@@ -17,6 +17,7 @@
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"
 
 #include "datadriven/application/Learner.hpp"
+#include "datadriven/application/LearnerDensityBased.hpp"
 
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"
 #include "datadriven/operation/OperationTest.hpp"
