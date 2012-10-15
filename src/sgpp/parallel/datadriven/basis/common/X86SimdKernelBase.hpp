@@ -20,7 +20,7 @@
 		throw sg::base::operation_exception("argument to big!");\
 	}\
 	if(arg%alignment != 0){\
-		throw sg::base::operation_exception("argument now aligned!");\
+		throw sg::base::operation_exception("argument not aligned!");\
 	}\
 }
 #else

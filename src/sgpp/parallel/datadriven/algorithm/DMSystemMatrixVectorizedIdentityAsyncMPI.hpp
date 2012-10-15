@@ -23,8 +23,8 @@
 #include <omp.h>
 #endif
 
-#define APPROXCHUNKSIZEGRID 50 // approximately how many blocks should be computed for the grid before sending
-#define APPROXCHUNKSIZEDATA 50 // approximately how many blocks should be computed for the data before sending
+#define APPROXCHUNKSIZEGRID_ASYNC 100 // approximately how many blocks should be computed for the grid before sending
+#define APPROXCHUNKSIZEDATA_ASYNC 2000 // approximately how many blocks should be computed for the data before sending
 
 namespace sg
 {
@@ -91,7 +91,7 @@ public:
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
 		size_t blockCountData = this->numPatchedTrainingInstances_/sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_); // this process has (in total) blockCountData blocks of Data to process
-		_chunkCountData = blockCountData/APPROXCHUNKSIZEDATA;
+		_chunkCountData = blockCountData/APPROXCHUNKSIZEDATA_ASYNC;
 
 		// arrays for distribution settings
 		_mpi_data_sizes = new int[_chunkCountData];
@@ -102,7 +102,7 @@ public:
 		sg::parallel::PartitioningTool::calcDistribution(this->numPatchedTrainingInstances_, _chunkCountData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 		sg::parallel::PartitioningTool::calcDistribution(_chunkCountData, mpi_size, _mpi_data_sizes_global, _mpi_data_offsets_global, 1);
 
-		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID;
+		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
 
 		// arrays for distribution settings
 		_mpi_grid_sizes = new int[_chunkCountGrid];
@@ -183,7 +183,7 @@ public:
 				size_t start = _mpi_data_offsets[thread_chunk];
 				size_t end =  start + _mpi_data_sizes[thread_chunk];
 
-				if (start % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0 || end % sg::parallel::X86SimdLinearMult::getChunkDataPoints() != 0)
+				if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
 				{
 					std::cout << "start%CHUNKDATAPOINTS_X86: " << start%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << "; end%CHUNKDATAPOINTS_X86: " << end%sg::parallel::X86SimdLinearMult::getChunkDataPoints() << std::endl;
 					throw sg::base::operation_exception("processed vector segment must fit to CHUNKDATAPOINTS_X86!");
@@ -298,7 +298,7 @@ public:
 
 		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID;
+		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
 
 		delete[] _mpi_grid_sizes;
 		delete[] _mpi_grid_offsets;

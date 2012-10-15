@@ -63,7 +63,21 @@ public:
 		result_tmp.setAll(0.0);
 		result.setAll(0.0);
 
-		MultType::mult(
+		size_t thread_count = 1;
+		size_t thread_num = 0;
+		this->myTimer_->start();
+		#pragma omp parallel private(thread_num, thread_count)
+		{
+#ifdef _OPENMP
+		thread_count = omp_get_num_threads();
+		thread_num = omp_get_thread_num();
+#endif
+			size_t threadChunkStart, threadChunkEnd;
+			sg::parallel::PartitioningTool::getPartitionSegment(
+					data_offset, data_offset + data_size,
+					thread_count, thread_num, &threadChunkStart, &threadChunkEnd,
+					sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+			MultType::mult(
 					level_,
 					index_,
 					dataset_,
@@ -71,29 +85,47 @@ public:
 					temp,
 					0,
 					m_grid.getSize(),
-					data_offset,
-					data_offset + data_size);
-
-		// patch result -> set additional entries zero
-		if (data_offset+data_size > this->numTrainingInstances_ && this->numTrainingInstances_ != temp.getSize())
-		{
-			for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
+					threadChunkStart,
+					threadChunkEnd);
+#pragma omp single nowait
 			{
-				temp.set(temp.getSize()-(i+1), 0.0f);
+				double timeMult = this->myTimer_->stop();
+				this->computeTimeMult_ += timeMult;
+				this->completeTimeMult_ += timeMult;
+				this->myTimer_->start();
 			}
-		}
 
-		MultTransType::multTranspose(
+			// patch result -> set additional entries zero
+			// only done for processes that need this part of the temp data
+			if (data_offset+data_size > this->numTrainingInstances_ && this->numTrainingInstances_ != temp.getSize())
+			{
+				for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
+				{
+					temp.set(temp.getSize()-(i+1), 0.0f);
+				}
+			}
+
+			sg::parallel::PartitioningTool::getPartitionSegment(
+					0, m_grid.getSize(),
+					thread_count, thread_num, &threadChunkStart, &threadChunkEnd, 1);
+			MultTransType::multTranspose(
 					level_,
 					index_,
 					dataset_,
 					temp,
 					result_tmp,
-					0,
-					m_grid.getSize(),
+					threadChunkStart,
+					threadChunkEnd,
 					data_offset,
 					data_offset + data_size);
+		}
+		this->computeTimeMultTrans_ += this->myTimer_->stop();
 		MPI_Allreduce(result_tmp.getPointer(), result.getPointer(), result.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+		this->completeTimeMultTrans_ += this->myTimer_->stop();
+
+		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+			std::cout << "*";
+		}
 	}
 
 	virtual void generateb(base::DataVector &classes, base::DataVector &b){
@@ -107,16 +139,29 @@ public:
 			myClasses.resizeZero(this->numPatchedTrainingInstances_);
 		}
 
-		MultTransType::multTranspose(
-					level_,
-					index_,
-					dataset_,
-					myClasses,
-					b_tmp,
-					0,
-					m_grid.getSize(),
-					data_offset,
-					data_offset + data_size);
+		size_t thread_count = 1;
+		size_t thread_num = 0;
+		#pragma omp parallel private(thread_num, thread_count)
+		{
+#ifdef _OPENMP
+		thread_count = omp_get_num_threads();
+		thread_num = omp_get_thread_num();
+#endif
+			size_t threadChunkStart, threadChunkEnd;
+			sg::parallel::PartitioningTool::getPartitionSegment(
+					0, m_grid.getSize(),
+					thread_count, thread_num, &threadChunkStart, &threadChunkEnd, 1);
+			MultTransType::multTranspose(
+						level_,
+						index_,
+						dataset_,
+						myClasses,
+						b_tmp,
+						threadChunkStart,
+						threadChunkEnd,
+						data_offset,
+						data_offset + data_size);
+		}
 		MPI_Allreduce(b_tmp.getPointer(), b.getPointer(), b_tmp.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 	}
 
