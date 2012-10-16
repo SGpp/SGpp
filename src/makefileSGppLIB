@@ -339,7 +339,9 @@ OBJS =	DataVector.o\
 	OperationFirstMomentLinear.o\
 	OperationDensityMarginalizeLinear.o\
 	OperationDensityConditionalLinear.o\
-	DMVectorizationPaddingAssistant.o
+	DMVectorizationPaddingAssistant.o\
+	OperationMatrixLTwoDotExplicitLinear.o\
+	OperationMatrixLTwoDotExplicitLinearBoundary.o
 	
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -689,6 +691,9 @@ OperationHestonZLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pd
 OperationHestonYLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
 
+OperationMatrixLTwoDotExplicitLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMatrixLTwoDotExplicitLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.cpp
+
 OperationLaplaceLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	
@@ -921,7 +926,10 @@ OperationHestonYLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operat
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.cpp
 
 OperationHestonZLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonZLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp	
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonZLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp
+
+OperationMatrixLTwoDotExplicitLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMatrixLTwoDotExplicitLinearBoundary.o $(SRCDIR)pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.cpp
 	
 OperationLBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
