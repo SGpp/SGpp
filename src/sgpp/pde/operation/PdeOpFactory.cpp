@@ -120,6 +120,19 @@ namespace op_factory
   	   throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
   }
 
+  base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid){
+    	  if(strcmp(grid.getType(), "linear") == 0)
+    	  {
+    	     return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
+    	  }
+    	  else if(strcmp(grid.getType(), "linearBoundary") == 0)
+    	  {
+    		  return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
+    	  }
+    	  else
+    	   throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
+    }
+
 }
 }
 
