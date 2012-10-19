@@ -5,13 +5,17 @@
 ******************************************************************************/
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
+#ifdef USE_MPI
 #include "parallel/tools/MPI/SGppMPITools.hpp"
+#endif
 #include "parallel/tools/PartitioningTool.hpp"
 #include "base/exception/operation_exception.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
 #endif
+
+#include <iostream>
 
 namespace sg
 {
