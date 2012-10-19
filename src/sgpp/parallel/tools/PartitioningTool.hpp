@@ -8,6 +8,8 @@
 #ifndef PARTITIONINGTOOL_HPP
 #define PARTITIONINGTOOL_HPP
 
+#include <cstddef>
+
 namespace sg
 {
 namespace parallel
