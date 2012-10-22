@@ -46,6 +46,8 @@ public:
 		virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
 
   time_t getExecTime();
+
+  size_t getNrGridPoints();
 };
 
 }
