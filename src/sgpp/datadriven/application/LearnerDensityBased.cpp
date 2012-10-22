@@ -357,6 +357,10 @@ sg::base::DataVector LearnerDensityBased::predict(
     return this->execTime_;
   }
 
+  size_t LearnerDensityBased::getNrGridPoints() {
+    return this->grid_->getSize();
+  }
+
 }
 }
 
