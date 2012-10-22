@@ -44,6 +44,8 @@ public:
 	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 	/// construct system matrix
 		virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+
+  time_t getExecTime();
 };
 
 }
