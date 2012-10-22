@@ -353,6 +353,10 @@ sg::base::DataVector LearnerDensityBased::predict(
 
 }
 
+  time_t LearnerDensityBased::getExecTime() {
+    return this->execTime_;
+  }
+
 }
 }
 
