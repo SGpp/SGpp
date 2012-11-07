@@ -116,18 +116,18 @@ namespace op_factory
         return new base::OperationHierarchisationPrewavelet(grid.getStorage(),
                                                       ((base::PrewaveletGrid*) &grid)->getShadowStorage());
       }
-    else if(strcmp(grid.getType(), "modBspline") == 0 )
-      {
-        return new base::OperationHierarchisationModBspline(grid.getStorage(),
-                                                      ((base::ModBsplineGrid*) &grid)->getDegree());
-      }
-    else if(strcmp(grid.getType(), "modWavelet") == 0 )
-      {
-        return new base::OperationHierarchisationModWavelet(grid.getStorage());
-      }
+//    else if(strcmp(grid.getType(), "modBspline") == 0 )
+//      {
+//        return new base::OperationHierarchisationModBspline(grid.getStorage(),
+//                                                      ((base::ModBsplineGrid*) &grid)->getDegree());
+//      }
+//    else if(strcmp(grid.getType(), "modWavelet") == 0 )
+//      {
+//        return new base::OperationHierarchisationModWavelet(grid.getStorage());
+//      }
 
     else
-      throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
+      throw base::factory_exception("OperationHierarchisation is not implemented for this grid type.");
   }
 
   base::OperationQuadrature* createOperationQuadrature(base::Grid& grid)
