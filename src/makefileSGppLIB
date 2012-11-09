@@ -1263,6 +1263,7 @@ $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMu
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
@@ -1424,7 +1425,9 @@ DatadrivenOpFactory.o : $(SRCDIR)datadriven/operation/DatadrivenOpFactory.cpp
 FinanceOpFactory.o : $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)FinanceOpFactory.o $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 
-ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
+ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
