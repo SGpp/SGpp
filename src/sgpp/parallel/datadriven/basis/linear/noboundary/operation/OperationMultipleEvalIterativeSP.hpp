@@ -44,14 +44,6 @@ public:
 		m_gridTo = gridTo;
 		m_datasetFrom = datasetFrom;
 		m_datasetTo = datasetTo;
-	#ifdef _OPENMP
-	#pragma omp parallel
-	{
-	   if (omp_get_thread_num() == 0) {
-		   std::cout << "using " << omp_get_num_threads() << " OpenMP Threads" << std::endl;
-	   }
-	}
-	#endif
 
 	   this->storage = storage;
 

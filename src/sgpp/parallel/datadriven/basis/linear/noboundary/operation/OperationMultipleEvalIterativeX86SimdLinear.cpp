@@ -31,15 +31,6 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
 
-#ifdef _OPENMP
-#pragma omp parallel
-{
-    if (omp_get_thread_num() == 0) {
-        std::cout << "using " << omp_get_num_threads() << " OpenMP Threads" << std::endl;
-    }
-}
-#endif
-
 	this->storage = storage;
 
 	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
