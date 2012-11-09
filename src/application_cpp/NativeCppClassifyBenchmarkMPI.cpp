@@ -217,10 +217,12 @@ void printResults()
         }
         std::cout << std::endl << "Timing Details:" << std::endl;
         std::cout << "         mult (complete): " << gtimings.timeMultComplete_ << " seconds" << std::endl;
-        std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
-        std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds" << std::endl;
-        std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds" << std::endl;
-        std::cout << std::endl;
+		std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds" << std::endl;
+		std::cout << "         mult (comm)    : " << gtimings.timeMultComplete_ - gtimings.timeMultCompute_ << " seconds" << std::endl;
+		std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds" << std::endl;
+		std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds" << std::endl;
+		std::cout << "  mult trans. (comm)    : " << gtimings.timeMultTransComplete_ - gtimings.timeMultTransCompute_ << " seconds" << std::endl;
+		std::cout << std::endl;
         std::cout << "GFlop/s (complete): " << gtimings.GFlop_/gtimings.timeComplete_ << std::endl;
         std::cout << "GByte/s (complete): " << gtimings.GByte_/gtimings.timeComplete_ << std::endl;
         std::cout << "GFlop/s (compute): " << gtimings.GFlop_/(gtimings.timeMultCompute_+gtimings.timeMultTransCompute_) << std::endl;
