@@ -21,6 +21,8 @@
 
 #include <iostream>
 
+#include "parallel/tools/MPI/SGppMPITools.hpp"
+
 namespace sg
 {
 
@@ -30,6 +32,15 @@ namespace datadriven
 LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
 	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(0.0), GFlop_(0.0), GByte_(0.0)
 {
+#ifdef USE_MPI
+	// suppress output from all process but proc0,
+	// output is (in the normal, correctly working
+	// case) the same for all MPI processes, so no
+	// need to see output more than once
+	if(sg::parallel::myGlobalMPIComm->getMyRank() != 0){
+		this->isVerbose_ = false;
+	}
+#endif
 }
 
 LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression, const bool isVerbose)
@@ -226,7 +237,8 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 
         if (isVerbose_)
         {
-        	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
+			std::cout << std::endl;
+			std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
         	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
         }
 
