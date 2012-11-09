@@ -13,6 +13,7 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
+#include "base/tools/AlignedMemory.hpp"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -44,14 +45,6 @@ public:
 		m_gridTo = gridTo;
 		m_datasetFrom = datasetFrom;
 		m_datasetTo = datasetTo;
-	#ifdef _OPENMP
-	#pragma omp parallel
-	{
-	   if (omp_get_thread_num() == 0) {
-		   std::cout << "using " << omp_get_num_threads() << " OpenMP Threads" << std::endl;
-	   }
-	}
-	#endif
 
 	   this->storage = storage;
 
@@ -73,13 +66,25 @@ public:
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 	{
+		// thread creating "benchmark" code
+		/*int threadCount = 1;
+#ifdef _OPENMP
+#pragma omp parallel
+		{
+			threadCount = omp_get_num_threads();
+		}
+#endif
+		double *openmp_startTime = (double *)aligned_malloc(threadCount*8*sizeof(double), SGPPMEMALIGNMENT); */
 		myTimer->start();
 
 	#ifdef _OPENMP
 		#pragma omp parallel
 		{
 	#endif
-			//std::cout << "thread " << omp_get_thread_num() << ": parallel section time: " << myTimer->stop() << std::endl;
+			/*
+			int myThreadNum = omp_get_thread_num();
+			openmp_startTime[myThreadNum*8] = myTimer->stop();
+*/
 			size_t start;
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
@@ -95,6 +100,25 @@ public:
 		}
 	#endif
 
+		// thread creation benchmark code
+		/* double max = 0;
+		double min = 99999999;
+		double avg = 0;
+		for (int i = 0; i<threadCount;i++){
+			double time_i = openmp_startTime[i*8];
+			if(max < time_i){
+				max = time_i;
+			}
+			if (min > time_i) {
+				min = time_i;
+			}
+			avg += time_i;
+		}
+		avg /= threadCount;
+		//std::cout << "Thread creation overhead: " << min << " - " << avg << " - " << max << std::endl;
+		//std::cout << "Thread creation overhead: " << max << std::endl;
+		aligned_free(openmp_startTime);
+*/
 		return myTimer->stop();
 	}
 
