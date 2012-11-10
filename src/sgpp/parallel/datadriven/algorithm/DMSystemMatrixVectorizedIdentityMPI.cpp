@@ -125,7 +125,10 @@ void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base:
 {
 	this->myTimer_->start();
 
-	this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
+	double funComputationTime = this->B_->multVectorized(alpha, result);
+	this->computeTimeMult_ += funComputationTime;
+
+	double computationTime = this->myTimer_->stop();
 
 	/// @todo hier zeiten plotten
 	debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_offsets[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_offsets[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
@@ -135,7 +138,26 @@ void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector &alpha, base:
 
 	sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
 
-	this->completeTimeMult_ += this->myTimer_->stop();
+	double completeTime = this->myTimer_->stop();
+	this->completeTimeMult_ += completeTime;
+	double communicationTime = completeTime - computationTime;
+
+	double maxComputationTime, minComputationTime;
+	double maxCompleteTime, minCompleteTime;
+	double maxCommunicationTime, minCommunicationTime;
+
+	MPI_Reduce(&computationTime, &maxComputationTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&computationTime, &minComputationTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&communicationTime, &maxCommunicationTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&communicationTime, &minCommunicationTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&completeTime, &maxCompleteTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&completeTime, &minCompleteTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+		std::cout << "computation     time min - max: " << minComputationTime << " - " << maxComputationTime << " (difference: " << (maxComputationTime - minComputationTime) << ") " << std::endl;
+		std::cout << "complete        time min - max: " << minCompleteTime << " - " << maxCompleteTime << " (difference: " << (maxCompleteTime - minCompleteTime) << ") " << std::endl;
+		std::cout << "communication   time min - max: " << minCommunicationTime << " - " << maxCommunicationTime << " (difference: " << (maxCommunicationTime - minCommunicationTime) << ") " << std::endl;
+		std::cout << std::endl;
+	}
 }
 
 void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector &source, base::DataVector &result)

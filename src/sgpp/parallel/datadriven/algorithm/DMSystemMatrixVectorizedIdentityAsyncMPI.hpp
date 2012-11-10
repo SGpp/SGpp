@@ -23,8 +23,8 @@
 #include <omp.h>
 #endif
 
-#define APPROXCHUNKSIZEGRID_ASYNC 100 // approximately how many blocks should be computed for the grid before sending
-#define APPROXCHUNKSIZEDATA_ASYNC 2000 // approximately how many blocks should be computed for the data before sending
+#define APPROXCHUNKSIZEGRID_ASYNC 30 // approximately how many blocks should be computed for the grid before sending
+#define APPROXCHUNKSIZEDATA_ASYNC 50 // approximately how many blocks should be computed for the data before sending
 
 namespace sg
 {
@@ -92,6 +92,7 @@ public:
 
 		size_t blockCountData = this->numPatchedTrainingInstances_/sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_); // this process has (in total) blockCountData blocks of Data to process
 		_chunkCountData = blockCountData/APPROXCHUNKSIZEDATA_ASYNC;
+		_chunkCountData = fmax(_chunkCountData, mpi_size); // every process should have at least one chunk
 
 		// arrays for distribution settings
 		_mpi_data_sizes = new int[_chunkCountData];
@@ -103,6 +104,7 @@ public:
 		sg::parallel::PartitioningTool::calcDistribution(_chunkCountData, mpi_size, _mpi_data_sizes_global, _mpi_data_offsets_global, 1);
 
 		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
+		_chunkCountGrid = fmax(_chunkCountGrid, mpi_size); // every process should have at least one chunk
 
 		// arrays for distribution settings
 		_mpi_grid_sizes = new int[_chunkCountGrid];
@@ -113,7 +115,10 @@ public:
 		sg::parallel::PartitioningTool::calcDistribution(m_grid.getSize(), _chunkCountGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 		sg::parallel::PartitioningTool::calcDistribution(_chunkCountGrid, mpi_size, _mpi_grid_sizes_global, _mpi_grid_offsets_global, 1);
 
-
+		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+			std::cout << "Data: " << _chunkCountData << " chunks of max size " << _mpi_data_sizes[0] << " (blocksize:" << sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_) << "), total: " << this->numPatchedTrainingInstances_ << std::endl;
+			std::cout << "Grid: " << _chunkCountGrid << " chunks of max size " << _mpi_grid_sizes[0] << " (blocksize: 1), total: " << m_grid.getSize() << std::endl;
+		}
 		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 
@@ -299,6 +304,8 @@ public:
 		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
+		_chunkCountGrid = fmax(_chunkCountGrid, sg::parallel::myGlobalMPIComm->getNumRanks()); // every process should have at least one chunk
+
 
 		delete[] _mpi_grid_sizes;
 		delete[] _mpi_grid_offsets;
