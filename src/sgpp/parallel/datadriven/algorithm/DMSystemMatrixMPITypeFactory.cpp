@@ -27,6 +27,8 @@
 #include <cstring>
 #include "base/exception/factory_exception.hpp"
 
+#include "parallel/tools/MPI/SGppMPITools.hpp"
+
 namespace sg {
 namespace parallel {
 
@@ -38,19 +40,31 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 #define MPI_TYPE_ASYNC 3
 #define MPI_TYPE_ONESIDED 4
 
-	int mpi_type = MPI_TYPE_ONESIDED;
+	int mpi_type = MPI_TYPE_ALLREDUCE;
 
+	std::string parallelizationType;
+	datadriven::DMSystemMatrixBase *result = 0;
 	if(mpi_type == MPI_TYPE_STANDARD){
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
+		parallelizationType = "standard";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ALLREDUCE) {
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		parallelizationType = "allreduce";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		parallelizationType = "async";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ONESIDED) {
-		return new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		parallelizationType = "onesided";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else {
 		throw new sg::base::factory_exception("not implemented");
 	}
+
+	if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+		std::cout << "Using MPI Parallelization: " << parallelizationType << std::endl;
+	}
+
+	return result;
 }
 
 datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::getDMSystemMatrix(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
