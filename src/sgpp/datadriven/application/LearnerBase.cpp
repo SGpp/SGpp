@@ -214,7 +214,7 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     		alpha_->resizeZero(grid_->getSize());
 			double refineTime = myStopwatch2->stop();
 			if (isVerbose_)
-				std::cout << "New Grid Size: " << grid_->getSize() << " (Refinement took " << refineTime << "seconds)" << std::endl;
+				std::cout << "New Grid Size: " << grid_->getSize() << " (Refinement took " << refineTime << " secs)" << std::endl;
     	}
     	else
     	{
