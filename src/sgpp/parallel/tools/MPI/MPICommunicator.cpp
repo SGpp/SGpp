@@ -162,15 +162,14 @@ void MPICommunicator::dataVectorAllToAll(base::DataVectorSP &alpha, int *distrib
 
 void MPICommunicator::IsendToAll(double *ptr, size_t size, int tag)
 {
-	MPI_Request* req = new MPI_Request();
+	MPI_Request req;
 	for(int rank = 0; rank<getNumRanks(); rank++){
 		if (rank == getMyRank()){
 			continue;
 		}
 
-		MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, req);
+		MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, &req);
 	}
-	delete req;
 }
 
 void MPICommunicator::IrecvFromAll(double *ptr, int *global_sizes, int *global_offsets, int *sizes, int *offsets, int *tag, int chunkCount, MPI_Request *dataRecvRequests)
