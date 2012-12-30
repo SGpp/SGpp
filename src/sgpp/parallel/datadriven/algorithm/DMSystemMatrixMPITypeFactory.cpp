@@ -35,7 +35,7 @@ namespace parallel {
 template<typename MultType, typename MultTransType>
 datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
 {
-#define MPI_TYPE_STANDARD 1
+#define MPI_TYPE_ALLTOALLV 1
 #define MPI_TYPE_ALLREDUCE 2
 #define MPI_TYPE_ASYNC 3
 #define MPI_TYPE_ONESIDED 4
@@ -44,17 +44,17 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 
 	std::string parallelizationType;
 	datadriven::DMSystemMatrixBase *result = 0;
-	if(mpi_type == MPI_TYPE_STANDARD){
-		parallelizationType = "standard";
+	if(mpi_type == MPI_TYPE_ALLTOALLV){
+		parallelizationType = "Alltoallv";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ALLREDUCE) {
-		parallelizationType = "allreduce";
+		parallelizationType = "Allreduce";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
-		parallelizationType = "async";
+		parallelizationType = "Asynchronous Communication";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ONESIDED) {
-		parallelizationType = "onesided";
+		parallelizationType = "Onesided Communication";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else {
 		throw new sg::base::factory_exception("not implemented");
@@ -62,6 +62,14 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 
 	if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
 		std::cout << "Using MPI Parallelization: " << parallelizationType << std::endl;
+		size_t thread_count = 1;
+#ifdef _OPENMP
+#pragma omp parallel
+		{
+			thread_count = omp_get_num_threads();
+		}
+#endif
+		std::cout << "OpenMP: " << thread_count << " Threads active" << std::endl;
 	}
 
 	return result;

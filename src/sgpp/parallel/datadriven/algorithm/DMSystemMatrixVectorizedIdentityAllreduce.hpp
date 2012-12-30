@@ -87,23 +87,29 @@ public:
 					m_grid.getSize(),
 					threadChunkStart,
 					threadChunkEnd);
-#pragma omp single nowait
+
+			// patch result -> set additional entries zero
+			// only done for processes that need this part of the temp data for multTrans
+			for (size_t i = std::max<size_t>(this->numTrainingInstances_, threadChunkStart); i < threadChunkEnd; i++)
 			{
+				temp.set(i, 0.0f);
+			}
+
+#pragma omp single
+			{
+				// the time measured here does not represent the complete
+				// time spent computing mult, it's probably the first threads
+				// that finished mult() that enters here while the other
+				// threads might still be busy with mult
 				double timeMult = this->myTimer_->stop();
 				this->computeTimeMult_ += timeMult;
 				this->completeTimeMult_ += timeMult;
 				this->myTimer_->start();
 			}
-
-			// patch result -> set additional entries zero
-			// only done for processes that need this part of the temp data
-			if (data_offset+data_size > this->numTrainingInstances_ && this->numTrainingInstances_ != temp.getSize())
-			{
-				for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
-				{
-					temp.set(temp.getSize()-(i+1), 0.0f);
-				}
-			}
+			// #pragma omp barrier
+			// implicit openMP barrier here (after omp single), which is
+			// needed, as multTranspose works on the full data part of this
+			// process, so threads might work on unfinished results of mult
 
 			sg::parallel::PartitioningTool::getPartitionSegment(
 					0, m_grid.getSize(),
