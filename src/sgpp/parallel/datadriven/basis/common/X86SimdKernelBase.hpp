@@ -9,7 +9,7 @@
 #ifndef X86SIMDKERNELBASE_HPP
 #define X86SIMDKERNELBASE_HPP
 
-//#define CHECK_KERNEL_CALLS
+#define CHECK_KERNEL_CALLS
 #ifdef CHECK_KERNEL_CALLS
 #include "base/exception/operation_exception.hpp"
 #define ASSERT_INDEX_ARG(arg, min, max, alignment){\
