@@ -50,6 +50,12 @@ public:
 
 		size_t end = end_index_data;
 
+		ASSERT_INDEX_ARG(start_index_grid, 0, level->getNrows(), 1);
+		ASSERT_INDEX_ARG(end_index_grid, 0, level->getNrows(), 1);
+		ASSERT_INDEX_ARG(start_index_data, 0, result_size, getChunkDataPoints()); //or alignment 24?
+		ASSERT_INDEX_ARG(end_index_data, 0, result_size, getChunkDataPoints()); //or alignment 24?
+
+
 		for(size_t c = start_index_data; c < end; c+=std::min<size_t>(getChunkDataPoints(), (end-c)))
 		{
 			size_t data_end = std::min<size_t>((size_t)getChunkDataPoints()+c, end);

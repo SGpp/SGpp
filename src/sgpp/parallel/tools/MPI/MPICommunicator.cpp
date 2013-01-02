@@ -160,15 +160,14 @@ void MPICommunicator::dataVectorAllToAll(base::DataVectorSP &alpha, int *distrib
 	delete[] sendOffsets;
 }
 
-void MPICommunicator::IsendToAll(double *ptr, size_t size, int tag)
+void MPICommunicator::IsendToAll(double *ptr, size_t size, int tag, MPI_Request* reqs)
 {
-	MPI_Request req;
 	for(int rank = 0; rank<getNumRanks(); rank++){
 		if (rank == getMyRank()){
+			reqs[rank] = MPI_REQUEST_NULL;
 			continue;
 		}
-
-		MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, &req);
+		MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, &reqs[rank]);
 	}
 }
 
@@ -192,6 +191,9 @@ void MPICommunicator::IrecvFromAll(double *ptr, int *global_sizes, int *global_o
 			continue;
 		}
 		MPI_Irecv(&ptr[offsets[i]], sizes[i], MPI_DOUBLE, rank, tag[i], MPI_COMM_WORLD, &dataRecvRequests[i]);
+//		if (getMyRank() == 0){
+//			std::cout << "posted receive for offset " << offsets[i] << ", size " << sizes[i] << " rank " << rank << " and tag "<< tag[i] << std::endl;
+//		}
 	}
 }
 
