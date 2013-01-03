@@ -21,6 +21,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
@@ -38,7 +39,8 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 #define MPI_TYPE_ALLTOALLV 1
 #define MPI_TYPE_ALLREDUCE 2
 #define MPI_TYPE_ASYNC 3
-#define MPI_TYPE_ONESIDED 4
+#define MPI_TYPE_TRUEASYNC 4
+#define MPI_TYPE_ONESIDED 5
 
 	int mpi_type = MPI_TYPE_ASYNC;
 
@@ -53,6 +55,9 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
 		parallelizationType = "Asynchronous Communication";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+	} else if(mpi_type == MPI_TYPE_TRUEASYNC) {
+		parallelizationType = "True Asynchronous Communication";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ONESIDED) {
 		parallelizationType = "Onesided Communication";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
