@@ -433,7 +433,7 @@ int main(int argc, char *argv[])
     MPI_Comm_size(MPI_COMM_WORLD,&mpi_size);
     MPI_Comm_rank(MPI_COMM_WORLD,&mpi_myid);
     sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_size);
-    std::cout << "Startup of Process " << mpi_myid << std::endl;
+	//std::cout << "Startup of Process " << mpi_myid << std::endl;
 
 	std::string dataFile;
 	std::string testFile;
