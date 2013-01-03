@@ -61,7 +61,7 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 	}
 
 	if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-		std::cout << "Using MPI Parallelization: " << parallelizationType << std::endl;
+		std::cout << "Using MPI Parallelization: " << parallelizationType << " ("<< sg::parallel::myGlobalMPIComm->getNumRanks() <<" Processes)" << std::endl;
 		size_t thread_count = 1;
 #ifdef _OPENMP
 #pragma omp parallel

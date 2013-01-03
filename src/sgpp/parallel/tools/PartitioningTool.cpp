@@ -64,14 +64,14 @@ void PartitioningTool::getPartitionSegment(int start, int end, int segmentCount,
 	*segmentEnd = *segmentStart + blockSegmentSize*blockSize;
 }
 
-void PartitioningTool::getOpenMPLoopPartitionSegment(int totalSize, size_t *size, size_t *offset, size_t blocksize)
+void PartitioningTool::getOpenMPPartitionSegment(int totalSize, size_t *size, size_t *offset, size_t blocksize)
 {
 	size_t end;
-	getOpenMPLoopPartitionSegment(0, totalSize, offset, &end, blocksize);
+	getOpenMPPartitionSegment(0, totalSize, offset, &end, blocksize);
 	*size = end - *offset;
 }
 
-void PartitioningTool::getOpenMPLoopPartitionSegment(int start, int end, size_t *segmentStart, size_t *segmentEnd, size_t blocksize)
+void PartitioningTool::getOpenMPPartitionSegment(int start, int end, size_t *segmentStart, size_t *segmentEnd, size_t blocksize)
 {
 	int threadCount = 1;
 	int myThreadNum = 0;
