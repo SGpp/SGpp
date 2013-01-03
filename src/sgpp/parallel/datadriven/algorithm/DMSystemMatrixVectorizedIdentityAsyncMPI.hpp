@@ -201,16 +201,14 @@ public:
 		int thread_num = 0;
 		#pragma omp parallel private (thread_num, thread_count)
 		{
-	#ifdef _OPENMP
-			thread_count = omp_get_num_threads();
-			thread_num = omp_get_thread_num();
-	#endif
 			size_t myDataChunkStart = _mpi_data_offsets_global[mpi_myrank];
 			size_t myDataChunkEnd = myDataChunkStart + _mpi_data_sizes_global[mpi_myrank];
 			size_t threadStart, threadEnd;
-			sg::parallel::PartitioningTool::getPartitionSegment(
+
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					myDataChunkStart, myDataChunkEnd,
-					thread_count, thread_num, &threadStart, &threadEnd, 1);
+					&threadStart, &threadEnd, 1);
+
 			for(size_t chunkIndex = threadStart; chunkIndex < threadEnd; chunkIndex++){
 				size_t start = _mpi_data_offsets[chunkIndex];
 				size_t end =  start + _mpi_data_sizes[chunkIndex];
@@ -288,7 +286,7 @@ public:
 //			}
 
 
-#pragma omp barrier //don't know why, but this line makes it fast...
+#pragma omp barrier // don't know why, but this line makes the calculations above faaaast
 #pragma omp single
 			{
 				double computationTime = this->myTimer_->stop();

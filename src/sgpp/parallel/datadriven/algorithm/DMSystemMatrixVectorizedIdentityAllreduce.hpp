@@ -1,3 +1,11 @@
+/******************************************************************************
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
+
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYALLREDUCE_H
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYALLREDUCE_H
 
@@ -63,20 +71,15 @@ public:
 		result_tmp.setAll(0.0);
 		result.setAll(0.0);
 
-		size_t thread_count = 1;
-		size_t thread_num = 0;
 		this->myTimer_->start();
-		#pragma omp parallel private(thread_num, thread_count)
+		#pragma omp parallel
 		{
-#ifdef _OPENMP
-		thread_count = omp_get_num_threads();
-		thread_num = omp_get_thread_num();
-#endif
 			size_t threadChunkStart, threadChunkEnd;
-			sg::parallel::PartitioningTool::getPartitionSegment(
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					data_offset, data_offset + data_size,
-					thread_count, thread_num, &threadChunkStart, &threadChunkEnd,
+					&threadChunkStart, &threadChunkEnd,
 					sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+
 			MultType::mult(
 					level_,
 					index_,
@@ -111,9 +114,9 @@ public:
 			// needed, as multTranspose works on the full data part of this
 			// process, so threads might work on unfinished results of mult
 
-			sg::parallel::PartitioningTool::getPartitionSegment(
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					0, m_grid.getSize(),
-					thread_count, thread_num, &threadChunkStart, &threadChunkEnd, 1);
+					&threadChunkStart, &threadChunkEnd, 1);
 			MultTransType::multTranspose(
 					level_,
 					index_,
@@ -145,18 +148,12 @@ public:
 			myClasses.resizeZero(this->numPatchedTrainingInstances_);
 		}
 
-		size_t thread_count = 1;
-		size_t thread_num = 0;
-		#pragma omp parallel private(thread_num, thread_count)
+		#pragma omp parallel
 		{
-#ifdef _OPENMP
-		thread_count = omp_get_num_threads();
-		thread_num = omp_get_thread_num();
-#endif
 			size_t threadChunkStart, threadChunkEnd;
-			sg::parallel::PartitioningTool::getPartitionSegment(
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					0, m_grid.getSize(),
-					thread_count, thread_num, &threadChunkStart, &threadChunkEnd, 1);
+					&threadChunkStart, &threadChunkEnd, 1);
 			MultTransType::multTranspose(
 						level_,
 						index_,

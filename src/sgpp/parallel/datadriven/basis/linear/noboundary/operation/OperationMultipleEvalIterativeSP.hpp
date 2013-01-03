@@ -73,7 +73,7 @@ public:
 	#endif
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
 
 			if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
 			{
@@ -101,7 +101,7 @@ public:
 	#endif
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPLoopPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
 			MultTransposeType::multTranspose(level_, index_, dataset_, source, result, start, end, 0, dataset_->getNcols());
 

@@ -50,8 +50,8 @@ public:
 	 * then the result is one single partition.
 	 *
 	 */
-	static void getOpenMPLoopPartitionSegment(int totalSize, size_t *size, size_t *offset, size_t blocksize = 1);
-	static void getOpenMPLoopPartitionSegment(int start, int end, size_t *segmentStart, size_t *segmentEnd, size_t blocksize = 1);
+	static void getOpenMPPartitionSegment(int totalSize, size_t *size, size_t *offset, size_t blocksize = 1);
+	static void getOpenMPPartitionSegment(int start, int end, size_t *segmentStart, size_t *segmentEnd, size_t blocksize = 1);
 
 	/**
 	 * @brief getMPIPartitionSegment uses the number of MPI processes and the MPI rank for segmentCount and segmentNumber
