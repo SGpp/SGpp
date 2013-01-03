@@ -99,7 +99,7 @@ public:
 		}
 #endif
 
-		size_t minChunkCount = mpi_size * thread_count; // every process should have at least thread_count chunks
+		size_t minChunkCount = mpi_size * thread_count * 2; // every process should have at least thread_count chunks
 
 		size_t blockCountData = this->numPatchedTrainingInstances_/sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_); // this process has (in total) blockCountData blocks of Data to process
 		_chunkCountData = blockCountData/APPROXCHUNKSIZEDATA_ASYNC;
@@ -160,13 +160,31 @@ public:
 	}
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
+
 		sg::base::DataVector temp(this->numPatchedTrainingInstances_);
-		//sg::base::DataVector temp_reference(this->numPatchedTrainingInstances_);
+		sg::base::DataVector temp_reference(this->numPatchedTrainingInstances_);
 		sg::base::DataVector result_reference(result.getSize());
+
+		sg::base::DataVector result_max(result.getSize());
+		sg::base::DataVector result_min(result.getSize());
+		sg::base::DataVector alpha_max(alpha.getSize());
+		sg::base::DataVector alpha_min(alpha.getSize());
+
+		MPI_Reduce(alpha.getPointer(), alpha_max.getPointer(), alpha.getSize(), MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+		MPI_Reduce(alpha.getPointer(), alpha_min.getPointer(), alpha.getSize(), MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+
+		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+			for (int i = 0; i<alpha.getSize(); i++){
+				if (alpha_max[i] != alpha_min[i]){
+					std::cout << "params do not match in mult: " << i << " | " << alpha_max[i] << " != " << alpha_min[i]  << "; diff: " << alpha_min[i] - alpha_max[i] << std::endl;
+					throw new sg::base::operation_exception("reuslts do not match!");
+				}
+			}
+		}
 
 		result.setAll(0.0);
 		temp.setAll(0.0);
-		//temp_reference.setAll(0.0);
+		temp_reference.setAll(0.0);
 		result_reference.setAll(0.0);
 		double* ptrResult = result.getPointer();
 		double* ptrTemp = temp.getPointer();
@@ -174,10 +192,10 @@ public:
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-		//MultType::mult(level_, index_, dataset_, alpha, temp_reference, 0, alpha.getSize(), 0, this->numPatchedTrainingInstances_);
+		MultType::mult(level_, index_, dataset_, alpha, temp_reference, 0, alpha.getSize(), 0, this->numPatchedTrainingInstances_);
 		for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++)
 		{
-			//temp_reference.set(i, 0.0f);
+			temp_reference.set(i, 0.0f);
 		}
 		MPI_Request dataRecvReqs[_chunkCountData]; //allocating a little more than necessary, otherwise complicated index computations needed
 		int tagsData[_chunkCountData];
@@ -201,14 +219,16 @@ public:
 		int thread_num = 0;
 		#pragma omp parallel private (thread_num, thread_count)
 		{
+	#ifdef _OPENMP
+			thread_count = omp_get_num_threads();
+			thread_num = omp_get_thread_num();
+	#endif
 			size_t myDataChunkStart = _mpi_data_offsets_global[mpi_myrank];
 			size_t myDataChunkEnd = myDataChunkStart + _mpi_data_sizes_global[mpi_myrank];
 			size_t threadStart, threadEnd;
-
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
+			sg::parallel::PartitioningTool::getPartitionSegment(
 					myDataChunkStart, myDataChunkEnd,
-					&threadStart, &threadEnd, 1);
-
+					thread_count, thread_num, &threadStart, &threadEnd, 1);
 			for(size_t chunkIndex = threadStart; chunkIndex < threadEnd; chunkIndex++){
 				size_t start = _mpi_data_offsets[chunkIndex];
 				size_t end =  start + _mpi_data_sizes[chunkIndex];
@@ -286,7 +306,7 @@ public:
 //			}
 
 
-#pragma omp barrier // don't know why, but this line makes the calculations above faaaast
+#pragma omp barrier //don't know why, but this line makes it fast...
 #pragma omp single
 			{
 				double computationTime = this->myTimer_->stop();
@@ -302,32 +322,32 @@ public:
 				this->completeTimeMult_ += completeTime;
 				double communicationTime = completeTime - computationTime;
 
-//				if(sg::parallel::myGlobalMPIComm->getMyRank() == 1){
-//					double sum_tmp = 0, sum_ref = 0;
-//					double total_diff = 0;
-//					int diffcounter = 0;
-//					std::strstream indices;
-//					for(int i = 0; i<this->numPatchedTrainingInstances_;i++){
-//						if(fabs(temp[i] - temp_reference[i]) != 0){
-//							sum_tmp += temp[i];
-//							sum_ref += temp_reference[i];
-//							total_diff += fabs(temp[i] - temp_reference[i]);
-//							diffcounter++;
-//							indices << i << " ";
-//						}
-//					}
-//					if(total_diff != 0){
-//						std::cout << "summs do not match: " << " " << sum_tmp << "!=" << sum_ref  << "  total diff: " << total_diff  << "; # of diffs: " << diffcounter<< std::endl << indices.str() << std::endl;
-//						throw new sg::base::operation_exception("reuslts do not match!");
-//					}
-//					for(int i = 0; i<this->numPatchedTrainingInstances_;i++){
+				if(sg::parallel::myGlobalMPIComm->getMyRank() == 1){
+					double sum_tmp = 0, sum_ref = 0;
+					double total_diff = 0;
+					int diffcounter = 0;
+					std::strstream indices;
+					for(int i = 0; i<this->numPatchedTrainingInstances_;i++){
+						if(fabs(temp[i] - temp_reference[i]) != 0){
+							sum_tmp += temp[i];
+							sum_ref += temp_reference[i];
+							total_diff += fabs(temp[i] - temp_reference[i]);
+							diffcounter++;
+							indices << i << " ";
+						}
+					}
+					if(total_diff != 0){
+						std::cout << "summs do not match: " << " " << sum_tmp << "!=" << sum_ref  << "  total diff: " << total_diff  << "; # of diffs: " << diffcounter<< std::endl << indices.str() << std::endl;
+						throw new sg::base::operation_exception("reuslts do not match!");
+					}
+					for(int i = 0; i<this->numPatchedTrainingInstances_;i++){
 
-//						if(temp[i] - temp_reference[i] != 0.0){
-//							std::cout << "results do not match: " << i << " " << temp[i] << "!=" << temp_reference[i]  << "diff" << temp[i] - temp_reference[i] << std::endl;
-//							throw new sg::base::operation_exception("reuslts do not match!");
-//						}
-//					}
-//				}
+						if(temp[i] - temp_reference[i] != 0.0){
+							std::cout << "results do not match: " << i << " " << temp[i] << "!=" << temp_reference[i]  << "diff" << temp[i] - temp_reference[i] << std::endl;
+							throw new sg::base::operation_exception("reuslts do not match!");
+						}
+					}
+				}
 
 //				double maxComputationTime, minComputationTime;
 //				double maxCompleteTime, minCompleteTime;
@@ -362,27 +382,57 @@ public:
 
 			} //implicit OpenMP barrier here
 
+
 			size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
 			size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
+					myGridChunkStart, myGridChunkEnd, &threadStart, &threadEnd, 1);
 
-			for(size_t thread_chunk = myGridChunkStart + thread_num; thread_chunk<myGridChunkEnd; thread_chunk+=thread_count){
+			for(size_t thread_chunk = threadStart; thread_chunk<threadEnd; thread_chunk++){
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
 				MultTransType::multTranspose(level_, index_, dataset_, temp, result, start, end, 0, this->numPatchedTrainingInstances_);
+				//std::cout << "alltoall[" << thread_chunk << "]: from " << start << "; size" << _mpi_grid_sizes[thread_chunk] <<   std::endl;
 				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[start], _mpi_grid_sizes[thread_chunk], start*2 + 3, &gridSendReqs[(thread_chunk - myGridChunkStart)*mpi_size]);
+				//std::cout << "after isendtoall " << thread_chunk << " --- " << _mpi_grid_offsets[thread_chunk] <<  std::endl;
 			}
 
 #pragma omp barrier
 		}
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 
-		MPI_Waitall(_chunkCountGrid, gridRecvReqs, MPI_STATUSES_IGNORE);
+		if(MPI_Waitall(_chunkCountGrid, gridRecvReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
+			std::cout << "Communication error (waitall gridrecvreqs)" << std::endl;
+			throw new sg::base::operation_exception("Communication error!");
+		}
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
+
+		MPI_Reduce(result.getPointer(), result_max.getPointer(), result.getSize(), MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+		MPI_Reduce(result.getPointer(), result_min.getPointer(), result.getSize(), MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+			for (int i = 0; i<alpha.getSize(); i++){
+				if (result_max[i] != result_min[i]){
+					std::cout << "reuslt does not match before axpy in mult: " << i << " | " << result_max[i] << " != " << result_min[i]  << "; diff: " << result_max[i] - result_min[i] << std::endl;
+					throw new sg::base::operation_exception("reuslts do not match!");
+				}
+			}
+		}
 
 		result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 		if (mpi_myrank == 0) std::cout << "*";
-	}
+
+		MPI_Reduce(result.getPointer(), result_max.getPointer(), result.getSize(), MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+		MPI_Reduce(result.getPointer(), result_min.getPointer(), result.getSize(), MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+			for (int i = 0; i<alpha.getSize(); i++){
+				if (result_max[i] != result_min[i]){
+					std::cout << "reuslt does not match at the end in mult: " << i << " | " << result_max[i] << " != " << result_min[i]  << "; diff: " << result_max[i] - result_min[i] << std::endl;
+					throw new sg::base::operation_exception("reuslts do not match!");
+				}
+			}
+		}
+	} //end mult
 
 	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b){
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
@@ -390,8 +440,8 @@ public:
 
 		double* ptrB = b.getPointer();
 		b.setAll(0.0);
-		sg::base::DataVector b_ref(b.getSize());
-		b_ref.setAll(0.0);
+
+
 
 		sg::base::DataVector myClasses(classes);
 		// Apply padding
@@ -399,7 +449,10 @@ public:
 		{
 			myClasses.resizeZero(this->numPatchedTrainingInstances_);
 		}
-		//MultTransType::multTranspose(level_, index_, dataset_, myClasses, b_ref, 0, b.getSize(), 0, this->numPatchedTrainingInstances_);
+
+		sg::base::DataVector b_ref(b.getSize());
+		b_ref.setAll(0.0);
+		MultTransType::multTranspose(level_, index_, dataset_, myClasses, b_ref, 0, b.getSize(), 0, this->numPatchedTrainingInstances_);
 
 		MPI_Request gridRecvReqs[_chunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
 		int tags[_chunkCountGrid];
@@ -411,37 +464,44 @@ public:
 
 	#pragma omp parallel
 		{
-			size_t threadStart;
-			size_t threadEnd;
 			size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
 			size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+			size_t threadStart, threadEnd;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
-					myGridChunkStart, myGridChunkEnd,
-					&threadStart, &threadEnd, 1);
+					myGridChunkStart, myGridChunkEnd, &threadStart, &threadEnd, 1);
 
-			for(size_t chunkIndex = threadStart; chunkIndex < threadEnd; chunkIndex++){
-				size_t start = _mpi_grid_offsets[chunkIndex];
-				size_t end =  start + _mpi_grid_sizes[chunkIndex];
+			for(size_t thread_chunk = threadStart; thread_chunk<threadEnd; thread_chunk++){
+				size_t start = _mpi_grid_offsets[thread_chunk];
+				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
 				MultTransType::multTranspose(level_, index_, dataset_, myClasses, b, start, end, 0, this->numPatchedTrainingInstances_);
-				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrB[start], _mpi_grid_sizes[chunkIndex], start+1, &gridSendReqs[(chunkIndex - myGridChunkStart)*mpi_size]);
+				//std::cout << "alltoall[" << thread_chunk << "]: from " << start << "; size" << _mpi_grid_sizes[thread_chunk] <<   std::endl;
+				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrB[start], _mpi_grid_sizes[thread_chunk], start+1, &gridSendReqs[(thread_chunk - myGridChunkStart)*mpi_size]);
+				//std::cout << "after isendtoall " << thread_chunk << " --- " << _mpi_grid_offsets[thread_chunk] <<  std::endl;
 			}
 #pragma omp barrier
 		}
 		MPI_Status stats[_chunkCountGrid];
-		if(MPI_Waitall(_chunkCountGrid, gridRecvReqs, stats) != MPI_SUCCESS){
-			std::cout << "errors in communication" << std::endl;
-			throw new sg::base::operation_exception("Communication error!");
+		if(MPI_Waitall(_chunkCountGrid, gridRecvReqs, stats) != MPI_SUCCESS) {
+			std::cout << "communication error in generateB" << std::endl;
+			throw new sg::base::operation_exception("COmmunication Error");
 		}
-		//MPI_Waitall(mpi_size * _mpi_grid_sizes_global[mpi_myrank], gridSendReqs, MPI_STATUSES_IGNORE);
+		if(MPI_Waitall(mpi_size * _mpi_grid_sizes_global[mpi_myrank], gridSendReqs, stats) != MPI_SUCCESS) {
+			std::cout << "communication error in generateB" << std::endl;
+			throw new sg::base::operation_exception("COmmunication Error");
+		}
 
-//		for(int i = 0; i<b.getSize();i++){
-//			if(b[i] != b_ref[i]){
-//				std::cout << "results do not match B: " << i << ": " <<b[i] << "!=" << b_ref[i] << "; rank: " << mpi_myrank << std::endl;
-//				throw new sg::base::operation_exception("reuslts do not match!");
-//			}
-//		}
+		for(int i = 0; i<b.getSize();i++){
+			if(b[i] != b_ref[i]){
+				std::cout << "results do not match in generateB: " << i << " " << b[i] << "!=" << b_ref[i]  << "diff" << b[i] - b_ref[i] << std::endl;
+				throw new sg::base::operation_exception("reuslts do not match!");
+			}
+		}
 
+		for(int i= 0; i<_chunkCountGrid; i++) {
+			if(stats[i].MPI_ERROR != MPI_SUCCESS){
+			}
+		}
 	}
 
 	virtual void rebuildLevelAndIndex(){
@@ -461,7 +521,7 @@ public:
 			thread_count = omp_get_num_threads();
 		}
 #endif
-		size_t minChunkCount = mpi_size * thread_count; // every process should have at least thread_count chunks
+		size_t minChunkCount = mpi_size * thread_count * 2; // every process should have at least thread_count chunks
 
 		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
 		_chunkCountGrid = std::max<size_t>(_chunkCountGrid, minChunkCount);
