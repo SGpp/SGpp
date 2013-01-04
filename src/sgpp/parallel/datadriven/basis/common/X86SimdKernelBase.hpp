@@ -20,6 +20,7 @@
 		throw sg::base::operation_exception("argument to big!");\
 	}\
 	if(arg%alignment != 0){\
+		std::cout << "argument " << arg << " not aligned to " << alignment << " (file:" << __FILE__ << ", line:" << __LINE__ << ")" << std::endl; \
 		throw sg::base::operation_exception("argument not aligned!");\
 	}\
 }
