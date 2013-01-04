@@ -131,12 +131,12 @@ public:
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
 		sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 		//sg::base::DataVector temp_reference(this->numPatchedTrainingInstances_);
-		sg::base::DataVector result_reference(result.getSize());
+//		sg::base::DataVector result_reference(result.getSize());
 
 		result.setAll(0.0);
 		temp.setAll(0.0);
 		//temp_reference.setAll(0.0);
-		result_reference.setAll(0.0);
+//		result_reference.setAll(0.0);
 		double* ptrResult = result.getPointer();
 		double* ptrTemp = temp.getPointer();
 
@@ -144,10 +144,10 @@ public:
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
 		//MultType::mult(level_, index_, dataset_, alpha, temp_reference, 0, alpha.getSize(), 0, this->numPatchedTrainingInstances_);
-		for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++)
-		{
-			//temp_reference.set(i, 0.0f);
-		}
+//		for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++)
+//		{
+//			temp_reference.set(i, 0.0f);
+//		}
 
 		MPI_Request dataSendReqs[mpi_size];
 		MPI_Request dataRecvReqs[mpi_size]; //allocating a little more than necessary, otherwise complicated index computations needed
@@ -176,8 +176,6 @@ public:
 			}
 			MPI_Irecv(&ptrResult[_mpi_grid_offsets[rank]], _mpi_grid_sizes[rank], MPI_DOUBLE, rank, tagsGrid[rank], MPI_COMM_WORLD, &gridRecvReqs[rank]);
 		}
-//		MPI_Request dataSendReqs[_mpi_data_sizes_global[mpi_myrank] * mpi_size];
-//		MPI_Request gridSendReqs[_mpi_grid_sizes_global[mpi_myrank] * mpi_size];
 
 		this->myTimer_->start();
 
@@ -185,14 +183,14 @@ public:
 		size_t dataProcessChunkEnd = dataProcessChunkStart + _mpi_data_sizes[mpi_myrank];
 		size_t gridProcessChunkStart = _mpi_grid_offsets[mpi_myrank];
 		size_t gridProcessChunkEnd = gridProcessChunkStart + _mpi_grid_sizes[mpi_myrank];
-
+		int idx;
 	#pragma omp parallel
 		{
 			size_t threadStartData, threadEndData;
 
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					dataProcessChunkStart, dataProcessChunkEnd,
-					&threadStartData, &threadEndData, 1);
+					&threadStartData, &threadEndData, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
 			MultType::mult(level_, index_, dataset_, alpha, temp, 0, alpha.getSize(), threadStartData, threadEndData);
 				// patch result -> set additional entries zero
@@ -209,19 +207,20 @@ public:
 //				}
 
 
-#pragma omp barrier // make sure that all threads finished their part
+#pragma omp barrier // make sure that all threads finished their part, so that we can safely send the results to all other procs
 #pragma omp single nowait
 			{
 				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrTemp[dataProcessChunkStart], _mpi_data_sizes[mpi_myrank],
 														  dataProcessChunkStart*2 + 2, &dataSendReqs[mpi_myrank]);
 			}
+			// we don't need to wait for the sendreqs to finish because we only read from temp after its calculation
 
 			size_t threadStartGrid, threadEndGrid;
 
+			// while the data is transfered we already calculate multTrans with this part of the grid and the temp-values computed by this process
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 				gridProcessChunkStart, gridProcessChunkEnd,
 				&threadStartGrid, &threadEndGrid, 1);
-
 			MultTransType::multTranspose(
 					level_,
 					index_,
@@ -232,9 +231,13 @@ public:
 					threadEndGrid,
 					dataProcessChunkStart,
 					dataProcessChunkEnd);
+
+			// after this, we receive the temp chunks from all the other processes and do the calculations for them
 			while (true) {
-				int idx;
-				MPI_Waitany(mpi_size, dataRecvReqs, &idx, MPI_STATUS_IGNORE); // MPI_Waitany is thread safe
+#pragma omp single
+				{
+					MPI_Waitany(sg::parallel::myGlobalMPIComm->getNumRanks(), dataRecvReqs, &idx, MPI_STATUS_IGNORE);
+				}
 				if(idx == MPI_UNDEFINED) {
 					// no more active request, everything is done
 					break;
@@ -253,15 +256,14 @@ public:
 							dataChunkStart,
 							dataChunkEnd);
 			}
-		#pragma omp barrier // wait for all threads to finish
-
 		}
 		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[gridProcessChunkStart], _mpi_data_sizes[mpi_myrank],
-												  gridProcessChunkStart*2 + 3, &gridSendReqs[mpi_myrank]);
+												  tagsGrid[mpi_myrank], &gridSendReqs[mpi_myrank]);
 
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 
 		MPI_Waitall(mpi_size, gridRecvReqs, MPI_STATUSES_IGNORE);
+		MPI_Waitall(mpi_size, gridSendReqs, MPI_STATUSES_IGNORE);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 
 		result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
@@ -269,10 +271,7 @@ public:
 	}
 
 	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b){
-		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
-
-		double* ptrB = b.getPointer();
 		b.setAll(0.0);
 
 		sg::base::DataVector myClasses(classes);
@@ -282,7 +281,6 @@ public:
 			myClasses.resizeZero(this->numPatchedTrainingInstances_);
 		}
 
-
 	#pragma omp parallel
 		{
 			size_t threadChunkStart;
@@ -291,7 +289,6 @@ public:
 					_mpi_grid_offsets[mpi_myrank], _mpi_grid_offsets[mpi_myrank] + _mpi_grid_sizes[mpi_myrank],
 					&threadChunkStart, &threadChunkEnd, 1);
 			MultTransType::multTranspose(level_, index_, dataset_, myClasses, b, threadChunkStart, threadChunkEnd, 0, this->numPatchedTrainingInstances_);
-	#pragma omp barrier
 		}
 		sg::parallel::myGlobalMPIComm->dataVectorAllToAll(b, _mpi_grid_offsets, _mpi_grid_sizes);
 	}
