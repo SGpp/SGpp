@@ -127,20 +127,6 @@ def openAlphaFile(filename):
 # @return the data stored in the file as a set of arrays
 def openFile(filename):
     return readData(filename)
-#    try:
-#        if isARFFFile(filename):
-#            data = readDataARFF(filename)
-#        else:
-#            data = readDataTrivial(filename)
-#    except:
-#        print ("An error occured while reading " + filename + "!")
-#        sys.exit(1)
-#        
-#    if data.has_key("classes") == False:
-#        print ("No classes found in the given File " + filename + "!")
-#        sys.exit(1)
-#        
-#    return data
 
 #-------------------------------------------------------------------------------
 ## Constructs a new grid.
@@ -596,7 +582,7 @@ def doTest():
             print "Correctly classified on testing data:  ",te
 
         if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, alpha, (options.adapt_start + adaptStep))
-        if options.stats != None: writeStats(options.stats, formTxt([te_refine[-1]], [tr_refine[-1]], [num_refine[-1]], False))
+        if options.verbose: print formTxt([te_refine[-1]], [tr_refine[-1]], [num_refine[-1]], False)
             
         #increment adaptive step
         adaptStep += 1
@@ -675,7 +661,7 @@ def getEpochsErrorIncreasing(list):
 def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
     txt = ""
     if withHeader:
-        txt = "%d %-10g %2d" % (options.level, options.regparam, options.adaptive)
+        txt = "%d %-10g %2d" % (options.level, options.regparam, options.adapt_points)
     for i in xrange(len(tr_refine)):
         txt = txt + ", %d %.10f %.10f" % (num_refine[i], tr_refine[i], te_refine[i])
     return txt + "\n"
@@ -686,7 +672,7 @@ def formTxt(te_refine, tr_refine, num_refine, withHeader = True):
 def formTxtVal(te_refine, tr_refine, val_refine, num_points, withHeader = True):
     txt = ""
     if withHeader:
-        txt = "%d %-10g %2d" % (options.level, options.regparam, options.adaptive)
+        txt = "%d %-10g %2d" % (options.level, options.regparam, options.adap_points)
     for i in xrange(len(tr_refine)):
         txt = txt + ", %f %.10f %.10f %.10f" % (num_points[i], tr_refine[i], val_refine[i], te_refine[i])
     return txt + "\n"
@@ -932,8 +918,11 @@ def performFoldNew(dvec,cvec,ifold):
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 def performFoldRegression(dvec,cvec):
+    """Perform n-fold cross-validation.
+    @param dvec contains n DataMatrices for the single folds;
+    @param cvec contains n DataVectors with function values for the single folds"""
     
-    grid = constructGrid(dvec[0].getDim())
+    grid = constructGrid(dvec[0].getNcols())
         
     num_points = []
     tr_refine = []
@@ -941,9 +930,7 @@ def performFoldRegression(dvec,cvec):
     tr_meanSqrError = []
     te_meanSqrError = []
         
-    for adpatStep in xrange(options.adaptive + 1):
-        trainingCorrect = []
-        testingCorrect = []
+    for adaptStep in xrange(options.adaptive + 1):
         meanSqrErrorsTraining = []
         meanSqrErrorsTesting = []        
 
@@ -961,69 +948,51 @@ def performFoldRegression(dvec,cvec):
 
             res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, options.reuse, options.verbose, max_threshold=options.max_r)
             print res
-            tr = testVector(grid,alpha,training,classes)
-            te = testVector(grid,alpha,dvec[foldSetNumber],cvec[foldSetNumber])
 
-            trainingCorrect.append(tr)
-            testingCorrect.append(te)
-            
-            # calculate Mean Square Error for training set
-            temp = DataVector(classes.getNrows())
+            # calculate squared error per basis function
+            temp = DataVector(len(classes))
             m.B.mult(alpha, temp)
             temp.sub(classes)
             temp.sqr()
-            meanSqrErrorsTraining.append(temp.sum() / temp.getNrows())
-
-            # calculate error per base function
+            # MSE for training set
+            tr = temp.sum() / len(temp)
+            meanSqrErrorsTraining.append(tr)
             errors = DataVector(len(alpha))
-            m.B.mult(temp, m.x, errors)
+            m.B.multTranspose(temp, errors)
 
-            # calculate Mean Square Error for testing set
-            temp = DataVector(cvec[foldSetNumber].getNrows())
-            m.B.multTranspose(alpha, dvec[foldSetNumber], temp)
-            temp.sub(cvec[foldSetNumber])
-            temp.sqr()
-            meanSqrErrorsTesting.append(temp.sum() / temp.getNrows())
+            # compute MSE for test set
+            te = testVectorFastMSE(grid,alpha,dvec[foldSetNumber],cvec[foldSetNumber])
+            meanSqrErrorsTesting.append(te)
 
-            
-            if(adpatStep +1 == options.adaptive):
-                #Letzte verfeinerung, wir sind fertig
-                pass
-            else:
-                refineerrors.add(errors)
+            refineerrors.add(errors)
 
-        if options.verbose:
-            print(trainingCorrect)   
-            print(testingCorrect)
-            print(meanSqrErrorsTraining)
-            print(meanSqrErrorsTesting)
-            
-      
-        tr = sum(trainingCorrect)/options.f_level
-        te = sum(testingCorrect)/options.f_level
+            if options.verbose:
+                print "Fold-%d MSE (te, tr):" % (foldSetNumber), te, tr
+                 
         trSqrError = sum(meanSqrErrorsTraining)/options.f_level
+        trVar = sum(map(lambda x: (x-trSqrError)**2, meanSqrErrorsTraining))/(options.f_level-1)
         teSqrError = sum(meanSqrErrorsTesting)/options.f_level
+        teVar = sum(map(lambda x: (x-teSqrError)**2, meanSqrErrorsTesting))/(options.f_level-1)
         
         if options.verbose:
-            print "training: ",tr, trSqrError
-            print "testing:  ",te, teSqrError
+            print "testing:  ", teSqrError, teVar
+            print "training: ", trSqrError, trVar
 
         num_points.append(grid.getStorage().size())
-        tr_refine.append(tr)
-        te_refine.append(te)
         tr_meanSqrError.append(trSqrError)
         te_meanSqrError.append(teSqrError)
         
         refineerrors.mult(1.0/options.f_level)
-        
-        if(adpatStep + 1 < options.adaptive):
+        if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, refineerrors)
+
+        if(adaptStep < options.adaptive):
             print "refine"
             grid.createGridGenerator().refine(SurplusRefinementFunctor(refineerrors, getNumOfPoints(options, grid)))
 
     if options.stats != None:
-            txt = formTxt(te_meanSqrError, tr_meanSqrError, num_points)
-            writeStats(options.stats, txt )
-            if options.verbose: print txt
+        txt = formTxt(te_meanSqrError, tr_meanSqrError, num_points)
+        writeStats(options.stats, txt )
+        if options.verbose: print txt
 
     return
 
@@ -1038,15 +1007,17 @@ def assembleTrainingVector(dvecs,cvecs,omit):
     
     size = size - dvecs[omit].getNrows()
     
-    training = DataVector(size, dvecs[0].getDim())
+    training = DataMatrix(size, dvecs[0].getNcols())
     classes = DataVector(size)
     
     i=0
+    cv = DataVector(dvecs[0].getNcols())
     for vec in dvecs:
         if vec == dvecs[omit]:
             continue
-        for x in xrange(len(vec)):
-            training[i] = vec[x]
+        for x in xrange(vec.getNrows()):
+            vec.getRow(x, cv)
+            training.setRow(i, cv)
             i = i + 1
     
     i=0
@@ -1087,7 +1058,7 @@ def buildTrainingVector(data):
 # @param classes DataVector of correct class values
 # @return classification accuracy
 def testVector(grid,alpha,test,classes):
-    p = DataVector(1,test.getDim())
+    p = DataVector(test.getNcols())
     correct = 0
     for i in xrange(test.getNrows()):
         test.getRow(i,p)
@@ -1108,6 +1079,18 @@ def testVector(grid,alpha,test,classes):
 # @return classification accuracy
 def testVectorFast(grid, alpha, test, classes):
     return createOperationTest(grid).test(alpha, test, classes)/float(test.getNrows())
+
+#-------------------------------------------------------------------------------
+## Computes the MSE on some test data. 
+#
+# Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
+# @param grid the sparse grid
+# @param alpha DataVector of surplusses
+# @param test a DataVector containing a dataset of points to test on
+# @param vals DataVector of correct function values
+# @return classification accuracy
+def testVectorFastMSE(grid, alpha, test, vals):
+    return createOperationTest(grid).testMSE(alpha, test, vals)
 
 
 #-------------------------------------------------------------------------------
