@@ -27,9 +27,9 @@
 #include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
 #include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.hpp"
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp"
-
-
 #include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 
 namespace sg
@@ -106,6 +106,20 @@ namespace op_factory
       return new datadriven::OperationDensityMarginalizeLinear(&grid);
     else
       throw base::factory_exception("OperationDensityMarginalize is not implemented for this grid type.");
+  }
+
+  datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid) {
+    if(strcmp(grid.getType(), "linear") == 0)
+      return new datadriven::OperationDensityMargTo1DLinear(&grid);
+    else
+      throw base::factory_exception("OperationDensityMargTo1D is not implemented for this grid type.");
+  }
+
+  datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid) {
+    if(strcmp(grid.getType(), "linear") == 0)
+      return new datadriven::OperationDensitySampling1DLinear(&grid);
+    else
+      throw base::factory_exception("OperationDensitySampling1D is not implemented for this grid type.");
   }
 
   datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid) {
