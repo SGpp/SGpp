@@ -34,7 +34,7 @@ namespace datadriven
 	   * @param dim_x Target dimension number, all dimensions higher and lower than dim_x will be removed
 	   * @param dim_h Highest dimension number of grid
 	   */
-      virtual void margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x, unsigned int dim_h) = 0;
+      virtual void margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x) = 0;
   };
 
 }
