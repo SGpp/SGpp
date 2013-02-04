@@ -15,7 +15,9 @@ namespace sg
 namespace datadriven
 {
 
-  void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x, unsigned int dim_h) {
+  void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x) {
+
+	unsigned int dim_h = this->grid->getStorage()->dim() - 1;
 
 	if (dim_x == 0) {
 		margToDim0(this->grid, alpha, grid_x, alpha_x);
