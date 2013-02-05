@@ -14,7 +14,6 @@ namespace sg
 {
 namespace datadriven
 {
-
   void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x) {
 
 	unsigned int dim_h = this->grid->getStorage()->dim() - 1;
@@ -93,7 +92,7 @@ namespace datadriven
 	if (g_tmp->getStorage()->dim() == 1) { //if dim = 1, return
 		g_out = g_tmp;
 		al_out = al_tmp;
-	} else {                                  //if dim > 1, marginalize further
+	} else {                               //if dim > 1, marginalize further
 		margToDim0(g_tmp, al_tmp, g_out, al_out);
 		delete g_tmp;
 		delete al_tmp;
