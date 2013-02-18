@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* Copyright (C) 2011-2013 Technische Universitaet Muenchen                    *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -35,6 +35,10 @@ protected:
 	sg::base::DataMatrixSP* level_;
 	/// Member to store the sparse grid's indices for better vectorization
 	sg::base::DataMatrixSP* index_;
+	/// Member to store for masks per grid point for better vectorization of modlinear operations
+	sg::base::DataMatrixSP* mask_;
+	/// Member to store offsets per grid point for better vecotrization of modlinear operations
+    sg::base::DataMatrixSP* offset_;
 
 public:
 	/**
@@ -46,6 +50,8 @@ public:
 		this->dataset_ = dataset;
 		this->level_ = NULL;
 		this->index_ = NULL;
+		this->mask_ = NULL;
+		this->offset_ = NULL;
 	}
 
 	/**
@@ -59,16 +65,12 @@ public:
 
 		if (this->index_ != NULL)
 			delete this->index_;
-	}
 
-	/**
-	 * Determines the size of stored dataset, including event. padding.
-	 *
-	 * @return returns the size of the stored dataset
-	 */
-	size_t getDatasetSize()
-	{
-		return this->dataset_->getNrows();
+		if (this->mask_ != NULL)
+		    delete this->mask_;
+		    
+		if (this->offset_ != NULL)
+		    delete this->offset_;
 	}
 
 	/**

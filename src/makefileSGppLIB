@@ -299,6 +299,8 @@ OBJS =	DataVector.o\
 	HierarchisationPoly.o\
 	OperationMultipleEvalIterativeSPX86SimdModLinear.o\
 	OperationMultipleEvalIterativeX86SimdModLinear.o\
+	OperationMultipleEvalIterativeSPX86SimdModLinearMask.o\
+	OperationMultipleEvalIterativeX86SimdModLinearMask.o\
 	DensitySystemMatrix.o\
 	DMWeightMatrix.o\
 	DehierarchisationPoly.o\
@@ -816,6 +818,12 @@ OperationMultipleEvalIterativeSPX86SimdModLinear.o : $(SRCDIR)parallel/datadrive
 
 OperationMultipleEvalIterativeX86SimdModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+	
+OperationMultipleEvalIterativeSPX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
+
+OperationMultipleEvalIterativeX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
 
 dPhidPhiDownModLinear.o : $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
