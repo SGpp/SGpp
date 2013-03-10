@@ -100,10 +100,6 @@ public:
 		_mpi_grid_offsets = new int[mpi_size];
 		sg::parallel::PartitioningTool::calcDistribution(m_grid.getSize(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 
-		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-			std::cout << "Data: " << mpi_size << " chunks of max size " << _mpi_data_sizes[0] << " (blocksize:" << sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_) << "), total: " << this->numPatchedTrainingInstances_ << std::endl;
-			std::cout << "Grid: " << mpi_size << " chunks of max size " << _mpi_grid_sizes[0] << " (blocksize: 1), total: " << m_grid.getSize() << std::endl;
-		}
 		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 
@@ -130,24 +126,14 @@ public:
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
 		sg::base::DataVector temp(this->numPatchedTrainingInstances_);
-		//sg::base::DataVector temp_reference(this->numPatchedTrainingInstances_);
-//		sg::base::DataVector result_reference(result.getSize());
 
 		result.setAll(0.0);
 		temp.setAll(0.0);
-		//temp_reference.setAll(0.0);
-//		result_reference.setAll(0.0);
 		double* ptrResult = result.getPointer();
 		double* ptrTemp = temp.getPointer();
 
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
-
-		//MultType::mult(level_, index_, dataset_, alpha, temp_reference, 0, alpha.getSize(), 0, this->numPatchedTrainingInstances_);
-//		for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++)
-//		{
-//			temp_reference.set(i, 0.0f);
-//		}
 
 		MPI_Request dataSendReqs[mpi_size];
 		MPI_Request dataRecvReqs[mpi_size]; //allocating a little more than necessary, otherwise complicated index computations needed
@@ -194,19 +180,12 @@ public:
 					&threadStartData, &threadEndData, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
 			MultType::mult(level_, index_, dataset_, alpha, temp, 0, alpha.getSize(), threadStartData, threadEndData);
-				// patch result -> set additional entries zero
-				// only done for processes that need this part of the temp data for multTrans
+			// patch result -> set additional entries zero
+			// only done for processes that need this part of the temp data for multTrans
 			for (size_t i = std::max<size_t>(this->numTrainingInstances_, threadStartData); i < threadEndData; i++)
 			{
 				temp.set(i, 0.0f);
 			}
-//				for(int i = start; i<end;i++){
-//					if(temp[i] != temp_reference[i]){
-//						std::cout << "results do not match: " << i << ": " <<temp[i] << "!=" << temp_reference[i] << "thread/proc" << thread_num <<"/" << mpi_myrank << std::endl;
-//						throw new sg::base::operation_exception("reuslts do not match!");
-//					}
-//				}
-
 
 #pragma omp barrier // make sure that all threads finished their part, so that we can safely send the results to all other procs
 #pragma omp single nowait
@@ -259,36 +238,15 @@ public:
 							dataChunkEnd);
 			}
 		}
-//		MPI_Barrier(MPI_COMM_WORLD);
-//		std::cout << "yeah, size for proc " << mpi_myrank << " is " << _mpi_grid_sizes[mpi_myrank]<< std::endl;
+		// send result of this process to all other processes
 		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[gridProcessChunkStart], _mpi_grid_sizes[mpi_myrank],
 												  tagsGrid[mpi_myrank], gridSendReqs);
-
-//		double *ptr = &ptrResult[gridProcessChunkStart];
-//		size_t size =  _mpi_grid_sizes[mpi_myrank];
-//		int tag = tagsGrid[mpi_myrank];
-//		MPI_Request* reqs = gridSendReqs;
-
-//		for(int rank = 0; rank<mpi_size; rank++){
-//			if (rank == mpi_myrank){
-//				reqs[rank] = MPI_REQUEST_NULL;
-//				continue;
-//			}
-//			MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, &reqs[rank]);
-//		}
-
-
-//		MPI_Barrier(MPI_COMM_WORLD);
-//		std::cout << "send success " << std::endl;
-//		MPI_Barrier(MPI_COMM_WORLD);
 
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 
 		MPI_Status stats[mpi_size];
-//		MPI_Barrier(MPI_COMM_WORLD);
+
 		MPI_Waitall(mpi_size, gridRecvReqs, stats);
-//		std::cout << "recv success " << std::endl;
-//		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Waitall(mpi_size, gridSendReqs, stats);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 
