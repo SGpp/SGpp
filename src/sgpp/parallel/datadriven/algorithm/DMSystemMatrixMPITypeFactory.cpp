@@ -42,7 +42,7 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 #define MPI_TYPE_TRUEASYNC 4
 #define MPI_TYPE_ONESIDED 5
 
-	int mpi_type = MPI_TYPE_ASYNC;
+	int mpi_type = MPI_TYPE_TRUEASYNC;
 
 	std::string parallelizationType;
 	datadriven::DMSystemMatrixBase *result = 0;

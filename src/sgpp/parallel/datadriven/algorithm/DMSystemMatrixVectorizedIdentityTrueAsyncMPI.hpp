@@ -184,6 +184,7 @@ public:
 		size_t gridProcessChunkStart = _mpi_grid_offsets[mpi_myrank];
 		size_t gridProcessChunkEnd = gridProcessChunkStart + _mpi_grid_sizes[mpi_myrank];
 		int idx;
+
 	#pragma omp parallel
 		{
 			size_t threadStartData, threadEndData;
@@ -211,7 +212,7 @@ public:
 #pragma omp single nowait
 			{
 				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrTemp[dataProcessChunkStart], _mpi_data_sizes[mpi_myrank],
-														  dataProcessChunkStart*2 + 2, &dataSendReqs[mpi_myrank]);
+														  tagsData[mpi_myrank], dataSendReqs);
 			}
 			// we don't need to wait for the sendreqs to finish because we only read from temp after its calculation
 
@@ -231,6 +232,7 @@ public:
 					threadEndGrid,
 					dataProcessChunkStart,
 					dataProcessChunkEnd);
+
 
 			// after this, we receive the temp chunks from all the other processes and do the calculations for them
 			while (true) {
@@ -257,13 +259,37 @@ public:
 							dataChunkEnd);
 			}
 		}
-		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[gridProcessChunkStart], _mpi_data_sizes[mpi_myrank],
-												  tagsGrid[mpi_myrank], &gridSendReqs[mpi_myrank]);
+//		MPI_Barrier(MPI_COMM_WORLD);
+//		std::cout << "yeah, size for proc " << mpi_myrank << " is " << _mpi_grid_sizes[mpi_myrank]<< std::endl;
+		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[gridProcessChunkStart], _mpi_grid_sizes[mpi_myrank],
+												  tagsGrid[mpi_myrank], gridSendReqs);
+
+//		double *ptr = &ptrResult[gridProcessChunkStart];
+//		size_t size =  _mpi_grid_sizes[mpi_myrank];
+//		int tag = tagsGrid[mpi_myrank];
+//		MPI_Request* reqs = gridSendReqs;
+
+//		for(int rank = 0; rank<mpi_size; rank++){
+//			if (rank == mpi_myrank){
+//				reqs[rank] = MPI_REQUEST_NULL;
+//				continue;
+//			}
+//			MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, &reqs[rank]);
+//		}
+
+
+//		MPI_Barrier(MPI_COMM_WORLD);
+//		std::cout << "send success " << std::endl;
+//		MPI_Barrier(MPI_COMM_WORLD);
 
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 
-		MPI_Waitall(mpi_size, gridRecvReqs, MPI_STATUSES_IGNORE);
-		MPI_Waitall(mpi_size, gridSendReqs, MPI_STATUSES_IGNORE);
+		MPI_Status stats[mpi_size];
+//		MPI_Barrier(MPI_COMM_WORLD);
+		MPI_Waitall(mpi_size, gridRecvReqs, stats);
+//		std::cout << "recv success " << std::endl;
+//		MPI_Barrier(MPI_COMM_WORLD);
+		MPI_Waitall(mpi_size, gridSendReqs, stats);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 
 		result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
@@ -290,6 +316,8 @@ public:
 					&threadChunkStart, &threadChunkEnd, 1);
 			MultTransType::multTranspose(level_, index_, dataset_, myClasses, b, threadChunkStart, threadChunkEnd, 0, this->numPatchedTrainingInstances_);
 		}
+
+
 		sg::parallel::myGlobalMPIComm->dataVectorAllToAll(b, _mpi_grid_offsets, _mpi_grid_sizes);
 	}
 
