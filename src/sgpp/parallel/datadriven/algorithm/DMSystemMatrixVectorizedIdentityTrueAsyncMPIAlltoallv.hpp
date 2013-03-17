@@ -4,8 +4,8 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Roman Karlstetter (karlstetter@mytum.de)
-#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_HPP
-#define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_HPP
+#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPIALLTOALLV_H
+#define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPIALLTOALLV_H
 
 
 #include "datadriven/algorithm/DMSystemMatrixBase.hpp"
@@ -30,7 +30,7 @@ namespace parallel
 {
 
 template<typename MultType, typename MultTransType>
-class DMSystemMatrixVectorizedIdentityTrueAsyncMPI : public sg::datadriven::DMSystemMatrixBase
+class DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv : public sg::datadriven::DMSystemMatrixBase
 {
 private:
 	/// vectorization mode
@@ -64,7 +64,7 @@ public:
 	 * @param lambda the lambda, the regression parameter
 	 * @param vecMode vectorization mode
 	 */
-	DMSystemMatrixVectorizedIdentityTrueAsyncMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
+	DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
 		: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid)
 	{
 		// handle unsupported vector extensions
@@ -112,7 +112,7 @@ public:
 	/**
 	 * Std-Destructor
 	 */
-	virtual ~DMSystemMatrixVectorizedIdentityTrueAsyncMPI(){
+	virtual ~DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv(){
 		delete this->dataset_;
 
 		delete this->level_;
@@ -149,21 +149,6 @@ public:
 			MPI_Irecv(&ptrTemp[_mpi_data_offsets[rank]], _mpi_data_sizes[rank], MPI_DOUBLE, rank, tagsData[rank], MPI_COMM_WORLD, &dataRecvReqs[rank]);
 		}
 
-		MPI_Request gridSendReqs[mpi_size];
-		MPI_Request gridRecvReqs[mpi_size]; //allocating a little more than necessary, otherwise complicated index computations needed
-		int tagsGrid[mpi_size];
-		for (int i = 0; i<mpi_size; i++){
-			tagsGrid[i] = _mpi_grid_offsets[i]*2 + 3;
-		}
-		for(int rank = 0; rank <mpi_size; rank++){
-			if(rank == mpi_myrank){
-				gridRecvReqs[rank] = MPI_REQUEST_NULL;
-				continue;
-			}
-			MPI_Irecv(&ptrResult[_mpi_grid_offsets[rank]], _mpi_grid_sizes[rank], MPI_DOUBLE, rank, tagsGrid[rank], MPI_COMM_WORLD, &gridRecvReqs[rank]);
-		}
-
-		MPI_Barrier(MPI_COMM_WORLD);
 		this->myTimer_->start();
 
 		size_t dataProcessChunkStart = _mpi_data_offsets[mpi_myrank];
@@ -217,7 +202,7 @@ public:
 
 
 			// after this, we receive the temp chunks from all the other processes and do the calculations for them
-			while (true) { 
+			while (true) {
 #pragma omp single
 				{
 					MPI_Waitany(sg::parallel::myGlobalMPIComm->getNumRanks(), dataRecvReqs, &idx, MPI_STATUS_IGNORE);
@@ -249,13 +234,9 @@ public:
 			}
 		}
 		// send result of this process to all other processes
-		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[gridProcessChunkStart], _mpi_grid_sizes[mpi_myrank],
-												  tagsGrid[mpi_myrank], gridSendReqs);
 
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
-
-		MPI_Waitall(mpi_size, gridSendReqs, MPI_STATUSES_IGNORE);
-		MPI_Waitall(mpi_size, gridRecvReqs, MPI_STATUSES_IGNORE);
+		sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 		MPI_Pcontrol(-1, complete);
 
@@ -307,5 +288,4 @@ public:
 
 }
 }
-
-#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_HPP
+#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPIALLTOALLV_H
