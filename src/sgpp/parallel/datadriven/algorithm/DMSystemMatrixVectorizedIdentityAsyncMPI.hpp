@@ -166,7 +166,6 @@ public:
 			tagsGrid[i] = _mpi_grid_offsets[i]*2 + 3;
 		}
 		sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrResult, _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, _chunkCountGrid, gridRecvReqs);
-
 		MPI_Request dataSendReqs[_mpi_data_sizes_global[mpi_myrank] * mpi_size];
 		MPI_Request gridSendReqs[_mpi_grid_sizes_global[mpi_myrank] * mpi_size];
 
@@ -283,8 +282,7 @@ public:
 		}
 		sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrB, _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, tags, _chunkCountGrid, gridRecvReqs);
 		MPI_Request gridSendReqs[mpi_size * _mpi_grid_sizes_global[mpi_myrank]];
-
-	#pragma omp parallel
+#pragma omp parallel
 		{
 			size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
 			size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
@@ -354,8 +352,8 @@ private:
 	size_t _chunkCountData;
 	size_t _chunkCountGrid;
 
-#define APPROXCHUNKSIZEGRID_ASYNC 10 // approximately how many blocks should be computed for the grid before sending
-#define APPROXCHUNKSIZEDATA_ASYNC 50 // approximately how many blocks should be computed for the data before sending
+#define APPROXCHUNKSIZEGRID_ASYNC 20 // approximately how many blocks should be computed for the grid before sending
+#define APPROXCHUNKSIZEDATA_ASYNC 150 // approximately how many blocks should be computed for the data before sending
 
 	void calculateChunkCountGrid() {
 		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
