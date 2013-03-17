@@ -40,7 +40,8 @@ LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
 		const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 		const sg::solver::SLESolverConfiguration& SolverConfigFinal,
 		const sg::base::AdpativityConfiguration& AdaptConfig,
-		const bool testAccDuringAdapt, const double lambda)
+		const bool testAccDuringAdapt, const double lambda, 
+		bool usePrior)
 {
 	LearnerTiming result;
 
@@ -107,20 +108,20 @@ LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
 
 	sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
-	int dim = trainDataset.getNcols();
+	int dim = (int)trainDataset.getNcols();
 
 	//Compute all occurring class labels and how many data points exist per label:
 	std::map<double, int> entriesPerClass;
 	for (unsigned int i = 0; i < classes.getSize(); i++)
 	{
 		double classNum = classes.get(i);
-		if (entriesPerClass.find(classNum) != entriesPerClass.end())
+		if (entriesPerClass.find(classNum) == entriesPerClass.end())
 		{
 			entriesPerClass.insert(std::pair<double, int>(classNum, 1));
 		}
 		else
 		{
-			entriesPerClass[classNum]++; //TODO get this running
+			entriesPerClass[classNum]++;
 		}
 	}
 
@@ -136,6 +137,12 @@ LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
 		trainDataClasses.push_back(m);
 		class_indeces[(*it).first] = index;
 		index_to_class_.insert(std::pair<int, double>(index, (*it).first));
+		//compute prior
+		if(usePrior) {
+		  prior.push_back((*it).second/(double)classes.getSize());
+		} else {
+		  prior.push_back(1.);
+		}
 		index++;
 	}
 
@@ -333,7 +340,8 @@ sg::base::DataVector LearnerDensityBased::predict(
 			for (it = alphas_.begin(); it != alphas_.end(); it++)
 			{
 				sg::base::DataVector alpha = *it;
-				double res = Eval->eval(alpha, p);
+				//posterior = likelihood*prior
+				double res = Eval->eval(alpha, p)*this->prior[class_index];
 				if (res > max)
 				{
 					max = res;
@@ -354,7 +362,7 @@ sg::base::DataVector LearnerDensityBased::predict(
 }
 
   time_t LearnerDensityBased::getExecTime() {
-    return this->execTime_;
+    return (time_t)this->execTime_;
   }
 
   size_t LearnerDensityBased::getNrGridPoints() {

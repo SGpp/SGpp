@@ -22,6 +22,8 @@ protected:
 	sg::base::OperationMatrix* C_;
 	/// regularization mode
 	sg::datadriven::LearnerRegularizationType CMode_;
+        // prior of data
+  std::vector<double> prior;
 public:
 	LearnerDensityBased(sg::datadriven::LearnerRegularizationType&, const bool isRegression, const bool isVerbose = true);
 	virtual ~LearnerDensityBased();
@@ -40,10 +42,10 @@ public:
 	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-			bool testAccDuringAdapt, const double lambda);
+				    bool testAccDuringAdapt, const double lambda, bool usePrior = true);
 	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 	/// construct system matrix
-		virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
 
   time_t getExecTime();
 
