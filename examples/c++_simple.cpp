@@ -1,16 +1,18 @@
 #include <iostream>
 // All SG++ headers
-#include "sgpp.hpp"
+//#include "sgpp_base.hpp"
 
-// Or, include only those that are required
-//#include "base/datatypes/DataVector.hpp"
-//#include "base/grid/Grid.hpp"
-//#include "base/grid/GridStorage.hpp"
-//#include "base/grid/generation/GridGenerator.hpp"
-//#include "base/operation/OperationEval.hpp"
+// Or, better!, include only those that are required
+#include "base/datatypes/DataVector.hpp"
+#include "base/grid/Grid.hpp"
+#include "base/grid/GridStorage.hpp"
+#include "base/grid/generation/GridGenerator.hpp"
+#include "base/operation/OperationEval.hpp"
+#include "base/operation/BaseOpFactory.hpp"
 
 using namespace std;
 using namespace sg;
+using namespace sg::base;
 
 // function to interpolate
 double f(double x0, double x1) {
@@ -20,7 +22,7 @@ double f(double x0, double x1) {
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  Grid* grid = Grid::createLinearTrapezoidBoundaryGrid(dim);
+  Grid* grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
   cout << "dimensionality:         " << gridStorage->dim() << endl;
 
@@ -44,14 +46,14 @@ int main() {
   cout << alpha.toString() << endl;
 
   // hierarchize
-  sg::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
   cout << alpha.toString() << endl;
 
   // evaluate
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
-  OperationEval* opEval = sg::op_factory::createOperationEval(*grid);
+  OperationEval* opEval = op_factory::createOperationEval(*grid);
   cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
 
   delete grid;

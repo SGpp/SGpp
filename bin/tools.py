@@ -465,6 +465,39 @@ def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
     writeAlphaARFF("%s%s%s.alpha.arff.gz" % (filename, fold_str, adapt_str), alpha)
     writeGrid("%s%s%s.grid.gz" % (filename, fold_str, adapt_str), grid)
     
+#-------------------------------------------------------------------------------
+# perform split of dataset in num_partitions partitions for n-fold-cv
+# split data into folds,
+# return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
+#-------------------------------------------------------------------------------
+def split_n_folds(data, num_partitions, seed=None):
+    dim = data["data"].getNcols()
+    size = data["data"].getNrows()
+    # create permutation
+    random.seed(seed)
+    seq = range(size)
+    random.shuffle(seq)
+    # container for new Data and Classes
+    dvec = []
+    cvec = []
+    cv = DataVector(dim)
+
+    size_left = size
+    index = 0
+    for i in xrange(num_partitions):
+        size_fold = size_left/(num_partitions-i)
+        dvec.append(DataMatrix(size_fold, dim))
+        cvec.append(DataVector(size_fold))
+        for rowNum in xrange(size_fold):
+            data["data"].getRow(seq[index], cv)
+            dvec[i].setRow(rowNum, cv)
+#            dvec[i][element*dim + d] = data["data"][d][seq[index]]
+#@todo: this doesn't work for regression, because the last parameter is not necessary class
+            cvec[i][rowNum] = data["classes"][seq[index]]
+            index += 1
+        size_left = size_left-size_fold
+    
+    return (dvec, cvec)
 
 
 
@@ -784,38 +817,6 @@ def checkData(data):
     return
 
 
-#-------------------------------------------------------------------------------
-# perform split of dataset in num_partitions partitions for n-fold-cv
-# split data into folds,
-# return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
-#-------------------------------------------------------------------------------
-def split_n_folds(data, num_partitions, seed=None):
-    dim = len(data["data"])
-    size = len(data["data"][0])
-
-    random.seed(seed)
-    seq = range(size)
-    random.shuffle(seq)
-
-    dvec = []
-    cvec = []
-
-    size_left = size
-    index = 0
-
-    for i in xrange(num_partitions):
-        size_fold = size_left/(num_partitions-i)
-        dvec.append(DataVector(size_fold, dim))
-        cvec.append(DataVector(size_fold))
-        for element in xrange(size_fold):
-            for d in xrange(dim):
-                dvec[i][element*dim + d] = data["data"][d][seq[index]]
-            #@todo: this doesn't work for regression, because the last parameter is not necessary class
-            cvec[i][element] = data["classes"][seq[index]]
-            index += 1
-        size_left = size_left-size_fold
-    
-    return (dvec, cvec)
 
 #-------------------------------------------------------------------------------
 # perform sequential(!) split of dataset in num_partitions partitions for n-fold-cv
