@@ -64,8 +64,10 @@ UPDOWN_PARADIMS=4
 CFLAGS_GCC:=-Wall -Wconversion -pedantic -ansi -c -O3 -funroll-loops -fstrict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR) 
-LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
+#CFLAGS_ICC:=-Wall -Wconversion -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+#LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
+CFLAGS_ICC:=-Wall -Wconversion -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+LFLAGS_ICC:=-Wall -ansi -O3
 
 CFLAGS_ICL:=/Wall /Qipo /Qip /Oa /Qansi_alias /Qfp-speculation=safe /c /O3 /Qunroll-aggressive /I$(SRCDIR) /DUSETRONE /Qcxx-features /D_WIN32 /DNOMINMAX
 LFLAGS_ICL:=/Wall /Qipo /Qip /Qansi_alias /O3
@@ -214,10 +216,13 @@ ifeq ($(VEC),sse3)
 CFLAGS:=$(CFLAGS) -msse3
 endif
 ifeq ($(VEC),sse4)
-CFLAGS:=$(CFLAGS) -xSSE4.2
+CFLAGS:=$(CFLAGS) -msse4.2
 endif
 ifeq ($(VEC),avx)
-CFLAGS:=$(CFLAGS) -xAVX -DUSEAVX
+CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
 endif
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp
@@ -389,6 +394,10 @@ endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=ClassifyBenchmark_ICC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/ClassifyBenchmark_mpiicc
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmarkMPI --directory=./tmp/build_native/ClassifyBenchmark_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=ClassifyBenchmark_ICC_MPI" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icl)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icl
