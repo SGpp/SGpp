@@ -40,6 +40,11 @@ protected:
 	/// Member to store offsets per grid point for better vecotrization of modlinear operations
     sg::base::DataMatrixSP* offset_;
 
+	int m_gridFrom;
+	int m_gridTo;
+	int m_datasetFrom;
+	int m_datasetTo;
+
 public:
 	/**
 	 * Constructor
@@ -104,6 +109,17 @@ public:
 	 * needed for vectorization.
 	 */
 	virtual void rebuildLevelAndIndex() = 0;
+
+	/**
+	 * @brief updates the compute boundaries for the grid, after this has been resized
+	 *
+	 * @todo for now, the default implementation does nothing. perhaps remove default implementation.
+	 * it would be an idea to integrate this with rebuildLevelAndIndex
+	 *
+	 * @param gridFrom
+	 * @param gridTo
+	 */
+	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo){}
 };
 
 }
