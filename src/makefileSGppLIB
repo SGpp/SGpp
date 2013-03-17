@@ -300,6 +300,8 @@ OBJS =	DataVector.o\
 	HierarchisationPoly.o\
 	OperationMultipleEvalIterativeSPX86SimdModLinear.o\
 	OperationMultipleEvalIterativeX86SimdModLinear.o\
+	OperationMultipleEvalIterativeSPX86SimdModLinearMask.o\
+	OperationMultipleEvalIterativeX86SimdModLinearMask.o\
 	DensitySystemMatrix.o\
 	DMWeightMatrix.o\
 	DehierarchisationPoly.o\
@@ -344,6 +346,8 @@ OBJS =	DataVector.o\
 	OperationDensityMarginalizeLinear.o\
 	OperationDensityConditionalLinear.o\
 	DMVectorizationPaddingAssistant.o\
+	OperationMatrixLTwoDotExplicitLinear.o\
+	OperationMatrixLTwoDotExplicitLinearBoundary.o
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -704,6 +708,9 @@ OperationHestonZLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pd
 OperationHestonYLinear.o : $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinear.o $(SRCDIR)finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
 
+OperationMatrixLTwoDotExplicitLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMatrixLTwoDotExplicitLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.cpp
+
 OperationLaplaceLinear.o : $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceLinear.o $(SRCDIR)pde/basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
 	
@@ -826,6 +833,12 @@ OperationMultipleEvalIterativeSPX86SimdModLinear.o : $(SRCDIR)parallel/datadrive
 
 OperationMultipleEvalIterativeX86SimdModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+	
+OperationMultipleEvalIterativeSPX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
+
+OperationMultipleEvalIterativeX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
 
 dPhidPhiDownModLinear.o : $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
@@ -936,7 +949,10 @@ OperationHestonYLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operat
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonYLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.cpp
 
 OperationHestonZLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonZLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp	
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationHestonZLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp
+
+OperationMatrixLTwoDotExplicitLinearBoundary.o : $(SRCDIR)pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMatrixLTwoDotExplicitLinearBoundary.o $(SRCDIR)pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.cpp
 	
 OperationLBLinearBoundary.o : $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLBLinearBoundary.o $(SRCDIR)finance/basis/linear/boundary/operation/OperationLBLinearBoundary.cpp

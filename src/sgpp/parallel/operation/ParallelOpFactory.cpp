@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2013 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -17,6 +17,7 @@
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp"
@@ -41,6 +42,7 @@
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.hpp"
 #ifdef USEARBB
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #endif
@@ -156,6 +158,7 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
         if (vecType == parallel::X86SIMD)
           {
 			return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+//            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -279,6 +282,7 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
         if (vecType == parallel::X86SIMD)
           {
 			return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+//            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinearMask(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)

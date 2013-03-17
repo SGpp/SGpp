@@ -29,6 +29,7 @@
 #include <exception>
 #include <list>
 #include <typeinfo>
+#include <stdint.h>
 
 namespace sg
 {
@@ -920,6 +921,124 @@ public:
 				}
 			}
 //		}
+	}
+	
+	/**
+	 * Converts this storage from AOS (array of structures) to SOA (structure of array)
+	 * with modification to speed up iterative function evaluation. The Level
+	 * array won't contain the levels, it contains the level to the power of two.
+	 *
+	 * The returned format is only useful for a multi-evaluation of modlinear grids
+	 *
+	 * @param level DataMatrix to store the grid's level to the power of two
+	 * @param index DataMatrix to store the grid's indices
+	 * @param mask DataMatrix to store masks of operations
+	 * @param offset DataMatrix to store offset for operations
+	 */
+	void getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index, DataMatrix& mask, DataMatrix& offset)
+	{
+		typename index_type::level_type curLevel;
+		typename index_type::level_type curIndex;
+
+		for(size_t i = 0; i < list.size(); i++)
+		{
+			for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+			{
+				(list[i])->get(current_dim, curLevel, curIndex);
+				
+				if (curLevel == 1)
+				{
+					level.set(i, current_dim, 0.0);
+					index.set(i, current_dim, 0.0);
+					uint64_t intmask = 0x0000000000000000;
+					mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+					offset.set(i, current_dim, 1.0);
+				}
+				else if (curIndex == 1)
+				{
+					level.set(i, current_dim, (-1.0)*static_cast<double>(1<<curLevel));
+					index.set(i, current_dim, 0.0);
+					uint64_t intmask = 0x0000000000000000;
+					mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+					offset.set(i, current_dim, 2.0);
+				}
+				else if (curIndex == ((1<<curLevel)-1))
+				{
+					level.set(i, current_dim, static_cast<double>(1<<curLevel));
+					index.set(i, current_dim, static_cast<double>(curIndex));
+					uint64_t intmask = 0x0000000000000000;
+					mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+					offset.set(i, current_dim, 1.0);				
+				}
+				else
+				{
+					level.set(i, current_dim, static_cast<double>(1<<curLevel));
+					index.set(i, current_dim, static_cast<double>(curIndex));
+					uint64_t intmask = 0x8000000000000000;
+					mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+					offset.set(i, current_dim, 1.0);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Converts this storage from AOS (array of structures) to SOA (structure of array)
+	 * with modification to speed up iterative function evaluation. The Level
+	 * array won't contain the levels, it contains the level to the power of two.
+	 *
+	 * The returned format is only useful for a multi-evaluation of modlinear grids
+	 *
+	 * @param level DataMatrix to store the grid's level to the power of two
+	 * @param index DataMatrix to store the grid's indices
+	 * @param mask DataMatrix to store masks of operations
+	 * @param offset DataMatrix to store offset for operations
+	 */
+	void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index, DataMatrixSP& mask, DataMatrixSP& offset)
+	{
+		typename index_type::level_type curLevel;
+		typename index_type::level_type curIndex;
+
+		for(size_t i = 0; i < list.size(); i++)
+		{
+			for (size_t current_dim = 0; current_dim < DIM; current_dim++)
+			{
+				(list[i])->get(current_dim, curLevel, curIndex);
+				
+				if (curLevel == 1)
+				{
+					level.set(i, current_dim, 0.0f);
+					index.set(i, current_dim, 0.0f);
+					unsigned int intmask = 0x00000000;
+					mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+					offset.set(i, current_dim, 1.0f);
+				}
+				else if (curIndex == 1)
+				{
+					level.set(i, current_dim, (-1.0f)*static_cast<float>(1<<curLevel));
+					index.set(i, current_dim, 0.0f);
+					unsigned int intmask = 0x00000000;
+					mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+					offset.set(i, current_dim, 2.0f);
+				}
+				else if (curIndex == ((1<<curLevel)-1))
+				{
+					level.set(i, current_dim, static_cast<float>(1<<curLevel));
+					index.set(i, current_dim, static_cast<float>(curIndex));
+					unsigned int intmask = 0x00000000;
+					mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+					offset.set(i, current_dim, 1.0f);				
+				}
+				else
+				{
+					level.set(i, current_dim, static_cast<float>(1<<curLevel));
+					index.set(i, current_dim, static_cast<float>(curIndex));
+					unsigned int intmask = 0x80000000;
+					mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+					offset.set(i, current_dim, 1.0f);
+				}
+			}
+		}
 	}
 
 protected:

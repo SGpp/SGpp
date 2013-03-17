@@ -36,5 +36,7 @@
 
 #include "combigrid/converter/CombiSGppConverter.hpp"
 
+#include "combigrid/operation/OperationMatrixLTwoExplicitFullGrid.hpp"
+
 
 #endif /* COMBIGRID_HPP_ */
