@@ -144,17 +144,26 @@ OCLKernels::OCLKernels()
 	num_devices = 1;
 #endif
 #ifdef USEOCL_AMD
-	device_ids = new cl_device_id[1];
+	device_ids = new cl_device_id[MAX_OCL_DEVICE_COUNT];
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, MAX_OCL_DEVICE_COUNT, device_ids, &num_devices);
+        if (num_devices == 0)
+	{
+        	std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
+    	}
+        // set max number of devices
+        if (num_devices > MAX_OCL_DEVICE_COUNT)
+        {
+                num_devices = MAX_OCL_DEVICE_COUNT;
+        }
 #ifdef USEOCL_CPU
-	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, device_ids, NULL);
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 2, device_ids, NULL);
 #else
-	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, device_ids, NULL);
+	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 2, device_ids, NULL);
 #endif
 	if (err != CL_SUCCESS)
     	{
     		std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
     	}
-	num_devices = 1;
 #endif
 #ifdef USEOCL_NVIDIA
 	err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, MAX_OCL_DEVICE_COUNT, NULL, &num_devices);

@@ -33,6 +33,7 @@ combigrid/multigridFG/utils/RunPoisson.cpp
 combigrid/multigridFG/utils/RunTikhonov.cpp
 combigrid/plotter/GridPlotter.cpp
 combigrid/utils/CombigridLevelVector.cpp
+combigrid/operation/OperationMatrixLTwoExplicitFullGrid.cpp
 """)
 
 sg_env = env.Clone()
