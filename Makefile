@@ -24,6 +24,8 @@ IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 # AMD OpenCL
 AMDOCLINCLUDE = /opt/AMDAPP/include
 AMDOCLLIB = /opt/AMDAPP/lib/x86_64
+#AMDOCLINCLUDE = /lrz/sys/parallel/amdapp/2.7/include
+#AMDOCLLIB = /lrz/sys/parallel/amdapp/2.7/lib/x86_64
 # Intel OpenCL, Windows
 IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include\"
 IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"

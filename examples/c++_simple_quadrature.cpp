@@ -1,9 +1,10 @@
 #include <iostream>
 // All SG++ headers
-#include "sgpp.hpp"
+#include "sgpp_base.hpp"
 
 using namespace std;
 using namespace sg;
+using namespace sg::base;
 
 // function to interpolate
 double f(int dim, double *x, void *clientdata) {
