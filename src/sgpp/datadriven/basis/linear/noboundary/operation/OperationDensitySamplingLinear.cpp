@@ -24,144 +24,116 @@ namespace datadriven
 		samples = new base::DataMatrix(num_samples, num_dims);
 
 		size_t size = num_samples / num_dims;
-		if (size <= 0) throw base::operation_exception("Error: # of dimensions greater than # of samples. Exit program...");
+		if (size <= 0)
+			throw base::operation_exception("Error: # of dimensions greater than # of samples. Operation aborted!");
+		size_t trunk = size;
 
-		for (size_t i=0; i < num_dims; i++) {
+		for (size_t dim_start = 0; dim_start < num_dims; dim_start++) {
 
-			// 1. marginalize to dim_i
-			base::Grid* grid_i = NULL;
-			base::DataVector* alpha_i = NULL;
-			OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*(this->grid));
-			marg1d->margToDimX(alpha, grid_i, alpha_i, 0);
+			if (dim_start == num_dims-1)
+				size += num_samples % num_dims;
+
+			// 1. marginalize to dim_start
+			base::Grid* g1d = NULL;
+			base::DataVector* a1d = NULL;
+			OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
+			marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 			delete marg1d;
 
-			// 2. 1D sampling on dim_i
-			base::DataVector* samples_i = new base::DataVector(1);
-			OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*grid_i);
-
-			if (i == num_dims-1)
-				size = num_samples - size*(num_dims-1);
-
-			samp1d->doSampling1D(alpha_i, size, samples_i);
+			// 2. 1D sampling on dim_start
+			base::DataVector* samples_start = new base::DataVector(1);
+			OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
+			samp1d->doSampling1D(a1d, size, samples_start);
 			delete samp1d;
-			delete grid_i;
-			delete alpha_i;
+			delete g1d;
+			delete a1d;
 
-			// 3. for every sample on dim_i, do sampling
+			// 3. for every sample do...
 			base::DataVector* sampleVec = new base::DataVector(num_dims);
-			for (size_t j=0; j < samples_i->getSize(); j++) {
+			for (size_t i=0; i < samples_start->getSize(); i++) {
 
-				sampleVec->setAll(-1.0);
-				sampleVec->set(i, samples_i->get(j));  //put samples_i[j] into i-th entry of samplesVec
-				sampling_on_all_dims(this->grid, alpha, i, sampleVec);
+				sampleVec->setAll(0.0);
+				sampleVec->set(dim_start, samples_start->get(i));
+				doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec);
 
-				// copy result to output
-				for (size_t k=0; k<num_dims; k++)
-					samples->set(i*size + j, k, sampleVec->get(k));
+				for (size_t j=0; j < num_dims; j++)
+					samples->set(dim_start*trunk + i, j, sampleVec->get(j));
 			}
-
-		}  // end for(i)
-
-		return;
-	}
-
-	void OperationDensitySamplingLinear::sampling_on_all_dims(base::Grid* grid, base::DataVector* alpha, unsigned int dim_start, base::DataVector* &sampleVec) {
-
-		unsigned int dim = sampleVec->getSize();
-		unsigned int count = dim_start;
-
-		if (dim_start == 0) {
-			sampling_on_higher_dims(grid, alpha, dim_start, sampleVec, count);
-
-		} else if (dim_start == dim - 1) {
-			sampling_on_lower_dims(grid, alpha, dim_start, sampleVec, count);
-
-		} else if ((dim_start > 0) && (dim_start < dim - 1)) {
-			sampling_on_lower_dims(grid, alpha, dim_start, sampleVec, count);
-			count = dim_start;
-			sampling_on_higher_dims(grid, alpha, dim_start, sampleVec, count);
-
-		} else {
-			throw base::operation_exception("Error: dimension out of range. Exit program...");
+            delete samples_start;
+            delete sampleVec;
 		}
 
 		return;
 	}
 
-	void OperationDensitySamplingLinear::sampling_on_lower_dims(base::Grid* g_in, base::DataVector* al_in, unsigned int dim_x, base::DataVector* &sampleVec, unsigned int &count) {
+	void OperationDensitySamplingLinear::doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* &sampleVec) {
 
-		// Recursive Call Stopper: when the lowest dimension (dim_0) is reached, stop
-		if (count == 0) return;
+		size_t dims = sampleVec->getSize(); // total dimensions
 
-		// Step 1: do conditional on dim_count
-		base::Grid* g_out = NULL;
-		base::DataVector* al_out = new base::DataVector(1);
-		OperationDensityConditional* cond = op_factory::createOperationDensityConditional(*g_in);
-		cond->doConditional(*al_in, g_out, *al_out, count, sampleVec->get(count));
-		delete cond;
-
-		count--;
-
-		// Step 2: marginalize to dim_count for g_out
-		base::Grid* g_1d = NULL;
-		base::DataVector* al_1d = NULL;
-		OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*g_out);
-		marg1d->margToDimX(al_out, g_1d, al_1d, count);
-		delete marg1d;
-
-		// Step 3: do sampling on dim_count
-		base::DataVector* sample = new base::DataVector(1);
-		OperationDensitySampling1D* samp = op_factory::createOperationDensitySampling1D(*g_1d);
-		samp->doSampling1D(al_1d, 1, sample);
-		delete samp;
-
-		// Step 4: put the sample into output
-		sampleVec->set(count, sample->get(0));
-		delete sample;
-
-		// repeat step 1-4 for the next dimension
-		sampling_on_lower_dims(g_out, al_out, dim_x, sampleVec, count);
-		delete g_out;
-		delete al_out;
+		if ((dims > 1) && (dim_start >= 0) && (dim_start <= dims-1)) {
+			size_t curr_dim = dim_start;
+			doSampling_in_next_dim(g_in, a_in, dim_start, sampleVec, curr_dim);
+		} else if (dims == 1) {
+			throw base::operation_exception("Error: # of dimensions = 1. No operation needed!");
+		} else {
+			throw base::operation_exception("Error: dimension out of range. Operation aborted!");
+		}
 
 		return;
 	}
 
-	void OperationDensitySamplingLinear::sampling_on_higher_dims(base::Grid* g_in, base::DataVector* al_in, unsigned int dim_x, base::DataVector* &sampleVec, unsigned int &count) {
+	void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector* &sampleVec, size_t &curr_dim) {
 
-		// Recursive Call Stopper: when the lowest dimension (dim_0) is reached, stop
-		if (count == (sampleVec->getSize() - 1)) return;
+		size_t dims = sampleVec->getSize();  // total dimensions
+		unsigned int op_dim = (curr_dim < dim_x)? 0 : (unsigned int)dim_x;  // actual dim to be operated on
 
-		// Step 1: do conditional on dim_count
+		/* Step 1: do conditional in current dim */
 		base::Grid* g_out = NULL;
-		base::DataVector* al_out = new base::DataVector(1);
+		base::DataVector* a_out = new base::DataVector(1);
 		OperationDensityConditional* cond = op_factory::createOperationDensityConditional(*g_in);
-		cond->doConditional(*al_in, g_out, *al_out, dim_x, sampleVec->get(count));
+		cond->doConditional(*a_in, g_out, *a_out, op_dim, sampleVec->get(curr_dim));
 		delete cond;
 
-		count++;
+		// move on to next dim
+		curr_dim = (curr_dim + 1) % dims;
+		op_dim = (curr_dim < dim_x)? 0 : (unsigned int)dim_x;
 
-		// Step 2: marginalize to dim_count for g_out
-		base::Grid* g_1d = NULL;
-		base::DataVector* al_1d = NULL;
-		OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*g_out);
-		marg1d->margToDimX(al_out, g_1d, al_1d, dim_x);
-		delete marg1d;
-
-		// Step 3: do sampling on dim_count
+		/* Step 2: draw a sample in next dim */
 		base::DataVector* sample = new base::DataVector(1);
-		OperationDensitySampling1D* samp = op_factory::createOperationDensitySampling1D(*g_1d);
-		samp->doSampling1D(al_1d, 1, sample);
-		delete samp;
 
-		// Step 4: put the sample into output
-		sampleVec->set(count, sample->get(0));
+		if (g_out->getStorage()->dim() > 1) {
+
+			// Marginalize to next dimension
+			base::Grid* g1d = NULL;
+			base::DataVector* a1d = NULL;
+			OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*g_out);
+			marg1d->margToDimX(a_out, g1d, a1d, op_dim);
+			delete marg1d;
+
+			// Draw a sample in next dimension
+			OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
+			samp1d->doSampling1D(a1d, 1, sample);
+			delete samp1d;
+			delete g1d;
+			delete a1d;
+
+		} else {
+			// skip Marginalize, directly draw a sample in next dimension
+			OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g_out);
+			samp1d->doSampling1D(a_out, 1, sample);
+			delete samp1d;
+		}
+
+		/* Step 3: copy sample to output */
+		sampleVec->set(curr_dim, sample->get(0));
 		delete sample;
 
-		// repeat step 1-4 for the next dimension
-		sampling_on_higher_dims(g_out, al_out, dim_x, sampleVec, count);
+		/* Step 4: sample in next dimension */
+		if (g_out->getStorage()->dim() > 1)
+			doSampling_in_next_dim(g_out, a_out, dim_x, sampleVec, curr_dim);
+
 		delete g_out;
-		delete al_out;
+		delete a_out;
 
 		return;
 	}
