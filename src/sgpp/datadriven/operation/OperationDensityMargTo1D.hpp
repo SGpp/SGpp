@@ -33,7 +33,7 @@ namespace datadriven
 	   * @param alpha_x Coefficient vector for new grid (grid_x). Will be resized.
 	   * @param dim_x Target dimension number, all dimensions higher and lower than dim_x will be removed
 	   */
-      virtual void margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x) = 0;
+      virtual void margToDimX(base::DataVector* alpha, base::Grid* &grid_X, base::DataVector* &alpha_x, size_t dim_x) = 0;
   };
 
 }
