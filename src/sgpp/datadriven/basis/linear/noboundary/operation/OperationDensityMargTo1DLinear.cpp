@@ -14,92 +14,47 @@ namespace sg
 {
 namespace datadriven
 {
-  void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, unsigned int dim_x) {
+ 	void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid* &grid_x, base::DataVector* &alpha_x, size_t dim_x){
 
-	unsigned int dim_h = this->grid->getStorage()->dim() - 1;
+		size_t dims = this->grid->getStorage()->dim();
+		size_t count = 0;
 
-	if (dim_x == 0) {
-		margToDim0(this->grid, alpha, grid_x, alpha_x);
+		if ((dims > 1) && (dim_x >= 0) && (dim_x <= dims-1)) {
+			marg_next_dim(this->grid, alpha, grid_x, alpha_x, dims, dim_x, count);
+		} else if (dims <= 1) {
+			throw base::operation_exception("Error: grid dimension is not greater than one. Operation aborted!");
+	    } else {
+			throw base::operation_exception("Error: dimension out of range. Operation aborted!");
+		}
 
-	} else if (dim_x == dim_h) {
-		margRemoveLowerDims(this->grid, alpha, grid_x, alpha_x, dim_x, dim_h);
-
-	} else if ((dim_x > 0) && (dim_x < dim_h)) {
-		base::Grid* grid_tmp = NULL;
-		base::DataVector* alpha_tmp = new base::DataVector(1);
-
-		margRemoveLowerDims(this->grid, alpha, grid_tmp, alpha_tmp, dim_x, dim_h);
-		margToDim0(grid_tmp, alpha_tmp, grid_x, alpha_x);
-
-		delete grid_tmp;
-		delete alpha_tmp;
-
-	} else {
-		throw base::operation_exception("Error: dimension out of range. Exit program...");
-	}
-
-	return;
-  }
-
-  void OperationDensityMargTo1DLinear::margRemoveLowerDims(base::Grid* g_in, base::DataVector* al_in, base::Grid* &g_out, base::DataVector* &al_out, unsigned int dim_x, unsigned int dim_h) {
-
-	unsigned int target_dims = dim_h + 1 - dim_x;
-
-	if (g_in->getStorage()->dim() == target_dims) {
-		g_out = g_in;
-		al_out = al_in;
 		return;
 	}
 
-	// marginalize: remove one lower dim
-	OperationDensityMarginalize* marg = op_factory::createOperationDensityMarginalize(*g_in);
-	base::Grid* g_tmp = NULL;
-	base::DataVector* al_tmp = new base::DataVector(1);
+	void OperationDensityMargTo1DLinear::marg_next_dim(base::Grid* g_in, base::DataVector* a_in, base::Grid* &g_out, base::DataVector* &a_out, size_t dims, size_t dim_x, size_t &count) {
 
-	marg->doMarginalize(*al_in, g_tmp, *al_tmp, 0);
-	delete marg;
+		size_t op_dim = (count < dim_x)? 0 : 1;
 
-	// check the new grid's dimensions
-	if (g_tmp->getStorage()->dim() == target_dims) {
-		g_out = g_tmp;
-		al_out = al_tmp;
-	} else {
-		margRemoveLowerDims(g_tmp, al_tmp, g_out, al_out, dim_x, dim_h);
-		delete g_tmp;
-		delete al_tmp;
-	}
+		base::Grid* g_tmp = NULL;
+		base::DataVector* a_tmp = new base::DataVector(1);
 
-	return;
-  }
+		OperationDensityMarginalize* marg = op_factory::createOperationDensityMarginalize(*g_in);
+		marg->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
+		delete marg;
 
-  void OperationDensityMargTo1DLinear::margToDim0(base::Grid* g_in, base::DataVector* al_in, base::Grid* &g_out, base::DataVector* &al_out) {
+		count++;
 
-	if (g_in->getStorage()->dim() == 1) {
-		g_out = g_in;
-		al_out = al_in;
+		if (g_tmp->getStorage()->dim() > 1) {
+			marg_next_dim(g_tmp, a_tmp, g_out, a_out, dims, dim_x, count);
+			delete g_tmp;
+			delete a_tmp;
+
+		} else {
+			g_out = g_tmp;
+			a_out = a_tmp;
+		}
+
 		return;
 	}
-
-	// marginalize: remove dim 1
-	OperationDensityMarginalize* marg = op_factory::createOperationDensityMarginalize(*g_in);
-	base::Grid* g_tmp = NULL;
-	base::DataVector* al_tmp = new base::DataVector(1);
-
-	marg->doMarginalize(*al_in, g_tmp, *al_tmp, 1);
-	delete marg;
-
-	// check the new grid's dimensions
-	if (g_tmp->getStorage()->dim() == 1) { //if dim = 1, return
-		g_out = g_tmp;
-		al_out = al_tmp;
-	} else {                               //if dim > 1, marginalize further
-		margToDim0(g_tmp, al_tmp, g_out, al_out);
-		delete g_tmp;
-		delete al_tmp;
-	}
-
-	return;
-  }
 
 }
 }
