@@ -27,12 +27,11 @@ namespace datadriven
     virtual ~OperationDensitySampling1D() {}
 
     /**
-     * Sample 1D (Density) Functions
-     * 
-     * @param alpha Coefficient vector for current grid
-     * @param mg Referenz of grid pointer 
-     * @param malpha Coefficient vector for new grid (mg). Will be resized.
-     * @param mdim Marginalize in dimension mdim 
+     * Sampling on 1D grid
+     *
+     * @param alpha Coefficient vector for current grid (1D grid)
+     * @param num_samples # of samples to draw
+     * @param samples Output DataVector
      */
     virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* &samples) = 0;
   };

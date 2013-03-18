@@ -66,6 +66,48 @@ namespace datadriven
 		return;
 	}
 
+	void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples, size_t dim_x) {
+
+		size_t num_dims = this->grid->getStorage()->dim();
+
+		if ((dim_x < 0) || (dim_x >= num_dims))
+			throw base::operation_exception("Error: starting dimension out of range. Operation aborted!");
+
+		//output matrix
+		samples = new base::DataMatrix(num_samples, num_dims);
+
+		// 1. marginalize to dim_x
+		base::Grid* g1d = NULL;
+		base::DataVector* a1d = NULL;
+		OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
+		marg1d->margToDimX(alpha, g1d, a1d, dim_x);
+		delete marg1d;
+
+		// 2. 1D sampling on dim_start
+		base::DataVector* samples_start = NULL;
+		OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
+		samp1d->doSampling1D(a1d, num_samples, samples_start);
+		delete samp1d;
+		delete g1d;
+		delete a1d;
+
+		// 3. for every sample do...
+		base::DataVector* sampleVec = new base::DataVector(num_dims);
+		for (size_t i=0; i < num_samples; i++) {
+
+			sampleVec->setAll(0.0);
+			sampleVec->set(dim_x, samples_start->get(i));
+			doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec);
+
+			for (size_t j=0; j < num_dims; j++)
+				samples->set(i, j, sampleVec->get(j));
+		}
+		delete samples_start;
+		delete sampleVec;
+
+		return;
+	}
+
 	void OperationDensitySamplingLinear::doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* &sampleVec) {
 
 		size_t dims = sampleVec->getSize(); // total dimensions

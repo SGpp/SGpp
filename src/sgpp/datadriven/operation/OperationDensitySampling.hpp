@@ -26,14 +26,23 @@ namespace datadriven
       virtual ~OperationDensitySampling() {}
 
 	  /**
-	   * Draw samples on all dimensions.
-	   * Each dimension x as a base, a number of samples would be draw based on dim_x
+	   * Sampling with mixed starting dimensions
 	   *
 	   * @param alpha Coefficient vector for current grid
-	   * @param samples output matrix
-	   * @param num_sampels number of samples to draw
+	   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+	   * @param num_samples # of samples to draw
 	   */
       virtual void doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples) = 0;
+
+	  /**
+	   * Sampling with specified starting dimension
+	   *
+	   * @param alpha Coefficient vector for current grid
+	   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+	   * @param num_samples # of samples to draw
+	   * @param dim_x Starting dimension
+	   */
+      virtual void doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples, size_t dim_x) = 0;
   };
 
 }

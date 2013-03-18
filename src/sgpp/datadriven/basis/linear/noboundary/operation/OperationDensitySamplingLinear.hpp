@@ -27,13 +27,23 @@ namespace datadriven
 	  virtual ~OperationDensitySamplingLinear() {}
 
 	  /**
-	   * Keep applying marginalizes to (Density) Functions, until it's reduced to 1 dimension (dim_x)
+	   * Sampling with mixed starting dimensions
 	   *
 	   * @param alpha Coefficient vector for current grid
-	   * @param dim_x Target dimension number, all dimensions higher and lower than dim_x will be removed
-	   * @param dim_h Highest dimension number of grid
+	   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+	   * @param num_samples # of samples to draw
 	   */
 	  void doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples);
+
+	  /**
+	   * Sampling with specified starting dimension
+	   *
+	   * @param alpha Coefficient vector for current grid
+	   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+	   * @param num_samples # of samples to draw
+	   * @param dim_x Starting dimension
+	   */
+	  void doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples, size_t dim_x);
 
     protected:
       base::Grid* grid;
