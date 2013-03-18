@@ -19,13 +19,12 @@ namespace datadriven
 		size_t dims = this->grid->getStorage()->dim();
 		size_t count = 0;
 
-		if ((dims > 1) && (dim_x >= 0) && (dim_x <= dims-1)) {
+		if ((dims > 1) && (dim_x >= 0) && (dim_x <= dims-1))
 			marg_next_dim(this->grid, alpha, grid_x, alpha_x, dims, dim_x, count);
-		} else if (dims <= 1) {
+		else if (dims <= 1)
 			throw base::operation_exception("Error: grid dimension is not greater than one. Operation aborted!");
-	    } else {
+	    else
 			throw base::operation_exception("Error: dimension out of range. Operation aborted!");
-		}
 
 		return;
 	}
@@ -36,7 +35,6 @@ namespace datadriven
 
 		base::Grid* g_tmp = NULL;
 		base::DataVector* a_tmp = new base::DataVector(1);
-
 		OperationDensityMarginalize* marg = op_factory::createOperationDensityMarginalize(*g_in);
 		marg->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
 		delete marg;
@@ -47,12 +45,10 @@ namespace datadriven
 			marg_next_dim(g_tmp, a_tmp, g_out, a_out, dims, dim_x, count);
 			delete g_tmp;
 			delete a_tmp;
-
 		} else {
 			g_out = g_tmp;
 			a_out = a_tmp;
 		}
-
 		return;
 	}
 
