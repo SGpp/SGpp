@@ -37,9 +37,8 @@ namespace datadriven
 
     protected:
       base::Grid* grid;
-      void sampling_on_all_dims(base::Grid* grid, base::DataVector* alpha, unsigned int dim_start, base::DataVector* &sampleVec);
-      void sampling_on_lower_dims(base::Grid* g_in, base::DataVector* al_in, unsigned int dim_x, base::DataVector* &sampleVec, unsigned int &count);
-      void sampling_on_higher_dims(base::Grid* g_in, base::DataVector* al_in, unsigned int dim_x, base::DataVector* &sampleVec, unsigned int &count);
+      void doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* &sampleVec);
+      void doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector* &sampleVec, size_t &curr_dim);
   };
 
 }
