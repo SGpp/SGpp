@@ -31,7 +31,7 @@ namespace datadriven
 		// TODO Auto-generated destructor stub
 	}
 
-	void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* samples) {
+	void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* &samples) {
 
 		/***************** STEP 1. Compute CDF  ********************/
 
@@ -86,7 +86,7 @@ namespace datadriven
 
 
 		/***************** STEP 2. Sampling  ********************/
-		samples->resize(num_samples);
+		samples = new base::DataVector(num_samples);
 
 		double y, x1, x2, y1, y2;
 		for (size_t i=0; i<num_samples; i++) {

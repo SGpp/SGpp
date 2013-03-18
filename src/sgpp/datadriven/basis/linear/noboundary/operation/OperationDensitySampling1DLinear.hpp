@@ -23,7 +23,7 @@ namespace datadriven
 			OperationDensitySampling1DLinear(base::Grid* grid);
 			virtual ~OperationDensitySampling1DLinear();
 
-			void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* samples);
+			void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* &samples);
 	};
 
 }

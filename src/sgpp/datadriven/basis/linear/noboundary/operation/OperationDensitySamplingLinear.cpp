@@ -41,7 +41,7 @@ namespace datadriven
 			delete marg1d;
 
 			// 2. 1D sampling on dim_start
-			base::DataVector* samples_start = new base::DataVector(1);
+			base::DataVector* samples_start = NULL;
 			OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
 			samp1d->doSampling1D(a1d, size, samples_start);
 			delete samp1d;
@@ -99,7 +99,7 @@ namespace datadriven
 		op_dim = (curr_dim < dim_x)? 0 : (unsigned int)dim_x;
 
 		/* Step 2: draw a sample in next dim */
-		base::DataVector* sample = new base::DataVector(1);
+		base::DataVector* sample = NULL;
 
 		if (g_out->getStorage()->dim() > 1) {
 

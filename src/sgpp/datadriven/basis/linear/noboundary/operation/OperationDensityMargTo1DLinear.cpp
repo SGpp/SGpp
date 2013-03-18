@@ -32,7 +32,7 @@ namespace datadriven
 
 	void OperationDensityMargTo1DLinear::marg_next_dim(base::Grid* g_in, base::DataVector* a_in, base::Grid* &g_out, base::DataVector* &a_out, size_t dims, size_t dim_x, size_t &count) {
 
-		size_t op_dim = (count < dim_x)? 0 : 1;
+		unsigned int op_dim = (count < dim_x)? 0 : 1;
 
 		base::Grid* g_tmp = NULL;
 		base::DataVector* a_tmp = new base::DataVector(1);
