@@ -29,9 +29,9 @@ namespace datadriven
 	   * Keep applying marginalizes to (Density) Functions, until it's reduced to 1 dimension (dim_x)
 	   *
 	   * @param alpha Coefficient vector for current grid
-	   * @param grid_x Referenz of grid pointer
-	   * @param alpha_x Coefficient vector for new grid (grid_x). Will be resized.
-	   * @param dim_x Target dimension number, all dimensions higher and lower than dim_x will be removed
+	   * @param grid_x output 1D grid pointer
+	   * @param alpha_x Coefficient vector for new grid (grid_x). Will be initialized.
+	   * @param dim_x Target dimension, all other dimensions will be marginalized
 	   */
       virtual void margToDimX(base::DataVector* alpha, base::Grid* &grid_X, base::DataVector* &alpha_x, size_t dim_x) = 0;
   };
