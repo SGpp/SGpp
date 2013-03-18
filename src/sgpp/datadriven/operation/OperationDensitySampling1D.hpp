@@ -34,7 +34,7 @@ namespace datadriven
      * @param malpha Coefficient vector for new grid (mg). Will be resized.
      * @param mdim Marginalize in dimension mdim 
      */
-    virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* samples) = 0;
+    virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* &samples) = 0;
   };
     
 }
