@@ -4,6 +4,7 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
@@ -11,6 +12,7 @@
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/tools/SGppStopwatch.hpp"
+#include "base/exception/operation_exception.hpp"
 
 namespace sg
 {
@@ -44,7 +46,8 @@ public:
 	 * @param storage Pointer to the grid's gridstorage object
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+    OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
+												int gridFrom, int gridTo, int datasetFrom, int datasetTo);
 
 	/**
 	 * Destructor
@@ -57,11 +60,14 @@ public:
 
 	virtual void rebuildLevelAndIndex();
 
+	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
+
 protected:
 	/// Pointer to the grid's GridStorage object
 	sg::base::GridStorage* storage;
 	/// Timer object to handle time measurements
 	sg::base::SGppStopwatch* myTimer;
+
 };
 
 }
