@@ -1,8 +1,7 @@
 #include "OperationMatrixLTwoExplicitFullGrid.hpp"
 #include "base/exception/data_exception.hpp"
 #include <vector>
-#include <math.h>
-
+#include <cmath>
 namespace combigrid {
 
 OperationMatrixLTwoExplicitFullGrid::OperationMatrixLTwoExplicitFullGrid(sg::base::DataMatrix* m,
@@ -42,7 +41,9 @@ void OperationMatrixLTwoExplicitFullGrid::buildMatrix(
 				if (i_indexes[k] == j_indexes[k]) {
 					//Use formula for identical ansatz functions:
 					res *= 2 / pow(2, levels[k]) / 3;
-				} else if (std::abs(i_indexes[k] - j_indexes[k]) == 1) {
+				} else if (//std::abs(i_indexes[k] - j_indexes[k]) == 1
+				    i_indexes[k] - j_indexes[k] == 1
+		    || i_indexes[k] - j_indexes[k] == -1 ) { //workaround as abs(int) is not supported in gcc 4.4
 					//Ansatz functions overlap:
 					res *= 1 / pow(2, levels[k]) / 6;
 				} else {

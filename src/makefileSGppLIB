@@ -4,6 +4,7 @@
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
 #                                                                               #
 # author Alexander Heinecke (Alexander.Heinecke@mytum.de)                       #
+# author Roman Karlstetter (karlstetter@mytum.de)                               #
 #################################################################################
 
 SRCDIR = ./../../../src/sgpp/
@@ -299,6 +300,8 @@ OBJS =	DataVector.o\
 	HierarchisationPoly.o\
 	OperationMultipleEvalIterativeSPX86SimdModLinear.o\
 	OperationMultipleEvalIterativeX86SimdModLinear.o\
+	OperationMultipleEvalIterativeSPX86SimdModLinearMask.o\
+	OperationMultipleEvalIterativeX86SimdModLinearMask.o\
 	DensitySystemMatrix.o\
 	DMWeightMatrix.o\
 	DehierarchisationPoly.o\
@@ -311,6 +314,8 @@ OBJS =	DataVector.o\
 	OperationQuadratureMC.o\
 	OperationQuadratureLinear.o\
 	OperationQuadraturePoly.o\
+	OperationMultipleEvalVectorized.o\
+	OperationMultipleEvalVectorizedSP.o\
 	BaseOpFactory.o\
 	DatadrivenOpFactory.o\
 	FinanceOpFactory.o\
@@ -337,12 +342,13 @@ OBJS =	DataVector.o\
 	BiCGStabSP.o\
 	OperationSecondMomentLinear.o\
 	OperationFirstMomentLinear.o\
+	PartitioningTool.o\
 	OperationDensityMarginalizeLinear.o\
 	OperationDensityConditionalLinear.o\
 	DMVectorizationPaddingAssistant.o\
 	OperationMatrixLTwoDotExplicitLinear.o\
 	OperationMatrixLTwoDotExplicitLinearBoundary.o
-	
+
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	OperationMultipleEvalIterativeSPArBBLinear.o\
@@ -426,7 +432,12 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesSolverMPI.o\
 	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	BiCGStabMPI.o\
-	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o
+	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
+	DMSystemMatrixVectorizedIdentityMPI.o\
+	DMSystemMatrixSPVectorizedIdentityMPI.o\
+	DMSystemMatrixMPITypeFactory.o\
+
+
 endif
 
 WINOBJS=$(OBJS:.o=.obj)
@@ -615,6 +626,12 @@ OperationHierarchisationModBspline.o : $(SRCDIR)base/basis/modbspline/operation/
 
 OperationMultipleEvalLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.cpp
+
+OperationMultipleEvalVectorized.o : $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorized.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalVectorized.o $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorized.cpp
+
+OperationMultipleEvalVectorizedSP.o : $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalVectorizedSP.o $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
 	
 OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
@@ -816,6 +833,12 @@ OperationMultipleEvalIterativeSPX86SimdModLinear.o : $(SRCDIR)parallel/datadrive
 
 OperationMultipleEvalIterativeX86SimdModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
+	
+OperationMultipleEvalIterativeSPX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
+
+OperationMultipleEvalIterativeX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
 
 dPhidPhiDownModLinear.o : $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
@@ -1236,10 +1259,33 @@ AlgorithmAdaBoostVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/A
 	
 DMSystemMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.cpp
-	
+
+DMSystemMatrixVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.cpp
+
 DMSystemMatrixSPVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.cpp
-	
+
+DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
+
+DMSystemMatrixMPITypeFactory.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
+
+
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	
@@ -1396,7 +1442,9 @@ DatadrivenOpFactory.o : $(SRCDIR)datadriven/operation/DatadrivenOpFactory.cpp
 FinanceOpFactory.o : $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)FinanceOpFactory.o $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 
-ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
+ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
@@ -1404,7 +1452,10 @@ PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
 TwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
-	
+
+PartitioningTool.o : $(SRCDIR)parallel/tools/PartitioningTool.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PartitioningTool.o $(SRCDIR)parallel/tools/PartitioningTool.cpp
+
 DMWeightMatrixVectorizedIdentity.o : $(SRCDIR)parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMWeightMatrixVectorizedIdentity.o $(SRCDIR)parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.cpp
 	

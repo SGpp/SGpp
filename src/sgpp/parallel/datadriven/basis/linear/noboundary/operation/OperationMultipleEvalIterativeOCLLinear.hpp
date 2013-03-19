@@ -44,7 +44,8 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+	OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
+											int gridFrom, int gridTo, int datasetFrom, int datasetTo);
 
 	/**
 	 * Destructor
@@ -56,6 +57,8 @@ public:
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
 
 	virtual void rebuildLevelAndIndex();
+
+	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
 
 protected:
 	/// Pointer to the grid's gridstorage object

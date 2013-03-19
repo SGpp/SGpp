@@ -4,9 +4,14 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef MPICOMMUNICATOR_HPP
 #define MPICOMMUNICATOR_HPP
+
+// we do not need c++ bindings, so skip these (and get rid of SEEK_SET errors)
+#define MPICH_SKIP_MPICXX
+#define OMPI_SKIP_MPICXX
 
 #include <mpi.h>
 
@@ -15,6 +20,39 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
+
+//#define ENABLE_DEBUG_MPI
+#ifdef ENABLE_DEBUG_MPI
+#define debugMPI(globalComm, messageStream) \
+    { \
+        int rank = globalComm->getMyRank(); \
+        int rcvbuffer; \
+        int token = 93453; \
+        MPI_Barrier(MPI_COMM_WORLD); \
+        if(rank > 0){ \
+                MPI_Recv(&rcvbuffer, 1, MPI_INT, rank-1, token, MPI_COMM_WORLD, MPI_STATUS_IGNORE); \
+        } \
+        std::cout << "[" << rank << "] " <<  messageStream << std::endl; \
+        std::cout.flush();\
+        if(rank < globalComm->getNumRanks()-1){ \
+            MPI_Send(&rank, 1, MPI_INT, rank+1, token, MPI_COMM_WORLD); \
+        } \
+        MPI_Barrier(MPI_COMM_WORLD); \
+    }
+
+#define debugMPI_0(messageStream) \
+    { \
+        int rank = globalComm->getMyRank(); \
+        MPI_Barrier(MPI_COMM_WORLD); \
+        if(rank == 0){ \
+            std::cout << "[0] " <<  messageStream << std::endl; \
+        } \
+        MPI_Barrier(MPI_COMM_WORLD); \
+    }
+#else
+#define debugMPI(globalComm, messageStream)
+#define debugMPI_0(messageStream)
+#endif
 
 namespace sg
 {
@@ -36,6 +74,10 @@ private:
 	int myid_;
 	/// Number of ranks in the whole system
 	int ranks_;
+
+    void dataVectorAllToAll_alltoallv(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+    void dataVectorAllToAll_broadcasts(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+    void dataVectorAllToAll_sendreceive(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
 
 public:
 	/*
@@ -118,6 +160,40 @@ public:
 	 * @param ctrl Control character that should be sent
 	 */
 	void broadcastControlFromRank0(char* ctrl);
+
+    /**
+     * broadcasts a specific range of a DataVector (depending on the rank of the process
+     * and specified by distributionOffsets  and distributionSizes) to all other
+     * processes.
+     *
+     * After this method has been executed, the entries of alpha from distributionOffsets[rank]
+     * to distributionOffsets[rank] + distributionSizes[rank] - 1 of process with number rank
+     * are available in all other processes in the same place. Overlapping regions lead to
+     * undefined behaviour.
+     *
+     * example:
+     *
+     *      p1 p2 p3 p4                                    p1 p2 p3 p4
+     * d[0] R  X  X  X                                d[0] R  R  R  R
+     * d[1] S  X  X  X      distrOffsets: {0,4,2,5}   d[1] S  S  S  S
+     * d[2] X  X  T  X     ------------------------>  d[2] T  T  T  T
+     * d[3] X  X  U  X      distrSizes: {2,1,2,2}     d[3] U  U  U  U
+     * d[4] X  V  X  X                                d[4] V  V  V  V
+     * d[5] X  X  X  Y                                d[5] Y  Y  Y  Y
+     * d[6] X  X  X  Z                                d[6] Z  Z  Z  Z
+     *
+     * @param alpha the DataVector to distribute
+     * @param distributionOffsets array containing the offsets of data to distribute
+     * @param distributionSizes array containing the sizes of data to distribute
+     */
+	void dataVectorAllToAll(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
+	void dataVectorAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
+
+	void IsendToAll(double* ptr, size_t size, int tag, MPI_Request *reqs);
+	void IrecvFromAll(double* ptr, int* global_sizes, int* global_offsets, int* sizes, int* offsets, int *tag, int chunkCount, MPI_Request *dataRecvRequests);
+
+	void putToAll(double* ptr, int winOffset, int count, MPI_Win win);
+	void putToAllInplace(MPI_Win win, int winOffset, int count);
 
 	/**
 	 * Implements a Barrier for all tasks

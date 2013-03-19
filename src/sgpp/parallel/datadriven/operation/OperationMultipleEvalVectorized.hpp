@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* Copyright (C) 2011-2013 Technische Universitaet Muenchen                    *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -35,6 +35,15 @@ protected:
 	sg::base::DataMatrix* level_;
 	/// Member to store the sparse grid's indices for better vectorization
 	sg::base::DataMatrix* index_;
+	/// Member to store for masks per grid point for better vectorization of modlinear operations
+	sg::base::DataMatrix* mask_;
+	/// Member to store offsets per grid point for better vecotrization of modlinear operations
+    sg::base::DataMatrix* offset_;
+
+	int m_gridFrom;
+	int m_gridTo;
+	int m_datasetFrom;
+	int m_datasetTo;
 
 public:
 	/**
@@ -46,6 +55,8 @@ public:
 		this->dataset_ = dataset;
 		this->level_ = NULL;
 		this->index_ = NULL;
+		this->mask_ = NULL;
+		this->offset_ = NULL;
 	}
 
 	/**
@@ -59,16 +70,12 @@ public:
 
 		if (this->index_ != NULL)
 			delete this->index_;
-	}
-
-	/**
-	 * Determines the size of stored dataset, including event. padding.
-	 *
-	 * @return returns the size of the stored dataset
-	 */
-	size_t getDatasetSize()
-	{
-		return this->dataset_->getNrows();
+			
+		if (this->mask_ != NULL)
+		    delete this->mask_;
+		    
+		if (this->offset_ != NULL)
+		    delete this->offset_;
 	}
 
 	/**
@@ -102,6 +109,17 @@ public:
 	 * needed for vectorization.
 	 */
 	virtual void rebuildLevelAndIndex() = 0;
+
+	/**
+	 * @brief updates the compute boundaries for the grid, after this has been resized
+	 *
+	 * @todo for now, the default implementation does nothing. perhaps remove default implementation.
+	 * it would be an idea to integrate this with rebuildLevelAndIndex
+	 *
+	 * @param gridFrom
+	 * @param gridTo
+	 */
+	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo){}
 };
 
 }

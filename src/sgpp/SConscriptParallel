@@ -23,8 +23,11 @@ parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalItera
 
 parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
 parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
+parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
+parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
 
 parallel/tools/TwoPartitionAutoTuning.cpp
+parallel/tools/PartitioningTool.cpp
 
 parallel/operation/ParallelOpFactory.cpp
 """)
