@@ -60,6 +60,7 @@ void DMSystemMatrixVectorizedIdentity::mult(sg::base::DataVector& alpha, sg::bas
     		temp.set(temp.getSize()-(i+1), 0.0f);
     	}
     }
+    //@TODO make MPI version of this
 
     this->myTimer_->start();
     this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);

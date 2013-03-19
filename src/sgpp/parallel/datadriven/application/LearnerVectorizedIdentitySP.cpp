@@ -7,6 +7,7 @@
 
 #include "parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 
@@ -39,7 +40,11 @@ sg::datadriven::DMSystemMatrixBaseSP* LearnerVectorizedIdentitySP::createDMSyste
 	if (this->grid_ == NULL)
 		return NULL;
 
+#ifndef USE_MPI
 	return new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
+#else
+	return new sg::parallel::DMSystemMatrixSPVectorizedIdentityMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
+#endif
 }
 
 void LearnerVectorizedIdentitySP::postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,

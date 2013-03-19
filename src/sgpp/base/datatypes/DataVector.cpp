@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include "base/tools/AlignedMemory.hpp"
 
+#include <iostream>
+
 namespace sg
 {
 namespace base

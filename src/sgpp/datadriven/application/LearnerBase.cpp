@@ -21,6 +21,8 @@
 
 #include <iostream>
 
+#include "parallel/tools/MPI/SGppMPITools.hpp"
+
 namespace sg
 {
 
@@ -30,6 +32,15 @@ namespace datadriven
 LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
 	: alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(0.0), GFlop_(0.0), GByte_(0.0)
 {
+#ifdef USE_MPI
+	// suppress output from all process but proc0,
+	// output is (in the normal, correctly working
+	// case) the same for all MPI processes, so no
+	// need to see output more than once
+	if(sg::parallel::myGlobalMPIComm->getMyRank() != 0){
+		this->isVerbose_ = false;
+	}
+#endif
 }
 
 LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression, const bool isVerbose)
@@ -180,7 +191,8 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 		std::cout << "Starting Learning...." << std::endl;
 
     // execute adaptsteps
-    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+	sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+	sg::base::SGppStopwatch* myStopwatch2 = new sg::base::SGppStopwatch();
 
     for (size_t i = 0; i < AdaptConfig.numRefinements_+1; i++)
     {
@@ -192,16 +204,17 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
     	// Do Refinements
     	if (i > 0)
     	{
+			myStopwatch2->start();
     		sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
     		grid_->createGridGenerator()->refine(myRefineFunc);
     		delete myRefineFunc;
 
     		DMSystem->rebuildLevelAndIndex();
 
-    		if (isVerbose_)
-    			std::cout << "New Grid Size: " << grid_->getSize() << std::endl;
-
     		alpha_->resizeZero(grid_->getSize());
+			double refineTime = myStopwatch2->stop();
+			if (isVerbose_)
+				std::cout << "New Grid Size: " << grid_->getSize() << " (Refinement took " << refineTime << " secs)" << std::endl;
     	}
     	else
     	{
@@ -211,19 +224,21 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 
     	sg::base::DataVector b(alpha_->getSize());
     	DMSystem->generateb(classes, b);
+		//std::cout<< "generated b" << std::endl;
 
     	if (i == AdaptConfig.numRefinements_)
     	{
     		myCG->setMaxIterations(SolverConfigFinal.maxIterations_);
     		myCG->setEpsilon(SolverConfigFinal.eps_);
     	}
-    	myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
+        myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
         execTime_ += myStopwatch->stop();
 
         if (isVerbose_)
         {
-        	std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
+			std::cout << std::endl;
+			std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
         	std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
         }
 
@@ -302,8 +317,9 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 
     isTrained_ = true;
 
-    delete myStopwatch;
-    delete myCG;
+	delete myStopwatch;
+	delete myStopwatch2;
+	delete myCG;
     delete DMSystem;
 
     return result;

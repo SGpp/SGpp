@@ -1,10 +1,11 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2013 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/operation/ParallelOpFactory.hpp"
 
@@ -15,6 +16,14 @@
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp"
+
 #ifdef USEARBB
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp"
 #endif
@@ -33,6 +42,7 @@
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.hpp"
 #ifdef USEARBB
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #endif
@@ -56,19 +66,24 @@ namespace op_factory
 {
 
   
-  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset)
+parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
+                                                                                   int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
+	// handle default upper boundaries
+    if(gridTo == -1) gridTo = grid.getStorage()->size();
+    if(datasetTo == -1) datasetTo = dataset->getNcols();
 
     if(strcmp(grid.getType(), "linear") == 0)
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
-          }
+			return new sg::parallel::OperationMultipleEvalIterative<sg::parallel::X86SimdLinearMult, sg::parallel::X86SimdLinearMultTranspose>(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+			return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+		  }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
           {
-            return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
         else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
@@ -103,12 +118,14 @@ namespace op_factory
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset);
+			return new sg::parallel::OperationMultipleEvalIterative<sg::parallel::X86SimdLinearMult, sg::parallel::X86SimdLinearMultTranspose>(
+						grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+			return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
           {
-            return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeOCLLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
         else if (vecType == parallel::Hybrid_X86SIMD_OpenCL)
           {
@@ -140,7 +157,8 @@ namespace op_factory
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+//            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -173,13 +191,20 @@ namespace op_factory
       }
   }
 
-  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset)
+  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
+																					   int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
+	// handle default upper boundaries
+	if(gridTo == -1) gridTo = grid.getStorage()->size();
+	if(datasetTo == -1) datasetTo = dataset->getNcols();
+
     if(strcmp(grid.getType(), "linear") == 0)
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
+			return new sg::parallel::OperationMultipleEvalIterativeSP<sg::parallel::SPX86SimdLinearMult, sg::parallel::SPX86SimdLinearMultTranspose>(
+						grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+			return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -217,7 +242,9 @@ namespace op_factory
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset);
+			return new sg::parallel::OperationMultipleEvalIterativeSP<sg::parallel::SPX86SimdLinearMult, sg::parallel::SPX86SimdLinearMultTranspose>(
+						grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+			return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)
@@ -254,7 +281,8 @@ namespace op_factory
       {
         if (vecType == parallel::X86SIMD)
           {
-            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset);
+			return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+//            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinearMask(grid.getStorage(), dataset);
           }
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL)

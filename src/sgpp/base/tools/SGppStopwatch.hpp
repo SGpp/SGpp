@@ -31,11 +31,9 @@ private:
 #ifdef _WIN32
 	LARGE_INTEGER ticksPerSecond;
 	LARGE_INTEGER begin;
-	LARGE_INTEGER end;
 #endif
 #ifndef _WIN32
 	timeval begin;
-	timeval end;
 #endif
 
 public:

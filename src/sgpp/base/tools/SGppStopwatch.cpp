@@ -39,6 +39,7 @@ void SGppStopwatch::start()
 double SGppStopwatch::stop()
 {
 #ifdef _WIN32
+    LARGE_INTEGER end;
 	QueryPerformanceCounter(&end);
 
 	double ret, ticksps;
@@ -51,6 +52,7 @@ double SGppStopwatch::stop()
 	return ret;
 #endif
 #ifndef _WIN32
+    timeval end;
 	gettimeofday(&end,(struct timezone *)0);
 	double seconds, useconds;
 	double ret, tmp;

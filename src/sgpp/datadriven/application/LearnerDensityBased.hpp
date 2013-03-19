@@ -3,6 +3,9 @@
 
 #include "datadriven/application/LearnerBase.hpp"
 #include "datadriven/application/Learner.hpp"
+#include "base/grid/type/LinearGrid.hpp"
+#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
+#include "base/grid/type/ModLinearGrid.hpp"
 
 namespace sg
 {
@@ -17,14 +20,28 @@ protected:
 	//Mapping from class index to class number:
 	std::map<int, double> index_to_class_;
 	//Stores the coefficients for every class
-	std::vector<sg::base::DataVector> alphas_;
-	/// regularization operator
-	sg::base::OperationMatrix* C_;
+	std::vector<sg::base::DataVector> alphaVec_;
 	/// regularization mode
 	sg::datadriven::LearnerRegularizationType CMode_;
+        // prior of data
+  std::vector<double> prior;
+  // vectors of grids
+  std::vector<sg::base::Grid*> gridVec_;
+  // vector of regterms
+  std::vector<sg::base::OperationMatrix*> CVec_;
 public:
 	LearnerDensityBased(sg::datadriven::LearnerRegularizationType&, const bool isRegression, const bool isVerbose = true);
 	virtual ~LearnerDensityBased();
+
+  /**
+   * Create a grid for each class
+   *
+   * @param GridConfig grid config
+   * @param nrClasses number of classes
+   */
+  void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig, size_t nrClasses);
+
+
 	/**
 	 * Learning a dataset with spatially adaptive sparse grids
 	 *
@@ -40,13 +57,20 @@ public:
 	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-			bool testAccDuringAdapt, const double lambda);
+				    bool testAccDuringAdapt, const double lambda, bool usePrior = true);
 	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 	/// construct system matrix
-		virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
 
+  /**
+   * Returns the execution time
+   */
   time_t getExecTime();
 
+  /**
+   * Returns number of grid points for the density
+   * with the maximum number of grid points
+   */
   size_t getNrGridPoints();
 };
 
