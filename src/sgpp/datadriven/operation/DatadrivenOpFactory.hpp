@@ -13,7 +13,10 @@
 #include "datadriven/operation/OperationTest.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "datadriven/operation/OperationDensityMarginalize.hpp"
+#include "datadriven/operation/OperationDensityMargTo1D.hpp"
 #include "datadriven/operation/OperationDensityConditional.hpp"
+#include "datadriven/operation/OperationDensitySampling1D.hpp"
+#include "datadriven/operation/OperationDensitySampling.hpp"
 
 /*
  * This file contains factory methods for operations.
@@ -50,7 +53,34 @@ namespace op_factory
    */
   datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid);
 
-    /**
+  /**
+   * Factory method, returning an OperationDensityMargTo1D for the grid.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for the operation
+   * @return Pointer to new OperationDensityMarginalize for the Grid grid
+   */
+  datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid);
+
+  /**
+   * Factory method, returning an OperationDensitySampling1D for the grid.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for the operation
+   * @return Pointer to new OperationDensitySampling1D for the Grid grid
+   */
+  datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid);
+
+  /**
+   * Factory method, returning an OperationDensitySampling for the grid.
+   * Note: object has to be freed after use.
+   *
+   * @param grid Grid which is to be used for the operation
+   * @return Pointer to new OperationDensitySampling1D for the Grid grid
+   */
+  datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid);
+
+  /**
    * Factory method, returning an OperationDensityConditional for the grid.
    * Note: object has to be freed after use.
    *

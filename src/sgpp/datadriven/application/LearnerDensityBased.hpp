@@ -53,6 +53,7 @@ public:
 	 * @param AdaptConfig configuration of the adaptivity strategy
 	 * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
 	 * @param lambda regularization parameter lambda
+	 * @param usePrior use prior information for prediction (Bayes)
 	 */
 	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,

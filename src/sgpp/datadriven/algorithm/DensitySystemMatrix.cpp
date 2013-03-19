@@ -54,7 +54,7 @@ void DensitySystemMatrix::generateb(sg::base::DataVector& rhs)
   // Bt * 1
   this->B->multTranspose(y, rhs);
   // 1 / 2M * Bt * 1
-  rhs.mult(1./this->data->getNrows());
+  rhs.mult(1./(double)this->data->getNrows());
 }
 
 DensitySystemMatrix::~DensitySystemMatrix()
