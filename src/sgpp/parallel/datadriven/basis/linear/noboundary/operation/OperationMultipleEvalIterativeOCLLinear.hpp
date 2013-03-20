@@ -57,7 +57,7 @@ public:
 
 	virtual void rebuildLevelAndIndex();
 
-	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
+//	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
 
 protected:
 	/// Pointer to the grid's gridstorage object
