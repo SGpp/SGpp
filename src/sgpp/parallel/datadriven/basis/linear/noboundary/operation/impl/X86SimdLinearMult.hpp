@@ -33,6 +33,8 @@ public:
 	static inline void mult(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,
+			sg::base::DataMatrix* /*mask*/, //unused for this specialization
+			sg::base::DataMatrix* /*offset*/, //unused for this specialization
 			sg::base::DataMatrix* dataset,
 			sg::base::DataVector& alpha,
 			sg::base::DataVector& result,

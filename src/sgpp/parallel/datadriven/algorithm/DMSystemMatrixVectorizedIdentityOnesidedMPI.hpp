@@ -53,9 +53,14 @@ private:
 	/// Number of patched and used training instances
 	size_t numPatchedTrainingInstances_;
 
+	/// Member to store the sparse grid's levels for better vectorization
 	sg::base::DataMatrix* level_;
 	/// Member to store the sparse grid's indices for better vectorization
 	sg::base::DataMatrix* index_;
+	/// Member to store for masks per grid point for better vectorization of modlinear operations
+	sg::base::DataMatrix* mask_;
+	/// Member to store offsets per grid point for better vecotrization of modlinear operations
+	sg::base::DataMatrix* offset_;
 
 
 public:
@@ -133,7 +138,18 @@ public:
 				size_t start = _mpi_data_offsets[thread_chunk];
 				size_t end = start + _mpi_data_sizes[thread_chunk];
 
-				MultType::mult(level_, index_, dataset_, alpha, temp, 0, alpha.getSize(), start, end);
+				MultType::mult(
+							level_,
+							index_,
+							mask_,
+							offset_,
+							dataset_,
+							alpha,
+							temp,
+							0,
+							alpha.getSize(),
+							start,
+							end);
 				for(int i = start; i<end; i++){
 					(*_mpi_data_window_buffer)[i] = temp[i];
 				}
@@ -181,7 +197,18 @@ public:
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-				MultTransposeType::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *_mpi_grid_window_buffer, start, end, 0, this->numPatchedTrainingInstances_);
+				MultTransposeType::multTranspose(
+							level_,
+							index_,
+							mask_,
+							offset_,
+							dataset_,
+							*_mpi_data_window_buffer,
+							*_mpi_grid_window_buffer,
+							start,
+							end,
+							0,
+							this->numPatchedTrainingInstances_);
 				sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_grid_window[mpi_myrank], start - procGridChunkStart, end-start);
 			}
 
@@ -235,7 +262,19 @@ public:
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-				MultTransposeType::multTranspose(level_, index_, dataset_, *_mpi_data_window_buffer, *_mpi_grid_window_buffer, start, end, 0, this->numPatchedTrainingInstances_);
+				MultTransposeType::multTranspose(
+							level_,
+							index_,
+							mask_,
+							offset_,
+							dataset_,
+							*_mpi_data_window_buffer,
+							*_mpi_grid_window_buffer,
+							start,
+							end,
+							0,
+							this->numPatchedTrainingInstances_);
+
 				sg::parallel::myGlobalMPIComm->putToAllInplace(_mpi_grid_window[mpi_myrank], start - procChunkStart, end - start);
 			}
 		}
@@ -312,6 +351,8 @@ private:
 
 		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
+		this->mask_ = NULL;
+		this->offset_ = NULL;
 
 		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
@@ -369,6 +410,12 @@ private:
 	void freeGridBuffers(){
 		delete this->level_;
 		delete this->index_;
+
+		if (this->mask_ != NULL)
+			delete this->mask_;
+
+		if (this->offset_ != NULL)
+			delete this->offset_;
 
 		delete[] this->_mpi_grid_sizes;
 		delete[] this->_mpi_grid_offsets;

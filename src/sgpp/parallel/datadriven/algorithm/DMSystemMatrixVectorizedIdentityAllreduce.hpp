@@ -34,11 +34,17 @@ private:
 	size_t data_size;
 	size_t data_offset;
 	sg::base::Grid& m_grid;
+
+	/// Member to store the sparse grid's levels for better vectorization
 	sg::base::DataMatrix* level_;
 	/// Member to store the sparse grid's indices for better vectorization
 	sg::base::DataMatrix* index_;
+	/// Member to store for masks per grid point for better vectorization of modlinear operations
+	sg::base::DataMatrix* mask_;
+	/// Member to store offsets per grid point for better vecotrization of modlinear operations
+	sg::base::DataMatrix* offset_;
 
-	// only allocate temporary arrays once
+	/// only allocate temporary arrays once
 	sg::base::DataVector *tempData;
 	sg::base::DataVector *result_tmp;
 
@@ -66,6 +72,8 @@ public:
 
 		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
+		this->mask_ = NULL;
+		this->offset_ = NULL;
 
 		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 		this->result_tmp = new sg::base::DataVector(m_grid.getSize());
@@ -79,6 +87,12 @@ public:
 
 		delete this->result_tmp;
 		delete this->tempData;
+
+		if (this->mask_ != NULL)
+			delete this->mask_;
+
+		if (this->offset_ != NULL)
+			delete this->offset_;
 	}
 
 	virtual void mult(base::DataVector &alpha, base::DataVector &result){
@@ -98,6 +112,8 @@ public:
 			MultType::mult(
 					level_,
 					index_,
+					mask_,
+					offset_,
 					dataset_,
 					alpha,
 					*tempData,
@@ -135,6 +151,8 @@ public:
 			MultTransType::multTranspose(
 					level_,
 					index_,
+					mask_,
+					offset_,
 					dataset_,
 					*tempData,
 					*result_tmp,
@@ -167,6 +185,8 @@ public:
 			MultTransType::multTranspose(
 						level_,
 						index_,
+						mask_,
+						offset_,
 						dataset_,
 						*tempData,
 						*result_tmp,

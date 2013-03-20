@@ -93,7 +93,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 		size_t end;
 		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		sg::parallel::SPX86SimdLinearMultTranspose::multTranspose(level_, index_, dataset_, source, result, start, end, 0, dataset_->getNcols());
+		sg::parallel::SPX86SimdLinearMultTranspose::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, dataset_->getNcols());
 #ifdef _OPENMP
 	}
 #endif
@@ -119,7 +119,7 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 		size_t end;
 		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::SPX86SimdLinearMult::getChunkDataPoints());
 
-		sg::parallel::SPX86SimdLinearMult::mult(level_, index_, dataset_, alpha, result, 0, alpha.getSize(), start, end);
+		sg::parallel::SPX86SimdLinearMult::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 #ifdef _OPENMP
 	}
 #endif

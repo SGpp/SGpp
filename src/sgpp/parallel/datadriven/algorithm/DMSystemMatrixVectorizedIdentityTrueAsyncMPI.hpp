@@ -40,9 +40,14 @@ private:
 	/// Number of patched and used training instances
 	size_t numPatchedTrainingInstances_;
 
+	/// Member to store the sparse grid's levels for better vectorization
 	sg::base::DataMatrix* level_;
 	/// Member to store the sparse grid's indices for better vectorization
 	sg::base::DataMatrix* index_;
+	/// Member to store for masks per grid point for better vectorization of modlinear operations
+	sg::base::DataMatrix* mask_;
+	/// Member to store offsets per grid point for better vecotrization of modlinear operations
+	sg::base::DataMatrix* offset_;
 
 	/// reference to grid. needed to get new grid size after it changes
 	sg::base::Grid& m_grid;
@@ -102,6 +107,8 @@ public:
 
 		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
 		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
+		this->mask_ = NULL;
+		this->offset_ = NULL;
 
 		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
@@ -122,6 +129,12 @@ public:
 		delete[] this->_mpi_grid_offsets;
 		delete[] this->_mpi_data_sizes;
 		delete[] this->_mpi_data_offsets;
+
+		if (this->mask_ != NULL)
+			delete this->mask_;
+
+		if (this->offset_ != NULL)
+			delete this->offset_;
 	}
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
@@ -182,7 +195,19 @@ public:
 					dataProcessChunkStart, dataProcessChunkEnd,
 					&threadStartData, &threadEndData, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
-			MultType::mult(level_, index_, dataset_, alpha, temp, 0, alpha.getSize(), threadStartData, threadEndData);
+			MultType::mult(
+						level_,
+						index_,
+						mask_,
+						offset_,
+						dataset_,
+						alpha,
+						temp,
+						0,
+						alpha.getSize(),
+						threadStartData,
+						threadEndData);
+
 			// patch result -> set additional entries zero
 			// only done for processes that need this part of the temp data for multTrans
 			for (size_t i = std::max<size_t>(this->numTrainingInstances_, threadStartData); i < threadEndData; i++)
@@ -207,6 +232,8 @@ public:
 			MultTransType::multTranspose(
 					level_,
 					index_,
+					mask_,
+					offset_,
 					dataset_,
 					temp,
 					result,
@@ -239,6 +266,8 @@ public:
 				MultTransType::multTranspose(
 							level_,
 							index_,
+							mask_,
+							offset_,
 							dataset_,
 							temp,
 							result,
@@ -281,7 +310,18 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					_mpi_grid_offsets[mpi_myrank], _mpi_grid_offsets[mpi_myrank] + _mpi_grid_sizes[mpi_myrank],
 					&threadChunkStart, &threadChunkEnd, 1);
-			MultTransType::multTranspose(level_, index_, dataset_, myClasses, b, threadChunkStart, threadChunkEnd, 0, this->numPatchedTrainingInstances_);
+			MultTransType::multTranspose(
+						level_,
+						index_,
+						mask_,
+						offset_,
+						dataset_,
+						myClasses,
+						b,
+						threadChunkStart,
+						threadChunkEnd,
+						0,
+						this->numPatchedTrainingInstances_);
 		}
 
 

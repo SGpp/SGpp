@@ -33,6 +33,8 @@ public:
 	static inline void multTranspose(
 			sg::base::DataMatrixSP* level,
 			sg::base::DataMatrixSP* index,
+			sg::base::DataMatrixSP* /*mask*/, //unused for this specialization
+			sg::base::DataMatrixSP* /*offset*/, //unused for this specialization
 			sg::base::DataMatrixSP* dataset,
 			sg::base::DataVectorSP& source,
 			sg::base::DataVectorSP& result,
