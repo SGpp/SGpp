@@ -9,15 +9,14 @@
 #ifndef SPX86SIMDMODLINEARMASKMULTTRANSPOSE_HPP
 #define SPX86SIMDMODLINEARMASKMULTTRANSPOSE_HPP
 
-#include "base/grid/GridStorage.hpp"
+#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
+
 namespace sg {
 namespace parallel {
 
-class SPX86SimdModLinearMaskMultTranspose
+class SPX86SimdModLinearMaskMultTranspose : public SPX86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 48;} //must be divisible by 48
 	static inline void multTranspose(
 			sg::base::DataMatrixSP* level,
 			sg::base::DataMatrixSP* index,
@@ -26,10 +25,10 @@ public:
 			sg::base::DataMatrixSP* dataset,
 			sg::base::DataVectorSP& source,
 			sg::base::DataVectorSP& result,
-			size_t start_index_grid,
-			size_t end_index_grid,
-			size_t start_index_data,
-			size_t end_index_data){
+			const size_t start_index_grid,
+			const size_t end_index_grid,
+			const size_t start_index_data,
+			const size_t end_index_data){
 		float* ptrLevel = level->getPointer();
 		float* ptrIndex = index->getPointer();
 		float* ptrMask = mask->getPointer();

@@ -9,26 +9,14 @@
 #ifndef X86SIMDMODLINEARMASKMULTTRANSPOSE_HPP
 #define X86SIMDMODLINEARMASKMULTTRANSPOSE_HPP
 
-#if defined(__SSE3__) || defined(__AVX__)
-#include <immintrin.h>
-#endif
-#if defined(__FMA4__)
-#include <x86intrin.h>
-#endif
+#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
 
-#ifdef __USEAVX128__
-#undef __AVX__
-#endif
-
-#include "base/grid/GridStorage.hpp"
 namespace sg {
 namespace parallel {
 
-class X86SimdModLinearMaskMultTranspose
+class X86SimdModLinearMaskMultTranspose : public X86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 24;}//must be divisible by 24
 	static inline void multTranspose(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,
@@ -37,10 +25,10 @@ public:
 			sg::base::DataMatrix* dataset,
 			sg::base::DataVector& source,
 			sg::base::DataVector& result,
-			size_t start_index_grid,
-			size_t end_index_grid,
-			size_t start_index_data,
-			size_t end_index_data){
+			const size_t start_index_grid,
+			const size_t end_index_grid,
+			const size_t start_index_data,
+			const size_t end_index_data){
 		double* ptrLevel = level->getPointer();
 		double* ptrIndex = index->getPointer();
 		double* ptrMask = mask->getPointer();

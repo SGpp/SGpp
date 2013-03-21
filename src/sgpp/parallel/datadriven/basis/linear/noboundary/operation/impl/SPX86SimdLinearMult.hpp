@@ -9,20 +9,7 @@
 #ifndef SPX86SIMDLINEARMULT_H
 #define SPX86SIMDLINEARMULT_H
 
-#include "base/grid/GridStorage.hpp"
 #include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
-
-#if defined(__SSE3__) || defined(__AVX__)
-#ifdef _WIN32
-#include <immintrin.h>
-#else
-#include <x86intrin.h>
-#endif
-#endif
-
-#ifdef __USEAVX128__
-#undef __AVX__
-#endif
 
 namespace sg {
 namespace parallel {
@@ -31,17 +18,17 @@ class SPX86SimdLinearMult : public SPX86SimdKernelBase
 {
 public:
 	static inline void mult(
-			sg::base::DataMatrixSP *level,
-			sg::base::DataMatrixSP *index,
+			sg::base::DataMatrixSP* level,
+			sg::base::DataMatrixSP* index,
 			sg::base::DataMatrixSP* /*mask*/, //unused for this specialization
 			sg::base::DataMatrixSP* /*offset*/, //unused for this specialization
-			sg::base::DataMatrixSP *dataset,
-			sg::base::DataVectorSP &alpha,
-			sg::base::DataVectorSP &result,
-			size_t start_index_grid,
-			size_t end_index_grid,
-			size_t start_index_data,
-			size_t end_index_data){
+			sg::base::DataMatrixSP* dataset,
+			sg::base::DataVectorSP& alpha,
+			sg::base::DataVectorSP& result,
+			const size_t start_index_grid,
+			const size_t end_index_grid,
+			const size_t start_index_data,
+			const size_t end_index_data){
 		float* ptrLevel = level->getPointer();
 		float* ptrIndex = index->getPointer();
 		float* ptrAlpha = alpha.getPointer();
