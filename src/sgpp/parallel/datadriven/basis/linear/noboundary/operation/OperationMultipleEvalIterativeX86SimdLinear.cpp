@@ -16,7 +16,6 @@
 #include "omp.h"
 #endif
 
-
 namespace sg
 {
 namespace parallel

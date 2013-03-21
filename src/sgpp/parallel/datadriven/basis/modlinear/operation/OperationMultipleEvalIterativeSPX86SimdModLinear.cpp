@@ -16,20 +16,6 @@
 #include "omp.h"
 #endif
 
-#if defined(__SSE3__) || defined(__AVX__)
-#include <immintrin.h>
-#endif
-#if defined(__FMA4__)
-#include <x86intrin.h>
-#endif
-
-#ifdef __USEAVX128__
-#undef __AVX__
-#endif
-
-#define CHUNKDATAPOINTS_SP_X86 24
-#define CHUNKGRIDPOINTS_SP_X86 12
-
 namespace sg
 {
 namespace parallel

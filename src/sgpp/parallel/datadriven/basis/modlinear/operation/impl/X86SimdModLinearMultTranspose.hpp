@@ -9,28 +9,14 @@
 #ifndef X86SIMDMODLINEARMULTTRANSPOSE_HPP
 #define X86SIMDMODLINEARMULTTRANSPOSE_HPP
 
-#include "base/grid/GridStorage.hpp"
-
-#if defined(__SSE3__) || defined(__AVX__)
-#ifdef _WIN32
-#include <immintrin.h>
-#else
-#include <x86intrin.h>
-#endif
-#endif
-
-#ifdef __USEAVX128__
-#undef __AVX__
-#endif
+#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
 
 namespace sg {
 namespace parallel {
 
-class X86SimdModLinearMultTranspose
+class X86SimdModLinearMultTranspose : public X86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 24;}//must be divisible by 24
 	static inline void multTranspose(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,
@@ -39,10 +25,10 @@ public:
 			sg::base::DataMatrix* dataset,
 			sg::base::DataVector& source,
 			sg::base::DataVector& result,
-			size_t start_index_grid,
-			size_t end_index_grid,
-			size_t start_index_data,
-			size_t end_index_data){
+			const size_t start_index_grid,
+			const size_t end_index_grid,
+			const size_t start_index_data,
+			const size_t end_index_data){
 		double* ptrLevel = level->getPointer();
 		double* ptrIndex = index->getPointer();
 		double* ptrSource = source.getPointer();

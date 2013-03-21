@@ -9,15 +9,14 @@
 #ifndef X86SIMDMODLINEARMASKMULT_HPP
 #define X86SIMDMODLINEARMASKMULT_HPP
 
-#include "base/grid/GridStorage.hpp"
+#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
+
 namespace sg {
 namespace parallel {
 
-class X86SimdModLinearMaskMult
+class X86SimdModLinearMaskMult : public X86SimdKernelBase
 {
 public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 24;} //must be divisible by 24
 	static inline void mult(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,

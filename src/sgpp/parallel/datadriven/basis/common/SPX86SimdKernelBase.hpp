@@ -9,6 +9,8 @@
 #ifndef SPX86SIMDKERNELBASE_HPP
 #define SPX86SIMDKERNELBASE_HPP
 
+#include "KernelIncludesAndMacros.hpp"
+
 namespace sg {
 namespace parallel {
 

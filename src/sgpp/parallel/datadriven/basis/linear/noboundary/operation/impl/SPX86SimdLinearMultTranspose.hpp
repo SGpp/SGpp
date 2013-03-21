@@ -9,20 +9,7 @@
 #ifndef SPX86SIMDLINEARMULTTRANSPOSE_H
 #define SPX86SIMDLINEARMULTTRANSPOSE_H
 
-#include "base/grid/GridStorage.hpp"
 #include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
-
-#if defined(__SSE3__) || defined(__AVX__)
-#ifdef _WIN32
-#include <immintrin.h>
-#else
-#include <x86intrin.h>
-#endif
-#endif
-
-#ifdef __USEAVX128__
-#undef __AVX__
-#endif
 
 namespace sg {
 namespace parallel {
@@ -38,10 +25,10 @@ public:
 			sg::base::DataMatrixSP* dataset,
 			sg::base::DataVectorSP& source,
 			sg::base::DataVectorSP& result,
-			size_t start_index_grid,
-			size_t end_index_grid,
-			size_t start_index_data,
-			size_t end_index_data){
+			const size_t start_index_grid,
+			const size_t end_index_grid,
+			const size_t start_index_data,
+			const size_t end_index_data){
 		float* ptrLevel = level->getPointer();
 		float* ptrIndex = index->getPointer();
 		float* ptrSource = source.getPointer();

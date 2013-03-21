@@ -9,20 +9,7 @@
 #ifndef X86SIMDLINEARMULT_H
 #define X86SIMDLINEARMULT_H
 
-#include "base/grid/GridStorage.hpp"
 #include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
-
-#if defined(__SSE3__) || defined(__AVX__)
-#ifdef _WIN32
-#include <immintrin.h>
-#else
-#include <x86intrin.h>
-#endif
-#endif
-
-#ifdef __USEAVX128__
-#undef __AVX__
-#endif
 
 namespace sg {
 namespace parallel {
@@ -38,10 +25,10 @@ public:
 			sg::base::DataMatrix* dataset,
 			sg::base::DataVector& alpha,
 			sg::base::DataVector& result,
-			size_t start_index_grid,
-			size_t end_index_grid,
-			size_t start_index_data,
-			size_t end_index_data){
+			const size_t start_index_grid,
+			const size_t end_index_grid,
+			const size_t start_index_data,
+			const size_t end_index_data){
 		double* ptrLevel = level->getPointer();
 		double* ptrIndex = index->getPointer();
 		double* ptrAlpha = alpha.getPointer();
@@ -54,8 +41,8 @@ public:
 
 		ASSERT_INDEX_ARG(start_index_grid, 0, level->getNrows(), 1);
 		ASSERT_INDEX_ARG(end_index_grid, 0, level->getNrows(), 1);
-		ASSERT_INDEX_ARG(start_index_data, 0, result_size, getChunkDataPoints()); //or alignment 24?
-		ASSERT_INDEX_ARG(end_index_data, 0, result_size, getChunkDataPoints()); //or alignment 24?
+		ASSERT_INDEX_ARG(start_index_data, 0, result_size, getChunkDataPoints());
+		ASSERT_INDEX_ARG(end_index_data, 0, result_size, getChunkDataPoints());
 
 
 		for(size_t c = start_index_data; c < end; c+=std::min<size_t>(getChunkDataPoints(), (end-c)))
