@@ -30,7 +30,7 @@ class SPX86SimdModLinearMultTranspose
 {
 public:
 	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 48;}
+	static inline size_t getChunkDataPoints(){return 48;} //must be divisible by 48
 	static inline void multTranspose(
 			sg::base::DataMatrixSP* level,
 			sg::base::DataMatrixSP* index,

@@ -1274,8 +1274,12 @@ $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLin
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMaskMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMaskMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMult.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \

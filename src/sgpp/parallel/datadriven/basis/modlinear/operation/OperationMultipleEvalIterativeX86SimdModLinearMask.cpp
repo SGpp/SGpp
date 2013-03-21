@@ -113,7 +113,7 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectoriz
 					__m128d support_3 = _mm_load_pd(&(ptrSource[i+6]));
 					__m128d support_4 = _mm_load_pd(&(ptrSource[i+8]));
 					__m128d support_5 = _mm_load_pd(&(ptrSource[i+10]));
-					
+
 					__m128d zero = _mm_set1_pd(0.0);
 
 					for (size_t d = 0; d < dims; d++)
@@ -201,7 +201,7 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectoriz
 					__m256d support_3 = _mm256_load_pd(&(ptrSource[i+12]));
 					__m256d support_4 = _mm256_load_pd(&(ptrSource[i+16]));
 					__m256d support_5 = _mm256_load_pd(&(ptrSource[i+20]));
-					
+
 					__m256d zero = _mm256_set1_pd(0.0);
 
 					for (size_t d = 0; d < dims; d++)
@@ -259,7 +259,7 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectoriz
 						support_2 = _mm256_mul_pd(support_2, eval_2);
 						support_3 = _mm256_mul_pd(support_3, eval_3);
 						support_4 = _mm256_mul_pd(support_4, eval_4);
-						support_5 = _mm256_mul_pd(support_5, eval_5);					
+						support_5 = _mm256_mul_pd(support_5, eval_5);
 					}
 
 					const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0xFFFFFFFFFFFFFFFF);
@@ -586,7 +586,7 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multVectorized(sg::ba
 					}
 				}
 #endif
-	        }
+			}
 		}
 #ifdef _OPENMP
 	}
