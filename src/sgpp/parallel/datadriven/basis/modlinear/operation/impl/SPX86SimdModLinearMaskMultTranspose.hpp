@@ -40,6 +40,8 @@ public:
 		size_t source_size = source.getSize();
 		size_t dims = dataset->getNrows();
 
+		CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid, start_index_data, end_index_data);
+
 		for(size_t k = start_index_grid; k < end_index_grid; k+=std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-k)))
 		{
 			size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-k));

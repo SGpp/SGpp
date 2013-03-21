@@ -40,10 +40,7 @@ public:
 
 		size_t end = end_index_grid;
 
-		ASSERT_INDEX_ARG(start_index_grid, 0, level->getNrows(), 1);
-		ASSERT_INDEX_ARG(end_index_grid, 0, level->getNrows(), 1);
-		ASSERT_INDEX_ARG(start_index_data, 0, source_size, getChunkGridPoints());
-		ASSERT_INDEX_ARG(end_index_data, 0, source_size, getChunkGridPoints());
+		CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid, start_index_data, end_index_data);
 
 		for(size_t k = start_index_grid; k < end; k+=std::min<size_t>(getChunkGridPoints(), (end-k)))
 		{
