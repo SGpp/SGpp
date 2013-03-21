@@ -589,7 +589,7 @@ double OperationMultipleEvalIterativeSPX86SimdModLinearMask::multVectorized(sg::
 					}
 				}
 #endif
-	        }
+			}
 		}
 #ifdef _OPENMP
 	}

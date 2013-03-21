@@ -32,13 +32,13 @@ public:
 	static inline size_t getChunkGridPoints(){return 12;}
 	static inline size_t getChunkDataPoints(){return 48;} //must be divisible by 48
 	static inline void mult(
-			sg::base::DataMatrixSP *level,
-			sg::base::DataMatrixSP *index,
+			sg::base::DataMatrixSP* level,
+			sg::base::DataMatrixSP* index,
 			sg::base::DataMatrixSP* /*mask*/, //unused for this specialization
 			sg::base::DataMatrixSP* /*offset*/, //unused for this specialization
-			sg::base::DataMatrixSP *dataset,
-			sg::base::DataVectorSP &alpha,
-			sg::base::DataVectorSP &result,
+			sg::base::DataMatrixSP* dataset,
+			sg::base::DataVectorSP& alpha,
+			sg::base::DataVectorSP& result,
 			size_t start_index_grid,
 			size_t end_index_grid,
 			size_t start_index_data,

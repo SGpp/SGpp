@@ -15,8 +15,12 @@
 
 #include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMaskMult.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMaskMultTranspose.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMult.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMultTranspose.hpp"
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
