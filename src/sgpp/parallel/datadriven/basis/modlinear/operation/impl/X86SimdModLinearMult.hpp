@@ -39,11 +39,9 @@ public:
 
 		CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid, start_index_data, end_index_data);
 
-		size_t end = end_index_data;
-
-		for(size_t c = start_index_data; c < end; c+=std::min<size_t>((size_t)getChunkDataPoints(), (end-c)))
+		for(size_t c = start_index_data; c < end_index_data; c+=std::min<size_t>((size_t)getChunkDataPoints(), (end_index_data-c)))
 		{
-			size_t data_end = std::min<size_t>((size_t)getChunkDataPoints()+c, end);
+			size_t data_end = std::min<size_t>((size_t)getChunkDataPoints()+c, end_index_data);
 
 #ifdef __ICC
 			#pragma ivdep

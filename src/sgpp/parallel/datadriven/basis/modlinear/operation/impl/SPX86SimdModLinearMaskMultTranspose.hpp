@@ -36,7 +36,6 @@ public:
 		float* ptrSource = source.getPointer();
 		float* ptrData = dataset->getPointer();
 		float* ptrResult = result.getPointer();
-
 		size_t source_size = source.getSize();
 		size_t dims = dataset->getNrows();
 

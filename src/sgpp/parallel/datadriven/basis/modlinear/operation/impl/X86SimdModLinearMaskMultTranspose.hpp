@@ -36,7 +36,6 @@ public:
 		double* ptrSource = source.getPointer();
 		double* ptrData = dataset->getPointer();
 		double* ptrResult = result.getPointer();
-
 		size_t source_size = source.getSize();
 		size_t dims = dataset->getNrows();
 
