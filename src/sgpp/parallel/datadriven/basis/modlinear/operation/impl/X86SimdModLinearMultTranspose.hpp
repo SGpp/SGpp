@@ -34,17 +34,14 @@ public:
 		double* ptrSource = source.getPointer();
 		double* ptrData = dataset->getPointer();
 		double* ptrResult = result.getPointer();
-
 		size_t source_size = source.getSize();
 		size_t dims = dataset->getNrows();
 
 		CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid, start_index_data, end_index_data);
 
-		size_t end = end_index_grid;
-
-		for(size_t k = start_index_grid; k < end; k+=std::min<size_t>((size_t)getChunkGridPoints(), (end-k)))
+		for(size_t k = start_index_grid; k < end_index_grid; k+=std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-k)))
 		{
-			size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end-k));
+			size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid-k));
 	#if defined(__SSE3__) && !defined(__AVX__)
 			long long imask = 0x7FFFFFFFFFFFFFFF;
 			double* fmask = (double*)&imask;
