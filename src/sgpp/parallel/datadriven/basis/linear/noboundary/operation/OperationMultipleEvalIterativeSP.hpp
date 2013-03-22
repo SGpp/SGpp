@@ -14,10 +14,6 @@
 #include "base/tools/SGppStopwatch.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
-#ifdef _OPENMP
-#include "omp.h"
-#endif
-
 namespace sg{
 namespace parallel{
 
@@ -66,20 +62,13 @@ public:
 	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 	{
 		myTimer->start();
+		result.setAll(0.0f);
 
-	#ifdef _OPENMP
 		#pragma omp parallel
 		{
-	#endif
 			size_t start;
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
-
-			if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
-			{
-				std::cout << "start%chunkDataPoints: " << start%MultType::getChunkDataPoints() << "; end%chunkDataPoints: " << end%MultType::getChunkDataPoints() << std::endl;
-				throw sg::base::operation_exception("processed vector segment must fit to chunkDataPoints!");
-			}
 
 			MultType::mult(
 						level_,
@@ -93,23 +82,17 @@ public:
 						alpha.getSize(),
 						start,
 						end);
-	#ifdef _OPENMP
 		}
-	#endif
-
 		return myTimer->stop();
 	}
 
 	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 	{
 		myTimer->start();
-
 		result.setAll(0.0);
 
-	#ifdef _OPENMP
 		#pragma omp parallel
 		{
-	#endif
 			size_t start;
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
@@ -126,10 +109,7 @@ public:
 						end,
 						0,
 						dataset_->getNcols());
-
-	#ifdef _OPENMP
 		}
-	#endif
 
 		return myTimer->stop();
 	}
@@ -158,7 +138,6 @@ protected:
 	sg::base::SGppStopwatch* myTimer;
 
 };
-
 
 }
 }

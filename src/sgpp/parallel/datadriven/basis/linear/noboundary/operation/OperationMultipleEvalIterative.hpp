@@ -15,10 +15,6 @@
 #include "parallel/tools/PartitioningTool.hpp"
 #include "base/tools/AlignedMemory.hpp"
 
-#ifdef _OPENMP
-#include "omp.h"
-#endif
-
 namespace sg{
 namespace parallel{
 
@@ -77,10 +73,8 @@ public:
 		double *openmp_startTime = (double *)aligned_malloc(threadCount*8*sizeof(double), SGPPMEMALIGNMENT); */
 		myTimer->start();
 
-	#ifdef _OPENMP
 		#pragma omp parallel
 		{
-	#endif
 			/*
 			int myThreadNum = omp_get_thread_num();
 			openmp_startTime[myThreadNum*8] = myTimer->stop();
@@ -88,12 +82,6 @@ public:
 			size_t start;
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
-
-			if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
-			{
-				std::cout << "start%chunkDataPoints: " << start%MultType::getChunkDataPoints() << "; end%chunkDataPoints: " << end%MultType::getChunkDataPoints() << std::endl;
-				throw sg::base::operation_exception("processed vector segment must fit to chunkDataPoints!");
-			}
 
 			MultType::mult(
 						level_,
@@ -107,9 +95,7 @@ public:
 						alpha.getSize(),
 						start,
 						end);
-	#ifdef _OPENMP
 		}
-	#endif
 
 		// thread creation benchmark code
 		/* double max = 0;
@@ -136,13 +122,10 @@ public:
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 	{
 		myTimer->start();
-
 		result.setAll(0.0);
 
-	#ifdef _OPENMP
 		#pragma omp parallel
 		{
-	#endif
 			size_t start;
 			size_t end;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
@@ -159,9 +142,7 @@ public:
 						end,
 						0,
 						dataset_->getNcols());
-	#ifdef _OPENMP
 		}
-	#endif
 
 		return myTimer->stop();
 	}
