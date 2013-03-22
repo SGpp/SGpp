@@ -6,8 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMultTranspose.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg
@@ -58,9 +57,9 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectoriz
 	{
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+		PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		sg::parallel::X86SimdModLinearMaskMultTranspose::multTranspose(
+		X86SimdModLinearMask::multTranspose(
 			level_, index_, mask_, offset_, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 	}
 
@@ -76,9 +75,9 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multVectorized(sg::ba
 	{
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::X86SimdModLinearMaskMult::getChunkDataPoints());
+		PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, X86SimdModLinearMask::getChunkDataPoints());
 
-		sg::parallel::X86SimdModLinearMaskMult::mult(
+		X86SimdModLinearMask::mult(
 			level_, index_, mask_, offset_, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	}
 

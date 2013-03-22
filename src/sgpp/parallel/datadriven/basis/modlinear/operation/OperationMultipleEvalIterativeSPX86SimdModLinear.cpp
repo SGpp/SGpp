@@ -7,8 +7,7 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg
@@ -66,9 +65,9 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
 	{
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+		PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		sg::parallel::SPX86SimdModLinearMultTranspose::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
+		SPX86SimdModLinear::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 	}
 
 	return myTimer->stop();
@@ -83,9 +82,9 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 	{
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::SPX86SimdModLinearMult::getChunkDataPoints());
+		PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, SPX86SimdModLinear::getChunkDataPoints());
 
-		sg::parallel::SPX86SimdModLinearMult::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
+		SPX86SimdModLinear::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	}
 
 	return myTimer->stop();

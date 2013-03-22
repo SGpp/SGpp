@@ -8,19 +8,13 @@
 
 #include "DMSystemMatrixMPITypeFactory.hpp"
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp"
 
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMaskMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMaskMultTranspose.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMaskMultTranspose.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp"
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
@@ -38,7 +32,7 @@
 namespace sg {
 namespace parallel {
 
-template<typename MultType, typename MultTransType>
+template<typename Kernel>
 datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
 {
 #define MPI_TYPE_ALLTOALLV 1
@@ -57,19 +51,19 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ALLREDUCE) {
 		parallelizationType = "Allreduce";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<Kernel>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
 		parallelizationType = "Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<Kernel>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_TRUEASYNC) {
 		parallelizationType = "True Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<Kernel>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_TRUEASYNC_ALLTOALLV) {
 		parallelizationType = "True Asynchronous Communication with alltoall end";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<Kernel>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ONESIDED) {
 		parallelizationType = "Onesided Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<Kernel>(grid, trainDataset, lambda, vecType);
 	} else {
 		throw new sg::base::factory_exception("not implemented");
 	}
@@ -94,12 +88,12 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
 	if(strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
 			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
 	{
-		return createDMSystemMatrixMPIType<sg::parallel::X86SimdLinearMult, sg::parallel::X86SimdLinearMultTranspose>
+		return createDMSystemMatrixMPIType<X86SimdLinear>
 				(grid, trainDataset, lambda, vecType);
 	}
 	else if(strcmp(grid.getType(), "modlinear") == 0)
 	{
-		return createDMSystemMatrixMPIType<sg::parallel::X86SimdModLinearMult, sg::parallel::X86SimdModLinearMultTranspose>
+		return createDMSystemMatrixMPIType<X86SimdModLinear>
 				(grid, trainDataset, lambda, vecType);
 	}
 	else

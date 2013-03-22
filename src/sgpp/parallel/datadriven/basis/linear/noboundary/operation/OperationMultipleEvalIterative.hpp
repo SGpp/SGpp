@@ -18,8 +18,8 @@
 namespace sg{
 namespace parallel{
 
-template<typename MultType, typename MultTransposeType>
-class OperationMultipleEvalIterative : public sg::parallel::OperationMultipleEvalVectorized
+template<typename Kernel>
+class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized
 {
 public:
 	/**
@@ -35,7 +35,7 @@ public:
 	 */
 	OperationMultipleEvalIterative(base::GridStorage *storage, base::DataMatrix *dataset,
 								   int gridFrom, int gridTo, int datasetFrom, int datasetTo):
-							   sg::parallel::OperationMultipleEvalVectorized(dataset)
+							   OperationMultipleEvalVectorized(dataset)
 	{
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
@@ -80,9 +80,9 @@ public:
 */
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
+			PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, Kernel::getChunkDataPoints());
 
-			MultType::mult(
+			Kernel::mult(
 						level_,
 						index_,
 						mask_,
@@ -127,9 +127,9 @@ public:
 		{
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+			PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			MultTransposeType::multTranspose(
+			Kernel::multTranspose(
 						level_,
 						index_,
 						mask_,
