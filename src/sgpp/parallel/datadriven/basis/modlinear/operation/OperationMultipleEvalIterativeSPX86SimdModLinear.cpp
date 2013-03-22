@@ -7,10 +7,9 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp"
+#include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg
 {
