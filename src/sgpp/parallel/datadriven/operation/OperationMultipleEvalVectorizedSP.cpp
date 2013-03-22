@@ -7,11 +7,6 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "base/exception/operation_exception.hpp"
-
-#ifdef _OPENMP
-#include "omp.h"
-#endif
 
 namespace sg
 {
