@@ -11,9 +11,9 @@
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "base/grid/GridStorage.hpp"
+#include "base/tools/AlignedMemory.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
-#include "base/tools/AlignedMemory.hpp"
 
 namespace sg{
 namespace parallel{
@@ -46,7 +46,6 @@ public:
 
 	   this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 	   this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-
 	   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	   myTimer = new sg::base::SGppStopwatch();
@@ -171,7 +170,6 @@ protected:
 	sg::base::SGppStopwatch* myTimer;
 
 };
-
 
 }
 }
