@@ -17,8 +17,8 @@
 namespace sg{
 namespace parallel{
 
-template<typename MultType, typename MultTransposeType>
-class OperationMultipleEvalIterativeSP : public sg::parallel::OperationMultipleEvalVectorizedSP
+template<typename KernelSP>
+class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedSP
 {
 public:
 	/**
@@ -34,7 +34,7 @@ public:
 	 */
 	OperationMultipleEvalIterativeSP(base::GridStorage *storage, base::DataMatrixSP *dataset,
 								   int gridFrom, int gridTo, int datasetFrom, int datasetTo):
-							   sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
+							   OperationMultipleEvalVectorizedSP(dataset)
 	{
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
@@ -68,21 +68,21 @@ public:
 		{
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
+			PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, KernelSP::getChunkDataPoints());
 
-			MultType::mult(
-						level_,
-						index_,
-						mask_,
-						offset_,
-						dataset_,
-						alpha,
-						result,
-						0,
-						alpha.getSize(),
-						start,
-						end);
-		}
+			KernelSP::mult(
+					level_,
+					index_,
+					mask_,
+					offset_,
+					dataset_,
+					alpha,
+					result,
+					0,
+					alpha.getSize(),
+					start,
+					end);
+	}
 		return myTimer->stop();
 	}
 
@@ -95,9 +95,9 @@ public:
 		{
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+			PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			MultTransposeType::multTranspose(
+			KernelSP::multTranspose(
 						level_,
 						index_,
 						mask_,

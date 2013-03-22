@@ -22,7 +22,7 @@ namespace sg
 {
 namespace parallel
 {
-template<typename MultType, typename MultTransType>
+template<typename Kernel>
 class DMSystemMatrixVectorizedIdentityAllreduce : public sg::datadriven::DMSystemMatrixBase
 {
 private:
@@ -109,7 +109,7 @@ public:
 					&threadChunkStart, &threadChunkEnd,
 					sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
-			MultType::mult(
+			Kernel::mult(
 					level_,
 					index_,
 					mask_,
@@ -148,7 +148,7 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					0, m_grid.getSize(),
 					&threadChunkStart, &threadChunkEnd, 1);
-			MultTransType::multTranspose(
+			Kernel::multTranspose(
 					level_,
 					index_,
 					mask_,
@@ -182,7 +182,7 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					0, m_grid.getSize(),
 					&threadChunkStart, &threadChunkEnd, 1);
-			MultTransType::multTranspose(
+			Kernel::multTranspose(
 						level_,
 						index_,
 						mask_,

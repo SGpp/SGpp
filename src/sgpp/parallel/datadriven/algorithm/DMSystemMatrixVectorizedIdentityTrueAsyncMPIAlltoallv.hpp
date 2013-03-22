@@ -29,7 +29,7 @@ namespace sg
 namespace parallel
 {
 
-template<typename MultType, typename MultTransType>
+template<typename Kernel>
 class DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv : public sg::datadriven::DMSystemMatrixBase
 {
 private:
@@ -180,7 +180,7 @@ public:
 					dataProcessChunkStart, dataProcessChunkEnd,
 					&threadStartData, &threadEndData, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
-			MultType::mult(
+			Kernel::mult(
 						level_,
 						index_,
 						mask_,
@@ -213,7 +213,7 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 				gridProcessChunkStart, gridProcessChunkEnd,
 				&threadStartGrid, &threadEndGrid, 1);
-			MultTransType::multTranspose(
+			Kernel::multTranspose(
 					level_,
 					index_,
 					mask_,
@@ -247,7 +247,7 @@ public:
 				// same index or not computing last index)
 	#pragma omp barrier
 
-				MultTransType::multTranspose(
+				Kernel::multTranspose(
 							level_,
 							index_,
 							mask_,
@@ -290,7 +290,7 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					_mpi_grid_offsets[mpi_myrank], _mpi_grid_offsets[mpi_myrank] + _mpi_grid_sizes[mpi_myrank],
 					&threadChunkStart, &threadChunkEnd, 1);
-			MultTransType::multTranspose(
+			Kernel::multTranspose(
 						level_,
 						index_,
 						mask_,

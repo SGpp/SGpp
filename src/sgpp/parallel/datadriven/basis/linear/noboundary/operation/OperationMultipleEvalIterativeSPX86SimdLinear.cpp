@@ -7,8 +7,7 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg
@@ -18,7 +17,7 @@ namespace parallel
 
 OperationMultipleEvalIterativeSPX86SimdLinear::OperationMultipleEvalIterativeSPX86SimdLinear(
 		sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset,
-		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
+		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : OperationMultipleEvalVectorizedSP(dataset)
 {
 	m_gridFrom = gridFrom;
 	m_gridTo = gridTo;
@@ -66,9 +65,9 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multTransposeVectorized(sg
 	{
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+		PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		sg::parallel::SPX86SimdLinearMultTranspose::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, dataset_->getNcols());
+		SPX86SimdLinear::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, dataset_->getNcols());
 	}
 
 	return myTimer->stop();
@@ -83,9 +82,9 @@ double OperationMultipleEvalIterativeSPX86SimdLinear::multVectorized(sg::base::D
 	{
 		size_t start;
 		size_t end;
-		sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, sg::parallel::SPX86SimdLinearMult::getChunkDataPoints());
+		PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, SPX86SimdLinear::getChunkDataPoints());
 
-		sg::parallel::SPX86SimdLinearMult::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
+		SPX86SimdLinear::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	}
 
 	return myTimer->stop();

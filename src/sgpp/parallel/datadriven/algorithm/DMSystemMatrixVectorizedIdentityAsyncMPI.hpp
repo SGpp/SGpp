@@ -39,7 +39,7 @@ namespace parallel
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-template<typename MultType, typename MultTransType>
+template<typename Kernel>
 class DMSystemMatrixVectorizedIdentityAsyncMPI : public sg::datadriven::DMSystemMatrixBase
 {
 private:
@@ -195,7 +195,7 @@ public:
 			for(size_t chunkIndex = threadStart; chunkIndex < threadEnd; chunkIndex++){
 				size_t start = _mpi_data_offsets[chunkIndex];
 				size_t end =  start + _mpi_data_sizes[chunkIndex];
-				MultType::mult(
+				Kernel::mult(
 							level_,
 							index_,
 							mask_,
@@ -265,7 +265,7 @@ public:
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-				MultTransType::multTranspose(
+				Kernel::multTranspose(
 						level_,
 						index_,
 						mask_,
@@ -330,7 +330,7 @@ public:
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-				MultTransType::multTranspose(
+				Kernel::multTranspose(
 							level_,
 							index_,
 							mask_,
