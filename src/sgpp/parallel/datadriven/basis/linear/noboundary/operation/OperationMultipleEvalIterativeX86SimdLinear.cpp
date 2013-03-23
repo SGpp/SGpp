@@ -30,7 +30,7 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 
 void OperationMultipleEvalIterativeX86SimdLinear::rebuildLevelAndIndex()
 {
-	LevelIndexMaskOffsetHelper::rebuild<X86SimdLinear::kernelType, OperationMultipleEvalIterativeX86SimdLinear>(this);
+	LevelIndexMaskOffsetHelper::rebuild<X86SimdLinear::kernelType, OperationMultipleEvalVectorized>(this);
 }
 
 void OperationMultipleEvalIterativeX86SimdLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)

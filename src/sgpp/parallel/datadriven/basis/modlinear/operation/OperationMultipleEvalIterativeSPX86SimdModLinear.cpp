@@ -29,7 +29,7 @@ OperationMultipleEvalIterativeSPX86SimdModLinear::OperationMultipleEvalIterative
 
 void OperationMultipleEvalIterativeSPX86SimdModLinear::rebuildLevelAndIndex()
 {
-	LevelIndexMaskOffsetHelperSP::rebuild<SPX86SimdModLinear::kernelType, OperationMultipleEvalIterativeSPX86SimdModLinear>(this);
+	LevelIndexMaskOffsetHelperSP::rebuild<SPX86SimdModLinear::kernelType, OperationMultipleEvalVectorizedSP>(this);
 }
 
 void OperationMultipleEvalIterativeSPX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
