@@ -9,7 +9,7 @@
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDNEWMPI_HPP
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDNEWMPI_HPP
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/exception/operation_exception.hpp"
@@ -41,7 +41,7 @@ namespace parallel
  * vectorized formulations are used.
  */
 template<typename MultType, typename MultTransType>
-class DMSystemMatrixVectorizedIdentityOneSidedMPI : public sg::datadriven::DMSystemMatrixBase
+class DMSystemMatrixVectorizedIdentityOneSidedMPI : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase
 {
 private:
 	/// vectorization mode

@@ -14,7 +14,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
@@ -43,7 +43,7 @@ namespace parallel
  * vectorized formulations are used.
  */
 template<typename Kernel>
-class DMSystemMatrixVectorizedIdentityOneSidedMPI : public sg::datadriven::DMSystemMatrixBase
+class DMSystemMatrixVectorizedIdentityOneSidedMPI : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase
 {
 private:
 	/// vectorization mode

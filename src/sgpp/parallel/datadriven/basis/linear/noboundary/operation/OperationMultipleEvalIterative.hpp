@@ -132,7 +132,7 @@ public:
 
 	virtual void rebuildLevelAndIndex()
 	{
-		LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType>(this);
+		LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType, OperationMultipleEvalIterative<KernelImplementation> >(this);
 	}
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo)
@@ -140,6 +140,9 @@ public:
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 	}
+
+	friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalIterative<KernelImplementation> >;
+	friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalIterative<KernelImplementation> >;
 };
 
 }

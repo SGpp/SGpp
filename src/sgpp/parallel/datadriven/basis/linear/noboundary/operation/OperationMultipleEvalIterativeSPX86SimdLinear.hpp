@@ -53,6 +53,8 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
+
+	friend struct LevelIndexMaskOffsetHelperSP::rebuild<Standard, OperationMultipleEvalIterativeSPX86SimdLinear>;
 };
 
 }

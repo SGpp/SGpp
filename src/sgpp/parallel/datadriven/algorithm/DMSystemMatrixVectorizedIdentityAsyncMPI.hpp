@@ -9,7 +9,7 @@
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYASYNCMPI_HPP
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYASYNCMPI_HPP
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/exception/operation_exception.hpp"
@@ -39,27 +39,9 @@ namespace parallel
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-template<typename Kernel>
-class DMSystemMatrixVectorizedIdentityAsyncMPI : public sg::datadriven::DMSystemMatrixBase
+template<typename KernelImplementation>
+class DMSystemMatrixVectorizedIdentityAsyncMPI : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>
 {
-private:
-	/// vectorization mode
-	VectorizationType vecMode_;
-	/// Number of orignal training instances
-	size_t numTrainingInstances_;
-	/// Number of patched and used training instances
-	size_t numPatchedTrainingInstances_;
-
-	/// Member to store the sparse grid's levels for better vectorization
-	sg::base::DataMatrix* level_;
-	/// Member to store the sparse grid's indices for better vectorization
-	sg::base::DataMatrix* index_;
-	/// Member to store for masks per grid point for better vectorization of modlinear operations
-	sg::base::DataMatrix* mask_;
-	/// Member to store offsets per grid point for better vecotrization of modlinear operations
-	sg::base::DataMatrix* offset_;
-
-
 public:
 	/**
 	 * Constructor
@@ -70,30 +52,9 @@ public:
 	 * @param vecMode vectorization mode
 	 */
 	DMSystemMatrixVectorizedIdentityAsyncMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-		: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid)
+		: DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>(SparseGrid, trainData, lambda, vecMode)
 	{
-		// handle unsupported vector extensions
-		if (this->vecMode_ != X86SIMD &&
-				this->vecMode_ != MIC &&
-				this->vecMode_ != Hybrid_X86SIMD_MIC &&
-				this->vecMode_ != OpenCL &&
-				this->vecMode_ != ArBB &&
-				this->vecMode_ != Hybrid_X86SIMD_OpenCL)
-		{
-			throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
-		}
-
-		this->dataset_ = new sg::base::DataMatrix(trainData);
-		this->numTrainingInstances_ = this->dataset_->getNrows();
-		this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
-
-		if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
-		{
-			this->dataset_->transpose();
-		}
-
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-
 
 		/* calculate distribution of data */
 		calculateChunkCountData();
@@ -107,22 +68,11 @@ public:
 			std::cout << "Max size per chunk Data: " << _mpi_data_sizes[0] << std::endl;
 		}
 
-		/* calculate distribution of grid */
-		calculateChunkCountGrid();
-		_mpi_grid_sizes = new int[_chunkCountGrid];
-		_mpi_grid_offsets = new int[_chunkCountGrid];
 		_mpi_grid_sizes_global = new int[mpi_size];
 		_mpi_grid_offsets_global = new int[mpi_size];
-		sg::parallel::PartitioningTool::calcDistribution(m_grid.getSize(), _chunkCountGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
-		sg::parallel::PartitioningTool::calcDistribution(_chunkCountGrid, mpi_size, _mpi_grid_sizes_global, _mpi_grid_offsets_global, 1);
-
-
-		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-		this->mask_ = NULL;
-		this->offset_ = NULL;
-
-		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		_mpi_grid_sizes = NULL; // allocation in rebuildLevelAndIndex();
+		_mpi_grid_offsets = NULL; // allocation in rebuildLevelAndIndex();
+		rebuildLevelAndIndex();
 
 		// mult: distribute calculations over dataset
 		// multTranspose: distribute calculations over grid
@@ -132,11 +82,6 @@ public:
 	 * Destructor
 	 */
 	virtual ~DMSystemMatrixVectorizedIdentityAsyncMPI(){
-		delete this->dataset_;
-
-		delete this->level_;
-		delete this->index_;
-
 		delete[] this->_mpi_grid_sizes;
 		delete[] this->_mpi_grid_offsets;
 		delete[] this->_mpi_data_sizes;
@@ -146,12 +91,6 @@ public:
 		delete[] this->_mpi_grid_offsets_global;
 		delete[] this->_mpi_data_sizes_global;
 		delete[] this->_mpi_data_offsets_global;
-
-		if (this->mask_ != NULL)
-			delete this->mask_;
-
-		if (this->offset_ != NULL)
-			delete this->offset_;
 	}
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
@@ -195,12 +134,12 @@ public:
 			for(size_t chunkIndex = threadStart; chunkIndex < threadEnd; chunkIndex++){
 				size_t start = _mpi_data_offsets[chunkIndex];
 				size_t end =  start + _mpi_data_sizes[chunkIndex];
-				Kernel::mult(
-							level_,
-							index_,
-							mask_,
-							offset_,
-							dataset_,
+				KernelImplementation::mult(
+							this->level_,
+							this->index_,
+							this->mask_,
+							this->offset_,
+							this->dataset_,
 							alpha,
 							temp,
 							0,
@@ -265,12 +204,12 @@ public:
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-				Kernel::multTranspose(
-						level_,
-						index_,
-						mask_,
-						offset_,
-						dataset_,
+				KernelImplementation::multTranspose(
+						this->level_,
+						this->index_,
+						this->mask_,
+						this->offset_,
+						this->dataset_,
 						temp,
 						result,
 						start,
@@ -330,12 +269,12 @@ public:
 				size_t start = _mpi_grid_offsets[thread_chunk];
 				size_t end =  start + _mpi_grid_sizes[thread_chunk];
 
-				Kernel::multTranspose(
-							level_,
-							index_,
-							mask_,
-							offset_,
-							dataset_,
+				KernelImplementation::multTranspose(
+							this->level_,
+							this->index_,
+							this->mask_,
+							this->offset_,
+							this->dataset_,
 							myClasses,
 							b,
 							start,
@@ -358,28 +297,24 @@ public:
 	}
 
 	virtual void rebuildLevelAndIndex(){
-		delete this->level_;
-		delete this->index_;
-		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
+		DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>::rebuildLevelAndIndex();
 
-		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		if(_mpi_grid_sizes != NULL){
+			delete[] _mpi_grid_sizes;
+		}
+		if(_mpi_grid_offsets != NULL){
+			delete[] _mpi_grid_offsets;
+		}
 
-
-		delete[] _mpi_grid_sizes;
-		delete[] _mpi_grid_offsets;
-
+		/* calculate distribution of grid */
 		calculateChunkCountGrid();
 		_mpi_grid_sizes = new int[_chunkCountGrid];
 		_mpi_grid_offsets = new int[_chunkCountGrid];
-		sg::parallel::PartitioningTool::calcDistribution(m_grid.getSize(), _chunkCountGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
+		sg::parallel::PartitioningTool::calcDistribution(this->storage_->size(), _chunkCountGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 		sg::parallel::PartitioningTool::calcDistribution(_chunkCountGrid, sg::parallel::myGlobalMPIComm->getNumRanks(), _mpi_grid_sizes_global, _mpi_grid_offsets_global, 1);
 	}
 
 private:
-	/// reference to grid. needed to get new grid size after it changes
-	sg::base::Grid& m_grid;
-
 	/// how to distribute storage array across processes
 	int * _mpi_grid_sizes;
 	int * _mpi_grid_offsets;
@@ -404,12 +339,12 @@ private:
 #define APPROXCHUNKSIZEDATA_ASYNC 150 // approximately how many blocks should be computed for the data before sending
 
 	void calculateChunkCountGrid() {
-		_chunkCountGrid = m_grid.getSize()/APPROXCHUNKSIZEGRID_ASYNC;
+		_chunkCountGrid = this->storage_->size()/APPROXCHUNKSIZEGRID_ASYNC;
 		_chunkCountGrid = std::max<size_t>(_chunkCountGrid, getMinChunkCount());
 		int chunkSize =
 				static_cast<int>(
 					std::ceil(
-						static_cast<double>(m_grid.getSize())/static_cast<double>(_chunkCountGrid)
+						static_cast<double>(this->storage_->size())/static_cast<double>(_chunkCountGrid)
 						)
 					);
 		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){

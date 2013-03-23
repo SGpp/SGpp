@@ -21,7 +21,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
+//#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
 #include <cstring>
@@ -32,7 +32,7 @@
 namespace sg {
 namespace parallel {
 
-template<typename Kernel>
+template<typename KernelImplementation>
 datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
 {
 #define MPI_TYPE_ALLTOALLV 1
@@ -51,20 +51,20 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ALLREDUCE) {
 		parallelizationType = "Allreduce";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<Kernel>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<KernelImplementation>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_ASYNC) {
 		parallelizationType = "Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<Kernel>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<KernelImplementation>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_TRUEASYNC) {
 		parallelizationType = "True Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<Kernel>(grid, trainDataset, lambda, vecType);
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<KernelImplementation>(grid, trainDataset, lambda, vecType);
 	} else if(mpi_type == MPI_TYPE_TRUEASYNC_ALLTOALLV) {
 		parallelizationType = "True Asynchronous Communication with alltoall end";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<Kernel>(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_ONESIDED) {
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<KernelImplementation>(grid, trainDataset, lambda, vecType);
+	} /*else if(mpi_type == MPI_TYPE_ONESIDED) {
 		parallelizationType = "Onesided Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<Kernel>(grid, trainDataset, lambda, vecType);
-	} else {
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<KernelImplementation>(grid, trainDataset, lambda, vecType);
+	} */ else {
 		throw new sg::base::factory_exception("not implemented");
 	}
 

@@ -4,27 +4,20 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef OPERATIONMULTIPLEEVALVECTORIZED_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZED_HPP
 
-#include "base/exception/operation_exception.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/tools/SGppStopwatch.hpp"
-#include "parallel/datadriven/basis/common/KernelIncludesAndMacros.hpp"
+#include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
 
 namespace sg
 {
 namespace parallel
 {
-
-// forward declarations
-class OperationMultipleEvalVectorized;
-namespace LevelIndexMaskOffsetHelper
-{
-template<KernelType T> struct rebuild { rebuild(OperationMultipleEvalVectorized *op);};
-}
 
 /**
  * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
@@ -119,52 +112,9 @@ public:
 	// we have to make sure that all implemented Kernel Types can see the fields they require.
 	// this has to be done here and only here because friends are checked at compile time and we use
 	// a pointer of this class to access the respective objects
-	friend struct LevelIndexMaskOffsetHelper::rebuild<Standard>;
-	friend struct LevelIndexMaskOffsetHelper::rebuild<Mask>;
+	friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
+	friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
 };
-
-namespace LevelIndexMaskOffsetHelper
-{
-// use constructor to do actual work, in code where we use this, it looks like a
-// function call (and we don't have to return anything, so this is nicer)
-template<KernelType T>  rebuild<T>::rebuild(OperationMultipleEvalVectorized* op){
-		throw base::operation_exception("The rebuild operation for the specified KernelType is not implemented.");
-}
-template<>
-inline rebuild<Standard>::rebuild(OperationMultipleEvalVectorized* op){
-		if (op->level_ != NULL)
-				delete op->level_;
-
-		if (op->index_ != NULL)
-				delete op->index_;
-
-		op->level_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-		op->index_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-
-		op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
-}
-template<>
-inline rebuild<Mask>::rebuild(OperationMultipleEvalVectorized* op){
-		if (op->level_ != NULL)
-				delete op->level_;
-
-		if (op->index_ != NULL)
-				delete op->index_;
-
-		if (op->mask_ != NULL)
-				delete op->mask_;
-
-		if (op->offset_ != NULL)
-				delete op->offset_;
-
-		op->level_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-		op->index_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-		op->mask_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-		op->offset_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-
-		op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_), *(op->offset_));
-}
-}
 
 }
 }

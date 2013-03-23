@@ -437,7 +437,6 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
 	DMSystemMatrixMPITypeFactory.o\
 
-
 endif
 
 WINOBJS=$(OBJS:.o=.obj)
@@ -1276,13 +1275,12 @@ $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMa
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp \
-$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
-
 
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
