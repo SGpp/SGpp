@@ -30,7 +30,7 @@ OperationMultipleEvalIterativeX86SimdModLinear::OperationMultipleEvalIterativeX8
 
 void OperationMultipleEvalIterativeX86SimdModLinear::rebuildLevelAndIndex()
 {
-	LevelIndexMaskOffsetHelper::rebuild<X86SimdModLinear::kernelType>(this);
+	LevelIndexMaskOffsetHelper::rebuild<X86SimdModLinear::kernelType, OperationMultipleEvalIterativeX86SimdModLinear>(this);
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)

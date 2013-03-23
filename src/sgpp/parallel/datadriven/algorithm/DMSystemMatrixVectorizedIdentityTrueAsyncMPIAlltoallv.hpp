@@ -8,7 +8,7 @@
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPIALLTOALLV_H
 
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/exception/operation_exception.hpp"
@@ -29,31 +29,10 @@ namespace sg
 namespace parallel
 {
 
-template<typename Kernel>
-class DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv : public sg::datadriven::DMSystemMatrixBase
+template<typename KernelImplementation>
+class DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>
 {
 private:
-	/// vectorization mode
-	VectorizationType vecMode_;
-	/// Number of orignal training instances
-	size_t numTrainingInstances_;
-	/// Number of patched and used training instances
-	size_t numPatchedTrainingInstances_;
-
-	/// Pointer to the grid's gridstorage object
-	sg::base::GridStorage* storage_;
-	/// Member to store the sparse grid's levels for better vectorization
-	sg::base::DataMatrix* level_;
-	/// Member to store the sparse grid's indices for better vectorization
-	sg::base::DataMatrix* index_;
-	/// Member to store for masks per grid point for better vectorization of modlinear operations
-	sg::base::DataMatrix* mask_;
-	/// Member to store offsets per grid point for better vecotrization of modlinear operations
-	sg::base::DataMatrix* offset_;
-
-	/// reference to grid. needed to get new grid size after it changes
-	sg::base::Grid& m_grid;
-
 	/// how to distribute storage array across processes
 	int* _mpi_grid_sizes;
 	int* _mpi_grid_offsets;
@@ -72,28 +51,8 @@ public:
 	 * @param vecMode vectorization mode
 	 */
 	DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-		: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid)
+		: DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>(SparseGrid, trainData, lambda, vecMode)
 	{
-		// handle unsupported vector extensions
-		if (this->vecMode_ != X86SIMD &&
-				this->vecMode_ != MIC &&
-				this->vecMode_ != Hybrid_X86SIMD_MIC &&
-				this->vecMode_ != OpenCL &&
-				this->vecMode_ != ArBB &&
-				this->vecMode_ != Hybrid_X86SIMD_OpenCL)
-		{
-			throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
-		}
-
-		this->dataset_ = new sg::base::DataMatrix(trainData);
-		this->numTrainingInstances_ = this->dataset_->getNrows();
-		this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
-
-		if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
-		{
-			this->dataset_->transpose();
-		}
-
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
 		// arrays for distribution settings
@@ -105,14 +64,8 @@ public:
 		// arrays for distribution settings
 		_mpi_grid_sizes = new int[mpi_size];
 		_mpi_grid_offsets = new int[mpi_size];
-		sg::parallel::PartitioningTool::calcDistribution(m_grid.getSize(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 
-		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-		this->mask_ = NULL;
-		this->offset_ = NULL;
-
-		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		rebuildLevelAndIndex();
 
 		// mult: distribute calculations over dataset
 		// multTranspose: distribute calculations over grid
@@ -122,21 +75,10 @@ public:
 	 * Std-Destructor
 	 */
 	virtual ~DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv(){
-		delete this->dataset_;
-
-		delete this->level_;
-		delete this->index_;
-
 		delete[] this->_mpi_grid_sizes;
 		delete[] this->_mpi_grid_offsets;
 		delete[] this->_mpi_data_sizes;
 		delete[] this->_mpi_data_offsets;
-
-		if (this->mask_ != NULL)
-			delete this->mask_;
-
-		if (this->offset_ != NULL)
-			delete this->offset_;
 	}
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
@@ -182,12 +124,12 @@ public:
 					dataProcessChunkStart, dataProcessChunkEnd,
 					&threadStartData, &threadEndData, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
-			Kernel::mult(
-						level_,
-						index_,
-						mask_,
-						offset_,
-						dataset_,
+			KernelImplementation::mult(
+						this->level_,
+						this->index_,
+						this->mask_,
+						this->offset_,
+						this->dataset_,
 						alpha,
 						temp,
 						0,
@@ -215,12 +157,12 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 				gridProcessChunkStart, gridProcessChunkEnd,
 				&threadStartGrid, &threadEndGrid, 1);
-			Kernel::multTranspose(
-					level_,
-					index_,
-					mask_,
-					offset_,
-					dataset_,
+			KernelImplementation::multTranspose(
+					this->level_,
+					this->index_,
+					this->mask_,
+					this->offset_,
+					this->dataset_,
 					temp,
 					result,
 					threadStartGrid,
@@ -249,12 +191,12 @@ public:
 				// same index or not computing last index)
 	#pragma omp barrier
 
-				Kernel::multTranspose(
-							level_,
-							index_,
-							mask_,
-							offset_,
-							dataset_,
+				KernelImplementation::multTranspose(
+							this->level_,
+							this->index_,
+							this->mask_,
+							this->offset_,
+							this->dataset_,
 							temp,
 							result,
 							threadStartGrid,
@@ -292,12 +234,12 @@ public:
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					_mpi_grid_offsets[mpi_myrank], _mpi_grid_offsets[mpi_myrank] + _mpi_grid_sizes[mpi_myrank],
 					&threadChunkStart, &threadChunkEnd, 1);
-			Kernel::multTranspose(
-						level_,
-						index_,
-						mask_,
-						offset_,
-						dataset_,
+			KernelImplementation::multTranspose(
+						this->level_,
+						this->index_,
+						this->mask_,
+						this->offset_,
+						this->dataset_,
 						myClasses,
 						b,
 						threadChunkStart,
@@ -311,22 +253,15 @@ public:
 	}
 
 	virtual void rebuildLevelAndIndex(){
-		delete this->level_;
-		delete this->index_;
-
-		this->level_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-		this->index_ = new sg::base::DataMatrix(m_grid.getSize(), m_grid.getStorage()->dim());
-
-		m_grid.getStorage()->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>::rebuildLevelAndIndex();
 
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
-		sg::parallel::PartitioningTool::calcDistribution(m_grid.getSize(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
+		sg::parallel::PartitioningTool::calcDistribution(this->storage_->size(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 	}
-
-
 };
 
 }
 }
+
 #endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPIALLTOALLV_H
