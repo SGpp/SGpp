@@ -17,6 +17,7 @@ namespace parallel {
 class X86SimdModLinearMask : public X86SimdKernelBase
 {
 public:
+	static const KernelType kernelType = Mask;
 	static inline void mult(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,

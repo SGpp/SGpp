@@ -17,6 +17,7 @@ namespace parallel {
 class SPX86SimdModLinearMask : public SPX86SimdKernelBase
 {
 public:
+	static const KernelType kernelType = Mask;
 	static inline void mult(
 			sg::base::DataMatrixSP* level,
 			sg::base::DataMatrixSP* index,

@@ -17,6 +17,7 @@ namespace parallel {
 class SPX86SimdLinear : public SPX86SimdKernelBase
 {
 public:
+	static const KernelType kernelType = Standard;
 	static inline void mult(
 			sg::base::DataMatrixSP* level,
 			sg::base::DataMatrixSP* index,

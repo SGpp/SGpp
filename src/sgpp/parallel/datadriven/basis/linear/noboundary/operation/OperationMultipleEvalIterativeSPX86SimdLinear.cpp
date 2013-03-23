@@ -25,21 +25,12 @@ OperationMultipleEvalIterativeSPX86SimdLinear::OperationMultipleEvalIterativeSPX
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
 
-	this->level_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
-
-	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	rebuildLevelAndIndex();
 }
 
 void OperationMultipleEvalIterativeSPX86SimdLinear::rebuildLevelAndIndex()
 {
-	delete this->level_;
-	delete this->index_;
-
-	this->level_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
-
-	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	LevelIndexMaskOffsetHelperSP::rebuild<SPX86SimdLinear::kernelType>(this);
 }
 
 void OperationMultipleEvalIterativeSPX86SimdLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)

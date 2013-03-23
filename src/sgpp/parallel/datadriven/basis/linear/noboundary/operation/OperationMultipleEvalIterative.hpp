@@ -16,7 +16,7 @@
 namespace sg{
 namespace parallel{
 
-template<typename Kernel>
+template<typename KernelImplementation>
 class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized
 {
 public:
@@ -40,9 +40,7 @@ public:
 		m_datasetFrom = datasetFrom;
 		m_datasetTo = datasetTo;
 
-	   this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	   this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		rebuildLevelAndIndex();
 	}
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -66,9 +64,9 @@ public:
 */
 			size_t start;
 			size_t end;
-			PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, Kernel::getChunkDataPoints());
+			PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, KernelImplementation::getChunkDataPoints());
 
-			Kernel::mult(
+			KernelImplementation::mult(
 						level_,
 						index_,
 						mask_,
@@ -115,7 +113,7 @@ public:
 			size_t end;
 			PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			Kernel::multTranspose(
+			KernelImplementation::multTranspose(
 						level_,
 						index_,
 						mask_,
@@ -134,13 +132,7 @@ public:
 
 	virtual void rebuildLevelAndIndex()
 	{
-		delete this->level_;
-		delete this->index_;
-
-		this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-		this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-
-		storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType>(this);
 	}
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo)

@@ -17,6 +17,7 @@ namespace parallel {
 class X86SimdModLinear : public X86SimdKernelBase
 {
 public:
+	static const KernelType kernelType = Standard;
 	static inline void mult(
 			sg::base::DataMatrix* level,
 			sg::base::DataMatrix* index,

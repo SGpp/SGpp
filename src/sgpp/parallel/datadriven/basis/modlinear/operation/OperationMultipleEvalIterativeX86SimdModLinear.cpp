@@ -25,22 +25,12 @@ OperationMultipleEvalIterativeX86SimdModLinear::OperationMultipleEvalIterativeX8
 	m_gridTo = gridTo;
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
-
-	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-
-	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	rebuildLevelAndIndex();
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinear::rebuildLevelAndIndex()
 {
-	delete this->level_;
-	delete this->index_;
-
-	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-
-	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	LevelIndexMaskOffsetHelper::rebuild<X86SimdModLinear::kernelType>(this);
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
