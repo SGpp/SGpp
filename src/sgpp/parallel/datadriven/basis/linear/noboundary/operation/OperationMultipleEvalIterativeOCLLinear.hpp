@@ -42,8 +42,7 @@ public:
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 * @param dataset dataset that should be evaluated
 	 */
-	OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
-											int gridFrom, int gridTo, int datasetFrom, int datasetTo);
+	OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
@@ -56,7 +55,7 @@ public:
 
 	virtual void rebuildLevelAndIndex();
 
-	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
+//	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
 
 protected:
 	/// Object to access the OCL Kernel
