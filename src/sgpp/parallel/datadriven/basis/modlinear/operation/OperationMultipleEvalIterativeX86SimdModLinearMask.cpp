@@ -14,23 +14,16 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeX86SimdModLinearMask::OperationMultipleEvalIterativeX86SimdModLinearMask(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeX86SimdModLinearMask::OperationMultipleEvalIterativeX86SimdModLinearMask(
+		sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) :
+	sg::parallel::OperationMultipleEvalVectorized(storage, dataset)
 {
-	this->storage = storage;
-
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->mask_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->offset_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->mask_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->offset_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 	
-	storage->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
-
-	myTimer = new sg::base::SGppStopwatch();
-}
-
-OperationMultipleEvalIterativeX86SimdModLinearMask::~OperationMultipleEvalIterativeX86SimdModLinearMask()
-{
-	delete myTimer;
+	storage_->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinearMask::rebuildLevelAndIndex()
@@ -40,17 +33,17 @@ void OperationMultipleEvalIterativeX86SimdModLinearMask::rebuildLevelAndIndex()
 	delete this->mask_;
 	delete this->offset_;
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());	
-	this->mask_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->offset_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->mask_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->offset_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-	storage->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
+	storage_->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
 }
 
 double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
-	myTimer->start();
+	myTimer_->start();
 	result.setAll(0.0);
 
 	#pragma omp parallel
@@ -63,12 +56,12 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectoriz
 			level_, index_, mask_, offset_, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 	}
 
-	return myTimer->stop();
+	return myTimer_->stop();
 }
 
 double OperationMultipleEvalIterativeX86SimdModLinearMask::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-	myTimer->start();
+	myTimer_->start();
 	result.setAll(0.0);
 
 	#pragma omp parallel
@@ -81,7 +74,7 @@ double OperationMultipleEvalIterativeX86SimdModLinearMask::multVectorized(sg::ba
 			level_, index_, mask_, offset_, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	}
 
-	return myTimer->stop();
+	return myTimer_->stop();
 }
 
 }

@@ -18,26 +18,18 @@ namespace parallel
 
 OperationMultipleEvalIterativeX86SimdModLinear::OperationMultipleEvalIterativeX86SimdModLinear(
 		sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
-		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+		int gridFrom, int gridTo, int datasetFrom, int datasetTo) :
+	sg::parallel::OperationMultipleEvalVectorized(storage, dataset)
 {
 	m_gridFrom = gridFrom;
 	m_gridTo = gridTo;
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
 
-	this->storage = storage;
+	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	myTimer = new sg::base::SGppStopwatch();
-}
-
-OperationMultipleEvalIterativeX86SimdModLinear::~OperationMultipleEvalIterativeX86SimdModLinear()
-{
-	delete myTimer;
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinear::rebuildLevelAndIndex()
@@ -45,10 +37,10 @@ void OperationMultipleEvalIterativeX86SimdModLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
@@ -59,7 +51,7 @@ void OperationMultipleEvalIterativeX86SimdModLinear::updateGridComputeBoundaries
 
 double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
-    myTimer->start();
+	myTimer_->start();
     result.setAll(0.0);
 
 	#pragma omp parallel
@@ -71,12 +63,12 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(s
 		X86SimdModLinear::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 	}
 
-	return myTimer->stop();
+	return myTimer_->stop();
 }
 
 double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
-    myTimer->start();
+	myTimer_->start();
 	result.setAll(0.0);
 
 	#pragma omp parallel
@@ -88,7 +80,7 @@ double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::
 		X86SimdModLinear::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	}
 
-	return myTimer->stop();
+	return myTimer_->stop();
 }
 
 }

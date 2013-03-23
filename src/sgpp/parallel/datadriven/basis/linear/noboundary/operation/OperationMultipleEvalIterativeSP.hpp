@@ -10,8 +10,6 @@
 #define OPERATIONMULTIPLEEVALITERATIVESP_H
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg{
@@ -34,34 +32,22 @@ public:
 	 */
 	OperationMultipleEvalIterativeSP(base::GridStorage *storage, base::DataMatrixSP *dataset,
 								   int gridFrom, int gridTo, int datasetFrom, int datasetTo):
-							   OperationMultipleEvalVectorizedSP(dataset)
+							   OperationMultipleEvalVectorizedSP(storage, dataset)
 	{
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 		m_datasetFrom = datasetFrom;
 		m_datasetTo = datasetTo;
 
-	   this->storage = storage;
-
 	   this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 	   this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	   myTimer = new sg::base::SGppStopwatch();
-	}
-
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalIterativeSP()
-	{
-		delete myTimer;
 	}
 
 	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 	{
-		myTimer->start();
+		myTimer_->start();
 		result.setAll(0.0f);
 
 		#pragma omp parallel
@@ -83,12 +69,12 @@ public:
 					start,
 					end);
 	}
-		return myTimer->stop();
+		return myTimer_->stop();
 	}
 
 	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 	{
-		myTimer->start();
+		myTimer_->start();
 		result.setAll(0.0);
 
 		#pragma omp parallel
@@ -111,7 +97,7 @@ public:
 						dataset_->getNcols());
 		}
 
-		return myTimer->stop();
+		return myTimer_->stop();
 	}
 
 	virtual void rebuildLevelAndIndex()
@@ -119,10 +105,10 @@ public:
 		delete this->level_;
 		delete this->index_;
 
-		this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
-		this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+		this->level_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
+		this->index_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
 
-		storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 	}
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo)
@@ -130,13 +116,6 @@ public:
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 	}
-
-protected:
-	/// Pointer to the grid's GridStorage object
-	sg::base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
-
 };
 
 }

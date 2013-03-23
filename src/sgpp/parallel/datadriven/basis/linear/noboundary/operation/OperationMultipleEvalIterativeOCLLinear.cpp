@@ -13,22 +13,19 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+OperationMultipleEvalIterativeOCLLinear::OperationMultipleEvalIterativeOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) :
+	sg::parallel::OperationMultipleEvalVectorized(storage, dataset)
 {
-	this->storage = storage;
+	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 }
 
 OperationMultipleEvalIterativeOCLLinear::~OperationMultipleEvalIterativeOCLLinear()
 {
-	delete myTimer;
 	delete myOCLKernels;
 }
 
@@ -37,10 +34,10 @@ void OperationMultipleEvalIterativeOCLLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
 }
@@ -48,8 +45,8 @@ void OperationMultipleEvalIterativeOCLLinear::rebuildLevelAndIndex()
 double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 {
 	size_t source_size = source.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0);
 
@@ -100,8 +97,8 @@ double OperationMultipleEvalIterativeOCLLinear::multTransposeVectorized(sg::base
 double OperationMultipleEvalIterativeOCLLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
 {
 	size_t result_size = result.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0);
 
