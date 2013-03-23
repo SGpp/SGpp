@@ -25,21 +25,12 @@ OperationMultipleEvalIterativeX86SimdLinear::OperationMultipleEvalIterativeX86Si
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
 
-	this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	rebuildLevelAndIndex();
 }
 
 void OperationMultipleEvalIterativeX86SimdLinear::rebuildLevelAndIndex()
 {
-	delete this->level_;
-	delete this->index_;
-
-	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-
-	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	LevelIndexMaskOffsetHelper::rebuild<X86SimdLinear::kernelType>(this);
 }
 
 void OperationMultipleEvalIterativeX86SimdLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)

@@ -79,6 +79,17 @@
 #define CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, s_grid, e_grid, s_data, e_data)
 #endif
 
+namespace sg
+{
+namespace parallel
+{
+enum KernelType {
+	Standard,
+	Mask
+};
+
+}
+}
 
 
 #endif // KERNELMACROS_HPP

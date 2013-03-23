@@ -18,27 +18,12 @@ OperationMultipleEvalIterativeX86SimdModLinearMask::OperationMultipleEvalIterati
 		sg::base::GridStorage* storage, sg::base::DataMatrix* dataset) :
 	sg::parallel::OperationMultipleEvalVectorized(storage, dataset)
 {
-	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->mask_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->offset_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	
-	storage_->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
+	rebuildLevelAndIndex();
 }
 
 void OperationMultipleEvalIterativeX86SimdModLinearMask::rebuildLevelAndIndex()
 {
-	delete this->level_;
-	delete this->index_;
-	delete this->mask_;
-	delete this->offset_;
-
-	this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->mask_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-	this->offset_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
-
-	storage_->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
+	LevelIndexMaskOffsetHelper::rebuild<X86SimdModLinearMask::kernelType>(this);
 }
 
 double OperationMultipleEvalIterativeX86SimdModLinearMask::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)

@@ -53,6 +53,8 @@ private:
 	/// Number of patched and used training instances
 	size_t numPatchedTrainingInstances_;
 
+	/// Pointer to the grid's gridstorage object
+	sg::base::GridStorage* storage_;
 	/// Member to store the sparse grid's levels for better vectorization
 	sg::base::DataMatrix* level_;
 	/// Member to store the sparse grid's indices for better vectorization
