@@ -47,8 +47,6 @@ public:
 	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
 
 	virtual void rebuildLevelAndIndex();
-
-	friend struct LevelIndexMaskOffsetHelperSP::rebuild<Mask, OperationMultipleEvalIterativeSPX86SimdModLinearMask>;
 };
 
 }

@@ -23,7 +23,7 @@ OperationMultipleEvalIterativeSPX86SimdModLinearMask::OperationMultipleEvalItera
 
 void OperationMultipleEvalIterativeSPX86SimdModLinearMask::rebuildLevelAndIndex()
 {
-	LevelIndexMaskOffsetHelperSP::rebuild<SPX86SimdModLinearMask::kernelType, OperationMultipleEvalIterativeSPX86SimdModLinearMask>(this);
+	LevelIndexMaskOffsetHelperSP::rebuild<SPX86SimdModLinearMask::kernelType, OperationMultipleEvalVectorizedSP>(this);
 }
 
 double OperationMultipleEvalIterativeSPX86SimdModLinearMask::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)

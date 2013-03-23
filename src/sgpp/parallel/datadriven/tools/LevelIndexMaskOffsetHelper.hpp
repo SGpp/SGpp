@@ -25,7 +25,10 @@ namespace parallel
 // storage_
 //
 // if these members are not visible, add the following lines (for each KernelType to
-// support one line) to the class definition of the classes you want to use this helper with.
+// support one line) to the class definition of the classes (NameOfClass) you want
+// to use this helper with. When you have all the fields defined in a superclass, using
+// this superclass as template parameter (and only adding the friend struct ... there)
+// avoids writing too much boilerplate code.
 // friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, NameOfClass>;
 // friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, NameOfClass>;
 
