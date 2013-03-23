@@ -10,9 +10,7 @@
 #define OPERATIONMULTIPLEEVALITERATIVE_H
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "base/grid/GridStorage.hpp"
 #include "base/tools/AlignedMemory.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg{
@@ -35,28 +33,16 @@ public:
 	 */
 	OperationMultipleEvalIterative(base::GridStorage *storage, base::DataMatrix *dataset,
 								   int gridFrom, int gridTo, int datasetFrom, int datasetTo):
-							   OperationMultipleEvalVectorized(dataset)
+							   OperationMultipleEvalVectorized(storage, dataset)
 	{
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 		m_datasetFrom = datasetFrom;
 		m_datasetTo = datasetTo;
 
-	   this->storage = storage;
-
 	   this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 	   this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
 	   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	   myTimer = new sg::base::SGppStopwatch();
-	}
-
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalIterative()
-	{
-		delete myTimer;
 	}
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -70,7 +56,7 @@ public:
 		}
 #endif
 		double *openmp_startTime = (double *)aligned_malloc(threadCount*8*sizeof(double), SGPPMEMALIGNMENT); */
-		myTimer->start();
+		myTimer_->start();
 
 		#pragma omp parallel
 		{
@@ -115,12 +101,12 @@ public:
 		//std::cout << "Thread creation overhead: " << max << std::endl;
 		aligned_free(openmp_startTime);
 */
-		return myTimer->stop();
+		return myTimer_->stop();
 	}
 
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 	{
-		myTimer->start();
+		myTimer_->start();
 		result.setAll(0.0);
 
 		#pragma omp parallel
@@ -143,7 +129,7 @@ public:
 						dataset_->getNcols());
 		}
 
-		return myTimer->stop();
+		return myTimer_->stop();
 	}
 
 	virtual void rebuildLevelAndIndex()
@@ -151,10 +137,10 @@ public:
 		delete this->level_;
 		delete this->index_;
 
-		this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-		this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+		this->level_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
+		this->index_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-		storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 	}
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo)
@@ -162,13 +148,6 @@ public:
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 	}
-
-protected:
-	/// Pointer to the grid's GridStorage object
-	sg::base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
-
 };
 
 }

@@ -10,8 +10,6 @@
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "parallel/datadriven/basis/common/OCLKernels.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -59,10 +57,6 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's gridstorage object
-	base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 };

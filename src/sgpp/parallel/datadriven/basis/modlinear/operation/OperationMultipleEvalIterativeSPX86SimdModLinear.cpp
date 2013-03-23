@@ -17,26 +17,18 @@ namespace parallel
 
 OperationMultipleEvalIterativeSPX86SimdModLinear::OperationMultipleEvalIterativeSPX86SimdModLinear(
 		sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset,
-		int gridFrom, int gridTo, int datasetFrom, int datasetTo) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
+		int gridFrom, int gridTo, int datasetFrom, int datasetTo) :
+	sg::parallel::OperationMultipleEvalVectorizedSP(storage, dataset)
 {
 	m_gridFrom = gridFrom;
 	m_gridTo = gridTo;
 	m_datasetFrom = datasetFrom;
 	m_datasetTo = datasetTo;
 
-	this->storage = storage;
-
 	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	myTimer = new sg::base::SGppStopwatch();
-}
-
-OperationMultipleEvalIterativeSPX86SimdModLinear::~OperationMultipleEvalIterativeSPX86SimdModLinear()
-{
-	delete myTimer;
 }
 
 void OperationMultipleEvalIterativeSPX86SimdModLinear::rebuildLevelAndIndex()
@@ -44,10 +36,10 @@ void OperationMultipleEvalIterativeSPX86SimdModLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
 void OperationMultipleEvalIterativeSPX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
@@ -58,7 +50,7 @@ void OperationMultipleEvalIterativeSPX86SimdModLinear::updateGridComputeBoundari
 
 double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
-    myTimer->start();
+	myTimer_->start();
     result.setAll(0.0);
 
 	#pragma omp parallel
@@ -70,12 +62,12 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multTransposeVectorized
 		SPX86SimdModLinear::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
 	}
 
-	return myTimer->stop();
+	return myTimer_->stop();
 }
 
 double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
-    myTimer->start();
+	myTimer_->start();
 	result.setAll(0.0);
 
 	#pragma omp parallel
@@ -87,7 +79,7 @@ double OperationMultipleEvalIterativeSPX86SimdModLinear::multVectorized(sg::base
 		SPX86SimdModLinear::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
 	}
 
-	return myTimer->stop();
+	return myTimer_->stop();
 }
 
 }

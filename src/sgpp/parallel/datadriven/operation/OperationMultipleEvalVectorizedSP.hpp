@@ -8,9 +8,9 @@
 #ifndef OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP
 
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
 #include "base/operation/OperationMatrix.hpp"
+#include "base/grid/GridStorage.hpp"
+#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -29,6 +29,8 @@ namespace parallel
 class OperationMultipleEvalVectorizedSP
 {
 protected:
+	/// Pointer to the grid's GridStorage object
+	sg::base::GridStorage* storage_;
 	/// Pointer to the dataset that should be evaluated on the grid
 	sg::base::DataMatrixSP* dataset_;
 	/// Member to store the sparse grid's levels for better vectorization
@@ -39,6 +41,8 @@ protected:
 	sg::base::DataMatrixSP* mask_;
 	/// Member to store offsets per grid point for better vecotrization of modlinear operations
     sg::base::DataMatrixSP* offset_;
+	/// Timer object to handle time measurements
+	sg::base::SGppStopwatch* myTimer_;
 
 	int m_gridFrom;
 	int m_gridTo;
@@ -51,32 +55,14 @@ public:
 	 *
 	 * @param dataset data set that should be evaluated on the sparse grid
 	 */
-	OperationMultipleEvalVectorizedSP(sg::base::DataMatrixSP* dataset) {
-		this->dataset_ = dataset;
-		this->level_ = NULL;
-		this->index_ = NULL;
-		this->mask_ = NULL;
-		this->offset_ = NULL;
-	}
+	OperationMultipleEvalVectorizedSP(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
 
 	/**
 	 * Destructor
 	 *
 	 * cleans up level_ and index_ members
 	 */
-	virtual ~OperationMultipleEvalVectorizedSP() {
-		if (this->level_ != NULL)
-			delete this->level_;
-
-		if (this->index_ != NULL)
-			delete this->index_;
-
-		if (this->mask_ != NULL)
-		    delete this->mask_;
-		    
-		if (this->offset_ != NULL)
-		    delete this->offset_;
-	}
+	virtual ~OperationMultipleEvalVectorizedSP();
 
 	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
@@ -111,7 +97,7 @@ public:
 	virtual void rebuildLevelAndIndex() = 0;
 
 	/**
-	 * @brief updates the compute boundaries for the grid, after this has been resized
+	 * @brief updates the compute boundaries for the grid, call this method after the grid has been resized
 	 *
 	 * @todo for now, the default implementation does nothing. perhaps remove default implementation.
 	 * it would be an idea to integrate this with rebuildLevelAndIndex

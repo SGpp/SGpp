@@ -11,8 +11,6 @@
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "parallel/datadriven/basis/common/OCLKernels.hpp"
 #include "parallel/tools/TwoPartitionAutoTuning.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -59,10 +57,6 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 protected:
-	/// Pointer to the grid's gridstorage object
-	sg::base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 	/// Autotuning object for mult routine

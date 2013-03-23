@@ -13,22 +13,20 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPOCLLinear::OperationMultipleEvalIterativeSPOCLLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPOCLLinear::OperationMultipleEvalIterativeSPOCLLinear(
+		sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) :
+	sg::parallel::OperationMultipleEvalVectorizedSP(storage, dataset)
 {
-	this->storage = storage;
+	this->level_ = new sg::base::DataMatrixSP(this->storage_->size(), this->storage_->dim());
+	this->index_ = new sg::base::DataMatrixSP(this->storage_->size(), this->storage_->dim());
 
-	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 }
 
 OperationMultipleEvalIterativeSPOCLLinear::~OperationMultipleEvalIterativeSPOCLLinear()
 {
-	delete myTimer;
 	delete myOCLKernels;
 }
 
@@ -37,10 +35,10 @@ void OperationMultipleEvalIterativeSPOCLLinear::rebuildLevelAndIndex()
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
 }
@@ -48,8 +46,8 @@ void OperationMultipleEvalIterativeSPOCLLinear::rebuildLevelAndIndex()
 double OperationMultipleEvalIterativeSPOCLLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0f);
 
@@ -100,8 +98,8 @@ double OperationMultipleEvalIterativeSPOCLLinear::multTransposeVectorized(sg::ba
 double OperationMultipleEvalIterativeSPOCLLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0f);
 
