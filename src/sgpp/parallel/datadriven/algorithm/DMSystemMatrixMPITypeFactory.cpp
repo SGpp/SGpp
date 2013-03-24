@@ -21,7 +21,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv.hpp"
-//#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
 #include <cstring>
@@ -63,11 +63,11 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<KernelImplementation>(
 					grid, trainDataset, lambda, vecType);
 		break;
-	/*case MPIOnesided:
+	case MPIOnesided:
 		parallelizationType = "Onesided Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<KernelImplementation>(
-	grid, trainDataset, lambda, vecType);
-		break;*/
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOnesidedMPI<KernelImplementation>(
+					grid, trainDataset, lambda, vecType);
+		break;
 	case MPINone:
 		parallelizationType = "No MPI Implementation is used.";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentity(grid, trainDataset, lambda, vecType);
