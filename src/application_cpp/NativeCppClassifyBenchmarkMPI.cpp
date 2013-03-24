@@ -405,7 +405,7 @@ void printHelp(){
     std::cout << "	CG epsilon, first refinement steps" << std::endl;
 	std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
 	std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl << std::endl << std::endl;
-	std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync; " << std::endl;
+	std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync, TrueAsyncAlltoallv; " << std::endl;
     std::cout << "Example call:" << std::endl;
     std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD" << std::endl << std::endl << std::endl;
 }
@@ -546,6 +546,10 @@ int main(int argc, char *argv[])
 		else if(mpiConfValue == "TrueAsync")
 		{
 			mpiType = sg::parallel::MPITrueAsync;
+		}
+		else if(mpiConfValue == "TrueAsyncAlltoallv")
+		{
+			mpiType = sg::parallel::MPITrueAsyncAlltoallv;
 		}
 		else if(mpiConfValue == "Onesided")
 		{
