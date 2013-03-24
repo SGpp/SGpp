@@ -47,8 +47,8 @@ namespace parallel
   double OperationMultipleEvalIterativeSPOCLModLinear::multTransposeVectorized(base::DataVectorSP& source, base::DataVectorSP& result)
   {
     size_t source_size = source.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0);
 
@@ -107,8 +107,8 @@ namespace parallel
   double OperationMultipleEvalIterativeSPOCLModLinear::multVectorized(base::DataVectorSP& alpha, base::DataVectorSP& result)
   {
     size_t result_size = result.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0f);
 
