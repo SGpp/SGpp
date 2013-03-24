@@ -226,7 +226,7 @@ public:
 			std::cout << "Communication error (waitall gridrecvreqs)" << std::endl;
 			throw new sg::base::operation_exception("Communication error!");
 		}
-		if(MPI_Waitall(_chunkCountGrid, gridSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
+		if(MPI_Waitall(_mpi_grid_sizes_global[mpi_myrank] * mpi_size, gridSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
 			std::cout << "Communication error (waitall gridsendreqs)" << std::endl;
 			throw new sg::base::operation_exception("Communication error!");
 		}
