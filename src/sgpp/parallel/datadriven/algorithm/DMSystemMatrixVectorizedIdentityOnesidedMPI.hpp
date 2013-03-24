@@ -166,16 +166,6 @@ public:
 			MPI_Win_fence(0, _mpi_data_windows[rank]);
 		}
 
-		/* setup MPI_Requests, tags and post receives for data */
-		MPI_Request dataRecvReqs[_chunkCountData]; //allocating a little more than necessary, otherwise complicated index computations needed
-		int tagsData[_chunkCountData];
-		for (int i = 0; i<_chunkCountData; i++){
-			tagsData[i] = _mpi_data_offsets[i]*2 + 2;
-		}
-		sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrTemp, _mpi_data_sizes_global, _mpi_data_offsets_global, _mpi_data_sizes, _mpi_data_offsets, tagsData, _chunkCountData, dataRecvReqs);
-
-		MPI_Request dataSendReqs[_mpi_data_sizes_global[mpi_myrank] * mpi_size];
-
 		this->myTimer_->start();
 		#pragma omp parallel
 		{
@@ -209,37 +199,23 @@ public:
 				for(int rank = 0; rank<mpi_size; rank++){
 					MPI_Put(&ptrTemp[start], _mpi_data_sizes[chunkIndex], MPI_DOUBLE, rank, start - _mpi_data_offsets[myDataChunkStart], _mpi_data_sizes[chunkIndex], MPI_DOUBLE, _mpi_data_windows[myGlobalMPIComm->getMyRank()]);
 				}
-				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrTemp[start], _mpi_data_sizes[chunkIndex], tagsData[chunkIndex], &dataSendReqs[(chunkIndex - myDataChunkStart)*mpi_size]);
 			}
 
+// this barrier is absolutely necessary, as it guarantees that all
+// put-calls from all threads have been made. This is required as a MPI_Win_fence
+// follows. If that fence is called before one or more threads have not finished their
+// loop (which is very likely), the put won't be taken into account for the
+// synchronization.
+#pragma omp barrier
 #pragma omp single
 			{
-				double computationTime = this->myTimer_->stop();
-				this->computeTimeMult_ += computationTime;
-				if(MPI_Waitall(_chunkCountData, dataRecvReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS){
-					std::cout << "errors in communication" << std::endl;
-				}
+				this->computeTimeMult_ += this->myTimer_->stop();
+
 				for (int rank = 0; rank < mpi_size; rank++){
 					MPI_Win_fence(0, _mpi_data_windows[rank]);
 				}
-				for(int i = 0; i<temp.getSize(); i++){
-					if(temp.get(i) != _mpi_data_windows_buffer->get(i)) {
-						if(myGlobalMPIComm->getMyRank() == 0){
-							std::cout << "different results in data buffers!!!" << i << ": "
-									  << temp.get(i) << " != " << _mpi_data_windows_buffer->get(i)<< std::endl;
-						}
-					}
-				}
-				temp.copyFrom(*_mpi_data_windows_buffer);
 
-				// we don't really need to wait for the sends to
-				// finish as we don't need (in particular not modify) temp
-				// advantage: it's a lot faster like this
-//				if(MPI_Waitall(_mpi_data_sizes_global[mpi_myrank] * mpi_size, dataSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS){
-//					std::cout << "errors in communication (send)" << std::endl;
-//				}
-				double completeTime = this->myTimer_->stop();
-				this->completeTimeMult_ += completeTime;
+				this->completeTimeMult_ += this->myTimer_->stop();
 				this->myTimer_->start();
 
 			} //implicit OpenMP barrier here
@@ -259,7 +235,7 @@ public:
 						this->mask_,
 						this->offset_,
 						this->dataset_,
-						temp,
+						*_mpi_data_windows_buffer,
 						result,
 						start,
 						end,
