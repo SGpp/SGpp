@@ -327,13 +327,6 @@ public:
 			myClasses.resizeZero(this->numPatchedTrainingInstances_);
 		}
 
-		MPI_Request gridRecvReqs[_chunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
-		int tags[_chunkCountGrid];
-		for(int i = 0; i<_chunkCountGrid; i++){
-			tags[i] = _mpi_grid_offsets[i]+1;
-		}
-		sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrB, _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, tags, _chunkCountGrid, gridRecvReqs);
-		MPI_Request gridSendReqs[mpi_size * _mpi_grid_sizes_global[mpi_myrank]];
 #pragma omp parallel
 		{
 			size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
@@ -358,33 +351,16 @@ public:
 							end,
 							0,
 							this->numPatchedTrainingInstances_);
-				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrB[start], _mpi_grid_sizes[thread_chunk], start+1, &gridSendReqs[(thread_chunk - myGridChunkStart)*mpi_size]);
 				for(int rank = 0; rank<mpi_size; rank++){
 					MPI_Put(&ptrB[start], _mpi_grid_sizes[thread_chunk], MPI_DOUBLE, rank, start - _mpi_grid_offsets[myGridChunkStart], _mpi_grid_sizes[thread_chunk], MPI_DOUBLE, _mpi_grid_windows[myGlobalMPIComm->getMyRank()]);
 				}
 			}
 		}
-		MPI_Status stats[_chunkCountGrid];
-		if(MPI_Waitall(_chunkCountGrid, gridRecvReqs, stats) != MPI_SUCCESS) {
-			std::cout << "communication error (recvReqs) in generateB" << std::endl;
-			throw new sg::base::operation_exception("COmmunication Error");
-		}
-		if(MPI_Waitall(mpi_size * _mpi_grid_sizes_global[mpi_myrank], gridSendReqs, stats) != MPI_SUCCESS) {
-			std::cout << "communication error (sendReqs) in generateB" << std::endl;
-			throw new sg::base::operation_exception("COmmunication Error");
-		}
+
 		for (int rank = 0; rank < mpi_size; rank++){
 			MPI_Win_fence(0, _mpi_grid_windows[rank]);
 		}
-		for(int i = 0; i<b.getSize(); i++){
-			if(b.get(i) != _mpi_grid_windows_buffer->get(i)) {
-				if(myGlobalMPIComm->getMyRank() == 0){
-					std::cout << "different results in buffers!!!" << i << ": "
-							  << b.get(i) << " != " << _mpi_grid_windows_buffer->get(i)<< std::endl;
-				}
-			}
-		}
-
+		b.copyFrom(*_mpi_grid_windows_buffer);
 	}
 
 	virtual void rebuildLevelAndIndex(){
