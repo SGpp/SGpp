@@ -20,10 +20,10 @@ class DMSystemMatrixMPITypeFactory
 {
 private:
 	template<typename Kernel>
-	static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType);
+	static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
 
 public:
-	static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType);
+	static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
 
 };
 
