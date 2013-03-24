@@ -23,7 +23,12 @@ namespace parallel
 {
 
 LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression, const bool verbose)
-	: sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType)
+	: sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone)
+{
+}
+
+LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool verbose):
+	sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType)
 {
 }
 
@@ -48,7 +53,7 @@ sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg
 #ifndef USE_MPI
     return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 #else
-	return sg::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(*(this->grid_), trainDataset, lambda, this->vecType_);
+	return sg::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(*(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
 #endif
 }
 
