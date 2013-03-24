@@ -174,15 +174,7 @@ public:
 		}
 		sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrTemp, _mpi_data_sizes_global, _mpi_data_offsets_global, _mpi_data_sizes, _mpi_data_offsets, tagsData, _chunkCountData, dataRecvReqs);
 
-		/* setup MPI_Requests, tags and post receives for grid */
-		MPI_Request gridRecvReqs[_chunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
-		int tagsGrid[_chunkCountGrid];
-		for (int i = 0; i<_chunkCountGrid; i++){
-			tagsGrid[i] = _mpi_grid_offsets[i]*2 + 3;
-		}
-		sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrResult, _mpi_grid_sizes_global, _mpi_grid_offsets_global, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, _chunkCountGrid, gridRecvReqs);
 		MPI_Request dataSendReqs[_mpi_data_sizes_global[mpi_myrank] * mpi_size];
-		MPI_Request gridSendReqs[_mpi_grid_sizes_global[mpi_myrank] * mpi_size];
 
 		this->myTimer_->start();
 		#pragma omp parallel
@@ -276,34 +268,15 @@ public:
 				for(int rank = 0; rank<mpi_size; rank++){
 					MPI_Put(&ptrResult[start], _mpi_grid_sizes[thread_chunk], MPI_DOUBLE, rank, start - _mpi_grid_offsets[myGridChunkStart], _mpi_grid_sizes[thread_chunk], MPI_DOUBLE, _mpi_grid_windows[myGlobalMPIComm->getMyRank()]);
 				}
-				sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[start], _mpi_grid_sizes[thread_chunk], tagsGrid[thread_chunk], &gridSendReqs[(thread_chunk - myGridChunkStart)*mpi_size]);
 			}
 		}
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 
-		MPI_Status gridRecsStats[_chunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
-		if(MPI_Waitall(_chunkCountGrid, gridRecvReqs, gridRecsStats) != MPI_SUCCESS) {
-			std::cout << "Communication error (waitall gridrecvreqs)" << std::endl;
-			throw new sg::base::operation_exception("Communication error!");
-		}
-		if(MPI_Waitall(_mpi_grid_sizes_global[mpi_myrank] * mpi_size, gridSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
-			std::cout << "Communication error (waitall gridsendreqs)" << std::endl;
-			throw new sg::base::operation_exception("Communication error!");
-		}
-
 		for (int rank = 0; rank < mpi_size; rank++){
 			MPI_Win_fence(0, _mpi_grid_windows[rank]);
 		}
-		for(int i = 0; i<result.getSize(); i++){
-			if(result.get(i) != _mpi_grid_windows_buffer->get(i)) {
-				if(myGlobalMPIComm->getMyRank() == 0){
-					std::cout << "different results in result buffers!!!" << i << ": "
-							  << result.get(i) << " != " << _mpi_grid_windows_buffer->get(i)<< std::endl;
-				}
-			}
-		}
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
-
+		result.copyFrom(*_mpi_grid_windows_buffer);
 		result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 		if (mpi_myrank == 0) std::cout << "*";
 	} //end mult
