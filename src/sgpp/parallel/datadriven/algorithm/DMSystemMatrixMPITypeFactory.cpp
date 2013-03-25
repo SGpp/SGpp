@@ -22,6 +22,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
+//#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI_single.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
 #include <cstring>
