@@ -106,7 +106,6 @@ public:
 					data_offset + data_size);
 		}
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
-		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Allreduce(this->result_tmp->getPointer(), result.getPointer(), result.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 
