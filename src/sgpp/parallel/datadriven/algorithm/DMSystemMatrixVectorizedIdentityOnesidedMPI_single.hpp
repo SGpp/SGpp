@@ -62,19 +62,14 @@ public:
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
 		/* calculate distribution of data */
-		calculateChunkCountData();
-		_mpi_data_sizes = new int[_chunkCountData];
-		_mpi_data_offsets = new int[_chunkCountData];
-		_mpi_data_sizes_global = new int[mpi_size];
-		_mpi_data_offsets_global = new int[mpi_size];
-		sg::parallel::PartitioningTool::calcDistribution(this->numPatchedTrainingInstances_, _chunkCountData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
-		sg::parallel::PartitioningTool::calcDistribution(_chunkCountData, mpi_size, _mpi_data_sizes_global, _mpi_data_offsets_global, 1);
+		_chunkCountPerProcData = 32;//getMinChunkCount();
+		_mpi_data_sizes = new int[_chunkCountPerProcData*mpi_size];
+		_mpi_data_offsets = new int[_chunkCountPerProcData*mpi_size];
+		PartitioningTool::calcMPIChunkedDistribution(this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
 			std::cout << "Max size per chunk Data: " << _mpi_data_sizes[0] << std::endl;
 		}
 
-		_mpi_grid_sizes_global = new int[mpi_size];
-		_mpi_grid_offsets_global = new int[mpi_size];
 		_mpi_grid_sizes = NULL; // allocation in rebuildLevelAndIndex();
 		_mpi_grid_offsets = NULL; // allocation in rebuildLevelAndIndex();
 		rebuildLevelAndIndex();
@@ -117,12 +112,8 @@ public:
 		delete[] this->_mpi_grid_offsets;
 		delete[] this->_mpi_data_sizes;
 		delete[] this->_mpi_data_offsets;
-
-		delete[] this->_mpi_grid_sizes_global;
-		delete[] this->_mpi_grid_offsets_global;
-		delete[] this->_mpi_data_sizes_global;
-		delete[] this->_mpi_data_offsets_global;
 		MPI_Win_free(&_mpi_data_window);
+		MPI_Win_free(&_mpi_grid_window);
 	}
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
@@ -135,7 +126,6 @@ public:
 		double* ptrResult = result.getPointer();
 		double* ptrTemp = temp.getPointer();
 
-		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
 		MPI_Win_fence(0, _mpi_grid_window);
@@ -144,8 +134,8 @@ public:
 		this->myTimer_->start();
 		#pragma omp parallel
 		{
-			size_t myDataChunkStart = _mpi_data_offsets_global[mpi_myrank];
-			size_t myDataChunkEnd = myDataChunkStart + _mpi_data_sizes_global[mpi_myrank];
+			size_t myDataChunkStart = mpi_myrank*_chunkCountPerProcData;
+			size_t myDataChunkEnd = (mpi_myrank+1)*_chunkCountPerProcData;
 			size_t threadStart, threadEnd;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					myDataChunkStart, myDataChunkEnd,
@@ -191,8 +181,8 @@ public:
 
 			} //implicit OpenMP barrier here
 
-			size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
-			size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+			size_t myGridChunkStart = mpi_myrank*_chunkCountPerProcGrid;
+			size_t myGridChunkEnd = (mpi_myrank+1)*_chunkCountPerProcGrid;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					myGridChunkStart, myGridChunkEnd, &threadStart, &threadEnd, 1);
 
@@ -243,8 +233,8 @@ public:
 
 #pragma omp parallel
 		{
-			size_t myGridChunkStart = _mpi_grid_offsets_global[mpi_myrank];
-			size_t myGridChunkEnd = myGridChunkStart + _mpi_grid_sizes_global[mpi_myrank];
+			size_t myGridChunkStart = mpi_myrank*_chunkCountPerProcGrid;
+			size_t myGridChunkEnd = (mpi_myrank+1)*_chunkCountPerProcGrid;
 			size_t threadStart, threadEnd;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
 					myGridChunkStart, myGridChunkEnd, &threadStart, &threadEnd, 1);
@@ -282,13 +272,13 @@ public:
 		if(_mpi_grid_offsets != NULL){
 			delete[] _mpi_grid_offsets;
 		}
+		int mpi_size = myGlobalMPIComm->getNumRanks();
 
-		/* calculate distribution of grid */
-		calculateChunkCountGrid();
-		_mpi_grid_sizes = new int[_chunkCountGrid];
-		_mpi_grid_offsets = new int[_chunkCountGrid];
-		sg::parallel::PartitioningTool::calcDistribution(this->storage_->size(), _chunkCountGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
-		sg::parallel::PartitioningTool::calcDistribution(_chunkCountGrid, sg::parallel::myGlobalMPIComm->getNumRanks(), _mpi_grid_sizes_global, _mpi_grid_offsets_global, 1);
+		_chunkCountPerProcGrid = 32;//getMinChunkCount(); // change this perhaps
+
+		_mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
+		_mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
+		PartitioningTool::calcMPIChunkedDistribution(this->storage_->size(), _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 		createAndInitGridBuffers();
 	}
 
@@ -301,17 +291,9 @@ private:
 	int * _mpi_data_sizes;
 	int * _mpi_data_offsets;
 
-	/// which chunks belong to which process
-	int * _mpi_data_sizes_global;
-	int * _mpi_data_offsets_global;
-
-	/// which chunks belong to which process
-	int * _mpi_grid_sizes_global;
-	int * _mpi_grid_offsets_global;
-
 	/// into how many chunks should data and grid be partitioned
-	size_t _chunkCountData;
-	size_t _chunkCountGrid;
+	size_t _chunkCountPerProcData;
+	size_t _chunkCountPerProcGrid;
 
 	/// MPI windows
 	sg::base::DataVector* _mpi_grid_window_buffer;
@@ -319,35 +301,7 @@ private:
 	MPI_Win _mpi_grid_window;
 	MPI_Win _mpi_data_window;
 
-#define APPROXCHUNKSIZEGRID_ASYNC 20 // approximately how many blocks should be computed for the grid before sending
-#define APPROXCHUNKSIZEDATA_ASYNC 150 // approximately how many blocks should be computed for the data before sending
-
-	void calculateChunkCountGrid() {
-		_chunkCountGrid = this->storage_->size()/APPROXCHUNKSIZEGRID_ASYNC;
-		_chunkCountGrid = std::max<size_t>(_chunkCountGrid, getMinChunkCount());
-		int chunkSize =
-				static_cast<int>(
-					std::ceil(
-						static_cast<double>(this->storage_->size())/static_cast<double>(_chunkCountGrid)
-						)
-					);
-		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-			std::cout << "Number of chunks Grid: " << _chunkCountGrid << std::endl;
-			std::cout << "Max size per chunk Grid: " << chunkSize << std::endl;
-		}
-	}
-
-	void calculateChunkCountData() {
-		size_t blockCount = this->numPatchedTrainingInstances_/sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_); // this process has (in total) blockCountData blocks of Data to process
-		_chunkCountData = blockCount/APPROXCHUNKSIZEDATA_ASYNC;
-		_chunkCountData = std::max<size_t>(_chunkCountData, getMinChunkCount());
-		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-			std::cout << "Number of chunks Data: " << _chunkCountData << std::endl;
-		}
-	}
-
-	size_t getMinChunkCount(){
-		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+	size_t getMinChunkCountPerProc(){
 		size_t thread_count = 1;
 #ifdef _OPENMP
 #pragma omp parallel
@@ -359,7 +313,6 @@ private:
 		// every process should have at least thread_count chunks,
 		// such that every thread has at least one chunk
 		return mpi_size * thread_count;
-
 	}
 };
 

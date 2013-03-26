@@ -120,7 +120,6 @@ public:
 			MPI_Irecv(&ptrResult[_mpi_grid_offsets[rank]], _mpi_grid_sizes[rank], MPI_DOUBLE, rank, tagsGrid[rank], MPI_COMM_WORLD, &gridRecvReqs[rank]);
 		}
 
-		MPI_Barrier(MPI_COMM_WORLD);
 		this->myTimer_->start();
 
 		size_t dataProcessChunkStart = _mpi_data_offsets[mpi_myrank];
