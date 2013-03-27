@@ -20,9 +20,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv.hpp"
-//#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI_single.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
 #include <cstring>
@@ -57,11 +55,6 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 	case MPITrueAsync:
 		parallelizationType = "True Asynchronous Communication";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
-					grid, trainDataset, lambda, vecType);
-		break;
-	case MPITrueAsyncAlltoallv:
-		parallelizationType = "True Asynchronous Communication with alltoall end";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<KernelImplementation>(
 					grid, trainDataset, lambda, vecType);
 		break;
 	case MPIOnesided:

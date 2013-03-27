@@ -4,8 +4,8 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Roman Karlstetter (karlstetter@mytum.de)
-#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_HPP
-#define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_HPP
+#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H
+#define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H
 
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
@@ -106,20 +106,6 @@ public:
 			MPI_Irecv(&ptrTemp[_mpi_data_offsets[rank]], _mpi_data_sizes[rank], MPI_DOUBLE, rank, tagsData[rank], MPI_COMM_WORLD, &dataRecvReqs[rank]);
 		}
 
-		MPI_Request gridSendReqs[mpi_size];
-		MPI_Request gridRecvReqs[mpi_size]; //allocating a little more than necessary, otherwise complicated index computations needed
-		int tagsGrid[mpi_size];
-		for (int i = 0; i<mpi_size; i++){
-			tagsGrid[i] = _mpi_grid_offsets[i]*2 + 3;
-		}
-		for(int rank = 0; rank <mpi_size; rank++){
-			if(rank == mpi_myrank){
-				gridRecvReqs[rank] = MPI_REQUEST_NULL;
-				continue;
-			}
-			MPI_Irecv(&ptrResult[_mpi_grid_offsets[rank]], _mpi_grid_sizes[rank], MPI_DOUBLE, rank, tagsGrid[rank], MPI_COMM_WORLD, &gridRecvReqs[rank]);
-		}
-
 		this->myTimer_->start();
 
 		size_t dataProcessChunkStart = _mpi_data_offsets[mpi_myrank];
@@ -150,7 +136,6 @@ public:
 						alpha.getSize(),
 						threadStartData,
 						threadEndData);
-
 			// patch result -> set additional entries zero
 			// only done for processes that need this part of the temp data for multTrans
 			for (size_t i = std::max<size_t>(this->numTrainingInstances_, threadStartData); i < threadEndData; i++)
@@ -187,7 +172,7 @@ public:
 
 
 			// after this, we receive the temp chunks from all the other processes and do the calculations for them
-			while (true) { 
+			while (true) {
 #pragma omp single
 				{
 					MPI_Waitany(sg::parallel::myGlobalMPIComm->getNumRanks(), dataRecvReqs, &idx, MPI_STATUS_IGNORE);
@@ -221,13 +206,9 @@ public:
 			}
 		}
 		// send result of this process to all other processes
-		sg::parallel::myGlobalMPIComm->IsendToAll(&ptrResult[gridProcessChunkStart], _mpi_grid_sizes[mpi_myrank],
-												  tagsGrid[mpi_myrank], gridSendReqs);
 
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
-
-		MPI_Waitall(mpi_size, gridSendReqs, MPI_STATUSES_IGNORE);
-		MPI_Waitall(mpi_size, gridRecvReqs, MPI_STATUSES_IGNORE);
+		sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 		MPI_Pcontrol(-1, complete);
 
@@ -266,8 +247,6 @@ public:
 						0,
 						this->numPatchedTrainingInstances_);
 		}
-
-
 		sg::parallel::myGlobalMPIComm->dataVectorAllToAll(b, _mpi_grid_offsets, _mpi_grid_sizes);
 	}
 
@@ -275,6 +254,7 @@ public:
 		DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>::rebuildLevelAndIndex();
 
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+
 		sg::parallel::PartitioningTool::calcDistribution(this->storage_->size(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
 	}
 };
@@ -282,4 +262,4 @@ public:
 }
 }
 
-#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_HPP
+#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H
