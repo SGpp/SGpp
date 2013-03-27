@@ -108,10 +108,6 @@ public:
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 		MPI_Allreduce(this->result_tmp->getPointer(), result.getPointer(), result.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
-
-//		if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-//			std::cout << "*";
-//		}
 	}
 
 	virtual void generateb(base::DataVector &classes, base::DataVector &b){
