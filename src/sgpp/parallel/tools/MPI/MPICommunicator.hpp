@@ -191,6 +191,7 @@ public:
 
 	void IsendToAll(double* ptr, size_t size, int tag, MPI_Request *reqs);
 	void IrecvFromAll(double* ptr, int* global_sizes, int* global_offsets, int* sizes, int* offsets, int *tag, int chunkCount, MPI_Request *dataRecvRequests);
+	void IrecvFromAll(double* ptr, int chunkSizePerProc, int* sizes, int* offsets, int *tag, MPI_Request *dataRecvRequests);
 
 	void putToAll(double* ptr, int winOffset, int count, MPI_Win win);
 	void putToAllInplace(MPI_Win win, int winOffset, int count);
