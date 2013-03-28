@@ -197,6 +197,20 @@ void MPICommunicator::IrecvFromAll(double *ptr, int *global_sizes, int *global_o
 	}
 }
 
+void MPICommunicator::IrecvFromAll(double *ptr, int chunkSizePerProc, int *sizes, int *offsets, int *tag, MPI_Request *dataRecvRequests)
+{
+	for(int rank = 0; rank<getNumRanks(); rank++){
+		for(int i = 0; i<chunkSizePerProc; i++){
+			int reqIdx = rank*chunkSizePerProc + i;
+			if(rank == getMyRank()){
+				dataRecvRequests[reqIdx] = MPI_REQUEST_NULL;
+			} else {
+				MPI_Irecv(&ptr[offsets[reqIdx]], sizes[reqIdx], MPI_DOUBLE, rank, tag[reqIdx], MPI_COMM_WORLD, &dataRecvRequests[reqIdx]);
+			}
+		}
+	}
+}
+
 void MPICommunicator::putToAll(double* ptr, int winOffset, int count, MPI_Win win)
 {
 	for(int i = 0; i<getNumRanks(); i++){

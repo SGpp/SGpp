@@ -236,7 +236,7 @@ public:
 
 #pragma omp parallel
 		{
-			size_t myGridChunkStart = mpi_myrank*_chunkCountPerProcGrid;
+			size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
 			size_t myGridChunkEnd = (mpi_myrank+1)*_chunkCountPerProcGrid;
 			size_t threadStart, threadEnd;
 			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(
