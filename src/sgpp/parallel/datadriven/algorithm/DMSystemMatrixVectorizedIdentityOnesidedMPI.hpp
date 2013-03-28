@@ -62,7 +62,7 @@ public:
 		int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
 		/* calculate distribution of data */
-		_chunkCountPerProcData = 32;//getMinChunkCount();
+		_chunkCountPerProcData = getMinChunkCountPerProc();
 		_mpi_data_sizes = new int[_chunkCountPerProcData*mpi_size];
 		_mpi_data_offsets = new int[_chunkCountPerProcData*mpi_size];
 		PartitioningTool::calcMPIChunkedDistribution(this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
@@ -89,7 +89,7 @@ public:
 
 		MPI_Win_create(_mpi_grid_window_buffer->getPointer(), this->storage_->size()*sizeof(double),
 					   sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_grid_window);
-		MPI_Win_fence(0, _mpi_grid_window);
+		MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_grid_window);
 	}
 
 	void createAndInitDataBuffers(){
@@ -101,7 +101,7 @@ public:
 		_mpi_data_window_buffer = new sg::base::DataVector(this->numPatchedTrainingInstances_);
 		MPI_Win_create(_mpi_data_window_buffer->getPointer(), this->numPatchedTrainingInstances_*sizeof(double),
 					   sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_data_window);
-		MPI_Win_fence(0, _mpi_data_window);
+		MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_data_window);
 	}
 
 	/**
@@ -128,8 +128,9 @@ public:
 
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-		MPI_Win_fence(0, _mpi_grid_window);
-		MPI_Win_fence(0, _mpi_data_window);
+		// we expect that there were no RMA calls before this line
+		MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_grid_window);
+		MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_data_window);
 
 		this->myTimer_->start();
 		#pragma omp parallel
@@ -174,7 +175,10 @@ public:
 			{
 				this->computeTimeMult_ += this->myTimer_->stop();
 
-				MPI_Win_fence(0, _mpi_data_window);
+				// we expect that there is not put to the buffer after this line
+				// and we did no store to the buffer locally (only via put to the same proc)
+				// and there won't be RMA calls until the next fence
+				MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_data_window);
 
 				this->completeTimeMult_ += this->myTimer_->stop();
 				this->myTimer_->start();
@@ -207,11 +211,10 @@ public:
 		}
 		this->computeTimeMultTrans_ += this->myTimer_->stop();
 
-		MPI_Win_fence(0, _mpi_grid_window);
+		MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_grid_window);
 		this->completeTimeMultTrans_ += this->myTimer_->stop();
 		result.copyFrom(*_mpi_grid_window_buffer);
 		result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
-		if (mpi_myrank == 0) std::cout << "*";
 	} //end mult
 
 	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b){
@@ -219,7 +222,7 @@ public:
 		int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
 		_mpi_grid_window_buffer->setAll(0.0);
-		MPI_Win_fence(0, _mpi_grid_window);
+		MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_grid_window);
 
 		double* ptrB = b.getPointer();
 		b.setAll(0.0);
@@ -259,7 +262,7 @@ public:
 			}
 		}
 
-		MPI_Win_fence(0, _mpi_grid_window);
+		MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_grid_window);
 		b.copyFrom(*_mpi_grid_window_buffer);
 	}
 
@@ -274,7 +277,7 @@ public:
 		}
 		int mpi_size = myGlobalMPIComm->getNumRanks();
 
-		_chunkCountPerProcGrid = 32;//getMinChunkCount(); // change this perhaps
+		_chunkCountPerProcGrid = getMinChunkCountPerProc();
 
 		_mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
 		_mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
@@ -309,10 +312,9 @@ private:
 			thread_count = omp_get_num_threads();
 		}
 #endif
-
 		// every process should have at least thread_count chunks,
 		// such that every thread has at least one chunk
-		return mpi_size * thread_count;
+		return thread_count;
 	}
 };
 
