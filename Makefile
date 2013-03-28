@@ -16,8 +16,8 @@ SRCDIR=./../../../src/sgpp
 ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
 ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
-OCLINCLUDE = $(OPENCL_INCDIR)
-OCLLIB = $(OPENCL_LIBDIR)
+OCLINCLUDE = /usr/local/cude/include
+OCLLIB = /usr/lib64/
 # Intel OpenCL
 IOCLINCLUDE = /usr/include
 IOCLLIB = /usr/lib64/OpenCL/vendors/intel
