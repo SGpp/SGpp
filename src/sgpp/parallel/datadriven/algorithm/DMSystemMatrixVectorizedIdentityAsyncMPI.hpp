@@ -297,8 +297,10 @@ public:
 			delete[] _mpi_grid_offsets;
 		}
 		int mpi_size = myGlobalMPIComm->getNumRanks();
+		int sendChunkSize = 2;
+		int sizePerProc = this->storage_->size()/mpi_size;
+		_chunkCountPerProcGrid = sizePerProc/sendChunkSize;
 
-		_chunkCountPerProcGrid = getChunkCountPerProc()*10;
 		if(myGlobalMPIComm->getMyRank() == 0){
 			std::cout << "chunksperproc grid: " << _chunkCountPerProcGrid << "; total # chunks: " << _chunkCountPerProcGrid *mpi_size << std::endl;
 		}
