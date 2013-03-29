@@ -278,7 +278,13 @@ public:
 		int mpi_size = myGlobalMPIComm->getNumRanks();
 
 		_chunkCountPerProcGrid = getMinChunkCountPerProc();
+		int sendChunkSize = 2;
+		int sizePerProc = this->storage_->size()/mpi_size;
+		_chunkCountPerProcGrid = sizePerProc/sendChunkSize;
 
+		if(myGlobalMPIComm->getMyRank() == 0){
+			std::cout << "chunksperproc grid: " << _chunkCountPerProcGrid << "; total # chunks: " << _chunkCountPerProcGrid *mpi_size << std::endl;
+		}
 		_mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
 		_mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
 		PartitioningTool::calcMPIChunkedDistribution(this->storage_->size(), _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
