@@ -17,7 +17,7 @@ ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
 ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
 OCLINCLUDE = /usr/local/cuda/include
-OCLLIB = /usr/lib64
+OCLLIB = /usr/lib64/
 # Intel OpenCL
 IOCLINCLUDE = /usr/include
 IOCLLIB = /usr/lib64/OpenCL/vendors/intel
@@ -207,6 +207,58 @@ LFLAGS:=$(LFLAGS) /Qopenmp $(IOCLLIBWIN)
 endif
 endif
 
+ifeq ($(CC),mpigxx)
+CFLAGS:=$(CFLAGS_GCC)
+LFLAGS:=$(LFLAGS_GCC)
+CFLAGS:=$(CFLAGS) -DUSE_MPI
+EXT=MPI
+ifeq ($(OMP),1)
+CFLAGS:=$(CFLAGS) -fopenmp
+LFLAGS:=$(LFLAGS) -fopenmp
+endif
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) -msse3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) -msse4.2
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(VEC),bd_avx128)
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__USEAVX128__
+endif
+ifeq ($(VEC),bd_avx)
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1
+endif
+ifeq ($(TR1),1)
+CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), ArBB)
+CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
+LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
+endif
+ifeq ($(EXT), NVOCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
+endif
+endif
+
 ifeq ($(CC),mpiicpc)
 CFLAGS:=$(CFLAGS_ICC)
 LFLAGS:=$(LFLAGS_ICC)
@@ -259,6 +311,10 @@ endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/sgpplib_mpiicc
 	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpigxx)
+	mkdir -p tmp/build_native/sgpplib_mpigxx
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx" "EXT=$(EXT)"
 endif
 
 
@@ -398,6 +454,10 @@ endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/ClassifyBenchmark_mpiicc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmarkMPI --directory=./tmp/build_native/ClassifyBenchmark_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=ClassifyBenchmark_ICC_MPI" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpigxx)
+	mkdir -p tmp/build_native/ClassifyBenchmark_mpigxx
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmarkMPI --directory=./tmp/build_native/ClassifyBenchmark_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx.a" "BINNAME=ClassifyBenchmark_GCC_MPI" "EXT=$(EXT)"
 endif
 ifeq ($(CC),icl)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icl
