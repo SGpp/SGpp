@@ -10,20 +10,14 @@
 #define OPERATIONMULTIPLEEVALITERATIVE_H
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
 #include "base/tools/AlignedMemory.hpp"
-
-#ifdef _OPENMP
-#include "omp.h"
-#endif
+#include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg{
 namespace parallel{
 
-template<typename MultType, typename MultTransposeType>
-class OperationMultipleEvalIterative : public sg::parallel::OperationMultipleEvalVectorized
+template<typename KernelImplementation>
+class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized
 {
 public:
 	/**
@@ -39,29 +33,14 @@ public:
 	 */
 	OperationMultipleEvalIterative(base::GridStorage *storage, base::DataMatrix *dataset,
 								   int gridFrom, int gridTo, int datasetFrom, int datasetTo):
-							   sg::parallel::OperationMultipleEvalVectorized(dataset)
+							   OperationMultipleEvalVectorized(storage, dataset)
 	{
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 		m_datasetFrom = datasetFrom;
 		m_datasetTo = datasetTo;
 
-	   this->storage = storage;
-
-	   this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-	   this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-
-	   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
-
-	   myTimer = new sg::base::SGppStopwatch();
-	}
-
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalIterative()
-	{
-		delete myTimer;
+		rebuildLevelAndIndex();
 	}
 
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
@@ -75,30 +54,31 @@ public:
 		}
 #endif
 		double *openmp_startTime = (double *)aligned_malloc(threadCount*8*sizeof(double), SGPPMEMALIGNMENT); */
-		myTimer->start();
+		myTimer_->start();
 
-	#ifdef _OPENMP
 		#pragma omp parallel
 		{
-	#endif
 			/*
 			int myThreadNum = omp_get_thread_num();
 			openmp_startTime[myThreadNum*8] = myTimer->stop();
 */
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, MultType::getChunkDataPoints());
+			PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, KernelImplementation::getChunkDataPoints());
 
-			if (start % MultType::getChunkDataPoints() != 0 || end % MultType::getChunkDataPoints() != 0)
-			{
-				std::cout << "start%chunkDataPoints: " << start%MultType::getChunkDataPoints() << "; end%chunkDataPoints: " << end%MultType::getChunkDataPoints() << std::endl;
-				throw sg::base::operation_exception("processed vector segment must fit to chunkDataPoints!");
-			}
-
-			MultType::mult(this->level_, this->index_, this->dataset_, alpha, result, 0, alpha.getSize(), start, end);
-	#ifdef _OPENMP
+			KernelImplementation::mult(
+						level_,
+						index_,
+						mask_,
+						offset_,
+						dataset_,
+						alpha,
+						result,
+						0,
+						alpha.getSize(),
+						start,
+						end);
 		}
-	#endif
 
 		// thread creation benchmark code
 		/* double max = 0;
@@ -119,40 +99,40 @@ public:
 		//std::cout << "Thread creation overhead: " << max << std::endl;
 		aligned_free(openmp_startTime);
 */
-		return myTimer->stop();
+		return myTimer_->stop();
 	}
 
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
 	{
-		myTimer->start();
-
+		myTimer_->start();
 		result.setAll(0.0);
 
-	#ifdef _OPENMP
 		#pragma omp parallel
 		{
-	#endif
 			size_t start;
 			size_t end;
-			sg::parallel::PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+			PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-			MultTransposeType::multTranspose(level_, index_, dataset_, source, result, start, end, 0, dataset_->getNcols());
-	#ifdef _OPENMP
+			KernelImplementation::multTranspose(
+						level_,
+						index_,
+						mask_,
+						offset_,
+						dataset_,
+						source,
+						result,
+						start,
+						end,
+						0,
+						dataset_->getNcols());
 		}
-	#endif
 
-		return myTimer->stop();
+		return myTimer_->stop();
 	}
 
 	virtual void rebuildLevelAndIndex()
 	{
-		delete this->level_;
-		delete this->index_;
-
-		this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-		this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-
-		storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+		LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType, OperationMultipleEvalVectorized >(this);
 	}
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo)
@@ -160,15 +140,7 @@ public:
 		m_gridFrom = gridFrom;
 		m_gridTo = gridTo;
 	}
-
-protected:
-	/// Pointer to the grid's GridStorage object
-	sg::base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
-
 };
-
 
 }
 }

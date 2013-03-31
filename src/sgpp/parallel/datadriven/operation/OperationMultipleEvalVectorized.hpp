@@ -4,13 +4,15 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifndef OPERATIONMULTIPLEEVALVECTORIZED_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZED_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include "base/grid/GridStorage.hpp"
 #include "base/operation/OperationMatrix.hpp"
+#include "base/tools/SGppStopwatch.hpp"
+#include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
 
 namespace sg
 {
@@ -29,6 +31,8 @@ namespace parallel
 class OperationMultipleEvalVectorized
 {
 protected:
+	/// Pointer to the grid's gridstorage object
+	sg::base::GridStorage* storage_;
 	/// Pointer to the dataset that should be evaluated on the grid
 	sg::base::DataMatrix* dataset_;
 	/// Member to store the sparse grid's levels for better vectorization
@@ -39,6 +43,8 @@ protected:
 	sg::base::DataMatrix* mask_;
 	/// Member to store offsets per grid point for better vecotrization of modlinear operations
     sg::base::DataMatrix* offset_;
+	/// Timer object to handle time measurements
+	sg::base::SGppStopwatch* myTimer_;
 
 	int m_gridFrom;
 	int m_gridTo;
@@ -51,32 +57,14 @@ public:
 	 *
 	 * @param dataset data set that should be evaluated on the sparse grid
 	 */
-	OperationMultipleEvalVectorized(sg::base::DataMatrix* dataset) {
-		this->dataset_ = dataset;
-		this->level_ = NULL;
-		this->index_ = NULL;
-		this->mask_ = NULL;
-		this->offset_ = NULL;
-	}
+	OperationMultipleEvalVectorized(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
 
 	/**
 	 * Destructor
 	 *
 	 * cleans up level_ and index_ members
 	 */
-	virtual ~OperationMultipleEvalVectorized() {
-		if (this->level_ != NULL)
-			delete this->level_;
-
-		if (this->index_ != NULL)
-			delete this->index_;
-			
-		if (this->mask_ != NULL)
-		    delete this->mask_;
-		    
-		if (this->offset_ != NULL)
-		    delete this->offset_;
-	}
+	virtual ~OperationMultipleEvalVectorized();
 
 	/**
 	 * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
@@ -120,6 +108,12 @@ public:
 	 * @param gridTo
 	 */
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo){}
+
+	// we have to make sure that all implemented Kernel Types can see the fields they require.
+	// this has to be done here and only here because friends are checked at compile time and we use
+	// a pointer of this class to access the respective objects
+	friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
+	friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
 };
 
 }

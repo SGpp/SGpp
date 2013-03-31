@@ -9,8 +9,6 @@
 #define OPERATIONMULTIPLEEVALITERATIVESPX86SIMDMODLINEARMASK_HPP
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -44,22 +42,11 @@ public:
 	 */
 	OperationMultipleEvalIterativeSPX86SimdModLinearMask(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalIterativeSPX86SimdModLinearMask();
-
 	virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
 
 	virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
 
 	virtual void rebuildLevelAndIndex();
-
-protected:
-	/// Pointer to the grid's GridStorage object
-	sg::base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
 };
 
 }

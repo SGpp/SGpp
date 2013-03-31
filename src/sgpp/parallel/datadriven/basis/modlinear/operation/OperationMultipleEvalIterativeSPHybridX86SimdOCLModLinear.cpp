@@ -27,16 +27,15 @@ namespace sg
 namespace parallel
 {
 
-OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::parallel::OperationMultipleEvalVectorizedSP(dataset)
+OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear(
+		sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) :
+	sg::parallel::OperationMultipleEvalVectorizedSP(storage, dataset)
 {
-	this->storage = storage;
-
 	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
 
 	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-	myTimer = new sg::base::SGppStopwatch();
 	myOCLKernels = new OCLKernels();
 
 	_tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10);
@@ -48,7 +47,6 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::OperationMultipleEval
 
 OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::~OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear()
 {
-	delete myTimer;
 	delete myOCLKernels;
 	delete _tuningMult;
 	delete _tuningMultTrans;
@@ -59,22 +57,22 @@ void OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::rebuildLevelAndI
 	delete this->level_;
 	delete this->index_;
 
-	this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
-	this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+	this->level_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
+	this->index_ = new sg::base::DataMatrixSP(storage_->size(), storage_->dim());
 
-	storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
 	myOCLKernels->resetKernels();
 
-	_tuningMultTrans->setProblemSize(storage->size());
+	_tuningMultTrans->setProblemSize(storage_->size());
 	_tuningMult->resetAutoTuning();
 }
 
 double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result)
 {
 	size_t source_size = source.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     double gpu_time = 0.0;
     double cpu_time = 0.0;
@@ -146,7 +144,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 #ifdef _OPENMP
 			double start = omp_get_wtime();
 #else
-			myTimer->start();
+			myTimer_->start();
 #endif
 //			#pragma omp critical
 //			{
@@ -500,7 +498,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 #ifdef _OPENMP
 			cpu_times[tid] = omp_get_wtime() - start;
 #else
-			cpu_times[tid] = myTimer->stop();
+			cpu_times[tid] = myTimer_->stop();
 #endif
 		}
 	}
@@ -523,8 +521,8 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multTransposeV
 double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result)
 {
 	size_t result_size = result.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     double gpu_time = 0.0;
     double cpu_time = 0.0;
@@ -588,7 +586,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
 #ifdef _OPENMP
 			double start = omp_get_wtime();
 #else
-			myTimer->start();
+			myTimer_->start();
 #endif
 //			#pragma omp critical
 //			{
@@ -966,7 +964,7 @@ double OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear::multVectorized
 #ifdef _OPENMP
 			cpu_times[tid] = omp_get_wtime() - start;
 #else
-			cpu_times[tid] = myTimer->stop();
+			cpu_times[tid] = myTimer_->stop();
 #endif
     	}
     }

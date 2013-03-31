@@ -83,6 +83,8 @@ public:
 	 * @param blocksize resulting sizes are a multiple of this blocksize.
 	 */
 	static void calcDistribution(int totalSize, int numChunks, int *sizes, int *offsets, size_t blocksize = 1);
+	static void calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int *sizes, int *offsets, size_t blocksize);
+	static void calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int *sizes, int *offsets, int *sizesGlobal, int *offsetsGlobal, size_t blocksize);
 };
 
 }
