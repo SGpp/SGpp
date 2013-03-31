@@ -14,22 +14,20 @@ namespace sg
 namespace parallel
 {
 
-  OperationMultipleEvalIterativeOCLModLinear::OperationMultipleEvalIterativeOCLModLinear(base::GridStorage* storage, base::DataMatrix* dataset) : sg::parallel::OperationMultipleEvalVectorized(dataset)
+  OperationMultipleEvalIterativeOCLModLinear::OperationMultipleEvalIterativeOCLModLinear(
+		  base::GridStorage* storage, base::DataMatrix* dataset) :
+	  sg::parallel::OperationMultipleEvalVectorized(storage, dataset)
   {
-    this->storage = storage;
-
     this->level_ = new base::DataMatrix(storage->size(), storage->dim());
     this->index_ = new base::DataMatrix(storage->size(), storage->dim());
 
     storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-    myTimer = new base::SGppStopwatch();
-    myOCLKernels = new OCLKernels();
+	myOCLKernels = new OCLKernels();
   }
 
   OperationMultipleEvalIterativeOCLModLinear::~OperationMultipleEvalIterativeOCLModLinear()
   {
-    delete myTimer;
     delete myOCLKernels;
   }
 
@@ -38,10 +36,10 @@ namespace parallel
     delete this->level_;
     delete this->index_;
 
-    this->level_ = new base::DataMatrix(storage->size(), storage->dim());
-    this->index_ = new base::DataMatrix(storage->size(), storage->dim());
+	this->level_ = new base::DataMatrix(storage_->size(), storage_->dim());
+	this->index_ = new base::DataMatrix(storage_->size(), storage_->dim());
 
-    storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
     myOCLKernels->resetKernels();
   }
@@ -49,8 +47,8 @@ namespace parallel
   double OperationMultipleEvalIterativeOCLModLinear::multTransposeVectorized(base::DataVector& source, base::DataVector& result)
   {
     size_t source_size = source.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0);
 
@@ -111,8 +109,8 @@ namespace parallel
   double OperationMultipleEvalIterativeOCLModLinear::multVectorized(base::DataVector& alpha, base::DataVector& result)
   {
     size_t result_size = result.getSize();
-    size_t dims = storage->dim();
-    size_t storageSize = storage->size();
+	size_t dims = storage_->dim();
+	size_t storageSize = storage_->size();
 
     result.setAll(0.0);
 

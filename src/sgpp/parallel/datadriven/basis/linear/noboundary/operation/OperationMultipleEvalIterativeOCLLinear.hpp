@@ -10,8 +10,6 @@
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
 #include "parallel/datadriven/basis/common/OCLKernels.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg
 {
@@ -60,11 +58,6 @@ public:
 //	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
 
 protected:
-	/// Pointer to the grid's gridstorage object
-	sg::base::GridStorage* storage;
-	/// sg::base::DataMatrix that contains a prepared Level matrix of all grid points (2^level)
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
 	/// Object to access the OCL Kernel
 	OCLKernels* myOCLKernels;
 };

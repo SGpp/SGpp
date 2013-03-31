@@ -254,11 +254,11 @@ void printResults()
 void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,
 		sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 		const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-		const double lambda, const sg::parallel::VectorizationType vecType)
+		const double lambda, const sg::parallel::VectorizationType vecType, const sg::parallel::MPIType mpiType)
 {
     sg::datadriven::LearnerBase* myLearner;
 
-    myLearner = new sg::parallel::LearnerVectorizedIdentity(vecType, isRegression, true);
+	myLearner = new sg::parallel::LearnerVectorizedIdentity(vecType, mpiType, isRegression, true);
 
     // training
     gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,	SolverConfigFinal, AdaptConfig, false, lambda);
@@ -403,8 +403,9 @@ void printHelp(){
     std::cout << "	#points refined" << std::endl;
     std::cout << "	CG max. iterations, first refinement steps" << std::endl;
     std::cout << "	CG epsilon, first refinement steps" << std::endl;
-    std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
-    std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl << std::endl << std::endl;
+	std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
+	std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl << std::endl << std::endl;
+	std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync, TrueAsyncAlltoallv; " << std::endl;
     std::cout << "Example call:" << std::endl;
     std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD" << std::endl << std::endl << std::endl;
 }
@@ -446,6 +447,7 @@ int main(int argc, char *argv[])
 	std::string gridtype;
 	std::string precision;
 	std::string vectorization;
+	std::string mpiConfValue;
 
 	double lambda = 0.0;
 	double cg_eps = 0.0;
@@ -465,11 +467,12 @@ int main(int argc, char *argv[])
 	sg::solver::SLESolverSPConfiguration SLESolverSPConfigFinal;
 	sg::base::AdpativityConfiguration adaptConfig;
 	sg::parallel::VectorizationType vecType;
+	sg::parallel::MPIType mpiType;
 
 	bool regression;
 
     printHeader();
-	if (argc != 16)
+	if (argc != 17)
 	{
         printHelp();
     }
@@ -494,6 +497,7 @@ int main(int argc, char *argv[])
 		cg_max_learning = atoi(argv[13]);
 		cg_eps_learning = atof(argv[14]);
 		vectorization.assign(argv[15]);
+		mpiConfValue.assign(argv[16]);
 
 		// Set Vectorization
 		// Fallback
@@ -524,6 +528,36 @@ int main(int argc, char *argv[])
 		else
 		{
 			vecType = sg::parallel::X86SIMD;
+		}
+
+		// set MPI Type
+		if(mpiConfValue == "Alltoallv")
+		{
+			mpiType = sg::parallel::MPIAlltoallv;
+		}
+		else if(mpiConfValue == "Allreduce")
+		{
+			mpiType = sg::parallel::MPIAllreduce;
+		}
+		else if(mpiConfValue == "Async")
+		{
+			mpiType = sg::parallel::MPIAsync;
+		}
+		else if(mpiConfValue == "TrueAsync")
+		{
+			mpiType = sg::parallel::MPITrueAsync;
+		}
+		else if(mpiConfValue == "TrueAsyncAlltoallv")
+		{
+			mpiType = sg::parallel::MPITrueAsyncAlltoallv;
+		}
+		else if(mpiConfValue == "Onesided")
+		{
+			mpiType = sg::parallel::MPIOnesided;
+		}
+		else
+		{
+			mpiType = sg::parallel::MPINone;
 		}
 
 		// Set Adaptivity
@@ -652,7 +686,7 @@ int main(int argc, char *argv[])
 								SLESolverConfigFinal, adaptConfig, lambda, vecType);
 
 				adaptClassificationTest(data, classes, testdata, testclasses, regression, gridConfig, SLESolverConfigRefine,
-						SLESolverConfigFinal, adaptConfig, lambda, vecType);
+						SLESolverConfigFinal, adaptConfig, lambda, vecType, mpiType);
 			}
 			else
 			{

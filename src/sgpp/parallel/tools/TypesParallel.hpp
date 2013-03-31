@@ -24,6 +24,16 @@ enum VectorizationType {
    ArBB
 };
 
+enum MPIType {
+	MPINone,
+	MPIAllreduce,
+	MPIAsync,
+	MPIOnesided,
+	MPIAlltoallv,
+	MPITrueAsync,
+	MPITrueAsyncAlltoallv
+};
+
 }
 
 }

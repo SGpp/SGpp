@@ -8,21 +8,18 @@
 
 #include "DMSystemMatrixMPITypeFactory.hpp"
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMult.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinearMultTranspose.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMult.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp"
 
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMultTranspose.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMult.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMultTranspose.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp"
 
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
 
@@ -34,40 +31,44 @@
 namespace sg {
 namespace parallel {
 
-template<typename MultType, typename MultTransType>
-datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
+template<typename KernelImplementation>
+datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType, MPIType mpiType)
 {
-#define MPI_TYPE_ALLTOALLV 1
-#define MPI_TYPE_ALLREDUCE 2
-#define MPI_TYPE_ASYNC 3
-#define MPI_TYPE_TRUEASYNC 4
-#define MPI_TYPE_TRUEASYNC_ALLTOALLV 5
-#define MPI_TYPE_ONESIDED 6
-
-	int mpi_type = MPI_TYPE_ALLREDUCE;
-
 	std::string parallelizationType;
 	datadriven::DMSystemMatrixBase *result = 0;
-	if(mpi_type == MPI_TYPE_ALLTOALLV){
+
+	switch (mpiType){
+	case MPIAllreduce:
+		parallelizationType = "Allreduce";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<KernelImplementation>(
+					grid, trainDataset, lambda, vecType);
+		break;
+	case MPIAlltoallv:
 		parallelizationType = "Alltoallv";
 		result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_ALLREDUCE) {
-		parallelizationType = "Allreduce";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_ASYNC) {
+		break;
+	case MPIAsync:
 		parallelizationType = "Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_TRUEASYNC) {
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<KernelImplementation>(
+					grid, trainDataset, lambda, vecType);
+		break;
+	case MPITrueAsync:
 		parallelizationType = "True Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_TRUEASYNC_ALLTOALLV) {
-		parallelizationType = "True Asynchronous Communication with alltoall end";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPIAlltoallv<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
-	} else if(mpi_type == MPI_TYPE_ONESIDED) {
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
+					grid, trainDataset, lambda, vecType);
+		break;
+	case MPIOnesided:
 		parallelizationType = "Onesided Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOneSidedMPI<MultType, MultTransType>(grid, trainDataset, lambda, vecType);
-	} else {
-		throw new sg::base::factory_exception("not implemented");
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOnesidedMPI<KernelImplementation>(
+					grid, trainDataset, lambda, vecType);
+		break;
+	case MPINone:
+		parallelizationType = "No MPI Implementation is used.";
+		result = new sg::parallel::DMSystemMatrixVectorizedIdentity(grid, trainDataset, lambda, vecType);
+		break;
+	default:
+		throw new sg::base::factory_exception("this type of MPI communication is not yet implemented");
+		break;
 	}
 
 	if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
@@ -85,22 +86,22 @@ datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatr
 	return result;
 }
 
-datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::getDMSystemMatrix(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType)
+datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::getDMSystemMatrix(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType, MPIType mpiType)
 {
 	if(strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
 			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
 	{
-		return createDMSystemMatrixMPIType<sg::parallel::X86SimdLinearMult, sg::parallel::X86SimdLinearMultTranspose>
-				(grid, trainDataset, lambda, vecType);
+		return createDMSystemMatrixMPIType<X86SimdLinear>
+				(grid, trainDataset, lambda, vecType, mpiType);
 	}
 	else if(strcmp(grid.getType(), "modlinear") == 0)
 	{
-		return createDMSystemMatrixMPIType<sg::parallel::X86SimdModLinearMult, sg::parallel::X86SimdModLinearMultTranspose>
-				(grid, trainDataset, lambda, vecType);
+		return createDMSystemMatrixMPIType<X86SimdModLinear>
+				(grid, trainDataset, lambda, vecType, mpiType);
 	}
 	else
 	{
-		throw base::factory_exception("OperationMultipleEvalVectorizedSP is not implemented for this grid type.");
+		throw base::factory_exception("OperationMultipleEvalVectorized is not implemented for this grid type.");
 	}
 }
 

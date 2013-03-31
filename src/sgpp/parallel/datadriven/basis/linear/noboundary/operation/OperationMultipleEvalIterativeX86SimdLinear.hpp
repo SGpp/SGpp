@@ -10,9 +10,6 @@
 #define OPERATIONMULTIPLEEVALITERATIVEX86SIMDLINEAR_HPP
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "base/exception/operation_exception.hpp"
 
 namespace sg
 {
@@ -49,11 +46,6 @@ public:
     OperationMultipleEvalIterativeX86SimdLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
 												int gridFrom, int gridTo, int datasetFrom, int datasetTo);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalIterativeX86SimdLinear();
-
 	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
 	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
@@ -61,13 +53,6 @@ public:
 	virtual void rebuildLevelAndIndex();
 
 	virtual void updateGridComputeBoundaries(int gridFrom, int gridTo);
-
-protected:
-	/// Pointer to the grid's GridStorage object
-	sg::base::GridStorage* storage;
-	/// Timer object to handle time measurements
-	sg::base::SGppStopwatch* myTimer;
-
 };
 
 }

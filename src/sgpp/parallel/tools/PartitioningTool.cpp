@@ -111,5 +111,37 @@ void PartitioningTool::calcDistribution(int totalSize, int numChunks, int *sizes
 	}
 }
 
+void PartitioningTool::calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int *sizes, int *offsets, size_t blocksize)
+{
+	int numRanks = 1;
+#ifdef USE_MPI
+			numRanks = myGlobalMPIComm->getNumRanks();
+#endif
+	int sizesGlobal[numRanks];
+	int offsetsGlobal[numRanks];
+	calcMPIChunkedDistribution(totalSize, numChunksPerProc, sizes, offsets, sizesGlobal, offsetsGlobal, blocksize);
+}
+
+void PartitioningTool::calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int *sizes, int *offsets, int *sizesGlobal, int *offsetsGlobal, size_t blocksize)
+{
+	int numRanks = 1;
+#ifdef USE_MPI
+			numRanks = myGlobalMPIComm->getNumRanks();
+#endif
+	calcDistribution(totalSize, numRanks, sizesGlobal, offsetsGlobal, blocksize);
+	int currentGlobalOffset = 0;
+	for(int proc = 0; proc<numRanks; proc++){
+		calcDistribution(sizesGlobal[proc], numChunksPerProc, &sizes[numChunksPerProc*proc], &offsets[numChunksPerProc*proc], blocksize);
+		int thisProcSize = 0;
+		for(int i = 0; i<numChunksPerProc; i++){
+			offsets[numChunksPerProc*proc + i] += currentGlobalOffset;
+			thisProcSize += sizes[numChunksPerProc*proc + i];
+		}
+		sizesGlobal[proc] = numChunksPerProc;
+		offsetsGlobal[proc] = proc*numChunksPerProc;
+		currentGlobalOffset += thisProcSize;
+	}
+}
+
 }
 }

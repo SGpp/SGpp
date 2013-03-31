@@ -9,24 +9,7 @@
 #ifndef X86SIMDKERNELBASE_HPP
 #define X86SIMDKERNELBASE_HPP
 
-#define CHECK_KERNEL_CALLS
-#ifdef CHECK_KERNEL_CALLS
-#include "base/exception/operation_exception.hpp"
-#define ASSERT_INDEX_ARG(arg, min, max, alignment){\
-	if(arg<min){\
-		throw sg::base::operation_exception("argument to small!");\
-	}\
-	if(arg>max){\
-		throw sg::base::operation_exception("argument to big!");\
-	}\
-	if(arg%alignment != 0){\
-		std::cout << "argument " << arg << " not aligned to " << alignment << " (file:" << __FILE__ << ", line:" << __LINE__ << ")" << std::endl; \
-		throw sg::base::operation_exception("argument not aligned!");\
-	}\
-}
-#else
-#define ASSERT_INDEX_ARG(arg, min, max, alignment)
-#endif
+#include "KernelIncludesAndMacros.hpp"
 
 namespace sg {
 namespace parallel {

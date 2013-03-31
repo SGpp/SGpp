@@ -31,6 +31,8 @@ protected:
 	/// vectorization selector
 	VectorizationType vecType_;
 
+	MPIType mpiType_;
+
 	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
 
 	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
@@ -45,6 +47,7 @@ public:
 	 * @param verbose
 	 */
 	LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+	LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
