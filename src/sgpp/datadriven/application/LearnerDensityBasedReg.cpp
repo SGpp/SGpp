@@ -41,8 +41,8 @@ LearnerTiming LearnerDensityBasedReg::train(sg::base::DataMatrix& trainDataset,
 		bool testAccDuringAdapt, const double lambda) {
 	LearnerTiming result;
 
-	unsigned int dim = trainDataset.getNcols();
-	unsigned int m = trainDataset.getNrows();
+	size_t dim = trainDataset.getNcols();
+	size_t m = trainDataset.getNrows();
 
 	if (m != classes.getSize()) {
 		throw base::application_exception(
@@ -90,9 +90,9 @@ LearnerTiming LearnerDensityBasedReg::train(sg::base::DataMatrix& trainDataset,
 	double* densityData = densityMatrix.getPointer();
 	double* trainData = trainDataset.getPointer();
 	double* classesData = classes_copy.getPointer();
-	unsigned int acc = 0;
-	for (unsigned int i = 0; i < m; i++) {
-		unsigned int j = 0;
+	size_t acc = 0;
+	for (size_t i = 0; i < m; i++) {
+		size_t j = 0;
 		for (; j < dim; j++) {
 			densityData[i * (dim + 1) + j] = trainData[acc + j];
 		}
@@ -230,11 +230,11 @@ sg::base::DataVector LearnerDensityBasedReg::predict(
 
 	double delta = (maxValue_ - minValue_) / (1 - 2 * border_);
 
-	unsigned int dim = testDataset.getNcols();
-	unsigned int m = testDataset.getNrows();
+	size_t dim = testDataset.getNcols();
+	size_t m = testDataset.getNrows();
 	sg::base::DataVector point(dim);
 
-	for (unsigned int i = 0; i < m; i++) {
+	for (size_t i = 0; i < m; i++) {
 		testDataset.getRow(i, point);
 
 		sg::base::Grid* tempGrid = grid_;
@@ -242,7 +242,7 @@ sg::base::DataVector LearnerDensityBasedReg::predict(
 		sg::base::DataVector* lastAlpha = alpha_;
 
 		//Conditionalize for all dimensions, but the last one:
-		for (unsigned int j = 0; j < dim; j++) {
+		for (size_t j = 0; j < dim; j++) {
 			OperationDensityConditional* cond =
 					sg::op_factory::createOperationDensityConditional(
 							*tempGrid);
@@ -279,13 +279,13 @@ sg::base::DataVector LearnerDensityBasedReg::predict(
 void LearnerDensityBasedReg::dumpDensityAtPoint(sg::base::DataVector& point,
 		std::string fileName, unsigned int resolution) {
 
-	unsigned int dim = point.getSize();
+	size_t dim = point.getSize();
 	sg::base::Grid* tempGrid = grid_;
 	sg::base::Grid* lastGrid = NULL;
 	sg::base::DataVector* lastAlpha = alpha_;
 
 	//Conditionalize for all dimensions, but the last one:
-	for (unsigned int j = 0; j < dim; j++) {
+	for (size_t j = 0; j < dim; j++) {
 		OperationDensityConditional* cond =
 				sg::op_factory::createOperationDensityConditional(*tempGrid);
 
