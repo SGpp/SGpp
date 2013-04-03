@@ -55,6 +55,7 @@ public:
 	/**
 	 * Constructor
 	 *
+	 * @param storage GridStorage object used in this operation
 	 * @param dataset data set that should be evaluated on the sparse grid
 	 */
 	OperationMultipleEvalVectorizedSP(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset);
@@ -71,8 +72,8 @@ public:
 	 *
 	 * IMPORTANT REMARK:
 	 * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
- 	 * 	- data MUST a have even number of points AND it must be transposed
- 	 *  - result MUST have the same size as data points that should be evaluated
+ 	 * @li data MUST a have even number of points AND it must be transposed
+ 	 * @li result MUST have the same size as data points that should be evaluated
 	 *
 	 * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
 	 * @param result the result vector of the matrix vector multiplication
@@ -84,8 +85,8 @@ public:
 	 *
 	 * IMPORTANT REMARK:
 	 * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
- 	 * 	- data MUST a have even number of points AND it must be transposed
- 	 *  - result MUST have the same size as data points that should be evaluated
+ 	 * @li data MUST a have even number of points AND it must be transposed
+ 	 * @li result MUST have the same size as data points that should be evaluated
 	 *
 	 * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
 	 * @param result the result vector of the matrix vector multiplication

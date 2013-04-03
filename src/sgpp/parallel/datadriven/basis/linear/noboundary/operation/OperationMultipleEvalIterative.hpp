@@ -30,6 +30,10 @@ public:
 	 *
 	 * @param storage Pointer to the grid's gridstorage object
 	 * @param dataset dataset that should be evaluated
+	 * @param gridFrom local part of grid (start)
+	 * @param gridTo local part of grid (end)
+	 * @param datasetFrom local part of dataset (start)
+	 * @param datasetTo local part of dataset (end)
 	 */
 	OperationMultipleEvalIterative(base::GridStorage *storage, base::DataMatrix *dataset,
 								   int gridFrom, int gridTo, int datasetFrom, int datasetTo):
