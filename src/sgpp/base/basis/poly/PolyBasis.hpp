@@ -33,7 +33,7 @@ public:
 	 *
 	 * @param degree the polynom's max. degree
 	 */
-	PolyBasis(int degree) : polynoms(NULL), degree(degree)
+	PolyBasis(size_t degree) : polynoms(NULL), degree(degree)
 	{
 		if(degree < 2)
 		{
@@ -115,7 +115,7 @@ private:
 		double x_val = x_store[0] + val * pow(2.0, -(1.0)*(static_cast<double>(deg)));
 
 		//Horner
-		for(int i = deg; i >= 0; i--)
+		for(size_t i = deg; i >= 0; i--)
 		{
 			y_val = y_val * x_val + y_store[i];
 		}

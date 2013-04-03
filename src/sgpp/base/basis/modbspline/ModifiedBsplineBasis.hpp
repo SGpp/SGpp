@@ -35,14 +35,14 @@ class ModifiedBsplineBasis
                 this->degree = degree-1;
 
         }
-        double BoundaryBSpline(double x, int p, int level){
+        double BoundaryBSpline(double x, size_t p, int level){
             double y=0;
-            for(int k=0; k <= (p+1)/2; k++)
+            for(size_t k=0; k <= (p+1)/2; k++)
                 y=y+(k+1)*UniformBSpline(x*(1<<level)+(p-1)/2+k,p);
             return y;
         }
 
-        double UniformBSpline(double x,int p)
+        double UniformBSpline(double x, size_t p)
         {
             if (p==0)
             { if ( (0 < x) && (x <=1 ) )
