@@ -43,8 +43,8 @@ public:
 	 * Constructor
 	 *
 	 * @param vecType selection of vectorization to employ
-	 * @param isRegression
-	 * @param verbose
+	 * @param isRegression set to true if a regression task should be executed
+	 * @param isVerbose set to true in order to allow console output
 	 */
 	LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
 
@@ -52,10 +52,10 @@ public:
 	 * Constructor
 	 *
 	 * @param tGridFilename path to file that contains a serialized grid
-	 * @param tAlphaFilenment path to file that contains the grid's coefficients
+	 * @param tAlphaFilename path to file that contains the grid's coefficients
 	 * @param vecType selection of vectorization to employ
 	 * @param isRegression set to true if a regression task should be executed
-	 * @param verbose set to true in order to allow console output
+	 * @param isVerbose set to true in order to allow console output
 	 */
 	LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
 			const bool isRegression, const bool isVerbose = true);
