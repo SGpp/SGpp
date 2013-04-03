@@ -44,6 +44,7 @@ public:
 	/**
 	 * Std-Constructor
 	 *
+	 * @param trainData matrix with training data
 	 * @param lambda the lambda, the regression parameter
 	 */
 	DMSystemMatrixBase(sg::base::DataMatrix& trainData, double lambda);
