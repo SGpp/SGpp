@@ -47,16 +47,16 @@ void AlgorithmAdaBoostSPVectorizedIdentity::alphaSolver(double& lambda, sg::base
 	sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(weight, weightSP);
 	sg::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(*this->data, dataSP);
 
-	DMWeightMatrixSPVectorizedIdentity WMatrix(*this->grid, dataSP, lambda, weightSP, this->vecMode);
+	DMWeightMatrixSPVectorizedIdentity WMatrix(*this->grid, dataSP, static_cast<float>(lambda), weightSP, this->vecMode);
 	WMatrix.generateb(classesSP, rhsSP);
 	if (final)
 	{
-		sg::solver::ConjugateGradientsSP myCG(this->imax_final, this->epsilon_final);
+		sg::solver::ConjugateGradientsSP myCG(static_cast<float>(this->imax_final), static_cast<float>(this->epsilon_final));
 		myCG.solve(WMatrix, alphaSP, rhsSP, false, false, -1.0);
 	}
 	else
 	{
-		sg::solver::ConjugateGradientsSP myCG(this->imax, this->epsilon);
+		sg::solver::ConjugateGradientsSP myCG(static_cast<float>(this->imax), static_cast<float>(this->epsilon));
 		myCG.solve(WMatrix, alphaSP, rhsSP, false, false, -1.0);
 	}
 

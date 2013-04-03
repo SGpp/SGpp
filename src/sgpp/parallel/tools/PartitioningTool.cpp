@@ -48,7 +48,7 @@ void PartitioningTool::getPartitionSegment(int start, int end, int segmentCount,
 	}
 
 	// do all further calculations with complete blocks
-	int blockCount = totalSize/blockSize;
+	int blockCount = totalSize/(int)blockSize;
 
 	int blockSegmentSize = blockCount / segmentCount;
 	int remainder = blockCount - blockSegmentSize*segmentCount;
@@ -106,8 +106,8 @@ void PartitioningTool::calcDistribution(int totalSize, int numChunks, int *sizes
 		size_t size;
 		size_t offset;
 		getPartitionSegment(totalSize, numChunks, chunkID, &size, &offset, blocksize);
-		sizes[chunkID] = size;
-		offsets[chunkID] = offset;
+		sizes[chunkID] = (int)size;
+		offsets[chunkID] = (int)offset;
 	}
 }
 
