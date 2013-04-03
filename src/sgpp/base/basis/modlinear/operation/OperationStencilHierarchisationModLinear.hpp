@@ -49,7 +49,7 @@ public:
 	virtual const WeightStencil&
 	getWeightStencil() const  { return weightStencil; };
 
-	virtual unsigned int
+	virtual size_t
 	getStencilSize() const { return surplusStencil.size(); };
 
 protected:

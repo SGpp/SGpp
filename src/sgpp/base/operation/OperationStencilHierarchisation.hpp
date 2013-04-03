@@ -100,7 +100,7 @@ public:
 	 *
 	 * @return the total number of operations
 	 */
-	virtual unsigned int
+	virtual size_t
 	getStencilSize() const = 0;
 };
 
