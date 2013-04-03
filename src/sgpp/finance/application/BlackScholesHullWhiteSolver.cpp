@@ -1,8 +1,8 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Chao qi (qic@in.tum.de)
 
 
@@ -32,6 +32,7 @@ namespace finance
 {
 
 BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) : ParabolicPDESolver()
+:: a(-1.0)
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -226,7 +227,7 @@ void BlackScholesHullWhiteSolver::initScreen()
 	this->myScreen->writeStartSolve("combine Black Scholes and Hull White Solver");
 }
 
-void BlackScholesHullWhiteSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
+void BlackScholesHullWhiteSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
 {
 	this->useCoarsen = true;
 	this->coarsenThreshold = coarsenThreshold;
