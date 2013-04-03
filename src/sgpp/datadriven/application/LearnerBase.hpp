@@ -65,7 +65,9 @@ protected:
 	 * refinement learning.
 	 *
 	 * can be overwritten by derived classes
-	 *
+	 * @param trainDataset matrix with training data
+	 * @param solver solver
+	 * @param numNeededIterations number of required iterations
 	 *
 	 */
 	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
@@ -91,8 +93,8 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param isRegression
-	 * @param verbose
+	 * @param isRegression flag for regression
+	 * @param isVerbose flag for verbose output
 	 */
 	LearnerBase(const bool isRegression, const bool isVerbose = true);
 
@@ -100,9 +102,9 @@ public:
 	 * Constructor
 	 *
 	 * @param tGridFilename path to file that contains a serialized grid
-	 * @param tAlphaFilenment path to file that contains the grid's coefficients
+	 * @param tAlphaFilename path to file that contains the grid's coefficients
 	 * @param isRegression set to true if a regression task should be executed
-	 * @param verbose set to true in order to allow console output
+	 * @param isVerbose set to true in order to allow console output
 	 */
 	LearnerBase(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression, const bool isVerbose = true);
 
@@ -261,7 +263,7 @@ public:
 	/**
 	 * sets the current verbose mode of learner
 	 *
-	 * @param verbose the current learner's verbose output
+	 * @param isVerbose the current learner's verbose output
 	 */
 	void setIsVerbose(const bool isVerbose);
 };
