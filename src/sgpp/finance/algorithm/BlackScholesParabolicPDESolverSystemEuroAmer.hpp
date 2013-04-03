@@ -1,8 +1,8 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
@@ -70,7 +70,7 @@ protected:
 	/// refine mode during solving Black Scholes Equation: classic or maxLevel
 	std::string refineMode;
 	/// maxLevel max. Level of refinement
-	size_t refineMaxLevel;
+	sg::base::GridIndex::level_type refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> BSalgoDims;
 	/// store number of executed timesteps
