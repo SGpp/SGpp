@@ -182,7 +182,7 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+	virtual void printGrid(sg::base::DataVector& alpha, size_t PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 * This is not used, throws exception to inform about the function printGridDomainStretching

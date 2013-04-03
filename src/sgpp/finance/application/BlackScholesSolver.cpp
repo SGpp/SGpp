@@ -76,6 +76,7 @@ namespace finance
     this->r = 0.0;
     this->refineThreshold = 0.0;
     this->rhos = NULL;
+    this->sigmas = NULL;
   }
 
   BlackScholesSolver::~BlackScholesSolver()
@@ -255,7 +256,7 @@ namespace finance
       }
   }
 
-  void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel)
+  void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel)
   {
     size_t nRefinements = 0;
 
@@ -947,7 +948,7 @@ namespace finance
 void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
 {
 	std::string tmp;
-	float epsilon = 0.001;
+	float epsilon = float(0.001);
 	float sc = 1;
 	float gamma = 0.5;
 	ODESolver* myODESolver;
@@ -1246,7 +1247,7 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double
     this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
   }
 
-  void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
+  void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
   {
     this->useCoarsen = true;
     this->coarsenThreshold = coarsenThreshold;

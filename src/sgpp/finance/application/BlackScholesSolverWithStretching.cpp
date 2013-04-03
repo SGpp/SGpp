@@ -562,7 +562,7 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(sg::base
 	}
 }
 
-void BlackScholesSolverWithStretching::printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const
+void BlackScholesSolverWithStretching::printGrid(sg::base::DataVector& alpha, size_t PointesPerDimension, std::string tfilename) const
 {
 	sg::base::GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);

@@ -32,7 +32,6 @@ namespace finance
 {
 
 BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) : ParabolicPDESolver()
-:: a(-1.0)
 {
 	this->bStochasticDataAlloc = false;
 	this->bGridConstructed = false;
@@ -53,6 +52,18 @@ BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) :
 	this->avgInnerGridSize = 0;
 	this->dim_BS = 0;
 	this->dim_HW = 1;
+
+	// @todo set to random value to remove compiler warnings due to uninitialized members
+	this->a = 0.0;
+	this->coarsenPercent = 0.0;
+	this->mus = NULL;
+	this->numExecCoarsen = 0;
+	this->r = 0.0;
+	this->refineThreshold = 0.0;
+	this->rhos = NULL;
+	this->sigma = 0.0;
+	this->sigmas = NULL;
+	this->theta = 0.0;
 }
 
 BlackScholesHullWhiteSolver::~BlackScholesHullWhiteSolver()

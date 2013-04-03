@@ -78,7 +78,7 @@ protected:
 	/// identifies if the Black Scholes Equation should be solved by using a principal axis transformation
 	bool usePAT;
 	/// max. level for refinement during solving
-	size_t refineMaxLevel;
+	sg::base::GridIndex::level_type refineMaxLevel;
 	/// variable to store needed solving iterations
 	size_t nNeededIterations;
 	/// variable to store the solving time
@@ -205,7 +205,7 @@ public:
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 * @param maxLevel maximum level of refinement
 	 */
-	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided
@@ -348,7 +348,7 @@ public:
 	 *	@param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
 	 *	@param refineThreshold Threshold needed to determine if a grid point should be refined
 	 */
-	virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+	virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
 	 * prints the 2D interpolation error at money into a file. This file is plotable via gnuplot. A bounding
