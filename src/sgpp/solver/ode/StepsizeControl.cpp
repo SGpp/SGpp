@@ -1,8 +1,8 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Peter Hoffmann (peter.hoffmann@mytum.de)
 
 
@@ -70,8 +70,8 @@ double StepsizeControl::maxNorm(sg::pde::OperationParabolicPDESolverSystem& Syst
 			//	 std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) << " " << (p->first)->toString() << " YKold" << ((q->first)->equals(*p->first)) << " "<< (q->first)->toString() << std::endl;
 				if((q->first)->equals(*p->first)) {
 
-					int i = p->second;
-					int j = q->second;
+					long unsigned int i = p->second;
+					long unsigned int j = q->second;
 				//	std::cout <<time<< " "<< (p->first)->toString() << " "<<i<<" " << Data[i]<< " " << (q->first)->toString() <<" "<<j<< " "<< OldData[j] << std::endl;
 					double t2 = std::max(fabs(Data[i]),fabs(OldData[j]));
 					double tmpData = fabs(Data[i]-OldData[j])/std::max(sc,t2);
@@ -99,7 +99,7 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver, sg::pde::OperationPar
     double tmp_timestepsize_new = tmp_timestepsize;
     double epsilon = this->myEps;
 
-    double maxTimestep = this->nMaxIterations*tmp_timestepsize;
+    double maxTimestep = static_cast<double> (this->nMaxIterations)*tmp_timestepsize;
 
     size_t maxIter = this->nMaxIterations*10000;
 
