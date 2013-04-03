@@ -192,7 +192,7 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGrid(sg::base::DataVector& alpha, size_t PointesPerDimension, std::string tfilename) const;
+	virtual void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -205,7 +205,7 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGridDomain(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
+	virtual void printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
 
 	/**
 	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value

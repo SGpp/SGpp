@@ -227,20 +227,20 @@ void HeatEquationSolverWithStretching::initScreen()
 	this->myScreen->writeTitle("SGpp - Heat Equation Solver With Stretching, 1.0.1", "Alexander Heinecke, Sarpkan Selcuk (C) 2009-2011");
 }
 
-void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, size_t PointesPerDimension, std::string tfilename) const
+void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
-	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
+	myPrinter.printGrid(alpha, tfilename, static_cast<size_t>(PointesPerDimension));
 }
 
 void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const{
 	throw new application_exception("HeatEquationSolverWithStretching::printGridDomain : BoundingBox not supported with this solver, use printGridDomainStretching instead ");
 }
 
-void HeatEquationSolverWithStretching::printGridDomainStretching(DataVector& alpha, size_t PointesPerDimension, Stretching& GridArea, std::string tfilename) const
+void HeatEquationSolverWithStretching::printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const
 {
 	GridPrinterForStretching myPrinter(*this->myGrid);
-	myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, PointesPerDimension);
+	myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, static_cast<size_t>(PointesPerDimension));
 }
 
 void HeatEquationSolverWithStretching::printSparseGrid(DataVector& alpha, std::string tfilename, bool bSurplus) const
