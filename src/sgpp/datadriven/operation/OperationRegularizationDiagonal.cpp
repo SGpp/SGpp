@@ -51,20 +51,20 @@ namespace datadriven
 
   void OperationRegularizationDiagonal::initIsotropicPenalty() {
     // \frac{1}{\max\{l_1,\dots,l_d\}-\min\{l_1,\dots,l_d\}+1}d
-    int dim = storage->dim();
+    size_t dim = storage->dim();
     base::GridIndex* gi;
     for (size_t i=0; i<size; i++) {
       gi = storage->get(i);
-      diagonal[i] = 1.0/(gi->getLevelMax()-gi->getLevelMin()+1)*dim;
+      diagonal[i] = 1.0/(gi->getLevelMax()-gi->getLevelMin()+1)*(double)dim;
     }
   }
   void OperationRegularizationDiagonal::initAnisotropicPenalty() {
     // \frac{1}{2}\log(1+(\frac{\max\{l_1,\dots,l_d\}}{\max\{\min\{l_1,\dots,l_d\},1\}})d)
-    int dim = storage->dim();
+    size_t dim = storage->dim();
     base::GridIndex* gi;
     for (size_t i=0; i<size; i++) {
       gi = storage->get(i);
-      diagonal[i] = 0.5 * log(1.+ gi->getLevelMax()/std::max(static_cast<int>(gi->getLevelMin()),1) * dim);
+      diagonal[i] = 0.5 * log(1.+ gi->getLevelMax()/std::max(static_cast<int>(gi->getLevelMin()),1) * (double)dim);
     }
   }
 

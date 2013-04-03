@@ -969,7 +969,7 @@ namespace datadriven
 			}
 			else if (this->refineMode == 2)
 			{
-				refineNumber = (size_t)(this->perOfAda * (this->grid->getSize()));
+			  refineNumber = (size_t)(this->perOfAda * (double)(this->grid->getSize()));
 				//force to refine at least one point
 				if(refineNumber == 0)
 					refineNumber = 1;
