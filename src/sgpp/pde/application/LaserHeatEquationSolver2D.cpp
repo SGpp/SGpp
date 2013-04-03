@@ -26,7 +26,7 @@ namespace sg
 namespace pde
 {
 
-LaserHeatEquationSolver2D::LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, size_t max_level, double refine_threshold, double coarsen_threshold, double heat) : HeatEquationSolver(), beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold)
+LaserHeatEquationSolver2D::LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double refine_threshold, double coarsen_threshold, double heat) : HeatEquationSolver(), beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold)
 {
 }
 

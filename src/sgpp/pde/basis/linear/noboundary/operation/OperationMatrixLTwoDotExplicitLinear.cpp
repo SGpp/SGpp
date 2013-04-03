@@ -31,18 +31,18 @@ inline double min(double a, double b) {
 }
 
 void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sg::base::Grid* grid) {
-	unsigned int gridSize = grid->getStorage()->size();
-	unsigned int gridDim = grid->getStorage()->dim();
+	size_t gridSize = grid->getStorage()->size();
+	size_t gridDim = grid->getStorage()->dim();
 
 	sg::base::DataMatrix level(gridSize, gridDim);
 	sg::base::DataMatrix index(gridSize, gridDim);
 
 	grid->getStorage()->getLevelIndexArraysForEval(level, index);
 
-	for (unsigned int i = 0; i < gridSize; i++) {
-		for (unsigned int j = i; j < gridSize; j++) {
+	for (size_t i = 0; i < gridSize; i++) {
+		for (size_t j = i; j < gridSize; j++) {
 			double res = 1;
-			for (unsigned int k = 0; k < gridDim; k++) {
+			for (size_t k = 0; k < gridDim; k++) {
 				double lik = level.get(i, k);
 				double ljk = level.get(j, k);
 				double iik = index.get(i, k);
@@ -96,8 +96,8 @@ OperationMatrixLTwoDotExplicitLinear::~OperationMatrixLTwoDotExplicitLinear() {
 void OperationMatrixLTwoDotExplicitLinear::mult(sg::base::DataVector& alpha,
 		sg::base::DataVector& result) {
 
-	unsigned int nrows = m_->getNrows();
-	unsigned int ncols = m_->getNcols();
+	size_t nrows = m_->getNrows();
+	size_t ncols = m_->getNcols();
 
 	if (alpha.getSize() != ncols || result.getSize() != nrows) {
 		throw sg::base::data_exception("Dimensions do not match!");
@@ -106,9 +106,9 @@ void OperationMatrixLTwoDotExplicitLinear::mult(sg::base::DataVector& alpha,
 
 	//Standard matrix multiplication:
 	double temp = 0.;
-	unsigned int acc = 0;
-	for (unsigned int i = 0; i < nrows; i++) {
-		for (unsigned int j = 0; j < ncols; j++) {
+	size_t acc = 0;
+	for (size_t i = 0; i < nrows; i++) {
+		for (size_t j = 0; j < ncols; j++) {
 			temp += data[j + acc] * alpha[j];
 		}
 		result[i] = temp;

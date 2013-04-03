@@ -11,6 +11,7 @@
 #include "pde/algorithm/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/datatypes/DataVector.hpp"
+#include "base/grid/GridStorage.hpp"
 
 namespace sg
 {
@@ -32,7 +33,7 @@ private:
 	/// the laser beam's expansion
 	double heat_sigma_;
 	/// the max. refinement level
-	size_t max_level_;
+	sg::base::GridStorage::index_type::level_type max_level_;
 	/// heating the grid initialization
 	double heat_;
 	/// threshold for refinening during solution
@@ -59,7 +60,7 @@ public:
 	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 */
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, size_t max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
 	/**
 	 * Std-Destructor

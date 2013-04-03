@@ -124,7 +124,7 @@ public:
 	 * @param PointesPerDimension the distance between evaluation points
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+	void printGrid(sg::base::DataVector& alpha, size_t PointesPerDimension, std::string tfilename) const;
 
 	/**
 	 This function is a placeholder, is not used.
@@ -142,7 +142,7 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	void printGridDomainStretching(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
+	void printGridDomainStretching(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
 
 	/**
 	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value

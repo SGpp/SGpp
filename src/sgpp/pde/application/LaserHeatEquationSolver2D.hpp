@@ -33,7 +33,7 @@ private:
 	/// stores the expansions of the laser's heat
 	double heat_sigma_;
 	/// stores the grid's max. refinement level
-	size_t max_level_;
+	sg::base::GridStorage::index_type::level_type max_level_;
 	/// heating factor
 	double heat_;
 	/// threshold for refineing the grid during solution process
@@ -52,7 +52,7 @@ public:
 	 * @param coarsen_threshold threshold for coarsening the grid during solution process
 	 * @param heat the heat factor to initialize the grid
 	 */
-	LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, size_t max_level, double refine_threshold, double coarsen_threshold, double heat);
+	LaserHeatEquationSolver2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double refine_threshold, double coarsen_threshold, double heat);
 
 	/**
 	 * Std-Destructor of the solver

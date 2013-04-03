@@ -274,15 +274,15 @@ sg::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS()
 			for(sg::base::GridStorage::grid_map_iterator p=gs->begin();p != gs->end();++p) {
 				q = ogs->find(p->first);
 				if((q->first)->equals(*p->first)) {
-					int i = p->second;
-					int j = q->second;
-					if(j < (int)temp_tmp.getSize())
+					size_t i = p->second;
+					size_t j = q->second;
+					if(j < temp_tmp.getSize())
 						OldData[i] = DataTmp[j];
 					else {
 						OldData[i] =0;
 					}
 				} else {
-					int i = p->second;
+					size_t i = p->second;
 					OldData[i] = 0.0;
 				}
 				length++;
