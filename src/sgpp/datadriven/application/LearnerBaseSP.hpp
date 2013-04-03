@@ -68,7 +68,9 @@ protected:
 	 * refinement learning.
 	 *
 	 * can be overwritten by derived classes
-	 *
+	 * @param trainDataset matrix with training data set
+	 * @param solver solver
+	 * @param numNeededIterations number of required iterations
 	 *
 	 */
 	virtual void postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
@@ -77,7 +79,7 @@ protected:
 	/**
 	 * Initialize the grid and its coefficients
 	 *
-	 * @param GridCongif structure which describes the regular start grid
+	 * @param GridConfig structure which describes the regular start grid
 	 */
 	virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig);
 
@@ -94,8 +96,8 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param isRegression
-	 * @param verbose
+	 * @param isRegression flag for regression
+	 * @param isVerbose flag for verbose output
 	 */
 	LearnerBaseSP(const bool isRegression, const bool isVerbose = true);
 
@@ -103,9 +105,9 @@ public:
 	 * Constructor
 	 *
 	 * @param tGridFilename path to file that contains a serialized grid
-	 * @param tAlphaFilenment path to file that contains the grid's coefficients
+	 * @param tAlphaFilename path to file that contains the grid's coefficients
 	 * @param isRegression set to true if a regression task should be executed
-	 * @param verbose set to true in order to allow console output
+	 * @param isVerbose set to true in order to allow console output
 	 */
 	LearnerBaseSP(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression, const bool isVerbose = true);
 
@@ -155,7 +157,6 @@ public:
 	 * executes a Regression test for a given dataset and returns the result
 	 *
 	 * @param testDataset dataset that is evaluated with the current learner
-	 *
 	 * @return regression values of testDataset
 	 */
 	virtual sg::base::DataVectorSP predict(sg::base::DataMatrixSP& testDataset);
