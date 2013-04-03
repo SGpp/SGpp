@@ -117,7 +117,7 @@ public:
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 * @param maxLevel maximum level of refinement
 	 */
-	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel);
 
 	/**
 	 * Inits the alpha vector with a payoff function of an European call option or put option
@@ -187,7 +187,7 @@ public:
 	/**
 	 * This is not used, throws exception to inform about the function printGridDomainStretching
 	 */
-	virtual void printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
+	virtual void printGridDomain(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
 
 	/**
 	 * This is some kind of debug functionality. It writes a file,
@@ -200,7 +200,7 @@ public:
 	 * @param GridArea the area in which the function should be plotted
 	 * @param tfilename absolute path to file into which the grid's evaluation is written
 	 */
-	virtual void printGridDomainStretching(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
+	virtual void printGridDomainStretching(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
 
 	/**
 	 * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
