@@ -213,7 +213,7 @@ Stretching::Stretching(size_t dim, std::vector<double>* coordinates) : BoundingB
 	stretchingMode = new std::string("discrete");
 	int _1DArrayLength = 0;
 	for(size_t i=0; i<nDim;i++){
-		_1DArrayLength = coordinates[i].size();
+	  _1DArrayLength = static_cast<int>(coordinates[i].size());
 		dimensionBoundaries[i].leftBoundary = coordinates[i][0];
 		dimensionBoundaries[i].rightBoundary = coordinates[i][_1DArrayLength-1];
 		dimensionBoundaries[i].bDirichletLeft = true;
@@ -248,7 +248,7 @@ Stretching::Stretching(Stretching& copyStretching) : BoundingBox(copyStretching)
 		}
 
 		discreteVectorLevel[i]=copyStretching.discreteVectorLevel[i];
-		stretching1Ds[i]= copyStretching.getStretching1D(i);
+		stretching1Ds[i]= copyStretching.getStretching1D(static_cast<int>(i));
 
 	}
 }
@@ -303,7 +303,7 @@ void Stretching::generateLeftRightArrays(Stretching1D &str1D,size_t dim){
 	int idx=0;
 	int lidx=0, ridx=0;
 	for(int l=1;l<=(LOOKUPMAX);l++){
-		int elemPerLevel = pow(2.0,l-1);
+	  int elemPerLevel = static_cast<int>(pow(2.0,l-1));
 		for(int i=1; i<= elemPerLevel;i++){
 
 			//Create left neighbors table
@@ -346,7 +346,7 @@ double Stretching::stretchingXform(int level, int index, size_t dim){
 		temp = leentvaarXform(level,index,dim);
 	}
 	else if(t=="fitob"){
-		int pow2deltaL = pow(2.0,(level - LOOKUPMAX));
+	  int pow2deltaL = static_cast<int>(pow(2.0,(level - LOOKUPMAX)));
 		double dIndex = (double)index/pow2deltaL;
 		bool leftContinue=false, rightContinue=false;
 		int rightLevel=LOOKUPMAX, leftLevel=LOOKUPMAX;
@@ -408,7 +408,7 @@ void Stretching::logXform(Stretching1D &str1D,size_t dim){
 	double f_a=log(getBoundary(dim).leftBoundary);
 	double f_b=log(getBoundary(dim).rightBoundary);
 	for(int l=1;l<=(LOOKUPMAX);l++){
-		int elemPerLevel = pow(2.0,l-1);
+	  int elemPerLevel = static_cast<int>(pow(2.0,l-1));
 		for(int i=1; i<= elemPerLevel;i++){
 			str1D.lookup[idx++][0] =
 					exp (f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a));
@@ -419,7 +419,7 @@ void Stretching::logXform(Stretching1D &str1D,size_t dim){
 double Stretching::logXform(int l, int i, size_t dim){
 	double f_a=log(getBoundary(dim).leftBoundary);
 	double f_b=log(getBoundary(dim).rightBoundary);
-	int elemPerLevel = pow(2.0,l-1);
+	int elemPerLevel = static_cast<int>(pow(2.0,l-1));
 
 	return exp (f_a + (double)(i)/(2*elemPerLevel)*(f_b-f_a));
 }
@@ -434,7 +434,7 @@ void Stretching::leentvaarXform(Stretching1D &str1D, size_t dim){
 	double f_a= log(sinhArgumenta+sqrt(sinhArgumenta*sinhArgumenta+1));
 	double f_b=log(sinhArgumentb+sqrt(sinhArgumentb*sinhArgumentb+1));
 	for(int l=1;l<=(LOOKUPMAX);l++){
-		int elemPerLevel = pow(2.0,l-1);
+	  int elemPerLevel = static_cast<int>(pow(2.0,l-1));
 		for(int i=1; i<= elemPerLevel;i++){
 			str1D.lookup[idx++][0] =
 					(1/str1D.xsi*sinh((f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a)))+str1D.x_0);
@@ -449,7 +449,7 @@ double Stretching::leentvaarXform (int l, int i, size_t dim){
 	double sinhArgumentb = ((b-stretching1Ds[dim].x_0)*stretching1Ds[dim].xsi);
 	double f_a= log(sinhArgumenta+sqrt(sinhArgumenta*sinhArgumenta+1));
 	double f_b=log(sinhArgumentb+sqrt(sinhArgumentb*sinhArgumentb+1));
-	int elemPerLevel = pow(2.0,l-1);
+	int elemPerLevel = static_cast<int>(pow(2.0,l-1));
 
 	return (1/stretching1Ds[dim].xsi*sinh((f_a + (double)(i)/(2*elemPerLevel)*(f_b-f_a)))+stretching1Ds[dim].x_0);
 }
@@ -459,7 +459,7 @@ void Stretching::noXform(Stretching1D &str1D,size_t dim){
 	double f_a=getBoundary(dim).leftBoundary;
 	double f_b=getBoundary(dim).rightBoundary;
 	for(int l=1;l<=(LOOKUPMAX);l++){
-		int elemPerLevel = pow(2.0,l-1);
+	  int elemPerLevel = static_cast<int>(pow(2.0,l-1));
 		for(int i=1; i<= elemPerLevel;i++){
 			str1D.lookup[idx++][0] =
 					(f_a + (double)(2*i-1)/(2*elemPerLevel)*(f_b-f_a));
@@ -470,7 +470,7 @@ void Stretching::noXform(Stretching1D &str1D,size_t dim){
 double Stretching::noXform(int l, int i, size_t dim){
 	double f_a=getBoundary(dim).leftBoundary;
 	double f_b=getBoundary(dim).rightBoundary;
-	int elemPerLevel = pow(2.0, l-1);
+	int elemPerLevel = static_cast<int>(pow(2.0, l-1));
 
 	return (f_a + (double)(i)/(2*elemPerLevel)*(f_b-f_a));
 }
@@ -479,7 +479,7 @@ double Stretching::noXform(int l, int i, size_t dim){
 
 int Stretching::calculateLookupIndex(int l, int i){
 	//Note: indices are always odd ;)
-	return (pow(2.0,l-1)-1+(i-1)/2);
+  return static_cast<int>((pow(2.0,l-1)-1+(i-1)/2));
 }
 
 double Stretching::getCoordinates(int level, int index, size_t dim){
@@ -584,7 +584,7 @@ void Stretching::calculateNeighborSpecs(int level, int index, int& leftLevel,int
 void Stretching::parseVectorToLookupTable(std::vector<double> vec, Stretching1D& stretch1d, size_t dim, int& discreteVectorLevel ){
 
 
-	int level = log(static_cast<double>(vec.size()-1))/log(2.0); // log2(vec.size()-1);
+  int level = static_cast<int>(log(static_cast<double>(vec.size()-1))/log(2.0)); // log2(vec.size()-1);
 	if(pow(2.0,level)+1 != vec.size()){
 		std::cout<<"parseVectorToLookupTable: Vector Size does not match, should be 2^l+1\n";
 		return;
@@ -597,7 +597,7 @@ void Stretching::parseVectorToLookupTable(std::vector<double> vec, Stretching1D&
 	stretch1d.type = "fitob";
 	//Handle current and lower levels
 	for(int l=level; l>0;l--){
-		elemPerLevel = pow(2.0,l);
+	  elemPerLevel = static_cast<int>(pow(2.0,l));
 		for(int i=1; i < elemPerLevel;i = i+2){
 			stretch1d.lookup[calculateLookupIndex(l,i)][0] = vec[i];
 			vec[idx++]= vec[i-1];
@@ -609,7 +609,7 @@ void Stretching::parseVectorToLookupTable(std::vector<double> vec, Stretching1D&
 	//Handle upper levels (up to LOOKUPMAX)
 	//Note: Takes a long time due to getAdjacentPositions
 	for(int l=level+1; l <= LOOKUPMAX; l++){
-		elemPerLevel = pow(2.0,l);
+	  elemPerLevel = static_cast<int>(pow(2.0,l));
 		for(int i=1; i < elemPerLevel;i = i+2){
 			calculateNeighborSpecs(l,i,lLevel, lIndex,rLevel,rIndex);
 			posl=getCoordinates(lLevel,lIndex,dim);
@@ -630,8 +630,8 @@ std::vector<double>* Stretching::getDiscreteVector(bool bSort){
 	if(*stretchingMode == "discrete"){
 		vec = new std::vector<double>[nDim];
 		for(size_t i=0; i<nDim; i++){
-			Stretching1D str1d=getStretching1D(i);
-			elemsToRead=(pow(2.0,discreteVectorLevel[i])-1);
+		  Stretching1D str1d=getStretching1D(static_cast<int>(i));
+		  elemsToRead=static_cast<int>((pow(2.0,discreteVectorLevel[i])-1));
 			vec[i]= std::vector<double>(elemsToRead+2,0);
 			vec[i][0]=dimensionBoundaries[i].leftBoundary;
 			for(int j=0;j<elemsToRead;j++){
@@ -687,7 +687,7 @@ void Stretching::calculateNeighborLookup(int maxlevel){
 					temp= -2;
 			}
 			else{
-				temp= (pow(2.0,lLevel-1)-1+(lIndex-1)/2);
+			  temp= static_cast<int>((pow(2.0,lLevel-1)-1+(lIndex-1)/2));
 			}
 			outfile1<<temp;
 			outfile1<<", ";
@@ -700,7 +700,7 @@ void Stretching::calculateNeighborLookup(int maxlevel){
 					temp= -2;
 			}
 			else{
-				temp= (pow(2.0,rLevel-1)-1+(rIndex-1)/2);
+			  temp= static_cast<int>((pow(2.0,rLevel-1)-1+(rIndex-1)/2));
 			}
 			outfile2<<temp;
 			outfile2<<", ";
