@@ -40,7 +40,7 @@ class DMWeightMatrixSPVectorizedIdentity : public sg::base::OperationMatrixSP
 {
 private:
 	/// the lambda, the regularisation parameter
-	double lamb;
+	float lamb;
 	/// OperationB for calculating the data matrix
 	sg::parallel::OperationMultipleEvalVectorizedSP* B;
 	/// Pointer to the data vector
@@ -77,7 +77,7 @@ public:
 	 * @param w the weights to the training data
 	 * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
 	 */
-	DMWeightMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, double lambda, sg::base::DataVectorSP& w, VectorizationType vecMode);
+	DMWeightMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, sg::base::DataVectorSP& w, VectorizationType vecMode);
 
 	/**
 	 * Std-Destructor

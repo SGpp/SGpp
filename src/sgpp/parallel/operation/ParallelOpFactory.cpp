@@ -68,8 +68,8 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
                                                                                    int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
 	// handle default upper boundaries
-    if(gridTo == -1) gridTo = grid.getStorage()->size();
-    if(datasetTo == -1) datasetTo = dataset->getNcols();
+    if(gridTo == -1) gridTo = static_cast<int>(grid.getStorage()->size());
+    if(datasetTo == -1) datasetTo = static_cast<int>(dataset->getNcols());
 
     if(strcmp(grid.getType(), "linear") == 0)
       {
@@ -193,8 +193,8 @@ parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized
 																					   int gridFrom, int gridTo, int datasetFrom, int datasetTo)
   {
 	// handle default upper boundaries
-	if(gridTo == -1) gridTo = grid.getStorage()->size();
-	if(datasetTo == -1) datasetTo = dataset->getNcols();
+	if(gridTo == -1) gridTo = static_cast<int>(grid.getStorage()->size());
+	if(datasetTo == -1) datasetTo = static_cast<int>(dataset->getNcols());
 
     if(strcmp(grid.getType(), "linear") == 0)
       {

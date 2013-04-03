@@ -1,10 +1,11 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2012 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#include "base/grid/GridStorage.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 #include <cstring>
 
@@ -33,7 +34,8 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
 
 			for (size_t h = 0; h < nDim; h++)
 			{
-				unsigned int level, index;
+				sg::base::GridStorage::index_type::level_type level;
+				sg::base::GridStorage::index_type::index_type index;
 
 				curPoint->get(h, level, index);
 
@@ -45,7 +47,7 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
 					result.GFlop_ += 1e-9*8.0*static_cast<double>(numIterations)*static_cast<double>(numInstances);
 					result.GByte_ += 1e-9*4.0*static_cast<double>(numIterations)*static_cast<double>(sizeDatatype)*static_cast<double>(numInstances);
 				}
-				else if (index == ((1<<level) - 1))
+				else if (index == static_cast<sg::base::GridStorage::index_type::index_type>((1<<static_cast<sg::base::GridStorage::index_type::index_type>(level)) - 1))
 				{
 					result.GFlop_ += 1e-9*10.0*static_cast<double>(numIterations)*static_cast<double>(numInstances);
 					result.GByte_ += 1e-9*6.0*static_cast<double>(numIterations)*static_cast<double>(sizeDatatype)*static_cast<double>(numInstances);

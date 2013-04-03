@@ -14,7 +14,7 @@ namespace sg
 namespace parallel
 {
 
-DMWeightMatrixSPVectorizedIdentity::DMWeightMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, double lambda, sg::base::DataVectorSP& w, VectorizationType vecMode)
+DMWeightMatrixSPVectorizedIdentity::DMWeightMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, sg::base::DataVectorSP& w, VectorizationType vecMode)
 {
 	// handle unsupported vector extensions
 	// @TODO (heinecke) find a better way to determine vectorwidth
@@ -118,7 +118,7 @@ void DMWeightMatrixSPVectorizedIdentity::generateb(sg::base::DataVectorSP& class
 	//resize the data class vector and weight
 	if (numPatchedTrainingInstances != numTrainingInstances)
 	{
-		double lastClass;
+		float lastClass;
 		for (size_t i = 0; i < loopcount; i++)
 		{
 			lastClass = myClassesWithWeights.get(myClassesWithWeights.getSize()-1);
