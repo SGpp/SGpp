@@ -1,9 +1,9 @@
-/*
- * RefinementStrategy.hpp
- *
- *  Created on: Mar 6, 2012
- *      Author: khakhutv_local
- */
+/* ****************************************************************************
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author khakhutv_local
 
 #ifndef REFINEMENTSTRATEGY_HPP_
 #define REFINEMENTSTRATEGY_HPP_

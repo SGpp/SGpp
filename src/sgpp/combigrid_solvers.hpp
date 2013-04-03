@@ -1,9 +1,8 @@
-/*
- * combigrid_solvers.hpp
- *
- *  Created on: Jul 29, 2011
- *      Author: benk
- */
+/* ****************************************************************************
+* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
 
 #ifndef COMBIGRID_SOLVERS_HPP_
 #define COMBIGRID_SOLVERS_HPP_

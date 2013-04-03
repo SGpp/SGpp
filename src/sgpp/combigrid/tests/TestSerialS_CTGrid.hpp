@@ -1,9 +1,9 @@
-/*
- * TestSerialS_CTGrid.hpp
- *
- *  Created on: Feb 28, 2011
- *      Author: benk
- */
+/* ****************************************************************************
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Janos Benk (benk@in.tum.de)
 
 #ifndef TESTSERIALS_CTGRID_HPP_
 #define TESTSERIALS_CTGRID_HPP_
