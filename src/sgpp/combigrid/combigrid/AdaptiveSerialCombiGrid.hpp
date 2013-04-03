@@ -1,9 +1,9 @@
-/*
- * AdaptiveSerialCombiGrid.hpp
- *
- *  Created on: Jun 28, 2011
- *      Author: kowitz_local
- */
+/* ****************************************************************************
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Christoph Kowitz (kowitz@in.tum.de)
 
 #ifndef ADAPTIVESERIALCOMBIGRID_HPP_
 #define ADAPTIVESERIALCOMBIGRID_HPP_
