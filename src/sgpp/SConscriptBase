@@ -134,3 +134,4 @@ libsgppbasestatic = sg_env.StaticLibrary(target="sgppbase", source = src_objs_ba
 
 Export('libsgppbase')
 Export('libsgppbasestatic')
+

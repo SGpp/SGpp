@@ -1,8 +1,8 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2011 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
 

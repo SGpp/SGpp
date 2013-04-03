@@ -1,8 +1,8 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
 #ifndef DATA_EXCEPTION_HPP
