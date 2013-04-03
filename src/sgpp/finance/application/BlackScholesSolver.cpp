@@ -1,8 +1,8 @@
-/******************************************************************************
+/* ****************************************************************************
 * Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+**************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
@@ -43,7 +43,8 @@ namespace sg
 namespace finance
 {
 
-  BlackScholesSolver::BlackScholesSolver(bool useLogTransform, bool usePAT) : ParabolicPDESolver()
+  BlackScholesSolver::BlackScholesSolver(bool useLogTransform, bool usePAT)
+  	  : ParabolicPDESolver()
   {
     this->bStochasticDataAlloc = false;
     this->bGridConstructed = false;
@@ -67,6 +68,14 @@ namespace finance
     this->avgInnerGridSize = 0;
     this->current_time = 0.0;
     this->tBoundaryType = "freeBoundaries";
+    this->eigval_covar = NULL;
+    this->dStrike = 0.0;
+    this->eigvec_covar = NULL;
+    this->mu_hat = NULL;
+    this->mus = NULL;
+    this->r = 0.0;
+    this->refineThreshold = 0.0;
+    this->rhos = NULL;
   }
 
   BlackScholesSolver::~BlackScholesSolver()

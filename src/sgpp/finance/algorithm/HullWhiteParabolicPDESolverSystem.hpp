@@ -54,7 +54,7 @@ protected:
 	/// refine mode during solving Black Scholes Equation: classic or maxLevel
 	std::string refineMode;
 	/// maxLevel max. Level of refinement
-	size_t refineMaxLevel;
+	sg::base::GridIndex::level_type refineMaxLevel;
 
 
 	std::vector<size_t> HWalgoDims;
