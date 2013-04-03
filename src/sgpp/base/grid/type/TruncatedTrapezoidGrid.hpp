@@ -1,9 +1,9 @@
-/*
- * TruncatedTrapezoidGrid.hpp
- *
- *  Created on: Aug 4, 2010
- *      Author: aliz
- */
+/* ****************************************************************************
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author aliz eva
 
 #ifndef TRUNCATEDTRAPEZOIDGRID_HPP_
 #define TRUNCATEDTRAPEZOIDGRID_HPP_

@@ -1,9 +1,9 @@
-/*
- * OperationDensitySampling1DLinear.hpp
- *
- *  Created on: Dec 4, 2012
- *      Author: Emily Mo-Hellenbrand
- */
+/* ****************************************************************************
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author: Emily Mo-Hellenbrand
 
 #ifndef OPERATIONDENSITYSAMPLING1DLINEAR_HPP_
 #define OPERATIONDENSITYSAMPLING1DLINEAR_HPP_
