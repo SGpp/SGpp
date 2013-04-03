@@ -57,7 +57,7 @@ namespace base
      * @param storage Hashmap that stores the grid points
      * @param level Grid level
      */
-    void regular(GridStorage* storage, int level)
+    void regular(GridStorage* storage, size_t level)
     {
       if(storage->size() > 0)
 	{
@@ -75,7 +75,7 @@ namespace base
      * @param storage Hashmap that stores the grid points
      * @param level Grid level
      */
-    void full(GridStorage* storage, int level)
+    void full(GridStorage* storage, size_t level)
     {
       if(storage->size() > 0)
 	{
@@ -93,7 +93,7 @@ namespace base
      * @param storage Hashmap that stores the grid points
      * @param level Grid level
      */
-    void fullWithBoundary(GridStorage* storage, int level)
+    void fullWithBoundary(GridStorage* storage, size_t level)
     {
       if(storage->size() > 0)
 	{
@@ -112,7 +112,7 @@ namespace base
      * @param level maximum level of the sparse grid
      * @param bTrapezoidBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
      */
-    void regularWithBoundaries(GridStorage* storage, int level, bool bTrapezoidBoundaries)
+    void regularWithBoundaries(GridStorage* storage, size_t level, bool bTrapezoidBoundaries)
     {
       if(storage->size() > 0)
 	{
@@ -166,7 +166,7 @@ namespace base
      * @param storage Hashmap, that stores the grid points
      * @param level maximum level of the square root  grid
      */
-    void squareRoot(GridStorage* storage, int level)
+    void squareRoot(GridStorage* storage, size_t level)
     {
       if(storage->size() > 0)
 	{
@@ -195,7 +195,7 @@ namespace base
      * @param level maximum level of the square root  grid
      * @param k the parameter which determines the maximum level of the gridpoints for every dimension
      */
-    void truncated(GridStorage* storage, int level,int k)
+    void truncated(GridStorage* storage, size_t level, int k)
     {
       if(storage->size() > 0)
 	{
