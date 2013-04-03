@@ -66,6 +66,16 @@ HestonSolver::HestonSolver(bool useLogTransform) : ParabolicPDESolver()
 	this->avgInnerGridSize = 0;
 	this->current_time = 0.0;
 	this->tBoundaryType = "freeBoundaries";
+
+	// @todo set to random value to remove compiler warnings due to uninitialized members
+	this->dStrike = 0.0;
+	this->hMatrix = NULL;
+	this->kappas = NULL;
+	this->numAssets = 0;
+	this->r = 0.0;
+	this->refineThreshold = 0.0;
+	this->thetas = NULL;
+	this->volvols = NULL;
 }
 
 HestonSolver::~HestonSolver()
@@ -189,7 +199,7 @@ void HestonSolver::refineInitialGridWithPayoff(DataVector& alpha, double strike,
 	}
 }
 
-void HestonSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel)
+void HestonSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel)
 {
 	size_t nRefinements = 0;
 
@@ -426,7 +436,7 @@ void HestonSolver::initScreen()
 	this->myScreen->writeStartSolve("Multidimensional Heston Solver");
 }
 
-void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
+void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold)
 {
 	this->useCoarsen = true;
 	this->coarsenThreshold = coarsenThreshold;
@@ -490,7 +500,7 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 {
 	double tmp;
 
-	BlackScholesSolver* bsSolver = new BlackScholesSolver();
+	//BlackScholesSolver* bsSolver = new BlackScholesSolver();
 
 	if (this->bGridConstructed)
 	{
@@ -557,7 +567,7 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 					else if(numAssets == 1 && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
 					{
 						// Smax boundary for a single asset. exponential function
-						double constantC = 20.0;
+						//double constantC = 20.0;
 						double constantB = (strike*pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary),20.0))/(1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
 						double constantA = strike + constantB;
 						alpha[i] = constantA*pow(exp(dblFuncValues[1] - this->myBoundingBox->getBoundary(1).rightBoundary),20.0) - constantB;
@@ -622,7 +632,7 @@ void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike,
 
 		// determine the number of grid points for both grids
 		size_t numTotalGridPoints = myGridStorage->size();
-		size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
+		//size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
 
 		size_t numNonZeroInner = 0;
 		for (size_t i = 0; i < numTotalGridPoints; i++)
@@ -649,7 +659,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 {
 	double tmp;
 
-	BlackScholesSolver* bsSolver = new BlackScholesSolver();
+	//BlackScholesSolver* bsSolver = new BlackScholesSolver();
 
 	if (this->bGridConstructed)
 	{
@@ -719,7 +729,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double st
 					else if(numAssets == 1 && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary)
 					{
 						// Smax boundary for a single asset. exponential function
-						double constantC = 20.0;
+						//double constantC = 20.0;
 						double constantB = (strike*pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary),20.0))/(1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
 						double constantA = strike + constantB;
 						alpha[i] = constantA*pow(exp(dblFuncValues[1] - this->myBoundingBox->getBoundary(1).rightBoundary),20.0) - constantB;
@@ -1254,8 +1264,8 @@ void HestonSolver::CompareHestonSolutionToExact(sg::base::DataVector* solution, 
 
 		double offset_x = dimOne.leftBoundary;
 		double offset_y = dimTwo.leftBoundary;
-		double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/(PointsPerDimension-1));
-		double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/(PointsPerDimension-1));
+		double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary)/double(PointsPerDimension-1));
+		double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary)/double(PointsPerDimension-1));
 
 		size_t points = (size_t)PointsPerDimension;
 

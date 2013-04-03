@@ -90,7 +90,7 @@ protected:
 	bool useLogTransform;
 
 	/// Max. level for refinement during solving
-	size_t refineMaxLevel;
+	sg::base::GridIndex::level_type refineMaxLevel;
 
 	/// Variable to store needed solving iterations
 	size_t nNeededIterations;
@@ -202,7 +202,7 @@ public:
 	 * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
 	 * @param maxLevel maximum level of refinement
 	 */
-	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel);
+	virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel);
 
 	/**
 	 * In order to solve the multi dimensional Heston Equation you have to provided
@@ -280,7 +280,7 @@ public:
 	 *	@param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
 	 *	@param refineThreshold Threshold needed to determine if a grid point should be refined
 	 */
-	virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+	virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
 	/**
 	 * Evaluates the current option value

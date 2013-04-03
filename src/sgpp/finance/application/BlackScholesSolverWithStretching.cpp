@@ -49,6 +49,9 @@ BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(bool useLogTr
 	this->avgInnerGridSize = 0;
 //	std::cout<<"BSSolverWithStretching\n";
 	this->tBoundaryType = "freeBoundaries";
+
+	// @todo set to random value to remove compiler warnings due to uninitialized members
+	this->myStretching = NULL;
 }
 
 BlackScholesSolverWithStretching::~BlackScholesSolverWithStretching()
@@ -203,7 +206,7 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(sg::base::Dat
 	}
 }
 
-void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, size_t maxLevel)
+void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel)
 {
 	size_t nRefinements = 0;
 
@@ -568,13 +571,13 @@ void BlackScholesSolverWithStretching::printGrid(sg::base::DataVector& alpha, si
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printGridDomainStretching(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const
+void BlackScholesSolverWithStretching::printGridDomainStretching(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const
 {
 	sg::base::GridPrinterForStretching myPrinter(*this->myGrid);
 	myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename)const
+void BlackScholesSolverWithStretching::printGridDomain(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename)const
 {
 	throw new sg::base::application_exception("BlackScholesSolverWithStretching::printGridDomain: sg::base::BoundingBox not supported, use printGridDomainStretching instead!");
 }
