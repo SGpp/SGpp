@@ -74,7 +74,7 @@ protected:
 	static const size_t maxParallelDims_ = TASKS_PARALLEL_UPDOWN;
 
 	/// Map of integer to function pointer. This is used to map the dimension situation to the relevant method handler.
-	std::map<int,MFP> fnMap;
+	std::map<size_t,MFP> fnMap;
 
 	/**
 	 * Utility method to generate the fnMap member for mappings.

@@ -30,12 +30,12 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(sg::base::Grid* g
 	OperationMatrix* opMatrix = sg::op_factory::createOperationLTwoDotProduct(
 			*grid);
 
-	unsigned int size = grid->getStorage()->size();
+	size_t size = grid->getStorage()->size();
 	sg::base::DataVector unit(size);
 	unit.setAll(0.0);
 	sg::base::DataVector result(size);
 
-	for (unsigned int i = 0; i < size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		//Compute i-th unit vector
 		if (i > 0)
 			unit.set(i - 1, 0.0);
@@ -50,8 +50,8 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(sg::base::Grid* g
 void OperationMatrixLTwoDotExplicitLinearBoundary::mult(sg::base::DataVector& alpha,
 		sg::base::DataVector& result) {
 
-	unsigned int nrows = m_->getNrows();
-	unsigned int ncols = m_->getNcols();
+	size_t nrows = m_->getNrows();
+	size_t ncols = m_->getNcols();
 
 	if (alpha.getSize() != ncols || result.getSize() != nrows) {
 		throw sg::base::data_exception("Dimensions do not match!");
@@ -60,9 +60,9 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::mult(sg::base::DataVector& al
 
 	//Standard matrix multiplication:
 	double temp = 0.;
-	unsigned int acc = 0;
-	for (unsigned int i = 0; i < nrows; i++) {
-		for (unsigned int j = 0; j < ncols; j++) {
+	size_t acc = 0;
+	for (size_t i = 0; i < nrows; i++) {
+		for (size_t j = 0; j < ncols; j++) {
 			temp += data[j + acc] * alpha[j];
 		}
 		result[i] = temp;

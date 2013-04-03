@@ -115,7 +115,7 @@ public:
 	 * @param dThreshold Threshold for a point's surplus for refining this point
 	 * @param maxLevel maxLevel of refinement
 	 */
-	void refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel);
+	void refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, sg::base::GridStorage::index_type::level_type maxLevel);
 
 	/**
 	 * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -150,7 +150,7 @@ public:
 	 * @param norm_mu the expected values of the normal distribution for every grid dimension
 	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
-	void refineInitialGridSurplusToMaxLevelSubDomain(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+	void refineInitialGridSurplusToMaxLevelSubDomain(sg::base::DataVector& alpha, double dThreshold, sg::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
 	/**
 	 * Coarsens a grid by taking the grid's coefficients into account. This coarsen method

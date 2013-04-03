@@ -187,7 +187,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(sg::base::DataVector& alpha, i
 	}
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel)
+void PDESolver::refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, double dThreshold, sg::base::GridStorage::index_type::level_type maxLevel)
 {
 	if (bGridConstructed)
 	{
@@ -207,7 +207,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(sg::base::DataVector& alpha, 
 	}
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(sg::base::DataVector& alpha, double dThreshold, size_t maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
+void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(sg::base::DataVector& alpha, double dThreshold, sg::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma)
 {
 	if (bGridConstructed)
 	{
