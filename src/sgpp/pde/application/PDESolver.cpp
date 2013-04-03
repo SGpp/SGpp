@@ -255,13 +255,13 @@ void PDESolver::coarsenInitialGridSurplus(sg::base::DataVector& alpha, double dT
 	}
 }
 
-void PDESolver::printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const
+void PDESolver::printGrid(sg::base::DataVector& alpha, size_t PointesPerDimension, std::string tfilename) const
 {
 	sg::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void PDESolver::printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const
+void PDESolver::printGridDomain(sg::base::DataVector& alpha, size_t PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const
 {
 	sg::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGridDomain(alpha, tfilename, GridArea, PointesPerDimension);
