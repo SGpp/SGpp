@@ -41,11 +41,13 @@ public:
 	/**
 	 * Std-Constructer
 	 *
+	 * @param odesolver the selected ode solver
 	 * @param nTimesteps number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
 	 * @param eps the epsilon for the stepsize control
 	 * @param sc
 	 * @param screen possible pointer to a sg::base::ScreenOutput object
+	 * @param gamma used damping factor, default is 0.5
 	 */
 	StepsizeControlEJ(std::string odesolver, size_t nTimesteps, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen = NULL, double gamma = 0.5);
 

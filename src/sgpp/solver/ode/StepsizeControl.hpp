@@ -27,7 +27,7 @@ namespace solver
 class StepsizeControl : public ODESolver
 {
 private:
-
+	/// identify of grid coarsening is used
 	bool useCoarsen;
 
 
@@ -35,6 +35,7 @@ protected:
 	/// Pointer to sg::base::ScreenOutput object
 	sg::base::ScreenOutput* myScreen;
 
+	/// temp. Stepsize Control
 	double mySC;
 
 	/// epsilon for the step size control
@@ -54,6 +55,7 @@ protected:
 
 	std::string filename;
 
+	/// damping factor
 	double _gamma;
 
 
