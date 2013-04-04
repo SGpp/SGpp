@@ -236,6 +236,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
 # @param ApplyMatrix procedure that applies A to a vector
 # @param reuse starting vector is 0 by default. If true, use current values in alpha
 # @param verbose verbose output (default False)
+# @param max_threshold maximal threshold
 # @return tuple (number of iterations, final norm of residuum)
 def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, max_threshold=None):
     if verbose:

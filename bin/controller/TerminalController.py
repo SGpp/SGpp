@@ -119,6 +119,7 @@ class TerminalController:
     
     ## Construct all objects from the information, defined in the job file
     #
+    # @param cls python keyword for class method (no specification needed)
     # @param filename: string path to the file with job settings
     @classmethod
     def constructObjectsFromFile(cls, filename):
@@ -270,6 +271,7 @@ class TerminalController:
     
     ## Construct all objects form the information, defined with arguments
     #
+    # @param cls python keyword for class method (no specification needed)
     # @param options: OptionParser result object with options
     @classmethod
     def constructObjectsFromOptions(cls, options):       
@@ -396,6 +398,7 @@ class TerminalController:
     
     ## Convert list of items [(key1,value1), ...] to dictionary
     #
+    # @param cls python keyword for class method (no specification needed)
     # @param items: list of items
     # @return: dictionary
     @classmethod
@@ -421,6 +424,7 @@ class TerminalController:
     # You can execute the code with exec command and use builder object in your 
     # python code
     #
+    # @param cls python keyword for class method (no specification needed)
     # @param options: OptionParser result object with options
     @classmethod
     def generateBuilderCodeFromOptions(cls, options):    

@@ -170,6 +170,7 @@ class TrainingSpecification(object):
     
     ## Restores the TrainingSpecification object from the json object with attributes.
     #
+    # @param cls python keyword (do not specify)
     # @param jsonObject A json object.
     # @return The restored TrainingSpecification object.
     @classmethod

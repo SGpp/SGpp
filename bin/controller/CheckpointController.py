@@ -210,7 +210,7 @@ class CheckpointController(LearnerEventController):
 
     ## Loads sg.Grid from the checkpoint  of given iteration
     #@param iteration: integer iteration number
-    #@return @link sg.Grid Grid @endlink object
+    #@return Grid object
     def loadGrid(self, iteration):
         gridFile = self.composeName(iteration) + ".grid.gz"
         grid = GridFormatter().deserializeFromFile(gridFile)

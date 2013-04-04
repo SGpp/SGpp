@@ -26,7 +26,7 @@ NOTAFILE = -1
 # added. Otherwise value is appended to the list under key.
 # @param dict the dictionary
 # @param key the key
-# @param value the value
+# @param val the value
 def appendToDict(dict, key, val):
     if dict.has_key(key):
         dict[key].append(val)
@@ -245,9 +245,9 @@ def readData(filename):
 # @param grid Grid
 # @param alpha Corresponding coefficient DataVector
 # @param resolution Number of sampling points per dimension
-# @param (optional) mode: {'w'|'a'} to write or append, default 'w'
-# @param (optional) data points to plot
-# @param (optional) corresponding function values
+# @param mode {'w'|'a'} to write or append, default 'w' (optional)
+# @param data points to plot (optional)
+# @param fvals corresponding function values (optional)
 def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=None):
     p = DataVector(grid.getStorage().dim())
     fout = gzOpen(filename, mode)
@@ -298,10 +298,10 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
 # The output is suitable for Gnuplot.
 #
 # @param filename Filename to which data is written
-# @param grid Grid
-# @param alpha Corresponding coefficient DataVector
+# @param dim dimension
+# @param fctn function
 # @param resolution Number of sampling points per dimension
-# @param (optional) mode: {'w'|'a'} to write or append, default 'w'
+# @param mode {'w'|'a'} to write or append, default 'w' (optional)
 def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
     p = DataVector(dim)
     fout = gzOpen(filename, mode)
@@ -453,7 +453,7 @@ def readGrid(filename):
 # @param filename Filename prefix
 # @param grid Grid file
 # @param alpha Coefficient DataVector
-# @param adaptation (optional) number of adaptive step for refinement
+# @param adaption (optional) number of adaptive step for refinement
 # @param fold (optional) specifying which fold
 def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
     adapt_str = ""
@@ -513,18 +513,18 @@ def split_n_folds(data, num_partitions, seed=None):
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #-------------------------------------------------------------------------------
-## @brief 
+## @brief writes statistics
 #
-# @param 
-# @param 
+# @param filename filename
+# @param txt text to write to file
+# @param mode writing mode (default "a")
 def writeStats(filename, txt, mode = "a"):
     writeLockFile(filename + ".stats.gz", txt, mode)
 
 #-------------------------------------------------------------------------------
-## @brief 
+## @brief read checkpoint
 #
-# @param 
-# @param 
+# @param filename filename
 def readCheckpoint(filename):
     alpha = readAlphaARFF(filename+".alpha.arff")
     grid = readGrid(filename+".grid")
@@ -535,7 +535,7 @@ def readCheckpoint(filename):
 ## @brief (Recursively) creates a directory if not yet existant.
 #
 # @param path Path of directory
-# @param (optional) Tell what is been done
+# @param verbose Tell what is been done (optional)
 def makedir(path, verbose=False):
     if not os.path.isdir(path):
         os.makedirs(path)
@@ -544,7 +544,10 @@ def makedir(path, verbose=False):
     else:
         if verbose:
             print "Nothing done. Directory %s already existing." %(s)
-
+## @brief write ARFF data
+#
+# @param data data to write
+# @param merge flag to merge data (default False)
 def writeDataARFF(data, merge=False):
     if len(data) == 0:
         return

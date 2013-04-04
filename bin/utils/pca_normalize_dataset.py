@@ -4,9 +4,6 @@
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 ##
-# @package pca_normalize_dataset
-# @ingroup bin.utils
-# @author: Valeriy Khakhutskyy (khakhutv@in.tum.de)
 # Helper tool, normalize dataset using PCA algorithm
 # Data normalisation using principal components
 # 
@@ -36,7 +33,7 @@ def norm(mat):
 # deviation from the mean
 # @param mat: matrix points row-wise
 # @param koef: koefficient to determine the outliers
-# @param targets: list with target values for the points
+# @param target: list with target values for the points
 def remove_outliers(mat, koef, target=None):
 	#mat = mat.T
 	(size, dim) = shape(mat)
