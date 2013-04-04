@@ -42,6 +42,7 @@ namespace base
      * Constructor, must be bind to a grid
      *
      * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
+     * @param base the base for the polynomials
      */
     DehierarchisationModPoly(GridStorage* storage, SModPolyBase* base);
     /**
@@ -71,8 +72,7 @@ namespace base
      * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
      * @param index a iterator object of the grid
      * @param dim current fixed dimension of the 'execution direction'
-     * @param fl left value of the current region regarded in this step of the recursion
-     * @param fr right value of the current region regarded in this step of the recursion
+     * @param koeffs coefficients
      */
     void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs);
   };
