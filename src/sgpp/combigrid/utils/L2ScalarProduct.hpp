@@ -5,6 +5,9 @@
 **************************************************************************** */
 // @author Christoph Kowitz
 
+//code by Mathias Wong for a different combigrid/Opticom  implementation
+
+
 #ifndef L2SCALARPRODUCT_HPP_
 #define L2SCALARPRODUCT_HPP_
 #include <math.h>
