@@ -82,6 +82,7 @@ void PartitioningTool::getOpenMPPartitionSegment(int start, int end, size_t *seg
 	getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart, segmentEnd, blocksize);
 }
 
+#ifdef USE_MPI
 void PartitioningTool::getMPIPartitionSegment(int totalSize, size_t *size, size_t *offset, size_t blocksize)
 {
 	size_t end;
@@ -142,6 +143,7 @@ void PartitioningTool::calcMPIChunkedDistribution(int totalSize, int numChunksPe
 		currentGlobalOffset += thisProcSize;
 	}
 }
+#endif
 
 }
 }
