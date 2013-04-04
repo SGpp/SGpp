@@ -255,7 +255,6 @@ namespace std {
 //
 %include "src/sgpp/combigrid/fullgrid/CombiFullGrid.hpp"
 %template(doubleFullGrid) combigrid::FullGrid<double>;
-%template(L2ProductDouble) combigrid::L2ScalarProduct<double>;
 
 //%template(FullGridC) combigrid::FullGrid< complex<double> >;
 //%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
