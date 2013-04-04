@@ -54,6 +54,7 @@ public:
 	 * Constructor, must be bind to a grid
 	 *
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
+	 * @param shadowstorage a storage containing intermediate results to support the conversion
 	 */
 	ConvertLinearToPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
 		storage(storage), shadowstorage(shadowstorage)
