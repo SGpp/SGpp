@@ -39,7 +39,7 @@ private:
 	 * The grid is initialized based on Cartesian coordinates!
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
@@ -49,7 +49,7 @@ private:
 	 * The grid is initialized based on log-transformed coordinates!
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
@@ -62,8 +62,8 @@ private:
 	 * This method is overwritten in order to support grids with logarithmic coordinates.
 	 *
 	 * @param alpha contains dehierarchized sparse grid coefficients containing the values of the multi dimensional normal distribution after call
-	 * @param std_mu the expected values of the normal distribution for every grid dimension
-	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
+	 * @param norm_mu the expected values of the normal distribution for every grid dimension
+	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
 	virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
@@ -123,7 +123,7 @@ public:
 	 * Inits the alpha vector with a payoff function of an European call option or put option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
@@ -135,7 +135,7 @@ public:
 	 *  @param strike strike price of the option
 	 *  @param t maturity time
 	 *  @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
-	 *  @param flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
+	 *  @param hierarchized flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
 	 */
 	virtual void getAnalyticAlpha1D(sg::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
 
@@ -153,7 +153,7 @@ public:
 	 *
 	 * @param alpha the sparse grid's coefficients
 	 * @param tFilename the name of file contain the interpolation error
-	 * @param numTestpoints Number of equal distribute testpoints @money
+	 * @param numTestpoints Number of equal distribute testpoints at the money
 	 * @param strike the option's strike
 	 */
 	virtual void printPayoffInterpolationError2D(sg::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
@@ -166,8 +166,6 @@ public:
 	 * @param payoffType the payoff type
 	 * @param strike the option's strike
 	 * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
-	 *
-	 * @param number of gridpoints at money
 	 */
 	virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
