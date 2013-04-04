@@ -26,7 +26,7 @@ public:
 
 	/** prolongation with the specified coefficients
      * 
-	 * @param nrSpace [IN] number of unknowns per node
+	 * @param fgFine fine grid to be restricted
      * @param vectFine vector containing the elements of the fine full grid
      * @param coefFine coefficient with which the values from the fine grid should be weighted
      * @param fgCoarse resulting coarse grid
