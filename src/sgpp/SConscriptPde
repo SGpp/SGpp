@@ -59,7 +59,9 @@ pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.cpp
 pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.cpp
 pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.cpp
 pde/basis/prewavelet/operation/OperationLaplacePrewavelet.cpp
-
+pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
+pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.cpp
+pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
 pde/operation/PdeOpFactory.cpp
 """)
 
