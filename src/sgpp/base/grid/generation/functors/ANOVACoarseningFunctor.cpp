@@ -41,7 +41,7 @@ ANOVACoarseningFunctor::ANOVACoarseningFunctor(DataVector* alpha, size_t
         index = *(iter->first);
         seq = (*storage)[&index];
         int level_sum = index.getLevelSum();
-        if (level_sum > storage->dim())
+        if (level_sum > static_cast<int>(storage->dim()))
         { //Ignore the ANOVA Component f0
             double dim = static_cast<double>(storage->dim());
             L2_value = fabs(alpha->get(seq))
