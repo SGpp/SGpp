@@ -46,7 +46,6 @@ public:
    * Create a grid for each class
    *
    * @param GridConfig grid config
-   * @param nrClasses number of classes
    */
   virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig);
 
