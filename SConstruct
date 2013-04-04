@@ -320,7 +320,7 @@ if not env.GetOption('clean'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
 
     # check if the math header is available
-    if not config.CheckLibWithHeader('m', 'math.h', 'c++'):
+    if not config.CheckLibWithHeader('cmath', 'cmath', 'c++'):
         sys.stderr.write("Error: Math headers are missing.\n")
         Exit(1)
 
