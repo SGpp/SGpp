@@ -51,7 +51,7 @@ public:
 	 * @param refineThreshold Threshold to decide, if a grid point should be refined
 	 * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
 	 * @param refineMaxLevel max. level of refinement during solving
-	 * @param dimension of Hull-White (= where r value is taken)
+	 * @param dim_HW of Hull-White (= where r value is taken)
 	 */
    	ModifiedBlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
 			sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,

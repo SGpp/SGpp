@@ -62,7 +62,7 @@ public:
 	 *
 	 * @param sparse_grid the sparse grid
 	 * @param alpha the sparse grid's coefficients
-	 * @param file_extensions some file extension (e.g. numbering) in order to distinguish different outputs that are written
+	 * @param file_extension some file extension (e.g. numbering) in order to distinguish different outputs that are written
 	 */
 	void calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alpha, std::string file_extension);
 };
