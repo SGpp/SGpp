@@ -97,7 +97,7 @@ public:
 	 * Inits the alpha vector with a payoff function of an European call option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 * @param sigma the sigma value in HullWhite model
 	 * @param a the value of a in HullWhite model
@@ -123,7 +123,7 @@ public:
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
 	 * operations (need for space discretization) should be applied)
 	 *
-	 * @param algoDims std::vector containing the algorithmic dimensions
+	 * @param newAlgoDims std::vector containing the algorithmic dimensions
 	 */
 	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 

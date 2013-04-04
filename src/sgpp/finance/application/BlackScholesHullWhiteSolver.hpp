@@ -190,7 +190,7 @@ public:
 	 *
 	 * @param payoffType the payoff type
 	 * @param strike the option's strike
-	 * @param eps epsilon to determine the gridpoints, use if @money is not exactly on grid
+	 * @param eps epsilon to determine the gridpoints, use if at the money is not exactly on grid
 	 */
 	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
