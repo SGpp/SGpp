@@ -951,7 +951,7 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double
 	float epsilon = float(0.001);
 	float sc = 1;
 	float gamma = 0.5;
-	ODESolver* myODESolver;
+	ODESolver* myODESolver = NULL;
 	std::istringstream iss(Solver);
 	if(Solver[2] == '2') {
 		getline(iss,tmp,':');
@@ -987,7 +987,9 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double
 	} else std::cerr << "BlackScholesSolver::solveSC(): Unknown Stepsize Control #" << Solver[3] << "#" << Solver << std::endl;
 
 	BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose, myODESolver, "CrNic");
-	delete myODESolver;
+
+	if (myODESolver != NULL)
+		delete myODESolver;
 }
 
   void BlackScholesSolver::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose)
