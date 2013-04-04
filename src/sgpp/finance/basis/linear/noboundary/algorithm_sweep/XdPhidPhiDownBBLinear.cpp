@@ -56,9 +56,9 @@ void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVect
 	index.get(dim, l, i);
 
 	double i_dbl = static_cast<double>(i);
-	int l_int = static_cast<int>(l);
+	//int l_int = static_cast<int>(l);
 
-	double h = (1.0/(static_cast<double>(1<<(l_int))));
+	//double h = (1.0/(static_cast<double>(1<<(l_int))));
 
 	double diagonal = 2*i_dbl;
 
@@ -97,7 +97,7 @@ void XdPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVe
 
 	index.get(dim, l, i);
 
-	double i_dbl = static_cast<double>(i);
+	//double i_dbl = static_cast<double>(i);
 	int l_int = static_cast<int>(l);
 
 	double h = (1.0/(static_cast<double>(1<<(l_int))));

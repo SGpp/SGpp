@@ -27,7 +27,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(s
 		sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 		double dStrike, std::string option_type,
 		bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-		int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel)
+		int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel)
 {
 	this->BoundGrid = &SparseGrid;
 	this->alpha_complete = &alpha;
