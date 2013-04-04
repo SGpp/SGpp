@@ -1028,9 +1028,7 @@ protected:
 	 * @param basis a sparse grid basis
 	 * @param point evaluation point within the domain
 	 * @param current_dim the dimension currently looked at (recursion parameter)
-	 * @param value the value of the evaluation of the current basis function up to (excluding) dimension current_dim (product of the evaluations of the one-dimensional ones)
-	 * @param working iterator working on the GridStorage of the basis
-	 * @param source array of indices for each dimension (identifying the indices of the current grid point)
+	 * @param iter iterator working on the GridStorage of the basis
 	 * @param result a vector to store the results in
 	 */
 
