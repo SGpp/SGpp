@@ -157,7 +157,11 @@ class TestDataVector(unittest.TestCase):
     def testArray(self):
         from sys import version_info
         from pysgpp import DataVector
-        from numpy import array,ndarray
+        try:
+            from numpy import array,ndarray
+        except ImportError:
+            # if numpy not installed, ignore this test
+            return
         
         x = DataVector([1,2,3])
         y = array([1,2,3])

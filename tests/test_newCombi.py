@@ -9,8 +9,6 @@ from pysgpp import AdaptiveSerialCombiGrid, CombiArbitraryScheme, \
     AdaptiveSerialCombiGridVariableCoefficients, BoolVector, IntVector,\
     CombigridLevelVector
 
-import numpy as np
-
 class toolsForTests:
     @staticmethod
     def getAllLevels(test, kernel):
