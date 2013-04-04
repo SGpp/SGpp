@@ -25,7 +25,15 @@ public:
 	virtual ~ProlongationRestriction() {;}
 
 	/** prolongation with the specified coefficients
-	 * @param nrSpace [IN] number of unknowns per node*/
+     * 
+	 * @param nrSpace [IN] number of unknowns per node
+     * @param vectFine vector containing the elements of the fine full grid
+     * @param coefFine coefficient with which the values from the fine grid should be weighted
+     * @param fgCoarse resulting coarse grid
+     * @param vectCoarse vector containing the elements of the coarse grid
+     * @param coefCoarse coefficient with which the elements from the coarse grid shall be weigthed
+     * @param nrSpace number of unknowns per node
+     */
 	static void prolongation(const FullGridD* fgFine ,
 			                 std::vector<double>& vectFine ,
 			                 double coefFine ,
@@ -35,6 +43,7 @@ public:
 			                 int nrSpace) ;
 
 	/** restriction with the specified coefficients
+     *
 	 * @param fgFine fine grid which shall be restricted
 	 * @param vectFine vector containing the elements of the fine full grid
 	 * @param coefFine coefficient with which the values from the fine grid should be weighted

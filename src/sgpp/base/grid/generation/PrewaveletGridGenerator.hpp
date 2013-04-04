@@ -30,9 +30,33 @@ protected:
 	typedef index_type::level_type level_t;
 
 private:
+
+    /**
+     * For the shadow storage, the two left and two right neighbors in each
+     * dimension of the refined point are required. This function only adds
+     * the point which are not in the actual grid to the shadow storage.
+     *
+     * @param index point added during refinement
+     * @param current_dim current dimension
+     * @param target_level target level
+     * @param iter iterator for grid storage
+     * @param shadowIter iterator for shadow storage
+     */
 	void addNeighbours(index_type& index, size_t current_dim,
 			level_t target_level, GridStorage::grid_iterator& iter, GridStorage::grid_iterator& shadowIter);
+
+    /**
+     * This function ensures that the special adaptive prewavelet grid points have parents.
+     *
+     * @param iter iterator for grid storage
+     * @param shadowIter iterator for shadow storage
+     */
 	void insertParents(GridStorage::grid_iterator& iter, GridStorage::grid_iterator& shadowIter);
+
+    /**
+     * If during the refinement one or more points of the shadow register are added
+     * to the actual grid then we have to remove these points from the shadow storage.
+     */
 	void consolidateShadow();
 
 public:
