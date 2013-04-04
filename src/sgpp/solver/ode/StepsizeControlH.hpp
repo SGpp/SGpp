@@ -45,11 +45,12 @@ public:
 	/**
 	 * Std-Constructer
 	 *
-	 * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
+	 * @param odesolver the mode of the euler that should be executed, must be ExEul or ImEul
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
 	 * @param eps the epsilon for the step size control
 	 * @param screen possible pointer to a sg::base::ScreenOutput object
+	 * @param gamma damping factor
 	 */
 	StepsizeControlH(std::string odesolver, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL, double gamma = 0.9);
 

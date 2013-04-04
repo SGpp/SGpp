@@ -27,21 +27,11 @@ namespace solver
 class VarTimestep : public StepsizeControl
 {
 protected:
-	/// Pointer to sg::base::ScreenOutput object
-	//sg::base::ScreenOutput* myScreen;
-
-	/// epsilon for the step size control
-	//double myEps;
-
 	void predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
 			double tmp_timestepsize, sg::base::DataVector &dv, sg::base::DataVector &corr, sg::base::DataVector *rhs);
 	void corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,double tmp_timestepsize, sg::base::DataVector &dv, sg::base::DataVector *rhs);
 
-	//double twoNorm(sg::base::DataVector &dv1, sg::base::DataVector &dv2);
-
 	virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon);
-
-	///std::string filename;
 
 	std::string _predictor;
 	std::string _corrector;
@@ -51,11 +41,13 @@ public:
 	/**
 	 * Std-Constructer
 	 *
-	 * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
+	 * @param pred used predictor
+	 * @param corr used corrector
 	 * @param imax number of maximum executed iterations
 	 * @param timestepSize the size of one timestep
 	 * @param eps the epsilon for the step size control
 	 * @param screen possible pointer to a sg::base::ScreenOutput object
+	 * @param gamma damping factor
 	 */
 	VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL, double gamma = -1);
 
