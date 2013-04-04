@@ -51,7 +51,7 @@ protected:
 	DataVector* alpha;
 
 	/// number of grid points to remove
-	int removements_num;
+	size_t removements_num;
 
 	/// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
 	double threshold;
