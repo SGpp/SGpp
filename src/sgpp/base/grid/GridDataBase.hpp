@@ -59,6 +59,9 @@ private:
    * to current database. Overwrites existing entries. To load a new database, 
    * use GridDataBase::fromFile(std::string filename).
    * @param filename name of file
+   * @param ftype type of stream
+   * @param dim dimension
+   * @param fin file stream
    */
   void _loadTypeDim(const std::string filename, char &ftype, int &dim, std::ifstream &fin);
 
@@ -67,7 +70,8 @@ private:
    * to current database. Overwrites existing entries. To load a new database, 
    * use GridDataBase::fromFile(std::string filename).
    * closes filestream fin at end
-   * @param filename name of file
+   * @param fin file stream
+   * @param ftype type of stream
    */
   void _loadData(std::ifstream &fin, char &ftype);
 
