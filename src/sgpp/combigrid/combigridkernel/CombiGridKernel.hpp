@@ -181,7 +181,7 @@ public:
 
 	/** changing the levels and coefs*/
 	void updateCombiScheme(
-	/* CombiSchemeBasis* currentScheme_,*/std::vector<int> newCoef,
+	/* CombiSchemeBasis* currentScheme_,*/std::vector<double> newCoef,
 			std::vector<std::vector<int> > newFullGridLevels,
 			std::vector<int> changes) {
 //		CombigridLevelVector current(currentScheme_[0].getLevels(),currentScheme_[0].getCoef());
