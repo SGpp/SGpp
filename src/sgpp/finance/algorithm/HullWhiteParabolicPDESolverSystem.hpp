@@ -90,7 +90,7 @@ public:
 		    double a, double TimestepSize, std::string OperationMode = "ExEul",
 		    bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
 		    int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
-		    size_t refineMaxLevel = 0, int dim_HW = 1);
+		    sg::base::GridIndex::level_type refineMaxLevel = 0, int dim_HW = 1);
 
 	/**
 	 * Std-Destructor

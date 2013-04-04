@@ -67,7 +67,7 @@ private:
 	/// number of points the are coarsened in each coarsening-step
 	int numCoarsenPoints;
 	/// max. level for refinement during solving
-	size_t refineMaxLevel;
+	sg::base::GridIndex::level_type refineMaxLevel;
 	/// variable to store needed solving iterations
 
 

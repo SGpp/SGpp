@@ -23,7 +23,7 @@ namespace finance
 HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double sigma,
 			double theta, double a, double TimestepSize, std::string OperationMode,
 			bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-			int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel,
+			int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel,
 			int dim_HW)
 {
 	this->BoundGrid = &SparseGrid;

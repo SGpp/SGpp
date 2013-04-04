@@ -63,7 +63,7 @@ public:
 			sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
 			double dStrike, std::string option_type,
 			bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
+			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
