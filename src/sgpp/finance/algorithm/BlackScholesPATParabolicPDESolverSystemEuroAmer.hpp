@@ -113,6 +113,9 @@ public:
 
 	virtual void finishTimestep();
 
+	/**
+	 * @param specify if last time step
+	 */
 	virtual void coarsenAndRefine(bool isLastTimestep = false);
 
 	void startTimestep();
