@@ -37,7 +37,6 @@ class TestLearnerBuilder(unittest.TestCase):
     # test the functions @link bin.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
     # @link bin.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
     # @link bin.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
-    # @link bin.learner.LearnerBuilder.StopPolicyDescriptor.withAdaptiveItarationLimit() LearnerBuilder.withAdaptiveItarationLimit() @endlink
     # @link bin.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
     # @link bin.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
     # @link bin.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink

@@ -35,7 +35,7 @@ class TestTerminalController(unittest.TestCase):
     
     
     ##
-    # Tests the function @link bin.controller.TerminalController.TerminalController.constructObjectsFromFile() TerminalController.() @endlink
+    # Tests the function @link bin.controller.TerminalController.TerminalController.constructObjectsFromFile TerminalController @endlink
     def testConstructObjectsFromFile(self,):
         jobfile = 'testsettings.job'
         
