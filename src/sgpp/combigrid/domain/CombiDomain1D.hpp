@@ -59,6 +59,7 @@ public:
 
 	/** flocated the point on one axis
 	 * @param coordReal the coord on real domain
+	 * @param level_in input level
 	 * @param startIndex the left index of the cell
 	 * @param intersect the intersection of the cell
 	 */
