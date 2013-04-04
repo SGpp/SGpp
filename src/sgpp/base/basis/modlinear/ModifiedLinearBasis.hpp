@@ -10,45 +10,37 @@
 
 #include <cmath>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * modified linear base functions.
- *
- * @version $HEAD$
- */
- template<class LT, class IT>
-class ModifiedLinearBasis
-{
-public:
-	/**
-	 * Evaluate a basis function.
-	 * Has a dependence on the absolute position of grid point and support.
-	 */
-	double eval(LT level, IT index, double p)
-	{
-		if(level == 1)
-		{
-			return 1.0;
-		}
-		else if(index == 1)
-		{
-			return 2.0 - (1<<level) * p;
-		}
-		else if(static_cast<int>(index) == static_cast<int>((1<<level)-1))
-		{
-			return (1<<level) * p - index + 1.0;
-		}
-		return 1.0 - fabs((1<<level) * p - index);
-	}
-};
+    /**
+     * modified linear base functions.
+     *
+     * @version $HEAD$
+     */
+    template<class LT, class IT>
+    class ModifiedLinearBasis {
+      public:
+        /**
+         * Evaluate a basis function.
+         * Has a dependence on the absolute position of grid point and support.
+         */
+        double eval(LT level, IT index, double p) {
+          if (level == 1) {
+            return 1.0;
+          } else if (index == 1) {
+            return 2.0 - (1 << level) * p;
+          } else if (static_cast<int>(index) == static_cast<int>((1 << level) - 1)) {
+            return (1 << level) * p - index + 1.0;
+          }
 
-  // default type-def (unsigned int for level and index)
-  typedef ModifiedLinearBasis<unsigned int, unsigned int> SModLinearBase;
-}
+          return 1.0 - fabs((1 << level) * p - index);
+        }
+    };
+
+    // default type-def (unsigned int for level and index)
+    typedef ModifiedLinearBasis<unsigned int, unsigned int> SModLinearBase;
+  }
 }
 
 #endif /* MODIFIED_LINEAR_BASE_HPP */

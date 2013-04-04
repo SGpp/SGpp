@@ -7,149 +7,127 @@
 
 #include "solver/sle/ConjugateGradientsSP.hpp"
 
-namespace sg
-{
-namespace solver
-{
+namespace sg {
+  namespace solver {
 
-ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon) : SLESolverSP(imax, epsilon)
-{
-}
+    ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon) : SLESolverSP(imax, epsilon) {
+    }
 
-ConjugateGradientsSP::~ConjugateGradientsSP()
-{
-}
+    ConjugateGradientsSP::~ConjugateGradientsSP() {
+    }
 
-void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold)
-{
-	if (verbose == true)
-	{
-		std::cout << "Starting Conjugated Gradients" << std::endl;
-	}
+    void ConjugateGradientsSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
+      if (verbose == true) {
+        std::cout << "Starting Conjugated Gradients" << std::endl;
+      }
 
-	// needed for residuum calculation
-	float epsilonSquared = this->myEpsilon*this->myEpsilon;
-	// number off current iterations
-	this->nIterations = 0;
+      // needed for residuum calculation
+      float epsilonSquared = this->myEpsilon * this->myEpsilon;
+      // number off current iterations
+      this->nIterations = 0;
 
-	// define temporal vectors
-	sg::base::DataVectorSP temp(alpha.getSize());
-	sg::base::DataVectorSP q(alpha.getSize());
-	sg::base::DataVectorSP r(b);
+      // define temporal vectors
+      sg::base::DataVectorSP temp(alpha.getSize());
+      sg::base::DataVectorSP q(alpha.getSize());
+      sg::base::DataVectorSP r(b);
 
-	float delta_0 = 0.0f;
-	float delta_old = 0.0f;
-	float delta_new = 0.0f;
-	float beta = 0.0f;
-	float a = 0.0f;
+      float delta_0 = 0.0f;
+      float delta_old = 0.0f;
+      float delta_new = 0.0f;
+      float beta = 0.0f;
+      float a = 0.0f;
 
-	if (verbose == true)
-	{
-		std::cout << "All temp variables used in CG have been initialized" << std::endl;
-	}
+      if (verbose == true) {
+        std::cout << "All temp variables used in CG have been initialized" << std::endl;
+      }
 
-	if (reuse == true)
-	{
-		q.setAll(0.0f);
-		SystemMatrix.mult(q, temp);
-		r.sub(temp);
-		delta_0 = r.dotProduct(r)*epsilonSquared;
-	}
-	else
-	{
-		alpha.setAll(0.0f);
-	}
+      if (reuse == true) {
+        q.setAll(0.0f);
+        SystemMatrix.mult(q, temp);
+        r.sub(temp);
+        delta_0 = r.dotProduct(r) * epsilonSquared;
+      } else {
+        alpha.setAll(0.0f);
+      }
 
-	// calculate the starting residuum
-	SystemMatrix.mult(alpha, temp);
-	r.sub(temp);
+      // calculate the starting residuum
+      SystemMatrix.mult(alpha, temp);
+      r.sub(temp);
 
-	sg::base::DataVectorSP d(r);
+      sg::base::DataVectorSP d(r);
 
-	delta_old = 0.0f;
-	delta_new = r.dotProduct(r);
+      delta_old = 0.0f;
+      delta_new = r.dotProduct(r);
 
-	if (reuse == false)
-	{
-		delta_0 = delta_new*epsilonSquared;
-	}
+      if (reuse == false) {
+        delta_0 = delta_new * epsilonSquared;
+      }
 
-	this->residuum = (delta_0/epsilonSquared);
+      this->residuum = (delta_0 / epsilonSquared);
 
-	if (verbose == true)
-	{
-		std::cout << "Starting norm of residuum: " << (delta_0/epsilonSquared) << std::endl;
-		std::cout << "Target norm:               " << (delta_0) << std::endl;
-	}
+      if (verbose == true) {
+        std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) << std::endl;
+        std::cout << "Target norm:               " << (delta_0) << std::endl;
+      }
 
-	while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold))
-	{
-		// q = A*d
-		SystemMatrix.mult(d, q);
+      while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold)) {
+        // q = A*d
+        SystemMatrix.mult(d, q);
 
-		// a = d_new / d.q
-		a = delta_new/d.dotProduct(q);
+        // a = d_new / d.q
+        a = delta_new / d.dotProduct(q);
 
-		// x = x + a*d
-		alpha.axpy(a, d);
+        // x = x + a*d
+        alpha.axpy(a, d);
 
-		// Why ????
-		if ((this->nIterations % 50) == 0)
-		{
-			// r = b - A*x
-			SystemMatrix.mult(alpha, temp);
-			r.copyFrom(b);
-			r.sub(temp);
-		}
-		else
-		{
-			// r = r - a*q
-			r.axpy(-a, q);
-		}
+        // Why ????
+        if ((this->nIterations % 50) == 0) {
+          // r = b - A*x
+          SystemMatrix.mult(alpha, temp);
+          r.copyFrom(b);
+          r.sub(temp);
+        } else {
+          // r = r - a*q
+          r.axpy(-a, q);
+        }
 
 
-		// calculate new deltas and determine beta
-		delta_old = delta_new;
-		delta_new = r.dotProduct(r);
-		beta = delta_new/delta_old;
+        // calculate new deltas and determine beta
+        delta_old = delta_new;
+        delta_new = r.dotProduct(r);
+        beta = delta_new / delta_old;
 
-		this->residuum = delta_new;
+        this->residuum = delta_new;
 
-		if (verbose == true)
-		{
-			std::cout << "delta: " << delta_new << std::endl;
-		}
+        if (verbose == true) {
+          std::cout << "delta: " << delta_new << std::endl;
+        }
 
-		d.mult(beta);
-		d.add(r);
+        d.mult(beta);
+        d.add(r);
 
-		this->nIterations++;
-	}
+        this->nIterations++;
+      }
 
-	this->residuum = delta_new;
+      this->residuum = delta_new;
 
-	if (verbose == true)
-	{
-		std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations << ")" << std::endl;
-		std::cout << "Final norm of residuum: " << delta_new << std::endl;
-	}
-}
+      if (verbose == true) {
+        std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations << ")" << std::endl;
+        std::cout << "Final norm of residuum: " << delta_new << std::endl;
+      }
+    }
 
-void ConjugateGradientsSP::starting()
-{
-}
+    void ConjugateGradientsSP::starting() {
+    }
 
-void ConjugateGradientsSP::calcStarting()
-{
-}
+    void ConjugateGradientsSP::calcStarting() {
+    }
 
-void ConjugateGradientsSP::iterationComplete()
-{
-}
+    void ConjugateGradientsSP::iterationComplete() {
+    }
 
-void ConjugateGradientsSP::complete()
-{
-}
+    void ConjugateGradientsSP::complete() {
+    }
 
-}
+  }
 }

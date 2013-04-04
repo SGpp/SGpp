@@ -1,4 +1,4 @@
- /*****************************************************************************/
+/*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
@@ -28,50 +28,40 @@
 #include "base/algorithm/sweep.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_values)
-{
-	HierarchisationLinearBoundary func(this->storage);
-	sweep<HierarchisationLinearBoundary> s(func, this->storage);
+    void OperationHierarchisationLinearBoundary::doHierarchisation(DataVector& node_values) {
+      HierarchisationLinearBoundary func(this->storage);
+      sweep<HierarchisationLinearBoundary> s(func, this->storage);
 
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(node_values, node_values, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(node_values, node_values, 0);
-	}
-}
+      // N D case
+      if (this->storage->dim() > 1) {
+        for (size_t i = 0; i < this->storage->dim(); i++) {
+          s.sweep1D_Boundary(node_values, node_values, i);
+        }
+      }
+      // 1 D case
+      else {
+        s.sweep1D(node_values, node_values, 0);
+      }
+    }
 
-void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alpha)
-{
-	DehierarchisationLinearBoundary func(this->storage);
-	sweep<DehierarchisationLinearBoundary> s(func, this->storage);
+    void OperationHierarchisationLinearBoundary::doDehierarchisation(DataVector& alpha) {
+      DehierarchisationLinearBoundary func(this->storage);
+      sweep<DehierarchisationLinearBoundary> s(func, this->storage);
 
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(alpha, alpha, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(alpha, alpha, 0);
-	}
-}
+      // N D case
+      if (this->storage->dim() > 1) {
+        for (size_t i = 0; i < this->storage->dim(); i++) {
+          s.sweep1D_Boundary(alpha, alpha, i);
+        }
+      }
+      // 1 D case
+      else {
+        s.sweep1D(alpha, alpha, 0);
+      }
+    }
 
-}
+  }
 }

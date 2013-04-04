@@ -7,37 +7,30 @@
 
 #include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num, double threshold) : alpha(alpha), removements_num(removements_num), threshold(threshold)
-{
-}
+    SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num, double threshold) : alpha(alpha), removements_num(removements_num), threshold(threshold) {
+    }
 
-SurplusCoarseningFunctor::~SurplusCoarseningFunctor() {}
+    SurplusCoarseningFunctor::~SurplusCoarseningFunctor() {}
 
 
-double SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq)
-{
-	return fabs(alpha->get(seq));
-}
+    double SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
+      return fabs(alpha->get(seq));
+    }
 
-double SurplusCoarseningFunctor::start()
-{
-	return 1.0;
-}
+    double SurplusCoarseningFunctor::start() {
+      return 1.0;
+    }
 
-size_t SurplusCoarseningFunctor::getRemovementsNum()
-{
-	return this->removements_num;
-}
+    size_t SurplusCoarseningFunctor::getRemovementsNum() {
+      return this->removements_num;
+    }
 
-double SurplusCoarseningFunctor::getCoarseningThreshold()
-{
-	return this->threshold;
-}
+    double SurplusCoarseningFunctor::getCoarseningThreshold() {
+      return this->threshold;
+    }
 
-}
+  }
 }

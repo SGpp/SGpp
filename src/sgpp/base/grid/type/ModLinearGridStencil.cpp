@@ -15,49 +15,40 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(istr)
-{
+    ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(istr) {
 
-}
+    }
 
-ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) : GridStencil(BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-ModLinearGridStencil::~ModLinearGridStencil()
-{
-}
+    ModLinearGridStencil::~ModLinearGridStencil() {
+    }
 
-const char* ModLinearGridStencil::getType()
-{
-	return "modlinearstencil";
-}
+    const char* ModLinearGridStencil::getType() {
+      return "modlinearstencil";
+    }
 
-Grid* ModLinearGridStencil::unserialize(std::istream& istr)
-{
-	return new ModLinearGridStencil(istr);
-}
+    Grid* ModLinearGridStencil::unserialize(std::istream& istr) {
+      return new ModLinearGridStencil(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* ModLinearGridStencil::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* ModLinearGridStencil::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
 
-}
+  }
 }

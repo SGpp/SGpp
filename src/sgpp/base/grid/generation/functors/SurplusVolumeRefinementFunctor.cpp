@@ -8,39 +8,31 @@
 #include "base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 #include <cmath>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
-{
-}
+    SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold) {
+    }
 
 
-SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor()
-{
-}
+    SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor() {
+    }
 
-double SurplusVolumeRefinementFunctor::operator()(GridStorage* storage, size_t seq)
-{
-  return pow(2, static_cast<double>(-((int)storage->get(seq)->getLevelSum())))*fabs(alpha->get(seq));
-}
+    double SurplusVolumeRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
+      return pow(2, static_cast<double>(-((int)storage->get(seq)->getLevelSum()))) * fabs(alpha->get(seq));
+    }
 
-double SurplusVolumeRefinementFunctor::start()
-{
-	return 0.0;
-}
+    double SurplusVolumeRefinementFunctor::start() {
+      return 0.0;
+    }
 
-size_t SurplusVolumeRefinementFunctor::getRefinementsNum()
-{
-	return this->refinements_num;
-}
+    size_t SurplusVolumeRefinementFunctor::getRefinementsNum() {
+      return this->refinements_num;
+    }
 
-double SurplusVolumeRefinementFunctor::getRefinementThreshold()
-{
-	return this->threshold;
-}
+    double SurplusVolumeRefinementFunctor::getRefinementThreshold() {
+      return this->threshold;
+    }
 
-}
+  }
 }

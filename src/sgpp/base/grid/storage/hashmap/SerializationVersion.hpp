@@ -15,7 +15,7 @@
  * Version 2: every gridpoint is extended by one boolean that specifies if it's a leaf
  * Version 3: added support for the grid's bounding box
  * Version 4: needed for import of the Bonner's Sparse Grid Definition files; same as Ver 3
- * 			  but without leaf property, NOT FOR EXPORT
+ *        but without leaf property, NOT FOR EXPORT
  * Version 5: differentiate BoundingBox and Stretching, added support for stretching.
  */
 #define SERIALIZATION_VERSION 5

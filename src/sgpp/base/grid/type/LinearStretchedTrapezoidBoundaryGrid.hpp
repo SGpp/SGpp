@@ -12,47 +12,44 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with linear base functions with boundaries, pentagon cut
- */
-class LinearStretchedTrapezoidBoundaryGrid : public Grid
-{
-protected:
-	LinearStretchedTrapezoidBoundaryGrid(std::istream& istr);
+    /**
+     * grid with linear base functions with boundaries, pentagon cut
+     */
+    class LinearStretchedTrapezoidBoundaryGrid : public Grid {
+      protected:
+        LinearStretchedTrapezoidBoundaryGrid(std::istream& istr);
 
-public:
-	/**
-	 * Constructor Linear Trapezoid Boundary Grid
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	LinearStretchedTrapezoidBoundaryGrid(size_t dim);
+      public:
+        /**
+         * Constructor Linear Trapezoid Boundary Grid
+         *
+         * @param dim the dimension of the grid
+         */
+        LinearStretchedTrapezoidBoundaryGrid(size_t dim);
 
-	/**
-	 * Constructor Linear Trapezoid Boundary Grid
-	 *
-	 * @param BB the Stretching of the grid
-	 */
-	LinearStretchedTrapezoidBoundaryGrid(Stretching& BB);
+        /**
+         * Constructor Linear Trapezoid Boundary Grid
+         *
+         * @param BB the Stretching of the grid
+         */
+        LinearStretchedTrapezoidBoundaryGrid(Stretching& BB);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~LinearStretchedTrapezoidBoundaryGrid();
+        /**
+         * Destructor
+         */
+        virtual ~LinearStretchedTrapezoidBoundaryGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
-};
+        static Grid* unserialize(std::istream& istr);
+    };
 
-}
+  }
 }
 
 #endif /* LINEARSTRETCHEDTRAPEZOIDBOUNDARYGRID_HPP */

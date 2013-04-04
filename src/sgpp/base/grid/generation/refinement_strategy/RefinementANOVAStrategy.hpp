@@ -12,22 +12,22 @@
 #include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
 
 namespace sg {
-namespace base {
+  namespace base {
 
-struct IndexDimension{
-	HashRefinementAbstract::index_type* index;
-	size_t d;
-};
+    struct IndexDimension {
+      HashRefinementAbstract::index_type* index;
+      size_t d;
+    };
 
-class RefinementANOVAStrategy: public RefinementStrategy {
-public:
-	void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement);
-	RefinementANOVAStrategy(RefinementFunctor* refinement_functor):RefinementStrategy(refinement_functor){};
-	/*virtual ~RefinementANOVAStrategy();*/
-private:
-	IndexDimension createIndexDimensionItem(HashRefinementAbstract::index_type* index, size_t d);
-};
+    class RefinementANOVAStrategy: public RefinementStrategy {
+      public:
+        void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement);
+        RefinementANOVAStrategy(RefinementFunctor* refinement_functor): RefinementStrategy(refinement_functor) {};
+        /*virtual ~RefinementANOVAStrategy();*/
+      private:
+        IndexDimension createIndexDimensionItem(HashRefinementAbstract::index_type* index, size_t d);
+    };
 
-} /* namespace base */
+  } /* namespace base */
 } /* namespace sg */
 #endif /* REFINEMENTANOVASTRATEGY_HPP_ */

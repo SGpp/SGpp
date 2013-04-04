@@ -21,77 +21,75 @@
 /*
  * This file contains factory methods for operations.
  */
- 
-namespace sg
-{
-namespace op_factory
-{
-  /**
-   * Factory method, returning an OperationTest for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for OperationTest
-   * @return Pointer to the new OperationTest object for the Grid grid
-   */
-  datadriven::OperationTest* createOperationTest(base::Grid& grid);
 
-  /**
-   * Factory method, returning an OperationRegularizationDiagonal for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for OperationRegularizationDiagonal
-   * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
-   * @param k Parameter for @f$H^k@f$
-   * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
-   */
-  base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);
+namespace sg {
+  namespace op_factory {
+    /**
+     * Factory method, returning an OperationTest for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for OperationTest
+     * @return Pointer to the new OperationTest object for the Grid grid
+     */
+    datadriven::OperationTest* createOperationTest(base::Grid& grid);
 
-  /**
-   * Factory method, returning an OperationDensityMarginalize for the grid.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for the operation
-   * @return Pointer to new OperationDensityMarginalize for the Grid grid
-   */
-  datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationRegularizationDiagonal for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for OperationRegularizationDiagonal
+     * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
+     * @param k Parameter for @f$H^k@f$
+     * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
+     */
+    base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);
 
-  /**
-   * Factory method, returning an OperationDensityMargTo1D for the grid.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for the operation
-   * @return Pointer to new OperationDensityMarginalize for the Grid grid
-   */
-  datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationDensityMarginalize for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationDensityMarginalize for the Grid grid
+     */
+    datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid);
 
-  /**
-   * Factory method, returning an OperationDensitySampling1D for the grid.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for the operation
-   * @return Pointer to new OperationDensitySampling1D for the Grid grid
-   */
-  datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationDensityMargTo1D for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationDensityMarginalize for the Grid grid
+     */
+    datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid);
 
-  /**
-   * Factory method, returning an OperationDensitySampling for the grid.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for the operation
-   * @return Pointer to new OperationDensitySampling1D for the Grid grid
-   */
-  datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationDensitySampling1D for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationDensitySampling1D for the Grid grid
+     */
+    datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid);
 
-  /**
-   * Factory method, returning an OperationDensityConditional for the grid.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for the operation
-   * @return Pointer to new OperationDensityConditional for the Grid grid
-   */
-  datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationDensitySampling for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationDensitySampling1D for the Grid grid
+     */
+    datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid);
 
-}
+    /**
+     * Factory method, returning an OperationDensityConditional for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationDensityConditional for the Grid grid
+     */
+    datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid);
+
+  }
 }
 
 #endif /*DATADRIVEN_OP_FACTORY_HPP*/

@@ -13,46 +13,43 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with linearstretched base functions
- */
-class LinearStretchedGrid : public Grid
-{
-protected:
-	LinearStretchedGrid(std::istream& istr);
+    /**
+     * grid with linearstretched base functions
+     */
+    class LinearStretchedGrid : public Grid {
+      protected:
+        LinearStretchedGrid(std::istream& istr);
 
-public:
-	/**
-	 * Constructor LinearStretched Grid without boundaries
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	LinearStretchedGrid(size_t dim);
+      public:
+        /**
+         * Constructor LinearStretched Grid without boundaries
+         *
+         * @param dim the dimension of the grid
+         */
+        LinearStretchedGrid(size_t dim);
 
-	/**
-	 * Constructor LinearStretched Grid
-	 *
-	 * @param BB the BoundingBox of the grid
-	 */
-	LinearStretchedGrid(Stretching& BB);
+        /**
+         * Constructor LinearStretched Grid
+         *
+         * @param BB the BoundingBox of the grid
+         */
+        LinearStretchedGrid(Stretching& BB);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~LinearStretchedGrid();
+        /**
+         * Destructor
+         */
+        virtual ~LinearStretchedGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
-	static Grid* unserialize(std::istream& istr);
-};
+        virtual GridGenerator* createGridGenerator();
+        static Grid* unserialize(std::istream& istr);
+    };
 
-}
+  }
 }
 
 #endif /* LINEARSTRETCHEDGRID_HPP */

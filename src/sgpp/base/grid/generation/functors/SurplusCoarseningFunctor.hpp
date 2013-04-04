@@ -12,52 +12,49 @@
 #include "base/grid/generation/functors/CoarseningFunctor.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * A coarsening functor, removing points according to the minimal absolute values in a DataVector provided.
- * @version $HEAD$
- */
-class SurplusCoarseningFunctor : public CoarseningFunctor
-{
-public:
-	/**
-	 * Constructor.
-	 *
-	 * @param alpha DataVector that is basis for coarsening decisions. The i-th entry corresponds to the i-th grid point.
-	 * @param removements_num Number of grid points which should be removed (if possible - there could be less removable grid points)
-	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
-	 */
-	SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num = 1, double threshold = 0.0);
+    /**
+     * A coarsening functor, removing points according to the minimal absolute values in a DataVector provided.
+     * @version $HEAD$
+     */
+    class SurplusCoarseningFunctor : public CoarseningFunctor {
+      public:
+        /**
+         * Constructor.
+         *
+         * @param alpha DataVector that is basis for coarsening decisions. The i-th entry corresponds to the i-th grid point.
+         * @param removements_num Number of grid points which should be removed (if possible - there could be less removable grid points)
+         * @param threshold The absolute value of the entries have to be greater or equal than the threshold
+         */
+        SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num = 1, double threshold = 0.0);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~SurplusCoarseningFunctor();
+        /**
+         * Destructor
+         */
+        virtual ~SurplusCoarseningFunctor();
 
-	virtual double operator()(GridStorage* storage, size_t seq);
+        virtual double operator()(GridStorage* storage, size_t seq);
 
-	virtual double start();
+        virtual double start();
 
-	size_t getRemovementsNum();
+        size_t getRemovementsNum();
 
-	double getCoarseningThreshold();
+        double getCoarseningThreshold();
 
-protected:
-	/// pointer to the vector that stores the alpha values
-	DataVector* alpha;
+      protected:
+        /// pointer to the vector that stores the alpha values
+        DataVector* alpha;
 
-	/// number of grid points to remove
-	size_t removements_num;
+        /// number of grid points to remove
+        size_t removements_num;
 
-	/// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
-	double threshold;
-};
+        /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
+        double threshold;
+    };
 
-}
+  }
 }
 
 #endif /* SURPLUSCOARSENINGFUNCTOR_HPP */

@@ -10,47 +10,44 @@
 
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
-
-  /**
-   * Implementation of the application of a diagonal matrix to a
-   * DataVector for regularization.
-   * This class implements several scaling possibilities for piecewise
-   * linear basis functions with and without boundaries.
-   */
-  class OperationRegularizationDiagonalLinearBoundary: public OperationRegularizationDiagonal
-  {
-  protected:
-    /**
-     * Initialize Hkmix
-     * @param k Parameter k
-     */
-    virtual void initHkmix(double k);
+namespace sg {
+  namespace datadriven {
 
     /**
-     * Initialize H0HkLaplace
-     * @param k Parameter k
+     * Implementation of the application of a diagonal matrix to a
+     * DataVector for regularization.
+     * This class implements several scaling possibilities for piecewise
+     * linear basis functions with and without boundaries.
      */
-    virtual void initH0HkLaplace(double k);
-    
-  public:
+    class OperationRegularizationDiagonalLinearBoundary: public OperationRegularizationDiagonal {
+      protected:
+        /**
+         * Initialize Hkmix
+         * @param k Parameter k
+         */
+        virtual void initHkmix(double k);
 
-    /**
-     * Constructor of OperationRegularizationDiagonalLinearBoundary.
-     * @param storage Pointer to grid's storage object
-     * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
-     * @param k Parameter for @f$H^k@f$
-     */
-    OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, double k); 
-//      : OperationRegularizationDiagonal(storage, mode, k) {
-//      init();
-//    };
+        /**
+         * Initialize H0HkLaplace
+         * @param k Parameter k
+         */
+        virtual void initH0HkLaplace(double k);
 
-  };
+      public:
 
-}
+        /**
+         * Constructor of OperationRegularizationDiagonalLinearBoundary.
+         * @param storage Pointer to grid's storage object
+         * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
+         * @param k Parameter for @f$H^k@f$
+         */
+        OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, double k);
+        //      : OperationRegularizationDiagonal(storage, mode, k) {
+        //      init();
+        //    };
+
+    };
+
+  }
 }
 #endif /* OPERATIONREGULARIZATIONDIAGONALLINEARBOUNDARY_HPP */

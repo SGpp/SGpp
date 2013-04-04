@@ -29,81 +29,80 @@
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 
 namespace sg {
-namespace parallel {
+  namespace parallel {
 
-template<typename KernelImplementation>
-datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType, MPIType mpiType)
-{
-	std::string parallelizationType;
-	datadriven::DMSystemMatrixBase *result = 0;
+    template<typename KernelImplementation>
+    datadriven::DMSystemMatrixBase* DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid& grid, base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType) {
+      std::string parallelizationType;
+      datadriven::DMSystemMatrixBase* result = 0;
 
-	switch (mpiType){
-	case MPIAllreduce:
-		parallelizationType = "Allreduce";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<KernelImplementation>(
-					grid, trainDataset, lambda, vecType);
-		break;
-	case MPIAlltoallv:
-		parallelizationType = "Alltoallv";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
-		break;
-	case MPIAsync:
-		parallelizationType = "Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<KernelImplementation>(
-					grid, trainDataset, lambda, vecType);
-		break;
-	case MPITrueAsync:
-		parallelizationType = "True Asynchronous Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
-					grid, trainDataset, lambda, vecType);
-		break;
-	case MPIOnesided:
-		parallelizationType = "Onesided Communication";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentityOnesidedMPI<KernelImplementation>(
-					grid, trainDataset, lambda, vecType);
-		break;
-	case MPINone:
-		parallelizationType = "No MPI Implementation is used.";
-		result = new sg::parallel::DMSystemMatrixVectorizedIdentity(grid, trainDataset, lambda, vecType);
-		break;
-	default:
-		throw new sg::base::factory_exception("this type of MPI communication is not yet implemented");
-		break;
-	}
+      switch (mpiType) {
+        case MPIAllreduce:
+          parallelizationType = "Allreduce";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<KernelImplementation>(
+            grid, trainDataset, lambda, vecType);
+          break;
 
-	if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-		std::cout << "Using MPI Parallelization: " << parallelizationType << " ("<< sg::parallel::myGlobalMPIComm->getNumRanks() <<" Processes)" << std::endl;
-		size_t thread_count = 1;
+        case MPIAlltoallv:
+          parallelizationType = "Alltoallv";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
+          break;
+
+        case MPIAsync:
+          parallelizationType = "Asynchronous Communication";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<KernelImplementation>(
+            grid, trainDataset, lambda, vecType);
+          break;
+
+        case MPITrueAsync:
+          parallelizationType = "True Asynchronous Communication";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
+            grid, trainDataset, lambda, vecType);
+          break;
+
+        case MPIOnesided:
+          parallelizationType = "Onesided Communication";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentityOnesidedMPI<KernelImplementation>(
+            grid, trainDataset, lambda, vecType);
+          break;
+
+        case MPINone:
+          parallelizationType = "No MPI Implementation is used.";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentity(grid, trainDataset, lambda, vecType);
+          break;
+
+        default:
+          throw new sg::base::factory_exception("this type of MPI communication is not yet implemented");
+          break;
+      }
+
+      if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+        std::cout << "Using MPI Parallelization: " << parallelizationType << " (" << sg::parallel::myGlobalMPIComm->getNumRanks() << " Processes)" << std::endl;
+        size_t thread_count = 1;
 #ifdef _OPENMP
-#pragma omp parallel
-		{
-			thread_count = omp_get_num_threads();
-		}
+        #pragma omp parallel
+        {
+          thread_count = omp_get_num_threads();
+        }
 #endif
-		std::cout << "OpenMP: " << thread_count << " Threads active" << std::endl;
-	}
+        std::cout << "OpenMP: " << thread_count << " Threads active" << std::endl;
+      }
 
-	return result;
-}
+      return result;
+    }
 
-datadriven::DMSystemMatrixBase *DMSystemMatrixMPITypeFactory::getDMSystemMatrix(base::Grid &grid, base::DataMatrix &trainDataset, double lambda, VectorizationType vecType, MPIType mpiType)
-{
-	if(strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
-			|| strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-	{
-		return createDMSystemMatrixMPIType<X86SimdLinear>
-				(grid, trainDataset, lambda, vecType, mpiType);
-	}
-	else if(strcmp(grid.getType(), "modlinear") == 0)
-	{
-		return createDMSystemMatrixMPIType<X86SimdModLinear>
-				(grid, trainDataset, lambda, vecType, mpiType);
-	}
-	else
-	{
-		throw base::factory_exception("OperationMultipleEvalVectorized is not implemented for this grid type.");
-	}
-}
+    datadriven::DMSystemMatrixBase* DMSystemMatrixMPITypeFactory::getDMSystemMatrix(base::Grid& grid, base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType) {
+      if (strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
+          || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+        return createDMSystemMatrixMPIType<X86SimdLinear>
+               (grid, trainDataset, lambda, vecType, mpiType);
+      } else if (strcmp(grid.getType(), "modlinear") == 0) {
+        return createDMSystemMatrixMPIType<X86SimdModLinear>
+               (grid, trainDataset, lambda, vecType, mpiType);
+      } else {
+        throw base::factory_exception("OperationMultipleEvalVectorized is not implemented for this grid type.");
+      }
+    }
 
-}
+  }
 }

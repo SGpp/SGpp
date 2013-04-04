@@ -7,137 +7,113 @@
 
 #include "finance/basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : SqXdPhidPhiUpBBLinear(storage)
-{
-}
+    SqXdPhidPhiUpBBLinearBoundary::SqXdPhidPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : SqXdPhidPhiUpBBLinear(storage) {
+    }
 
-SqXdPhidPhiUpBBLinearBoundary::~SqXdPhidPhiUpBBLinearBoundary()
-{
-}
+    SqXdPhidPhiUpBBLinearBoundary::~SqXdPhidPhiUpBBLinearBoundary() {
+    }
 
-void SqXdPhidPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	double q = this->boundingBox->getIntervalWidth(dim);
-	double t = this->boundingBox->getIntervalOffset(dim);
+    void SqXdPhidPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      double q = this->boundingBox->getIntervalWidth(dim);
+      double t = this->boundingBox->getIntervalOffset(dim);
 
-	bool useBB = false;
+      bool useBB = false;
 
-	if (q != 1.0 || t != 0.0)
-	{
-		useBB = true;
-	}
+      if (q != 1.0 || t != 0.0) {
+        useBB = true;
+      }
 
-	// get boundary values
-	double fl = 0.0;
-	double fr = 0.0;
+      // get boundary values
+      double fl = 0.0;
+      double fr = 0.0;
 
-	if (useBB)
-	{
-		if(!index.hint())
-		{
-			index.top(dim);
-			if(!this->storage->end(index.seq()))
-			{
-				recBB(source, result, index, dim, fl, fr, q, t);
-			}
+      if (useBB) {
+        if (!index.hint()) {
+          index.top(dim);
 
-			index.left_levelzero(dim);
-		}
+          if (!this->storage->end(index.seq())) {
+            recBB(source, result, index, dim, fl, fr, q, t);
+          }
 
-		size_t seq_left;
-		size_t seq_right;
+          index.left_levelzero(dim);
+        }
 
-		// left boundary
-		seq_left = index.seq();
+        size_t seq_left;
+        size_t seq_right;
 
-		// right boundary
-		index.right_levelzero(dim);
-		seq_right = index.seq();
+        // left boundary
+        seq_left = index.seq();
 
-		// up
-		//////////////////////////////////////
-		// check boundary conditions
-		if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-		{
-			result[seq_left] = 0.0; // source[seq_left];
-		}
-		else
-		{
-			result[seq_left] = fl;
-			double bbFactor = ((q*q) + (3.0*q*t) + (3.0*t*t))/(q);
-			result[seq_left] -= (1.0/3.0)*source[seq_right]*bbFactor;
-		}
+        // right boundary
+        index.right_levelzero(dim);
+        seq_right = index.seq();
 
-		if (this->boundingBox->hasDirichletBoundaryRight(dim))
-		{
-			result[seq_right] = 0.0; //source[seq_right];
-		}
-		else
-		{
-			result[seq_right] = fr;
-		}
+        // up
+        //////////////////////////////////////
+        // check boundary conditions
+        if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
+          result[seq_left] = 0.0; // source[seq_left];
+        } else {
+          result[seq_left] = fl;
+          double bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+          result[seq_left] -= (1.0 / 3.0) * source[seq_right] * bbFactor;
+        }
 
-		index.left_levelzero(dim);
-	}
-	else
-	{
-		if(!index.hint())
-		{
-			index.top(dim);
+        if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
+          result[seq_right] = 0.0; //source[seq_right];
+        } else {
+          result[seq_right] = fr;
+        }
 
-			if(!this->storage->end(index.seq()))
-			{
-				rec(source, result, index, dim, fl, fr);
-			}
+        index.left_levelzero(dim);
+      } else {
+        if (!index.hint()) {
+          index.top(dim);
 
-			index.left_levelzero(dim);
-		}
+          if (!this->storage->end(index.seq())) {
+            rec(source, result, index, dim, fl, fr);
+          }
 
-		size_t seq_left;
-		size_t seq_right;
+          index.left_levelzero(dim);
+        }
 
-		// left boundary
-		seq_left = index.seq();
+        size_t seq_left;
+        size_t seq_right;
 
-		// right boundary
-		index.right_levelzero(dim);
-		seq_right = index.seq();
+        // left boundary
+        seq_left = index.seq();
 
-		// up
-		//////////////////////////////////////
-		// check boundary conditions
-		if (this->boundingBox->hasDirichletBoundaryLeft(dim))
-		{
-			result[seq_left] = 0.0; // source[seq_left];
-		}
-		else
-		{
-			result[seq_left] = fl;
+        // right boundary
+        index.right_levelzero(dim);
+        seq_right = index.seq();
 
-			result[seq_left] -= (1.0/3.0)*source[seq_right];
-		}
+        // up
+        //////////////////////////////////////
+        // check boundary conditions
+        if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
+          result[seq_left] = 0.0; // source[seq_left];
+        } else {
+          result[seq_left] = fl;
 
-		if (this->boundingBox->hasDirichletBoundaryRight(dim))
-		{
-			result[seq_right] = 0.0; //source[seq_right];
-		}
-		else
-		{
-			result[seq_right] = fr;
-		}
+          result[seq_left] -= (1.0 / 3.0) * source[seq_right];
+        }
 
-		index.left_levelzero(dim);
-	}
-}
+        if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
+          result[seq_right] = 0.0; //source[seq_right];
+        } else {
+          result[seq_right] = fr;
+        }
 
- // namespace detail
+        index.left_levelzero(dim);
+      }
+    }
 
-} // namespace sg
+    // namespace detail
+
+  } // namespace sg
 }

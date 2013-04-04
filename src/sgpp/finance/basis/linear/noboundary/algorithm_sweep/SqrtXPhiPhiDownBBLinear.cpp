@@ -7,195 +7,182 @@
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-SqrtXPhiPhiDownBBLinear::SqrtXPhiPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
-{
-}
+    SqrtXPhiPhiDownBBLinear::SqrtXPhiPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    }
 
-SqrtXPhiPhiDownBBLinear::~SqrtXPhiPhiDownBBLinear()
-{
-}
+    SqrtXPhiPhiDownBBLinear::~SqrtXPhiPhiDownBBLinear() {
+    }
 
-void SqrtXPhiPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	double q = this->boundingBox->getIntervalWidth(dim);
-	double t = this->boundingBox->getIntervalOffset(dim);
+    void SqrtXPhiPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      double q = this->boundingBox->getIntervalWidth(dim);
+      double t = this->boundingBox->getIntervalOffset(dim);
 
-	bool useBB = false;
+      bool useBB = false;
 
-	if (q != 1.0 || t != 0.0)
-	{
-		useBB = true;
-	}
+      if (q != 1.0 || t != 0.0) {
+        useBB = true;
+      }
 
-	if (useBB)
-	{
-		recBB(source, result, index, dim, 0.0, 0.0, q, t);
-	}
-	else
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
-}
+      if (useBB) {
+        recBB(source, result, index, dim, 0.0, 0.0, q, t);
+      } else {
+        rec(source, result, index, dim, 0.0, 0.0);
+      }
+    }
 
-void SqrtXPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-{
-	size_t seq = index.seq();
+    void SqrtXPhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+      size_t seq = index.seq();
 
-	double alpha_value = source[seq];
+      double alpha_value = source[seq];
 
-	sg::base::GridStorage::index_type::level_type l;
-	sg::base::GridStorage::index_type::index_type i_idx;
+      sg::base::GridStorage::index_type::level_type l;
+      sg::base::GridStorage::index_type::index_type i_idx;
 
-	index.get(dim, l, i_idx);
+      index.get(dim, l, i_idx);
 
-	double i = static_cast<double>(i_idx);
-    int l_int = static_cast<int>(l);
+      double i = static_cast<double>(i_idx);
+      int l_int = static_cast<int>(l);
 
-	double h = (1.0/(static_cast<double>(1<<(l_int))));
+      double h = (1.0 / (static_cast<double>(1 << (l_int))));
 
-	double a = fl;
-	double b = fr;
+      double a = fl;
+      double b = fr;
 
-	double c = sqrt(i*h+ h);
-	double d = sqrt(i*h);
-	double e = sqrt(i*h - h);
+      double c = sqrt(i * h + h);
+      double d = sqrt(i * h);
+      double e = sqrt(i * h - h);
 
-	double hSq = pow(h,2);
-	double hCu = pow(h,3);
-	double iSq = pow(i,2);
-	double iCu = pow(i,3);
+      double hSq = pow(h, 2);
+      double hCu = pow(h, 3);
+      double iSq = pow(i, 2);
+      double iCu = pow(i, 3);
 
-	double diagResultTemp = e*iCu*hCu - 3*e*iSq*hCu + 3*e*i*hCu + 7*d*iSq*hCu - c*iCu*hCu
-	- 3*c*iSq*hCu - 3*c*i*hCu - e*hCu - c*hCu;
-	diagResultTemp = (-16.0/105.0)*(1.0/(hSq))*diagResultTemp;
+      double diagResultTemp = e * iCu * hCu - 3 * e * iSq * hCu + 3 * e * i * hCu + 7 * d * iSq * hCu - c * iCu * hCu
+                              - 3 * c * iSq * hCu - 3 * c * i * hCu - e * hCu - c * hCu;
+      diagResultTemp = (-16.0 / 105.0) * (1.0 / (hSq)) * diagResultTemp;
 
-	double downResultTemp = 2*c*hCu*a + 5*c*hCu*b + 4*d*iCu*hCu*b - 7*d*iSq*hCu*b -
-	4*d*iCu*hCu*a - 8*e*hCu*a*i - 6*e*hCu*b*i - 2*e*iCu*hCu*b +
-	6*e*iSq*hCu*b + 2*e*iCu*hCu*a + e*iSq*hCu*a + 5*e*hCu*a + 2*e*hCu*b +
-	6*c*hCu*a*i - 2*c*iCu*hCu*b + c*iSq*hCu*b +
-	6*c*iSq*hCu*a + 2*c*iCu*hCu*a + 8*c*i*hCu*b - 7*d*iSq*hCu*a;
+      double downResultTemp = 2 * c * hCu * a + 5 * c * hCu * b + 4 * d * iCu * hCu * b - 7 * d * iSq * hCu * b -
+                              4 * d * iCu * hCu * a - 8 * e * hCu * a * i - 6 * e * hCu * b * i - 2 * e * iCu * hCu * b +
+                              6 * e * iSq * hCu * b + 2 * e * iCu * hCu * a + e * iSq * hCu * a + 5 * e * hCu * a + 2 * e * hCu * b +
+                              6 * c * hCu * a * i - 2 * c * iCu * hCu * b + c * iSq * hCu * b +
+                              6 * c * iSq * hCu * a + 2 * c * iCu * hCu * a + 8 * c * i * hCu * b - 7 * d * iSq * hCu * a;
 
-	downResultTemp = (4.0/105.0)*(1.0/(hSq))*downResultTemp;
+      downResultTemp = (4.0 / 105.0) * (1.0 / (hSq)) * downResultTemp;
 
 
-	// integration
-	result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
+      // integration
+      result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
 
-	// dehierarchisation
-	double fm = ((fl+fr)/2.0) + alpha_value;
+      // dehierarchisation
+      double fm = ((fl + fr) / 2.0) + alpha_value;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fm);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fm, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fm);
+        }
 
-		index.up(dim);
-	}
-}
+        index.step_right(dim);
 
-void SqrtXPhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t)
-{
-	size_t seq = index.seq();
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fm, fr);
+        }
 
-	double alpha_value = source[seq];
+        index.up(dim);
+      }
+    }
 
-	sg::base::GridStorage::index_type::level_type l;
-	sg::base::GridStorage::index_type::index_type i_idx;
+    void SqrtXPhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t) {
+      size_t seq = index.seq();
 
-	index.get(dim, l, i_idx);
+      double alpha_value = source[seq];
 
-	double i = static_cast<double>(i_idx);
-	int l_int = static_cast<int>(l);
+      sg::base::GridStorage::index_type::level_type l;
+      sg::base::GridStorage::index_type::index_type i_idx;
 
-	double h = (1.0/(static_cast<double>(1<<(l_int))));
+      index.get(dim, l, i_idx);
 
-	double c = sqrt(i*h*q + t + q*h);
-	double d = sqrt(i*h*q + t);
-	double e = sqrt(i*h*q + t - q*h);
+      double i = static_cast<double>(i_idx);
+      int l_int = static_cast<int>(l);
 
-	double qSq = pow(q,2);
-	double qCu = pow(q,3);
-	double hSq = pow(h,2);
-	double hCu = pow(h,3);
-	double tSq = pow(t,2);
-	double tCu = pow(t,3);
-	double iSq = pow(i,2);
-	double iCu = pow(i,3);
+      double h = (1.0 / (static_cast<double>(1 << (l_int))));
 
-	double a = fl;
-	double b = fr;
+      double c = sqrt(i * h * q + t + q * h);
+      double d = sqrt(i * h * q + t);
+      double e = sqrt(i * h * q + t - q * h);
 
-	double diagResultTemp = e*iCu*hCu*qCu - 3*e*iSq*hCu*qCu + 3*e*i*hCu*qCu
-	- 3*e*tSq*q*h + 3*e*t*qSq*hSq + 7*d*tSq*q*h + 7*d*iSq*hCu*qCu
-	- c*iCu*hCu*qCu - 3*c*iSq*hCu*qCu - 3*c*i*hCu*qCu
-	- 3*c*tSq*q*h - 3*c*t*qSq*hSq + 3*e*iSq*hSq*qSq*t
-	+ 3*e*i*h*q*tSq - 6*e*i*hSq*qSq*t + 14*d*t*qSq*hSq*i
-	- 3*c*iSq*hSq*qSq*t - 3*c*i*h*q*tSq - 6*c*i*hSq*qSq*t
-	+ e*tCu - c*tCu - e*qCu*hCu - c*qCu*hCu;
+      double qSq = pow(q, 2);
+      double qCu = pow(q, 3);
+      double hSq = pow(h, 2);
+      double hCu = pow(h, 3);
+      double tSq = pow(t, 2);
+      double tCu = pow(t, 3);
+      double iSq = pow(i, 2);
+      double iCu = pow(i, 3);
 
-	diagResultTemp = (-16.0/105.0)*(1.0/(qSq*hSq))*diagResultTemp;
+      double a = fl;
+      double b = fr;
 
-	double downResultTemp = 2*c*qCu*hCu*a + 5*c*qCu*hCu*b - 14*d*i*hSq*qSq*a*t
-	+ 6*c*a*tSq*i*h*q - 6*c*b*tSq*i*h*q + 6*c*iSq*hSq*qSq*a*t
-	+ 12*c*i*hSq*qSq*a*t - 6*c*iSq*hSq*qSq*b*t + 2*c*i*hSq*qSq*b*t
-	+ 2*e*a*tCu - 2*e*b*tCu + 4*d*b*tCu - 4*d*a*tCu
-	+ 4*d*iCu*hCu*qCu*b - 7*d*iSq*hCu*qCu*b - 4*d*iCu*hCu*qCu*a - 7*d*tSq*b*q*h
-	- 8*e*qCu*hCu*a*i - 8*e*qSq*hSq*a*t - 6*e*qCu*hCu*b*i
-	- 6*e*qSq*hSq*b*t + 6*e*b*tSq*q*h + e*a*tSq*q*h
-	- 2*e*iCu*hCu*qCu*b + 6*e*iSq*hCu*qCu*b + 2*e*iCu*hCu*qCu*a
-	+ e*iSq*hCu*qCu*a + 5*e*qCu*hCu*a + 2*e*qCu*hCu*b
-	- 14*d*i*hSq*qSq*b*t + 6*e*iSq*hSq*qSq*a*t + 6*e*i*h*q*a*tSq
-	+ 2*e*i*hSq*qSq*a*t - 6*e*iSq*hSq*qSq*b*t - 6*e*i*h*q*b*tSq
-	+ 12*e*i*hSq*qSq*b*t + 12*d*iSq*hSq*qSq*b*t + 12*d*i*h*q*b*tSq
-	- 12*d*iSq*hSq*qSq*a*t - 12*d*i*h*q*a*tSq + 2*c*a*tCu - 2*c*b*tCu
-	+ 6*c*a*tSq*q*h + c*b*tSq*q*h + 6*c*qCu*hCu*a*i
-	+ 6*c*qSq*hSq*a*t - 2*c*iCu*hCu*qCu*b + c*iSq*hCu*qCu*b
-	+ 6*c*iSq*hCu*qCu*a + 2*c*iCu*hCu*qCu*a + 8*c*t*b*qSq*hSq
-	+ 8*c*i*hCu*qCu*b - 7*d*iSq*hCu*qCu*a - 7*d*tSq*a*q*h;
+      double diagResultTemp = e * iCu * hCu * qCu - 3 * e * iSq * hCu * qCu + 3 * e * i * hCu * qCu
+                              - 3 * e * tSq * q * h + 3 * e * t * qSq * hSq + 7 * d * tSq * q * h + 7 * d * iSq * hCu * qCu
+                              - c * iCu * hCu * qCu - 3 * c * iSq * hCu * qCu - 3 * c * i * hCu * qCu
+                              - 3 * c * tSq * q * h - 3 * c * t * qSq * hSq + 3 * e * iSq * hSq * qSq * t
+                              + 3 * e * i * h * q * tSq - 6 * e * i * hSq * qSq * t + 14 * d * t * qSq * hSq * i
+                              - 3 * c * iSq * hSq * qSq * t - 3 * c * i * h * q * tSq - 6 * c * i * hSq * qSq * t
+                              + e * tCu - c * tCu - e * qCu * hCu - c * qCu * hCu;
 
-	downResultTemp = (4.0/105.0)*(1.0/(qSq*hSq))*downResultTemp;
+      diagResultTemp = (-16.0 / 105.0) * (1.0 / (qSq * hSq)) * diagResultTemp;
 
-	// integration
-	result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
+      double downResultTemp = 2 * c * qCu * hCu * a + 5 * c * qCu * hCu * b - 14 * d * i * hSq * qSq * a * t
+                              + 6 * c * a * tSq * i * h * q - 6 * c * b * tSq * i * h * q + 6 * c * iSq * hSq * qSq * a * t
+                              + 12 * c * i * hSq * qSq * a * t - 6 * c * iSq * hSq * qSq * b * t + 2 * c * i * hSq * qSq * b * t
+                              + 2 * e * a * tCu - 2 * e * b * tCu + 4 * d * b * tCu - 4 * d * a * tCu
+                              + 4 * d * iCu * hCu * qCu * b - 7 * d * iSq * hCu * qCu * b - 4 * d * iCu * hCu * qCu * a - 7 * d * tSq * b * q * h
+                              - 8 * e * qCu * hCu * a * i - 8 * e * qSq * hSq * a * t - 6 * e * qCu * hCu * b * i
+                              - 6 * e * qSq * hSq * b * t + 6 * e * b * tSq * q * h + e * a * tSq * q * h
+                              - 2 * e * iCu * hCu * qCu * b + 6 * e * iSq * hCu * qCu * b + 2 * e * iCu * hCu * qCu * a
+                              + e * iSq * hCu * qCu * a + 5 * e * qCu * hCu * a + 2 * e * qCu * hCu * b
+                              - 14 * d * i * hSq * qSq * b * t + 6 * e * iSq * hSq * qSq * a * t + 6 * e * i * h * q * a * tSq
+                              + 2 * e * i * hSq * qSq * a * t - 6 * e * iSq * hSq * qSq * b * t - 6 * e * i * h * q * b * tSq
+                              + 12 * e * i * hSq * qSq * b * t + 12 * d * iSq * hSq * qSq * b * t + 12 * d * i * h * q * b * tSq
+                              - 12 * d * iSq * hSq * qSq * a * t - 12 * d * i * h * q * a * tSq + 2 * c * a * tCu - 2 * c * b * tCu
+                              + 6 * c * a * tSq * q * h + c * b * tSq * q * h + 6 * c * qCu * hCu * a * i
+                              + 6 * c * qSq * hSq * a * t - 2 * c * iCu * hCu * qCu * b + c * iSq * hCu * qCu * b
+                              + 6 * c * iSq * hCu * qCu * a + 2 * c * iCu * hCu * qCu * a + 8 * c * t * b * qSq * hSq
+                              + 8 * c * i * hCu * qCu * b - 7 * d * iSq * hCu * qCu * a - 7 * d * tSq * a * q * h;
 
-	// dehierarchisation
-	double fm = ((fl+fr)/2.0) + alpha_value;
+      downResultTemp = (4.0 / 105.0) * (1.0 / (qSq * hSq)) * downResultTemp;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fl, fm, q, t);
-		}
+      // integration
+      result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fm, fr, q, t);
-		}
+      // dehierarchisation
+      double fm = ((fl + fr) / 2.0) + alpha_value;
 
-		index.up(dim);
-	}
-}
+      if (!index.hint()) {
+        index.left_child(dim);
 
- // namespace detail
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fl, fm, q, t);
+        }
 
-} // namespace sg
+        index.step_right(dim);
+
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fm, fr, q, t);
+        }
+
+        index.up(dim);
+      }
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

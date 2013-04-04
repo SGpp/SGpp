@@ -13,49 +13,46 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with linear base functions
- */
-class ModLinearGridStencil : public GridStencil
-{
-protected:
-	ModLinearGridStencil(std::istream& istr);
+    /**
+     * grid with linear base functions
+     */
+    class ModLinearGridStencil : public GridStencil {
+      protected:
+        ModLinearGridStencil(std::istream& istr);
 
-public:
-	/**
-	 * Constructor Linear Grid without boundaries
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	ModLinearGridStencil(size_t dim);
+      public:
+        /**
+         * Constructor Linear Grid without boundaries
+         *
+         * @param dim the dimension of the grid
+         */
+        ModLinearGridStencil(size_t dim);
 
-	/**
-	 * Constructor Linear Grid
-	 *
-	 * @param BB the BoundingBox of the grid
-	 */
-	ModLinearGridStencil(BoundingBox& BB);
+        /**
+         * Constructor Linear Grid
+         *
+         * @param BB the BoundingBox of the grid
+         */
+        ModLinearGridStencil(BoundingBox& BB);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~ModLinearGridStencil();
+        /**
+         * Destructor
+         */
+        virtual ~ModLinearGridStencil();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
+        static Grid* unserialize(std::istream& istr);
 
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* MODLINEARGRIDSTENCIL_HPP */

@@ -9,81 +9,74 @@
 #include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
 
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
 
 
-PhiPhiUpBBLinearStretched::PhiPhiUpBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
-{
-}
+    PhiPhiUpBBLinearStretched::PhiPhiUpBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching()) {
+    }
 
-PhiPhiUpBBLinearStretched::~PhiPhiUpBBLinearStretched()
-{
-}
+    PhiPhiUpBBLinearStretched::~PhiPhiUpBBLinearStretched() {
+    }
 
-void PhiPhiUpBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
+    void PhiPhiUpBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
 
-	// get boundary values
-	double fl = 0.0;
-	double fr = 0.0;
+      // get boundary values
+      double fl = 0.0;
+      double fr = 0.0;
 
-	rec(source, result, index, dim, fl, fr);
+      rec(source, result, index, dim, fl, fr);
 
-}
+    }
 
-void PhiPhiUpBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-{
+    void PhiPhiUpBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
 
-	size_t seq = index.seq();
+      size_t seq = index.seq();
 
-	fl = fr = 0.0;
-	double fml = 0.0;
-	double fmr = 0.0;
+      fl = fr = 0.0;
+      double fml = 0.0;
+      double fmr = 0.0;
 
-	sg::base::GridStorage::index_type::level_type current_level;
-	sg::base::GridStorage::index_type::index_type current_index;
+      sg::base::GridStorage::index_type::level_type current_level;
+      sg::base::GridStorage::index_type::index_type current_index;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fml);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fmr, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fml);
+        }
 
-		index.up(dim);
-	}
+        index.step_right(dim);
 
-	index.get(dim, current_level, current_index);
-	double posl=0, posr=0, currentPosition=0;
-	this->stretching->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, currentPosition, posl, posr );
-	double baseLength = posr - posl;
-	double leftLength = currentPosition - posl;
-	double rightLength = posr - currentPosition;
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fmr, fr);
+        }
 
-	double fm = fml + fmr;
+        index.up(dim);
+      }
 
-	double alpha_value = source[seq];
+      index.get(dim, current_level, current_index);
+      double posl = 0, posr = 0, currentPosition = 0;
+      this->stretching->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, currentPosition, posl, posr );
+      double baseLength = posr - posl;
+      double leftLength = currentPosition - posl;
+      double rightLength = posr - currentPosition;
 
-	// transposed operations:
-	result[seq] = fm;
+      double fm = fml + fmr;
 
-	fl = (1.0/6.0)*(baseLength+rightLength)*alpha_value + fl + fm*(rightLength/baseLength);
-	fr = (1.0/6.0)*(baseLength+leftLength)*alpha_value + fr + fm*(leftLength/baseLength);
-}
+      double alpha_value = source[seq];
+
+      // transposed operations:
+      result[seq] = fm;
+
+      fl = (1.0 / 6.0) * (baseLength + rightLength) * alpha_value + fl + fm * (rightLength / baseLength);
+      fr = (1.0 / 6.0) * (baseLength + leftLength) * alpha_value + fr + fm * (leftLength / baseLength);
+    }
 
 
- // namespace detail
+    // namespace detail
 
-} // namespace sg
+  } // namespace sg
 }

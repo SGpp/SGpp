@@ -13,72 +13,69 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with linear base functions
- */
-class GridStencil : public Grid
-{
-protected:
-	GridStencil(std::istream& istr);
+    /**
+     * grid with linear base functions
+     */
+    class GridStencil : public Grid {
+      protected:
+        GridStencil(std::istream& istr);
 
-public:
+      public:
 
-	typedef std::vector<unsigned int>	IndexStencil;
+        typedef std::vector<unsigned int> IndexStencil;
 
-	typedef std::vector<float>			WeightStencil;
+        typedef std::vector<float>      WeightStencil;
 
 
-	/**
-	 * Constructor Linear Grid without boundaries
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	GridStencil(size_t dim);
+        /**
+         * Constructor Linear Grid without boundaries
+         *
+         * @param dim the dimension of the grid
+         */
+        GridStencil(size_t dim);
 
-	/**
-	 * Constructor Linear Grid
-	 *
-	 * @param BB the BoundingBox of the grid
-	 */
-	GridStencil(BoundingBox& BB);
+        /**
+         * Constructor Linear Grid
+         *
+         * @param BB the BoundingBox of the grid
+         */
+        GridStencil(BoundingBox& BB);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~GridStencil();
+        /**
+         * Destructor
+         */
+        virtual ~GridStencil();
 
-	/**
-	 * Get the surplus stencil, in fact an array of unsigned ints.
-	 */
-	virtual const IndexStencil&
-	getSurplusStencil() const;
+        /**
+         * Get the surplus stencil, in fact an array of unsigned ints.
+         */
+        virtual const IndexStencil&
+        getSurplusStencil() const;
 
-	/**
-	 * Get the neighbor stencil, in fact an array of unsigned ints.
-	 */
-	virtual const IndexStencil&
-	getNeighborStencil() const;
+        /**
+         * Get the neighbor stencil, in fact an array of unsigned ints.
+         */
+        virtual const IndexStencil&
+        getNeighborStencil() const;
 
-	/**
-	 * Get the weight stencil, in fact an array of floats.
-	 */
-	virtual const WeightStencil&
-	getWeightStencil() const;
+        /**
+         * Get the weight stencil, in fact an array of floats.
+         */
+        virtual const WeightStencil&
+        getWeightStencil() const;
 
 
-protected:
+      protected:
 
-	IndexStencil surplusStencil;
-	IndexStencil neighborStencil;
-	WeightStencil weightStencil;
-};
+        IndexStencil surplusStencil;
+        IndexStencil neighborStencil;
+        WeightStencil weightStencil;
+    };
 
-}
+  }
 }
 
 #endif /* GRIDSTENCIL_HPP */

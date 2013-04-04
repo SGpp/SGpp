@@ -13,18 +13,18 @@
 #include "base/grid/storage/hashmap/HashGridIterator.hpp"
 
 namespace sg {
-namespace base {
+  namespace base {
 
-/**
- * Main typedef for GridIndex
- */
-typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
-/**
- * Main typedef for GridStorage
- */
-typedef HashGridStorage<GridIndex> GridStorage;
+    /**
+     * Main typedef for GridIndex
+     */
+    typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
+    /**
+     * Main typedef for GridStorage
+     */
+    typedef HashGridStorage<GridIndex> GridStorage;
 
-}
+  }
 }
 
 #endif /* GRIDSTORAGE_HPP */

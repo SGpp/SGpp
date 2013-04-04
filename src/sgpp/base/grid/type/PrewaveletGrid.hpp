@@ -9,40 +9,37 @@
 
 #include "base/grid/Grid.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with prewavelet base functions
- */
-class PrewaveletGrid : public Grid
-{
-protected:
-	PrewaveletGrid(std::istream& istr);
-	GridStorage* shadowStorage;
+    /**
+     * grid with prewavelet base functions
+     */
+    class PrewaveletGrid : public Grid {
+      protected:
+        PrewaveletGrid(std::istream& istr);
+        GridStorage* shadowStorage;
 
-public:
-	PrewaveletGrid(size_t dim);
-	virtual ~PrewaveletGrid();
+      public:
+        PrewaveletGrid(size_t dim);
+        virtual ~PrewaveletGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
+        static Grid* unserialize(std::istream& istr);
 
-	/**
-	 * gets a pointer to the GridStorage object
-	 *
-	 * @return pointer to the GridStorage object
-	 */
-	GridStorage* getShadowStorage();
+        /**
+         * gets a pointer to the GridStorage object
+         *
+         * @return pointer to the GridStorage object
+         */
+        GridStorage* getShadowStorage();
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* PREWAVELETGRID_HPP */

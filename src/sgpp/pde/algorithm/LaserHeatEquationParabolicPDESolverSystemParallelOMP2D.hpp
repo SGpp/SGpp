@@ -13,68 +13,65 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-/**
- * This class implements the ParabolicPDESolverSystem for the
- * Heat Equation.
- *
- * In this case the Heat Equation is used to solve a rotating laser
- * beam.
- */
-class LaserHeatEquationParabolicPDESolverSystemParallelOMP2D : public HeatEquationParabolicPDESolverSystemParallelOMP
-{
-private:
-	/// the velocity of the rotating laser beam
-	double beam_velocity_;
-	/// the laser beam's expansion
-	double heat_sigma_;
-	/// the max. refinement level
-	sg::base::GridStorage::index_type::level_type max_level_;
-	/// heating the grid initialization
-	double heat_;
-	/// threshold for refinening during solution
-	double refine_threshold_;
-	/// threshold for coarsening during solution
-	double coarsen_threshold_;
-	/// number of calculated timesteps
-	size_t done_steps_;
+    /**
+     * This class implements the ParabolicPDESolverSystem for the
+     * Heat Equation.
+     *
+     * In this case the Heat Equation is used to solve a rotating laser
+     * beam.
+     */
+    class LaserHeatEquationParabolicPDESolverSystemParallelOMP2D : public HeatEquationParabolicPDESolverSystemParallelOMP {
+      private:
+        /// the velocity of the rotating laser beam
+        double beam_velocity_;
+        /// the laser beam's expansion
+        double heat_sigma_;
+        /// the max. refinement level
+        sg::base::GridStorage::index_type::level_type max_level_;
+        /// heating the grid initialization
+        double heat_;
+        /// threshold for refinening during solution
+        double refine_threshold_;
+        /// threshold for coarsening during solution
+        double coarsen_threshold_;
+        /// number of calculated timesteps
+        size_t done_steps_;
 
-public:
-	/**
-	 * Std-Constructor
-	 *
-	 * @param beam_velocity the velocity of the rotating laser beam
-	 * @param heat_sigma the laser beam's expansion
-	 * @param max_level the max. refinement level
-	 * @param heat heating the grid initialization
-	 * @param refine_threshold threshold for refinening during solution
-	 * @param coarsen_threshold threshold for coarsening during solution
-	 * @param SparseGrid reference to the sparse grid
-	 * @param alpha the sparse grid's coefficients
-	 * @param a the heat coefficient
-	 * @param TimestepSize the size of one timestep used in the ODE Solver
-	 * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
-	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
-	 */
-	LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+      public:
+        /**
+         * Std-Constructor
+         *
+         * @param beam_velocity the velocity of the rotating laser beam
+         * @param heat_sigma the laser beam's expansion
+         * @param max_level the max. refinement level
+         * @param heat heating the grid initialization
+         * @param refine_threshold threshold for refinening during solution
+         * @param coarsen_threshold threshold for coarsening during solution
+         * @param SparseGrid reference to the sparse grid
+         * @param alpha the sparse grid's coefficients
+         * @param a the heat coefficient
+         * @param TimestepSize the size of one timestep used in the ODE Solver
+         * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+         *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
+         */
+        LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
-	/**
-	 * Std-Destructor
-	 */
-	virtual ~LaserHeatEquationParabolicPDESolverSystemParallelOMP2D();
+        /**
+         * Std-Destructor
+         */
+        virtual ~LaserHeatEquationParabolicPDESolverSystemParallelOMP2D();
 
-	virtual void finishTimestep();
+        virtual void finishTimestep();
 
-	virtual void coarsenAndRefine(bool isLastTimestep = false);
+        virtual void coarsenAndRefine(bool isLastTimestep = false);
 
-	virtual void startTimestep();
-};
+        virtual void startTimestep();
+    };
 
-}
+  }
 }
 
 #endif /* LASERHEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP2D_HPP */

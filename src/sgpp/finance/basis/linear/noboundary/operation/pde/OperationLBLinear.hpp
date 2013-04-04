@@ -10,56 +10,53 @@
 
 #include "pde/algorithm/StdUpDown.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
-/**
- * Implements the standard \f$(\phi_i(x),d\phi_j(x))\f$ operator on linear grids (no boundaries)
- *
- * @version $HEAD$
- */
-class OperationLBLinear: public sg::pde::StdUpDown
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's sg::base::GridStorage object
-	 */
-	OperationLBLinear(sg::base::GridStorage* storage);
+    /**
+     * Implements the standard \f$(\phi_i(x),d\phi_j(x))\f$ operator on linear grids (no boundaries)
+     *
+     * @version $HEAD$
+     */
+    class OperationLBLinear: public sg::pde::StdUpDown {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's sg::base::GridStorage object
+         */
+        OperationLBLinear(sg::base::GridStorage* storage);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationLBLinear();
+        /**
+         * Destructor
+         */
+        virtual ~OperationLBLinear();
 
-protected:
-	/**
-	 * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),d\phi_j(x))\f$.
-	 * Applies the up-part of the one-dimensional mass matrix in one dimension.
-	 * Computes \f[\int_{x=0}^1  \phi_i(x)d\phi_j(x) dx.\f]
-	 *
-	 * @param dim dimension in which to apply the up-part
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+      protected:
+        /**
+         * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),d\phi_j(x))\f$.
+         * Applies the up-part of the one-dimensional mass matrix in one dimension.
+         * Computes \f[\int_{x=0}^1  \phi_i(x)d\phi_j(x) dx.\f]
+         *
+         * @param dim dimension in which to apply the up-part
+         * @param alpha vector of coefficients
+         * @param result vector to store the results in
+         */
+        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	/**
-	 * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),d\phi_j(x))\f$.
-	 * Applies the down-part of the one-dimensional mass matrix in one dimension.
-	 * Computes \f[\int_{x=0}^1  \phi_i(x)d\phi_j(x) dx.\f]
-	 *
-	 * @param dim dimension in which to apply the down-part
-	 * @param alpha vector of coefficients
-	 * @param result vector to store the results in
-	 */
-	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
-};
+        /**
+         * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),d\phi_j(x))\f$.
+         * Applies the down-part of the one-dimensional mass matrix in one dimension.
+         * Computes \f[\int_{x=0}^1  \phi_i(x)d\phi_j(x) dx.\f]
+         *
+         * @param dim dimension in which to apply the down-part
+         * @param alpha vector of coefficients
+         * @param result vector to store the results in
+         */
+        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONLBLINEAR_HPP */

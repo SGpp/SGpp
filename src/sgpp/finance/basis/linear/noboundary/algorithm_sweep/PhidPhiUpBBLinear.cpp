@@ -7,74 +7,67 @@
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-PhidPhiUpBBLinear::PhidPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
-{
-}
+    PhidPhiUpBBLinear::PhidPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    }
 
-PhidPhiUpBBLinear::~PhidPhiUpBBLinear()
-{
-}
+    PhidPhiUpBBLinear::~PhidPhiUpBBLinear() {
+    }
 
-void PhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	// get boundary values
-	double fl = 0.0;
-	double fr = 0.0;
+    void PhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      // get boundary values
+      double fl = 0.0;
+      double fr = 0.0;
 
-	rec(source, result, index, dim, fl, fr);
-}
+      rec(source, result, index, dim, fl, fr);
+    }
 
-void PhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-{
-	size_t seq = index.seq();
+    void PhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+      size_t seq = index.seq();
 
-	fl = fr = 0.0;
-	double fml = 0.0;
-	double fmr = 0.0;
+      fl = fr = 0.0;
+      double fml = 0.0;
+      double fmr = 0.0;
 
-	sg::base::GridStorage::index_type::level_type current_level;
-	sg::base::GridStorage::index_type::index_type current_index;
+      sg::base::GridStorage::index_type::level_type current_level;
+      sg::base::GridStorage::index_type::index_type current_index;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fml);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fmr, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fml);
+        }
 
-		index.up(dim);
-	}
+        index.step_right(dim);
 
-	index.get(dim, current_level, current_index);
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fmr, fr);
+        }
 
-	double fm = fml + fmr;
+        index.up(dim);
+      }
 
-	double alpha_value = source[seq];
+      index.get(dim, current_level, current_index);
 
-	double helper = 0.5;
+      double fm = fml + fmr;
 
-	// transposed operations:
-	result[seq] = fm;
+      double alpha_value = source[seq];
 
-	fl = (fm/2.0) + ((alpha_value*((-1.0)*helper)) + fl);
-	fr = (fm/2.0) + ((alpha_value*helper) + fr);
-}
+      double helper = 0.5;
 
- // namespace detail
+      // transposed operations:
+      result[seq] = fm;
 
-} // namespace sg
+      fl = (fm / 2.0) + ((alpha_value * ((-1.0) * helper)) + fl);
+      fr = (fm / 2.0) + ((alpha_value * helper) + fr);
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

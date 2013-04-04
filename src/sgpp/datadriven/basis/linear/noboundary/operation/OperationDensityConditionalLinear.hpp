@@ -12,36 +12,33 @@
 #include "datadriven/operation/OperationDensityConditional.hpp"
 #include <cstring>
 
-namespace sg
-{
-namespace datadriven
-{
-
-  /**
-   * Marginalize Probability Density Function
-   */
-  
-  class OperationDensityConditionalLinear : public OperationDensityConditional
-  {
-  public:
-    OperationDensityConditionalLinear(base::Grid* grid) : grid(grid) {}
-    virtual ~OperationDensityConditionalLinear() {}
+namespace sg {
+  namespace datadriven {
 
     /**
-     * Marginalizes (Density) Functions
-     * 
-     * @param alpha Coefficient vector for current grid
-     * @param mg Referenz of grid pointer 
-     * @param malpha Coefficient vector for new grid (mg). Will be resized.
-     * @param mdim Marginalize in dimension mdim 
-     * @param xbar Point at which to conditionalize
+     * Marginalize Probability Density Function
      */
-    void doConditional(base::DataVector &alpha, base::Grid* &mg, base::DataVector &malpha, unsigned int mdim, double xbar);
 
-  protected:
-    base::Grid* grid;
-  };
-    
-}
+    class OperationDensityConditionalLinear : public OperationDensityConditional {
+      public:
+        OperationDensityConditionalLinear(base::Grid* grid) : grid(grid) {}
+        virtual ~OperationDensityConditionalLinear() {}
+
+        /**
+         * Marginalizes (Density) Functions
+         *
+         * @param alpha Coefficient vector for current grid
+         * @param mg Referenz of grid pointer
+         * @param malpha Coefficient vector for new grid (mg). Will be resized.
+         * @param mdim Marginalize in dimension mdim
+         * @param xbar Point at which to conditionalize
+         */
+        void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim, double xbar);
+
+      protected:
+        base::Grid* grid;
+    };
+
+  }
 }
 #endif /* OPERATIONDENSITYCONDITIONALLINEAR_HPP */

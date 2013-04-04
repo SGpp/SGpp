@@ -30,300 +30,263 @@
 #include "base/operation/BaseOpFactory.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-Grid* Grid::createLinearGridStencil(size_t dim)
-{
-	return new LinearGridStencil(dim);
-}
+    Grid* Grid::createLinearGridStencil(size_t dim) {
+      return new LinearGridStencil(dim);
+    }
 
-Grid* Grid::createModLinearGridStencil(size_t dim)
-{
-	return new ModLinearGridStencil(dim);
-}
+    Grid* Grid::createModLinearGridStencil(size_t dim) {
+      return new ModLinearGridStencil(dim);
+    }
 
-Grid* Grid::createLinearGrid(size_t dim)
-{
-	return new LinearGrid(dim);
-}
+    Grid* Grid::createLinearGrid(size_t dim) {
+      return new LinearGrid(dim);
+    }
 
-Grid* Grid::createLinearStretchedGrid(size_t dim)
-{
-	return new LinearStretchedGrid(dim);
-}
+    Grid* Grid::createLinearStretchedGrid(size_t dim) {
+      return new LinearStretchedGrid(dim);
+    }
 
-Grid* Grid::createLinearBoundaryGrid(size_t dim)
-{
-	return new LinearBoundaryGrid(dim);
-}
+    Grid* Grid::createLinearBoundaryGrid(size_t dim) {
+      return new LinearBoundaryGrid(dim);
+    }
 
-Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim)
-{
-	return new LinearTrapezoidBoundaryGrid(dim);
-}
+    Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim) {
+      return new LinearTrapezoidBoundaryGrid(dim);
+    }
 
-Grid* Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim)
-{
-	return new LinearStretchedTrapezoidBoundaryGrid(dim);
-}
+    Grid* Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim) {
+      return new LinearStretchedTrapezoidBoundaryGrid(dim);
+    }
 
-Grid* Grid::createModLinearGrid(size_t dim)
-{
-	return new ModLinearGrid(dim);
-}
+    Grid* Grid::createModLinearGrid(size_t dim) {
+      return new ModLinearGrid(dim);
+    }
 
-Grid* Grid::createPolyGrid(size_t dim, size_t degree)
-{
-	return new PolyGrid(dim, degree);
-}
+    Grid* Grid::createPolyGrid(size_t dim, size_t degree) {
+      return new PolyGrid(dim, degree);
+    }
 
-Grid* Grid::createModWaveletGrid(size_t dim)
-{
-    return new ModWaveletGrid(dim);
-}
+    Grid* Grid::createModWaveletGrid(size_t dim) {
+      return new ModWaveletGrid(dim);
+    }
 
-Grid* Grid::createModBsplineGrid(size_t dim, size_t degree)
-{
-    return new ModBsplineGrid(dim, degree);
-}
+    Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
+      return new ModBsplineGrid(dim, degree);
+    }
 
-Grid* Grid::createSquareRootGrid(size_t dim)
-{
-    return new SquareRootGrid(dim);
-}
+    Grid* Grid::createSquareRootGrid(size_t dim) {
+      return new SquareRootGrid(dim);
+    }
 
-Grid* Grid::createPrewaveletGrid(size_t dim)
-{
-    return new PrewaveletGrid(dim);
-}
+    Grid* Grid::createPrewaveletGrid(size_t dim) {
+      return new PrewaveletGrid(dim);
+    }
 
-Grid* Grid::createTruncatedTrapezoidGrid(size_t dim)
-{
-    return new TruncatedTrapezoidGrid(dim);
-}
+    Grid* Grid::createTruncatedTrapezoidGrid(size_t dim) {
+      return new TruncatedTrapezoidGrid(dim);
+    }
 
-//OperationMatrix* Grid::createOperationIdentity()
-//{
-//	return new OperationIdentity();
-//}
+    //OperationMatrix* Grid::createOperationIdentity()
+    //{
+    //  return new OperationIdentity();
+    //}
 
-Grid* Grid::createModPolyGrid(size_t dim, size_t degree)
-{
-	return new ModPolyGrid(dim, degree);
-}
+    Grid* Grid::createModPolyGrid(size_t dim, size_t degree) {
+      return new ModPolyGrid(dim, degree);
+    }
 
-Grid* Grid::unserialize(const std::string& istr)
-{
-	std::istringstream istream;
-	istream.str(istr);
+    Grid* Grid::unserialize(const std::string& istr) {
+      std::istringstream istream;
+      istream.str(istr);
 
-	return Grid::unserialize(istream);
-}
+      return Grid::unserialize(istream);
+    }
 
-Grid* Grid::unserialize(std::istream& istr)
-{
-	std::string gridtype;
-	istr >> gridtype;
+    Grid* Grid::unserialize(std::istream& istr) {
+      std::string gridtype;
+      istr >> gridtype;
 
-	if(typeMap().count(gridtype) > 0)
-	{
-		// it calls a function pointer out of a map.
-		return typeMap()[gridtype](istr);
-	}
-	else
-	{
-	  // compose error message and throw factory_exception
-	  std::string errMsg = "factory_exeception unserialize: unkown gridtype.\n";
-	  errMsg += "Got: '" + gridtype + "'; possible choices: ";
-	  factoryMap::iterator it;
-	  for (it = typeMap().begin(); it != typeMap().end(); it++) {
-	    errMsg += "'" + (*it).first + "' ";
-	  }
-	  throw factory_exception(errMsg.c_str());
-	}
+      if (typeMap().count(gridtype) > 0) {
+        // it calls a function pointer out of a map.
+        return typeMap()[gridtype](istr);
+      } else {
+        // compose error message and throw factory_exception
+        std::string errMsg = "factory_exeception unserialize: unkown gridtype.\n";
+        errMsg += "Got: '" + gridtype + "'; possible choices: ";
+        factoryMap::iterator it;
 
-	return NULL;
-}
+        for (it = typeMap().begin(); it != typeMap().end(); it++) {
+          errMsg += "'" + (*it).first + "' ";
+        }
 
-std::map<std::string, Grid::Factory>& Grid::typeMap()
-{
-	// This is only executed once!
-	static factoryMap* tMap = new factoryMap();
-	if(tMap->size() == 0)
-	{
-		/*
-		 * Insert factories here. This methods may NOT read the grid type.
-		 * This map takes a string, function pointer pair.
-		 */
+        throw factory_exception(errMsg.c_str());
+      }
+
+      return NULL;
+    }
+
+    std::map<std::string, Grid::Factory>& Grid::typeMap() {
+      // This is only executed once!
+      static factoryMap* tMap = new factoryMap();
+
+      if (tMap->size() == 0) {
+        /*
+         * Insert factories here. This methods may NOT read the grid type.
+         * This map takes a string, function pointer pair.
+         */
 #ifdef _WIN32
-		tMap->insert(std::pair<std::string, Grid::Factory>("NULL",Grid::nullFactory));
-		tMap->insert(std::pair<std::string, Grid::Factory>("linear", LinearGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("linearStretched", LinearStretchedGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("linearstencil", LinearGridStencil::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("modlinearstencil", ModLinearGridStencil::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("modWavelet", ModWaveletGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
-		tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("NULL", Grid::nullFactory));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linear", LinearGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearStretched", LinearStretchedGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearstencil", LinearGridStencil::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modlinearstencil", ModLinearGridStencil::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modWavelet", ModWaveletGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
 #else
-		tMap->insert(std::make_pair("NULL",Grid::nullFactory));
-		tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
-		tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
-		tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
-		tMap->insert(std::make_pair("linearstencil", LinearGridStencil::unserialize));
-		tMap->insert(std::make_pair("modlinearstencil", ModLinearGridStencil::unserialize));
-		tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
-		tMap->insert(std::make_pair("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
-		tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
-		tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
-		tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
-		tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
-		tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
-		tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
+        tMap->insert(std::make_pair("NULL", Grid::nullFactory));
+        tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
+        tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
+        tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("linearstencil", LinearGridStencil::unserialize));
+        tMap->insert(std::make_pair("modlinearstencil", ModLinearGridStencil::unserialize));
+        tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
+        tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
+        tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
+        tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
+        tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
 #endif
-	}
+      }
 
-	return *tMap;
-}
+      return *tMap;
+    }
 
-/**
- * Factory for everything we don't know.
- */
-Grid* Grid::nullFactory(std::istream&)
-{
-	throw factory_exception("factory_exeception unserialize: unsupported gridtype");
-	return NULL;
-}
+    /**
+     * Factory for everything we don't know.
+     */
+    Grid* Grid::nullFactory(std::istream&) {
+      throw factory_exception("factory_exeception unserialize: unsupported gridtype");
+      return NULL;
+    }
 
-Grid::Grid(std::istream& istr) : storage(NULL)
-{
-	int hasStorage;
-	istr >> hasStorage;
-	if(hasStorage == 1)
-	{
-		storage = new GridStorage(istr);
-	}
-}
+    Grid::Grid(std::istream& istr) : storage(NULL) {
+      int hasStorage;
+      istr >> hasStorage;
 
-Grid::Grid() : storage(NULL)
-{
-}
+      if (hasStorage == 1) {
+        storage = new GridStorage(istr);
+      }
+    }
 
-Grid::~Grid()
-{
-	if(storage != NULL)
-	{
-		delete storage;
-	}
+    Grid::Grid() : storage(NULL) {
+    }
 
-	if(evalOp != NULL)
-	{
-		delete evalOp;
-		evalOp = NULL;
-	}
-}
+    Grid::~Grid() {
+      if (storage != NULL) {
+        delete storage;
+      }
 
-GridStorage* Grid::getStorage()
-{
-	return this->storage;
-}
+      if (evalOp != NULL) {
+        delete evalOp;
+        evalOp = NULL;
+      }
+    }
 
-BoundingBox* Grid::getBoundingBox()
-{
-	return this->storage->getBoundingBox();
-}
+    GridStorage* Grid::getStorage() {
+      return this->storage;
+    }
 
-Stretching* Grid::getStretching()
-{
-	return this->storage->getStretching();
-}
+    BoundingBox* Grid::getBoundingBox() {
+      return this->storage->getBoundingBox();
+    }
 
-void Grid::setBoundingBox(BoundingBox& bb)
-{
-	this->storage->setBoundingBox(bb);
-}
+    Stretching* Grid::getStretching() {
+      return this->storage->getStretching();
+    }
 
-void Grid::setStretching(Stretching& bb)
-{
-	this->storage->setStretching(bb);
-}
+    void Grid::setBoundingBox(BoundingBox& bb) {
+      this->storage->setBoundingBox(bb);
+    }
 
-void Grid::serialize(std::string& ostr)
-{
-	std::ostringstream ostream;
-	this->serialize(ostream);
+    void Grid::setStretching(Stretching& bb) {
+      this->storage->setStretching(bb);
+    }
 
-	ostr = ostream.str();
-}
+    void Grid::serialize(std::string& ostr) {
+      std::ostringstream ostream;
+      this->serialize(ostream);
 
-std::string Grid::serialize()
-{
-	std::ostringstream ostream;
-	this->serialize(ostream);
+      ostr = ostream.str();
+    }
 
-	return ostream.str();
-}
+    std::string Grid::serialize() {
+      std::ostringstream ostream;
+      this->serialize(ostream);
 
-void Grid::serialize(std::ostream& ostr)
-{
-	ostr << this->getType() << std::endl;
-	if(storage != NULL)
-	{
-		ostr << "1" << std::endl;
-		storage->serialize(ostr);
-	}
-	else
-	{
-		ostr << "0" << std::endl;
-	}
-}
+      return ostream.str();
+    }
 
-void Grid::refine(DataVector* vector, int numOfPoints)
-{
-	// @todo (khakhutv) (low) different refinemente Functors
-	this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
-}
+    void Grid::serialize(std::ostream& ostr) {
+      ostr << this->getType() << std::endl;
 
-OperationEval* Grid::evalOp(NULL);
+      if (storage != NULL) {
+        ostr << "1" << std::endl;
+        storage->serialize(ostr);
+      } else {
+        ostr << "0" << std::endl;
+      }
+    }
 
-double Grid::eval(DataVector& alpha, DataVector& point){
-	if(this->evalOp == NULL) this->evalOp = sg::op_factory::createOperationEval(*this);
-	return this->evalOp->eval(alpha, point);
-}
+    void Grid::refine(DataVector* vector, int numOfPoints) {
+      // @todo (khakhutv) (low) different refinemente Functors
+      this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
+    }
 
-void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf){
-	//create HashGridIndex object for the point
-	GridIndex pointIndex = new GridIndex(dim);
-	for (unsigned int i=0; i<dim-1; i++){
-		pointIndex.push(i, levels[i], indices[i]);
-	}
-	//insert last level/index and hash
-	pointIndex.set(dim-1, levels[dim-1], indices[dim-1], isLeaf);
-	//insert point to the GridStorage
-	storage->insert(pointIndex);
-}
+    OperationEval* Grid::evalOp(NULL);
 
-size_t Grid::getSize(){
-	return this->storage->size();
-}
+    double Grid::eval(DataVector& alpha, DataVector& point) {
+      if (this->evalOp == NULL) this->evalOp = sg::op_factory::createOperationEval(*this);
 
-std::vector<size_t> Grid::getAlgorithmicDimensions()
-{
-	return this->storage->getAlgorithmicDimensions();
-}
+      return this->evalOp->eval(alpha, point);
+    }
 
-void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims)
-{
-	this->storage->setAlgorithmicDimensions(newAlgoDims);
-}
+    void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf) {
+      //create HashGridIndex object for the point
+      GridIndex pointIndex = new GridIndex(dim);
 
-}
+      for (unsigned int i = 0; i < dim - 1; i++) {
+        pointIndex.push(i, levels[i], indices[i]);
+      }
+
+      //insert last level/index and hash
+      pointIndex.set(dim - 1, levels[dim - 1], indices[dim - 1], isLeaf);
+      //insert point to the GridStorage
+      storage->insert(pointIndex);
+    }
+
+    size_t Grid::getSize() {
+      return this->storage->size();
+    }
+
+    std::vector<size_t> Grid::getAlgorithmicDimensions() {
+      return this->storage->getAlgorithmicDimensions();
+    }
+
+    void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
+      this->storage->setAlgorithmicDimensions(newAlgoDims);
+    }
+
+  }
 }

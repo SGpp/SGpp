@@ -19,78 +19,75 @@
 
 #include <string>
 
-namespace sg
-{
-namespace parallel
-{
-
-/**
- * Class that implements the virtual class sg::base::OperationMatrix for the
- * application of classification for the Systemmatrix
- *
- * The Identity matrix is used as regularization operator.
- *
- * For the Operation B's mult and mutlTransposed functions
- * vectorized formulations are used.
- */
-class DMSystemMatrixVectorizedIdentityMPI : public sg::datadriven::DMSystemMatrixBase
-{
-private:
-	/// vectorization mode
-	VectorizationType vecMode_;
-	/// Number of orignal training instances
-	size_t numTrainingInstances_;
-	/// Number of patched and used training instances
-	size_t numPatchedTrainingInstances_;
-	/// OperationB for calculating the data matrix
-	sg::parallel::OperationMultipleEvalVectorized* B_;
-
-public:
-	/**
-	 * Std-Constructor
-	 *
-	 * @param SparseGrid reference to the sparse grid
-	 * @param trainData reference to sg::base::DataMatrix that contains the training data
-	 * @param lambda the lambda, the regression parameter
-	 * @param vecMode vectorization mode
-	 */
-    DMSystemMatrixVectorizedIdentityMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
-
-	/**
-	 * Std-Destructor
-	 */
-    virtual ~DMSystemMatrixVectorizedIdentityMPI();
-
-	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
-	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
-
-	virtual void rebuildLevelAndIndex();
-
-private:
-    /// how to distribute storage array
-	int * _mpi_grid_sizes;
-	int * _mpi_grid_offsets;
-
-	/// reference to grid. needed to get new grid size after it changes
-	sg::base::Grid& m_grid;
-
-	/// how to distribute dataset
-	int * _mpi_data_sizes;
-	int * _mpi_data_offsets;
+namespace sg {
+  namespace parallel {
 
     /**
-     * Wrapper function that handles communication after calculation and time measurement
+     * Class that implements the virtual class sg::base::OperationMatrix for the
+     * application of classification for the Systemmatrix
+     *
+     * The Identity matrix is used as regularization operator.
+     *
+     * For the Operation B's mult and mutlTransposed functions
+     * vectorized formulations are used.
      */
-    void multVec(base::DataVector &alpha, base::DataVector &result);
+    class DMSystemMatrixVectorizedIdentityMPI : public sg::datadriven::DMSystemMatrixBase {
+      private:
+        /// vectorization mode
+        VectorizationType vecMode_;
+        /// Number of orignal training instances
+        size_t numTrainingInstances_;
+        /// Number of patched and used training instances
+        size_t numPatchedTrainingInstances_;
+        /// OperationB for calculating the data matrix
+        sg::parallel::OperationMultipleEvalVectorized* B_;
 
-    /**
-     * Wrapper function that handles communication after calculation and time measurement
-     */
-    void multTransposeVec(base::DataVector &source, base::DataVector &result);
-};
+      public:
+        /**
+         * Std-Constructor
+         *
+         * @param SparseGrid reference to the sparse grid
+         * @param trainData reference to sg::base::DataMatrix that contains the training data
+         * @param lambda the lambda, the regression parameter
+         * @param vecMode vectorization mode
+         */
+        DMSystemMatrixVectorizedIdentityMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
 
-}
+        /**
+         * Std-Destructor
+         */
+        virtual ~DMSystemMatrixVectorizedIdentityMPI();
+
+        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+
+        virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
+
+        virtual void rebuildLevelAndIndex();
+
+      private:
+        /// how to distribute storage array
+        int* _mpi_grid_sizes;
+        int* _mpi_grid_offsets;
+
+        /// reference to grid. needed to get new grid size after it changes
+        sg::base::Grid& m_grid;
+
+        /// how to distribute dataset
+        int* _mpi_data_sizes;
+        int* _mpi_data_offsets;
+
+        /**
+         * Wrapper function that handles communication after calculation and time measurement
+         */
+        void multVec(base::DataVector& alpha, base::DataVector& result);
+
+        /**
+         * Wrapper function that handles communication after calculation and time measurement
+         */
+        void multTransposeVec(base::DataVector& source, base::DataVector& result);
+    };
+
+  }
 }
 
 #endif /* DMSYSTEMMATRIXVECTORIZEDIDENTITYMPI_HPP */

@@ -10,37 +10,33 @@
 
 #include <cstddef>
 
-namespace sg
-{
+namespace sg {
 
-namespace solver
-{
+  namespace solver {
 
-/**
- * enum to address different SLE solvers in a standardized way
- */
-enum SLESolverType {
-   CG,
-   BiCGSTAB
-};
+    /**
+     * enum to address different SLE solvers in a standardized way
+     */
+    enum SLESolverType {
+      CG,
+      BiCGSTAB
+    };
 
-struct SLESolverConfiguration
-{
-	sg::solver::SLESolverType type_;
-	double eps_;
-	size_t maxIterations_;
-	double threshold_;
-};
+    struct SLESolverConfiguration {
+      sg::solver::SLESolverType type_;
+      double eps_;
+      size_t maxIterations_;
+      double threshold_;
+    };
 
-struct SLESolverSPConfiguration
-{
-	sg::solver::SLESolverType type_;
-	float eps_;
-	size_t maxIterations_;
-	float threshold_;
-};
+    struct SLESolverSPConfiguration {
+      sg::solver::SLESolverType type_;
+      float eps_;
+      size_t maxIterations_;
+      float threshold_;
+    };
 
-}
+  }
 
 }
 

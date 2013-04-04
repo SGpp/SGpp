@@ -11,61 +11,53 @@
 #include <exception>
 #include <cstddef>
 
-namespace sg
-{
-namespace base
-{
-
-/**
- * Exception that is thrown in case of a grid generation failure
- *
- * @version $HEAD$
- */
-class generation_exception : public std::exception
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param msg the exception message
-	 */
-	generation_exception(const char* msg) throw() : msg(msg)
-	{
-	}
-
-	/**
-	 * Standared Constructor
-	 */
-	generation_exception() throw() : msg(NULL) { }
-
-	/**
-	 * Destructor
-	 */
-    virtual ~generation_exception() throw() { }
+namespace sg {
+  namespace base {
 
     /**
-     * throw method that have to be implemented
+     * Exception that is thrown in case of a grid generation failure
      *
-     * @return returns the message specified in the constructor otherwise a general text
+     * @version $HEAD$
      */
-    virtual const char* what() const throw()
-	{
-		if(msg)
-		{
-			return msg;
-		}
-		else
-		{
-			return "generation_exception: failure generating grid";
-		}
-	}
+    class generation_exception : public std::exception {
+      public:
+        /**
+         * Constructor
+         *
+         * @param msg the exception message
+         */
+        generation_exception(const char* msg) throw() : msg(msg) {
+        }
 
-protected:
-	/// the exception message
-	const char* msg;
-};
+        /**
+         * Standared Constructor
+         */
+        generation_exception() throw() : msg(NULL) { }
 
-}
+        /**
+         * Destructor
+         */
+        virtual ~generation_exception() throw() { }
+
+        /**
+         * throw method that have to be implemented
+         *
+         * @return returns the message specified in the constructor otherwise a general text
+         */
+        virtual const char* what() const throw() {
+          if (msg) {
+            return msg;
+          } else {
+            return "generation_exception: failure generating grid";
+          }
+        }
+
+      protected:
+        /// the exception message
+        const char* msg;
+    };
+
+  }
 }
 
 #endif /* GENERATION_EXCEPTION_HPP */

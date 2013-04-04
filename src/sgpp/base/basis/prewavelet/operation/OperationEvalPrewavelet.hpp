@@ -13,40 +13,37 @@
 #include "base/operation/OperationEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationEval for a grids with prewavelet basis ansatzfunctions without boundaries
- */
-class OperationEvalPrewavelet : public OperationEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
+    /**
+     * This class implements OperationEval for a grids with prewavelet basis ansatzfunctions without boundaries
+     */
+    class OperationEvalPrewavelet : public OperationEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GridStorage object
+         */
+        OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationEvalPrewavelet() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationEvalPrewavelet() {}
 
-	virtual double eval(DataVector& alpha, std::vector<double>& point);
-	virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-	virtual double integrate(DataVector& alpha);
+        virtual double eval(DataVector& alpha, std::vector<double>& point);
+        virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
+        virtual double integrate(DataVector& alpha);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONEVELMODLINEAR_HPP */

@@ -12,16 +12,19 @@
 #include "KernelIncludesAndMacros.hpp"
 
 namespace sg {
-namespace parallel {
+  namespace parallel {
 
-class SPX86SimdKernelBase
-{
-public:
-	static inline size_t getChunkGridPoints(){return 12;}
-	static inline size_t getChunkDataPoints(){return 48;} //must be divisible by 48
-};
+    class SPX86SimdKernelBase {
+      public:
+        static inline size_t getChunkGridPoints() {
+          return 12;
+        }
+        static inline size_t getChunkDataPoints() {
+          return 48; //must be divisible by 48
+        }
+    };
 
-}
+  }
 }
 
 #endif // SPX86SIMDKERNELBASE_HPP

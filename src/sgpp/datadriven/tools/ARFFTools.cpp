@@ -11,188 +11,158 @@
 #include <stdlib.h>
 #include <iostream>
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-ARFFTools::ARFFTools()
-{
-}
+    ARFFTools::ARFFTools() {
+    }
 
-ARFFTools::~ARFFTools()
-{
-}
+    ARFFTools::~ARFFTools() {
+    }
 
-size_t ARFFTools::getDimension(std::string tfilename)
-{
-	std::string line;
-	std::ifstream myfile (tfilename.c_str());
-	size_t numFound = 0;
+    size_t ARFFTools::getDimension(std::string tfilename) {
+      std::string line;
+      std::ifstream myfile (tfilename.c_str());
+      size_t numFound = 0;
 
-	if (myfile.is_open())
-	{
-		while (! myfile.eof() )
-		{
-			getline (myfile,line);
-			if (line.find("@ATTRIBUTE", 0) != line.npos)
-			{
-				numFound++;
-			}
-		}
-		myfile.close();
-	}
-	else
-	{
-		std::string msg = "Unable to open file: " + tfilename;
-		throw new sg::base::file_exception(msg.c_str());
-	}
+      if (myfile.is_open()) {
+        while (! myfile.eof() ) {
+          getline (myfile, line);
 
-	// the class is not regarded when getting the dimension
-	numFound--;
+          if (line.find("@ATTRIBUTE", 0) != line.npos) {
+            numFound++;
+          }
+        }
 
-	return numFound;
-}
+        myfile.close();
+      } else {
+        std::string msg = "Unable to open file: " + tfilename;
+        throw new sg::base::file_exception(msg.c_str());
+      }
 
-size_t ARFFTools::getNumberInstances(std::string tfilename)
-{
-	std::string line;
-	std::ifstream myfile (tfilename.c_str());
-	size_t numInst = 0;
+      // the class is not regarded when getting the dimension
+      numFound--;
 
-	if (myfile.is_open())
-	{
-		getline (myfile,line);
+      return numFound;
+    }
 
-		while (! myfile.eof() )
-		{
-			if (line.find("@DATA", 0) != line.npos)
-			{
-				numInst = 0;
-			}
-			else
-			{
-				numInst++;
-			}
+    size_t ARFFTools::getNumberInstances(std::string tfilename) {
+      std::string line;
+      std::ifstream myfile (tfilename.c_str());
+      size_t numInst = 0;
 
-			getline (myfile,line);
-		}
-		myfile.close();
-	}
-	else
-	{
-		std::string msg = "Unable to open file: " + tfilename;
-		throw new sg::base::file_exception(msg.c_str());
-	}
+      if (myfile.is_open()) {
+        getline (myfile, line);
 
-	return numInst;
-}
+        while (! myfile.eof() ) {
+          if (line.find("@DATA", 0) != line.npos) {
+            numInst = 0;
+          } else {
+            numInst++;
+          }
 
-void ARFFTools::readTrainingData(std::string tfilename, sg::base::DataMatrix& destination)
-{
-	std::string line;
-	std::ifstream myfile (tfilename.c_str());
-	bool data = false;
-	size_t instanceNo = 0;
+          getline (myfile, line);
+        }
 
-	if (myfile.is_open())
-	{
-		getline (myfile,line);
+        myfile.close();
+      } else {
+        std::string msg = "Unable to open file: " + tfilename;
+        throw new sg::base::file_exception(msg.c_str());
+      }
 
-		while (! myfile.eof() )
-		{
-			if (data == true)
-			{
-				writeNewElement(line, destination, instanceNo);
-				instanceNo++;
-			}
+      return numInst;
+    }
 
-			if (line.find("@DATA", 0) != line.npos)
-			{
-				data = true;
-			}
+    void ARFFTools::readTrainingData(std::string tfilename, sg::base::DataMatrix& destination) {
+      std::string line;
+      std::ifstream myfile (tfilename.c_str());
+      bool data = false;
+      size_t instanceNo = 0;
 
-			getline (myfile,line);
-		}
-		myfile.close();
-	}
-	else
-	{
-		std::string msg = "Unable to open file: " + tfilename;
-		throw new sg::base::file_exception(msg.c_str());
-	}
-}
+      if (myfile.is_open()) {
+        getline (myfile, line);
 
-void ARFFTools::readClasses(std::string tfilename, sg::base::DataVector& destination)
-{
-	std::string line;
-	std::ifstream myfile (tfilename.c_str());
-	bool data = false;
-	size_t instanceNo = 0;
+        while (! myfile.eof() ) {
+          if (data == true) {
+            writeNewElement(line, destination, instanceNo);
+            instanceNo++;
+          }
 
-	if (myfile.is_open())
-	{
-		getline (myfile,line);
+          if (line.find("@DATA", 0) != line.npos) {
+            data = true;
+          }
 
-		while (! myfile.eof() )
-		{
-			if (data == true)
-			{
-				writeNewClass(line, destination, instanceNo);
-				instanceNo++;
-			}
+          getline (myfile, line);
+        }
 
-			if (line.find("@DATA", 0) != line.npos)
-			{
-				data = true;
-			}
+        myfile.close();
+      } else {
+        std::string msg = "Unable to open file: " + tfilename;
+        throw new sg::base::file_exception(msg.c_str());
+      }
+    }
 
-			getline (myfile,line);
-		}
-		myfile.close();
-	}
-	else
-	{
-		std::string msg = "Unable to open file: " + tfilename;
-		throw new sg::base::file_exception(msg.c_str());
-	}
-}
+    void ARFFTools::readClasses(std::string tfilename, sg::base::DataVector& destination) {
+      std::string line;
+      std::ifstream myfile (tfilename.c_str());
+      bool data = false;
+      size_t instanceNo = 0;
 
-void ARFFTools::writeNewElement(std::string& instance, sg::base::DataMatrix& destination, size_t instanceNo)
-{
-	size_t cur_pos = 0;
-	size_t cur_find = 0;
-	size_t dim = destination.getNcols();
-	std::string cur_value;
-	double dbl_cur_value;
+      if (myfile.is_open()) {
+        getline (myfile, line);
 
-	for (size_t i = 0; i < dim; i++)
-	{
-		cur_find = instance.find(",", cur_pos);
-		cur_value = instance.substr(cur_pos, cur_find-cur_pos);
-		dbl_cur_value = atof(cur_value.c_str());
-		destination.set(instanceNo , i, dbl_cur_value);
-		cur_pos = cur_find + 1;
-	}
-}
+        while (! myfile.eof() ) {
+          if (data == true) {
+            writeNewClass(line, destination, instanceNo);
+            instanceNo++;
+          }
 
-void ARFFTools::writeNewClass(std::string& instance, sg::base::DataVector& destination, size_t instanceNo)
-{
-	size_t cur_pos = instance.find_last_of(",");
-	std::string cur_value = instance.substr(cur_pos+1);
-	double dbl_cur_value = atof(cur_value.c_str());
-	destination.set(instanceNo, dbl_cur_value);
-}
+          if (line.find("@DATA", 0) != line.npos) {
+            data = true;
+          }
 
-//void ARFFTools::writeAlpha(std::string tfilename, sg::base::DataVector& source)
-//{
-//
-//}
+          getline (myfile, line);
+        }
 
-//void ARFFTools::readAlpha(std::string tfilename, sg::base::DataVector& destination)
-//{
-//
-//}
+        myfile.close();
+      } else {
+        std::string msg = "Unable to open file: " + tfilename;
+        throw new sg::base::file_exception(msg.c_str());
+      }
+    }
 
-}
+    void ARFFTools::writeNewElement(std::string& instance, sg::base::DataMatrix& destination, size_t instanceNo) {
+      size_t cur_pos = 0;
+      size_t cur_find = 0;
+      size_t dim = destination.getNcols();
+      std::string cur_value;
+      double dbl_cur_value;
+
+      for (size_t i = 0; i < dim; i++) {
+        cur_find = instance.find(",", cur_pos);
+        cur_value = instance.substr(cur_pos, cur_find - cur_pos);
+        dbl_cur_value = atof(cur_value.c_str());
+        destination.set(instanceNo , i, dbl_cur_value);
+        cur_pos = cur_find + 1;
+      }
+    }
+
+    void ARFFTools::writeNewClass(std::string& instance, sg::base::DataVector& destination, size_t instanceNo) {
+      size_t cur_pos = instance.find_last_of(",");
+      std::string cur_value = instance.substr(cur_pos + 1);
+      double dbl_cur_value = atof(cur_value.c_str());
+      destination.set(instanceNo, dbl_cur_value);
+    }
+
+    //void ARFFTools::writeAlpha(std::string tfilename, sg::base::DataVector& source)
+    //{
+    //
+    //}
+
+    //void ARFFTools::readAlpha(std::string tfilename, sg::base::DataVector& destination)
+    //{
+    //
+    //}
+
+  }
 }

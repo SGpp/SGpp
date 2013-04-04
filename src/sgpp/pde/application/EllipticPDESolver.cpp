@@ -7,18 +7,14 @@
 
 #include "pde/application/EllipticPDESolver.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-EllipticPDESolver::EllipticPDESolver() : PDESolver()
-{
-}
+    EllipticPDESolver::EllipticPDESolver() : PDESolver() {
+    }
 
-EllipticPDESolver::~EllipticPDESolver()
-{
-}
+    EllipticPDESolver::~EllipticPDESolver() {
+    }
 
-}
+  }
 }

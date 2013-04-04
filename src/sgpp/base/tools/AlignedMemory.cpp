@@ -7,34 +7,32 @@
 
 #include "base/tools/AlignedMemory.hpp"
 
-void* operator new (size_t size) throw (std::bad_alloc)
-{
-	void *p;
-	p = aligned_malloc(size, SGPPMEMALIGNMENT);
-	if (p==0)
-	{
-		throw std::bad_alloc();
-	}
-	return p;
+void* operator new (size_t size) throw (std::bad_alloc) {
+  void* p;
+  p = aligned_malloc(size, SGPPMEMALIGNMENT);
+
+  if (p == 0) {
+    throw std::bad_alloc();
+  }
+
+  return p;
 }
 
-void* operator new[] (size_t size) throw (std::bad_alloc)
-{
-	void *p;
-	p = aligned_malloc(size, SGPPMEMALIGNMENT);
-	if (p==0)
-	{
-		throw std::bad_alloc();
-	}
-	return p;
+void* operator new[] (size_t size) throw (std::bad_alloc) {
+  void* p;
+  p = aligned_malloc(size, SGPPMEMALIGNMENT);
+
+  if (p == 0) {
+    throw std::bad_alloc();
+  }
+
+  return p;
 }
 
-void operator delete (void *p) throw ()
-{
-	aligned_free(p);
+void operator delete (void* p) throw () {
+  aligned_free(p);
 }
 
-void operator delete[] (void *p) throw()
-{
-	aligned_free(p);
+void operator delete[] (void* p) throw() {
+  aligned_free(p);
 }

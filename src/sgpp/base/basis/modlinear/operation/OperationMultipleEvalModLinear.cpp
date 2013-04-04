@@ -12,26 +12,22 @@
 
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationMultipleEvalModLinear::mult(DataVector& alpha, DataVector& result)
-{
-	AlgorithmDGEMV<SModLinearBase> op;
-	ModifiedLinearBasis<unsigned int, unsigned int> base;
+    void OperationMultipleEvalModLinear::mult(DataVector& alpha, DataVector& result) {
+      AlgorithmDGEMV<SModLinearBase> op;
+      ModifiedLinearBasis<unsigned int, unsigned int> base;
 
-	op.mult(storage, base, alpha, *(this->dataset_), result);
-}
+      op.mult(storage, base, alpha, *(this->dataset_), result);
+    }
 
-void OperationMultipleEvalModLinear::multTranspose(DataVector& source, DataVector& result)
-{
-	AlgorithmDGEMV<SModLinearBase> op;
-	ModifiedLinearBasis<unsigned int, unsigned int> base;
+    void OperationMultipleEvalModLinear::multTranspose(DataVector& source, DataVector& result) {
+      AlgorithmDGEMV<SModLinearBase> op;
+      ModifiedLinearBasis<unsigned int, unsigned int> base;
 
-	op.mult_transposed(storage, base, source, *(this->dataset_), result);
-}
+      op.mult_transposed(storage, base, source, *(this->dataset_), result);
+    }
 
-}
+  }
 }

@@ -11,44 +11,41 @@
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationMultipleEval for a grids with linear basis ansatzfunctions
- * with boundaries
- *
- * @version $HEAD$
- */
-class OperationMultipleEvalLinearBoundary : public OperationMultipleEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GirdStorage object
-	 * @param dataset the dataset the should be evaluated
-	 */
-	OperationMultipleEvalLinearBoundary(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-		this->storage = storage;
-	}
+    /**
+     * This class implements OperationMultipleEval for a grids with linear basis ansatzfunctions
+     * with boundaries
+     *
+     * @version $HEAD$
+     */
+    class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GirdStorage object
+         * @param dataset the dataset the should be evaluated
+         */
+        OperationMultipleEvalLinearBoundary(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
+          this->storage = storage;
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalLinearBoundary() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationMultipleEvalLinearBoundary() {}
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-	virtual void multTranspose(DataVector& source, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONMULTIPLEEVALLINEARBOUNDARY_HPP */

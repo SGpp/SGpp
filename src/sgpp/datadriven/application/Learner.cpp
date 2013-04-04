@@ -12,54 +12,43 @@
 #include "datadriven/application/Learner.hpp"
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace datadriven
-{
+  namespace datadriven {
 
-Learner::Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
-	: LearnerBase(isRegression, verbose), CMode_(regularization), C_(NULL)
-{
-}
+    Learner::Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
+      : LearnerBase(isRegression, verbose), CMode_(regularization), C_(NULL) {
+    }
 
-Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization,
-		const bool isRegression, const bool verbose)
-	: LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), CMode_(regularization), C_(NULL)
-{
-}
+    Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization,
+                     const bool isRegression, const bool verbose)
+      : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), CMode_(regularization), C_(NULL) {
+    }
 
-Learner::~Learner()
-{
-	if (C_ != NULL)
-		delete C_;
-}
+    Learner::~Learner() {
+      if (C_ != NULL)
+        delete C_;
+    }
 
-sg::datadriven::DMSystemMatrixBase* Learner::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda)
-{
-	if (this->grid_ == NULL)
-		return NULL;
+    sg::datadriven::DMSystemMatrixBase* Learner::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) {
+      if (this->grid_ == NULL)
+        return NULL;
 
-	// Clean up, if needed
-	if (C_ != NULL)
-		delete C_;
+      // Clean up, if needed
+      if (C_ != NULL)
+        delete C_;
 
-	if (this->CMode_ == Laplace)
-	{
-		C_ = sg::op_factory::createOperationLaplace(*this->grid_);
-	}
-	else if (this->CMode_ == Identity)
-	{
-		C_ = sg::op_factory::createOperationIdentity(*this->grid_);
-	}
-	else
-	{
-		// should not happen
-	}
+      if (this->CMode_ == Laplace) {
+        C_ = sg::op_factory::createOperationLaplace(*this->grid_);
+      } else if (this->CMode_ == Identity) {
+        C_ = sg::op_factory::createOperationIdentity(*this->grid_);
+      } else {
+        // should not happen
+      }
 
-	return new sg::datadriven::DMSystemMatrix(*(this->grid_), trainDataset, *C_, lambda);
-}
+      return new sg::datadriven::DMSystemMatrix(*(this->grid_), trainDataset, *C_, lambda);
+    }
 
-}
+  }
 
 }

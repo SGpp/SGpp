@@ -10,95 +10,84 @@
 
 #include "base/basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
 
 
-HierarchisationModLinear::HierarchisationModLinear(GridStorage* storage) : storage(storage)
-{
-}
+    HierarchisationModLinear::HierarchisationModLinear(GridStorage* storage) : storage(storage) {
+    }
 
-HierarchisationModLinear::~HierarchisationModLinear()
-{
-}
+    HierarchisationModLinear::~HierarchisationModLinear() {
+    }
 
-void HierarchisationModLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-{
-	rec(source, result, index, dim, 0.0, 0.0);
-}
+    void HierarchisationModLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
+      rec(source, result, index, dim, 0.0, 0.0);
+    }
 
-void HierarchisationModLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-{
-	// current position on the grid
-	size_t seq = index.seq();
-	// value in the middle, needed for recursive call and calculation of the hierarchical surplus
-	double fm = source[seq];
+    void HierarchisationModLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+      // current position on the grid
+      size_t seq = index.seq();
+      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+      double fm = source[seq];
 
-	GridStorage::index_type::level_type l;
-	GridStorage::index_type::index_type i;
+      GridStorage::index_type::level_type l;
+      GridStorage::index_type::index_type i;
 
-	index.get(dim, l, i);
+      index.get(dim, l, i);
 
-	// recursive calls for the right and left side of the current node
-	if(index.hint() == false)
-	{
-		double fltemp = fl;
-		double frtemp = fr;
+      // recursive calls for the right and left side of the current node
+      if (index.hint() == false) {
+        double fltemp = fl;
+        double frtemp = fr;
 
-		// When we descend the hierarchical basis we have to modify the boundary values
-		// in case the index is 1 or (2^l)-1 or we are on the first level
-		// level 1, constant function
-		if(l == 1)
-		{
-			// constant function
-			fltemp = fm;
-			frtemp = fm;
-		}
-		// left boundary
-		else if(i == 1)
-		{
-			double ftemp;
-			ftemp = fr - fm;
-			fltemp = fm - ftemp;
-		}
-		// right boundary
-		else if(static_cast<int>(i) == static_cast<int>((1 << l)-1))
-		{
-			double ftemp;
-			ftemp = fl - fm;
-			frtemp = fm - ftemp;
-		}
-		// inner functions
-		else
-		{
-		}
+        // When we descend the hierarchical basis we have to modify the boundary values
+        // in case the index is 1 or (2^l)-1 or we are on the first level
+        // level 1, constant function
+        if (l == 1) {
+          // constant function
+          fltemp = fm;
+          frtemp = fm;
+        }
+        // left boundary
+        else if (i == 1) {
+          double ftemp;
+          ftemp = fr - fm;
+          fltemp = fm - ftemp;
+        }
+        // right boundary
+        else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+          double ftemp;
+          ftemp = fl - fm;
+          frtemp = fm - ftemp;
+        }
+        // inner functions
+        else {
+        }
 
-		// descend left
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fltemp, fm);
-		}
+        // descend left
+        index.left_child(dim);
 
-		// descend right
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fm, frtemp);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fltemp, fm);
+        }
 
-		// ascend
-		index.up(dim);
-	}
+        // descend right
+        index.step_right(dim);
 
-	// hierarchisation
-	result[seq] = fm - ((fl + fr)/2.0);
-}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fm, frtemp);
+        }
 
-	// namespace detail
+        // ascend
+        index.up(dim);
+      }
 
-}	// namespace sg
+      // hierarchisation
+      result[seq] = fm - ((fl + fr) / 2.0);
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

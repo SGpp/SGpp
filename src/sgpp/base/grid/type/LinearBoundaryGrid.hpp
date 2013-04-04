@@ -12,40 +12,37 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with linear base functions with boundaries
- */
-class LinearBoundaryGrid : public Grid
-{
-protected:
-	LinearBoundaryGrid(std::istream& istr);
+    /**
+     * grid with linear base functions with boundaries
+     */
+    class LinearBoundaryGrid : public Grid {
+      protected:
+        LinearBoundaryGrid(std::istream& istr);
 
-public:
-	/**
-	 * Constructor for the Linear Boundary Grid
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	LinearBoundaryGrid(size_t dim);
+      public:
+        /**
+         * Constructor for the Linear Boundary Grid
+         *
+         * @param dim the dimension of the grid
+         */
+        LinearBoundaryGrid(size_t dim);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~LinearBoundaryGrid();
+        /**
+         * Destructor
+         */
+        virtual ~LinearBoundaryGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
-};
+        static Grid* unserialize(std::istream& istr);
+    };
 
-}
+  }
 }
 
 #endif /* LINEARBOUNDARYGRID_HPP */

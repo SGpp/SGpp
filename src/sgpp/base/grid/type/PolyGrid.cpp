@@ -14,54 +14,44 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(-1)
-{
-	istr >> degree;
-}
+    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(-1) {
+      istr >> degree;
+    }
 
-PolyGrid::PolyGrid(size_t dim, size_t degree) : degree(degree)
-{
-	this->storage = new GridStorage(dim);
-}
+    PolyGrid::PolyGrid(size_t dim, size_t degree) : degree(degree) {
+      this->storage = new GridStorage(dim);
+    }
 
-PolyGrid::~PolyGrid()
-{
-}
+    PolyGrid::~PolyGrid() {
+    }
 
-const char* PolyGrid::getType()
-{
-	return "poly";
-}
+    const char* PolyGrid::getType() {
+      return "poly";
+    }
 
-size_t PolyGrid::getDegree() const
-{
-	return this->degree;
-}
+    size_t PolyGrid::getDegree() const {
+      return this->degree;
+    }
 
-Grid* PolyGrid::unserialize(std::istream& istr)
-{
-	return new PolyGrid(istr);
-}
+    Grid* PolyGrid::unserialize(std::istream& istr) {
+      return new PolyGrid(istr);
+    }
 
-void PolyGrid::serialize(std::ostream& ostr)
-{
-	this->Grid::serialize(ostr);
-	ostr << degree << std::endl;
-}
+    void PolyGrid::serialize(std::ostream& ostr) {
+      this->Grid::serialize(ostr);
+      ostr << degree << std::endl;
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* PolyGrid::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* PolyGrid::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
-}
+  }
 }

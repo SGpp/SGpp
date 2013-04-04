@@ -11,83 +11,72 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 
-namespace sg
-{
-namespace parallel
-{
+namespace sg {
+  namespace parallel {
 
-DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-	: DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0)
-{
-	// handle unsupported vector extensions
-	if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
-	{
-		throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
-	}
+    DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
+      : DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0) {
+      // handle unsupported vector extensions
+      if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+        throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
+      }
 
-	this->dataset_ = new sg::base::DataMatrix(trainData);
-	this->numTrainingInstances_ = this->dataset_->getNrows();
-	this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+      this->dataset_ = new sg::base::DataMatrix(trainData);
+      this->numTrainingInstances_ = this->dataset_->getNrows();
+      this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
-	if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB  && this->vecMode_ != Hybrid_X86SIMD_OpenCL)
-	{
-		this->dataset_->transpose();
-	}
+      if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB  && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+        this->dataset_->transpose();
+      }
 
-	this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_);
-}
-
-DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity()
-{
-	delete this->B_;
-	delete this->dataset_;
-}
-
-void DMSystemMatrixVectorizedIdentity::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
-{
-	sg::base::DataVector temp(this->numPatchedTrainingInstances_);
-
-    // Operation B
-	this->myTimer_->start();
-	this->computeTimeMult_ += this->B_->multVectorized(alpha, temp);
-    this->completeTimeMult_ += this->myTimer_->stop();
-
-    // patch result -> set additional entries zero
-    if (this->numTrainingInstances_ != temp.getSize())
-    {
-    	for (size_t i = 0; i < (temp.getSize()-this->numTrainingInstances_); i++)
-    	{
-    		temp.set(temp.getSize()-(i+1), 0.0f);
-    	}
+      this->B_ = sg::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_, this->dataset_);
     }
-    //@TODO make MPI version of this
 
-    this->myTimer_->start();
-    this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
-    this->completeTimeMultTrans_ += this->myTimer_->stop();
+    DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity() {
+      delete this->B_;
+      delete this->dataset_;
+    }
 
-    result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
-}
+    void DMSystemMatrixVectorizedIdentity::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
-void DMSystemMatrixVectorizedIdentity::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
-{
-	sg::base::DataVector myClasses(classes);
+      // Operation B
+      this->myTimer_->start();
+      this->computeTimeMult_ += this->B_->multVectorized(alpha, temp);
+      this->completeTimeMult_ += this->myTimer_->stop();
 
-	// Apply padding
-	if (this->numPatchedTrainingInstances_ != myClasses.getSize())
-	{
-		myClasses.resizeZero(this->numPatchedTrainingInstances_);
-	}
+      // patch result -> set additional entries zero
+      if (this->numTrainingInstances_ != temp.getSize()) {
+        for (size_t i = 0; i < (temp.getSize() - this->numTrainingInstances_); i++) {
+          temp.set(temp.getSize() - (i + 1), 0.0f);
+        }
+      }
 
-	this->myTimer_->start();
-	this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(myClasses, b);
-	this->completeTimeMultTrans_ += this->myTimer_->stop();
-}
+      //@TODO make MPI version of this
 
-void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex()
-{
-	this->B_->rebuildLevelAndIndex();
-}
+      this->myTimer_->start();
+      this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
+      this->completeTimeMultTrans_ += this->myTimer_->stop();
 
-}
+      result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
+    }
+
+    void DMSystemMatrixVectorizedIdentity::generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
+      sg::base::DataVector myClasses(classes);
+
+      // Apply padding
+      if (this->numPatchedTrainingInstances_ != myClasses.getSize()) {
+        myClasses.resizeZero(this->numPatchedTrainingInstances_);
+      }
+
+      this->myTimer_->start();
+      this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(myClasses, b);
+      this->completeTimeMultTrans_ += this->myTimer_->stop();
+    }
+
+    void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex() {
+      this->B_->rebuildLevelAndIndex();
+    }
+
+  }
 }

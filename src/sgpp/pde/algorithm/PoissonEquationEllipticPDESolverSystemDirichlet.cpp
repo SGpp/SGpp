@@ -11,32 +11,26 @@
 
 using namespace sg::op_factory;
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs)
-{
-	this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
-	this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
-}
+    PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
+      this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
+      this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
+    }
 
-PoissonEquationEllipticPDESolverSystemDirichlet::~PoissonEquationEllipticPDESolverSystemDirichlet()
-{
-	delete this->Laplace_Complete;
-	delete this->Laplace_Inner;
-}
+    PoissonEquationEllipticPDESolverSystemDirichlet::~PoissonEquationEllipticPDESolverSystemDirichlet() {
+      delete this->Laplace_Complete;
+      delete this->Laplace_Inner;
+    }
 
-void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result)
-{
-	Laplace_Inner->mult(alpha, result);
-}
+    void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      Laplace_Inner->mult(alpha, result);
+    }
 
-void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result)
-{
-	Laplace_Complete->mult(alpha, result);
-}
+    void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      Laplace_Complete->mult(alpha, result);
+    }
 
-}
+  }
 }

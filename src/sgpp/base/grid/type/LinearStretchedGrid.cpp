@@ -16,47 +16,38 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-LinearStretchedGrid::LinearStretchedGrid(std::istream& istr) : Grid(istr)
-{
+    LinearStretchedGrid::LinearStretchedGrid(std::istream& istr) : Grid(istr) {
 
-}
+    }
 
-LinearStretchedGrid::LinearStretchedGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    LinearStretchedGrid::LinearStretchedGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-LinearStretchedGrid::LinearStretchedGrid(Stretching& BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    LinearStretchedGrid::LinearStretchedGrid(Stretching& BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-LinearStretchedGrid::~LinearStretchedGrid()
-{
-}
+    LinearStretchedGrid::~LinearStretchedGrid() {
+    }
 
-const char* LinearStretchedGrid::getType()
-{
-	return "linearStretched";
-}
+    const char* LinearStretchedGrid::getType() {
+      return "linearStretched";
+    }
 
-Grid* LinearStretchedGrid::unserialize(std::istream& istr)
-{
-	return new LinearStretchedGrid(istr);
-}
+    Grid* LinearStretchedGrid::unserialize(std::istream& istr) {
+      return new LinearStretchedGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* LinearStretchedGrid::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* LinearStretchedGrid::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
+  }
 }

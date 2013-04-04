@@ -9,125 +9,92 @@
 
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace parallel
-{
+  namespace parallel {
 
-size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType)
-{
-	if (vecType == X86SIMD)
-    {
+    size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType) {
+      if (vecType == X86SIMD) {
         return 24;
-    }
-    else if (vecType == OpenCL)
-    {
+      } else if (vecType == OpenCL) {
         return 128;
-    }
-    else if (vecType == Hybrid_X86SIMD_OpenCL)
-    {
+      } else if (vecType == Hybrid_X86SIMD_OpenCL) {
         return 128;
-    }
-    else if (vecType == ArBB)
-    {
+      } else if (vecType == ArBB) {
         return 16;
-    }
-    else if (vecType == MIC)
-    {
+      } else if (vecType == MIC) {
         return 96;
-    }
-    else if (vecType == Hybrid_X86SIMD_MIC)
-    {
+      } else if (vecType == Hybrid_X86SIMD_MIC) {
         return 96;
-    }
-    else
-    {
+      } else {
         throw new sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
+      }
+
+      return 0;
     }
 
-	return 0;
-}
-
-size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType)
-{
-	if (vecType == X86SIMD)
-    {
+    size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType) {
+      if (vecType == X86SIMD) {
         return 48;
-    }
-    else if (vecType == OpenCL)
-    {
+      } else if (vecType == OpenCL) {
         return 128;
-    }
-    else if (vecType == Hybrid_X86SIMD_OpenCL)
-    {
+      } else if (vecType == Hybrid_X86SIMD_OpenCL) {
         return 128;
-    }
-    else if (vecType == ArBB)
-    {
+      } else if (vecType == ArBB) {
         return 16;
-    }
-    else if (vecType == MIC)
-    {
+      } else if (vecType == MIC) {
         return 192;
-    }
-    else if (vecType == Hybrid_X86SIMD_MIC)
-    {
+      } else if (vecType == Hybrid_X86SIMD_MIC) {
         return 192;
-    }
-    else
-    {
+      } else {
         throw new sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
+      }
+
+      return 0;
     }
-	return 0;
-}
 
-size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType)
-{
-    size_t vecWidth = getVecWidth(vecType);
+    size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType) {
+      size_t vecWidth = getVecWidth(vecType);
 
-	// Assure that data has a even number of instances -> padding might be needed
-    size_t remainder = dataset.getNrows() % vecWidth;
-    size_t loopCount = vecWidth - remainder;
+      // Assure that data has a even number of instances -> padding might be needed
+      size_t remainder = dataset.getNrows() % vecWidth;
+      size_t loopCount = vecWidth - remainder;
 
-    if (loopCount != vecWidth)
-    {
+      if (loopCount != vecWidth) {
         sg::base::DataVector lastRow(dataset.getNcols());
         size_t oldSize = dataset.getNrows();
-        dataset.getRow(dataset.getNrows()-1, lastRow);
-        dataset.resize(dataset.getNrows()+loopCount);
-        for (size_t i = 0; i < loopCount; i++)
-        {
-            dataset.setRow(oldSize+i, lastRow);
+        dataset.getRow(dataset.getNrows() - 1, lastRow);
+        dataset.resize(dataset.getNrows() + loopCount);
+
+        for (size_t i = 0; i < loopCount; i++) {
+          dataset.setRow(oldSize + i, lastRow);
         }
+      }
+
+      return dataset.getNrows();
     }
 
-    return dataset.getNrows();
-}
+    size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType) {
+      size_t vecWidth = getVecWidthSP(vecType);
 
-size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType)
-{
-	size_t vecWidth = getVecWidthSP(vecType);
+      // Assure that data has a even number of instances -> padding might be needed
+      size_t remainder = dataset.getNrows() % vecWidth;
+      size_t loopCount = vecWidth - remainder;
 
-	// Assure that data has a even number of instances -> padding might be needed
-    size_t remainder = dataset.getNrows() % vecWidth;
-    size_t loopCount = vecWidth - remainder;
-
-    if (loopCount != vecWidth)
-    {
+      if (loopCount != vecWidth) {
         sg::base::DataVectorSP lastRow(dataset.getNcols());
         size_t oldSize = dataset.getNrows();
-        dataset.getRow(dataset.getNrows()-1, lastRow);
-        dataset.resize(dataset.getNrows()+loopCount);
-        for (size_t i = 0; i < loopCount; i++)
-        {
-            dataset.setRow(oldSize+i, lastRow);
+        dataset.getRow(dataset.getNrows() - 1, lastRow);
+        dataset.resize(dataset.getNrows() + loopCount);
+
+        for (size_t i = 0; i < loopCount; i++) {
+          dataset.setRow(oldSize + i, lastRow);
         }
+      }
+
+      return dataset.getNrows();
     }
 
-    return dataset.getNrows();
-}
-
-}
+  }
 
 }

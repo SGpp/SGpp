@@ -8,71 +8,64 @@
 
 #include "finance/basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-XPhidPhiDownBBLinearStretched::XPhidPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
-{
-}
+    XPhidPhiDownBBLinearStretched::XPhidPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching()) {
+    }
 
-XPhidPhiDownBBLinearStretched::~XPhidPhiDownBBLinearStretched()
-{
-}
+    XPhidPhiDownBBLinearStretched::~XPhidPhiDownBBLinearStretched() {
+    }
 
-void XPhidPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	rec(source, result, index, dim, 0.0, 0.0);
+    void XPhidPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      rec(source, result, index, dim, 0.0, 0.0);
 
-}
+    }
 
-void XPhidPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-{
-	size_t seq = index.seq();
+    void XPhidPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+      size_t seq = index.seq();
 
-	double alpha_value = source[seq];
+      double alpha_value = source[seq];
 
-	sg::base::GridStorage::index_type::level_type l;
-	sg::base::GridStorage::index_type::index_type i;
+      sg::base::GridStorage::index_type::level_type l;
+      sg::base::GridStorage::index_type::index_type i;
 
-	index.get(dim, l, i);
-	//get the positions of the current index as well as its left and right neighbors
-	double posl=0, posr=0, posc=0;
-	this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
-	double baseLength = posr - posl;
-	double leftLength = posc - posl;
+      index.get(dim, l, i);
+      //get the positions of the current index as well as its left and right neighbors
+      double posl = 0, posr = 0, posc = 0;
+      this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
+      double baseLength = posr - posl;
+      double leftLength = posc - posl;
 
-	result[seq] = fl*(1.0/6.0)*(2*posc+2*posl-posr) - fr*(1.0/6.0)*(2*posc-posl+2*posr)
-								- 1.0/6.0*(baseLength)*alpha_value;	// diagonal entry
+      result[seq] = fl * (1.0 / 6.0) * (2 * posc + 2 * posl - posr) - fr * (1.0 / 6.0) * (2 * posc - posl + 2 * posr)
+                    - 1.0 / 6.0 * (baseLength) * alpha_value; // diagonal entry
 
 
-	// dehierarchisation
-	double fm =  (fr-fl)*(leftLength)/(baseLength)+fl+ alpha_value;
+      // dehierarchisation
+      double fm =  (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fm);
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fm);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fm, fr);
+        }
 
-		}
+        index.step_right(dim);
 
-		index.up(dim);
-	}
-}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fm, fr);
 
- // namespace detail
+        }
 
-} // namespace sg
+        index.up(dim);
+      }
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

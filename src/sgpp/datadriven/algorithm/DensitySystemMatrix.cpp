@@ -15,53 +15,47 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-  DensitySystemMatrix::DensitySystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
-{
-  this->data = &trainData;
-  this->lambda = lambda;
+    DensitySystemMatrix::DensitySystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda) {
+      this->data = &trainData;
+      this->lambda = lambda;
 
-  this->A = sg::op_factory::createOperationLTwoDotProduct(grid);
-  this->B = sg::op_factory::createOperationMultipleEval(grid, this->data);
-  this->C = &C;
-}
+      this->A = sg::op_factory::createOperationLTwoDotProduct(grid);
+      this->B = sg::op_factory::createOperationMultipleEval(grid, this->data);
+      this->C = &C;
+    }
 
-void DensitySystemMatrix::mult(sg::base::DataVector &alpha, sg::base::DataVector &result)
-{
-  result.setAll(0.0);
+    void DensitySystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      result.setAll(0.0);
 
-  // A * alpha
-  this->A->mult(alpha, result);
-  
-  // C * alpha
-  base::DataVector tmp(result.getSize());
-  this->C->mult(alpha, tmp);
+      // A * alpha
+      this->A->mult(alpha, result);
 
-  // A * alpha + lambda * C * alpha
-  result.axpy(this->lambda, tmp);
-}
+      // C * alpha
+      base::DataVector tmp(result.getSize());
+      this->C->mult(alpha, tmp);
+
+      // A * alpha + lambda * C * alpha
+      result.axpy(this->lambda, tmp);
+    }
 
 
-// Matrix-Multiplikation verwenden
-void DensitySystemMatrix::generateb(sg::base::DataVector& rhs)
-{
-  sg::base::DataVector y(this->data->getNrows());
-  y.setAll(1.0);
-  // Bt * 1
-  this->B->multTranspose(y, rhs);
-  // 1 / 2M * Bt * 1
-  rhs.mult(1./(double)this->data->getNrows());
-}
+    // Matrix-Multiplikation verwenden
+    void DensitySystemMatrix::generateb(sg::base::DataVector& rhs) {
+      sg::base::DataVector y(this->data->getNrows());
+      y.setAll(1.0);
+      // Bt * 1
+      this->B->multTranspose(y, rhs);
+      // 1 / 2M * Bt * 1
+      rhs.mult(1. / (double)this->data->getNrows());
+    }
 
-DensitySystemMatrix::~DensitySystemMatrix()
-{
-  delete this->A;
-  delete this->B;
-}
+    DensitySystemMatrix::~DensitySystemMatrix() {
+      delete this->A;
+      delete this->B;
+    }
 
-}
+  }
 }

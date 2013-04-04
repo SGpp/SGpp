@@ -11,40 +11,37 @@
 #include "base/operation/OperationEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationEval for a grids with linear basis ansatzfunctions with
- * boundaries
- *
- * @version $HEAD$
- */
-class OperationEvalLinearStretchedBoundary : public OperationEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	OperationEvalLinearStretchedBoundary(GridStorage* storage) : storage(storage) {}
+    /**
+     * This class implements OperationEval for a grids with linear basis ansatzfunctions with
+     * boundaries
+     *
+     * @version $HEAD$
+     */
+    class OperationEvalLinearStretchedBoundary : public OperationEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GridStorage object
+         */
+        OperationEvalLinearStretchedBoundary(GridStorage* storage) : storage(storage) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationEvalLinearStretchedBoundary() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationEvalLinearStretchedBoundary() {}
 
-	virtual double eval(DataVector& alpha, std::vector<double>& point);
+        virtual double eval(DataVector& alpha, std::vector<double>& point);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONEVALLINEARSTRETCHEDBOUNDARY_HPP */

@@ -10,59 +10,52 @@
 
 #include "base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
 
 
-HierarchisationLinear::HierarchisationLinear(GridStorage* storage) : storage(storage)
-{
-}
+    HierarchisationLinear::HierarchisationLinear(GridStorage* storage) : storage(storage) {
+    }
 
-HierarchisationLinear::~HierarchisationLinear()
-{
-}
+    HierarchisationLinear::~HierarchisationLinear() {
+    }
 
-void HierarchisationLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-{
-	rec(source, result, index, dim, 0.0, 0.0);
-}
+    void HierarchisationLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
+      rec(source, result, index, dim, 0.0, 0.0);
+    }
 
-void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-{
-	// current position on the grid
-	size_t seq = index.seq();
-	// value in the middle, needed for recursive call and calculation of the hierarchical surplus
-	double fm = source[seq];
+    void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+      // current position on the grid
+      size_t seq = index.seq();
+      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+      double fm = source[seq];
 
-	// recursive calls for the right and left side of the current node
-	if(index.hint() == false)
-	{
-		// descend left
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fm);
-		}
+      // recursive calls for the right and left side of the current node
+      if (index.hint() == false) {
+        // descend left
+        index.left_child(dim);
 
-		// descend right
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fm, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fm);
+        }
 
-		// ascend
-		index.up(dim);
-	}
+        // descend right
+        index.step_right(dim);
 
-	// hierarchisation
-	result[seq] = fm - ((fl + fr)/2.0);
-}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fm, fr);
+        }
 
-	// namespace detail
+        // ascend
+        index.up(dim);
+      }
 
-}	// namespace sg
+      // hierarchisation
+      result[seq] = fm - ((fl + fr) / 2.0);
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

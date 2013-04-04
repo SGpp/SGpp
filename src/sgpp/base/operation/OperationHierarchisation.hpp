@@ -10,43 +10,40 @@
 
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements the hierarchisation and dehierarchisation on the sparse grid
- */
-class OperationHierarchisation
-{
-public:
-	/**
-	 * Constructor
-	 */
-	OperationHierarchisation() {}
+    /**
+     * This class implements the hierarchisation and dehierarchisation on the sparse grid
+     */
+    class OperationHierarchisation {
+      public:
+        /**
+         * Constructor
+         */
+        OperationHierarchisation() {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationHierarchisation() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationHierarchisation() {}
 
-	/**
-	 * Implements the hierarchisation on a sparse grid
-	 *
-	 * @param node_values the function's values in the nodal basis
-	 */
-	virtual void doHierarchisation(DataVector& node_values) = 0;
+        /**
+         * Implements the hierarchisation on a sparse grid
+         *
+         * @param node_values the function's values in the nodal basis
+         */
+        virtual void doHierarchisation(DataVector& node_values) = 0;
 
-	/**
-	 * Implements the dehierarchisation on a sparse grid
-	 *
-	 * @param alpha the coefficients of the sparse grid's basis functions
-	 */
-	virtual void doDehierarchisation(DataVector& alpha) = 0;
-};
+        /**
+         * Implements the dehierarchisation on a sparse grid
+         *
+         * @param alpha the coefficients of the sparse grid's basis functions
+         */
+        virtual void doDehierarchisation(DataVector& alpha) = 0;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONHIERARCHISATION_HPP */

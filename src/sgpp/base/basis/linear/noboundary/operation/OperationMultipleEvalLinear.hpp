@@ -11,41 +11,38 @@
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationB for a grids with linear basis ansatzfunctions without boundaries
- */
-class OperationMultipleEvalLinear : public OperationMultipleEval
-{
-public:
-	/**
-	 * Constructor of OperationBLinear
-	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
-	 * @param dataset Pointer to the dataset that should be evaluated
-	 */
-	OperationMultipleEvalLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-		this->storage = storage;
-	}
+    /**
+     * This class implements OperationB for a grids with linear basis ansatzfunctions without boundaries
+     */
+    class OperationMultipleEvalLinear : public OperationMultipleEval {
+      public:
+        /**
+         * Constructor of OperationBLinear
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         * @param dataset Pointer to the dataset that should be evaluated
+         */
+        OperationMultipleEvalLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
+          this->storage = storage;
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalLinear() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationMultipleEvalLinear() {}
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-	virtual void multTranspose(DataVector& source, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
-protected:
-	/// Pointer to the grid's GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to the grid's GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONMULTIPLEEVALLINEAR_HPP */

@@ -17,70 +17,65 @@
 #include <fstream>
 #include <algorithm>
 
-namespace sg
-{
-namespace solver
-{
+namespace sg {
+  namespace solver {
 
-VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen, double gamma)
-: StepsizeControl(imax, timestepSize,eps,1.0,screen, gamma), _predictor(pred), _corrector(corr)
-{
+    VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen, double gamma)
+      : StepsizeControl(imax, timestepSize, eps, 1.0, screen, gamma), _predictor(pred), _corrector(corr) {
 
-	std::stringstream fnsstream;
+      std::stringstream fnsstream;
 
-	fnsstream << "Time_" << "VaTim" << eps << ".gnuplot";
+      fnsstream << "Time_" << "VaTim" << eps << ".gnuplot";
 
-	filename = fnsstream.str();
+      filename = fnsstream.str();
 
-}
+    }
 
-VarTimestep::~VarTimestep()
-{
-}
+    VarTimestep::~VarTimestep() {
+    }
 
-void VarTimestep::predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
-		double tmp_timestepsize, sg::base::DataVector &dv, sg::base::DataVector &corr, sg::base::DataVector *rhs)
-{
-	System.setTimestepSize(tmp_timestepsize);
+    void VarTimestep::predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
+                                double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector& corr, sg::base::DataVector* rhs) {
+      System.setTimestepSize(tmp_timestepsize);
 
-	System.setODESolver("AdBas");
+      System.setODESolver("AdBas");
 
-	// generate right hand side
-	rhs = System.generateRHS();
+      // generate right hand side
+      rhs = System.generateRHS();
 
-	// solve the system of the current timestep
-	LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+      // solve the system of the current timestep
+      LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 
-	System.finishTimestep();
+      System.finishTimestep();
 
-    dv.resize(System.getGridCoefficients()->getSize());
+      dv.resize(System.getGridCoefficients()->getSize());
 
-	System.getGridCoefficientsForSC(dv);
+      System.getGridCoefficientsForSC(dv);
 
-	System.abortTimestep();
-}
+      System.abortTimestep();
+    }
 
-void VarTimestep::corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,double tmp_timestepsize, sg::base::DataVector &dv, sg::base::DataVector *rhs) {
-	System.setODESolver("CrNic");
+    void VarTimestep::corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector* rhs) {
+      System.setODESolver("CrNic");
 
-	// generate right hand side
-	rhs = System.generateRHS();
+      // generate right hand side
+      rhs = System.generateRHS();
 
-	// solve the system of the current timestep
-	LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+      // solve the system of the current timestep
+      LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 
-	System.finishTimestep();
+      System.finishTimestep();
 
-	System.getGridCoefficientsForSC(dv);
-}
+      System.getGridCoefficientsForSC(dv);
+    }
 
 
-double VarTimestep::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon) {
+    double VarTimestep::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon) {
 
-	double deltaY = norm/(3.0*(1.0+tmp_timestepsize/tmp_timestepsize_old));
+      double deltaY = norm / (3.0 * (1.0 + tmp_timestepsize / tmp_timestepsize_old));
 
-	return tmp_timestepsize * std::max(0.67,std::min(1.5,pow(epsilon/deltaY,(double)1.0/(double)3.0)));
+      return tmp_timestepsize * std::max(0.67, std::min(1.5, pow(epsilon / deltaY, (double)1.0 / (double)3.0)));
 
-}
-}
+    }
+  }
 }

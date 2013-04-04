@@ -21,359 +21,313 @@
 using namespace sg::solver;
 using namespace sg::base;
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver()
-{
-	this->bGridConstructed = false;
-	this->myScreen = NULL;
-}
+    HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver() {
+      this->bGridConstructed = false;
+      this->myScreen = NULL;
+    }
 
-HeatEquationSolver::~HeatEquationSolver()
-{
-	if (this->myScreen != NULL)
-	{
-		delete this->myScreen;
-	}
-}
+    HeatEquationSolver::~HeatEquationSolver() {
+      if (this->myScreen != NULL) {
+        delete this->myScreen;
+      }
+    }
 
-void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, int level)
-{
-	this->dim = BoundingBox.getDimensions();
-	this->levels = level;
+    void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, int level) {
+      this->dim = BoundingBox.getDimensions();
+      this->levels = level;
 
-	this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
+      this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
 
-	GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-	myGenerator->regular(levels);
-	delete myGenerator;
+      GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+      myGenerator->regular(levels);
+      delete myGenerator;
 
-	this->myBoundingBox = this->myGrid->getBoundingBox();
-	this->myGridStorage = this->myGrid->getStorage();
+      this->myBoundingBox = this->myGrid->getBoundingBox();
+      this->myGridStorage = this->myGrid->getStorage();
 
-	this->bGridConstructed = true;
-}
+      this->bGridConstructed = true;
+    }
 
-void HeatEquationSolver::setHeatCoefficient(double a)
-{
-	this->a = a;
-}
+    void HeatEquationSolver::setHeatCoefficient(double a) {
+      this->a = a;
+    }
 
-void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
-{
-	if (this->bGridConstructed)
-	{
-		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		double dNeededTime;
-		Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
-		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+    void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+      if (this->bGridConstructed) {
+        this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+        double dNeededTime;
+        Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-		HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+        HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 #else
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
 #endif
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-		myStopwatch->start();
-		myEuler->solve(*myCG, *myHESolver, verbose);
-		dNeededTime = myStopwatch->stop();
+        myStopwatch->start();
+        myEuler->solve(*myCG, *myHESolver, verbose);
+        dNeededTime = myStopwatch->stop();
 
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
+        if (this->myScreen != NULL) {
+          std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
+          this->myScreen->writeEmptyLines(2);
+        }
 
-		delete myStopwatch;
-		delete myCG;
-		delete myEuler;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::solveExplicitEuler : A grid wasn't constructed before!");
-	}
-}
+        delete myStopwatch;
+        delete myCG;
+        delete myEuler;
+      } else {
+        throw new application_exception("HeatEquationSolver::solveExplicitEuler : A grid wasn't constructed before!");
+      }
+    }
 
-void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation)
-{
-	if (this->bGridConstructed)
-	{
-		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		double dNeededTime;
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
-		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+    void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+      if (this->bGridConstructed) {
+        this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+        double dNeededTime;
+        Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+        ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-		HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 #else
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
 #endif
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-		myStopwatch->start();
-		myEuler->solve(*myCG, *myHESolver, verbose);
-		dNeededTime = myStopwatch->stop();
+        myStopwatch->start();
+        myEuler->solve(*myCG, *myHESolver, verbose);
+        dNeededTime = myStopwatch->stop();
 
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
+        if (this->myScreen != NULL) {
+          std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
+          this->myScreen->writeEmptyLines(2);
+        }
 
-		delete myStopwatch;
-		delete myHESolver;
-		delete myCG;
-		delete myEuler;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
-	}
-}
+        delete myStopwatch;
+        delete myHESolver;
+        delete myCG;
+        delete myEuler;
+      } else {
+        throw new application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
+      }
+    }
 
-void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul)
-{
-	if (this->bGridConstructed)
-	{
-		this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-		double dNeededTime;
-		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+    void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul) {
+      if (this->bGridConstructed) {
+        this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
+        double dNeededTime;
+        ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
-		HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+        HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 #else
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
 #endif
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-		size_t numCNSteps;
-		size_t numIESteps;
+        size_t numCNSteps;
+        size_t numIESteps;
 
-		numCNSteps = numTimesteps;
-		if (numTimesteps > NumImEul)
-		{
-			numCNSteps = numTimesteps - NumImEul;
-		}
-		numIESteps = NumImEul;
+        numCNSteps = numTimesteps;
 
-		Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
-		CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize);
+        if (numTimesteps > NumImEul) {
+          numCNSteps = numTimesteps - NumImEul;
+        }
 
-		myStopwatch->start();
-		if (numIESteps > 0)
-		{
-			myEuler->solve(*myCG, *myHESolver, false);
-		}
+        numIESteps = NumImEul;
 
-		myCN->solve(*myCG, *myHESolver, false);
-		dNeededTime = myStopwatch->stop();
+        Euler* myEuler = new Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+        CrankNicolson* myCN = new CrankNicolson(numCNSteps, timestepsize);
 
-		if (this->myScreen != NULL)
-		{
-			std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
-			this->myScreen->writeEmptyLines(2);
-		}
+        myStopwatch->start();
 
-		delete myStopwatch;
-		delete myHESolver;
-		delete myCG;
-		delete myCN;
-		delete myEuler;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
-	}
-}
+        if (numIESteps > 0) {
+          myEuler->solve(*myCG, *myHESolver, false);
+        }
 
-void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor)
-{
-	if (this->bGridConstructed)
-	{
-		double tmp;
-		double* dblFuncValues = new double[this->dim];
+        myCN->solve(*myCG, *myHESolver, false);
+        dNeededTime = myStopwatch->stop();
 
-		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++)
-		{
-			std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
-			std::stringstream coordsStream(coords);
+        if (this->myScreen != NULL) {
+          std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
+          this->myScreen->writeEmptyLines(2);
+        }
 
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				coordsStream >> tmp;
+        delete myStopwatch;
+        delete myHESolver;
+        delete myCG;
+        delete myCN;
+        delete myEuler;
+      } else {
+        throw new application_exception("HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
+      }
+    }
 
-				dblFuncValues[j] = tmp;
-			}
+    void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor) {
+      if (this->bGridConstructed) {
+        double tmp;
+        double* dblFuncValues = new double[this->dim];
 
-			tmp = 1.0;
-			for (size_t j = 0; j < this->dim; j++)
-			{
-				tmp *=  factor*factor*((1.0/(sigma*2.0*3.145))*exp((-0.5)*((dblFuncValues[j]-mu)/sigma)*((dblFuncValues[j]-mu)/sigma)));
-			}
+        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+          std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
+          std::stringstream coordsStream(coords);
 
-			alpha[i] = tmp;
-		}
+          for (size_t j = 0; j < this->dim; j++) {
+            coordsStream >> tmp;
 
-		delete[] dblFuncValues;
+            dblFuncValues[j] = tmp;
+          }
 
-		OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
-		myHierarchisation->doHierarchisation(alpha);
-		delete myHierarchisation;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
-	}
-}
+          tmp = 1.0;
 
-void HeatEquationSolver::initScreen()
-{
-	this->myScreen = new ScreenOutput();
-	this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
-}
+          for (size_t j = 0; j < this->dim; j++) {
+            tmp *=  factor * factor * ((1.0 / (sigma * 2.0 * 3.145)) * exp((-0.5) * ((dblFuncValues[j] - mu) / sigma) * ((dblFuncValues[j] - mu) / sigma)));
+          }
 
-void HeatEquationSolver::storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	if (this->bGridConstructed)
-	{
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+          alpha[i] = tmp;
+        }
 
-		std::string mtx = "";
+        delete[] dblFuncValues;
 
-		myStopwatch->start();
-		std::cout << "Generating matrix in MatrixMarket format..." << std::endl;
-		myHESolver->getInnerMatrix(mtx);
+        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        myHierarchisation->doHierarchisation(alpha);
+        delete myHierarchisation;
+      } else {
+        throw new application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
+      }
+    }
 
-		std::ofstream outfile(tFilename.c_str());
-		outfile << mtx;
-		outfile.close();
-		std::cout << "Generating matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+    void HeatEquationSolver::initScreen() {
+      this->myScreen = new ScreenOutput();
+      this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
+    }
 
-		delete myHESolver;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	}
-}
+    void HeatEquationSolver::storeInnerMatrix(DataVector& alpha, std::string tFilename, double timestepsize) {
+      if (this->bGridConstructed) {
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-void HeatEquationSolver::storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	if (this->bGridConstructed)
-	{
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+        std::string mtx = "";
 
-		std::string mtx = "";
+        myStopwatch->start();
+        std::cout << "Generating matrix in MatrixMarket format..." << std::endl;
+        myHESolver->getInnerMatrix(mtx);
 
-		myStopwatch->start();
-		std::cout << "Generating systemmatrix's diagonal in MatrixMarket format..." << std::endl;
-		myHESolver->getInnerMatrixDiagonal(mtx);
+        std::ofstream outfile(tFilename.c_str());
+        outfile << mtx;
+        outfile.close();
+        std::cout << "Generating matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
 
-		std::ofstream outfile(tFilename.c_str());
-		outfile << mtx;
-		outfile.close();
-		std::cout << "Generating systemmatrix's diagonal in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+        delete myHESolver;
+      } else {
+        throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
+      }
+    }
 
-		delete myHESolver;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	}
-}
+    void HeatEquationSolver::storeInnerMatrixDiagonal(DataVector& alpha, std::string tFilename, double timestepsize) {
+      if (this->bGridConstructed) {
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-void HeatEquationSolver::storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	if (this->bGridConstructed)
-	{
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+        std::string mtx = "";
 
-		std::string mtx = "";
+        myStopwatch->start();
+        std::cout << "Generating systemmatrix's diagonal in MatrixMarket format..." << std::endl;
+        myHESolver->getInnerMatrixDiagonal(mtx);
 
-		myStopwatch->start();
-		std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format..." << std::endl;
-		myHESolver->getInnerMatrixDiagonalRowSum(mtx);
+        std::ofstream outfile(tFilename.c_str());
+        outfile << mtx;
+        outfile.close();
+        std::cout << "Generating systemmatrix's diagonal in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
 
-		std::ofstream outfile(tFilename.c_str());
-		outfile << mtx;
-		outfile.close();
-		std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+        delete myHESolver;
+      } else {
+        throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
+      }
+    }
 
-		delete myHESolver;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	}
-}
+    void HeatEquationSolver::storeInnerMatrixDiagonalRowSum(DataVector& alpha, std::string tFilename, double timestepsize) {
+      if (this->bGridConstructed) {
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-void HeatEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize)
-{
-	if (this->bGridConstructed)
-	{
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+        std::string mtx = "";
 
-		myStopwatch->start();
-		std::cout << "Exporting inner right-hand-side..." << std::endl;
-		DataVector* rhs_inner = myHESolver->generateRHS();
+        myStopwatch->start();
+        std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format..." << std::endl;
+        myHESolver->getInnerMatrixDiagonalRowSum(mtx);
 
-		size_t nCoefs = rhs_inner->getSize();
-		std::ofstream outfile(tFilename.c_str());
-		for (size_t i = 0; i < nCoefs; i++)
-		{
-			outfile << std::scientific << rhs_inner->get(i) << std::endl;
-		}
-		outfile.close();
-		std::cout << "Exporting inner right-hand-side... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
+        std::ofstream outfile(tFilename.c_str());
+        outfile << mtx;
+        outfile.close();
+        std::cout << "Generating systemmatrix rowsum as diagonal matrix in MatrixMarket format... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
 
-		delete myHESolver;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
-	}
-}
+        delete myHESolver;
+      } else {
+        throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
+      }
+    }
 
-void HeatEquationSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename)
-{
-	if (this->bGridConstructed)
-	{
-		Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, false, 0, this->myScreen);
-		ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
-		HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
-		SGppStopwatch* myStopwatch = new SGppStopwatch();
+    void HeatEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize) {
+      if (this->bGridConstructed) {
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
 
-		myStopwatch->start();
-		std::cout << "Exporting inner solution..." << std::endl;
-		myEuler->solve(*myCG, *myHESolver, false);
+        myStopwatch->start();
+        std::cout << "Exporting inner right-hand-side..." << std::endl;
+        DataVector* rhs_inner = myHESolver->generateRHS();
 
-		DataVector* alpha_solve = myHESolver->getGridCoefficientsForCG();
-		size_t nCoefs = alpha_solve->getSize();
-		std::ofstream outfile(tFilename.c_str());
-		for (size_t i = 0; i < nCoefs; i++)
-		{
-			outfile << std::scientific << alpha_solve->get(i) << std::endl;
-		}
-		outfile.close();
+        size_t nCoefs = rhs_inner->getSize();
+        std::ofstream outfile(tFilename.c_str());
 
-		std::cout << "Exporting inner solution... DONE!" << std::endl;
+        for (size_t i = 0; i < nCoefs; i++) {
+          outfile << std::scientific << rhs_inner->get(i) << std::endl;
+        }
 
-		delete myHESolver;
-		delete myCG;
-		delete myEuler;
-	}
-	else
-	{
-		throw new application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
-	}
+        outfile.close();
+        std::cout << "Exporting inner right-hand-side... DONE! (" << myStopwatch->stop() << " s)" << std::endl << std::endl << std::endl;
 
-}
+        delete myHESolver;
+      } else {
+        throw new application_exception("HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
+      }
+    }
+
+    void HeatEquationSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename) {
+      if (this->bGridConstructed) {
+        Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, false, 0, this->myScreen);
+        ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
+        HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        SGppStopwatch* myStopwatch = new SGppStopwatch();
+
+        myStopwatch->start();
+        std::cout << "Exporting inner solution..." << std::endl;
+        myEuler->solve(*myCG, *myHESolver, false);
+
+        DataVector* alpha_solve = myHESolver->getGridCoefficientsForCG();
+        size_t nCoefs = alpha_solve->getSize();
+        std::ofstream outfile(tFilename.c_str());
+
+        for (size_t i = 0; i < nCoefs; i++) {
+          outfile << std::scientific << alpha_solve->get(i) << std::endl;
+        }
+
+        outfile.close();
+
+        std::cout << "Exporting inner solution... DONE!" << std::endl;
+
+        delete myHESolver;
+        delete myCG;
+        delete myEuler;
+      } else {
+        throw new application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
+      }
+
+    }
 
 
-}
+  }
 }

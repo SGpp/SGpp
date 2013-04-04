@@ -10,37 +10,34 @@
 
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class provides the quadrature of a sparse grid function
- */
-class OperationQuadrature
-{
-public:
-	/**
-	 * Constructor
-	 */
-	OperationQuadrature() {}
+    /**
+     * This class provides the quadrature of a sparse grid function
+     */
+    class OperationQuadrature {
+      public:
+        /**
+         * Constructor
+         */
+        OperationQuadrature() {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationQuadrature() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationQuadrature() {}
 
-	/**
-	 * Integrate the sparse grid function
-	 *
-	 * @param alpha the function's values in the nodal basis
-	 */
-	virtual double doQuadrature(DataVector& alpha) = 0;
+        /**
+         * Integrate the sparse grid function
+         *
+         * @param alpha the function's values in the nodal basis
+         */
+        virtual double doQuadrature(DataVector& alpha) = 0;
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONQUADRATURE_HPP */

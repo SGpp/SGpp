@@ -8,28 +8,22 @@
 #include "pde/operation/OperationEllipticPDESolverSystem.hpp"
 #include "base/exception/algorithm_exception.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : BoundGrid(&SparseGrid), rhs(&rhs), numGridpointsComplete(SparseGrid.getSize())
-{
-}
+    OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : BoundGrid(&SparseGrid), rhs(&rhs), numGridpointsComplete(SparseGrid.getSize()) {
+    }
 
-OperationEllipticPDESolverSystem::~OperationEllipticPDESolverSystem()
-{
-}
+    OperationEllipticPDESolverSystem::~OperationEllipticPDESolverSystem() {
+    }
 
-size_t OperationEllipticPDESolverSystem::getNumGridPointsComplete()
-{
-	return this->numGridpointsComplete;
-}
+    size_t OperationEllipticPDESolverSystem::getNumGridPointsComplete() {
+      return this->numGridpointsComplete;
+    }
 
-size_t OperationEllipticPDESolverSystem::getNumGridPointsInner()
-{
-	return this->numGridpointsInner;
-}
+    size_t OperationEllipticPDESolverSystem::getNumGridPointsInner() {
+      return this->numGridpointsInner;
+    }
 
-}
+  }
 }

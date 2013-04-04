@@ -11,26 +11,22 @@
 #include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationMultipleEvalLinearBoundary::mult(DataVector& alpha, DataVector& result)
-{
-	AlgorithmDGEMV<SLinearBoundaryBase> op;
-	LinearBoundaryBasis<unsigned int, unsigned int> base;
+    void OperationMultipleEvalLinearBoundary::mult(DataVector& alpha, DataVector& result) {
+      AlgorithmDGEMV<SLinearBoundaryBase> op;
+      LinearBoundaryBasis<unsigned int, unsigned int> base;
 
-	op.mult(storage, base, alpha, *(this->dataset_), result);
-}
+      op.mult(storage, base, alpha, *(this->dataset_), result);
+    }
 
-void OperationMultipleEvalLinearBoundary::multTranspose(DataVector& source, DataVector& result)
-{
-	AlgorithmDGEMV<SLinearBoundaryBase> op;
-	LinearBoundaryBasis<unsigned int, unsigned int> base;
+    void OperationMultipleEvalLinearBoundary::multTranspose(DataVector& source, DataVector& result) {
+      AlgorithmDGEMV<SLinearBoundaryBase> op;
+      LinearBoundaryBasis<unsigned int, unsigned int> base;
 
-	op.mult_transposed(storage, base, source, *(this->dataset_), result);
-}
+      op.mult_transposed(storage, base, source, *(this->dataset_), result);
+    }
 
-}
+  }
 }

@@ -11,67 +11,60 @@
 #include "parallel/tools/PartitioningTool.hpp"
 
 
-namespace sg
-{
-namespace parallel
-{
+namespace sg {
+  namespace parallel {
 
-OperationMultipleEvalIterativeX86SimdModLinear::OperationMultipleEvalIterativeX86SimdModLinear(
-		sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
-		int gridFrom, int gridTo, int datasetFrom, int datasetTo) :
-	sg::parallel::OperationMultipleEvalVectorized(storage, dataset)
-{
-	m_gridFrom = gridFrom;
-	m_gridTo = gridTo;
-	m_datasetFrom = datasetFrom;
-	m_datasetTo = datasetTo;
-	rebuildLevelAndIndex();
-}
+    OperationMultipleEvalIterativeX86SimdModLinear::OperationMultipleEvalIterativeX86SimdModLinear(
+      sg::base::GridStorage* storage, sg::base::DataMatrix* dataset,
+      int gridFrom, int gridTo, int datasetFrom, int datasetTo) :
+      sg::parallel::OperationMultipleEvalVectorized(storage, dataset) {
+      m_gridFrom = gridFrom;
+      m_gridTo = gridTo;
+      m_datasetFrom = datasetFrom;
+      m_datasetTo = datasetTo;
+      rebuildLevelAndIndex();
+    }
 
-void OperationMultipleEvalIterativeX86SimdModLinear::rebuildLevelAndIndex()
-{
-	LevelIndexMaskOffsetHelper::rebuild<X86SimdModLinear::kernelType, OperationMultipleEvalVectorized>(this);
-}
+    void OperationMultipleEvalIterativeX86SimdModLinear::rebuildLevelAndIndex() {
+      LevelIndexMaskOffsetHelper::rebuild<X86SimdModLinear::kernelType, OperationMultipleEvalVectorized>(this);
+    }
 
-void OperationMultipleEvalIterativeX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo)
-{
-	m_gridFrom = gridFrom;
-	m_gridTo = gridTo;
-}
+    void OperationMultipleEvalIterativeX86SimdModLinear::updateGridComputeBoundaries(int gridFrom, int gridTo) {
+      m_gridFrom = gridFrom;
+      m_gridTo = gridTo;
+    }
 
-double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result)
-{
-	myTimer_->start();
-    result.setAll(0.0);
+    double OperationMultipleEvalIterativeX86SimdModLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) {
+      myTimer_->start();
+      result.setAll(0.0);
 
-	#pragma omp parallel
-	{
-		size_t start;
-		size_t end;
-		PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
+      #pragma omp parallel
+      {
+        size_t start;
+        size_t end;
+        PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
 
-		X86SimdModLinear::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
-	}
+        X86SimdModLinear::multTranspose(level_, index_, NULL, NULL, dataset_, source, result, start, end, 0, this->dataset_->getNcols());
+      }
 
-	return myTimer_->stop();
-}
+      return myTimer_->stop();
+    }
 
-double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result)
-{
-	myTimer_->start();
-	result.setAll(0.0);
+    double OperationMultipleEvalIterativeX86SimdModLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      myTimer_->start();
+      result.setAll(0.0);
 
-	#pragma omp parallel
-	{
-		size_t start;
-		size_t end;
-		PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, X86SimdModLinear::getChunkDataPoints());
+      #pragma omp parallel
+      {
+        size_t start;
+        size_t end;
+        PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, X86SimdModLinear::getChunkDataPoints());
 
-		X86SimdModLinear::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
-	}
+        X86SimdModLinear::mult(level_, index_, NULL, NULL, dataset_, alpha, result, 0, alpha.getSize(), start, end);
+      }
 
-	return myTimer_->stop();
-}
+      return myTimer_->stop();
+    }
 
-}
+  }
 }

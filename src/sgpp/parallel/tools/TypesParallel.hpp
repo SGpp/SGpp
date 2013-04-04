@@ -8,33 +8,31 @@
 #ifndef TYPESPARALLEL_HPP
 #define TYPESPARALLEL_HPP
 
-namespace sg
-{
+namespace sg {
 
-namespace parallel
-{
+  namespace parallel {
 
-enum VectorizationType {
-   X86SIMD,
-   OpenCL,
-   Hybrid_X86SIMD_OpenCL,
-   MIC,
-   Hybrid_X86SIMD_MIC,
-   CUDA,
-   ArBB
-};
+    enum VectorizationType {
+      X86SIMD,
+      OpenCL,
+      Hybrid_X86SIMD_OpenCL,
+      MIC,
+      Hybrid_X86SIMD_MIC,
+      CUDA,
+      ArBB
+    };
 
-enum MPIType {
-	MPINone,
-	MPIAllreduce,
-	MPIAsync,
-	MPIOnesided,
-	MPIAlltoallv,
-	MPITrueAsync,
-	MPITrueAsyncAlltoallv
-};
+    enum MPIType {
+      MPINone,
+      MPIAllreduce,
+      MPIAsync,
+      MPIOnesided,
+      MPIAlltoallv,
+      MPITrueAsync,
+      MPITrueAsyncAlltoallv
+    };
 
-}
+  }
 
 }
 

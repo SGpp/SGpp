@@ -11,37 +11,34 @@
 #include "base/operation/OperationEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
- */
-class OperationEvalModWavelet : public OperationEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 */
-	OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
+    /**
+     * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
+     */
+    class OperationEvalModWavelet : public OperationEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GridStorage object
+         */
+        OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationEvalModWavelet() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationEvalModWavelet() {}
 
-	virtual double eval(DataVector& alpha, std::vector<double>& point);
+        virtual double eval(DataVector& alpha, std::vector<double>& point);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIINEVALMODWAVELET_HPP */

@@ -10,62 +10,54 @@
 
 #include <exception>
 
-namespace sg
-{
-namespace base
-{
-
-/**
- * Exception that is thrown in case of an application failure
- *
- * @version $HEAD$
- */
-class algorithm_exception : public std::exception
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param msg the exception message
-	 */
-	algorithm_exception(const char* msg) throw() : msg(msg)
-	{
-	}
-
-	/**
-	 * Standard Constructor
-	 */
-	algorithm_exception() throw() : msg(NULL) { }
-
-	/**
-	 * Destructor
-	 */
-    virtual ~algorithm_exception() throw() { }
+namespace sg {
+  namespace base {
 
     /**
-     * throw method that have to be implemented
+     * Exception that is thrown in case of an application failure
      *
-     * @return returns the message specified in the constructor otherwise a general text
+     * @version $HEAD$
      */
-	virtual const char* what() const throw()
-	{
-		if(msg)
-		{
-			return msg;
-		}
-		else
-		{
-			return "algorithm_exception: general failure";
-		}
-	}
+    class algorithm_exception : public std::exception {
+      public:
+        /**
+         * Constructor
+         *
+         * @param msg the exception message
+         */
+        algorithm_exception(const char* msg) throw() : msg(msg) {
+        }
 
-protected:
-	/// the exception message
-	const char* msg;
+        /**
+         * Standard Constructor
+         */
+        algorithm_exception() throw() : msg(NULL) { }
 
-};
+        /**
+         * Destructor
+         */
+        virtual ~algorithm_exception() throw() { }
 
-}
+        /**
+         * throw method that have to be implemented
+         *
+         * @return returns the message specified in the constructor otherwise a general text
+         */
+        virtual const char* what() const throw() {
+          if (msg) {
+            return msg;
+          } else {
+            return "algorithm_exception: general failure";
+          }
+        }
+
+      protected:
+        /// the exception message
+        const char* msg;
+
+    };
+
+  }
 }
 
 #endif /* ALGORITHM_EXCEPTION_HPP */

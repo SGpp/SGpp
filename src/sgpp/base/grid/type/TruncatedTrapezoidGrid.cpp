@@ -21,60 +21,51 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(std::istream& istr) : Grid(istr)
-{
+    TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(std::istream& istr) : Grid(istr) {
 
-}
+    }
 
-TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(BoundingBox& BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    TruncatedTrapezoidGrid::TruncatedTrapezoidGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-TruncatedTrapezoidGrid::~TruncatedTrapezoidGrid()
-{
-}
+    TruncatedTrapezoidGrid::~TruncatedTrapezoidGrid() {
+    }
 
-const char* TruncatedTrapezoidGrid::getType()
-{
-	return "TruncatedTrapezoid";
-}
-Grid* TruncatedTrapezoidGrid::unserialize(std::istream& istr)
-{
-	return new TruncatedTrapezoidGrid(istr);
-}
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* TruncatedTrapezoidGrid::createGridGenerator()
-{
-	return new TruncatedTrapezoidGridGenerator(this->storage);
-}
-//OperationHierarchisation* TruncatedTrapezoidGrid::createOperationHierarchisation()
-//{
-//	return new OperationHierarchisationLinearBoundary(this->storage);
-//}
-//OperationEval* TruncatedTrapezoidGrid::createOperationEval()
-//{
-//	return new OperationEvalLinearBoundary(this->storage);
-//}
+    const char* TruncatedTrapezoidGrid::getType() {
+      return "TruncatedTrapezoid";
+    }
+    Grid* TruncatedTrapezoidGrid::unserialize(std::istream& istr) {
+      return new TruncatedTrapezoidGrid(istr);
+    }
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* TruncatedTrapezoidGrid::createGridGenerator() {
+      return new TruncatedTrapezoidGridGenerator(this->storage);
+    }
+    //OperationHierarchisation* TruncatedTrapezoidGrid::createOperationHierarchisation()
+    //{
+    //  return new OperationHierarchisationLinearBoundary(this->storage);
+    //}
+    //OperationEval* TruncatedTrapezoidGrid::createOperationEval()
+    //{
+    //  return new OperationEvalLinearBoundary(this->storage);
+    //}
 
-//OperationConvert* TruncatedTrapezoidGrid::createOperationConvert()
-//{
-//	throw factory_exception("Unsupported operation");
-//}
+    //OperationConvert* TruncatedTrapezoidGrid::createOperationConvert()
+    //{
+    //  throw factory_exception("Unsupported operation");
+    //}
 
-}
+  }
 }
 

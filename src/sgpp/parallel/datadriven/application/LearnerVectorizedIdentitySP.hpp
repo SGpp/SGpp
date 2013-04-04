@@ -12,63 +12,60 @@
 
 #include "parallel/tools/TypesParallel.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace parallel
-{
+  namespace parallel {
 
-/**
- * This class implements standard sparse grid regression
- * with an Identity matrix as regularization operator.
- *
- * Furthermore this Learner provides support for several
- * vectorization approaches covering GPUs, CPUs and coprocessors.
- *
- * This version supports single precision floating point numbers.
- */
-class LearnerVectorizedIdentitySP : public sg::datadriven::LearnerBaseSP
-{
-protected:
-	/// vectorization selector
-	VectorizationType vecType_;
+    /**
+     * This class implements standard sparse grid regression
+     * with an Identity matrix as regularization operator.
+     *
+     * Furthermore this Learner provides support for several
+     * vectorization approaches covering GPUs, CPUs and coprocessors.
+     *
+     * This version supports single precision floating point numbers.
+     */
+    class LearnerVectorizedIdentitySP : public sg::datadriven::LearnerBaseSP {
+      protected:
+        /// vectorization selector
+        VectorizationType vecType_;
 
-	virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP& trainDataset, float lambda);
+        virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP& trainDataset, float lambda);
 
-	virtual void postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
-			const size_t numNeededIterations);
+        virtual void postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
+                                    const size_t numNeededIterations);
 
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param vecType selection of vectorization to employ
-	 * @param isRegression set to true if a regression task should be executed
-	 * @param isVerbose set to true in order to allow console output
-	 */
-	LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+      public:
+        /**
+         * Constructor
+         *
+         * @param vecType selection of vectorization to employ
+         * @param isRegression set to true if a regression task should be executed
+         * @param isVerbose set to true in order to allow console output
+         */
+        LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
 
-	/**
-	 * Constructor
-	 *
-	 * @param tGridFilename path to file that contains a serialized grid
-	 * @param tAlphaFilename path to file that contains the grid's coefficients
-	 * @param vecType selection of vectorization to employ
-	 * @param isRegression set to true if a regression task should be executed
-	 * @param isVerbose set to true in order to allow console output
-	 */
-	LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
-			const bool isRegression, const bool isVerbose = true);
+        /**
+         * Constructor
+         *
+         * @param tGridFilename path to file that contains a serialized grid
+         * @param tAlphaFilename path to file that contains the grid's coefficients
+         * @param vecType selection of vectorization to employ
+         * @param isRegression set to true if a regression task should be executed
+         * @param isVerbose set to true in order to allow console output
+         */
+        LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
+                                    const bool isRegression, const bool isVerbose = true);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~LearnerVectorizedIdentitySP();
+        /**
+         * Destructor
+         */
+        virtual ~LearnerVectorizedIdentitySP();
 
-	virtual sg::base::DataVectorSP predict(sg::base::DataMatrixSP& testDataset);
-};
+        virtual sg::base::DataVectorSP predict(sg::base::DataMatrixSP& testDataset);
+    };
 
-}
+  }
 
 }
 

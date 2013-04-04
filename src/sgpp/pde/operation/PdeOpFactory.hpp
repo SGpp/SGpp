@@ -15,45 +15,43 @@
 /*
  * This file contains factory methods for operations.
  */
- 
-namespace sg
-{
 
-namespace op_factory
-{
-  /**
-   * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used
-   * @return Pointer to the new OperationMatrix object for the Grid grid
-   */
-  base::OperationMatrix* createOperationLaplace(base::Grid& grid);
-  /**
-   * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used
-   * @param coef Coefficient vector for OperationLaplace
-   * @return Pointer to the new OperationMatrix object for the Grid grid
-   */
-  base::OperationMatrix* createOperationLaplace(base::Grid& grid, sg::base::DataVector& coef);
-  /**
-   * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used
-   * @return Pointer to the new OperationMatrix object for the Grid grid
-   */
-  base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid);
+namespace sg {
 
-  /**
-     * Factory method, returning an OperationLTwoDotExplicit (OperationMatrix) for the grid at hand.
+  namespace op_factory {
+    /**
+     * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
      * Note: object has to be freed after use.
      *
      * @param grid Grid which is to be used
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
+    base::OperationMatrix* createOperationLaplace(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @param coef Coefficient vector for OperationLaplace
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    base::OperationMatrix* createOperationLaplace(base::Grid& grid, sg::base::DataVector& coef);
+    /**
+     * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid);
+
+    /**
+       * Factory method, returning an OperationLTwoDotExplicit (OperationMatrix) for the grid at hand.
+       * Note: object has to be freed after use.
+       *
+       * @param grid Grid which is to be used
+       * @return Pointer to the new OperationMatrix object for the Grid grid
+       */
     base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid);
 
     /**
@@ -65,9 +63,9 @@ namespace op_factory
        * @param m DataMatrix in which the data is stored
        * @return Pointer to the new OperationMatrix object for the Grid grid
        */
-      base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid);
+    base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid);
 
-}
+  }
 
 }
 

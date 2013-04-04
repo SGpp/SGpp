@@ -9,14 +9,14 @@
 
 
 void combigrid::UniformStretching::get1DStretching(
-		int level , double min, double max,
-		std::vector<double>& stretching) const{
+  int level , double min, double max,
+  std::vector<double>& stretching) const {
 
-	int nrPoints = combigrid::powerOfTwo[level]+1;
-	stretching.resize( nrPoints , 0.0 );
+  int nrPoints = combigrid::powerOfTwo[level] + 1;
+  stretching.resize( nrPoints , 0.0 );
 
-	// set each point just uniformly
-	for (int i = 0 ; i < nrPoints ; i++){
-		stretching[i] = min + ((double)i)*(max-min)/(nrPoints-1);
-	}
+  // set each point just uniformly
+  for (int i = 0 ; i < nrPoints ; i++) {
+    stretching[i] = min + ((double)i) * (max - min) / (nrPoints - 1);
+  }
 }

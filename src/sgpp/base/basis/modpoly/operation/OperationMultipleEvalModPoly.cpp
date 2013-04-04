@@ -12,24 +12,20 @@
 
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result)
-{
-	AlgorithmDGEMV<SModPolyBase> op;
+    void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result) {
+      AlgorithmDGEMV<SModPolyBase> op;
 
-	op.mult(storage, base, alpha, *(this->dataset_), result);
-}
+      op.mult(storage, base, alpha, *(this->dataset_), result);
+    }
 
-void OperationMultipleEvalModPoly::multTranspose(DataVector& source, DataVector& result)
-{
-	AlgorithmDGEMV<SModPolyBase> op;
+    void OperationMultipleEvalModPoly::multTranspose(DataVector& source, DataVector& result) {
+      AlgorithmDGEMV<SModPolyBase> op;
 
-	op.mult_transposed(storage, base, source, *(this->dataset_), result);
-}
+      op.mult_transposed(storage, base, source, *(this->dataset_), result);
+    }
 
-}
+  }
 }

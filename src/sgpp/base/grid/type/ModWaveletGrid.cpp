@@ -15,44 +15,36 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-ModWaveletGrid::ModWaveletGrid(std::istream& istr) : Grid(istr)
-{
-}
+    ModWaveletGrid::ModWaveletGrid(std::istream& istr) : Grid(istr) {
+    }
 
-ModWaveletGrid::ModWaveletGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    ModWaveletGrid::ModWaveletGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-ModWaveletGrid::~ModWaveletGrid()
-{
-}
+    ModWaveletGrid::~ModWaveletGrid() {
+    }
 
-const char* ModWaveletGrid::getType()
-{
-	return "modWavelet";
-}
+    const char* ModWaveletGrid::getType() {
+      return "modWavelet";
+    }
 
-Grid* ModWaveletGrid::unserialize(std::istream& istr)
-{
-	return new ModWaveletGrid(istr);
-}
+    Grid* ModWaveletGrid::unserialize(std::istream& istr) {
+      return new ModWaveletGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* ModWaveletGrid::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* ModWaveletGrid::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
 
 
-}
+  }
 }

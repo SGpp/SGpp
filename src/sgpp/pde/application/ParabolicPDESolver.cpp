@@ -7,18 +7,14 @@
 
 #include "pde/application/ParabolicPDESolver.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-ParabolicPDESolver::ParabolicPDESolver() : PDESolver()
-{
-}
+    ParabolicPDESolver::ParabolicPDESolver() : PDESolver() {
+    }
 
-ParabolicPDESolver::~ParabolicPDESolver()
-{
-}
+    ParabolicPDESolver::~ParabolicPDESolver() {
+    }
 
-}
+  }
 }

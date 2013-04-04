@@ -12,41 +12,38 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with modified linear base functions
- */
-class ModLinearGrid : public Grid
-{
-protected:
-	ModLinearGrid(std::istream& istr);
+    /**
+     * grid with modified linear base functions
+     */
+    class ModLinearGrid : public Grid {
+      protected:
+        ModLinearGrid(std::istream& istr);
 
-public:
-	/**
-	 * Constructor modified linear grid
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	ModLinearGrid(size_t dim);
+      public:
+        /**
+         * Constructor modified linear grid
+         *
+         * @param dim the dimension of the grid
+         */
+        ModLinearGrid(size_t dim);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~ModLinearGrid();
+        /**
+         * Destructor
+         */
+        virtual ~ModLinearGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
+        static Grid* unserialize(std::istream& istr);
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* MODLINEARGRID_HPP */

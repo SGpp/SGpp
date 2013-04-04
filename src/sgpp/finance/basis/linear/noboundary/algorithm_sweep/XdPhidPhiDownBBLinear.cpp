@@ -7,128 +7,115 @@
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiDownBBLinear.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-XdPhidPhiDownBBLinear::XdPhidPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
-{
-}
+    XdPhidPhiDownBBLinear::XdPhidPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    }
 
-XdPhidPhiDownBBLinear::~XdPhidPhiDownBBLinear()
-{
-}
+    XdPhidPhiDownBBLinear::~XdPhidPhiDownBBLinear() {
+    }
 
-void XdPhidPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	double q = boundingBox->getIntervalWidth(dim);
-	double t = boundingBox->getIntervalOffset(dim);
+    void XdPhidPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      double q = boundingBox->getIntervalWidth(dim);
+      double t = boundingBox->getIntervalOffset(dim);
 
-	bool useBB = false;
+      bool useBB = false;
 
-	if (q != 1.0 || t != 0.0)
-	{
-		useBB = true;
-	}
+      if (q != 1.0 || t != 0.0) {
+        useBB = true;
+      }
 
-	if (useBB)
-	{
-		recBB(source, result, index, dim, 0.0, 0.0, q, t);
-	}
-	else
-	{
-		rec(source, result, index, dim, 0.0, 0.0);
-	}
-}
+      if (useBB) {
+        recBB(source, result, index, dim, 0.0, 0.0, q, t);
+      } else {
+        rec(source, result, index, dim, 0.0, 0.0);
+      }
+    }
 
-void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-{
-	size_t seq = index.seq();
+    void XdPhidPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+      size_t seq = index.seq();
 
-	double alpha_value = source[seq];
+      double alpha_value = source[seq];
 
-	sg::base::GridStorage::index_type::level_type l;
-	sg::base::GridStorage::index_type::index_type i;
+      sg::base::GridStorage::index_type::level_type l;
+      sg::base::GridStorage::index_type::index_type i;
 
-	index.get(dim, l, i);
+      index.get(dim, l, i);
 
-	double i_dbl = static_cast<double>(i);
-	//int l_int = static_cast<int>(l);
+      double i_dbl = static_cast<double>(i);
+      //int l_int = static_cast<int>(l);
 
-	//double h = (1.0/(static_cast<double>(1<<(l_int))));
+      //double h = (1.0/(static_cast<double>(1<<(l_int))));
 
-	double diagonal = 2*i_dbl;
+      double diagonal = 2 * i_dbl;
 
-	// integration
-	result[seq] = (  (0.5 * (fl-fr)) + (diagonal * alpha_value) );
+      // integration
+      result[seq] = (  (0.5 * (fl - fr)) + (diagonal * alpha_value) );
 
-	// dehierarchisation
-	double fm = ((fl+fr)/2.0) + alpha_value;
+      // dehierarchisation
+      double fm = ((fl + fr) / 2.0) + alpha_value;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fm);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fm, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fm);
+        }
 
-		index.up(dim);
-	}
-}
+        index.step_right(dim);
 
-void XdPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t)
-{
-	size_t seq = index.seq();
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fm, fr);
+        }
 
-	double alpha_value = source[seq];
+        index.up(dim);
+      }
+    }
 
-	sg::base::GridStorage::index_type::level_type l;
-	sg::base::GridStorage::index_type::index_type i;
+    void XdPhidPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t) {
+      size_t seq = index.seq();
 
-	index.get(dim, l, i);
+      double alpha_value = source[seq];
 
-	//double i_dbl = static_cast<double>(i);
-	int l_int = static_cast<int>(l);
+      sg::base::GridStorage::index_type::level_type l;
+      sg::base::GridStorage::index_type::index_type i;
 
-	double h = (1.0/(static_cast<double>(1<<(l_int))));
+      index.get(dim, l, i);
 
-	double diagonal = (2*(i*h*q + t))/(q*h);
+      //double i_dbl = static_cast<double>(i);
+      int l_int = static_cast<int>(l);
 
-	// integration
-	result[seq] = (  (0.5 * q * (fl-fr)) + (diagonal * alpha_value) );
+      double h = (1.0 / (static_cast<double>(1 << (l_int))));
 
-	// dehierarchisation
-	double fm = ((fl+fr)/2.0) + alpha_value;
+      double diagonal = (2 * (i * h * q + t)) / (q * h);
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fl, fm, q, t);
-		}
+      // integration
+      result[seq] = (  (0.5 * q * (fl - fr)) + (diagonal * alpha_value) );
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fm, fr, q, t);
-		}
+      // dehierarchisation
+      double fm = ((fl + fr) / 2.0) + alpha_value;
 
-		index.up(dim);
-	}
-}
+      if (!index.hint()) {
+        index.left_child(dim);
 
- // namespace detail
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fl, fm, q, t);
+        }
 
-} // namespace sg
+        index.step_right(dim);
+
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fm, fr, q, t);
+        }
+
+        index.up(dim);
+      }
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

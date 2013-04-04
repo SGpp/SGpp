@@ -7,80 +7,68 @@
 
 #include "pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
 
 
-PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(sg::base::GridStorage* storage) : PhiPhiUpBBLinearStretched(storage)
-{
-}
+    PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(sg::base::GridStorage* storage) : PhiPhiUpBBLinearStretched(storage) {
+    }
 
-PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary()
-{
-}
+    PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary() {
+    }
 
-void PhiPhiUpBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	double q = this->stretching->getIntervalWidth(dim);
-	//	double t = this->stretching->getIntervalOffset(dim);
+    void PhiPhiUpBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      double q = this->stretching->getIntervalWidth(dim);
+      //  double t = this->stretching->getIntervalOffset(dim);
 
 
-	// get boundary values
-	double fl = 0.0;
-	double fr = 0.0;
+      // get boundary values
+      double fl = 0.0;
+      double fr = 0.0;
 
-	if(!index.hint())
-	{
-		index.top(dim);
+      if (!index.hint()) {
+        index.top(dim);
 
-		if(!this->storage->end(index.seq()))
-		{
-			//This will be changed to rec
-			rec(source, result, index, dim, fl, fr);
-		}
+        if (!this->storage->end(index.seq())) {
+          //This will be changed to rec
+          rec(source, result, index, dim, fl, fr);
+        }
 
-		index.left_levelzero(dim);
-	}
+        index.left_levelzero(dim);
+      }
 
-	size_t seq_left;
-	size_t seq_right;
+      size_t seq_left;
+      size_t seq_right;
 
-	// left boundary
-	seq_left = index.seq();
+      // left boundary
+      seq_left = index.seq();
 
-	// right boundary
-	index.right_levelzero(dim);
-	seq_right = index.seq();
+      // right boundary
+      index.right_levelzero(dim);
+      seq_right = index.seq();
 
-	// up
-	//////////////////////////////////////
-	//Left
-	if (this->stretching->hasDirichletBoundaryLeft(dim))
-	{
-		result[seq_left] = 0.0; // source[seq_left];
-	}
-	else
-	{
-		result[seq_left] = fl;
-		result[seq_left] += (((1.0/6.0)*source[seq_right])*q);
-	}
-	// Right
-	if (this->stretching->hasDirichletBoundaryRight(dim))
-	{
-		result[seq_right] = 0.0; //source[seq_right];
-	}
-	else
-	{
-		result[seq_right] = fr;
-	}
+      // up
+      //////////////////////////////////////
+      //Left
+      if (this->stretching->hasDirichletBoundaryLeft(dim)) {
+        result[seq_left] = 0.0; // source[seq_left];
+      } else {
+        result[seq_left] = fl;
+        result[seq_left] += (((1.0 / 6.0) * source[seq_right]) * q);
+      }
 
-	index.left_levelzero(dim);
-}
+      // Right
+      if (this->stretching->hasDirichletBoundaryRight(dim)) {
+        result[seq_right] = 0.0; //source[seq_right];
+      } else {
+        result[seq_right] = fr;
+      }
 
- // namespace detail
+      index.left_levelzero(dim);
+    }
 
-} // namespace sg
+    // namespace detail
+
+  } // namespace sg
 }

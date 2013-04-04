@@ -11,31 +11,27 @@
 #include "base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>& point)
-{
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>& point) {
+      typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	IndexValVector vec;
-	LinearBoundaryBasis<unsigned int, unsigned int> base;
-	GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> > ga(storage);
+      IndexValVector vec;
+      LinearBoundaryBasis<unsigned int, unsigned int> base;
+      GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> > ga(storage);
 
-	ga(base, point, vec);
+      ga(base, point, vec);
 
-	double result = 0.0;
+      double result = 0.0;
 
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-	{
-		result += iter->second * alpha[iter->first];
-	}
+      for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+        result += iter->second * alpha[iter->first];
+      }
 
-	return result;
-}
+      return result;
+    }
 
-}
+  }
 }
 

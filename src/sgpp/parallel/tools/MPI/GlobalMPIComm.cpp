@@ -7,11 +7,9 @@
 
 #include "parallel/tools/MPI/MPICommunicator.hpp"
 
-namespace sg
-{
-namespace parallel
-{
-	// @todo MPI (heinecke) Hack, remove if possible
-	MPICommunicator* myGlobalMPIComm;
-}
+namespace sg {
+  namespace parallel {
+    // @todo MPI (heinecke) Hack, remove if possible
+    MPICommunicator* myGlobalMPIComm;
+  }
 }
