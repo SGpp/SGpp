@@ -117,11 +117,17 @@ public:
 	 * @param sigmas a sg::base::DataVector that contains the underlyings' standard deviations
 	 * @param rhos a sg::base::DataMatrix that contains the correlations between the underlyings
 	 * @param r the riskfree rate used in the market model
+	 * @param theta the theta of HullWhite PDE
+	 * @param sigma the sigma of HullWhite PDE (vola)
+	 * @param a the a of HullWhite PDE (mean reversion rate)
 	 */
 	void setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r,double theta, double sigma, double a);
 
 	/**
 	 *  defines the dimension of the stoch. processes (BS and HW). default is BS:0, HW:1
+	 *
+	 *  @param dim_BS dimension in which Black-Scholes should be calculated
+	 *  @param dim_HW dimension in which Hull-White should be calculated
 	 */
 	void setProcessDimensions(int dim_BS, int dim_HW);
 
@@ -135,12 +141,13 @@ public:
 	 * Inits the alpha vector with a payoff function of an European call option or put option
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 * @param a is the mean reversion rate
-	 * @sigma is the volatility
+	 * @param sigma is the volatility
 	 */
 	void initGridWithPayoffBSHW(sg::base::DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
+
 	/**
 	 * Inits the screen object
 	 */
@@ -158,7 +165,7 @@ public:
 	 * sets the algorithmic dimensions (the dimensions in which the Up Down
 	 * operations (need for space discretization) should be applied)
 	 *
-	 * @param algoDims std::vector containing the algorithmic dimensions
+	 * @param newAlgoDims std::vector containing the algorithmic dimensions
 	 */
 	void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 
@@ -184,8 +191,6 @@ public:
 	 * @param payoffType the payoff type
 	 * @param strike the option's strike
 	 * @param eps epsilon to determine the gridpoints, use if @money is not exactly on grid
-	 *
-	 * @param number of gridpoints @money
 	 */
 	size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 

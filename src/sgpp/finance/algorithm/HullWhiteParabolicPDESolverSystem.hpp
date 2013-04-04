@@ -27,8 +27,11 @@ namespace finance
 class HullWhiteParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries
 {
 protected:
+	/// theta
 	double theta;
+	/// sigma
 	double sigma;
+	/// a
 	double a;
 	/// the B matrix Operation, on boundary grid
 	sg::base::OperationMatrix* OpBBound;
@@ -56,7 +59,7 @@ protected:
 	/// maxLevel max. Level of refinement
 	sg::base::GridIndex::level_type refineMaxLevel;
 
-
+	/// vector storing algorithmic dimensions
 	std::vector<size_t> HWalgoDims;
 	/// Routine to modify the boundaries/inner points of the grid
 	sg::base::DirichletUpdateVector* BoundaryUpdate;
@@ -82,8 +85,11 @@ public:
 	 *  							ImEul for implicit Euler, CrNic for Crank Nicolson solver
 	 * @param useCoarsen specifies if the grid should be coarsened between timesteps
 	 * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
-	 * @param coarsenPercent Number of removable grid points that should be tested for deletion
-	 * @param numExecCoarsen denotes the number of complete coarsen procedures per timestep
+	 * @param adaptSolveMode adaptivity applied during sloving HullWhite PDE
+	 * @param numCoarsenPoints number of points that should be coarsened
+	 * @param refineThreshold surplus threshold for refinement
+	 * @param refineMode mode used when applying refinements
+	 * @param refineMaxLevel max. refinement level
 	 * @param dim_HW dimension of Hull-White (dimension of risk-free rate)
 	 */
 	HullWhiteParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double sigma, double theta,
@@ -99,6 +105,9 @@ public:
 
 	void finishTimestep();
 
+	/**
+	 * @param isLastTimestep specify if last time step
+	 */
 	void coarsenAndRefine(bool isLastTimestep = false);
 
 	void startTimestep();
