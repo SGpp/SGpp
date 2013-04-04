@@ -350,7 +350,9 @@ OBJS =	DataVector.o\
 	OperationMatrixLTwoDotExplicitLinearBoundary.o\
 	LaplaceDownGradientPrewavelet.o\
 	LaplaceUpGradientPrewavelet.o\
-	LaplaceUpPrewavelet.o
+	LaplaceUpPrewavelet.o\
+	ConvertPrewaveletToLinear.cpp\
+	ConvertLinearToPrewavelet.cpp
 
 
 ifeq ($(EXT), ArBB)
@@ -1630,6 +1632,12 @@ LaplaceUpGradientPrewavelet.o :  $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/L
 
 LaplaceUpPrewavelet.o :  $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceUpPrewavelet.o $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
-		
+
+ConvertPrewaveletToLinear.o :  $(SRCDIR)base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConvertPrewaveletToLinear.o $(SRCDIR)base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.cpp
+
+ConvertLinearToPrewavelet.o :  $(SRCDIR)base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)ConvertLinearToPrewavelet.o $(SRCDIR)base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.cpp
+
 clean:
 	rm *

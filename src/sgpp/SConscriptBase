@@ -54,6 +54,8 @@ base/basis/prewavelet/operation/OperationConvertPrewavelet.cpp
 base/basis/prewavelet/operation/OperationEvalPrewavelet.cpp
 base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.cpp
 base/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.cpp
+base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.cpp
+base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.cpp
 base/datatypes/DataMatrix.cpp
 base/datatypes/DataMatrixSP.cpp
 base/datatypes/DataVector.cpp
