@@ -76,7 +76,7 @@ protected:
 	/**
 	 * Initialize the grid and its coefficients
 	 *
-	 * @param GridCongif structure which describes the regular start grid
+	 * @param GridConfig structure which describes the regular start grid
 	 */
 	virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig);
 
@@ -144,7 +144,7 @@ public:
 	 * @param classes classes corresponding to the training dataset
 	 * @param GridConfig configuration of the regular grid
 	 * @param SolverConfig configuration of the SLE solver
-	 * @param lambda regularization parameter lambda
+	 * @param lamda regularization parameter lambda
 	 */
 	virtual LearnerTiming train(sg::base::DataMatrix& testDataset,  sg::base::DataVector& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,

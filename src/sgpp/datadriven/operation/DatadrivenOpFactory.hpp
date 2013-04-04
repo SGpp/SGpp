@@ -40,6 +40,8 @@ namespace op_factory
    * Note: object has to be freed after use.
    *
    * @param grid Grid which is to be used for OperationRegularizationDiagonal
+   * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
+   * @param k Parameter for @f$H^k@f$
    * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
    */
   base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);

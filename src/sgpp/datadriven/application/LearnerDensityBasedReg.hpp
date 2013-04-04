@@ -71,7 +71,7 @@ public:
 	 *  into file, e.g. used to plot with gnuplot.
 	 *
 	 * @param point point for which the one dimensional density function is computed
-	 * @param tFilename filename to store the dump to
+	 * @param fileName filename to store the dump to
 	 * @param resolution resolution of function plot
 	 */
 	void dumpDensityAtPoint(sg::base::DataVector& point, std::string fileName,

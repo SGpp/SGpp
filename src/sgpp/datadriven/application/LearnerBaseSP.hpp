@@ -147,7 +147,7 @@ public:
 	 * @param classes classes corresponding to the training dataset
 	 * @param GridConfig configuration of the regular grid
 	 * @param SolverConfig configuration of the SLE solver
-	 * @param lambda regularization parameter lambda
+	 * @param lamda regularization parameter lambda
 	 */
 	virtual LearnerTiming train(sg::base::DataMatrixSP& testDataset,  sg::base::DataVectorSP& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverSPConfiguration& SolverConfig,
@@ -265,7 +265,7 @@ public:
 	/**
 	 * sets the current verbose mode of learner
 	 *
-	 * @param verbose the current learner's verbose output
+	 * @param isVerbose the current learner's verbose output
 	 */
 	void setIsVerbose(const bool isVerbose);
 };
