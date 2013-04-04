@@ -31,6 +31,7 @@ public:
      * @param alpha DataVector that is basis for coarsening decisions. The i-th entry corresponds to the i-th grid point.
      * @param removements_num Number of grid points which should be removed (if possible - there could be less removable grid points)
      * @param threshold The absolute value of the entries have to be greater or equal than the threshold
+     * @param storage grid storage
      */
     ANOVACoarseningFunctor(DataVector* alpha, size_t removements_num, double threshold, GridStorage* storage);
 
