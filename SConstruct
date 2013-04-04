@@ -8,8 +8,6 @@
 import os, sys
 import distutils.sysconfig
 
-print os.environ
-
 # Check for versions of Scons and Python
 EnsureSConsVersion(1, 0)
 EnsurePythonVersion(2, 5)
