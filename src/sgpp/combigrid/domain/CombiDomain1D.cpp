@@ -22,7 +22,7 @@ combigrid::Domain1D::Domain1D(double min, double max) {
 
 combigrid::Domain1D::Domain1D(const std::vector<double>& inputStretching){
 	isStretched_ = true;
-	level_ = ::round( ::log((double)inputStretching.size())/ ::log(2.0) );
+	level_ = static_cast<int>(::round( ::log(static_cast<double>(inputStretching.size()))/ ::log(2.0) ));
 
 	// test if the vector size match
 	COMBIGRID_ERROR_TEST( (int)inputStretching.size() == combigrid::powerOfTwo[level_]+1 ,
@@ -55,7 +55,7 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
 
 	if (isStretched_){
 		int startInd = 0 ,mid = 0;
-		int endInd = stretching_.size() - 1;
+		int endInd = static_cast<int>(stretching_.size()) - 1;
 		double intersec = 0.0;
 		int level_diff = (level_ < level_in)? 0 : level_ - level_in;
 		// stop when the difference is one, which means we found the cell
@@ -127,7 +127,7 @@ void combigrid::Domain1D::findEntry(double coordReal, int level_in ,
 	if (isStretched_)
 	{
 		int startInd = 0 ,mid = 0;
-		int endInd = stretching_.size() - 1;
+		int endInd = static_cast<int>(stretching_.size()) - 1;
 		int level_diff = (level_ < level_in)? 0 : level_ - level_in;
 		// stop when the difference is one, which means we found the cell
 		while ( endInd - startInd > combigrid::powerOfTwo[level_diff] )
@@ -150,7 +150,7 @@ void combigrid::Domain1D::findEntry(double coordReal, int level_in ,
 	{
 		// for the non-stretched case
 		double unitC = (coordReal - min_)/(max_ - min_);
-		startIndex = ::floor( (double)combigrid::powerOfTwo[level_in]*unitC );
+		startIndex = static_cast<int>(::floor( (double)combigrid::powerOfTwo[level_in]*unitC ));
 		startIndex = (startIndex < 0) ? 0 : startIndex;
 		startIndex = (startIndex >= combigrid::powerOfTwo[level_in]-1) ? combigrid::powerOfTwo[level_in]-1 : startIndex;
 		intersect =  (unitC*(double)combigrid::powerOfTwo[level_in]  - (double)(startIndex));

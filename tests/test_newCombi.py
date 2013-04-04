@@ -6,7 +6,7 @@ Created on 24.02.2012
 import unittest
 
 from pysgpp import AdaptiveSerialCombiGrid, CombiArbitraryScheme, \
-    AdaptiveSerialCombiGridVariableCoefficients, L2ProductDouble, BoolVector, IntVector
+    AdaptiveSerialCombiGridVariableCoefficients, BoolVector, IntVector
 
 import numpy as np
 
@@ -98,48 +98,6 @@ class TestAdaptiveCombiGridVariableCoefficients(unittest.TestCase):
         self.assertEqual((5.0, 1., -1., 1., -1.), self.grid2.getCombiScheme().getCoef())
         toolsForTests.isKernelEqualScheme(self, self.grid2)
 
-
-class TestL2ScalarProduct(unittest.TestCase):
-
-    def setUp(self):
-        self.level = 3
-        self.size = 2 ** self.level + 1
-        self.product1D = L2ProductDouble(1, [True], [self.level])
-
-        self.product2D = L2ProductDouble(2, [True, True], [self.level, self.level])
-        self.product3D = L2ProductDouble(3, [True, True, True], [self.level, self.level, self.level])
-        self.k = 2.*np.pi
-
-    def helperFunction(self, coord):
-        return coord[0]
-
-    def test1DdoubleProduct(self):
-        grid = [np.mgrid[0:1:1j * self.size]]
-        u = self.helperFunction(grid)
-        v = np.ones(self.size).flatten()
-        result1D = 0.5
-        self.assertEqual(result1D, self.product1D.return_l2_scalar_product(u, v))
-        u = list(np.sin(grid[0] * self.k).flatten())
-        v = list(np.cos(grid[0] * self.k).flatten())
-#        self.assertAlmostEqual(0.0, self.product1D.return_l2_scalar_product(u, v), delta=0.0000001)
-
-    def test2DdoubleProduct(self):
-        grid = np.mgrid[0:1:1j * self.size, 0:1:1j * self.size]
-        u = self.helperFunction(grid)
-        v = np.ones((self.size, self.size))
-#        self.assertAlmostEqual(0.5, self.product2D.return_l2_scalar_product(u.flatten(), v.flatten()), delta=0.0001)
-        u = np.sin(grid[0] * self.k) * np.sin(grid[1] * self.k)
-        v = np.cos(grid[0] * self.k) * np.cos(grid[1] * self.k)
-#        self.assertAlmostEqual(0.0, self.product2D.return_l2_scalar_product(u.flatten(), v.flatten()), delta=0.0001)
-
-    def test3DdoubleProduct(self):
-        grid = np.mgrid[0:1:1j * self.size, 0:1:1j * self.size, 0:1:1j * self.size]
-        u = self.helperFunction(grid)
-        v = np.ones((self.size, self.size, self.size))
-#        self.assertAlmostEqual(0.5, self.product3D.return_l2_scalar_product(u.flatten(), v.flatten()), delta=0.0001)
-        u = np.sin(grid[0] * self.k) * np.sin(grid[1] * self.k) * np.sin(grid[2] * self.k)
-        v = np.cos(grid[0] * self.k) * np.cos(grid[1] * self.k) * np.sin(grid[2] * self.k)
-#        self.assertAlmostEqual(0.0, self.product3D.return_l2_scalar_product(u.flatten(), v.flatten()), delta=0.0001)
 
 
 if __name__ == '__main__':
