@@ -28,11 +28,11 @@ public:
 	virtual ~RunPoisson() {;}
 
 	/** static function to run the Poisson problem on a full grid
-	 * @param domain [IN] the domain for the full grid
-	 * @param levels [IN] level vector
-	 * @param sigma [IN] diffusion coefficients in each direction
-	 * @param startValue [IN] the value of all unknowns at the beginning
-	 * @param callbackRHS  [IN] right hand side call back
+	 * @param domain the domain for the full grid
+	 * @param levels  level vector
+	 * @param sigma  diffusion coefficients in each direction
+	 * @param startValue the value of all unknowns at the beginning
+	 * @param callbackRHS  right hand side call back
 	 * */
 	static FullGridD* computeFGPoisson(
 			GridDomain& domain,
@@ -42,11 +42,10 @@ public:
 			const CallBackRHS* callbackRHS );
 
 	/** static function to run the Poisson problem on a full grid, which the user already created
-	 * @param fg [IN/OUT] the full grid
-	 * @param sigma [IN] diffusion coefficients in each direction
-	 * @param unkwons [IN/OUT] the initial value of unkowns
-	 * @param startValue [IN] the value of all unknowns at the beginning
-	 * @param callbackRHS  [IN] right hand side call back
+	 * @param fg  the full grid
+	 * @param sigma  diffusion coefficients in each direction
+	 * @param unknowns  the initial value of unkowns
+	 * @param callbackRHS right hand side call back
 	 * */
 	static void computeFGPoisson_FG(
 			FullGridD* fg ,
