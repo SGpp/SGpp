@@ -6,7 +6,8 @@ Created on 24.02.2012
 import unittest
 
 from pysgpp import AdaptiveSerialCombiGrid, CombiArbitraryScheme, \
-    AdaptiveSerialCombiGridVariableCoefficients, BoolVector, IntVector
+    AdaptiveSerialCombiGridVariableCoefficients, BoolVector, IntVector,\
+    CombigridLevelVector
 
 import numpy as np
 
@@ -67,6 +68,8 @@ class TestAdaptiveCombiGrid(unittest.TestCase):
         newscheme = ((1, 5, 1), (3, 3, 0), (1, 3, -1), (5, 1, 1), (3, 1, 0), (4, 3, 1), (4, 1, -1))
         gridBuffer = self.changingGrid
         gridBuffer.addToCombiScheme([4, 3])
+#         gridBuffer.addToCombiScheme([4,3])
+#         print 'asdfasd asdf a',gridBuffer.getCombiScheme().getLevels(),gridBuffer.getCombiScheme().getCoef()
         levelsAndCoef = []
         for buf1, buf2 in zip(gridBuffer.getCombiScheme().getLevels(), gridBuffer.getCombiScheme().getCoef()):
             levelsAndCoef.append((buf1[0], buf1[1], buf2))
@@ -99,14 +102,42 @@ class TestAdaptiveCombiGridVariableCoefficients(unittest.TestCase):
         toolsForTests.isKernelEqualScheme(self, self.grid2)
 
 
+class TestCombiGridLevelvector(unittest.TestCase):
+    
+    def setUp(self):
+        self.levelVec=CombigridLevelVector([2,2])
+        
+        
+    def tearDown(self):
+        pass
+    
+    def testAddToVector(self):
+        self.assertEqual(self.levelVec.getLevelVec()[0], (2,2))
+        buf=self.levelVec+CombigridLevelVector([3,1])
+        self.assertEqual(((2,2),(3,1)), buf.getLevelVec())
+        self.assertEqual((1,1), buf.getCoef())
+        buf=buf+CombigridLevelVector([3,1])
+        self.assertEqual(((2,2),(3,1)), buf.getLevelVec())
+        self.assertEqual((1,2), buf.getCoef())
+        
+    def testComputeCombiCoeff(self):
+        
+        unity=CombigridLevelVector(2)
+        buf2=unity-(unity-CombigridLevelVector([2,2]))*(unity-CombigridLevelVector([3,1]))
+        self.assertTrue((2,2) in buf2.getLevelVec())
+        self.assertTrue((3,1) in buf2.getLevelVec())
+        self.assertTrue((2,1) in buf2.getLevelVec())
+        self.assertEqual(buf2.getCoef(),(1,1,-1))
+
 
 if __name__ == '__main__':
     unittest.main()
 
 
 
-#if __name__ == "__main__":
-##    #import sys;sys.argv = ['', 'TestAdaptiveCombiGrid.testRightLevels']
-##    unittest.main()
-#suite = unittest.TestLoader().loadTestsFromTestCase(TestAdaptiveCombiGrid)
-#unittest.TextTestRunner(verbosity=5).run(suite)
+# if __name__ == "__main__":
+# #    #import sys;sys.argv = ['', 'TestAdaptiveCombiGrid.testRightLevels']
+# #    unittest.main()
+#     suite = unittest.TestLoader().loadTestsFromTestCase(TestAdaptiveCombiGrid)
+#     
+#     unittest.TextTestRunner(verbosity=10).run(suite)
