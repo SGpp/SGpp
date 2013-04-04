@@ -433,5 +433,5 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail and swigAvail:
     else:
         Depends(testdep, [pyinst])
 else:
-    sys.stderr.write("Warning!! Skipping unit tests!!\n\n\n")
+    sys.stderr.write("Attention!! Skipping unit tests!!\n\n\n")
 
