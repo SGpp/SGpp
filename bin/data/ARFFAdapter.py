@@ -178,7 +178,7 @@ class ARFFAdapter(DataAdapter):
     ## Opens a file. If the file ends with ".gz", automatically gzip compression
     # is used for the file. Returns the filedescriptor
     # @param filename
-    # @param mode, default: "r" for read only
+    # @param mode default: "r" for read only
     # @return file descriptor
     def __gzOpen(self, filename, mode="r"):
         # gzip-file
