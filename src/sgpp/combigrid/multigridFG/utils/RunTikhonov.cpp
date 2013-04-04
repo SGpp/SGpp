@@ -149,7 +149,7 @@ void combigrid::RunTikhonov::computeFGTikhonov_FG(
 		std::vector<double>& YPoint ){
 
 	//int dimensions = (int) ::round( ((double)XCoords.size()) / ((double)YPoint.size()) );
-	int nrPoints = YPoint.size();
+	int nrPoints = static_cast<int>( YPoint.size() );
 	int verb = 6;
 
 	// create the Tikhonov operator
@@ -197,8 +197,8 @@ void combigrid::RunTikhonov::computeTikhonov_FG_crossvalidation(
 		std::vector<double>& YPoint){
 
 	int verb = 6;
-	int trainPointNr = 3*YPoint.size() / 4;
-	int testPointNr = YPoint.size() - trainPointNr;
+	int trainPointNr = 3 * static_cast<int>( YPoint.size() ) / 4;
+	int testPointNr = static_cast<int>( YPoint.size() ) - trainPointNr;
 	int dim = (int)::round((double)XCoords.size()/(double)YPoint.size());
 
 	COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_FG_crossvalidation    , trainPointNr="
@@ -270,8 +270,8 @@ void combigrid::RunTikhonov::computeTikhonov_CG_crossvalidation(
 		std::vector<double>& XCoords,
 		std::vector<double>& YPoint){
 	int verb = 6;
-	int trainPointNr = 3*YPoint.size() / 4;
-	int testPointNr = YPoint.size() - trainPointNr;
+	int trainPointNr = 3* static_cast<int>( YPoint.size() ) / 4;
+	int testPointNr = static_cast<int>( YPoint.size() ) - trainPointNr;
 	int dim = (int)::round((double)XCoords.size()/(double)YPoint.size());
 
 	COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_CG_crossvalidation    , trainPointNr="
