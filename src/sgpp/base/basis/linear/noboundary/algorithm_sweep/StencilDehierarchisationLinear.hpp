@@ -73,6 +73,8 @@ protected:
 	 * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
 	 * @param index a iterator object of the grid
 	 * @param dim current fixed dimension of the 'execution direction'
+     * @param seql left grid point index of the current region regarded in this step of the recursion
+     * @param seqr right grid point index of the current region regarded in this step of the recursion
 	 */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, int seql, int seqr);
 
