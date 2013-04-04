@@ -92,30 +92,37 @@ namespace combigrid{
 		virtual int getNrFullGrid() const = 0;
 
 		/** evaluate the combi grid at one specified point
-		 * @param coords , the coordinates on the unit form [0,1]^D */
+		 * @param coords the coordinates on the unit cube [0,1]^D
+		 * */
 		virtual double eval( std::vector<double>& coords ) const = 0;
 
 		/** evaluate the combi grid at one specified point. Buffered evaluation
 		 * which might be faster than one evaluation point.
-		 * @param coords , the coordinates on the unit form [0,1]^D
-		 * @param results , the result vector */
+		 * @param coords the coordinates on the unit form [0,1]^D
+		 * @param results the result vector
+		 */
 		virtual void eval( std::vector< std::vector<double> >& coords , std::vector<double>& results ) const = 0;
 
 		/** create SGpp grid storage out of the combi grid <br>
-		 * @return the created grid storage for the SGpp grid */
+		 * @return the created grid storage for the SGpp grid
+		 *
+		 * */
 		virtual sg::base::GridStorage* createSGppGridStorage() const = 0;
 
 		/** in this step the full grid values will be projected to the sparse grid space
-		 * @param gridstorageSGpp  , SGpp grid storage
-		 * @param alpha , the coefficient vector which will be overwritten
-		 * @param minAlpha , the minimum of all points, if this argument is set
-		 * @param maxAlpha , the maximum of all points, if this argument is set*/
+		 * @param gridstorageSGpp SGpp grid storage
+		 * @param alpha the coefficient vector which will be overwritten
+		 * @param minAlpha the minimum of all points, if this argument is set
+		 * @param maxAlpha the maximum of all points, if this argument is set
+		 *
+		 * */
 		virtual void reCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha,
 				sg::base::DataVector* minAlpha = NULL , sg::base::DataVector* maxAlpha = NULL) const = 0;
 
 		/** takes the SGpp sparse grid space and projects to the combi grid
-		 * @param gridstorageSGpp , SGpp grid storage
-		 * @param alpha , the coefficient vector with which the combi grid values will be set */
+		 * @param gridstorageSGpp SGpp grid storage
+		 * @param alpha the coefficient vector with which the combi grid values will be set
+		 */
 		virtual void deCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha) = 0;
 
 		/** return the combi scheme */
