@@ -35,7 +35,6 @@ def getSubdirs(path):
 # Check for jni header file
 # if found, additionally add all subdirs to CPPPATH (platform dependent files)
 def CheckJNI(context):
-    found = False
     print "Trying to locate jni.h..."
     # message if JNI_CPPINCLUDE not set
     if not os.environ.get('JNI_CPPINCLUDE'):
@@ -52,26 +51,27 @@ def CheckJNI(context):
             print "... not found in $JAVA_HOME/include"
     else:
         print "... JAVA_HOME not set"
-        # not found, try guessing:
-        # look, where java and javac are located:
-        # include/ directory might be 1 or 2 dirs below
-        print "... trying to guess"
-        for f in ['java', 'javacc']:
-            fdir = context.env.WhereIs(f)
-            if not fdir:
-                continue
-            # os.path.realpath to resolve links
-            basedir = os.path.dirname(os.path.realpath(fdir))
-            for subdir in ['..', os.path.join('..','..')]:
-                pname = os.path.join(basedir, subdir, 'include')
-                if os.path.exists(os.path.join(pname, 'jni.h')):
-                    context.env.Append(CPPPATH = [pname]+getSubdirs(pname))
-                    res = "... found in "+pname
-                    context.Result(res)
-                    return res
-    ret = 0
+
+    # not found, try guessing:
+    # look, where java and javac are located:
+    # include/ directory might be 1 or 2 dirs below
+    print "... trying to guess"
+    for f in ['java', 'javacc']:
+        fdir = context.env.WhereIs(f)
+        if not fdir:
+            continue
+        # os.path.realpath to resolve links
+        basedir = os.path.dirname(os.path.realpath(fdir))
+        for subdir in ['..', os.path.join('..','..')]:
+            pname = os.path.join(basedir, subdir, 'include')
+            if os.path.exists(os.path.join(pname, 'jni.h')):
+                context.env.Append(CPPPATH = [pname]+getSubdirs(pname))
+                res = "... found in "+pname
+                context.Result(res)
+                return res
+            
     context.Result('... nothing found!')
-    return ret
+    return 0
 
 
 # Definition of flags / command line parameters for SCons
@@ -80,7 +80,7 @@ def CheckJNI(context):
 vars = Variables("custom.py")
 
 # define the flags 
-vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','-Wno-deprecated')
+vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','')
 vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 
 # define the target
@@ -168,9 +168,10 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-Wconversion', '-ansi', '-pedantic', '-Wno-long-long', 
+    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long',
                          '-fno-strict-aliasing', '-O3',
-                         '-funroll-loops', '-mfpmath=sse', '-msse3'])
+                         '-funroll-loops', '-mfpmath=sse', '-msse3',
+                         '-Werror', '-Wno-deprecated'])
     if env['OMP']:
 	env.Append(CPPFLAGS=['-fopenmp'])
     	env.Append(CPPDEFINES=['USEOMP'])
@@ -179,9 +180,11 @@ if env['TARGETCPU'] == 'default':
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
-    env.Append(CPPFLAGS = ['-msse3', '-O3', '-funroll-loops', '-ipo', '-ip', 
-                           '-Wconversion', '-ansi-alias', '-fp-speculation=safe', 
-                           '-Wall', '-ansi', '-fno-strict-aliasing', '-fPIC'])
+    env.Append(CPPFLAGS = ['-Wall', '-ansi',
+                           '-fno-strict-aliasing', '-O3',
+                           '-funroll-loops', '-msse3',
+                           '-ipo', '-ip', '-ansi-alias', '-fp-speculation=safe', '-fPIC',
+                           '-Wno-deprecated']) # '-Werror'
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: ICC"
