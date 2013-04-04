@@ -20,7 +20,7 @@ public:
 	CallBackRHS(){;}
 
 	/** the callback function for the right hand side
-	 * @param coords [IN] the coordinates */
+	 * @param coords the coordinates */
 	virtual double eval(std::vector<double>&  coords) const {return 1.0;}
 };
 
