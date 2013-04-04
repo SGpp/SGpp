@@ -36,7 +36,7 @@ private:
 	 *
 	 * @param evalPoints vector of dynamic size into which the points are "submitted" during calculation
 	 * @param curPoint a current point in the d-dimensional space which which is adjusted during this recursive calculations
-	 * @param myStreching streching
+	 * @param myStretching streching
 	 * @param points number of points used in every dimension
 	 * @param curDim current dimension in recursive cuboid construction
 	 */
