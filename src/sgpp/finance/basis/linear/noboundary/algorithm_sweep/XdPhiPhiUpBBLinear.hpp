@@ -79,6 +79,8 @@ protected:
 	 * @param dim the dimension in which the operation is executed
 	 * @param fl function value on the left boundary, reference parameter
 	 * @param fr function value on the right boundary, reference parameter
+	 * @param q recursive parameter
+	 * @param t recursive parameter
 	 */
 	void recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t);
 };
