@@ -31,9 +31,14 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation
 public:
 	/**
 	 * Constructor of OperationHierarchisationPrewavelet
-	 *
+	 * 
+     * An adaptive grid with prewavelet ansatz functions requires for operations
+	 * using the up-down algorithm shadow points. These shadow points a needed just
+	 * for data transport, thus they do not have an influence on the final function.
+	 * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
+     * 
 	 * @param storage Pointer to the grid's gridstorage obejct
-	 * @param shadowStorage a storage containing intermediate results to support the conversion
+	 * @param shadowStorage shadow points (see detailed description)
 	 */
 	OperationHierarchisationPrewavelet(GridStorage* storage,GridStorage* shadowStorage) :
 		storage(storage), shadowStorage(shadowStorage)

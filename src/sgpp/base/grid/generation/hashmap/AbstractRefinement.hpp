@@ -51,14 +51,6 @@ public:
 
 
     /**
-     * Refine grid points using a specified strategy
-     * @param storage hashmap that stores the grid points
-     * @param index point to refine
-     * @param d direction
-     */
-    //virtual void strategy_refine(GridStorage* storage, RefinementStrategy& refinement_strategy);
-
-    /**
      * Refine one grid point along a single direction
      * @param storage hashmap that stores the grid points
      * @param index point to refine
@@ -66,15 +58,6 @@ public:
      */
     virtual void refineGridpoint1D(GridStorage * storage, index_type & index, size_t d) = 0;
 
-    /**
-     * Refine one grid point along a single direction
-     * @param storage hashmap that stores the grid points
-     * @param index point to refine
-     * @param d direction
-     */
-    /*void refine_gridpoint_1d(GridStorage * storage, index_pointer index, size_t d) {
-      refine_gridpoint_1d(storage, *index, d);
-    }*/
 
     /**
      * Check if the grid point is refinable

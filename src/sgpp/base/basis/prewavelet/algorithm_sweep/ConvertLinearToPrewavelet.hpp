@@ -53,8 +53,13 @@ public:
 	/**
 	 * Constructor, must be bind to a grid
 	 *
+	 * An adaptive grid with prewavelet ansatz functions requires for operations
+	 * using the up-down algorithm shadow points. These shadow points a needed just
+	 * for data transport, thus they do not have an influence on the final function.
+	 * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
+     *
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
-	 * @param shadowstorage a storage containing intermediate results to support the conversion
+	 * @param shadowstorage shadow points (see detailed description)
 	 */
 	ConvertLinearToPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
 		storage(storage), shadowstorage(shadowstorage)
