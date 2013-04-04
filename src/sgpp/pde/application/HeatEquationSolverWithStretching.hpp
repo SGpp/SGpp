@@ -85,8 +85,8 @@ public:
 	/**
 	 * Inits the grid in the middle of the whole domain with one single heat
 	 *
-	 * @param alpha reference to the coefficients vector
-	 * @param heat the value of the heat in the middle of the domain
+	 * alpha reference to the coefficients vector
+	 * heat the value of the heat in the middle of the domain
 	 */
 //	void initGridWithSingleHeat(sg::base::DataVector& alpha, double heat);
 
@@ -104,8 +104,8 @@ public:
 	/**
 	 * Inits the grid with a constant heat
 	 *
-	 * @param alpha reference to the coefficients vector
-	 * @param constHeat the temperature of the constant heat
+	 * alpha reference to the coefficients vector
+	 * constHeat the temperature of the constant heat
 	 */
 //	void initGridWithConstantHeat(sg::base::DataVector& alpha, double constHeat);
 

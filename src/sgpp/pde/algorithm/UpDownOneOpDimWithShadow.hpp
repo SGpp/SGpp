@@ -35,6 +35,7 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's sg::base::GridStorage object
+	 * @param shadowStorage shadow storage
 	 */
 	UpDownOneOpDimWithShadow(sg::base::GridStorage* storage, sg::base::GridStorage* shadowStorage);
 
