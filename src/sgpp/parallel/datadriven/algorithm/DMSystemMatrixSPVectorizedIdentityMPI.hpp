@@ -100,6 +100,7 @@ private:
 	 * @param totalSize size of domain to distribute
 	 * @param sizes output array to store resulting distribution sizes (array size must match the number of MPI processes)
 	 * @param offsets output array to store resulting distribution offsets (array size must match the number of MPI processes)
+	 * @param blocksize blocksize
 	 *
 	 */
 	void calcDistribution(int totalSize, int* sizes, int* offsets, size_t blocksize);
