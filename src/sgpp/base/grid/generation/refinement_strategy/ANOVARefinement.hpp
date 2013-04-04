@@ -18,8 +18,8 @@ namespace base
 
 /**
  * Dimension-adaptive refinement as
- * @link http://hss.ulb.uni-bonn.de/2010/2267/2267.htm described by
- * Feuersaenger @endlink. Unlike in the dissertation we allow to define the number
+ * <a href="http://hss.ulb.uni-bonn.de/2010/2267/2267.htm">Feuersaenger</a>
+ * Unlike in the dissertation we allow to define the number
  * of points to define more flexibly using RefinementFunctor just like in spatially-
  * adaptive case. A grid point is refined only in those dimensions, where the
  * corresponding level is not 1. This method works with ModLinear basis functions.
