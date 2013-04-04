@@ -85,7 +85,7 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
 
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
-vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'opteronICC', 'core2ICC', 'ia64ICC'; here Intel Compiler in version 11 must be used", 'default')
+vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
 vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
 vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
 
@@ -132,11 +132,7 @@ to enable OpenMP support.
 
 Specifying the target, the following options are available:
     - default: using the gcc toolchain with OpenMP 2
-    - opteronICC: using the ICC 11.x toolchain with OpenMP 3 with standard x86_64 options
-    - core2ICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (core architecture)
-    - nehalemICC: using the ICC 11.x toolchain with OpenMP 3 with Intel x86_64 options (nehalem architecture)
-    - snbICC: using the ICC 12.x toolchain with OpenMP 3 with Intel x86_64 options (sandy bridge architecture)
-    - ia64ICC: using the ICC 11.x toolchain with OpenMP 3 with Itanium options
+    - ICC: using the ICC toolchain with OpenMP 3 with standard x86_64 options
 
 For LRZ, please execute:
 module load python
@@ -180,48 +176,26 @@ if env['TARGETCPU'] == 'default':
     	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
     	
-elif env['TARGETCPU'] == 'ia64ICC':
-    print "Using icc 11.0 for Itanium systems"
-    # ICC doesn't know '-pedantic'
-    # ICC has different options on ia64
-    env.Append(CPPFLAGS = ['-O3', '-funroll-loops', '-Wconversion',
-                           '-no-alias', '-i-static', '-gcc-version=400', 
-                           '-unroll-aggressive', '-opt-jump-tables=large', '-Wall', 
-                           '-ansi', '-wd981', '-fno-strict-aliasing']) 
-elif env['TARGETCPU'] == 'opteronICC':
-    print "Using icc 11.x/12.0 for Opteron systems"
-    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
-                           '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing'])
-elif env['TARGETCPU'] == 'core2ICC':
-    print "Using icc 11.x/12.0 for Core2 systems"
-    env.Append(CPPFLAGS = ['-axSSE3', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
-                           '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing'])
-elif env['TARGETCPU'] == 'nehalemICC':
-    print "Using icc 11.x/12.0 for Nehalem/Westmere systems"
-    env.Append(CPPFLAGS = ['-axSSE4.1', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
-                           '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing'])
-elif env['TARGETCPU'] == 'snbICC':
-    print "Using icc 12.0 for Sandy Bridge systems"
-    env.Append(CPPFLAGS = ['-axAVX', '-O3', '-funroll-loops', '-ipo', '-ip', '-ansi-alias', 
-                           '-Wall', '-ansi', '-wd981', 
-                           '-fno-strict-aliasing'])
+
+elif env['TARGETCPU'] == 'ICC':
+    print "Using icc"
+    env.Append(CPPFLAGS = ['-msse3', '-O3', '-funroll-loops', '-ipo', '-ip', 
+                           '-Wconversion', '-ansi-alias', '-fp-speculation=safe', 
+                           '-Wall', '-ansi', '-fno-strict-aliasing', '-fPIC'])
 else:
     print "You must specify a valid value for TARGETCPU."
-    print "Available configurations are: default, core2ICC, opteronICC, ia64ICC"
+    print "Available configurations are: ICC"
     Exit(1)
     
 # sets ICC-wide commen options and the tool chain   
-if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
+if env['TARGETCPU'] in ['ICC']:
     env['CC'] = ('icc')
     env['LINK'] = ('icpc')
     env['CXX'] = ('icpc')	    
     if env['OMP']:
 	env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
-        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE', 'USEICCINTRINSICS'])
+        env.Append(CPPDEFINES=['USEOMP', 'USEOMPTHREE'])
     
 # sets the architecture option for gcc
 if env.has_key('MARCH'):
@@ -363,17 +337,6 @@ if not env.GetOption('clean'):
             javaAvail = False
     if not javaAvail:
         sys.stderr.write("No Java support...\n")
-
-    # check if the intel omp lib is available
-    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC'] and env['OMP']:
-        if not config.CheckLib('iomp5', language='c++'):
-            print "Error: Intel omp library iomp5 is missing."
-            Exit(1)
-
-    # check if the the intel vector lib is available
-    if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
-        if not config.CheckLib('svml', language='c++'):
-            print "SVML should be available when using intelc. Consider runnning scons --config=force!"
 
     env = config.Finish()
 
