@@ -177,7 +177,7 @@ public:
 	/**
 	 * stores the values of the (dehierarchized) grid in the sg::base::DataVector Values used by time step size control methods
 	 *
-	 * @param sg::base::DataVector in which the values will be stored
+	 * @param Values sg::base::DataVector in which the values will be stored
 	 */
 	void getGridCoefficientsForSC(sg::base::DataVector& Values);
 
