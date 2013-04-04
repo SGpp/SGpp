@@ -22,14 +22,6 @@ OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(sg::b
 	buildMatrix(grid);
 }
 
-inline double max(double a, double b) {
-	return a > b ? a : b;
-}
-
-inline double min(double a, double b) {
-	return a < b ? a : b;
-}
-
 void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sg::base::Grid* grid) {
 	size_t gridSize = grid->getStorage()->size();
 	size_t gridDim = grid->getStorage()->dim();
@@ -57,8 +49,8 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sg::base::Grid* grid) {
 						break;
 					}
 				} else {
-					if (max((iik - 1) / lik, (ijk - 1) / ljk)
-							>= min((iik + 1) / lik, (ijk + 1) / ljk)) {
+					if (std::max((iik - 1) / lik, (ijk - 1) / ljk)
+							>= std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
 						//Ansatz functions do not not overlap:
 						res = 0.;
 						break;
