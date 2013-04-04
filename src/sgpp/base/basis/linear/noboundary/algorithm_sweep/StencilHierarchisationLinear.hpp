@@ -62,18 +62,18 @@ public:
 
 protected:
 
-	/**
-	 * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
+    /** 
+     * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
 	 *
 	 * @todo add graphical explanation here
-	 *
-	 * @param source this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
-	 * @param result this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
-	 * @param index a iterator object of the grid
-	 * @param dim current fixed dimension of the 'execution direction'
-	 * @param seql left grid point index of the current region regarded in this step of the recursion
-	 * @param seqr right grid point index of the current region regarded in this step of the recursion
-	 */
+     * 
+     * @param source this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
+     * @param result result this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions 
+     * @param index a iterator object of the grid
+     * @param dim current fixed dimension of the 'execution direction'
+     * @param seql left grid point index of the current region regarded in this step of the recursion
+     * @param seqr right grid point index of the current region regarded in this step of the recursion
+     */
 	void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, int seql, int seqr);
 
 

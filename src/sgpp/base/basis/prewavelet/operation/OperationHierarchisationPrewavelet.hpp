@@ -33,7 +33,7 @@ public:
 	 * Constructor of OperationHierarchisationPrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
-	 * @param shadowstorage a storage containing intermediate results to support the conversion
+	 * @param shadowStorage a storage containing intermediate results to support the conversion
 	 */
 	OperationHierarchisationPrewavelet(GridStorage* storage,GridStorage* shadowStorage) :
 		storage(storage), shadowStorage(shadowStorage)
