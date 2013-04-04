@@ -6,6 +6,9 @@
 // @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (alexander.heinecke@mytum.de)
 
 %module(directors="1") pysgpp
+%feature("docstring");
+
+// %include "includeDoxy.i"
 
 %include "stl.i"
 %include "std_vector.i"
