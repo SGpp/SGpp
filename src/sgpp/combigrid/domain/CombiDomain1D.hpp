@@ -44,31 +44,32 @@ public:
 	inline int getLevel() const { return level_; }
 
 	/** transform the real coordinates to unit coordinates
-	 * @param coordReal [IN]
-	 * @param coordUnit [OUT]
-	 * @param level_in [IN] level of the resolution required
-	 * @param noBoundary [IN] make extrapolation for the boundary cells*/
+	 * @param coordReal real non-unit coordinates
+	 * @param coordUnit coordinates in the unit cube
+	 * @param level_in level of the resolution required
+	 * @param noBoundary make extrapolation for the boundary cells*/
 	void transformRealToUnit( double coordReal, double& coordUnit ,
 			int level_in = 0 , bool noBoundary = false ) const;
 
 	/** transform from unit index to real coordinates
-	 * @param level [IN] input level
-	 * @param index [IN] the index 0..2^level
-	 * @param realCoord [OUT] the real coordinate */
+	 * @param level input level
+	 * @param index the index 0..2^level
+	 * @param realCoord the real coordinate */
 	void transformUnitToReal( int level , int index , double& realCoord) const;
 
 	/** flocated the point on one axis
-	 * @param coordReal [IN] the coord on real domain
-	 * @param startIndex [OUT] the left index of the cell
-	 * @param intersect [OUT] the intersection of the cell */
+	 * @param coordReal the coord on real domain
+	 * @param startIndex the left index of the cell
+	 * @param intersect the intersection of the cell
+	 */
 	void findEntry(double coordReal, int level_in ,
 			int& startIndex , double& intersect) const;
 
 	/** returns the mesh width /scaling
-	 * @param index [IN] point index
-	 * @param level_in [IN] the level resolution
-	 * @param h0 [OUT] the first mesh width
-	 * @param h1 [OUT] the second mesh width */
+	 * @param index point index
+	 * @param level_in the level resolution
+	 * @param h0 the first mesh width
+	 * @param h1 the second mesh width */
 	void getMeshWidth(int index , int level_in , double& h0 , double& h1) const;
 
 private:
