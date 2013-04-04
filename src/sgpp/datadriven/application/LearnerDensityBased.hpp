@@ -28,6 +28,10 @@ protected:
 	std::vector<sg::base::DataVector> alphaVec_;
 	/// regularization mode
 	sg::datadriven::LearnerRegularizationType CMode_;
+  //with prior
+  bool withPrior;
+  //number of classes
+  size_t nrClasses;
         // prior of data
   std::vector<double> prior;
   // vectors of grids
@@ -44,9 +48,9 @@ public:
    * @param GridConfig grid config
    * @param nrClasses number of classes
    */
-  virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig, size_t nrClasses);
+  virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig);
 
-  	/**
+	/**
 	 * Learning a dataset with spatially adaptive sparse grids
 	 *
 	 * @param testDataset the training dataset
@@ -64,25 +68,6 @@ public:
 				    bool testAccDuringAdapt, const double lambda);
 
 
-	/**
-	 * Learning a dataset with spatially adaptive sparse grids
-	 *
-	 * @param testDataset the training dataset
-	 * @param classes classes corresponding to the training dataset
-	 * @param GridConfig configuration of the regular start grid
-	 * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of the grid
-	 * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
-	 * @param AdaptConfig configuration of the adaptivity strategy
-	 * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
-	 * @param lambda regularization parameter lambda
-	 * @param usePrior use prior information for prediction (Bayes)
-	 */
-	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-				    bool testAccDuringAdapt, const double lambda, bool usePrior = true);
-
-
 	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 	/// construct system matrix
   virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
@@ -97,6 +82,33 @@ public:
    * with the maximum number of grid points
    */
   size_t getNrGridPoints();
+
+  /**
+   * Get Prior
+   */
+  bool getWithPrior() { return withPrior;} 
+
+  /**
+   * Set prior
+   * 
+   * @param p prior
+   */
+  bool setWithPrior(bool p) {withPrior = p; return withPrior;}
+
+  /**
+   * Get number of classes
+   */
+  size_t getNrClasses() {return nrClasses;}
+
+  /**
+   * Set number of classes
+   * 
+   * @param c set number of classes
+   */
+  size_t setNrClasses(size_t c) { nrClasses = c; return nrClasses;}
+
+  
+
 };
 
 }
