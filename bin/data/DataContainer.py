@@ -280,6 +280,7 @@ class DataContainer(object):
     # @param points: DataVector new points
     # @param values: DataVector new values
     # @param name: String category name under which points and values should be stored
+    # @param specification specification
     # @return: DataContainer itself
     def __setSubContainer(self, points, values, specification, name):
         self.points[name] = points
