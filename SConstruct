@@ -320,8 +320,8 @@ if not env.GetOption('clean'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
 
     # check if the math header is available
-    if not config.CheckLibWithHeader('cmath', 'cmath', 'c++'):
-        sys.stderr.write("Error: Math headers are missing.\n")
+    if not config.CheckHeader('cmath', language='c++'):
+        sys.stderr.write("Error: c++ math header cmath.h is missing.\n")
         Exit(1)
 
     # check whether swig installed
@@ -366,13 +366,13 @@ if not env.GetOption('clean'):
 
     # check if the intel omp lib is available
     if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC'] and env['OMP']:
-        if not config.CheckLib('iomp5'):
+        if not config.CheckLib('iomp5', language='c++'):
             print "Error: Intel omp library iomp5 is missing."
             Exit(1)
 
     # check if the the intel vector lib is available
     if env['TARGETCPU'] in ['ia64ICC', 'opteronICC', 'core2ICC', 'nehalemICC', 'snbICC']:
-        if not config.CheckLib('svml'):
+        if not config.CheckLib('svml', language='c++'):
             print "SVML should be available when using intelc. Consider runnning scons --config=force!"
 
     env = config.Finish()
