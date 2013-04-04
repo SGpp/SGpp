@@ -23,7 +23,7 @@ namespace base
 /**
  * enum to address different gridtypes in a standardized way
  *
- * @TODO: use this also for unserialization!
+ * @todo: use this also for unserialization!
  */
 enum GridType {
    Linear,
@@ -161,6 +161,7 @@ public:
 	 * creates a mod-Bspline grid
 	 *
 	 * @param dim the grid's dimension
+	 * @param degree the polynom's max. degree
 	 */
 	static Grid* createModBsplineGrid(size_t dim, size_t degree);
 
@@ -171,11 +172,6 @@ public:
 	 */
 	static Grid* createPrewaveletGrid(size_t dim);
 
-	/**
-	 * reads a grid out of a string
-	 *
-	 * @param istr string that contains the grid information
-	 */
 	/**
 	 * creates a square root grid(h-grid)
 	 * @param dim the grid's dimension
@@ -269,7 +265,7 @@ public:
 	/**
 	 * Returns a string that identifies the grid type uniquely
 	 *
-	 * @TODO use enum instead!!
+	 * @todo use enum instead!!
 	 *
 	 * @return string that identifies the grid type uniquely
 	 */
