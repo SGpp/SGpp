@@ -182,7 +182,7 @@ public:
 			}
 
 			//Special treatment for last index
-			size_t last = (1 << level) - 1;
+			index_type last = (1 << static_cast<index_type>(level)) - 1;
 			index.set(dim, level, last);
 			_seq = index.seq();
 			_val = storage->end(_seq) ? 0.0 : source[_seq];
