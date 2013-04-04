@@ -19,6 +19,8 @@ namespace datadriven
 					   const bool isVerbose) :
     LearnerBase(isRegression, isVerbose), CMode_(regularization)
   {
+    this->withPrior = true;
+    this->nrClasses = 0;
   }
   
   LearnerDensityBased::~LearnerDensityBased()
@@ -43,8 +45,11 @@ namespace datadriven
     return NULL;
   }
   
-  void LearnerDensityBased::InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig, size_t nrClasses)
+  void LearnerDensityBased::InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig)
   {
+    if(this->nrClasses == 0) {
+      throw base::application_exception("LearnerDensityBased::InitializeGrid: Number of classes not set!");
+    }
 
     if(!gridVec_.empty()) {
       for(size_t i = 0; i < gridVec_.size(); i++)
@@ -104,8 +109,7 @@ LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
 		const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 		const sg::solver::SLESolverConfiguration& SolverConfigFinal,
 		const sg::base::AdpativityConfiguration& AdaptConfig,
-		const bool testAccDuringAdapt, const double lambda, 
-		bool usePrior)
+		const bool testAccDuringAdapt, const double lambda)
 {
 	LearnerTiming result;
 
@@ -186,7 +190,7 @@ LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
 		class_indeces[(*it).first] = index;
 		index_to_class_.insert(std::pair<int, double>(index, (*it).first));
 		//compute prior
-		if(usePrior) {
+		if(this->withPrior) {
 		  prior.push_back((*it).second/(double)classes.getSize());
 		} else {
 		  prior.push_back(1.);
@@ -213,7 +217,9 @@ LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
 	if (isTrained_ == true)
 	  isTrained_ = false;
 
-	InitializeGrid(GridConfig, class_indeces.size());
+	setNrClasses(class_indeces.size());
+	InitializeGrid(GridConfig);
+	
 
 	// check if grids were created
 	if (gridVec_.size() != class_indeces.size())
