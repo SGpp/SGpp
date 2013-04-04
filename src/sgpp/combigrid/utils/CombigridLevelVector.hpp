@@ -58,12 +58,12 @@ public:
 
 	/** Returns the dimensionality of the grids*/
 	int getDim() const {
-		return levelVec_[0].size();
+		return int( levelVec_[0].size() );
 	}
 
 	/** Returns the number of full grids */
 	int getN() const {
-		return levelVec_.size();
+		return int( levelVec_.size() );
 	}
 
 	CombigridLevelVector& operator=(const CombigridLevelVector & rhs);
