@@ -14,7 +14,7 @@ namespace combigrid {
 
 /**Levelvector allowing computations done in hegland.2003.adaptive equation (16)
  * for the computation of required grid to create a valid combination solution.
- * Represents the P_\alpha in that paper. It is thus also including the respective
+ * Represents the P_alpha in that paper. It is thus also including the respective
  * coefficient of the full grid level vector. */
 class CombigridLevelVector {
 public:
