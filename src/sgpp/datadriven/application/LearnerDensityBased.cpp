@@ -82,7 +82,7 @@ namespace datadriven
       
       // Generate regular Grid with LEVELS Levels
       sg::base::GridGenerator* myGenerator = gridVec_[i]->createGridGenerator();
-      myGenerator->regular(static_cast<int>(GridConfig.level_));
+      myGenerator->regular(GridConfig.level_);
       delete myGenerator;
       
       // Create alpha
