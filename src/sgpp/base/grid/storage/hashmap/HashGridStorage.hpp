@@ -349,7 +349,7 @@ public:
 				 */
 				for (size_t i = 0; i < DIM; i++)
 				{
-					str1d = stretching->getStretching1D(i);
+					str1d = stretching->getStretching1D(static_cast<int>(i) );
 					if(str1d.type == "id"){
 						stretchingType =1;
 					}
@@ -586,7 +586,7 @@ public:
 	unsigned int store(index_pointer index)
 	{
 		list.push_back(index);
-		return (map[index] = this->seq() - 1);
+		return (map[index] = static_cast<unsigned int>(this->seq() - 1));
 	}
 
 	/**
@@ -962,7 +962,7 @@ public:
 					mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
 					offset.set(i, current_dim, 2.0);
 				}
-				else if (curIndex == ((1<<curLevel)-1))
+				else if (curIndex == static_cast<typename index_type::level_type>( ( (1<<curLevel) -1) ) )
 				{
 					level.set(i, current_dim, static_cast<double>(1<<curLevel));
 					index.set(i, current_dim, static_cast<double>(curIndex));
@@ -1021,7 +1021,7 @@ public:
 					mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
 					offset.set(i, current_dim, 2.0f);
 				}
-				else if (curIndex == ((1<<curLevel)-1))
+				else if (curIndex == static_cast<typename index_type::level_type>(((1<<curLevel)-1)))
 				{
 					level.set(i, current_dim, static_cast<float>(1<<curLevel));
 					index.set(i, current_dim, static_cast<float>(curIndex));
@@ -1208,7 +1208,7 @@ private:
 				for (size_t i = 0; i < DIM; i++)
 				{
 					istream >> discreteLevel;
-					vectorLength = pow(2.0,discreteLevel)+1;
+					vectorLength = static_cast<int>(pow(2.0,discreteLevel))+1;
 					vec[i]= std::vector<double>(vectorLength,0);
 					for(int j=0; j<vectorLength;j++){
 						istream >> vec[i][j];
