@@ -201,13 +201,13 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
 
 				// The index cast to int is required to allow a negative index
 				int target_left = (1.0 / (1 << target_level))
-						* static_cast<double> (target_index - 3);
+						* static_cast<double> (static_cast<int>(target_index) - 3);
 				int target_right = (1.0 / (1 << target_level))
-						* static_cast<double> (target_index + 3);
+						* static_cast<double> (static_cast<int>(target_index) + 3);
 				int current_left = (1.0 / (1 << current_index))
-						* static_cast<double> (current_level + 3);
+						* static_cast<double> (static_cast<int>(current_level) + 3);
 				int current_right = (1.0 / (1 << current_index))
-						* static_cast<double> (current_level + 3);
+						* static_cast<double> (static_cast<int>(current_level) + 3);
 
 				if (!(current_right > target_left || current_left
 						< target_right))
