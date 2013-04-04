@@ -211,7 +211,8 @@ namespace base
 
       size_t mydim = storage->dim();
       index.setLeaf(true);
-      trunc_rec(storage, index, (mydim - 1), mydim*k, (level + k*(mydim - 1)),k);
+      trunc_rec(storage, index, (mydim - 1), static_cast<level_t>(mydim*k),
+    		  static_cast<level_t>(level + k*(mydim - 1)), k);
     }
 
   protected:
@@ -365,7 +366,7 @@ namespace base
 	  for (size_t g = 0; g < grid_size; g++)
 	    {
 	      // add missing Level 1
-	      level_t level_sum = (storage->dim()-1) - d;
+	      level_t level_sum = static_cast<level_t>((storage->dim()-1) - d);
 	      bool has_level_zero = false;
 	      index_type idx(storage->get(g));
 

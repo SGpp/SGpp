@@ -43,7 +43,7 @@ void TruncatedTrapezoidGridGenerator::truncated(int level,size_t l_user)
 	   throw generation_exception("Grid level value is negative");
 	}
 	HashGenerator gen;
-	gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level),l_user);
+	gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level), static_cast<int>(l_user));
 }
 
 //void BoundaryGridGenerator::refine(RefinementFunctor* func)
