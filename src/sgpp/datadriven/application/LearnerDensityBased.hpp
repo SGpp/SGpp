@@ -77,13 +77,15 @@ public:
 	 * @param lambda regularization parameter lambda
 	 * @param usePrior use prior information for prediction (Bayes)
 	 */
-	LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
+	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
 				    bool testAccDuringAdapt, const double lambda, bool usePrior = true);
+
+
 	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 	/// construct system matrix
-        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+  virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
 
   /**
    * Returns the execution time

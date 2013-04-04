@@ -86,16 +86,16 @@ namespace datadriven
     }
 }
 
-LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
-		sg::base::DataVector& classes,
-		const sg::base::RegularGridConfiguration& GridConfig,
-		const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-		const sg::solver::SLESolverConfiguration& SolverConfigFinal,
-		const sg::base::AdpativityConfiguration& AdaptConfig,
-		const bool testAccDuringAdapt, const double lambda)
-{
-  return train(trainDataset, classes, GridConfig, SolverConfigRefine, SolverConfigFinal, AdaptConfig, testAccDuringAdapt, lambda, true);
-}
+// LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
+// 		sg::base::DataVector& classes,
+// 		const sg::base::RegularGridConfiguration& GridConfig,
+// 		const sg::solver::SLESolverConfiguration& SolverConfigRefine,
+// 		const sg::solver::SLESolverConfiguration& SolverConfigFinal,
+// 		const sg::base::AdpativityConfiguration& AdaptConfig,
+// 		const bool testAccDuringAdapt, const double lambda)
+// {
+//   return train(trainDataset, classes, GridConfig, SolverConfigRefine, SolverConfigFinal, AdaptConfig, testAccDuringAdapt, lambda, true);
+// }
 
 
 LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
