@@ -25,7 +25,6 @@ namespace finance
  * to improve the use of spatially adaptive grids and to reduce the
  * calculation effort for higher dimensional cases.
  *
- * @revision HEAD
  */
 class BlackScholesPATParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries
 {
@@ -53,7 +52,7 @@ protected:
 	/// refine mode during solving Black Scholes Equation: classic or maxLevel
 	std::string refineMode;
 	/// maxLevel max. Level of refinement
-	size_t refineMaxLevel;
+	sg::base::GridIndex::level_type refineMaxLevel;
 	/// the algorithmic dimensions used in this system
 	std::vector<size_t> BSalgoDims;
 	/// Routine to modify the boundaries/inner points of the grid
@@ -87,7 +86,7 @@ public:
 			sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
 			double dStrike, std::string option_type,
 			bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode ="none",
-			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", size_t refineMaxLevel = 0);
+			int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
 
 	/**
 	 * Std-Destructor
@@ -96,6 +95,9 @@ public:
 
 	virtual void finishTimestep();
 
+	/*
+	 * @ param isLastTimestep specify if last timestep
+	 */
 	virtual void coarsenAndRefine(bool isLastTimestep = false);
 
 	virtual void startTimestep();
