@@ -68,8 +68,8 @@ void OperationMatrixLTwoExplicitFullGrid::buildMatrix(
 void OperationMatrixLTwoExplicitFullGrid::mult(sg::base::DataVector& alpha,
 		sg::base::DataVector& result) {
 
-	unsigned int nrows( m_->getNrows() );
-	unsigned int ncols( m_->getNcols() );
+	unsigned int nrows( static_cast<unsigned int>( m_->getNrows() ) );
+	unsigned int ncols( static_cast<unsigned int>( m_->getNcols() ) );
 
 	if (alpha.getSize() != ncols || result.getSize() != nrows) {
 		throw sg::base::data_exception("Dimensions do not match!");
