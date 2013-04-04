@@ -51,7 +51,7 @@ struct RegularGridConfiguration
 	/// number of dimensions
 	size_t dim_;
 	/// number of levels
-	size_t level_;
+	int level_;
 };
 
 /**
