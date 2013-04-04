@@ -26,6 +26,7 @@ public:
 	 * Constructor
 	 *
 	 * @param storage the grid's GridStorage object
+	 * @param dataset data
 	 */
 	OperationMultipleEvalModWavelet(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
 		this->storage = storage;
