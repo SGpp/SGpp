@@ -38,7 +38,7 @@ class ModifiedBsplineBasis
         double BoundaryBSpline(double x, size_t p, int level){
             double y=0;
             for(size_t k=0; k <= (p+1)/2; k++)
-                y=y+(k+1)*UniformBSpline(x*(1<<level)+(p-1)/2+k,p);
+                y=y+static_cast<double>(k+1)*UniformBSpline(x*(1<<level)+static_cast<double>(p-1)/2+static_cast<double>(k),p);
             return y;
         }
 
@@ -50,7 +50,8 @@ class ModifiedBsplineBasis
               else
                 return 0;
             }
-            return (x/p)*UniformBSpline(x,p-1)+ ((p+1-x)/p)*UniformBSpline(x-1,p-1);
+            double p_double = static_cast<double>(p);
+            return (x/p_double)*UniformBSpline(x,p-1)+ ((p_double+1-x)/p_double)*UniformBSpline(x-1,p-1);
 
         }
 
@@ -71,7 +72,7 @@ class ModifiedBsplineBasis
                 return BoundaryBSpline(p,this->degree,level);
             }
             //std::cout<<UniformBSpline(p*(1<<level)+(this->degree+1)/2-index,this->degree)<<std::endl;
-            return UniformBSpline(p*(1<<level)+(this->degree+1)/2-index,this->degree);
+            return UniformBSpline(p*(1<<level)+static_cast<double>(this->degree+1)/2-index, this->degree);
         }
 
 };
