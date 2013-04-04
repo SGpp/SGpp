@@ -228,7 +228,6 @@ namespace std {
 
 %include "src/sgpp/combigrid/utils/combigrid_ultils.hpp"
 %include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"  
-%include "src/sgpp/combigrid/utils/L2ScalarProduct.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
 %include "src/sgpp/combigrid/domain/AbstractStretchingMaker.hpp"
