@@ -139,7 +139,6 @@ class TestDataVector(unittest.TestCase):
 
     ##
     # Vector-Operations
-    # @test DataVector::dotProduct(DataVector &vec)
     def testDotProduct(self):
         from pysgpp import DataVector
         
