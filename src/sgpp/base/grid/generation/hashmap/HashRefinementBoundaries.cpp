@@ -23,7 +23,7 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage, Refi
   size_t min_idx = 0;
 
   RefinementFunctor::value_type max_value = max_values[min_idx];
-  size_t max_index = max_indexes[min_idx];
+  //size_t max_index = max_indexes[min_idx];
 
   index_type index;
   GridStorage::grid_map_iterator end_iter = storage->end();
