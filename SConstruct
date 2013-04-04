@@ -391,49 +391,49 @@ Export('env')
 lib_sgpp_targets = []
 
 if env['SG_BASE']:
-	SConscript('src/sgpp/SConscriptBase', build_dir='tmp/build_sgbase', duplicate=0)
+	SConscript('src/sgpp/SConscriptBase', variant_dir='tmp/build_sgbase', duplicate=0)
 	Import('libsgppbase')
 	Import('libsgppbasestatic')
 	lib_sgpp_targets.append(libsgppbase)
 	lib_sgpp_targets.append(libsgppbasestatic)
 	
 if env['SG_PDE']:
-	SConscript('src/sgpp/SConscriptPde', build_dir='tmp/build_sgpde', duplicate=0)
+	SConscript('src/sgpp/SConscriptPde', variant_dir='tmp/build_sgpde', duplicate=0)
 	Import('libsgpppde')
 	Import('libsgpppdestatic')
 	lib_sgpp_targets.append(libsgpppde)
 	lib_sgpp_targets.append(libsgpppdestatic)
 	
 if env['SG_DATADRIVEN']:
-	SConscript('src/sgpp/SConscriptDatadriven', build_dir='tmp/build_sgdatadriven', duplicate=0)
+	SConscript('src/sgpp/SConscriptDatadriven', variant_dir='tmp/build_sgdatadriven', duplicate=0)
 	Import('libsgppdatadriven')
 	Import('libsgppdatadrivenstatic')
 	lib_sgpp_targets.append(libsgppdatadriven)
 	lib_sgpp_targets.append(libsgppdatadrivenstatic)
 	
 if env['SG_SOLVER']:
-	SConscript('src/sgpp/SConscriptSolver', build_dir='tmp/build_sgsolver', duplicate=0)
+	SConscript('src/sgpp/SConscriptSolver', variant_dir='tmp/build_sgsolver', duplicate=0)
 	Import('libsgppsolver')
 	Import('libsgppsolverstatic')
 	lib_sgpp_targets.append(libsgppsolver)
 	lib_sgpp_targets.append(libsgppsolverstatic)
 	
 if env['SG_FINANCE']:
-	SConscript('src/sgpp/SConscriptFinance', build_dir='tmp/build_sgfinance', duplicate=0)
+	SConscript('src/sgpp/SConscriptFinance', variant_dir='tmp/build_sgfinance', duplicate=0)
 	Import('libsgppfinance')
 	Import('libsgppfinancestatic')
 	lib_sgpp_targets.append(libsgppfinance)
 	lib_sgpp_targets.append(libsgppfinancestatic)
 	
 if env['SG_PARALLEL']:
-	SConscript('src/sgpp/SConscriptParallel', build_dir='tmp/build_sgparallel', duplicate=0)
+	SConscript('src/sgpp/SConscriptParallel', variant_dir='tmp/build_sgparallel', duplicate=0)
 	Import('libsgppparallel')
 	Import('libsgppparallelstatic')
 	lib_sgpp_targets.append(libsgppparallel)
 	lib_sgpp_targets.append(libsgppparallelstatic)
 
 if env['SG_COMBIGRID']:
-	SConscript('src/sgpp/SConscriptCombigrid', build_dir='tmp/build_sgcombigrid', duplicate=0)
+	SConscript('src/sgpp/SConscriptCombigrid', variant_dir='tmp/build_sgcombigrid', duplicate=0)
 	Import('libsgppcombigrid')
 	Import('libsgppcombigridstatic')
 	lib_sgpp_targets.append(libsgppcombigrid)
@@ -441,7 +441,7 @@ if env['SG_COMBIGRID']:
 
 # build python lib
 if env['SG_PYTHON'] and swigAvail and pyAvail:
-	libpysgpp = SConscript('src/pysgpp/SConscript', build_dir='tmp/build_pysgpp', duplicate=0)
+	libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
 	pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
 	Depends(pyinst, libpysgpp)
 	pybin = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
@@ -450,9 +450,9 @@ if env['SG_PYTHON'] and swigAvail and pyAvail:
 # build java lib
 if swigAvail and javaAvail and env['SG_JAVA']:
     libjsgpp = env.SConscript('src/jsgpp/SConscript',
-                              build_dir='tmp/build_jsgpp', duplicate=0)
+                              variant_dir='tmp/build_jsgpp', duplicate=0)
 #    libweka = env.SConscript('src/jsgpp_weka/SConscript',
-#                             build_dir='tmp/build_jsgpp_weka', duplicate=0)
+#                             variant_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
     jinst = env.Install('lib/jsgpp', [libjsgpp])
 	
