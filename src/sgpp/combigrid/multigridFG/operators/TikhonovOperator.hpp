@@ -21,6 +21,7 @@ public:
 	/** Ctor for a Tikhonov regularization problem (operator) on a given full grid
 	 * @param fg the full grid on which this problem should be set up
 	 * @param nrInputPoints nmber of input (e.g. Monte-Carlo) points
+	 * @param lambda lambda parameter
 	 * @param xCoords the coordinates of the input points for the regression (e.g. Monte-Carlo points). <br>
 	 *        the length of the vector is nrInputPoints*dimension , the small index is the dimension
 	 * @param yCoords the points values at the specified coordinates, the vector length is nrInputPoints */
