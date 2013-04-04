@@ -44,7 +44,24 @@ public:
    * @param GridConfig grid config
    * @param nrClasses number of classes
    */
-  void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig, size_t nrClasses);
+  virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig, size_t nrClasses);
+
+  	/**
+	 * Learning a dataset with spatially adaptive sparse grids
+	 *
+	 * @param testDataset the training dataset
+	 * @param classes classes corresponding to the training dataset
+	 * @param GridConfig configuration of the regular start grid
+	 * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of the grid
+	 * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
+	 * @param AdaptConfig configuration of the adaptivity strategy
+	 * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
+	 * @param lambda regularization parameter lambda
+	 */
+	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
+			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
+			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
+				    bool testAccDuringAdapt, const double lambda);
 
 
 	/**
@@ -60,7 +77,7 @@ public:
 	 * @param lambda regularization parameter lambda
 	 * @param usePrior use prior information for prediction (Bayes)
 	 */
-	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
+	LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
 			const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
 			const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
 				    bool testAccDuringAdapt, const double lambda, bool usePrior = true);
