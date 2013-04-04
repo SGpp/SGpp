@@ -70,7 +70,7 @@ namespace datadriven
 
 		size_t num_dims = this->grid->getStorage()->dim();
 
-		if ((dim_x < 0) || (dim_x >= num_dims))
+		if ((dim_x >= num_dims))
 			throw base::operation_exception("Error: starting dimension out of range. Operation aborted!");
 
 		//output matrix
@@ -112,7 +112,7 @@ namespace datadriven
 
 		size_t dims = sampleVec->getSize(); // total dimensions
 
-		if ((dims > 1) && (dim_start >= 0) && (dim_start <= dims-1)) {
+		if ((dims > 1) && (dim_start <= dims-1)) {
 			size_t curr_dim = dim_start;
 			doSampling_in_next_dim(g_in, a_in, dim_start, sampleVec, curr_dim);
 		} else if (dims == 1) {

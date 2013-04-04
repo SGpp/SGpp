@@ -19,7 +19,7 @@ namespace datadriven
 		size_t dims = this->grid->getStorage()->dim();
 		size_t count = 0;
 
-		if ((dims > 1) && (dim_x >= 0) && (dim_x <= dims-1))
+		if ((dims > 1) && (dim_x <= dims-1))
 			marg_next_dim(this->grid, alpha, grid_x, alpha_x, dims, dim_x, count);
 		else if (dims <= 1)
 			throw base::operation_exception("Error: grid dimension is not greater than one. Operation aborted!");
