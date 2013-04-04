@@ -421,9 +421,6 @@ if swigAvail and javaAvail and env['SG_JAVA']:
 	
 env.Install('#lib/sgpp', lib_sgpp_targets)
 
-print env['LD_LIBRARY_PATH']
-
-
 # Unit tests
 #########################################################################
 
