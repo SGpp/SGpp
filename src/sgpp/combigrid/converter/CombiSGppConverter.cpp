@@ -46,7 +46,7 @@ void combigrid::CombiSGppConverter::createSGpp( sg::base::GridStorage* storage ,
 				storage->insert( (*hgi) );
 				//COMBIGRID_OUT_LEVEL3(4 , "createSGpp  add point nrp:" << nrp << " , sgppIndex:" << sgppIndex);
 			}
-			sgppIndex = (*storage)[hgi];
+			sgppIndex = static_cast<int>((*storage)[hgi]);
 			fg->getSGppIndex()[nrp] = sgppIndex;
 		}
 	}
@@ -211,7 +211,7 @@ void combigrid::CombiSGppConverter::SGppToFullGrid( sg::base::GridStorage* stora
 			// rehash for this index
 			hgi->rehash();
 			//todo: we do not test if this is present in the hashmap
-			sgppIndex = (*storage)[hgi];
+			sgppIndex = static_cast<int>((*storage)[hgi]);
 			fg->getElementVector()[nrp] = (*alpha)[sgppIndex];
 			fg->getSGppIndex()[nrp] = sgppIndex;
 		}
