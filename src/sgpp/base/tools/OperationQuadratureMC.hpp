@@ -75,7 +75,7 @@ protected:
   // Pointer to the grid object
   sg::base::Grid* grid;
   // Number of MC paths
-  int mcPaths;
+  size_t mcPaths;
 };
 
 }

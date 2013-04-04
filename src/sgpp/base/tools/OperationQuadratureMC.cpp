@@ -26,11 +26,11 @@ namespace base
 
 double OperationQuadratureMC::doQuadrature(DataVector& alpha)
 {
-  int dim = grid->getStorage()->dim();
+  size_t dim = grid->getStorage()->dim();
   // create number of paths (uniformly drawn from [0,1]^d)
   DataMatrix dm(mcPaths, dim);
-  for (int i=0; i<mcPaths; i++) {
-    for (int d=0; d<dim; d++) {
+  for (size_t i=0; i<mcPaths; i++) {
+    for (size_t d=0; d<dim; d++) {
       dm.set(i, d, static_cast<double>(rand())/RAND_MAX);
     }
   }
@@ -42,16 +42,16 @@ double OperationQuadratureMC::doQuadrature(DataVector& alpha)
 
 double OperationQuadratureMC::doQuadratureFunc(FUNC func, void *clientdata)
 {
-  int dim = grid->getStorage()->dim();
+  size_t dim = grid->getStorage()->dim();
   double* p = new double[dim];
   
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
-  for (int i=0; i<mcPaths; i++) {
-    for (int d=0; d<dim; d++) {
+  for (size_t i=0; i<mcPaths; i++) {
+    for (size_t d=0; d<dim; d++) {
       p[d] = static_cast<double>(rand())/RAND_MAX;
     }
-    res += func(dim, p, clientdata);
+    res += func(static_cast<int>(dim), p, clientdata);
   }
   delete p;
   return res / static_cast<double>(mcPaths);
@@ -59,7 +59,7 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void *clientdata)
 
 double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void *clientdata, DataVector& alpha)
 {
-  int dim = grid->getStorage()->dim();
+  size_t dim = grid->getStorage()->dim();
   double x;
   double* p = new double[dim];
 
@@ -67,13 +67,13 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void *clientdata, D
   OperationEval* opEval = sg::op_factory::createOperationEval(*grid);  
   // create number of paths (uniformly drawn from [0,1]^d)
   double res = 0;
-  for (int i=0; i<mcPaths; i++) {
-    for (int d=0; d<dim; d++) {
+  for (size_t i=0; i<mcPaths; i++) {
+    for (size_t d=0; d<dim; d++) {
       x = static_cast<double>(rand())/RAND_MAX;
       p[d] = x;
       point[d] = x;
     }
-    res += pow(func(dim, p, clientdata) - opEval->eval(alpha, point), 2);
+    res += pow(func(static_cast<int>(dim), p, clientdata) - opEval->eval(alpha, point), 2);
   }
   delete p;
   return sqrt(res / static_cast<double>(mcPaths));
