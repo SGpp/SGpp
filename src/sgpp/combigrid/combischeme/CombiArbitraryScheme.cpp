@@ -9,7 +9,7 @@
 
 combigrid::CombiArbitraryScheme::CombiArbitraryScheme(std::vector<std::vector<
 		int> > level_vectors) :
-	combigrid::CombiSchemeBasis(level_vectors[0].size(), level_vectors[0]) {
+	combigrid::CombiSchemeBasis(static_cast<int>(level_vectors[0].size()), level_vectors[0]) {
 	combigrid::CombigridLevelVector buffer =
 			combigrid::CombigridLevelVector::getCombiLevels(level_vectors);
 	levels_vector_ = buffer.getLevelVec();

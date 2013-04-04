@@ -106,7 +106,7 @@ void combigrid::S_CT::init( std::vector< int >& levels , std::vector< double >& 
 	for (int d = 0 ; d < dim_ ; d++ )
 	{
 			combi = combigrid::combination( dim_-1 , d );
-			int oldsize = levels_vector_.size();
+			int oldsize = static_cast<int>(levels_vector_.size());
 			if ( d%2 != 0 ) combi=-combi;
 			// call the recursive function to add the spaces
 			getTrapezoidsums( v , dim_ , n-d , ratio_ , l_user_);
