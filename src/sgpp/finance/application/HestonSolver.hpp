@@ -224,7 +224,7 @@ public:
 	 * Concrete implementation of the Crank-Nicholson solver. Optional use of implicit euler as a 'kickstart'.
 	 *
 	 * @param numTimesteps the number of timesteps to use. The product of this and the timestepsize parameter must be equal to the maturity T.
-	 * @param timestepSize size of the timestep to take. Assumed constant.
+	 * @param timestepsize size of the timestep to take. Assumed constant.
 	 * @param maxCGIterations the maximum number of iterations to be undertaken by the CG algorithm before aborting.
 	 * @param epsilonCG residual value below which the CG iterative process stops
 	 * @param alpha coefficients of the sparse grid basis functions
