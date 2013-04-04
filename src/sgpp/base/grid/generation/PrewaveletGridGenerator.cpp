@@ -1,24 +1,9 @@
-/*****************************************************************************/
-/* This file is part of sgpp, a program package making use of spatially      */
-/* adaptive sparse grids to solve numerical problems                         */
-/*                                                                           */
-/* Copyright (C) 2010 Richard Röttger                                        */
-/*                                                                           */
-/* sgpp is free software; you can redistribute it and/or modify              */
-/* it under the terms of the GNU Lesser General Public License as published  */
-/* by the Free Software Foundation; either version 3 of the License, or      */
-/* (at your option) any later version.                                       */
-/*                                                                           */
-/* sgpp is distributed in the hope that it will be useful,                   */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
-/* GNU Lesser General Public License for more details.                       */
-/*                                                                           */
-/* You should have received a copy of the GNU Lesser General Public License  */
-/* along with sgpp; if not, write to the Free Software                       */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
-/* or see <http://www.gnu.org/licenses/>.                                    */
-/*****************************************************************************/
+/* ****************************************************************************
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Richard Röttger
 
 #include "base/grid/generation/PrewaveletGridGenerator.hpp"
 #include "base/grid/GridStorage.hpp"
@@ -113,9 +98,6 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePoints()
 	return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-/**
- * This function ensures that the special adaptive prewavelet grid points have parents.
- */
 void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
 		GridStorage::grid_iterator& shadowIter)
 {
@@ -156,13 +138,6 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
 	}
 }
 
-/**
- * For the shadow storage, the two left and two right neighbors in each
- * dimension of the refined point are required. This function only adds
- * the point which are not in the actual grid to the shadow storage.
- *
- * @param index point added during refinement
- */
 void PrewaveletGridGenerator::addNeighbours(index_type& index,
 		size_t current_dim, level_t target_level,
 		GridStorage::grid_iterator& iter,
