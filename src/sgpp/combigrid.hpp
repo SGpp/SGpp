@@ -14,7 +14,6 @@
 #include "base/grid/GridStorage.hpp"
 
 // ----------- Combi Grid Includes ----------
-#include "combigrid/utils/L2ScalarProduct.hpp"
 #include "combigrid/combigrid/AbstractCombiGrid.hpp"
 #include "combigrid/combigrid/SerialCombiGrid.hpp"
 #include "combigrid/combigrid/AdaptiveSerialCombiGrid.hpp"
