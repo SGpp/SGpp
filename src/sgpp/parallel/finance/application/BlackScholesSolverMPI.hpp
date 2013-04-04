@@ -123,7 +123,7 @@ protected:
 	 * The grid is initialized based on Cartesian coordinates!
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
@@ -133,7 +133,7 @@ protected:
 	 * The grid is initialized based on log-transformed coordinates!
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
@@ -143,7 +143,7 @@ protected:
 	 * The grid is initialized based on log-transformed and a principal axis transformation coordinates!
 	 *
 	 * @param alpha the coefficient vector of the grid's ansatzfunctions
-	 * @param strik the option's strike
+	 * @param strike the option's strike
 	 * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
 	 */
 	virtual void initPATTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
@@ -156,8 +156,8 @@ protected:
 	 * This method is overwritten in order to support grids with logarithmic coordinates.
 	 *
 	 * @param alpha contains dehierarchized sparse grid coefficients containing the values of the multi dimensional normal distribution after call
-	 * @param std_mu the expected values of the normal distribution for every grid dimension
-	 * @param std_sigma the standard deviation of the normal distribution for every grid dimension
+	 * @param norm_mu the expected values of the normal distribution for every grid dimension
+	 * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
 	 */
 	virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
