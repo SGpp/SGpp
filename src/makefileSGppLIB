@@ -347,7 +347,7 @@ OBJS =	DataVector.o\
 	OperationDensityConditionalLinear.o\
 	DMVectorizationPaddingAssistant.o\
 	OperationMatrixLTwoDotExplicitLinear.o\
-	OperationMatrixLTwoDotExplicitLinearBoundary.o
+	OperationMatrixLTwoDotExplicitLinearBoundary.o\
 	LaplaceDownGradientPrewavelet.o\
 	LaplaceUpGradientPrewavelet.o\
 	LaplaceUpPrewavelet.o
@@ -1621,6 +1621,15 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/fi
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
+
+LaplaceDownGradientPrewavelet.o :  $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceDownGradientPrewavelet.o $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
+
+LaplaceUpGradientPrewavelet.o :  $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceUpGradientPrewavelet.o $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.cpp
+
+LaplaceUpPrewavelet.o :  $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceUpPrewavelet.o $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
 		
 clean:
 	rm *
