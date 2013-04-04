@@ -37,6 +37,9 @@ public:
 	 * Constructor, must be bind to a grid
 	 *
 	 * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
+	 * @param surplusStencil stencil for surplus
+	 * @param neighborStencil stencil for neighbors
+	 * @param weightStencil weighted stencil
 	 */
 	StencilDehierarchisationModLinear(GridStorage* storage,
 			OperationStencilHierarchisation::IndexStencil& surplusStencil,
