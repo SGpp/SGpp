@@ -65,9 +65,9 @@ public:
 	 */
 	virtual ~HeatEquationSolverWithStretching();
 
-	void constructGrid(sg::base::Stretching& myStretching, size_t level);
+	void constructGrid(sg::base::Stretching& myStretching, int level);
 
-	void constructGrid(sg::base::BoundingBox& myStretching, size_t level);
+	void constructGrid(sg::base::BoundingBox& myStretching, int level);
 
 	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 

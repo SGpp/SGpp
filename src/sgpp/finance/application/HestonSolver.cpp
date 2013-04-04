@@ -93,7 +93,7 @@ HestonSolver::~HestonSolver()
 	}
 }
 
-void HestonSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
+void HestonSolver::constructGrid(BoundingBox& BoundingBox, int level)
 {
 	this->dim = BoundingBox.getDimensions();
 
@@ -1000,7 +1000,7 @@ void HestonSolver::CompareHestonBs1d(double maturity, double v)
 		throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
 
 	size_t dim1d = 1;
-	size_t levels1d = this->levels;
+	int levels1d = this->levels;
 
 	// Build a new 1d grid for stock price
 	DimensionBoundary* boundaries1d = new sg::base::DimensionBoundary[dim1d];

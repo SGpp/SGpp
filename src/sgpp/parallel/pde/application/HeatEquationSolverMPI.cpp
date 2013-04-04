@@ -38,7 +38,7 @@ HeatEquationSolverMPI::~HeatEquationSolverMPI()
 	}
 }
 
-void HeatEquationSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, size_t level)
+void HeatEquationSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, int level)
 {
 	this->dim = BoundingBox.getDimensions();
 	this->levels = level;

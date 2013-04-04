@@ -82,7 +82,7 @@ public:
 	 */
 	virtual ~HullWhiteSolver();
 
-	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	void setStochasticData(double theta, double sigma, double a);
 

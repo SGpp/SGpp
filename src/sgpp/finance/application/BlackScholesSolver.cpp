@@ -151,7 +151,7 @@ namespace finance
       }
   }
 
-  void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
+  void BlackScholesSolver::constructGrid(BoundingBox& BoundingBox, int level)
   {
     this->dim = BoundingBox.getDimensions();
     this->levels = level;

@@ -130,7 +130,7 @@ void BlackScholesSolverMPI::getGridNormalDistribution(sg::base::DataVector& alph
 	}
 }
 
-void BlackScholesSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, size_t level)
+void BlackScholesSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, int level)
 {
 	this->dim = BoundingBox.getDimensions();
 	this->levels = level;

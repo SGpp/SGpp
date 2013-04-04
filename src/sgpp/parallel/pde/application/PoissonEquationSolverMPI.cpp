@@ -38,7 +38,7 @@ PoissonEquationSolverMPI::~PoissonEquationSolverMPI()
 	}
 }
 
-void PoissonEquationSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, size_t level)
+void PoissonEquationSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, int level)
 {
 	this->dim = BoundingBox.getDimensions();
 	this->levels = level;

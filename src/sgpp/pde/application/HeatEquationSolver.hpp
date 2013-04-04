@@ -58,7 +58,7 @@ public:
 	 */
 	virtual ~HeatEquationSolver();
 
-	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 

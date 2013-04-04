@@ -175,7 +175,7 @@ public:
 	 */
 	virtual ~BlackScholesSolverMPI();
 
-	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	/**
 	 * In order to solve the multi dimensional Black Scholes Equation you have to provided

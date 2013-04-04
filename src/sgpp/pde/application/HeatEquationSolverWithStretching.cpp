@@ -30,7 +30,7 @@ HeatEquationSolverWithStretching::~HeatEquationSolverWithStretching()
 	}
 }
 
-void HeatEquationSolverWithStretching::constructGrid(Stretching& stretching, size_t level)
+void HeatEquationSolverWithStretching::constructGrid(Stretching& stretching, int level)
 {
 	this->dim = stretching.getDimensions();
 	this->levels = level;
@@ -47,7 +47,7 @@ void HeatEquationSolverWithStretching::constructGrid(Stretching& stretching, siz
 	this->bGridConstructed = true;
 }
 
-void HeatEquationSolverWithStretching::constructGrid(BoundingBox& BoundingBox, size_t level){
+void HeatEquationSolverWithStretching::constructGrid(BoundingBox& BoundingBox, int level){
 	std::cout<<"I'm not supposed to be here, me is constructGrid\n";
 }
 

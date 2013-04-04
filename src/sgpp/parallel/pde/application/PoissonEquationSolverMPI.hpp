@@ -58,7 +58,7 @@ public:
 	 */
 	virtual ~PoissonEquationSolverMPI();
 
-	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	void solvePDE(sg::base::DataVector& alpha, sg::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false);
 

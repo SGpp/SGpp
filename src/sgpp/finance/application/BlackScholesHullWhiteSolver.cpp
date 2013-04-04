@@ -80,7 +80,7 @@ BlackScholesHullWhiteSolver::~BlackScholesHullWhiteSolver()
 	}
 }
 
-void BlackScholesHullWhiteSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
+void BlackScholesHullWhiteSolver::constructGrid(BoundingBox& BoundingBox, int level)
 {
 	this->dim = BoundingBox.getDimensions();
 	this->levels = level;
