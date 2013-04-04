@@ -28,6 +28,7 @@ public:
 	 *
 	 * @param storage the grid's GridStorage object
 	 * @param degree the polynom's max. degree
+	 * @param dataset Dataset
 	 */
 	OperationMultipleEvalPoly(GridStorage* storage, size_t degree, DataMatrix* dataset) : OperationMultipleEval(dataset), base(degree) {
 		this->storage = storage;

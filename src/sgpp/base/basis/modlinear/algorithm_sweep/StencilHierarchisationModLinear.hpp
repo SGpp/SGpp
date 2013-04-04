@@ -37,7 +37,7 @@ public:
 	 * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
 	 * @param surplusStencil surplus stencil
 	 * @param neighborStencil neighboring stencils
-	 * @param weightedStencil weighted stencil
+	 * @param weightStencil weighted stencil
 	 */
 	StencilHierarchisationModLinear(GridStorage* storage,
 			OperationStencilHierarchisation::IndexStencil& surplusStencil,
