@@ -45,10 +45,11 @@ public:
 
 
 	/**
-         * Refine one grid point along a single direction
-         * @param storage hashmap that stores the grid points
-         * @param index point to refine
-         * @param d direction
+	 * Refine one grid point along a single direction
+	 * @param storage hashmap that stores the grid points
+	 * @param index point to refine
+	 * @param d direction
+	 * @param maxLevel no points on higher levels than maxLevel will be created
          */
 	void refineGridpoint1D(GridStorage * storage, index_type & index,
 	                         size_t d, unsigned int maxLevel);

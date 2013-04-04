@@ -95,7 +95,7 @@ protected:
          */
 	void createGridpoint1D(index_type& index,
 				 size_t d, GridStorage * storage,
-				 index_t& souce_index, level_t& source_level);
+				 index_t& source_index, level_t& source_level);
 
 	/**
          * Examines the grid points and stores the indices those that can be refined

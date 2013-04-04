@@ -37,14 +37,14 @@ public:
 	 * Creates a regular trapezoid boundary grid with given level and l_user=1
 	 * Is the same as the regular trapezoid grid
 	 * */
-	virtual void regular(size_t level);
-        virtual void full(size_t level){};
+	virtual void regular(int level);
+        virtual void full(int level){};
 	/**
 	 * Creates a super trapezoid boundary grid with given level and l_user
 	 * @param level the maximum level of the grid
 	 * @param l_user the number of fullgrids cut off from the boundaries.
 	 * */
-	virtual void truncated(size_t level,size_t l_user);
+	virtual void truncated(int level,size_t l_user);
 	virtual void refine(RefinementFunctor* func){};
 	virtual size_t getNumberOfRefinablePoints(){return 0;};
 
@@ -52,8 +52,8 @@ public:
 	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly){};
 	virtual size_t getNumberOfRemovablePoints(){return 0;};
 
-	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel){};
-	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel){return 0;};
+	virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel){throw generation_exception("refineMaxLevel is not implemented");};
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel){throw generation_exception("getNumberOfRefinablePointsToMaxLevel is not implemented");return 0;};
 
 protected:
 	/// Pointer to the grid's storage object

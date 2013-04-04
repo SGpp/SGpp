@@ -34,8 +34,8 @@ public:
 	 */
 	virtual ~SquareRootGridGenerator();
 
-	virtual void regular(size_t level);
-        virtual void full(size_t level){};
+	virtual void regular(int level);
+        virtual void full(int level){};
 	virtual void refine(RefinementFunctor* func){};
 	virtual size_t getNumberOfRefinablePoints(){return 0;};
 
@@ -43,8 +43,8 @@ public:
 	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly){};
 	virtual size_t getNumberOfRemovablePoints(){return 0;};
 
-	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel){};
-	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel){return 0;};
+	virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel){};
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel){return 0;};
 
 protected:
 	/// Pointer to the grid's storage object

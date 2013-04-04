@@ -29,10 +29,13 @@ SquareRootGridGenerator::~SquareRootGridGenerator()
 {
 }
 
-void SquareRootGridGenerator::regular(size_t level)
+void SquareRootGridGenerator::regular(int level)
 {
+	if (level < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashGenerator gen;
-	gen.squareRoot(this->storage, level);
+	gen.squareRoot(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
 //void BoundaryGridGenerator::refine(RefinementFunctor* func)

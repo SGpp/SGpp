@@ -29,7 +29,15 @@ import_array();
 %}
 //%apply (double** ARGOUTVIEW_ARRAY1, int *DIM1) {(double** vec, int* n)}
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
+//%apply int INPUT {sg::base::HashGenerator::level_t level};
 
+%typemap(in) sg::base::HashGenerator::level_t level{
+    if (PyInt_AsLong($input) < 0) {
+           PyErr_SetString(PyExc_ValueError,"Expected a nonnegative value.");
+           return NULL;
+        }
+	$1 = static_cast<sg::base::HashGenerator::level_t>(PyInt_AsLong($input));
+}
 
 %exception {
   try {
@@ -260,4 +268,8 @@ namespace std {
 //%template(CombiGridKernelC) combigrid::CombiGridKernel< complex<double> >;
 %template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
 //%template(ComplexVector) std::vector< complex<double> >;
+
+//%typemap(in) sg::base::HashGenerator::level_t {
+//  $1 = static_cast<sg::base::HashGenerator::level_t>(PyInt_AsLong($input));
+//}
 #endif
