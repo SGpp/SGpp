@@ -50,7 +50,7 @@ public:
 
 	/** number of subsapces */
 	inline int getNrSapces() const {
-		return levels_vector_.size();
+		return static_cast<int>(levels_vector_.size());
 	}
 
 	/** returns the level vector for one subspace */

@@ -15,7 +15,7 @@ void combigrid::CombiSchemeBasis::removeDuplicates() {
 	size_t j;
 	std::vector<std::vector<int> >::iterator gt = levels_vector_.begin();
 	std::vector<double>::iterator ct = cofficients_.begin();
-	int size_fg = levels_vector_.size();
+	int size_fg = static_cast<int>(levels_vector_.size());
 	while ((int) i < size_fg - 1) {
 		j = i + 1;
 		while ((int) j < size_fg) {
@@ -67,7 +67,7 @@ std::vector<int> combigrid::CombiSchemeBasis::updateScheme(
 		} else {
 			levels_vector_.push_back(levelsNew[i]);
 			cofficients_.push_back(coef[i]);
-			result.push_back(cofficients_.size() - 1);
+			result.push_back(static_cast<int>(cofficients_.size()) - 1);
 		}
 	}
 	return result;

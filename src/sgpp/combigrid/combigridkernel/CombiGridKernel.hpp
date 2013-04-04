@@ -153,7 +153,7 @@ public:
 	}
 
 	/** return the coefficient of one space */
-	int getCoef(int i) const {
+	double getCoef(int i) const {
 		return coefs_[i];
 //		return currentScheme_[0].getCoef(i);
 	}

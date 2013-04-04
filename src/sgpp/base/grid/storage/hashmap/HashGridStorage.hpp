@@ -586,7 +586,7 @@ public:
 	unsigned int store(index_pointer index)
 	{
 		list.push_back(index);
-		return (map[index] = static_cast<unsigned int>(this->seq() - 1));
+		return static_cast<unsigned int>(map[index] = static_cast<unsigned int>(this->seq() - 1));
 	}
 
 	/**
