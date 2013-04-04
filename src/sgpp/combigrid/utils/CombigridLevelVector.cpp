@@ -133,9 +133,12 @@ std::vector<CombigridLevelVector> CombigridLevelVector::split(){
 
 CombigridLevelVector CombigridLevelVector::getCombiLevels(CombigridLevelVector in){
 	in.doAddition();
-	for (int i = 0; i < in.getN(); ++i) {
-		if(in.getCoef()[i]!=1) return NULL;
-	}
+//	for (int i = 0; i < in.getN(); ++i) {
+//		if(in.getCoef()[i]!=1) {
+//			std::cout<<'will return NULL!'<<std::endl;
+//			return NULL;
+//		}
+//	}
 	return getCombiLevels(in.split());
 
 }
