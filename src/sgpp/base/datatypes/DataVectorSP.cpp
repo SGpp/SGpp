@@ -257,9 +257,9 @@ float DataVectorSP::maxNorm() {
     float max = 0.0f;
     for (size_t i = 0; i < size; i++)
     {
-        if (max < fabs(static_cast<float>(data[i])))
+        if (max < static_cast<float>(fabs(data[i])))
         {
-        	max = fabs(static_cast<float>(data[i]));
+        	max = static_cast<float>(fabs(data[i]));
         }
     }
     return max;
