@@ -175,7 +175,7 @@ public:
    * Save database to file. Overwrites existing files
    * without warning! Writes either ASCII (default) or binary format.
    * @param filename name of file
-   * @param type filetype (either ASCII, GridDataBase::asc (default), or binary, GridDataBase::bin)
+   * @param ftype filetype (either ASCII, GridDataBase::asc (default), or binary, GridDataBase::bin)
    */
   void save(std::string filename, char ftype=GridDataBase::ascii);
 
