@@ -144,7 +144,7 @@ public:
 			 //if ((coords[ii]<0.0)||(coords[ii]>1.0)) return 0.0;
 		     // scale to the reference [0,1] interval the intersection point
 			 normcoord = coords[ii] * powerOfTwo[levels_[ii]];
-			 aindex[ii]=floor(normcoord);
+			 aindex[ii]= static_cast<int>( std::floor(normcoord) );
 			 if (hasBoundaryPoints_[ii] == true )
 			 {
 				 aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
