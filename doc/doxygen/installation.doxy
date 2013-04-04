@@ -155,7 +155,7 @@ For the use of SGpp with Java, you have to generate the <tt>libjsgpp</tt>. It ca
 @verbatim
   scons JSGPP=True JNI_CPPPATH=<jnipath> JNI_OS=linux 
 @endverbatim
-The <tt><jnipath></tt> can be determined with the command <tt>locate jni.h</tt>. On <tt>atsccsXX</tt> it is in general something in the form of <tt>/usr/lib/jvm/java-6-sun-1.6.X.XX/include</tt>.
+The <tt>$lt;jnipath&gt;</tt> can be determined with the command <tt>locate jni.h</tt>. On <tt>atsccsXX</tt> it is in general something in the form of <tt>/usr/lib/jvm/java-6-sun-1.6.X.XX/include</tt>.
 
 
 

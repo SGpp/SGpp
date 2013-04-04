@@ -58,19 +58,19 @@ This includes the typicial python header. Then, the module sys is
 imported. The list @c sys.path includes the search paths for modules. To
 be able to import the module pysgpp, we have to add the directory
 <tt>../lib/pysgpp</tt> to the search path. After that, we import the two classes
-DataVector and @link sg::Grid Grid @endlink, which we require afterwards.
+DataVector and @link sg::base::Grid Grid() @endlink, which we require afterwards.
 
 @until dimensionality
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
-@link sg::Grid.createLinearGrid() Grid.createLinearGrid()
+@link sg::base::Grid.createLinearGrid() Grid.createLinearGrid()
 @endlink. Then we obtain a reference to the Grid's 
 GridStorage-object, which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points. 
 
 @until number
-Here, we use a @link sg::GridGenerator GridGenerator @endlink to
+Here, we use a @link sg::base::GridGenerator GridGenerator() @endlink to
 create a regular sparse grid of level 
 3. Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
@@ -91,8 +91,7 @@ function value at the grid point's coordinates which are obtained by @c abs(dim)
 The current coefficient vector is then printed.
 
 @until print alpha
-An object @link sg::OperationHierarchisation OperationHierarchisation
-@endlink is created and used to hierarchize 
+An objectOperationHierarchisation is created and used to hierarchize 
 the coefficient vector, which we print.
 
 @until u(
