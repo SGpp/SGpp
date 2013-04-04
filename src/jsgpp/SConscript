@@ -32,6 +32,10 @@ if env['SG_COMBIGRID']:
 
 j_env = env.Clone()
 
+# remove compiler warnings caused by swig (as we cannot do anything against them, 
+# and as they confuse jenkins):
+j_env.AppendUnique(CPPFLAGS=['-w'])
+
 j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'])
 j_env.AppendUnique(CPPPATH=['#/src/sgpp'])
 j_env.AppendUnique(CPPFLAGS=['-fno-strict-aliasing'])
