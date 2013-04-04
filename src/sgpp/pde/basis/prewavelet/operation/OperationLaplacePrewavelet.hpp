@@ -39,6 +39,7 @@ public:
 	 * Constructor of OperationLaplacePrewavelet
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
+	 * @param shadowstorage shadow storage fuer prewavelets
 	 */
 	OperationLaplacePrewavelet(sg::base::GridStorage* storage, sg::base::GridStorage* shadowstorage);
 
