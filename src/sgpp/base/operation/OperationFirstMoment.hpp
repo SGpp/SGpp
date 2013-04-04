@@ -11,37 +11,34 @@
 
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class provides the first moment of a sparse grid function
- */
-class OperationFirstMoment
-{
-public:
-	/**
-	 * Constructor
-	 */
-	OperationFirstMoment() {}
+    /**
+     * This class provides the first moment of a sparse grid function
+     */
+    class OperationFirstMoment {
+      public:
+        /**
+         * Constructor
+         */
+        OperationFirstMoment() {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationFirstMoment() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationFirstMoment() {}
 
-	/**
-	 * Integrate the sparse grid function
-	 *
-	 * @param alpha the function's values in the nodal basis
-	 */
-	virtual double doQuadrature(DataVector& alpha) = 0;
+        /**
+         * Integrate the sparse grid function
+         *
+         * @param alpha the function's values in the nodal basis
+         */
+        virtual double doQuadrature(DataVector& alpha) = 0;
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONFIRSTMOMENT_HPP */

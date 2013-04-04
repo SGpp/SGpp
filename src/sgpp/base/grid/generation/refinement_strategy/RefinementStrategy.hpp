@@ -13,31 +13,35 @@
 //#include "base/grid/generation/hashmap/HashRefinementAbstract.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-class HashRefinementAbstract;
+    class HashRefinementAbstract;
 
-class RefinementStrategy {
-public:
-	/*RefinementStrategy();*/
-	RefinementStrategy(RefinementFunctor* functor){refinement_functor_ = functor;};
-	virtual ~RefinementStrategy(){};
+    class RefinementStrategy {
+      public:
+        /*RefinementStrategy();*/
+        RefinementStrategy(RefinementFunctor* functor) {
+          refinement_functor_ = functor;
+        };
+        virtual ~RefinementStrategy() {};
 
-	virtual void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement)=0;
+        virtual void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement) = 0;
 
-protected:
+      protected:
 
-	RefinementFunctor* get_refinement_functor(){return refinement_functor_;}
-	void set_refinement_functor(RefinementFunctor* functor) {refinement_functor_ = functor;}
+        RefinementFunctor* get_refinement_functor() {
+          return refinement_functor_;
+        }
+        void set_refinement_functor(RefinementFunctor* functor) {
+          refinement_functor_ = functor;
+        }
 
-private:
-	RefinementFunctor* refinement_functor_;
-};
+      private:
+        RefinementFunctor* refinement_functor_;
+    };
 
-}
+  }
 }
 
 #endif /* REFINEMENTSTRATEGY_HPP_ */

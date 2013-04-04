@@ -27,112 +27,73 @@
 #include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
 #include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace op_factory
-{
+  namespace op_factory {
 
-  base::OperationMatrix* createOperationLaplace(base::Grid& grid)
-  {
+    base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
+      if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceLinear(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         return new pde::OperationLaplaceLinearBoundary(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "modlinear") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
         return new pde::OperationLaplaceModLinear(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "prewavelet") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "prewavelet") == 0 ) {
         return new pde::OperationLaplacePrewavelet(grid.getStorage(),
-                                                   ((base::PrewaveletGrid*) &grid)->getShadowStorage());
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0 )
-      {
+               ((base::PrewaveletGrid*) &grid)->getShadowStorage());
+      } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new pde::OperationLaplaceLinearStretched(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
         return new pde::OperationLaplaceLinearStretchedBoundary(grid.getStorage());
-      }
-    else
-      {
+      } else {
         throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
       }
-  }
-
-  base::OperationMatrix* createOperationLaplace(base::Grid& grid, sg::base::DataVector& coef)
-  {
-
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new pde::OperationLaplaceLinear(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new pde::OperationLaplaceLinearBoundary(grid.getStorage(), coef);
-      }
-    else
-      {
-        throw base::factory_exception("OperationLaplace (with coefficients) is not implemented for this grid type.");
-      }
-  }
-
-  base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid)
-  {
-
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
-        return new pde::OperationLTwoDotProductLinear(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
-        return new pde::OperationLTwoDotProductLinearBoundary(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0)
-      {
-        return new pde::OperationLTwoDotProductLinearStretched(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0)
-      {
-        return new pde::OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
-      }
-    else
-      throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
-  }
-
-  base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid){
-  	  if(strcmp(grid.getType(), "linear") == 0)
-  	  {
-  	     return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
-  	  }
-  	  else if(strcmp(grid.getType(), "linearBoundary") == 0)
-  	  {
-  		  return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
-  	  }
-  	  else
-  	   throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
-  }
-
-  base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid){
-    	  if(strcmp(grid.getType(), "linear") == 0)
-    	  {
-    	     return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
-    	  }
-    	  else if(strcmp(grid.getType(), "linearBoundary") == 0)
-    	  {
-    		  return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
-    	  }
-    	  else
-    	   throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
     }
 
-}
+    base::OperationMatrix* createOperationLaplace(base::Grid& grid, sg::base::DataVector& coef) {
+
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new pde::OperationLaplaceLinear(grid.getStorage(), coef);
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+        return new pde::OperationLaplaceLinearBoundary(grid.getStorage(), coef);
+      } else {
+        throw base::factory_exception("OperationLaplace (with coefficients) is not implemented for this grid type.");
+      }
+    }
+
+    base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
+
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new pde::OperationLTwoDotProductLinear(grid.getStorage());
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+        return new pde::OperationLTwoDotProductLinearBoundary(grid.getStorage());
+      } else if (strcmp(grid.getType(), "linearStretched") == 0) {
+        return new pde::OperationLTwoDotProductLinearStretched(grid.getStorage());
+      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+        return new pde::OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
+      } else
+        throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
+    }
+
+    base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0) {
+        return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
+      } else
+        throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
+    }
+
+    base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0) {
+        return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
+      } else
+        throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
+    }
+
+  }
 }
 

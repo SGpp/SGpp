@@ -11,30 +11,24 @@
 
 #include "base/exception/operation_exception.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-double OperationTestModPoly::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes)
-{
-	return test_dataset(this->storage, base, alpha, data, classes);
-}
+    double OperationTestModPoly::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes) {
+      return test_dataset(this->storage, base, alpha, data, classes);
+    }
 
-double OperationTestModPoly::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues)
-{
-	return test_dataset_mse(this->storage, base, alpha, data, refValues);
-}
+    double OperationTestModPoly::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues) {
+      return test_dataset_mse(this->storage, base, alpha, data, refValues);
+    }
 
-double OperationTestModPoly::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers)
-{
-	return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
-}
+    double OperationTestModPoly::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) {
+      return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
+    }
 
-void OperationTestModPoly::calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve)
-{
-	test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
-}
+    void OperationTestModPoly::calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) {
+      test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
+    }
 
-}
+  }
 }

@@ -11,31 +11,28 @@
 #include "base/grid/Grid.hpp"
 #include <cstring>
 
-namespace sg
-{
-namespace datadriven
-{
-
-  /**
-   * Sample 1D Probability Density Function
-   */
-  
-  class OperationDensitySampling1D
-  {
-  public:
-    OperationDensitySampling1D() {}
-    virtual ~OperationDensitySampling1D() {}
+namespace sg {
+  namespace datadriven {
 
     /**
-     * Sampling on 1D grid
-     *
-     * @param alpha Coefficient vector for current grid (1D grid)
-     * @param num_samples # of samples to draw
-     * @param samples Output DataVector
+     * Sample 1D Probability Density Function
      */
-    virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector* &samples) = 0;
-  };
-    
-}
+
+    class OperationDensitySampling1D {
+      public:
+        OperationDensitySampling1D() {}
+        virtual ~OperationDensitySampling1D() {}
+
+        /**
+         * Sampling on 1D grid
+         *
+         * @param alpha Coefficient vector for current grid (1D grid)
+         * @param num_samples # of samples to draw
+         * @param samples Output DataVector
+         */
+        virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples) = 0;
+    };
+
+  }
 }
 #endif /* OPERATIONDENSITYSAMPLING1D_HPP */

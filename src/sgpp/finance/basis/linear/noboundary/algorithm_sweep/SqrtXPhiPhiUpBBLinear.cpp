@@ -7,220 +7,207 @@
 
 #include "finance/basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-SqrtXPhiPhiUpBBLinear::SqrtXPhiPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
-{
-}
+    SqrtXPhiPhiUpBBLinear::SqrtXPhiPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    }
 
-SqrtXPhiPhiUpBBLinear::~SqrtXPhiPhiUpBBLinear()
-{
-}
+    SqrtXPhiPhiUpBBLinear::~SqrtXPhiPhiUpBBLinear() {
+    }
 
-void SqrtXPhiPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	double q = boundingBox->getIntervalWidth(dim);
-	double t = boundingBox->getIntervalOffset(dim);
+    void SqrtXPhiPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      double q = boundingBox->getIntervalWidth(dim);
+      double t = boundingBox->getIntervalOffset(dim);
 
-	bool useBB = false;
+      bool useBB = false;
 
-	if (q != 1.0 || t != 0.0)
-	{
-		useBB = true;
-	}
+      if (q != 1.0 || t != 0.0) {
+        useBB = true;
+      }
 
-	// get boundary values
-	double fl = 0.0;
-	double fr = 0.0;
+      // get boundary values
+      double fl = 0.0;
+      double fr = 0.0;
 
-	if (useBB)
-	{
-		recBB(source, result, index, dim, fl, fr, q, t);
-	}
-	else
-	{
-		rec(source, result, index, dim, fl, fr);
-	}
-}
+      if (useBB) {
+        recBB(source, result, index, dim, fl, fr, q, t);
+      } else {
+        rec(source, result, index, dim, fl, fr);
+      }
+    }
 
-void SqrtXPhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-{
-	size_t seq = index.seq();
+    void SqrtXPhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+      size_t seq = index.seq();
 
-	fl = fr = 0.0;
-	double fml = 0.0;
-	double fmr = 0.0;
+      fl = fr = 0.0;
+      double fml = 0.0;
+      double fmr = 0.0;
 
-	sg::base::GridStorage::index_type::level_type current_level;
-	sg::base::GridStorage::index_type::index_type current_index;
+      sg::base::GridStorage::index_type::level_type current_level;
+      sg::base::GridStorage::index_type::index_type current_index;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fml);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fmr, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fml);
+        }
 
-		index.up(dim);
-	}
+        index.step_right(dim);
 
-	index.get(dim, current_level, current_index);
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fmr, fr);
+        }
 
-	double fm = fml + fmr;
+        index.up(dim);
+      }
 
-	double alpha_value = source[seq];
+      index.get(dim, current_level, current_index);
 
-	double i = static_cast<double>(current_index);
-	double h = (1.0/static_cast<double>(1<<current_level));
+      double fm = fml + fmr;
 
-	double c = sqrt(i*h + h);
-	double d = sqrt(i*h);
-	double e = sqrt(i*h - h);
+      double alpha_value = source[seq];
 
-	double hSq = pow(h,2);
-	double hCu = pow(h,3);
-	double iSq = pow(i,2);
-	double iCu = pow(i,3);
+      double i = static_cast<double>(current_index);
+      double h = (1.0 / static_cast<double>(1 << current_level));
 
-	double flTemp = 2*c*hCu
-			- 4*d*iCu*hCu
-			- 8*e*hCu*i
-			+ 2*e*iCu*hCu
-			+ e*iSq*hCu + 5*e*hCu
-			+ 6*c*hCu*i
-			+ 6*c*iSq*hCu + 2*c*iCu*hCu
-			- 7*d*iSq*hCu;
+      double c = sqrt(i * h + h);
+      double d = sqrt(i * h);
+      double e = sqrt(i * h - h);
 
-	flTemp = (4.0/105.0)*(1/(hSq))*flTemp;
+      double hSq = pow(h, 2);
+      double hCu = pow(h, 3);
+      double iSq = pow(i, 2);
+      double iCu = pow(i, 3);
 
-	double frTemp = 5*c*hCu
-			+ 4*d*iCu*hCu - 7*d*iSq*hCu
-			- 6*e*hCu*i
-			- 2*e*iCu*hCu + 6*e*iSq*hCu
-			+ 2*e*hCu
-			- 2*c*iCu*hCu + c*iSq*hCu
-			+ 8*c*i*hCu;
+      double flTemp = 2 * c * hCu
+                      - 4 * d * iCu * hCu
+                      - 8 * e * hCu * i
+                      + 2 * e * iCu * hCu
+                      + e * iSq * hCu + 5 * e * hCu
+                      + 6 * c * hCu * i
+                      + 6 * c * iSq * hCu + 2 * c * iCu * hCu
+                      - 7 * d * iSq * hCu;
 
-	frTemp = (4.0/105.0)*(1/(hSq))*frTemp;
+      flTemp = (4.0 / 105.0) * (1 / (hSq)) * flTemp;
 
-	fl = ((fm/2.0) + (alpha_value*(flTemp))) + fl;
-	fr = ((fm/2.0) + (alpha_value*(frTemp))) + fr;
+      double frTemp = 5 * c * hCu
+                      + 4 * d * iCu * hCu - 7 * d * iSq * hCu
+                      - 6 * e * hCu * i
+                      - 2 * e * iCu * hCu + 6 * e * iSq * hCu
+                      + 2 * e * hCu
+                      - 2 * c * iCu * hCu + c * iSq * hCu
+                      + 8 * c * i * hCu;
 
-	// transposed operations:
-	result[seq] = fm;
-}
+      frTemp = (4.0 / 105.0) * (1 / (hSq)) * frTemp;
 
-void SqrtXPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
-{
-	size_t seq = index.seq();
+      fl = ((fm / 2.0) + (alpha_value * (flTemp))) + fl;
+      fr = ((fm / 2.0) + (alpha_value * (frTemp))) + fr;
 
-	fl = fr = 0.0;
-	double fml = 0.0;
-	double fmr = 0.0;
+      // transposed operations:
+      result[seq] = fm;
+    }
 
-	sg::base::GridStorage::index_type::level_type current_level;
-	sg::base::GridStorage::index_type::index_type current_index;
+    void SqrtXPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
+      size_t seq = index.seq();
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fl, fml, q, t);
-		}
+      fl = fr = 0.0;
+      double fml = 0.0;
+      double fmr = 0.0;
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fmr, fr, q ,t);
-		}
+      sg::base::GridStorage::index_type::level_type current_level;
+      sg::base::GridStorage::index_type::index_type current_index;
 
-		index.up(dim);
-	}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-	index.get(dim, current_level, current_index);
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fl, fml, q, t);
+        }
 
-	double fm = fml + fmr;
+        index.step_right(dim);
 
-	double alpha_value = source[seq];
-	double h = (1.0/static_cast<double>(1<<current_level));
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fmr, fr, q , t);
+        }
 
-	// transposed operations:
-	result[seq] = fm;
+        index.up(dim);
+      }
 
-	double i = static_cast<double>(current_index);
+      index.get(dim, current_level, current_index);
 
-	double c = sqrt(i*h*q + t + q*h);
-	double d = sqrt(i*h*q + t);
-	double e = sqrt(i*h*q + t - q*h);
+      double fm = fml + fmr;
 
-	double qSq = pow(q,2);
-	double qCu = pow(q,3);
-	double hSq = pow(h,2);
-	double hCu = pow(h,3);
-	double tSq = pow(t,2);
-	double tCu = pow(t,3);
-	double iSq = pow(i,2);
-	double iCu = pow(i,3);
+      double alpha_value = source[seq];
+      double h = (1.0 / static_cast<double>(1 << current_level));
 
-	double flTemp = 2*c*qCu*hCu - 14*d*i*hSq*qSq*t
-			+ 6*c*tSq*i*h*q + 6*c*iSq*hSq*qSq*t
-			+ 12*c*i*hSq*qSq*t
-			+ 2*e*tCu - 4*d*tCu
-			- 4*d*iCu*hCu*qCu
-			- 8*e*qCu*hCu*i - 8*e*qSq*hSq*t
-			+ e*tSq*q*h
-			+ 2*e*iCu*hCu*qCu
-			+ e*iSq*hCu*qCu + 5*e*qCu*hCu
-			+ 6*e*iSq*hSq*qSq*t + 6*e*i*h*q*tSq
-			+ 2*e*i*hSq*qSq*t
-			- 12*d*iSq*hSq*qSq*t - 12*d*i*h*q*tSq + 2*c*tCu
-			+ 6*c*tSq*q*h + 6*c*qCu*hCu*i
-			+ 6*c*qSq*hSq*t
-			+ 6*c*iSq*hCu*qCu + 2*c*iCu*hCu*qCu
-			- 7*d*iSq*hCu*qCu - 7*d*tSq*q*h;
+      // transposed operations:
+      result[seq] = fm;
 
-	flTemp = (4.0/105.0)*(1/(qSq*hSq))*flTemp;
+      double i = static_cast<double>(current_index);
 
-	double frTemp = 5*c*qCu*hCu
-			- 6*c*tSq*i*h*q
-			- 6*c*iSq*hSq*qSq*t + 2*c*i*hSq*qSq*t
-			- 2*e*tCu + 4*d*tCu
-			+ 4*d*iCu*hCu*qCu - 7*d*iSq*hCu*qCu - 7*d*tSq*q*h
-			- 6*e*qCu*hCu*i
-			- 6*e*qSq*hSq*t + 6*e*tSq*q*h
-			- 2*e*iCu*hCu*qCu + 6*e*iSq*hCu*qCu
-			+ 2*e*qCu*hCu
-			- 14*d*i*hSq*qSq*t
-			- 6*e*iSq*hSq*qSq*t - 6*e*i*h*q*tSq
-			+ 12*e*i*hSq*qSq*t + 12*d*iSq*hSq*qSq*t + 12*d*i*h*q*tSq
-			- 2*c*tCu
-			+ c*tSq*q*h
-			- 2*c*iCu*hCu*qCu + c*iSq*hCu*qCu
-			+ 8*c*t*qSq*hSq
-			+ 8*c*i*hCu*qCu;
+      double c = sqrt(i * h * q + t + q * h);
+      double d = sqrt(i * h * q + t);
+      double e = sqrt(i * h * q + t - q * h);
 
-	frTemp = (4.0/105.0)*(1/(qSq*hSq))*frTemp;
+      double qSq = pow(q, 2);
+      double qCu = pow(q, 3);
+      double hSq = pow(h, 2);
+      double hCu = pow(h, 3);
+      double tSq = pow(t, 2);
+      double tCu = pow(t, 3);
+      double iSq = pow(i, 2);
+      double iCu = pow(i, 3);
+
+      double flTemp = 2 * c * qCu * hCu - 14 * d * i * hSq * qSq * t
+                      + 6 * c * tSq * i * h * q + 6 * c * iSq * hSq * qSq * t
+                      + 12 * c * i * hSq * qSq * t
+                      + 2 * e * tCu - 4 * d * tCu
+                      - 4 * d * iCu * hCu * qCu
+                      - 8 * e * qCu * hCu * i - 8 * e * qSq * hSq * t
+                      + e * tSq * q * h
+                      + 2 * e * iCu * hCu * qCu
+                      + e * iSq * hCu * qCu + 5 * e * qCu * hCu
+                      + 6 * e * iSq * hSq * qSq * t + 6 * e * i * h * q * tSq
+                      + 2 * e * i * hSq * qSq * t
+                      - 12 * d * iSq * hSq * qSq * t - 12 * d * i * h * q * tSq + 2 * c * tCu
+                      + 6 * c * tSq * q * h + 6 * c * qCu * hCu * i
+                      + 6 * c * qSq * hSq * t
+                      + 6 * c * iSq * hCu * qCu + 2 * c * iCu * hCu * qCu
+                      - 7 * d * iSq * hCu * qCu - 7 * d * tSq * q * h;
+
+      flTemp = (4.0 / 105.0) * (1 / (qSq * hSq)) * flTemp;
+
+      double frTemp = 5 * c * qCu * hCu
+                      - 6 * c * tSq * i * h * q
+                      - 6 * c * iSq * hSq * qSq * t + 2 * c * i * hSq * qSq * t
+                      - 2 * e * tCu + 4 * d * tCu
+                      + 4 * d * iCu * hCu * qCu - 7 * d * iSq * hCu * qCu - 7 * d * tSq * q * h
+                      - 6 * e * qCu * hCu * i
+                      - 6 * e * qSq * hSq * t + 6 * e * tSq * q * h
+                      - 2 * e * iCu * hCu * qCu + 6 * e * iSq * hCu * qCu
+                      + 2 * e * qCu * hCu
+                      - 14 * d * i * hSq * qSq * t
+                      - 6 * e * iSq * hSq * qSq * t - 6 * e * i * h * q * tSq
+                      + 12 * e * i * hSq * qSq * t + 12 * d * iSq * hSq * qSq * t + 12 * d * i * h * q * tSq
+                      - 2 * c * tCu
+                      + c * tSq * q * h
+                      - 2 * c * iCu * hCu * qCu + c * iSq * hCu * qCu
+                      + 8 * c * t * qSq * hSq
+                      + 8 * c * i * hCu * qCu;
+
+      frTemp = (4.0 / 105.0) * (1 / (qSq * hSq)) * frTemp;
 
 
 
-	fl = ((fm/2.0) + (alpha_value*(flTemp))) + fl;
-	fr = ((fm/2.0) + (alpha_value*(frTemp))) + fr;
-}
+      fl = ((fm / 2.0) + (alpha_value * (flTemp))) + fl;
+      fr = ((fm / 2.0) + (alpha_value * (frTemp))) + fr;
+    }
 
-// namespace detail
+    // namespace detail
 
-} // namespace sg
+  } // namespace sg
 }

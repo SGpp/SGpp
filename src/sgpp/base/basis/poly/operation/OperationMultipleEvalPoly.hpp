@@ -12,44 +12,41 @@
 #include "base/grid/GridStorage.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
- */
-class OperationMultipleEvalPoly : public OperationMultipleEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 * @param degree the polynom's max. degree
-	 * @param dataset Dataset
-	 */
-	OperationMultipleEvalPoly(GridStorage* storage, size_t degree, DataMatrix* dataset) : OperationMultipleEval(dataset), base(degree) {
-		this->storage = storage;
-	}
+    /**
+     * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
+     */
+    class OperationMultipleEvalPoly : public OperationMultipleEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GridStorage object
+         * @param degree the polynom's max. degree
+         * @param dataset Dataset
+         */
+        OperationMultipleEvalPoly(GridStorage* storage, size_t degree, DataMatrix* dataset) : OperationMultipleEval(dataset), base(degree) {
+          this->storage = storage;
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalPoly() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationMultipleEvalPoly() {}
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-	virtual void multTranspose(DataVector& source, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-	/// Poly Basis object
-	SPolyBase base;
-};
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+        /// Poly Basis object
+        SPolyBase base;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONMULTIPLEEVALPOLY_HPP */

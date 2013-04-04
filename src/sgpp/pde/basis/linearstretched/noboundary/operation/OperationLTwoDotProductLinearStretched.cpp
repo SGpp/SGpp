@@ -14,36 +14,30 @@
 #include "base/algorithm/sweep.hpp"
 
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationLTwoDotProductLinearStretched::OperationLTwoDotProductLinearStretched(sg::base::GridStorage* storage) : StdUpDown(storage)
-{
-}
+    OperationLTwoDotProductLinearStretched::OperationLTwoDotProductLinearStretched(sg::base::GridStorage* storage) : StdUpDown(storage) {
+    }
 
-OperationLTwoDotProductLinearStretched::~OperationLTwoDotProductLinearStretched()
-{
-}
+    OperationLTwoDotProductLinearStretched::~OperationLTwoDotProductLinearStretched() {
+    }
 
-void OperationLTwoDotProductLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// phi * phi
-	PhiPhiUpBBLinearStretched func(this->storage);
-	sg::base::sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
+    void OperationLTwoDotProductLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      // phi * phi
+      PhiPhiUpBBLinearStretched func(this->storage);
+      sg::base::sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
-}
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLTwoDotProductLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// phi * phi
-	PhiPhiDownBBLinearStretched func(this->storage);
-	sg::base::sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
+    void OperationLTwoDotProductLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      // phi * phi
+      PhiPhiDownBBLinearStretched func(this->storage);
+      sg::base::sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
-}
+      s.sweep1D(alpha, result, dim);
+    }
 
-}
+  }
 }

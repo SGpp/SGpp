@@ -11,50 +11,45 @@
 #include "base/operation/OperationConvert.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- *
- */
-class OperationConvertPrewavelet : public OperationConvert
-{
-public:
-	/**
-	 * Constructor of OperationHierarchisationPrewavelet
-	 *
-     * An adaptive grid with prewavelet ansatz functions requires for operations
-	 * using the up-down algorithm shadow points. These shadow points a needed just
-	 * for data transport, thus they do not have an influence on the final function.
-	 * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
-	 *
-     * @param storage Pointer to the grid's gridstorage obejct
-	 * @param shadowstorage shadow points (see detailed description)
-	 */
-	OperationConvertPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
-		storage(storage),shadowstorage(shadowstorage)
-	{
-	}
+    /**
+     *
+     */
+    class OperationConvertPrewavelet : public OperationConvert {
+      public:
+        /**
+         * Constructor of OperationHierarchisationPrewavelet
+         *
+           * An adaptive grid with prewavelet ansatz functions requires for operations
+         * using the up-down algorithm shadow points. These shadow points a needed just
+         * for data transport, thus they do not have an influence on the final function.
+         * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
+         *
+           * @param storage Pointer to the grid's gridstorage obejct
+         * @param shadowstorage shadow points (see detailed description)
+         */
+        OperationConvertPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
+          storage(storage), shadowstorage(shadowstorage) {
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationConvertPrewavelet()
-	{
-	}
+        /**
+         * Destructor
+         */
+        virtual ~OperationConvertPrewavelet() {
+        }
 
-	virtual void doConvertToLinear(DataVector& alpha);
-	virtual void doConvertFromLinear(DataVector& alpha);
+        virtual void doConvertToLinear(DataVector& alpha);
+        virtual void doConvertFromLinear(DataVector& alpha);
 
-protected:
-	/// Pointer to the grid's GridStorage object
-	GridStorage* storage;
-	GridStorage* shadowstorage;
-};
+      protected:
+        /// Pointer to the grid's GridStorage object
+        GridStorage* storage;
+        GridStorage* shadowstorage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONCONVERTPREWAVELET_HPP */

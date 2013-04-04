@@ -7,39 +7,31 @@
 
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold)
-{
-}
+    SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold) {
+    }
 
 
-SurplusRefinementFunctor::~SurplusRefinementFunctor()
-{
-}
+    SurplusRefinementFunctor::~SurplusRefinementFunctor() {
+    }
 
-double SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq)
-{
-	return fabs(alpha->get(seq));
-}
+    double SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
+      return fabs(alpha->get(seq));
+    }
 
-double SurplusRefinementFunctor::start()
-{
-	return 0.0;
-}
+    double SurplusRefinementFunctor::start() {
+      return 0.0;
+    }
 
-size_t SurplusRefinementFunctor::getRefinementsNum()
-{
-	return this->refinements_num;
-}
+    size_t SurplusRefinementFunctor::getRefinementsNum() {
+      return this->refinements_num;
+    }
 
-double SurplusRefinementFunctor::getRefinementThreshold()
-{
-	return this->threshold;
-}
+    double SurplusRefinementFunctor::getRefinementThreshold() {
+      return this->threshold;
+    }
 
-}
+  }
 }

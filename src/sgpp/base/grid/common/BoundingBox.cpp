@@ -7,105 +7,91 @@
 
 #include "base/grid/common/BoundingBox.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-BoundingBox::BoundingBox(size_t dim)
-{
-	nDim = dim;
-	dimensionBoundaries = new DimensionBoundary[nDim];
-	for (size_t i = 0; i < nDim; i++)
-	{
-		dimensionBoundaries[i].leftBoundary = 0.0;
-		dimensionBoundaries[i].rightBoundary = 1.0;
-		dimensionBoundaries[i].bDirichletLeft = false;
-		dimensionBoundaries[i].bDirichletRight = false;
-	}
-	bTrivialCube = true;
-}
+    BoundingBox::BoundingBox(size_t dim) {
+      nDim = dim;
+      dimensionBoundaries = new DimensionBoundary[nDim];
 
-BoundingBox::BoundingBox(size_t dim, DimensionBoundary* boundaries)
-{
-	bTrivialCube = true;
-	nDim = dim;
-	dimensionBoundaries = new DimensionBoundary[nDim];
-	for (size_t i = 0; i < nDim; i++)
-	{
-		dimensionBoundaries[i] = boundaries[i];
-		if (dimensionBoundaries[i].leftBoundary != 0.0 || dimensionBoundaries[i].rightBoundary != 1.0)
-		{
-			bTrivialCube = false;
-		}
-	}
-}
+      for (size_t i = 0; i < nDim; i++) {
+        dimensionBoundaries[i].leftBoundary = 0.0;
+        dimensionBoundaries[i].rightBoundary = 1.0;
+        dimensionBoundaries[i].bDirichletLeft = false;
+        dimensionBoundaries[i].bDirichletRight = false;
+      }
 
-BoundingBox::BoundingBox(BoundingBox& copyBoundingBox)
-{
-	bTrivialCube = true;
-	nDim = copyBoundingBox.getDimensions();
-	dimensionBoundaries = new DimensionBoundary[nDim];
-	for (size_t i = 0; i < nDim; i++)
-	{
-		dimensionBoundaries[i] = copyBoundingBox.getBoundary(i);
-		if (dimensionBoundaries[i].leftBoundary != 0.0 || dimensionBoundaries[i].rightBoundary != 1.0)
-		{
-			bTrivialCube = false;
-		}
-	}
-}
+      bTrivialCube = true;
+    }
 
-BoundingBox::~BoundingBox()
-{
-	delete[] dimensionBoundaries;
-}
+    BoundingBox::BoundingBox(size_t dim, DimensionBoundary* boundaries) {
+      bTrivialCube = true;
+      nDim = dim;
+      dimensionBoundaries = new DimensionBoundary[nDim];
 
-void BoundingBox::setBoundary(size_t dimension, DimensionBoundary& newBoundaries)
-{
-	dimensionBoundaries[dimension] = newBoundaries;
+      for (size_t i = 0; i < nDim; i++) {
+        dimensionBoundaries[i] = boundaries[i];
 
-	if (dimensionBoundaries[dimension].leftBoundary != 0.0 || dimensionBoundaries[dimension].rightBoundary != 1.0)
-	{
-		bTrivialCube = false;
-	}
+        if (dimensionBoundaries[i].leftBoundary != 0.0 || dimensionBoundaries[i].rightBoundary != 1.0) {
+          bTrivialCube = false;
+        }
+      }
+    }
 
-}
+    BoundingBox::BoundingBox(BoundingBox& copyBoundingBox) {
+      bTrivialCube = true;
+      nDim = copyBoundingBox.getDimensions();
+      dimensionBoundaries = new DimensionBoundary[nDim];
 
-DimensionBoundary BoundingBox::getBoundary(size_t dimension)
-{
-	return dimensionBoundaries[dimension];
-}
+      for (size_t i = 0; i < nDim; i++) {
+        dimensionBoundaries[i] = copyBoundingBox.getBoundary(i);
 
-size_t BoundingBox::getDimensions()
-{
-	return nDim;
-}
+        if (dimensionBoundaries[i].leftBoundary != 0.0 || dimensionBoundaries[i].rightBoundary != 1.0) {
+          bTrivialCube = false;
+        }
+      }
+    }
 
-double BoundingBox::getIntervalWidth(size_t dimension)
-{
-	return dimensionBoundaries[dimension].rightBoundary - dimensionBoundaries[dimension].leftBoundary;
-}
+    BoundingBox::~BoundingBox() {
+      delete[] dimensionBoundaries;
+    }
 
-double BoundingBox::getIntervalOffset(size_t dimension)
-{
-	return dimensionBoundaries[dimension].leftBoundary;
-}
+    void BoundingBox::setBoundary(size_t dimension, DimensionBoundary& newBoundaries) {
+      dimensionBoundaries[dimension] = newBoundaries;
 
-bool BoundingBox::isTrivialCube()
-{
-	return bTrivialCube;
-}
+      if (dimensionBoundaries[dimension].leftBoundary != 0.0 || dimensionBoundaries[dimension].rightBoundary != 1.0) {
+        bTrivialCube = false;
+      }
 
-bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension)
-{
-	return dimensionBoundaries[dimension].bDirichletLeft;
-}
+    }
 
-bool BoundingBox::hasDirichletBoundaryRight(size_t dimension)
-{
-	return dimensionBoundaries[dimension].bDirichletRight;
-}
+    DimensionBoundary BoundingBox::getBoundary(size_t dimension) {
+      return dimensionBoundaries[dimension];
+    }
 
-}
+    size_t BoundingBox::getDimensions() {
+      return nDim;
+    }
+
+    double BoundingBox::getIntervalWidth(size_t dimension) {
+      return dimensionBoundaries[dimension].rightBoundary - dimensionBoundaries[dimension].leftBoundary;
+    }
+
+    double BoundingBox::getIntervalOffset(size_t dimension) {
+      return dimensionBoundaries[dimension].leftBoundary;
+    }
+
+    bool BoundingBox::isTrivialCube() {
+      return bTrivialCube;
+    }
+
+    bool BoundingBox::hasDirichletBoundaryLeft(size_t dimension) {
+      return dimensionBoundaries[dimension].bDirichletLeft;
+    }
+
+    bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) {
+      return dimensionBoundaries[dimension].bDirichletRight;
+    }
+
+  }
 }

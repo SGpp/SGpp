@@ -13,49 +13,40 @@
 #include "base/exception/factory_exception.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-PrewaveletGrid::PrewaveletGrid(std::istream& istr) : Grid(istr)
-{
-}
+    PrewaveletGrid::PrewaveletGrid(std::istream& istr) : Grid(istr) {
+    }
 
-PrewaveletGrid::PrewaveletGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-	this->shadowStorage = new GridStorage(dim);
-}
+    PrewaveletGrid::PrewaveletGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+      this->shadowStorage = new GridStorage(dim);
+    }
 
-PrewaveletGrid::~PrewaveletGrid()
-{
-}
+    PrewaveletGrid::~PrewaveletGrid() {
+    }
 
-const char* PrewaveletGrid::getType()
-{
-	return "prewavelet";
-}
+    const char* PrewaveletGrid::getType() {
+      return "prewavelet";
+    }
 
-Grid* PrewaveletGrid::unserialize(std::istream& istr)
-{
-	return new PrewaveletGrid(istr);
-}
+    Grid* PrewaveletGrid::unserialize(std::istream& istr) {
+      return new PrewaveletGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* PrewaveletGrid::createGridGenerator()
-{
-	return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* PrewaveletGrid::createGridGenerator() {
+      return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
+    }
 
 
-GridStorage* PrewaveletGrid::getShadowStorage()
-{
-	return this->shadowStorage;
-}
+    GridStorage* PrewaveletGrid::getShadowStorage() {
+      return this->shadowStorage;
+    }
 
-}
+  }
 }

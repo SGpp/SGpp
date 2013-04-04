@@ -10,42 +10,39 @@
 
 #include "pde/algorithm/UpDownOneOpDim.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-/**
- * Implementation of Laplace for mod linear functions
- *
- * @version $HEAD$
- */
-class OperationLaplaceModLinear : public UpDownOneOpDim
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's sg::base::GridStorage object
-	 */
-	OperationLaplaceModLinear(sg::base::GridStorage* storage);
+    /**
+     * Implementation of Laplace for mod linear functions
+     *
+     * @version $HEAD$
+     */
+    class OperationLaplaceModLinear : public UpDownOneOpDim {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's sg::base::GridStorage object
+         */
+        OperationLaplaceModLinear(sg::base::GridStorage* storage);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationLaplaceModLinear();
+        /**
+         * Destructor
+         */
+        virtual ~OperationLaplaceModLinear();
 
-protected:
-	virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+      protected:
+        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
 
-	virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
-};
+        virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONLAPLACEMODLINEAR_HPP */

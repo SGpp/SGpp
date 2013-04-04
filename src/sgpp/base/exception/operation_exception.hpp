@@ -11,62 +11,54 @@
 #include <exception>
 #include <cstddef>
 
-namespace sg
-{
-namespace base
-{
-
-/**
- * Exception that is thrown in case of a grid operation failure
- *
- * @version $HEAD$
- */
-class operation_exception : public std::exception
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param msg the exception message
-	 */
-	operation_exception(const char* msg) throw() : msg(msg)
-	{
-	}
-
-	/**
-	 * Standard Constructor
-	 */
-	operation_exception() throw() : msg(NULL) { }
-
-	/**
-	 * Destructor
-	 */
-    virtual ~operation_exception() throw() { }
+namespace sg {
+  namespace base {
 
     /**
-     * throw method that have to be implemented
+     * Exception that is thrown in case of a grid operation failure
      *
-     * @return returns the message specified in the constructor otherwise a general text
+     * @version $HEAD$
      */
-	virtual const char* what() const throw()
-	{
-		if(msg)
-		{
-			return msg;
-		}
-		else
-		{
-			return "operation_exception: general failure";
-		}
-	}
+    class operation_exception : public std::exception {
+      public:
+        /**
+         * Constructor
+         *
+         * @param msg the exception message
+         */
+        operation_exception(const char* msg) throw() : msg(msg) {
+        }
 
-protected:
-	/// the exception message
-	const char* msg;
+        /**
+         * Standard Constructor
+         */
+        operation_exception() throw() : msg(NULL) { }
 
-};
+        /**
+         * Destructor
+         */
+        virtual ~operation_exception() throw() { }
 
-}
+        /**
+         * throw method that have to be implemented
+         *
+         * @return returns the message specified in the constructor otherwise a general text
+         */
+        virtual const char* what() const throw() {
+          if (msg) {
+            return msg;
+          } else {
+            return "operation_exception: general failure";
+          }
+        }
+
+      protected:
+        /// the exception message
+        const char* msg;
+
+    };
+
+  }
 }
 
 #endif /* OPERATION_EXCEPTION_HPP */

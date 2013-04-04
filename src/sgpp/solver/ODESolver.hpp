@@ -15,41 +15,37 @@
 #include "solver/SGSolver.hpp"
 #include "solver/SLESolver.hpp"
 
-namespace sg
-{
-namespace solver
-{
+namespace sg {
+  namespace solver {
 
-class ODESolver : public SGSolver
-{
-public:
-	/**
-	 * Std-Constructor
-	 *
-	 * @param imax number of maximum executed iterations
-	 * @param timestepSize the size of one timestep
-	 */
-	ODESolver(size_t imax, double timestepSize) : SGSolver(imax, timestepSize)
-	{
-	}
+    class ODESolver : public SGSolver {
+      public:
+        /**
+         * Std-Constructor
+         *
+         * @param imax number of maximum executed iterations
+         * @param timestepSize the size of one timestep
+         */
+        ODESolver(size_t imax, double timestepSize) : SGSolver(imax, timestepSize) {
+        }
 
-	/**
-	 * Std-Destructor
-	 */
-	virtual ~ODESolver() { }
+        /**
+         * Std-Destructor
+         */
+        virtual ~ODESolver() { }
 
-	/**
-	 * Pure virtual Function that defines a solve method for an ODE solver
-	 *
-	 * @param LinearSystemSolver reference to an instance of a linear system solver that is used by this ODE solver
-	 * @param System reference to an sg::base::OperationMatrix Object that implements the matrix vector multiplication
-	 * @param bIdentifyLastStep set this to true to tell System the last step
-	 * @param verbose prints information during execution of the solver
-	 */
-	virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
-};
+        /**
+         * Pure virtual Function that defines a solve method for an ODE solver
+         *
+         * @param LinearSystemSolver reference to an instance of a linear system solver that is used by this ODE solver
+         * @param System reference to an sg::base::OperationMatrix Object that implements the matrix vector multiplication
+         * @param bIdentifyLastStep set this to true to tell System the last step
+         * @param verbose prints information during execution of the solver
+         */
+        virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
+    };
 
-}
+  }
 }
 
 #endif /* ODESOLVER_HPP */

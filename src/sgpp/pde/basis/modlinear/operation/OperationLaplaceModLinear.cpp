@@ -14,51 +14,43 @@
 
 #include "base/algorithm/sweep.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationLaplaceModLinear::OperationLaplaceModLinear(sg::base::GridStorage* storage) : UpDownOneOpDim(storage)
-{
-}
+    OperationLaplaceModLinear::OperationLaplaceModLinear(sg::base::GridStorage* storage) : UpDownOneOpDim(storage) {
+    }
 
-OperationLaplaceModLinear::~OperationLaplaceModLinear()
-{
-}
+    OperationLaplaceModLinear::~OperationLaplaceModLinear() {
+    }
 
-void OperationLaplaceModLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	PhiPhiUpModLinear func(this->storage);
-	sg::base::sweep<PhiPhiUpModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
+    void OperationLaplaceModLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      result.setAll(0.0);
+      PhiPhiUpModLinear func(this->storage);
+      sg::base::sweep<PhiPhiUpModLinear> s(func, this->storage);
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLaplaceModLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	PhiPhiDownModLinear func(this->storage);
-	sg::base::sweep<PhiPhiDownModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
+    void OperationLaplaceModLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      result.setAll(0.0);
+      PhiPhiDownModLinear func(this->storage);
+      sg::base::sweep<PhiPhiDownModLinear> s(func, this->storage);
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLaplaceModLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	dPhidPhiDownModLinear func(this->storage);
-	sg::base::sweep<dPhidPhiDownModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
+    void OperationLaplaceModLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      result.setAll(0.0);
+      dPhidPhiDownModLinear func(this->storage);
+      sg::base::sweep<dPhidPhiDownModLinear> s(func, this->storage);
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLaplaceModLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	result.setAll(0.0);
-	dPhidPhiUpModLinear func(this->storage);
-	sg::base::sweep<dPhidPhiUpModLinear> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
+    void OperationLaplaceModLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      result.setAll(0.0);
+      dPhidPhiUpModLinear func(this->storage);
+      sg::base::sweep<dPhidPhiUpModLinear> s(func, this->storage);
+      s.sweep1D(alpha, result, dim);
+    }
 
-}
+  }
 }
 

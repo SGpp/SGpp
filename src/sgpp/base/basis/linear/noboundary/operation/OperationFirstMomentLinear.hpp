@@ -12,40 +12,37 @@
 #include "base/operation/OperationFirstMoment.hpp"
 #include "base/grid/Grid.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * FirstMomemnt of sparse grid function, linear grid without boundaries
- */
-class OperationFirstMomentLinear : public OperationFirstMoment
-{
-public:
-	/**
-	 * Constructor of OperationFirstMomentLinear
-	 *
-	 * @param storage Pointer to the grid's GridStorage object
-	 */
-	OperationFirstMomentLinear(GridStorage* storage) : storage(storage) {}
+    /**
+     * FirstMomemnt of sparse grid function, linear grid without boundaries
+     */
+    class OperationFirstMomentLinear : public OperationFirstMoment {
+      public:
+        /**
+         * Constructor of OperationFirstMomentLinear
+         *
+         * @param storage Pointer to the grid's GridStorage object
+         */
+        OperationFirstMomentLinear(GridStorage* storage) : storage(storage) {}
 
-	virtual ~OperationFirstMomentLinear() {}
+        virtual ~OperationFirstMomentLinear() {}
 
-  /**
-   * Compute first moment of the function
-   * @f[ \int_{\Omega} x\cdot f(x) dx. @f]
-   *
-   * @param alpha Coefficient vector for current grid
-   */
-  virtual double doQuadrature(DataVector& alpha);
+        /**
+         * Compute first moment of the function
+         * @f[ \int_{\Omega} x\cdot f(x) dx. @f]
+         *
+         * @param alpha Coefficient vector for current grid
+         */
+        virtual double doQuadrature(DataVector& alpha);
 
-protected:
-	// Pointer to the grid's GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        // Pointer to the grid's GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONFIRSTMOMENTLINEAR_HPP */

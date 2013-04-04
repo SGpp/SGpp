@@ -12,41 +12,38 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with modified polynomial base functions
- */
-class ModWaveletGrid : public Grid
-{
-protected:
-	ModWaveletGrid(std::istream& istr);
+    /**
+     * grid with modified polynomial base functions
+     */
+    class ModWaveletGrid : public Grid {
+      protected:
+        ModWaveletGrid(std::istream& istr);
 
-public:
-	/**
-	 * Constructor of grid with modified polynomial base functions
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	ModWaveletGrid(size_t dim);
+      public:
+        /**
+         * Constructor of grid with modified polynomial base functions
+         *
+         * @param dim the dimension of the grid
+         */
+        ModWaveletGrid(size_t dim);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~ModWaveletGrid();
+        /**
+         * Destructor
+         */
+        virtual ~ModWaveletGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
+        static Grid* unserialize(std::istream& istr);
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* MODWAVELETGRID_HPP */

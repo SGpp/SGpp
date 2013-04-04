@@ -8,29 +8,23 @@
 #include "pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.hpp"
 #include "base/exception/algorithm_exception.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs)
-{
-}
+    OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
+    }
 
-OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries()
-{
-}
+    OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries() {
+    }
 
-void OperationEllipticPDESolverSystemFreeBoundaries::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
-{
-	applyLOperator(alpha, result);
-}
+    void OperationEllipticPDESolverSystemFreeBoundaries::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      applyLOperator(alpha, result);
+    }
 
-sg::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS()
-{
-	return this->rhs;
-}
+    sg::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
+      return this->rhs;
+    }
 
-}
+  }
 }
 

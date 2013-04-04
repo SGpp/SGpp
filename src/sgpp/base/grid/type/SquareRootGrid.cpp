@@ -21,60 +21,51 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-SquareRootGrid::SquareRootGrid(std::istream& istr) : Grid(istr)
-{
+    SquareRootGrid::SquareRootGrid(std::istream& istr) : Grid(istr) {
 
-}
+    }
 
-SquareRootGrid::SquareRootGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    SquareRootGrid::SquareRootGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-SquareRootGrid::SquareRootGrid(BoundingBox& BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    SquareRootGrid::SquareRootGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-SquareRootGrid::~SquareRootGrid()
-{
-}
+    SquareRootGrid::~SquareRootGrid() {
+    }
 
-const char* SquareRootGrid::getType()
-{
-	return "squareRoot";
-}
-Grid* SquareRootGrid::unserialize(std::istream& istr)
-{
-	return new SquareRootGrid(istr);
-}
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* SquareRootGrid::createGridGenerator()
-{
-	return new SquareRootGridGenerator(this->storage);
-}
-//OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
-//{
-//	return new OperationHierarchisationLinearBoundary(this->storage);
-//}
-//OperationEval* SquareRootGrid::createOperationEval()
-//{
-//	return new OperationEvalLinearBoundary(this->storage);
-//}
+    const char* SquareRootGrid::getType() {
+      return "squareRoot";
+    }
+    Grid* SquareRootGrid::unserialize(std::istream& istr) {
+      return new SquareRootGrid(istr);
+    }
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* SquareRootGrid::createGridGenerator() {
+      return new SquareRootGridGenerator(this->storage);
+    }
+    //OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
+    //{
+    //  return new OperationHierarchisationLinearBoundary(this->storage);
+    //}
+    //OperationEval* SquareRootGrid::createOperationEval()
+    //{
+    //  return new OperationEvalLinearBoundary(this->storage);
+    //}
 
-//OperationConvert* SquareRootGrid::createOperationConvert()
-//{
-//	throw factory_exception("Unsupported operation");
-//}
+    //OperationConvert* SquareRootGrid::createOperationConvert()
+    //{
+    //  throw factory_exception("Unsupported operation");
+    //}
 
-}
+  }
 }
 

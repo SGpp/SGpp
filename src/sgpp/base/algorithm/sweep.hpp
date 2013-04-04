@@ -15,225 +15,204 @@
 #include <utility>
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * Standard sweep operation
- * FUNC should be a class with overwritten operator(). For an example see laplace_up_functor in laplace.hpp.
- * It must be default constructable or copyable.
- * STORAGE must provide a grid_iterator supporting left_child, step_right, up, hint and seq.
- */
-template<class FUNC>
-class sweep
-{
-protected:
-	typedef GridStorage::grid_iterator grid_iterator;
+    /**
+     * Standard sweep operation
+     * FUNC should be a class with overwritten operator(). For an example see laplace_up_functor in laplace.hpp.
+     * It must be default constructable or copyable.
+     * STORAGE must provide a grid_iterator supporting left_child, step_right, up, hint and seq.
+     */
+    template<class FUNC>
+    class sweep {
+      protected:
+        typedef GridStorage::grid_iterator grid_iterator;
 
-	/// Object of FUNC, this is executed by sweep
-	FUNC functor;
-	/// Pointer to the grid's storage object
-	GridStorage* storage;
+        /// Object of FUNC, this is executed by sweep
+        FUNC functor;
+        /// Pointer to the grid's storage object
+        GridStorage* storage;
 
-public:
-	/**
-	 * Create a new sweep object with a default constructed functor
-	 *
-	 * @param storage the storage that contains the grid points
-	 */
-	sweep(GridStorage* storage) : functor(), storage(storage)
-	{
-	}
+      public:
+        /**
+         * Create a new sweep object with a default constructed functor
+         *
+         * @param storage the storage that contains the grid points
+         */
+        sweep(GridStorage* storage) : functor(), storage(storage) {
+        }
 
-	/**
-	 * Create a new sweep object with a copied functor
-	 *
-	 * @param functor the functor that is executed on the grid
-	 * @param storage the storage that contains the grid points
-	 */
-	sweep(FUNC& functor, GridStorage* storage) : functor(functor), storage(storage)
-	{
-	}
+        /**
+         * Create a new sweep object with a copied functor
+         *
+         * @param functor the functor that is executed on the grid
+         * @param storage the storage that contains the grid points
+         */
+        sweep(FUNC& functor, GridStorage* storage) : functor(functor), storage(storage) {
+        }
 
-	/**
-	 * Destructor
-	 */
-	~sweep()
-	{
-	}
+        /**
+         * Destructor
+         */
+        ~sweep() {
+        }
 
-	/**
-	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
-	 * Boundaries are not regarded
-	 *
-	 * @param source a DataVector containing the source coefficients of the grid points
-	 * @param result a DataVector containing the result coefficients of the grid points
-	 * @param dim_sweep the dimension in which the functor is executed
-	 */
-	void sweep1D(DataVector& source, DataVector& result, size_t dim_sweep)
-	{
-		// generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
-		std::vector<size_t> dim_list;
-		for(size_t i = 0; i < storage->dim(); i++)
-		{
-			if(i != dim_sweep)
-			{
-				dim_list.push_back(i);
-			}
-		}
+        /**
+         * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
+         * Boundaries are not regarded
+         *
+         * @param source a DataVector containing the source coefficients of the grid points
+         * @param result a DataVector containing the result coefficients of the grid points
+         * @param dim_sweep the dimension in which the functor is executed
+         */
+        void sweep1D(DataVector& source, DataVector& result, size_t dim_sweep) {
+          // generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+          std::vector<size_t> dim_list;
 
-		grid_iterator index(storage);
+          for (size_t i = 0; i < storage->dim(); i++) {
+            if (i != dim_sweep) {
+              dim_list.push_back(i);
+            }
+          }
 
-		sweep_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
-	}
+          grid_iterator index(storage);
 
-	/**
-	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
-	 * Boundaries are regarded
-	 *
-	 * @param source a DataVector containing the source coefficients of the grid points
-	 * @param result a DataVector containing the result coefficients of the grid points
-	 * @param dim_sweep the dimension in which the functor is executed
-	 */
-	void sweep1D_Boundary(DataVector& source, DataVector& result, size_t dim_sweep)
-	{
-		// generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
-		std::vector<size_t> dim_list;
-		for(size_t i = 0; i < storage->dim(); i++)
-		{
-			if(i != dim_sweep)
-			{
-				dim_list.push_back(i);
-			}
-		}
+          sweep_rec(source, result, index, dim_list, storage->dim() - 1, dim_sweep);
+        }
 
-		grid_iterator index(storage);
-		index.resetToLevelZero();
+        /**
+         * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep
+         * Boundaries are regarded
+         *
+         * @param source a DataVector containing the source coefficients of the grid points
+         * @param result a DataVector containing the result coefficients of the grid points
+         * @param dim_sweep the dimension in which the functor is executed
+         */
+        void sweep1D_Boundary(DataVector& source, DataVector& result, size_t dim_sweep) {
+          // generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+          std::vector<size_t> dim_list;
 
-		sweep_Boundary_rec(source, result, index, dim_list, storage->dim()-1, dim_sweep);
-	}
+          for (size_t i = 0; i < storage->dim(); i++) {
+            if (i != dim_sweep) {
+              dim_list.push_back(i);
+            }
+          }
 
-protected:
+          grid_iterator index(storage);
+          index.resetToLevelZero();
 
-	/**
-	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
-	 * Boundaries are not regarded
-	 *
-	 * @param source coefficients of the sparse grid
-	 * @param result coefficients of the function computed by sweep
-	 * @param index current grid position
-	 * @param dim_list list of dimensions, that should be handled
-	 * @param dim_rem number of remaining dims
-	 * @param dim_sweep static dimension, in this dimension the functor is executed
-	 */
-	void sweep_rec(DataVector& source, DataVector& result, grid_iterator& index,
-				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
-	{
-		functor(source, result, index, dim_sweep);
+          sweep_Boundary_rec(source, result, index, dim_list, storage->dim() - 1, dim_sweep);
+        }
 
-		// dimension recursion unrolled
-		for(size_t d = 0; d < dim_rem; d++)
-		{
-			size_t current_dim = dim_list[d];
+      protected:
 
-			if(index.hint())
-			{
-				continue;
-			}
+        /**
+         * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
+         * Boundaries are not regarded
+         *
+         * @param source coefficients of the sparse grid
+         * @param result coefficients of the function computed by sweep
+         * @param index current grid position
+         * @param dim_list list of dimensions, that should be handled
+         * @param dim_rem number of remaining dims
+         * @param dim_sweep static dimension, in this dimension the functor is executed
+         */
+        void sweep_rec(DataVector& source, DataVector& result, grid_iterator& index,
+                       std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep) {
+          functor(source, result, index, dim_sweep);
 
-			index.left_child(current_dim);
-			if(!storage->end(index.seq()))
-			{
-				sweep_rec(source, result, index, dim_list, d+1, dim_sweep);
-			}
+          // dimension recursion unrolled
+          for (size_t d = 0; d < dim_rem; d++) {
+            size_t current_dim = dim_list[d];
 
-			index.step_right(current_dim);
-			if(!storage->end(index.seq()))
-			{
-				sweep_rec(source, result, index, dim_list, d+1, dim_sweep);
-			}
+            if (index.hint()) {
+              continue;
+            }
 
-			index.up(current_dim);
-		}
-	}
+            index.left_child(current_dim);
 
-	/**
-	 * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
-	 * Boundaries are regarded
-	 *
-	 * @param source coefficients of the sparse grid
-	 * @param result coefficients of the function computed by sweep
-	 * @param index current grid position
-	 * @param dim_list list of dimensions, that should be handled
-	 * @param dim_rem number of remaining dims
-	 * @param dim_sweep static dimension, in this dimension the functor is executed
-	 */
-	void sweep_Boundary_rec(DataVector& source, DataVector& result, grid_iterator& index,
-				std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep)
-	{
-		if (dim_rem == 0)
-		{
-			functor(source, result, index, dim_sweep);
-		}
-		else
-		{
-			typedef GridStorage::index_type::level_type level_type;
-			typedef GridStorage::index_type::index_type index_type;
+            if (!storage->end(index.seq())) {
+              sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
+            }
 
-			level_type current_level;
-			index_type current_index;
+            index.step_right(current_dim);
 
-			index.get(dim_list[dim_rem-1], current_level, current_index);
+            if (!storage->end(index.seq())) {
+              sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
+            }
 
-			// handle level greater zero
-			if (current_level > 0)
-			{
-				// given current point to next dim
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+            index.up(current_dim);
+          }
+        }
 
-				if (!index.hint())
-				{
-					index.left_child(dim_list[dim_rem-1]);
-					if(!storage->end(index.seq()))
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-					}
+        /**
+         * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
+         * Boundaries are regarded
+         *
+         * @param source coefficients of the sparse grid
+         * @param result coefficients of the function computed by sweep
+         * @param index current grid position
+         * @param dim_list list of dimensions, that should be handled
+         * @param dim_rem number of remaining dims
+         * @param dim_sweep static dimension, in this dimension the functor is executed
+         */
+        void sweep_Boundary_rec(DataVector& source, DataVector& result, grid_iterator& index,
+                                std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep) {
+          if (dim_rem == 0) {
+            functor(source, result, index, dim_sweep);
+          } else {
+            typedef GridStorage::index_type::level_type level_type;
+            typedef GridStorage::index_type::index_type index_type;
 
-					index.step_right(dim_list[dim_rem-1]);
-					if(!storage->end(index.seq()))
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-					}
+            level_type current_level;
+            index_type current_index;
 
-					index.up(dim_list[dim_rem-1]);
-				}
-			}
-			// handle level zero
-			else
-			{
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+            index.get(dim_list[dim_rem - 1], current_level, current_index);
 
-				index.right_levelzero(dim_list[dim_rem-1]);
-				sweep_Boundary_rec(source, result, index, dim_list, dim_rem-1, dim_sweep);
+            // handle level greater zero
+            if (current_level > 0) {
+              // given current point to next dim
+              sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
-				if (!index.hint())
-				{
-					index.top(dim_list[dim_rem-1]);
-					if(!storage->end(index.seq()))
-					{
-						sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
-					}
-				}
+              if (!index.hint()) {
+                index.left_child(dim_list[dim_rem - 1]);
 
-				index.left_levelzero(dim_list[dim_rem-1]);
-			}
-		}
-	}
-};
+                if (!storage->end(index.seq())) {
+                  sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+                }
 
-}
+                index.step_right(dim_list[dim_rem - 1]);
+
+                if (!storage->end(index.seq())) {
+                  sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+                }
+
+                index.up(dim_list[dim_rem - 1]);
+              }
+            }
+            // handle level zero
+            else {
+              sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+
+              index.right_levelzero(dim_list[dim_rem - 1]);
+              sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+
+              if (!index.hint()) {
+                index.top(dim_list[dim_rem - 1]);
+
+                if (!storage->end(index.seq())) {
+                  sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+                }
+              }
+
+              index.left_levelzero(dim_list[dim_rem - 1]);
+            }
+          }
+        }
+    };
+
+  }
 }
 
 #endif /* SWEEP_HPP */

@@ -1,9 +1,9 @@
- /*****************************************************************************/
+/*****************************************************************************/
 /* This file is part of sgpp, a program package making use of spatially      */
 /* adaptive sparse grids to solve numerical problems                         */
 /*                                                                           */
 /* Copyright (C) 2009-2010 Alexander Heinecke (Alexander.Heinecke@mytum.de) */
-/* 				2010 - 2011 Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de) 		*/
+/*        2010 - 2011 Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)    */
 /*                                                                           */
 /* sgpp is free software; you can redistribute it and/or modify              */
 /* it under the terms of the GNU Lesser General Public License as published  */
@@ -29,50 +29,40 @@
 #include "base/algorithm/sweep.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(DataVector& node_values)
-{
-	HierarchisationLinearStretchedBoundary func(this->storage);
-	sweep<HierarchisationLinearStretchedBoundary> s(func, this->storage);
+    void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(DataVector& node_values) {
+      HierarchisationLinearStretchedBoundary func(this->storage);
+      sweep<HierarchisationLinearStretchedBoundary> s(func, this->storage);
 
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(node_values, node_values, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(node_values, node_values, 0);
-	}
-}
+      // N D case
+      if (this->storage->dim() > 1) {
+        for (size_t i = 0; i < this->storage->dim(); i++) {
+          s.sweep1D_Boundary(node_values, node_values, i);
+        }
+      }
+      // 1 D case
+      else {
+        s.sweep1D(node_values, node_values, 0);
+      }
+    }
 
-void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(DataVector& alpha)
-{
-	DehierarchisationLinearStretchedBoundary func(this->storage);
-	sweep<DehierarchisationLinearStretchedBoundary> s(func, this->storage);
+    void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(DataVector& alpha) {
+      DehierarchisationLinearStretchedBoundary func(this->storage);
+      sweep<DehierarchisationLinearStretchedBoundary> s(func, this->storage);
 
-	// N D case
-	if (this->storage->dim() > 1)
-	{
-		for (size_t i = 0; i < this->storage->dim(); i++)
-		{
-			s.sweep1D_Boundary(alpha, alpha, i);
-		}
-	}
-	// 1 D case
-	else
-	{
-		s.sweep1D(alpha, alpha, 0);
-	}
-}
+      // N D case
+      if (this->storage->dim() > 1) {
+        for (size_t i = 0; i < this->storage->dim(); i++) {
+          s.sweep1D_Boundary(alpha, alpha, i);
+        }
+      }
+      // 1 D case
+      else {
+        s.sweep1D(alpha, alpha, 0);
+      }
+    }
 
-}
+  }
 }

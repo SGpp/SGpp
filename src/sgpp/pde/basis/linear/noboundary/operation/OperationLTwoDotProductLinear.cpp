@@ -12,36 +12,30 @@
 
 #include "base/algorithm/sweep.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(sg::base::GridStorage* storage) : StdUpDown(storage)
-{
-}
+    OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(sg::base::GridStorage* storage) : StdUpDown(storage) {
+    }
 
-OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear()
-{
-}
+    OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear() {
+    }
 
-void OperationLTwoDotProductLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// phi * phi
-	PhiPhiUpBBLinear func(this->storage);
-	sg::base::sweep<PhiPhiUpBBLinear> s(func, this->storage);
+    void OperationLTwoDotProductLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      // phi * phi
+      PhiPhiUpBBLinear func(this->storage);
+      sg::base::sweep<PhiPhiUpBBLinear> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
-}
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLTwoDotProductLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// phi * phi
-	PhiPhiDownBBLinear func(this->storage);
-	sg::base::sweep<PhiPhiDownBBLinear> s(func, this->storage);
+    void OperationLTwoDotProductLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      // phi * phi
+      PhiPhiDownBBLinear func(this->storage);
+      sg::base::sweep<PhiPhiDownBBLinear> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
-}
+      s.sweep1D(alpha, result, dim);
+    }
 
-}
+  }
 }

@@ -12,67 +12,60 @@
 
 #include "base/basis/modpoly/algorithm_sweep/HierarchisationModPoly.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace base
-{
+  namespace base {
 
-HierarchisationModPoly::HierarchisationModPoly(GridStorage* storage, SModPolyBase* base) : storage(storage), base(base)
-{
-}
+    HierarchisationModPoly::HierarchisationModPoly(GridStorage* storage, SModPolyBase* base) : storage(storage), base(base) {
+    }
 
-HierarchisationModPoly::~HierarchisationModPoly()
-{
-}
+    HierarchisationModPoly::~HierarchisationModPoly() {
+    }
 
-void HierarchisationModPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-{
-	DataVector koeffs(index.getGridDepth(dim)+1);
-	koeffs.setAll(0.0);
-	rec(source, result, index, dim, koeffs);
-}
+    void HierarchisationModPoly::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
+      DataVector koeffs(index.getGridDepth(dim) + 1);
+      koeffs.setAll(0.0);
+      rec(source, result, index, dim, koeffs);
+    }
 
-void HierarchisationModPoly::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs)
-{
-	// current position on the grid
-	size_t seq = index.seq();
-	
-	level_type cur_lev;
-	index_type cur_ind;
-	
-	// get current level and index from grid
-	index.get(dim, cur_lev, cur_ind);
-		
-	// hierarchisation
-	result[seq] = source[seq] - this->base->evalHierToTop(cur_lev, cur_ind, koeffs, cur_ind/(pow(2.0, static_cast<int>(cur_lev))));
-	
-	// recursive calls for the right and left side of the current node
-	if(index.hint() == false)
-	{
-		koeffs[cur_lev] = result[seq];
-		
-		// descend left
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, koeffs);
-		}
+    void HierarchisationModPoly::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs) {
+      // current position on the grid
+      size_t seq = index.seq();
 
-		// descend right
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, koeffs);
-		}
+      level_type cur_lev;
+      index_type cur_ind;
 
-		// ascend
-		index.up(dim);
-		
-		koeffs[cur_lev] = 0.0;
-	}
-}
+      // get current level and index from grid
+      index.get(dim, cur_lev, cur_ind);
 
-}	// namespace base
+      // hierarchisation
+      result[seq] = source[seq] - this->base->evalHierToTop(cur_lev, cur_ind, koeffs, cur_ind / (pow(2.0, static_cast<int>(cur_lev))));
 
-}	// namespace sg
+      // recursive calls for the right and left side of the current node
+      if (index.hint() == false) {
+        koeffs[cur_lev] = result[seq];
+
+        // descend left
+        index.left_child(dim);
+
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, koeffs);
+        }
+
+        // descend right
+        index.step_right(dim);
+
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, koeffs);
+        }
+
+        // ascend
+        index.up(dim);
+
+        koeffs[cur_lev] = 0.0;
+      }
+    }
+
+  } // namespace base
+
+} // namespace sg

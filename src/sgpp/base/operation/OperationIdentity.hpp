@@ -12,35 +12,30 @@
 
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * Implementation of identity Operation for all kinds of grids
- */
-class OperationIdentity: public OperationMatrix
-{
-public:
-	/**
-	 * Constructor of OperationIdentity
-	 */
-	OperationIdentity()
-	{
-	}
+    /**
+     * Implementation of identity Operation for all kinds of grids
+     */
+    class OperationIdentity: public OperationMatrix {
+      public:
+        /**
+         * Constructor of OperationIdentity
+         */
+        OperationIdentity() {
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationIdentity() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationIdentity() {}
 
-	void mult(DataVector& alpha, DataVector& result)
-	{
-		result = alpha;
-	}
-};
+        void mult(DataVector& alpha, DataVector& result) {
+          result = alpha;
+        }
+    };
 
-}
+  }
 }
 #endif /* OPERATIONIDENTITY_HPP */

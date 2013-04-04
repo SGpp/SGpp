@@ -7,51 +7,44 @@
 
 #include "base/basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
 
 
-DehierarchisationLinearBoundary::DehierarchisationLinearBoundary(GridStorage* storage) : DehierarchisationLinear(storage)
-{
-}
+    DehierarchisationLinearBoundary::DehierarchisationLinearBoundary(GridStorage* storage) : DehierarchisationLinear(storage) {
+    }
 
-DehierarchisationLinearBoundary::~DehierarchisationLinearBoundary()
-{
-}
+    DehierarchisationLinearBoundary::~DehierarchisationLinearBoundary() {
+    }
 
-void DehierarchisationLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim)
-{
-	double left_boundary;
-	double right_boundary;
-	size_t seq;
+    void DehierarchisationLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
+      double left_boundary;
+      double right_boundary;
+      size_t seq;
 
-	// left boundary
-	index.left_levelzero(dim);
-	seq = index.seq();
-	left_boundary = source[seq];
-	// right boundary
-	index.right_levelzero(dim);
-	seq = index.seq();
-	right_boundary = source[seq];
+      // left boundary
+      index.left_levelzero(dim);
+      seq = index.seq();
+      left_boundary = source[seq];
+      // right boundary
+      index.right_levelzero(dim);
+      seq = index.seq();
+      right_boundary = source[seq];
 
-	// move to root
-	if (!index.hint())
-	{
-		index.top(dim);
+      // move to root
+      if (!index.hint()) {
+        index.top(dim);
 
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, left_boundary, right_boundary);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, left_boundary, right_boundary);
+        }
 
-		index.left_levelzero(dim);
-	}
-}
+        index.left_levelzero(dim);
+      }
+    }
 
-	// namespace detail
+    // namespace detail
 
-}	// namespace sg
+  } // namespace sg
 }

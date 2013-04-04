@@ -7,67 +7,60 @@
 
 #include "finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.hpp"
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
 
 
-DPhiPhiDownBBLinearStretched::DPhiPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching())
-{
-}
+    DPhiPhiDownBBLinearStretched::DPhiPhiDownBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching()) {
+    }
 
-DPhiPhiDownBBLinearStretched::~DPhiPhiDownBBLinearStretched()
-{
-}
+    DPhiPhiDownBBLinearStretched::~DPhiPhiDownBBLinearStretched() {
+    }
 
-void DPhiPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	rec(source, result, index, dim, 0.0, 0.0);
-}
+    void DPhiPhiDownBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      rec(source, result, index, dim, 0.0, 0.0);
+    }
 
-void DPhiPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr)
-{
-	size_t seq = index.seq();
+    void DPhiPhiDownBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+      size_t seq = index.seq();
 
-	double alpha_value = source[seq];
+      double alpha_value = source[seq];
 
-	sg::base::GridStorage::index_type::level_type l;
-	sg::base::GridStorage::index_type::index_type i;
+      sg::base::GridStorage::index_type::level_type l;
+      sg::base::GridStorage::index_type::index_type i;
 
-	index.get(dim, l, i);
+      index.get(dim, l, i);
 
-	double posl=0, posr=0, posc=0;
+      double posl = 0, posr = 0, posc = 0;
 
-	this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
+      this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
 
-	// integration
-	result[seq] = (  0.5*(fr -fl) );    // diagonal entry = 0.0
+      // integration
+      result[seq] = (  0.5 * (fr - fl) ); // diagonal entry = 0.0
 
-	// dehierarchisation
+      // dehierarchisation
 
-	double fm  = (fr-fl)*(posc-posl)/(posr-posl)+fl + alpha_value;
+      double fm  = (fr - fl) * (posc - posl) / (posr - posl) + fl + alpha_value;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fm);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fm, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fm);
+        }
 
-		index.up(dim);
-	}
-}
+        index.step_right(dim);
 
- // namespace detail
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fm, fr);
+        }
 
-} // namespace sg
+        index.up(dim);
+      }
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

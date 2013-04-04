@@ -7,78 +7,69 @@
 
 #include "base/tools/SGppStopwatch.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-SGppStopwatch::SGppStopwatch()
-{
+    SGppStopwatch::SGppStopwatch() {
 #ifdef _WIN32
-	QueryPerformanceFrequency(&ticksPerSecond);
+      QueryPerformanceFrequency(&ticksPerSecond);
 #endif
 #ifndef _WIN32
 
 #endif
-}
+    }
 
-SGppStopwatch::~SGppStopwatch()
-{
-}
+    SGppStopwatch::~SGppStopwatch() {
+    }
 
-void SGppStopwatch::start()
-{
+    void SGppStopwatch::start() {
 #ifdef _WIN32
-	QueryPerformanceCounter(&begin);
+      QueryPerformanceCounter(&begin);
 #endif
 #ifndef _WIN32
-	gettimeofday(&begin,(struct timezone *)0);
+      gettimeofday(&begin, (struct timezone*)0);
 #endif
-}
+    }
 
-double SGppStopwatch::stop()
-{
+    double SGppStopwatch::stop() {
 #ifdef _WIN32
-    LARGE_INTEGER end;
-	QueryPerformanceCounter(&end);
+      LARGE_INTEGER end;
+      QueryPerformanceCounter(&end);
 
-	double ret, ticksps;
+      double ret, ticksps;
 
-	end.QuadPart -= begin.QuadPart;
-	ret = (double)(end.QuadPart);
-	ticksps = (double)(ticksPerSecond.QuadPart);
-	ret /= ticksps;
+      end.QuadPart -= begin.QuadPart;
+      ret = (double)(end.QuadPart);
+      ticksps = (double)(ticksPerSecond.QuadPart);
+      ret /= ticksps;
 
-	return ret;
+      return ret;
 #endif
 #ifndef _WIN32
-    timeval end;
-	gettimeofday(&end,(struct timezone *)0);
-	double seconds, useconds;
-	double ret, tmp;
+      timeval end;
+      gettimeofday(&end, (struct timezone*)0);
+      double seconds, useconds;
+      double ret, tmp;
 
-	if (end.tv_usec >= begin.tv_usec)
-	{
-		seconds = (double)end.tv_sec - (double)begin.tv_sec;
-		useconds = (double)end.tv_usec - (double)begin.tv_usec;
-	}
-	else
-	{
-		seconds = (double)end.tv_sec - (double)begin.tv_sec;
-		seconds -= 1;					// Correction
-		useconds = (double)end.tv_usec - (double)begin.tv_usec;
-		useconds += 1000000;			// Correction
-	}
+      if (end.tv_usec >= begin.tv_usec) {
+        seconds = (double)end.tv_sec - (double)begin.tv_sec;
+        useconds = (double)end.tv_usec - (double)begin.tv_usec;
+      } else {
+        seconds = (double)end.tv_sec - (double)begin.tv_sec;
+        seconds -= 1;         // Correction
+        useconds = (double)end.tv_usec - (double)begin.tv_usec;
+        useconds += 1000000;      // Correction
+      }
 
-	// get time in seconds
-	tmp = (double)useconds;
-	ret = (double)seconds;
-	tmp /= 1000000;
-	ret += tmp;
+      // get time in seconds
+      tmp = (double)useconds;
+      ret = (double)seconds;
+      tmp /= 1000000;
+      ret += tmp;
 
-	return ret;
+      return ret;
 #endif
-}
+    }
 
-}
+  }
 }

@@ -13,62 +13,67 @@
 
 #include <vector>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * Hierarchisation on sparse grid, linear grid without boundaries
- */
-class OperationStencilHierarchisationLinear : public OperationStencilHierarchisation
-{
-public:
-	/**
-	 * Constructor of OperationStencilHierarchisationLinear
-	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
-	 */
-	OperationStencilHierarchisationLinear(GridStorage* storage) : storage(storage),
-	surplusStencil(0), neighborStencil(0), weightStencil(0) {}
+    /**
+     * Hierarchisation on sparse grid, linear grid without boundaries
+     */
+    class OperationStencilHierarchisationLinear : public OperationStencilHierarchisation {
+      public:
+        /**
+         * Constructor of OperationStencilHierarchisationLinear
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         */
+        OperationStencilHierarchisationLinear(GridStorage* storage) : storage(storage),
+          surplusStencil(0), neighborStencil(0), weightStencil(0) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationStencilHierarchisationLinear() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationStencilHierarchisationLinear() {}
 
-	virtual void doHierarchisation(DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha);
+        virtual void doHierarchisation(DataVector& node_values);
+        virtual void doDehierarchisation(DataVector& alpha);
 
 
-	virtual const IndexStencil&
-	getSurplusStencil() const { return surplusStencil; };
+        virtual const IndexStencil&
+        getSurplusStencil() const {
+          return surplusStencil;
+        };
 
-	virtual const IndexStencil&
-	getNeighborStencil() const { return neighborStencil; };
+        virtual const IndexStencil&
+        getNeighborStencil() const {
+          return neighborStencil;
+        };
 
-	virtual const WeightStencil&
-	getWeightStencil() const  { return weightStencil; };
+        virtual const WeightStencil&
+        getWeightStencil() const  {
+          return weightStencil;
+        };
 
-	virtual size_t
-	getStencilSize() const { return surplusStencil.size(); };
+        virtual size_t
+        getStencilSize() const {
+          return surplusStencil.size();
+        };
 
-protected:
-	/// Pointer to the grid's GridStorage object
-	GridStorage* storage;
+      protected:
+        /// Pointer to the grid's GridStorage object
+        GridStorage* storage;
 
-	/// Index array with surplus indices
-	IndexStencil surplusStencil;
+        /// Index array with surplus indices
+        IndexStencil surplusStencil;
 
-	/// Index array with neighboring surplus indices
-	IndexStencil neighborStencil;
+        /// Index array with neighboring surplus indices
+        IndexStencil neighborStencil;
 
-	/// Index array with surplus indices
-	WeightStencil weightStencil;
+        /// Index array with surplus indices
+        WeightStencil weightStencil;
 
-};
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONSTENCILHIERARCHISATION_HPP */

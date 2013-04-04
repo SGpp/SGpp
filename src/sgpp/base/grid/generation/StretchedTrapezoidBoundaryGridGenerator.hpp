@@ -11,48 +11,45 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class provides the interface for the grid generation
- * for grids with boundaries, pentagon cut through sub space scheme
- */
-class StretchedTrapezoidBoundaryGridGenerator : public GridGenerator
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage template type that holds the grid points
-	 */
-	StretchedTrapezoidBoundaryGridGenerator(GridStorage* storage);
+    /**
+     * This class provides the interface for the grid generation
+     * for grids with boundaries, pentagon cut through sub space scheme
+     */
+    class StretchedTrapezoidBoundaryGridGenerator : public GridGenerator {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage template type that holds the grid points
+         */
+        StretchedTrapezoidBoundaryGridGenerator(GridStorage* storage);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~StretchedTrapezoidBoundaryGridGenerator();
+        /**
+         * Destructor
+         */
+        virtual ~StretchedTrapezoidBoundaryGridGenerator();
 
-	virtual void regular(int level);
+        virtual void regular(int level);
         virtual void full(int level);
-	virtual void refine(RefinementFunctor* func);
-	virtual size_t getNumberOfRefinablePoints();
+        virtual void refine(RefinementFunctor* func);
+        virtual size_t getNumberOfRefinablePoints();
 
-	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
-	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
-	virtual size_t getNumberOfRemovablePoints();
+        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
+        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
+        virtual size_t getNumberOfRemovablePoints();
 
-	virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel);
-	virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel);
+        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel);
+        virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel);
 
-protected:
-	/// Pointer to the grid's storage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to the grid's storage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* STRETCHEDTRAPEZOIDBOUNDARYGRIDGENERATOR_HPP */

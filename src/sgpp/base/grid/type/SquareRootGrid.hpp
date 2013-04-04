@@ -11,47 +11,44 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * grid with linear base functions with boundaries, pentagon cut
- */
-class SquareRootGrid : public Grid
-{
-protected:
-	SquareRootGrid(std::istream& istr);
+    /**
+     * grid with linear base functions with boundaries, pentagon cut
+     */
+    class SquareRootGrid : public Grid {
+      protected:
+        SquareRootGrid(std::istream& istr);
 
-public:
-	/**
-	 * Constructor Linear Trapezoid Boundary Grid
-	 *
-	 * @param dim the dimension of the grid
-	 */
-	SquareRootGrid(size_t dim);
+      public:
+        /**
+         * Constructor Linear Trapezoid Boundary Grid
+         *
+         * @param dim the dimension of the grid
+         */
+        SquareRootGrid(size_t dim);
 
-	/**
-	 * Constructor Linear Trapezoid Boundary Grid
-	 *
-	 * @param BB the BoundingBox of the grid
-	 */
-	SquareRootGrid(BoundingBox& BB);
+        /**
+         * Constructor Linear Trapezoid Boundary Grid
+         *
+         * @param BB the BoundingBox of the grid
+         */
+        SquareRootGrid(BoundingBox& BB);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~SquareRootGrid();
+        /**
+         * Destructor
+         */
+        virtual ~SquareRootGrid();
 
-	virtual const char* getType();
+        virtual const char* getType();
 
-	virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator();
 
-	static Grid* unserialize(std::istream& istr);
-};
+        static Grid* unserialize(std::istream& istr);
+    };
 
-}
+  }
 }
 
 #endif /* SQUAREROOTGRID_HPP_ */

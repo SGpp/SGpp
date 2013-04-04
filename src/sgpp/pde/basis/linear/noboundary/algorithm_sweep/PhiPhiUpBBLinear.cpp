@@ -7,132 +7,119 @@
 
 #include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
 
 
-PhiPhiUpBBLinear::PhiPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox())
-{
-}
+    PhiPhiUpBBLinear::PhiPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    }
 
-PhiPhiUpBBLinear::~PhiPhiUpBBLinear()
-{
-}
+    PhiPhiUpBBLinear::~PhiPhiUpBBLinear() {
+    }
 
-void PhiPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
-{
-	double q = boundingBox->getIntervalWidth(dim);
-	double t = boundingBox->getIntervalOffset(dim);
+    void PhiPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+      double q = boundingBox->getIntervalWidth(dim);
+      double t = boundingBox->getIntervalOffset(dim);
 
-	bool useBB = false;
+      bool useBB = false;
 
-	if (q != 1.0 || t != 0.0)
-	{
-		useBB = true;
-	}
+      if (q != 1.0 || t != 0.0) {
+        useBB = true;
+      }
 
-	// get boundary values
-	double fl = 0.0;
-	double fr = 0.0;
+      // get boundary values
+      double fl = 0.0;
+      double fr = 0.0;
 
-	if (useBB)
-	{
-		recBB(source, result, index, dim, fl, fr, q, t);
-	}
-	else
-	{
-		rec(source, result, index, dim, fl, fr);
-	}
-}
+      if (useBB) {
+        recBB(source, result, index, dim, fl, fr, q, t);
+      } else {
+        rec(source, result, index, dim, fl, fr);
+      }
+    }
 
-void PhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr)
-{
-	size_t seq = index.seq();
+    void PhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+      size_t seq = index.seq();
 
-	fl = fr = 0.0;
-	double fml = 0.0;
-	double fmr = 0.0;
+      fl = fr = 0.0;
+      double fml = 0.0;
+      double fmr = 0.0;
 
-	sg::base::GridStorage::index_type::level_type current_level;
-	sg::base::GridStorage::index_type::index_type current_index;
+      sg::base::GridStorage::index_type::level_type current_level;
+      sg::base::GridStorage::index_type::index_type current_index;
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fl, fml);
-		}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			rec(source, result, index, dim, fmr, fr);
-		}
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fl, fml);
+        }
 
-		index.up(dim);
-	}
+        index.step_right(dim);
 
-	index.get(dim, current_level, current_index);
+        if (!storage->end(index.seq())) {
+          rec(source, result, index, dim, fmr, fr);
+        }
 
-	double fm = fml + fmr;
-	double alpha_value = source[seq];
+        index.up(dim);
+      }
 
-	// transposed operations:
-	result[seq] = fm;
+      index.get(dim, current_level, current_index);
 
-	double tmp = (fm/2.0) + (alpha_value/static_cast<double>(1<<(current_level+1)));
+      double fm = fml + fmr;
+      double alpha_value = source[seq];
 
-	fl = tmp + fl;
-	fr = tmp + fr;
-}
+      // transposed operations:
+      result[seq] = fm;
 
-void PhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t)
-{
-	size_t seq = index.seq();
+      double tmp = (fm / 2.0) + (alpha_value / static_cast<double>(1 << (current_level + 1)));
 
-	fl = fr = 0.0;
-	double fml = 0.0;
-	double fmr = 0.0;
+      fl = tmp + fl;
+      fr = tmp + fr;
+    }
 
-	sg::base::GridStorage::index_type::level_type current_level;
-	sg::base::GridStorage::index_type::index_type current_index;
+    void PhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
+      size_t seq = index.seq();
 
-	if(!index.hint())
-	{
-		index.left_child(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fl, fml, q, t);
-		}
+      fl = fr = 0.0;
+      double fml = 0.0;
+      double fmr = 0.0;
 
-		index.step_right(dim);
-		if(!storage->end(index.seq()))
-		{
-			recBB(source, result, index, dim, fmr, fr, q ,t);
-		}
+      sg::base::GridStorage::index_type::level_type current_level;
+      sg::base::GridStorage::index_type::index_type current_index;
 
-		index.up(dim);
-	}
+      if (!index.hint()) {
+        index.left_child(dim);
 
-	index.get(dim, current_level, current_index);
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fl, fml, q, t);
+        }
 
-	double fm = fml + fmr;
-	double alpha_value = source[seq];
+        index.step_right(dim);
 
-	// transposed operations:
-	result[seq] = fm;
+        if (!storage->end(index.seq())) {
+          recBB(source, result, index, dim, fmr, fr, q , t);
+        }
 
-	double tmp = ((fm/2.0) + ((alpha_value/static_cast<double>(1<<(current_level+1)))*q));
+        index.up(dim);
+      }
 
-	fl = tmp + fl;
-	fr = tmp + fr;
-}
+      index.get(dim, current_level, current_index);
 
-// namespace detail
-}
-// namespace sg
+      double fm = fml + fmr;
+      double alpha_value = source[seq];
+
+      // transposed operations:
+      result[seq] = fm;
+
+      double tmp = ((fm / 2.0) + ((alpha_value / static_cast<double>(1 << (current_level + 1))) * q));
+
+      fl = tmp + fl;
+      fr = tmp + fr;
+    }
+
+    // namespace detail
+  }
+  // namespace sg
 }

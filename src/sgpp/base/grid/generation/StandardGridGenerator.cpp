@@ -14,83 +14,74 @@
 #include "base/grid/generation/hashmap/HashRefinement.hpp"
 #include "base/grid/generation/hashmap/HashGenerator.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-StandardGridGenerator::StandardGridGenerator(GridStorage* storage) : storage(storage)
-{
-}
-
-StandardGridGenerator::~StandardGridGenerator()
-{
-}
-
-void StandardGridGenerator::regular(int level)
-{
-	if (level < 0) {
-	   throw generation_exception("Grid level value is negative");
+    StandardGridGenerator::StandardGridGenerator(GridStorage* storage) : storage(storage) {
     }
-	HashGenerator gen;
-	gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
-}
 
-void StandardGridGenerator::full(int level)
-{
-	if (level < 0) {
-		   throw generation_exception("Grid level value is negative");
-	    }
-	HashGenerator gen;
-	gen.full(this->storage, static_cast<HashGenerator::level_t>(level));
-}
+    StandardGridGenerator::~StandardGridGenerator() {
+    }
 
-void StandardGridGenerator::refine(RefinementFunctor* func)
-{
-	HashRefinement refine;
-	refine.free_refine(this->storage, func);
-}
+    void StandardGridGenerator::regular(int level) {
+      if (level < 0) {
+        throw generation_exception("Grid level value is negative");
+      }
 
-size_t StandardGridGenerator::getNumberOfRefinablePoints()
-{
-	HashRefinement refine;
-	return refine.getNumberOfRefinablePoints(this->storage);
-}
+      HashGenerator gen;
+      gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
+    }
 
-void StandardGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
-{
-	HashCoarsening coarsen;
-	coarsen.free_coarsen(this->storage, func, alpha);
-}
+    void StandardGridGenerator::full(int level) {
+      if (level < 0) {
+        throw generation_exception("Grid level value is negative");
+      }
 
-void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly)
-{
-	HashCoarsening coarsen;
-	coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
-}
+      HashGenerator gen;
+      gen.full(this->storage, static_cast<HashGenerator::level_t>(level));
+    }
 
-size_t StandardGridGenerator::getNumberOfRemovablePoints()
-{
-	HashCoarsening coarsen;
-	return coarsen.getNumberOfRemovablePoints(this->storage);
-}
+    void StandardGridGenerator::refine(RefinementFunctor* func) {
+      HashRefinement refine;
+      refine.free_refine(this->storage, func);
+    }
 
-void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel)
-{
-	if (maxLevel < 0) {
-			   throw generation_exception("Grid level value is negative");
-		    }
-	throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
-}
+    size_t StandardGridGenerator::getNumberOfRefinablePoints() {
+      HashRefinement refine;
+      return refine.getNumberOfRefinablePoints(this->storage);
+    }
 
-size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel)
-{
-	if (maxLevel < 0) {
-				   throw generation_exception("Grid level value is negative");
-			    }
-	throw generation_exception("StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
-	return 0;
-}
+    void StandardGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha) {
+      HashCoarsening coarsen;
+      coarsen.free_coarsen(this->storage, func, alpha);
+    }
 
-}
+    void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {
+      HashCoarsening coarsen;
+      coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
+    }
+
+    size_t StandardGridGenerator::getNumberOfRemovablePoints() {
+      HashCoarsening coarsen;
+      return coarsen.getNumberOfRemovablePoints(this->storage);
+    }
+
+    void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel) {
+      if (maxLevel < 0) {
+        throw generation_exception("Grid level value is negative");
+      }
+
+      throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
+    }
+
+    size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel) {
+      if (maxLevel < 0) {
+        throw generation_exception("Grid level value is negative");
+      }
+
+      throw generation_exception("StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
+      return 0;
+    }
+
+  }
 }

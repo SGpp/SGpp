@@ -9,126 +9,117 @@
 
 #include <cmath>
 
-namespace sg
-{
-namespace solver
-{
+namespace sg {
+  namespace solver {
 
-BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : sg::solver::SLESolverSP(imax, epsilon)
-{
-}
+    BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : sg::solver::SLESolverSP(imax, epsilon) {
+    }
 
-BiCGStabSP::~BiCGStabSP()
-{
-}
+    BiCGStabSP::~BiCGStabSP() {
+    }
 
-void BiCGStabSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold)
-{
-	this->nIterations = 1;
-	float epsilonSqd = this->myEpsilon* this->myEpsilon;
+    void BiCGStabSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
+      this->nIterations = 1;
+      float epsilonSqd = this->myEpsilon * this->myEpsilon;
 
-	if (reuse == false)
-	{
-		// Choose x0
-		alpha.setAll(0.0f);
-	}
+      if (reuse == false) {
+        // Choose x0
+        alpha.setAll(0.0f);
+      }
 
-	//Calculate r0
-	sg::base::DataVectorSP r(alpha.getSize());
-	SystemMatrix.mult(alpha, r);
-	r.sub(b);
+      //Calculate r0
+      sg::base::DataVectorSP r(alpha.getSize());
+      SystemMatrix.mult(alpha, r);
+      r.sub(b);
 
-	float delta_0 = r.dotProduct(r)*epsilonSqd;
-	float delta = 0.0f;
+      float delta_0 = r.dotProduct(r) * epsilonSqd;
+      float delta = 0.0f;
 
-	if (verbose == true)
-	{
-		std::cout <<  "delta_0 " << delta_0 << std::endl;
-	}
+      if (verbose == true) {
+        std::cout <<  "delta_0 " << delta_0 << std::endl;
+      }
 
-	//Choose r0 as r
-	sg::base::DataVectorSP rZero(r);
-	// Set p as r0
-	sg::base::DataVectorSP p(rZero);
+      //Choose r0 as r
+      sg::base::DataVectorSP rZero(r);
+      // Set p as r0
+      sg::base::DataVectorSP p(rZero);
 
-	float rho = rZero.dotProduct(r);
-	float rho_new = 0.0f;
-	float sigma = 0.0f;
-	float a = 0.0f;
-	float omega = 0.0f;
-	float beta = 0.0f;
+      float rho = rZero.dotProduct(r);
+      float rho_new = 0.0f;
+      float sigma = 0.0f;
+      float a = 0.0f;
+      float omega = 0.0f;
+      float beta = 0.0f;
 
-	sg::base::DataVectorSP s(alpha.getSize());
-	sg::base::DataVectorSP v(alpha.getSize());
-	sg::base::DataVectorSP w(alpha.getSize());
+      sg::base::DataVectorSP s(alpha.getSize());
+      sg::base::DataVectorSP v(alpha.getSize());
+      sg::base::DataVectorSP w(alpha.getSize());
 
-	s.setAll(0.0);
-	v.setAll(0.0);
-	w.setAll(0.0);
+      s.setAll(0.0);
+      v.setAll(0.0);
+      w.setAll(0.0);
 
-	while (this->nIterations < this->nMaxIterations)
-	{
-		// s  = Ap
-		s.setAll(0.0f);
-		SystemMatrix.mult(p, s);
+      while (this->nIterations < this->nMaxIterations) {
+        // s  = Ap
+        s.setAll(0.0f);
+        SystemMatrix.mult(p, s);
 
-		//std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
+        //std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
 
-		sigma = s.dotProduct(rZero);
-		if (fabs(sigma) == 0.0f)
-		{
-			break;
-		}
+        sigma = s.dotProduct(rZero);
 
-		a = rho/sigma;
+        if (fabs(sigma) == 0.0f) {
+          break;
+        }
 
-		// w = r - a*s
-		w = r;
-		w.axpy((-1.0f)*a, s);
+        a = rho / sigma;
 
-		// v = Aw
-		v.setAll(0.0f);
-		SystemMatrix.mult(w, v);
+        // w = r - a*s
+        w = r;
+        w.axpy((-1.0f)*a, s);
 
-		//std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
+        // v = Aw
+        v.setAll(0.0f);
+        SystemMatrix.mult(w, v);
 
-		omega = (v.dotProduct(w)) / (v.dotProduct(v));
+        //std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
-		// x = x - a*p - omega*w
-		alpha.axpy((-1.0f)*a, p);
-		alpha.axpy((-1.0f)*omega, w);
+        omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
-		// r = r - a*s - omega*v
-		r.axpy((-1.0f)*a, s);
-		r.axpy((-1.0f)*omega, v);
+        // x = x - a*p - omega*w
+        alpha.axpy((-1.0f)*a, p);
+        alpha.axpy((-1.0f)*omega, w);
 
-		rho_new = r.dotProduct(rZero);
+        // r = r - a*s - omega*v
+        r.axpy((-1.0f)*a, s);
+        r.axpy((-1.0f)*omega, v);
 
-		delta = r.dotProduct(r);
+        rho_new = r.dotProduct(rZero);
 
-		if (verbose == true)
-		{
-			std::cout << "delta: " << delta << std::endl;
-		}
-		this->residuum = delta;
+        delta = r.dotProduct(r);
 
-		// Stop in case of better accuracy
-		if (delta < delta_0 || delta < max_threshold)
-		{
-			break;
-		}
+        if (verbose == true) {
+          std::cout << "delta: " << delta << std::endl;
+        }
 
-		beta = (rho_new/rho) * (a/omega);
-		rho = rho_new;
+        this->residuum = delta;
 
-		// p = r + beta*(p - omega*s)
-		p.axpy((-1.0f)*omega, s);
-		p.mult(beta);
-		p.add(r);
+        // Stop in case of better accuracy
+        if (delta < delta_0 || delta < max_threshold) {
+          break;
+        }
 
-		this->nIterations++;
-	}
-}
+        beta = (rho_new / rho) * (a / omega);
+        rho = rho_new;
 
-}
+        // p = r + beta*(p - omega*s)
+        p.axpy((-1.0f)*omega, s);
+        p.mult(beta);
+        p.add(r);
+
+        this->nIterations++;
+      }
+    }
+
+  }
 }

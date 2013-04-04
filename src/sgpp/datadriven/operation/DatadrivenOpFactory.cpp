@@ -33,110 +33,86 @@
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp"
 #include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace op_factory
-{
+  namespace op_factory {
 
-  datadriven::OperationTest* createOperationTest(base::Grid& grid)
-  {
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
+    datadriven::OperationTest* createOperationTest(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0) {
         return new datadriven::OperationTestLinear(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0
-            || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0
+                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         return new datadriven::OperationTestLinearBoundary(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "modBspline") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "modBspline") == 0 ) {
         return new datadriven::OperationTestModBspline(grid.getStorage(),
-                                                   ((base::ModBsplineGrid*) &grid)->getDegree());
-      }
-    else if(strcmp(grid.getType(), "modlinear") == 0 )
-      {
+               ((base::ModBsplineGrid*) &grid)->getDegree());
+      } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
         return new datadriven::OperationTestModLinear(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "poly") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "poly") == 0 ) {
         return new datadriven::OperationTestPoly(grid.getStorage(),
-                                             ((base::PolyGrid*) &grid)->getDegree());
-      }
-    else if(strcmp(grid.getType(), "modpoly") == 0 )
-      {
+               ((base::PolyGrid*) &grid)->getDegree());
+      } else if (strcmp(grid.getType(), "modpoly") == 0 ) {
         return new datadriven::OperationTestModPoly(grid.getStorage(),
-                                                ((base::ModPolyGrid*) &grid)->getDegree());
-      }
-    else if(strcmp(grid.getType(), "modWavelet") == 0 )
-      {
+               ((base::ModPolyGrid*) &grid)->getDegree());
+      } else if (strcmp(grid.getType(), "modWavelet") == 0 ) {
         return new datadriven::OperationTestModWavelet(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "prewavelet") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "prewavelet") == 0 ) {
         return new datadriven::OperationTestPrewavelet(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearStretched") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new datadriven::OperationTestLinearStretched(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 )
-      {
+      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
         return new datadriven::OperationTestLinearStretchedBoundary(grid.getStorage());
       }
 
-    else
-      throw base::factory_exception("OperationTest is not implemented for this grid type.");
-  }
-
-  base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k)
-  {
-    if(strcmp(grid.getType(), "linear") == 0
-       || strcmp(grid.getType(), "linearBoundary") == 0 
-       || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0
-       || strcmp(grid.getType(), "modlinear") == 0) {
-      return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode, k);
+      else
+        throw base::factory_exception("OperationTest is not implemented for this grid type.");
     }
-    else
-      throw base::factory_exception("OperationRegularizationDiagonal is not implemented for this grid type.");
-  }
 
-  datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid) {
-    if(strcmp(grid.getType(), "linear") == 0)
-      return new datadriven::OperationDensityMarginalizeLinear(&grid);
-    else
-      throw base::factory_exception("OperationDensityMarginalize is not implemented for this grid type.");
-  }
+    base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k) {
+      if (strcmp(grid.getType(), "linear") == 0
+          || strcmp(grid.getType(), "linearBoundary") == 0
+          || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0
+          || strcmp(grid.getType(), "modlinear") == 0) {
+        return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode, k);
+      } else
+        throw base::factory_exception("OperationRegularizationDiagonal is not implemented for this grid type.");
+    }
 
-  datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid) {
-    if(strcmp(grid.getType(), "linear") == 0)
-      return new datadriven::OperationDensityMargTo1DLinear(&grid);
-    else
-      throw base::factory_exception("OperationDensityMargTo1D is not implemented for this grid type.");
-  }
+    datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0)
+        return new datadriven::OperationDensityMarginalizeLinear(&grid);
+      else
+        throw base::factory_exception("OperationDensityMarginalize is not implemented for this grid type.");
+    }
 
-  datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid) {
-    if(strcmp(grid.getType(), "linear") == 0)
-      return new datadriven::OperationDensitySampling1DLinear(&grid);
-    else
-      throw base::factory_exception("OperationDensitySampling1D is not implemented for this grid type.");
-  }
+    datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0)
+        return new datadriven::OperationDensityMargTo1DLinear(&grid);
+      else
+        throw base::factory_exception("OperationDensityMargTo1D is not implemented for this grid type.");
+    }
 
-  datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid) {
-    if(strcmp(grid.getType(), "linear") == 0)
-      return new datadriven::OperationDensitySamplingLinear(&grid);
-    else
-      throw base::factory_exception("OperationDensitySampling is not implemented for this grid type.");
-  }
+    datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0)
+        return new datadriven::OperationDensitySampling1DLinear(&grid);
+      else
+        throw base::factory_exception("OperationDensitySampling1D is not implemented for this grid type.");
+    }
 
-  datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid) {
-    if(strcmp(grid.getType(), "linear") == 0)
-      return new datadriven::OperationDensityConditionalLinear(&grid);
-    else
-      throw base::factory_exception("OperationDensityConditional is not implemented for this grid type.");
-  }
+    datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0)
+        return new datadriven::OperationDensitySamplingLinear(&grid);
+      else
+        throw base::factory_exception("OperationDensitySampling is not implemented for this grid type.");
+    }
 
-}
+    datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0)
+        return new datadriven::OperationDensityConditionalLinear(&grid);
+      else
+        throw base::factory_exception("OperationDensityConditional is not implemented for this grid type.");
+    }
+
+  }
 }
 

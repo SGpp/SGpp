@@ -8,83 +8,66 @@
 #include "base/grid/common/DirichletUpdateVector.hpp"
 #include "solver/ode/CrankNicolson.hpp"
 
-namespace sg
-{
-namespace solver
-{
+namespace sg {
+  namespace solver {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen)
-{
-	this->residuum = 0.0;
-}
+    CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen) {
+      this->residuum = 0.0;
+    }
 
-CrankNicolson::~CrankNicolson()
-{
-}
+    CrankNicolson::~CrankNicolson() {
+    }
 
-void CrankNicolson::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose)
-{
-	size_t allIter = 0;
-    sg::base::DataVector* rhs = NULL;
+    void CrankNicolson::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
+      size_t allIter = 0;
+      sg::base::DataVector* rhs = NULL;
 
-	for (size_t i = 0; i < this->nMaxIterations; i++)
-	{
-		// generate right hand side
-		rhs = System.generateRHS();
+      for (size_t i = 0; i < this->nMaxIterations; i++) {
+        // generate right hand side
+        rhs = System.generateRHS();
 
-		// solve the system of the current timestep
-		LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
-	    allIter += LinearSystemSolver.getNumberIterations();
+        // solve the system of the current timestep
+        LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
+        allIter += LinearSystemSolver.getNumberIterations();
 
-	    if (verbose == true)
-	    {
-	    	if (myScreen == NULL)
-	    	{
-	    		std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
-	    	}
-	    }
-	    if (myScreen != NULL)
-    	{
-    		std::stringstream soutput;
-    		soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
+        if (verbose == true) {
+          if (myScreen == NULL) {
+            std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
+          }
+        }
 
-    		if (i < this->nMaxIterations-1)
-    		{
-    			myScreen->update((size_t)(((double)(i+1)*100.0)/((double)this->nMaxIterations)), soutput.str());
-    		}
-    		else
-    		{
-    			myScreen->update(100, soutput.str());
-    		}
-    	}
+        if (myScreen != NULL) {
+          std::stringstream soutput;
+          soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
-	    System.finishTimestep();
-	    // Do some adjustments on the boundaries if needed, copy values back
-	    if (bIdentifyLastStep == false)
-	    {
-	    	System.coarsenAndRefine(false);
-	    }
-	    else
-	    {
-			if (i < (this->nMaxIterations-1))
-			{
-				System.coarsenAndRefine(false);
-			}
-			else
-			{
-				System.coarsenAndRefine(true);
-			}
-	    }
-	}
+          if (i < this->nMaxIterations - 1) {
+            myScreen->update((size_t)(((double)(i + 1) * 100.0) / ((double)this->nMaxIterations)), soutput.str());
+          } else {
+            myScreen->update(100, soutput.str());
+          }
+        }
 
-	// write some empty lines to console
-    if (myScreen != NULL)
-	{
-    	myScreen->writeEmptyLines(2);
-	}
+        System.finishTimestep();
 
-    this->nIterations = allIter;
-}
+        // Do some adjustments on the boundaries if needed, copy values back
+        if (bIdentifyLastStep == false) {
+          System.coarsenAndRefine(false);
+        } else {
+          if (i < (this->nMaxIterations - 1)) {
+            System.coarsenAndRefine(false);
+          } else {
+            System.coarsenAndRefine(true);
+          }
+        }
+      }
 
-}
+      // write some empty lines to console
+      if (myScreen != NULL) {
+        myScreen->writeEmptyLines(2);
+      }
+
+      this->nIterations = allIter;
+    }
+
+  }
 }

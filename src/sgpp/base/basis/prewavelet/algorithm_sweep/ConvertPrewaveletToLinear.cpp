@@ -8,159 +8,145 @@
 #include "base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-ConvertPrewaveletToLinear::ConvertPrewaveletToLinear(GridStorage* storage) :
-		storage(storage)
-	{
-	}
+    ConvertPrewaveletToLinear::ConvertPrewaveletToLinear(GridStorage* storage) :
+      storage(storage) {
+    }
 
-ConvertPrewaveletToLinear::~ConvertPrewaveletToLinear()
-	{
-	}
+    ConvertPrewaveletToLinear::~ConvertPrewaveletToLinear() {
+    }
 
-void ConvertPrewaveletToLinear::operator()(DataVector& source, DataVector& result,
-			grid_iterator& index, size_t dim)
-	{
-		level_type max_level = index.getGridDepth(dim);
+    void ConvertPrewaveletToLinear::operator()(DataVector& source, DataVector& result,
+        grid_iterator& index, size_t dim) {
+      level_type max_level = index.getGridDepth(dim);
 
-		if (max_level == 1)
-		{
-			return;
-		}
+      if (max_level == 1) {
+        return;
+      }
 
-		level_type level = max_level;
+      level_type level = max_level;
 
-		level_type init_level;
-		index_type init_index;
-		size_t _seq;
-		size_t _seq_temp;
-		double _val = 0.0;
-		double* temp_current = 0;
-		double* temp_old = 0;
+      level_type init_level;
+      index_type init_index;
+      size_t _seq;
+      size_t _seq_temp;
+      double _val = 0.0;
+      double* temp_current = 0;
+      double* temp_old = 0;
 
 
-		index.get(dim, init_level, init_index);
+      index.get(dim, init_level, init_index);
 
-		for (; level > 1; --level)
-		{
-			if (level == max_level)
-			{
-				temp_current = new double[1 << level];
-				temp_old = new double[1 << (level + 1)];
-				for (int t = 0; t < (1 << (level + 1)); t++)
-				{
-					temp_old[t] = 0;
-				}
+      for (; level > 1; --level) {
+        if (level == max_level) {
+          temp_current = new double[1 << level];
+          temp_old = new double[1 << (level + 1)];
 
-				for (int t = 2; t < (1 << level); t = t + 2)
-				{
-					index.set(dim, level, t - 1);
-					_seq = index.seq();
-					_val = storage->end(_seq) ? 0.0 : source[_seq];
-					temp_current[t] = -0.6 * _val;
+          for (int t = 0; t < (1 << (level + 1)); t++) {
+            temp_old[t] = 0;
+          }
 
-					index.set(dim, level, t + 1);
-					_seq = index.seq();
-					_val = storage->end(_seq) ? 0.0 : source[_seq];
-					temp_current[t] = temp_current[t] - 0.6 * _val;
-				}
-			}
-			else
-			{
-				delete[] temp_old;
-				temp_old = temp_current;
-				temp_current = new double[(1 << level)];
+          for (int t = 2; t < (1 << level); t = t + 2) {
+            index.set(dim, level, t - 1);
+            _seq = index.seq();
+            _val = storage->end(_seq) ? 0.0 : source[_seq];
+            temp_current[t] = -0.6 * _val;
 
-				for (int t = 2; t < (1 << level); t = t + 2)
-				{
-					index.set(dim, level, t - 1);
-					_seq = index.seq();
-					_val = storage->end(_seq) ? 0.0 : source[_seq];
-					temp_current[t] = -0.6 * _val + temp_old[t * 2];
+            index.set(dim, level, t + 1);
+            _seq = index.seq();
+            _val = storage->end(_seq) ? 0.0 : source[_seq];
+            temp_current[t] = temp_current[t] - 0.6 * _val;
+          }
+        } else {
+          delete[] temp_old;
+          temp_old = temp_current;
+          temp_current = new double[(1 << level)];
 
-					index.set(dim, level, t + 1);
-					_seq = index.seq();
-					_val = storage->end(_seq) ? 0.0 : source[_seq];
-					temp_current[t] = temp_current[t] - 0.6 * _val;
-				}
+          for (int t = 2; t < (1 << level); t = t + 2) {
+            index.set(dim, level, t - 1);
+            _seq = index.seq();
+            _val = storage->end(_seq) ? 0.0 : source[_seq];
+            temp_current[t] = -0.6 * _val + temp_old[t * 2];
 
-			}
+            index.set(dim, level, t + 1);
+            _seq = index.seq();
+            _val = storage->end(_seq) ? 0.0 : source[_seq];
+            temp_current[t] = temp_current[t] - 0.6 * _val;
+          }
 
-			//Special treatment for first index
-			index.set(dim, level, 1);
-			_seq = index.seq();
-			_val = storage->end(_seq) ? 0.0 : source[_seq];
-			double current_value = _val;
-			double left_value = 0;
+        }
 
-			if (!storage->end(_seq))
-				result[_seq] = 0.9 * current_value;
+        //Special treatment for first index
+        index.set(dim, level, 1);
+        _seq = index.seq();
+        _val = storage->end(_seq) ? 0.0 : source[_seq];
+        double current_value = _val;
+        double left_value = 0;
 
-			index.set(dim, level, 3);
-			_seq_temp = index.seq();
-			_val = storage->end(_seq_temp) ? 0.0 : source[_seq_temp];
+        if (!storage->end(_seq))
+          result[_seq] = 0.9 * current_value;
 
-			if (!storage->end(_seq))
-			{
-				result[_seq] += 0.1 * _val;
-				result[_seq] += temp_old[2] - 0.5 * temp_current[2];
-			}
+        index.set(dim, level, 3);
+        _seq_temp = index.seq();
+        _val = storage->end(_seq_temp) ? 0.0 : source[_seq_temp];
 
-			for (int i = 3; i < (1 << level) - 2; i = i + 2)
-			{
-				index.set(dim, level, i);
-				_seq = index.seq();
+        if (!storage->end(_seq)) {
+          result[_seq] += 0.1 * _val;
+          result[_seq] += temp_old[2] - 0.5 * temp_current[2];
+        }
 
-				index.set(dim, level, i + 2);
-				_seq_temp = index.seq();
+        for (int i = 3; i < (1 << level) - 2; i = i + 2) {
+          index.set(dim, level, i);
+          _seq = index.seq();
 
-				left_value = current_value;
-				_val = storage->end(_seq) ? 0.0 : source[_seq];
-				current_value = _val;
+          index.set(dim, level, i + 2);
+          _seq_temp = index.seq();
 
-				_val = storage->end(_seq_temp) ? 0.0 : source[_seq_temp];
-				if (!storage->end(_seq))
-				{
-					result[_seq] = current_value + 0.1 * left_value + 0.1
-							* _val;
+          left_value = current_value;
+          _val = storage->end(_seq) ? 0.0 : source[_seq];
+          current_value = _val;
 
-					result[_seq] += temp_old[i * 2] - 0.5 * temp_current[i - 1]
-							- 0.5 * temp_current[i + 1];
-				}
-			}
+          _val = storage->end(_seq_temp) ? 0.0 : source[_seq_temp];
 
-			//Special treatment for last index
-			index_type last = (1 << static_cast<index_type>(level)) - 1;
-			index.set(dim, level, last);
-			_seq = index.seq();
-			_val = storage->end(_seq) ? 0.0 : source[_seq];
-			if (!storage->end(_seq))
-			{
-				result[_seq] = 0.9 * _val + 0.1 * current_value;
+          if (!storage->end(_seq)) {
+            result[_seq] = current_value + 0.1 * left_value + 0.1
+                           * _val;
 
-				result[_seq] += temp_old[last * 2] - 0.5 * temp_current[last
-						- 1];
-			}
+            result[_seq] += temp_old[i * 2] - 0.5 * temp_current[i - 1]
+                            - 0.5 * temp_current[i + 1];
+          }
+        }
 
-		}
+        //Special treatment for last index
+        index_type last = (1 << static_cast<index_type>(level)) - 1;
+        index.set(dim, level, last);
+        _seq = index.seq();
+        _val = storage->end(_seq) ? 0.0 : source[_seq];
 
-		index.set(dim, init_level, init_index);
-		_seq = index.seq();
+        if (!storage->end(_seq)) {
+          result[_seq] = 0.9 * _val + 0.1 * current_value;
 
-		result[_seq] = source[_seq] + temp_current[2];
+          result[_seq] += temp_old[last * 2] - 0.5 * temp_current[last
+                          - 1];
+        }
 
-		delete[] temp_old;
-		temp_old = 0;
-		delete[] temp_current;
-		temp_current = 0;
+      }
 
-}
+      index.set(dim, init_level, init_index);
+      _seq = index.seq();
 
- // namespace detail
+      result[_seq] = source[_seq] + temp_current[2];
 
-} // namespace sg
+      delete[] temp_old;
+      temp_old = 0;
+      delete[] temp_current;
+      temp_current = 0;
+
+    }
+
+    // namespace detail
+
+  } // namespace sg
 }

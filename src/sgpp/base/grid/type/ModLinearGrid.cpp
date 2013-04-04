@@ -15,43 +15,35 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-ModLinearGrid::ModLinearGrid(std::istream& istr) : Grid(istr)
-{
-}
+    ModLinearGrid::ModLinearGrid(std::istream& istr) : Grid(istr) {
+    }
 
-ModLinearGrid::ModLinearGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    ModLinearGrid::ModLinearGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-ModLinearGrid::~ModLinearGrid()
-{
-}
+    ModLinearGrid::~ModLinearGrid() {
+    }
 
-const char* ModLinearGrid::getType()
-{
-	return "modlinear";
-}
+    const char* ModLinearGrid::getType() {
+      return "modlinear";
+    }
 
-Grid* ModLinearGrid::unserialize(std::istream& istr)
-{
-	return new ModLinearGrid(istr);
-}
+    Grid* ModLinearGrid::unserialize(std::istream& istr) {
+      return new ModLinearGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* ModLinearGrid::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* ModLinearGrid::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
 
-}
+  }
 }

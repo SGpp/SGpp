@@ -16,59 +16,47 @@
 #include "base/algorithm/sweep.hpp"
 
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationLaplaceLinearStretched::OperationLaplaceLinearStretched(sg::base::GridStorage* storage) : UpDownOneOpDim(storage)
-{
-}
+    OperationLaplaceLinearStretched::OperationLaplaceLinearStretched(sg::base::GridStorage* storage) : UpDownOneOpDim(storage) {
+    }
 
-OperationLaplaceLinearStretched::~OperationLaplaceLinearStretched()
-{
-}
+    OperationLaplaceLinearStretched::~OperationLaplaceLinearStretched() {
+    }
 
-void OperationLaplaceLinearStretched::specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t gradient_dim)
-{
-	// In direction gradient_dim we only calculate the norm of the gradient
-	// The up-part is empty, thus omitted
-	if(dim > 0)
-	{
-		sg::base::DataVector temp(alpha.getSize());
-		updown(alpha, temp, dim-1, gradient_dim);
-		downOpDim(temp, result, gradient_dim);
-	}
-	else
-	{
-		// Terminates dimension recursion
-		downOpDim(alpha, result, gradient_dim);
-	}
-}
+    void OperationLaplaceLinearStretched::specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t gradient_dim) {
+      // In direction gradient_dim we only calculate the norm of the gradient
+      // The up-part is empty, thus omitted
+      if (dim > 0) {
+        sg::base::DataVector temp(alpha.getSize());
+        updown(alpha, temp, dim - 1, gradient_dim);
+        downOpDim(temp, result, gradient_dim);
+      } else {
+        // Terminates dimension recursion
+        downOpDim(alpha, result, gradient_dim);
+      }
+    }
 
-void OperationLaplaceLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	PhiPhiUpBBLinearStretched func(this->storage);
-	sg::base::sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
+    void OperationLaplaceLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      PhiPhiUpBBLinearStretched func(this->storage);
+      sg::base::sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLaplaceLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	PhiPhiDownBBLinearStretched func(this->storage);
-	sg::base::sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
-	s.sweep1D(alpha, result, dim);
-}
+    void OperationLaplaceLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      PhiPhiDownBBLinearStretched func(this->storage);
+      sg::base::sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLaplaceLinearStretched::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	DowndPhidPhiBBIterativeLinearStretched myDown(this->storage);
-	myDown(alpha, result, dim);
-}
+    void OperationLaplaceLinearStretched::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      DowndPhidPhiBBIterativeLinearStretched myDown(this->storage);
+      myDown(alpha, result, dim);
+    }
 
-void OperationLaplaceLinearStretched::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-}
+    void OperationLaplaceLinearStretched::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    }
 
-}
+  }
 }

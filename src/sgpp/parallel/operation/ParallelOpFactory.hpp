@@ -21,55 +21,53 @@
 /*
  * This file contains factory methods for operations.
  */
- 
-namespace sg
-{
 
-namespace op_factory
-{
+namespace sg {
 
-  /**
-   * Factory method, returning an OperationMultipleEvalVectorized for the grid at hand.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for evaluation
-   * @param vecType Type of Vectorization used
-   * @param dataset Dataset (DataMatrix, data points per row) that is to be evaluated
-   * @param datasetFrom lower bound index that describes where to start processing the dataset
-   * @param datasetTo upper bound index (exclusive) that describes where to end processing the dataset
-   * @param gridFrom lower bound index that describes where to start processing the storage
-   * @param gridTo upper bound index (exclusive) that describes where to end processing the storage
-   *
-   * @note the bounds describe for which part of the dataset/grid the create instance will be
-   * responsible. However, for performance optimizations, implementations might actually calculate (and write to)
-   * data that lies beyond these boundaries.
-   *
-   * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
-   */
-  parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
-                                                                                   int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
-  /**
-   * Factory method, returning an OperationMultipleEvalVectorizedSP for the grid at hand,
-   * single precision.
-   * Note: object has to be freed after use.
-   *
-   * @param grid Grid which is to be used for evaluation
-   * @param vecType Type of Vectorization used
-   * @param dataset Dataset (DataMatrixSP, data points per row) that is to be evaluated
-   * @param datasetFrom lower bound index that describes where to start processing the dataset
-   * @param datasetTo upper bound index (exclusive) that describes where to end processing the dataset
-   * @param gridFrom lower bound index that describes where to start processing the storage
-   * @param gridTo upper bound index (exclusive) that describes where to end processing the storage
-   *
-   * @note the bounds describe for which part of the dataset/grid the create instance will be
-   * responsible. However, for performance optimizations, implementations might actually calculate (and write to)
-   * data that lies beyond these boundaries.
-   *
-   * @return Pointer to the new OperationMultipleEvalVectorizedSP for the Grid grid
-   */
-  parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
-																					   int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
-}
+  namespace op_factory {
+
+    /**
+     * Factory method, returning an OperationMultipleEvalVectorized for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for evaluation
+     * @param vecType Type of Vectorization used
+     * @param dataset Dataset (DataMatrix, data points per row) that is to be evaluated
+     * @param datasetFrom lower bound index that describes where to start processing the dataset
+     * @param datasetTo upper bound index (exclusive) that describes where to end processing the dataset
+     * @param gridFrom lower bound index that describes where to start processing the storage
+     * @param gridTo upper bound index (exclusive) that describes where to end processing the storage
+     *
+     * @note the bounds describe for which part of the dataset/grid the create instance will be
+     * responsible. However, for performance optimizations, implementations might actually calculate (and write to)
+     * data that lies beyond these boundaries.
+     *
+     * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
+     */
+    parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
+        int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
+    /**
+     * Factory method, returning an OperationMultipleEvalVectorizedSP for the grid at hand,
+     * single precision.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for evaluation
+     * @param vecType Type of Vectorization used
+     * @param dataset Dataset (DataMatrixSP, data points per row) that is to be evaluated
+     * @param datasetFrom lower bound index that describes where to start processing the dataset
+     * @param datasetTo upper bound index (exclusive) that describes where to end processing the dataset
+     * @param gridFrom lower bound index that describes where to start processing the storage
+     * @param gridTo upper bound index (exclusive) that describes where to end processing the storage
+     *
+     * @note the bounds describe for which part of the dataset/grid the create instance will be
+     * responsible. However, for performance optimizations, implementations might actually calculate (and write to)
+     * data that lies beyond these boundaries.
+     *
+     * @return Pointer to the new OperationMultipleEvalVectorizedSP for the Grid grid
+     */
+    parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
+        int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
+  }
 
 }
 

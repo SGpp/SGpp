@@ -12,32 +12,26 @@
 #include "pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
 
 
-namespace sg
-{
-namespace finance
-{
+namespace sg {
+  namespace finance {
 
-OperationLELinearBoundary::OperationLELinearBoundary(sg::base::GridStorage* storage) : sg::pde::StdUpDown(storage)
-{
-}
+    OperationLELinearBoundary::OperationLELinearBoundary(sg::base::GridStorage* storage) : sg::pde::StdUpDown(storage) {
+    }
 
-OperationLELinearBoundary::~OperationLELinearBoundary()
-{
-}
+    OperationLELinearBoundary::~OperationLELinearBoundary() {
+    }
 
-void OperationLELinearBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// Dphi * dphi
-	sg::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
-	myUp(alpha, result, dim);
-}
+    void OperationLELinearBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      // Dphi * dphi
+      sg::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+      myUp(alpha, result, dim);
+    }
 
-void OperationLELinearBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim)
-{
-	// Dphi * dphi
-	sg::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
-	myDown(alpha, result, dim);
-}
+    void OperationLELinearBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+      // Dphi * dphi
+      sg::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+      myDown(alpha, result, dim);
+    }
 
-}
+  }
 }

@@ -12,19 +12,16 @@
 #include "base/basis/linear/noboundary/operation/OperationEvalLinear.hpp"
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point)
-{
-	LinearBasis<unsigned int, unsigned int> base;
-	AlgorithmEvaluation<LinearBasis<unsigned int, unsigned int> > AlgoEval(storage);
+    double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point) {
+      LinearBasis<unsigned int, unsigned int> base;
+      AlgorithmEvaluation<LinearBasis<unsigned int, unsigned int> > AlgoEval(storage);
 
-	return AlgoEval(base, point, alpha);
-}
+      return AlgoEval(base, point, alpha);
+    }
 
-}
+  }
 }
 

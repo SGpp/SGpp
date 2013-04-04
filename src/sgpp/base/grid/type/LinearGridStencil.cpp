@@ -15,49 +15,40 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr)
-{
+    LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
 
-}
+    }
 
-LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-LinearGridStencil::~LinearGridStencil()
-{
-}
+    LinearGridStencil::~LinearGridStencil() {
+    }
 
-const char* LinearGridStencil::getType()
-{
-	return "linearstencil";
-}
+    const char* LinearGridStencil::getType() {
+      return "linearstencil";
+    }
 
-Grid* LinearGridStencil::unserialize(std::istream& istr)
-{
-	return new LinearGridStencil(istr);
-}
+    Grid* LinearGridStencil::unserialize(std::istream& istr) {
+      return new LinearGridStencil(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* LinearGridStencil::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* LinearGridStencil::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
 
-}
+  }
 }

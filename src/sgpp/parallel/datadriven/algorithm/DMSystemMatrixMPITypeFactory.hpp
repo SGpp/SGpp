@@ -14,20 +14,19 @@
 #include "datadriven/algorithm/DMSystemMatrixBase.hpp"
 
 namespace sg {
-namespace parallel {
+  namespace parallel {
 
-class DMSystemMatrixMPITypeFactory
-{
-private:
-	template<typename Kernel>
-	static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+    class DMSystemMatrixMPITypeFactory {
+      private:
+        template<typename Kernel>
+        static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
 
-public:
-	static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+      public:
+        static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
 
-};
+    };
 
-}
+  }
 }
 
 #endif // DMSYSTEMMATRIXMPITYPEFACTORY_HPP

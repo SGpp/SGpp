@@ -55,14 +55,14 @@ void* operator new[] (size_t size) throw (std::bad_alloc);
  *
  * @param p pointer to data to free
  */
-void operator delete (void *p) throw();
+void operator delete (void* p) throw();
 
 /**
  * Overrides normal delete[]
  *
  * @param p pointer to data to free
  */
-void operator delete[] (void *p) throw();
+void operator delete[] (void* p) throw();
 
 #endif /* ALIGNEDMEMORY_HPP */
 

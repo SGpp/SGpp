@@ -20,113 +20,103 @@
 #define PI 3.14159265
 #endif
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode), beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0)
-{
-}
+    LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::LaserHeatEquationParabolicPDESolverSystemParallelOMP2D(double beam_velocity, double heat_sigma, sg::base::GridStorage::index_type::level_type max_level, double heat, double refine_threshold, double coarsen_threshold, sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode) : HeatEquationParabolicPDESolverSystemParallelOMP(SparseGrid, alpha, a, TimestepSize, OperationMode), beam_velocity_(beam_velocity), heat_sigma_(heat_sigma), max_level_(max_level), heat_(heat), refine_threshold_(refine_threshold), coarsen_threshold_(coarsen_threshold), done_steps_(0) {
+    }
 
-LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::~LaserHeatEquationParabolicPDESolverSystemParallelOMP2D()
-{
-}
+    LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::~LaserHeatEquationParabolicPDESolverSystemParallelOMP2D() {
+    }
 
-void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep()
-{
-	// Replace the inner coefficients on the boundary grid
-	this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+    void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::finishTimestep() {
+      // Replace the inner coefficients on the boundary grid
+      this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
-	// apply new laser position
-	base::StdNormalDistribution myNormDistr;
-	base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
-	myHierarchisation->doDehierarchisation(*this->alpha_complete);
+      // apply new laser position
+      base::StdNormalDistribution myNormDistr;
+      base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
+      myHierarchisation->doDehierarchisation(*this->alpha_complete);
 
-	base::DataVector laser_update(this->BoundGrid->getStorage()->size());
-	base::BoundingBox* myBoundingBox = new base::BoundingBox(*(this->BoundGrid->getStorage()->getBoundingBox()));
+      base::DataVector laser_update(this->BoundGrid->getStorage()->size());
+      base::BoundingBox* myBoundingBox = new base::BoundingBox(*(this->BoundGrid->getStorage()->getBoundingBox()));
 
-	this->done_steps_++;
-	double angle = ((this->beam_velocity_*(double(this->done_steps_)*this->TimestepSize)) * 360) - 180;
+      this->done_steps_++;
+      double angle = ((this->beam_velocity_ * (double(this->done_steps_) * this->TimestepSize)) * 360) - 180;
 
-	double pos_x = ((cos((angle * PI) / 180.0))*0.25)+0.5;
-	double pos_y = ((sin((angle * PI) / 180.0))*0.25)+0.5;
+      double pos_x = ((cos((angle * PI) / 180.0)) * 0.25) + 0.5;
+      double pos_y = ((sin((angle * PI) / 180.0)) * 0.25) + 0.5;
 
-	//std::cout << std::endl << std::endl << pos_x << " " << pos_y << std::endl << std::endl;
+      //std::cout << std::endl << std::endl << pos_x << " " << pos_y << std::endl << std::endl;
 
-	double* dblFuncValues = new double[2];
-	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
-	{
-		std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*(myBoundingBox));
-		std::stringstream coordsStream(coords);
+      double* dblFuncValues = new double[2];
 
-		for (size_t j = 0; j < 2; j++)
-		{
-			coordsStream >> dblFuncValues[j];
-		}
+      for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
+        std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*(myBoundingBox));
+        std::stringstream coordsStream(coords);
 
-		// check if coordinates at starting point of laser
-		laser_update[i] =  this->heat_*(myNormDistr.getDensity(dblFuncValues[0], pos_x, this->heat_sigma_)*myNormDistr.getDensity(dblFuncValues[1], pos_y, this->heat_sigma_));
+        for (size_t j = 0; j < 2; j++) {
+          coordsStream >> dblFuncValues[j];
+        }
 
-		//boundaries are set to zero
-		if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0)
-		{
-			laser_update[i] = 0.0;
-		}
-	}
-	delete[] dblFuncValues;
-	delete myBoundingBox;
+        // check if coordinates at starting point of laser
+        laser_update[i] =  this->heat_ * (myNormDistr.getDensity(dblFuncValues[0], pos_x, this->heat_sigma_) * myNormDistr.getDensity(dblFuncValues[1], pos_y, this->heat_sigma_));
 
-	// combine last solution and laser update
-	for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++)
-	{
-		this->alpha_complete->set(i, std::max< double >(this->alpha_complete->get(i), laser_update[i]));
-	}
+        //boundaries are set to zero
+        if (dblFuncValues[0] == 0.0 || dblFuncValues[1] == 0.0) {
+          laser_update[i] = 0.0;
+        }
+      }
 
-	// do hierarchisation
-	myHierarchisation->doHierarchisation(*this->alpha_complete);
-	delete myHierarchisation;
+      delete[] dblFuncValues;
+      delete myBoundingBox;
 
-	///////////////////////////////////////////////////
-	// Start integrated refinement & coarsening
-	///////////////////////////////////////////////////
+      // combine last solution and laser update
+      for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
+        this->alpha_complete->set(i, std::max< double >(this->alpha_complete->get(i), laser_update[i]));
+      }
 
-	size_t originalGridSize = this->BoundGrid->getStorage()->size();
+      // do hierarchisation
+      myHierarchisation->doHierarchisation(*this->alpha_complete);
+      delete myHierarchisation;
 
-	// Coarsen the grid
-	base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+      ///////////////////////////////////////////////////
+      // Start integrated refinement & coarsening
+      ///////////////////////////////////////////////////
 
-	size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-	base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refine_threshold_);
-	myGenerator->refineMaxLevel(myRefineFunc, this->max_level_);
-	this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
-	delete myRefineFunc;
+      size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
-	if (this->BoundGrid->getStorage()->getNumInnerPoints() > 100)
-	{
-		size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-		base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
-		myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
-		delete myCoarsenFunctor;
-	}
+      // Coarsen the grid
+      base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
-	delete myGenerator;
+      size_t numRefines = myGenerator->getNumberOfRefinablePoints();
+      base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refine_threshold_);
+      myGenerator->refineMaxLevel(myRefineFunc, this->max_level_);
+      this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+      delete myRefineFunc;
 
-	///////////////////////////////////////////////////
-	// End integrated refinement & coarsening
-	///////////////////////////////////////////////////
+      if (this->BoundGrid->getStorage()->getNumInnerPoints() > 100) {
+        size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
+        base::SurplusCoarseningFunctor* myCoarsenFunctor = new base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsen_threshold_);
+        myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
+        delete myCoarsenFunctor;
+      }
 
-	// rebuild the inner grid + coefficients
-	this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-}
+      delete myGenerator;
 
-void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::coarsenAndRefine(bool isLastTimestep)
-{
-}
+      ///////////////////////////////////////////////////
+      // End integrated refinement & coarsening
+      ///////////////////////////////////////////////////
 
-void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::startTimestep()
-{
-}
+      // rebuild the inner grid + coefficients
+      this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+    }
 
-}
+    void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::coarsenAndRefine(bool isLastTimestep) {
+    }
+
+    void LaserHeatEquationParabolicPDESolverSystemParallelOMP2D::startTimestep() {
+    }
+
+  }
 }

@@ -11,43 +11,40 @@
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationMultipleEval for a grids with mod linear basis ansatzfunctions
- *
- * @version $HEAD$
- */
-class OperationMultipleEvalModLinear : public OperationMultipleEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 * @param dataset the dataset that should be evaluated
-	 */
-	OperationMultipleEvalModLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-		this->storage = storage;
-	}
+    /**
+     * This class implements OperationMultipleEval for a grids with mod linear basis ansatzfunctions
+     *
+     * @version $HEAD$
+     */
+    class OperationMultipleEvalModLinear : public OperationMultipleEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GridStorage object
+         * @param dataset the dataset that should be evaluated
+         */
+        OperationMultipleEvalModLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
+          this->storage = storage;
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalModLinear() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationMultipleEvalModLinear() {}
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-	virtual void multTranspose(DataVector& source, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONMULTIPLEEVALMODLINEAR_HPP */

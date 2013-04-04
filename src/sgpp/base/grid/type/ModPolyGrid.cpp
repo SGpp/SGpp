@@ -15,57 +15,47 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(-1)
-{
-	istr >> degree;
-}
+    ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(-1) {
+      istr >> degree;
+    }
 
 
-ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) : degree(degree)
-{
-	this->storage = new GridStorage(dim);
-}
+    ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) : degree(degree) {
+      this->storage = new GridStorage(dim);
+    }
 
-ModPolyGrid::~ModPolyGrid()
-{
-}
+    ModPolyGrid::~ModPolyGrid() {
+    }
 
-const char* ModPolyGrid::getType()
-{
-	return "modpoly";
-}
+    const char* ModPolyGrid::getType() {
+      return "modpoly";
+    }
 
-size_t ModPolyGrid::getDegree() const
-{
-	return this->degree;
-}
+    size_t ModPolyGrid::getDegree() const {
+      return this->degree;
+    }
 
-Grid* ModPolyGrid::unserialize(std::istream& istr)
-{
-	return new ModPolyGrid(istr);
-}
+    Grid* ModPolyGrid::unserialize(std::istream& istr) {
+      return new ModPolyGrid(istr);
+    }
 
-void ModPolyGrid::serialize(std::ostream& ostr)
-{
-	this->Grid::serialize(ostr);
-	ostr << degree << std::endl;
-}
+    void ModPolyGrid::serialize(std::ostream& ostr) {
+      this->Grid::serialize(ostr);
+      ostr << degree << std::endl;
+    }
 
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* ModPolyGrid::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* ModPolyGrid::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
 
-}
+  }
 }

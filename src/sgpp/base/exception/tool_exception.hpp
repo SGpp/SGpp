@@ -11,62 +11,54 @@
 #include <exception>
 #include <cstddef>
 
-namespace sg
-{
-namespace base
-{
-
-/**
- * Exception that is thrown in case of a tool operation failure
- *
- * @version $HEAD$
- */
-class tool_exception : public std::exception
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param msg the exception message
-	 */
-	tool_exception(const char* msg) throw() : msg(msg)
-	{
-	}
-
-	/**
-	 * Standard Constructor
-	 */
-	tool_exception() throw() : msg(NULL) { }
-
-	/**
-	 * Destructor
-	 */
-    virtual ~tool_exception() throw() { }
+namespace sg {
+  namespace base {
 
     /**
-     * throw method that have to be implemented
+     * Exception that is thrown in case of a tool operation failure
      *
-     * @return returns the message specified in the constructor otherwise a general text
+     * @version $HEAD$
      */
-	virtual const char* what() const throw()
-	{
-		if(msg)
-		{
-			return msg;
-		}
-		else
-		{
-			return "tool_exception: general failure";
-		}
-	}
+    class tool_exception : public std::exception {
+      public:
+        /**
+         * Constructor
+         *
+         * @param msg the exception message
+         */
+        tool_exception(const char* msg) throw() : msg(msg) {
+        }
 
-protected:
-	/// the exception message
-	const char* msg;
+        /**
+         * Standard Constructor
+         */
+        tool_exception() throw() : msg(NULL) { }
 
-};
+        /**
+         * Destructor
+         */
+        virtual ~tool_exception() throw() { }
 
-}
+        /**
+         * throw method that have to be implemented
+         *
+         * @return returns the message specified in the constructor otherwise a general text
+         */
+        virtual const char* what() const throw() {
+          if (msg) {
+            return msg;
+          } else {
+            return "tool_exception: general failure";
+          }
+        }
+
+      protected:
+        /// the exception message
+        const char* msg;
+
+    };
+
+  }
 }
 
 #endif /* TOOL_EXCEPTION_HPP */

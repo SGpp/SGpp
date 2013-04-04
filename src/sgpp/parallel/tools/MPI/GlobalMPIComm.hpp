@@ -10,13 +10,11 @@
 
 // MPI Support
 #ifdef USE_MPI
-namespace sg
-{
-namespace parallel
-{
-	// @todo MPI (heinecke) Hack, remove if possible
-	extern MPICommunicator* myGlobalMPIComm;
-}
+namespace sg {
+  namespace parallel {
+    // @todo MPI (heinecke) Hack, remove if possible
+    extern MPICommunicator* myGlobalMPIComm;
+  }
 }
 #endif
 

@@ -11,47 +11,44 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * GridGenerator for standard grids without boundaries
- */
-class StandardGridGenerator : public GridGenerator
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's storage object
-	 */
-	StandardGridGenerator(GridStorage* storage);
+    /**
+     * GridGenerator for standard grids without boundaries
+     */
+    class StandardGridGenerator : public GridGenerator {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's storage object
+         */
+        StandardGridGenerator(GridStorage* storage);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~StandardGridGenerator();
+        /**
+         * Destructor
+         */
+        virtual ~StandardGridGenerator();
 
-	virtual void regular(int level);
-	virtual void full(int level);
-	virtual void refine(RefinementFunctor* func);
-	virtual size_t getNumberOfRefinablePoints();
+        virtual void regular(int level);
+        virtual void full(int level);
+        virtual void refine(RefinementFunctor* func);
+        virtual size_t getNumberOfRefinablePoints();
 
-	virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
-	virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
-	virtual size_t getNumberOfRemovablePoints();
+        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
+        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
+        virtual size_t getNumberOfRemovablePoints();
 
-	virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel);
-	virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel);
+        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel);
+        virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel);
 
-protected:
-	/// pointer to the storage object
-	GridStorage* storage;
-};
+      protected:
+        /// pointer to the storage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* STANDARDGRIDGEMERATOR_HPP */

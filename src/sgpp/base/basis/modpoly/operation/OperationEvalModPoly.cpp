@@ -10,29 +10,25 @@
 #include "base/exception/operation_exception.hpp"
 #include "base/algorithm/GetAffectedBasisFunctions.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-double OperationEvalModPoly::eval(DataVector& alpha, std::vector<double>& point)
-{
-	typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    double OperationEvalModPoly::eval(DataVector& alpha, std::vector<double>& point) {
+      typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
-	IndexValVector vec;
-	GetAffectedBasisFunctions<SModPolyBase> ga(storage);
+      IndexValVector vec;
+      GetAffectedBasisFunctions<SModPolyBase> ga(storage);
 
-	ga(base, point, vec);
+      ga(base, point, vec);
 
-	double result = 0.0;
+      double result = 0.0;
 
-	for(IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++)
-	{
-		result += iter->second * alpha[iter->first];
-	}
+      for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+        result += iter->second * alpha[iter->first];
+      }
 
-	return result;
-}
+      return result;
+    }
 
-}
+  }
 }

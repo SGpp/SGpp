@@ -13,42 +13,39 @@
 #include "base/basis/modpoly/ModifiedPolyBasis.hpp"
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationEval for a grids with mod poly basis ansatzfunctions with
- *
- * @version $HEAD$
- */
-class OperationEvalModPoly : public OperationEval
-{
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param storage the grid's GridStorage object
-	 * @param degree the polynom's max. degree
-	 */
-	OperationEvalModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+    /**
+     * This class implements OperationEval for a grids with mod poly basis ansatzfunctions with
+     *
+     * @version $HEAD$
+     */
+    class OperationEvalModPoly : public OperationEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's GridStorage object
+         * @param degree the polynom's max. degree
+         */
+        OperationEvalModPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationEvalModPoly() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationEvalModPoly() {}
 
-	virtual double eval(DataVector& alpha, std::vector<double>& point);
+        virtual double eval(DataVector& alpha, std::vector<double>& point);
 
-protected:
-	/// Pointer to GridStorage object
-	GridStorage* storage;
-	/// Mod Poly Basis object
-  sg::base::SModPolyBase base;
-};
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+        /// Mod Poly Basis object
+        sg::base::SModPolyBase base;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONEVALMODPOLY_HPP */

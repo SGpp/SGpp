@@ -11,24 +11,20 @@
 
 
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationMultipleEvalModBspline::mult(DataVector& alpha, DataVector& result)
-{
-	AlgorithmDGEMV<SModBsplineBase> op;
+    void OperationMultipleEvalModBspline::mult(DataVector& alpha, DataVector& result) {
+      AlgorithmDGEMV<SModBsplineBase> op;
 
-	op.mult(storage, base, alpha, *(this->dataset_), result);
-}
+      op.mult(storage, base, alpha, *(this->dataset_), result);
+    }
 
-void OperationMultipleEvalModBspline::multTranspose(DataVector& source, DataVector& result)
-{
-	AlgorithmDGEMV<SModBsplineBase> op;
+    void OperationMultipleEvalModBspline::multTranspose(DataVector& source, DataVector& result) {
+      AlgorithmDGEMV<SModBsplineBase> op;
 
-	op.mult_transposed(storage, base, source, *(this->dataset_), result);
-}
+      op.mult_transposed(storage, base, source, *(this->dataset_), result);
+    }
 
-}
+  }
 }

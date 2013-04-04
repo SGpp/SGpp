@@ -15,45 +15,42 @@
 
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-  /**
-   * This class implements OperationTest for a grids with mod poly basis ansatzfunctions with
-   *
-   * @version $HEAD$
-   */
-  class OperationTestModPoly : public OperationTest
-  {
-  public:
     /**
-     * Constructor
+     * This class implements OperationTest for a grids with mod poly basis ansatzfunctions with
      *
-     * @param storage the grid's base::GridStorage object
-     * @param degree the polynom's max. degree
+     * @version $HEAD$
      */
-    OperationTestModPoly(base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+    class OperationTestModPoly : public OperationTest {
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's base::GridStorage object
+         * @param degree the polynom's max. degree
+         */
+        OperationTestModPoly(base::GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-    /**
-     * Destructor
-     */
-    virtual ~OperationTestModPoly() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationTestModPoly() {}
 
-    virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
-    virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
-	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
+        virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
+        virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
+        virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
+        virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
 
-  protected:
-    /// Pointer to base::GridStorage object
-    base::GridStorage* storage;
-    /// Mod Poly Basis object
-    base::SModPolyBase base;
-  };
+      protected:
+        /// Pointer to base::GridStorage object
+        base::GridStorage* storage;
+        /// Mod Poly Basis object
+        base::SModPolyBase base;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONTESTMODPOLY_HPP */

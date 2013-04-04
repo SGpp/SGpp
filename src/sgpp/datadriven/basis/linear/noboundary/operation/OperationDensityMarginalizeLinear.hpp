@@ -12,35 +12,32 @@
 #include "datadriven/operation/OperationDensityMarginalize.hpp"
 #include <cstring>
 
-namespace sg
-{
-namespace datadriven
-{
-
-  /**
-   * Marginalize Probability Density Function
-   */
-  
-  class OperationDensityMarginalizeLinear : public OperationDensityMarginalize
-  {
-  public:
-    OperationDensityMarginalizeLinear(base::Grid* grid) : grid(grid) {}
-    virtual ~OperationDensityMarginalizeLinear() {}
+namespace sg {
+  namespace datadriven {
 
     /**
-     * Marginalizes (Density) Functions
-     * 
-     * @param alpha Coefficient vector for current grid
-     * @param mg Referenz of grid pointer 
-     * @param malpha Coefficient vector for new grid (mg). Will be resized.
-     * @param mdim Marginalize in dimension mdim 
+     * Marginalize Probability Density Function
      */
-    void doMarginalize(base::DataVector &alpha, base::Grid* &mg, base::DataVector &malpha, unsigned int mdim);
 
-  protected:
-    base::Grid* grid;
-  };
-    
-}
+    class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
+      public:
+        OperationDensityMarginalizeLinear(base::Grid* grid) : grid(grid) {}
+        virtual ~OperationDensityMarginalizeLinear() {}
+
+        /**
+         * Marginalizes (Density) Functions
+         *
+         * @param alpha Coefficient vector for current grid
+         * @param mg Referenz of grid pointer
+         * @param malpha Coefficient vector for new grid (mg). Will be resized.
+         * @param mdim Marginalize in dimension mdim
+         */
+        void doMarginalize(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim);
+
+      protected:
+        base::Grid* grid;
+    };
+
+  }
 }
 #endif /* OPERATIONDENSITYMARGINALIZELINEAR_HPP */

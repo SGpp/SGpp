@@ -15,48 +15,39 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr)
-{
+    LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr) {
 
-}
+    }
 
-LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(Stretching& BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    LinearStretchedTrapezoidBoundaryGrid::LinearStretchedTrapezoidBoundaryGrid(Stretching& BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-LinearStretchedTrapezoidBoundaryGrid::~LinearStretchedTrapezoidBoundaryGrid()
-{
-}
+    LinearStretchedTrapezoidBoundaryGrid::~LinearStretchedTrapezoidBoundaryGrid() {
+    }
 
-const char* LinearStretchedTrapezoidBoundaryGrid::getType()
-{
-	return "linearStretchedTrapezoidBoundary";
-}
+    const char* LinearStretchedTrapezoidBoundaryGrid::getType() {
+      return "linearStretchedTrapezoidBoundary";
+    }
 
-Grid* LinearStretchedTrapezoidBoundaryGrid::unserialize(std::istream& istr)
-{
-	return new LinearStretchedTrapezoidBoundaryGrid(istr);
-}
+    Grid* LinearStretchedTrapezoidBoundaryGrid::unserialize(std::istream& istr) {
+      return new LinearStretchedTrapezoidBoundaryGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* LinearStretchedTrapezoidBoundaryGrid::createGridGenerator()
-{
-	return new StretchedTrapezoidBoundaryGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* LinearStretchedTrapezoidBoundaryGrid::createGridGenerator() {
+      return new StretchedTrapezoidBoundaryGridGenerator(this->storage);
+    }
 
-}
+  }
 }

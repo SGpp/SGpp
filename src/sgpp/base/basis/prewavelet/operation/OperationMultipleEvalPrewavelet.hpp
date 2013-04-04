@@ -12,41 +12,38 @@
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * This class implements OperationMultipleEval for a grids with prewavelet ansatzfunctions without boundaries
- */
-class OperationMultipleEvalPrewavelet : public OperationMultipleEval
-{
-public:
-	/**
-	 * Constructor of OperationMultipleEvalPrewavelet
-	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
-	 * @param dataset Dataset
-	 */
-	OperationMultipleEvalPrewavelet(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-		this->storage = storage;
-	}
+    /**
+     * This class implements OperationMultipleEval for a grids with prewavelet ansatzfunctions without boundaries
+     */
+    class OperationMultipleEvalPrewavelet : public OperationMultipleEval {
+      public:
+        /**
+         * Constructor of OperationMultipleEvalPrewavelet
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         * @param dataset Dataset
+         */
+        OperationMultipleEvalPrewavelet(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
+          this->storage = storage;
+        }
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationMultipleEvalPrewavelet() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationMultipleEvalPrewavelet() {}
 
-	virtual void mult(DataVector& alpha, DataVector& result);
-	virtual void multTranspose(DataVector& source, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
-protected:
-	/// Pointer to the grid's GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to the grid's GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONMULTIPLEEVALPREWAVELET_HPP */

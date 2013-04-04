@@ -11,34 +11,28 @@
 
 #include "base/algorithm/sweep.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values)
-{
-	HierarchisationModPoly func(this->storage, &this->base);
-	sweep<HierarchisationModPoly> s(func, this->storage);
+    void OperationHierarchisationModPoly::doHierarchisation(DataVector& node_values) {
+      HierarchisationModPoly func(this->storage, &this->base);
+      sweep<HierarchisationModPoly> s(func, this->storage);
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(node_values, node_values, i);
-	}
-}
+      // Execute hierarchisation in every dimension of the grid
+      for (size_t i = 0; i < this->storage->dim(); i++) {
+        s.sweep1D(node_values, node_values, i);
+      }
+    }
 
-void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha)
-{
-	DehierarchisationModPoly func(this->storage, &this->base);
-	sweep<DehierarchisationModPoly> s(func, this->storage);
+    void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha) {
+      DehierarchisationModPoly func(this->storage, &this->base);
+      sweep<DehierarchisationModPoly> s(func, this->storage);
 
-	// Execute hierarchisation in every dimension of the grid
-	for (size_t i = 0; i < this->storage->dim(); i++)
-	{
-		s.sweep1D(alpha, alpha, i);
-	}
-}
+      // Execute hierarchisation in every dimension of the grid
+      for (size_t i = 0; i < this->storage->dim(); i++) {
+        s.sweep1D(alpha, alpha, i);
+      }
+    }
 
-}
+  }
 }

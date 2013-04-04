@@ -16,49 +16,40 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-LinearGrid::LinearGrid(std::istream& istr) : Grid(istr)
-{
+    LinearGrid::LinearGrid(std::istream& istr) : Grid(istr) {
 
-}
+    }
 
-LinearGrid::LinearGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    LinearGrid::LinearGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-LinearGrid::LinearGrid(BoundingBox& BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    LinearGrid::LinearGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-LinearGrid::~LinearGrid()
-{
-}
+    LinearGrid::~LinearGrid() {
+    }
 
-const char* LinearGrid::getType()
-{
-	return "linear";
-}
+    const char* LinearGrid::getType() {
+      return "linear";
+    }
 
-Grid* LinearGrid::unserialize(std::istream& istr)
-{
-	return new LinearGrid(istr);
-}
+    Grid* LinearGrid::unserialize(std::istream& istr) {
+      return new LinearGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* LinearGrid::createGridGenerator()
-{
-	return new StandardGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* LinearGrid::createGridGenerator() {
+      return new StandardGridGenerator(this->storage);
+    }
 
 
-}
+  }
 }

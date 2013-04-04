@@ -9,43 +9,37 @@
 #include "base/exception/operation_exception.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-DMSystemMatrix::DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
-	: DMSystemMatrixBase(trainData, lambda)
-{
-	// create the operations needed in ApplyMatrix
-	this->C = &C;
-	this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, this->dataset_);
-}
+    DMSystemMatrix::DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda)
+      : DMSystemMatrixBase(trainData, lambda) {
+      // create the operations needed in ApplyMatrix
+      this->C = &C;
+      this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, this->dataset_);
+    }
 
-DMSystemMatrix::~DMSystemMatrix()
-{
-	delete this->B;
-}
+    DMSystemMatrix::~DMSystemMatrix() {
+      delete this->B;
+    }
 
-void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result)
-{
-	sg::base::DataVector temp((*this->dataset_).getNrows());
-	size_t M = (*this->dataset_).getNrows();
+    void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp((*this->dataset_).getNrows());
+      size_t M = (*this->dataset_).getNrows();
 
-    // Operation B
-    this->B->mult(alpha, temp);
-    this->B->multTranspose(temp, result);
+      // Operation B
+      this->B->mult(alpha, temp);
+      this->B->multTranspose(temp, result);
 
-	sg::base::DataVector temptwo(alpha.getSize());
-	this->C->mult(alpha, temptwo);
-	result.axpy(static_cast<double>(M)*this->lambda_, temptwo);
-}
+      sg::base::DataVector temptwo(alpha.getSize());
+      this->C->mult(alpha, temptwo);
+      result.axpy(static_cast<double>(M)*this->lambda_, temptwo);
+    }
 
-void DMSystemMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b)
-{
-	this->B->multTranspose(classes, b);
-}
+    void DMSystemMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
+      this->B->multTranspose(classes, b);
+    }
 
-}
+  }
 
 }

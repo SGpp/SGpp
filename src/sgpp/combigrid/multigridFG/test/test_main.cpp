@@ -9,14 +9,13 @@
 #include "combigrid/multigridFG/test/TestPoisson.hpp"
 
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 
-	// test the Poisson problem solver
-	combigrid::TestPoisson::test_all_cases();
+  // test the Poisson problem solver
+  combigrid::TestPoisson::test_all_cases();
 
-	// test the Tikhonov solver
-	combigrid::TestTikhonov::test_all_cases();
+  // test the Tikhonov solver
+  combigrid::TestTikhonov::test_all_cases();
 
-	return 0;
+  return 0;
 }

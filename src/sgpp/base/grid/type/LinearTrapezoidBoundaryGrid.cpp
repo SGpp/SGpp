@@ -16,49 +16,40 @@
 
 #include <iostream>
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr)
-{
+    LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(std::istream& istr) : Grid(istr) {
 
-}
+    }
 
-LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(size_t dim)
-{
-	this->storage = new GridStorage(dim);
-}
+    LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
+    }
 
-LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(BoundingBox& BB)
-{
-	this->storage = new GridStorage(BB);
-}
+    LinearTrapezoidBoundaryGrid::LinearTrapezoidBoundaryGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
+    }
 
-LinearTrapezoidBoundaryGrid::~LinearTrapezoidBoundaryGrid()
-{
-}
+    LinearTrapezoidBoundaryGrid::~LinearTrapezoidBoundaryGrid() {
+    }
 
-const char* LinearTrapezoidBoundaryGrid::getType()
-{
-	return "linearTrapezoidBoundary";
-}
+    const char* LinearTrapezoidBoundaryGrid::getType() {
+      return "linearTrapezoidBoundary";
+    }
 
-Grid* LinearTrapezoidBoundaryGrid::unserialize(std::istream& istr)
-{
-	return new LinearTrapezoidBoundaryGrid(istr);
-}
+    Grid* LinearTrapezoidBoundaryGrid::unserialize(std::istream& istr) {
+      return new LinearTrapezoidBoundaryGrid(istr);
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator()
-{
-	return new TrapezoidBoundaryGridGenerator(this->storage);
-}
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* LinearTrapezoidBoundaryGrid::createGridGenerator() {
+      return new TrapezoidBoundaryGridGenerator(this->storage);
+    }
 
 
-}
+  }
 }

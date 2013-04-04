@@ -10,50 +10,47 @@
 
 #include "pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp"
 
-namespace sg
-{
-namespace parallel
-{
+namespace sg {
+  namespace parallel {
 
-/**
- * This class uses sg::pde::OperationEllipticPDESolverSystemDirichlet
- * to define a solver system for the Poission Equation.
- *
- * For the mult-routine only the Laplace-Operator is required
- *
- * There is a parallelization over all operators, required
- * to solve the poisson equation.
- */
-class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public sg::pde::OperationEllipticPDESolverSystemDirichlet
-{
-protected:
-	sg::base::OperationMatrix* Laplace_Inner;
-	sg::base::OperationMatrix* Laplace_Complete;
+    /**
+     * This class uses sg::pde::OperationEllipticPDESolverSystemDirichlet
+     * to define a solver system for the Poission Equation.
+     *
+     * For the mult-routine only the Laplace-Operator is required
+     *
+     * There is a parallelization over all operators, required
+     * to solve the poisson equation.
+     */
+    class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public sg::pde::OperationEllipticPDESolverSystemDirichlet {
+      protected:
+        sg::base::OperationMatrix* Laplace_Inner;
+        sg::base::OperationMatrix* Laplace_Complete;
 
-	void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
-	 * @param rhs the right hand side for solving the elliptic PDE
-	 */
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
+      public:
+        /**
+         * Constructor
+         *
+         * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
+         * @param rhs the right hand side for solving the elliptic PDE
+         */
+        PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI();
+        /**
+         * Destructor
+         */
+        virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI();
 
-	void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-	sg::base::DataVector* generateRHS();
-};
+        sg::base::DataVector* generateRHS();
+    };
 
-}
+  }
 }
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP */

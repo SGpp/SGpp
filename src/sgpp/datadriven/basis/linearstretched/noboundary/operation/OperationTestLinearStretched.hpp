@@ -12,40 +12,37 @@
 #include "datadriven/operation/OperationTest.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-/**
- * This class implements OperationTest for a grids with linearstretched basis ansatzfunctions without boundaries
- */
-class OperationTestLinearStretched : public OperationTest
-{
-public:
-	/**
-	 * Constructor of OperationTestLinearStretched
-	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
-	 */
-	OperationTestLinearStretched(sg::base::GridStorage* storage) : storage(storage) {}
+    /**
+     * This class implements OperationTest for a grids with linearstretched basis ansatzfunctions without boundaries
+     */
+    class OperationTestLinearStretched : public OperationTest {
+      public:
+        /**
+         * Constructor of OperationTestLinearStretched
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         */
+        OperationTestLinearStretched(sg::base::GridStorage* storage) : storage(storage) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationTestLinearStretched() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationTestLinearStretched() {}
 
-	virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
-	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
-	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
+        virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
+        virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
+        virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
+        virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
 
-protected:
-	/// Pointer to the grid's GridStorage object
-	sg::base::GridStorage* storage;
-};
+      protected:
+        /// Pointer to the grid's GridStorage object
+        sg::base::GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONTESTLINEARSTRETCHED_HPP */

@@ -12,38 +12,35 @@
 #include "base/operation/OperationHierarchisation.hpp"
 #include "base/grid/GridStorage.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-/**
- * Hierarchisation on sparse grid, linear grid without boundaries
- */
-class OperationHierarchisationLinearStretched : public OperationHierarchisation
-{
-public:
-	/**
-	 * Constructor of OperationHierarchisationLinear
-	 *
-	 * @param storage Pointer to the grid's gridstorage obejct
-	 */
-	OperationHierarchisationLinearStretched(GridStorage* storage) : storage(storage) {}
+    /**
+     * Hierarchisation on sparse grid, linear grid without boundaries
+     */
+    class OperationHierarchisationLinearStretched : public OperationHierarchisation {
+      public:
+        /**
+         * Constructor of OperationHierarchisationLinear
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         */
+        OperationHierarchisationLinearStretched(GridStorage* storage) : storage(storage) {}
 
-	/**
-	 * Destructor
-	 */
-	virtual ~OperationHierarchisationLinearStretched() {}
+        /**
+         * Destructor
+         */
+        virtual ~OperationHierarchisationLinearStretched() {}
 
-	virtual void doHierarchisation(DataVector& node_values);
-	virtual void doDehierarchisation(DataVector& alpha);
+        virtual void doHierarchisation(DataVector& node_values);
+        virtual void doDehierarchisation(DataVector& alpha);
 
-protected:
-	/// Pointer to the grid's GridStorage object
-	GridStorage* storage;
-};
+      protected:
+        /// Pointer to the grid's GridStorage object
+        GridStorage* storage;
+    };
 
-}
+  }
 }
 
 #endif /* OPERATIONHIERARCHISATIONLINEARSTRETCHED_HPP */
