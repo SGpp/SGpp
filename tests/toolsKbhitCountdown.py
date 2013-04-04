@@ -52,7 +52,7 @@ def countdown(timeout):
                 # switch to normal terminal
                 termios.tcsetattr(fd, termios.TCSAFLUSH, old_term)
             except:
-                sys.stdout.write("\nWarning: Terminal unacessable. If SGpp was built within Eclipse, everything is fine!\n")
+                sys.stdout.write("\nAttention: Terminal unacessable. If SGpp was built within Eclipse, everything is fine!\n")
                 sys.stdout.flush()
                 return keypressed
 
