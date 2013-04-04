@@ -4,8 +4,6 @@
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 ##
-# @package sg_projections
-# @ingroup bin.utils
 # Helper tool, creating projections of grids.
 # Creates gnuplot printable projections of a sparse grid provided with --grid.
 # Output either as eps, png, or to stdout.

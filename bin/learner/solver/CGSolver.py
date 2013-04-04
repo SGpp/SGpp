@@ -28,10 +28,9 @@ from LinearSolver import LinearSolver, LinearSolverEvents
 from bin.pysgpp import *
 import types
 
-## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for 
-# @link sg::ConjugateGradients ConjugateGradients@endlink class.
+## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sg::ConjugateGradients class.
 # The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
-# described in @link bin.learner.LinearSolver.LinearSolver LinearSolver@endlink and function for serialization
+# described in @link bin.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
 # end deserialization.
 #
 # In order to combine high performance of C++ code and flexibility of Subscription pattern
@@ -164,6 +163,7 @@ class CGSolver(ConjugateGradients, LinearSolver):
     
     ## Restores the CGSolver object from the json object with attributes.
     #
+    # @param cls python keyword (do not specify)
     # @param jsonObject A json object.
     # @return The restored SGSolver object.
     @classmethod

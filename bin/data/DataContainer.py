@@ -243,6 +243,7 @@ class DataContainer(object):
     ## Merges several data containers to one.
     # Unlike combine(), this method actually merges the set of points and values
     # and not just puts them to the different categories
+    # @param cls python keyword (no specification required)
     # @param containerList list of DataContainer's
     @classmethod
     def merge(cls, containerList):
@@ -373,6 +374,7 @@ class DataContainer(object):
     
     ## Restores the DataContainer object from the json object with attributes.
     #
+    # @param cls python keyword for class method (no specification needed)
     # @param jsonObject A json object.
     # @return The restored DataContainer object.
     @classmethod

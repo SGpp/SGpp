@@ -3,11 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-##
-# @package data_projections
-# @ingroup bin.utils
-# @author Dirk Pflueger
-# @version $CURR$
+#
 # Helper tool, plotting projections of data.
 # Plots the grid file provided by --grid
 

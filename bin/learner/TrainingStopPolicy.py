@@ -146,6 +146,7 @@ class TrainingStopPolicy(object):
     
     ## Restores the TrainingStopPolicy object from the json object with attributes.
     #
+    # @param cls python keyword (do not specify)
     # @param jsonObject A json object.
     # @return The restored TrainingStopPolicy object.
     @classmethod

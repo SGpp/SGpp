@@ -3,15 +3,11 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-##
-# @package data_projections
-# @ingroup bin.utils
-# @author Dirk Pflueger
-# @version $CURR$
+#
 # Helper tool, creating projections of data.
 # Creates gnuplot projections of a data set provided with --data.
 # Output either as eps, png, or to stdout.
-
+#
 
 import sys, os, re, optparse
 if os.environ.has_key("SGPP"):

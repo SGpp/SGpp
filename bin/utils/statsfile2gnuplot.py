@@ -16,9 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## @package statsfile2gnuplot
-# @ingroup bin.utils
-# @brief Create gnuplot-plot from statsfile.
+## @brief Create gnuplot-plot from statsfile.
 #
 # Plot e.g. accuracy against lambda and number of grid points
 # @version $CURR$
