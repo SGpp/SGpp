@@ -15,7 +15,7 @@ namespace sg
 {
 namespace datadriven
 {
-	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, size_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode)
+	AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, sg::base::HashGenerator::level_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode)
     {
 		if (refine && (gridType != 1 && gridType != 2 && gridType != 3))
 		{
@@ -34,7 +34,7 @@ namespace datadriven
         this->grid = &SparseGrid;
 		this->type = gridType;
 		this->gridPoint = gridStorage->size();
-		this->level = gridLevel;
+		this->level = static_cast<sg::base::HashGenerator::level_t>(gridLevel);
         this->lamb = lambda;
         this->data = &trainData;
         this->classes = &trainDataClass;
