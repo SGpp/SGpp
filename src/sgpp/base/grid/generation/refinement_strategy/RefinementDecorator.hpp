@@ -20,8 +20,8 @@ namespace base
 
 /**
  * RefinementDecorator enhances the behavior of underlying Refinement objects
- * using @link http://en.wikipedia.org/wiki/Decorator_pattern Decorator design
- * pattern @endlink. Although not abstract, this class is thought
+ * using <a href="http://en.wikipedia.org/wiki/Decorator_pattern"> Decorator design
+ * pattern </a>. Although not abstract, this class is thought
  * to be a base class as it simply delegates the function calls to the decorated
  * object. Subclasses will implement more sophisticated behavior.
  */
