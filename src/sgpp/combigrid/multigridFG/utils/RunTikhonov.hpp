@@ -27,11 +27,11 @@ public:
 	virtual ~RunTikhonov() {;}
 
 	/** static function to run the Tikhonov reguralization on a full grid
-	 * @param domain [IN] the domain for the full grid on which the regularization will be done
-	 * @param levels [IN] level vector
-	 * @param lambda [IN] the lambda factor
-	 * @param Xfile  [IN] file path with the X coordinates
-	 * @param Yfile  [IN] file with the Y values
+	 * @param domain the domain for the full grid on which the regularization will be done
+	 * @param levels level vector
+	 * @param lambda the lambda factor
+	 * @param Xfile  file path with the X coordinates
+	 * @param YFile  file with the Y values
 	 * @return a full grid with the solution */
 	static FullGridD* computeFGTikhonov(
 			GridDomain& domain,
