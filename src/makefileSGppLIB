@@ -348,6 +348,10 @@ OBJS =	DataVector.o\
 	DMVectorizationPaddingAssistant.o\
 	OperationMatrixLTwoDotExplicitLinear.o\
 	OperationMatrixLTwoDotExplicitLinearBoundary.o
+	LaplaceDownGradientPrewavelet.o\
+	LaplaceUpGradientPrewavelet.o\
+	LaplaceUpPrewavelet.o
+
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
