@@ -34,7 +34,7 @@ public:
    * Constructor of OperationQuadratureMC, specifying a grid
    * object and the number of samples to use.
    *
-   * @param storage Pointer to the grid's GridStorage object
+   * @param grid Reference to the grid object
    * @param mcPaths Number of Monte Carlo samples
    *
    * @todo (pflueged) extend to error computation / arbitrary functions
@@ -54,7 +54,7 @@ public:
    * Quadrature of an arbitrary function using 
    * simple MC in @f$\Omega=[0,1]^d@f$.
    *
-   * @param FUNC The function to integrate
+   * @param func The function to integrate
    * @param clientdata Optional data to pass to FUNC
    */
   double doQuadratureFunc(FUNC func, void *clientdata);
@@ -65,7 +65,7 @@ public:
    * current sparse grid function using 
    * simple MC in @f$\Omega=[0,1]^d@f$.
    *
-   * @param FUNC The function @f$f(x)@f$
+   * @param func The function @f$f(x)@f$
    * @param clientdata Optional data to pass to FUNC
    * @param alpha Coefficient vector for current grid
    */

@@ -34,7 +34,7 @@ public:
 	/**
 	 * Integrate the sparse grid function
 	 *
-	 * @param node_values the function's values in the nodal basis
+	 * @param alpha the function's values in the nodal basis
 	 */
 	virtual double doQuadrature(DataVector& alpha) = 0;
 
