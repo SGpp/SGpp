@@ -27,16 +27,22 @@ StandardGridGenerator::~StandardGridGenerator()
 {
 }
 
-void StandardGridGenerator::regular(size_t level)
+void StandardGridGenerator::regular(int level)
 {
+	if (level < 0) {
+	   throw generation_exception("Grid level value is negative");
+    }
 	HashGenerator gen;
-	gen.regular(this->storage, level);
+	gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
-void StandardGridGenerator::full(size_t level)
+void StandardGridGenerator::full(int level)
 {
+	if (level < 0) {
+		   throw generation_exception("Grid level value is negative");
+	    }
 	HashGenerator gen;
-	gen.full(this->storage, level);
+	gen.full(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
 void StandardGridGenerator::refine(RefinementFunctor* func)
@@ -69,12 +75,20 @@ size_t StandardGridGenerator::getNumberOfRemovablePoints()
 	return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel)
 {
+	if (maxLevel < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
+	throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
 }
 
-size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel)
 {
+	if (maxLevel < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
+	throw generation_exception("StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
 	return 0;
 }
 

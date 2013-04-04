@@ -55,9 +55,9 @@ namespace base
      * @todo (blank) level should be of type level_t but swig doesnt want that
      *
      * @param storage Hashmap that stores the grid points
-     * @param level Grid level
+     * @param level Grid level (non-negative value)
      */
-    void regular(GridStorage* storage, int level)
+    void regular(GridStorage* storage, level_t level)
     {
       if(storage->size() > 0)
 	{
@@ -68,14 +68,14 @@ namespace base
     }
 
     /**
-     * Generates a full grid of level @it level, without boundaries.
+     * Generates a full grid of level @p level, without boundaries.
      *
      * @todo (blank) level should be of type level_t but swig doesnt want that
      *
      * @param storage Hashmap that stores the grid points
-     * @param level Grid level
+     * @param level Grid level (non-negative value)
      */
-    void full(GridStorage* storage, int level)
+    void full(GridStorage* storage, level_t level)
     {
       if(storage->size() > 0)
 	{
@@ -86,14 +86,14 @@ namespace base
     }
 
     /**
-     * Generates a full grid of level @it level, with boundary grid points.
+     * Generates a full grid of level @p level, with boundary grid points.
      *
      * @todo (blank) level should be of type level_t but swig doesnt want that
      *
      * @param storage Hashmap that stores the grid points
-     * @param level Grid level
+     * @param level Grid level (non-negative value)
      */
-    void fullWithBoundary(GridStorage* storage, int level)
+    void fullWithBoundary(GridStorage* storage, level_t level)
     {
       if(storage->size() > 0)
 	{
@@ -109,10 +109,10 @@ namespace base
      * @todo (blank) level should be of type level_t but swig doesnt want that
      *
      * @param storage Hashmap, that stores the grid points
-     * @param level maximum level of the sparse grid
+     * @param level maximum level of the sparse grid (non-negative value)
      * @param bTrapezoidBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
      */
-    void regularWithBoundaries(GridStorage* storage, int level, bool bTrapezoidBoundaries)
+    void regularWithBoundaries(GridStorage* storage, level_t level, bool bTrapezoidBoundaries)
     {
       if(storage->size() > 0)
 	{
@@ -164,9 +164,9 @@ namespace base
      *
      *
      * @param storage Hashmap, that stores the grid points
-     * @param level maximum level of the square root  grid
+     * @param level maximum level of the square root  grid (non-negative value)
      */
-    void squareRoot(GridStorage* storage, int level)
+    void squareRoot(GridStorage* storage, level_t level)
     {
       if(storage->size() > 0)
 	{
@@ -192,10 +192,10 @@ namespace base
      *
      *
      * @param storage Hashmap, that stores the grid points
-     * @param level maximum level of the square root  grid
+     * @param level maximum level of the square root  grid (non-negative value)
      * @param k the parameter which determines the maximum level of the gridpoints for every dimension
      */
-    void truncated(GridStorage* storage, int level, int k)
+    void truncated(GridStorage* storage, level_t level, int k)
     {
       if(storage->size() > 0)
 	{
@@ -900,9 +900,13 @@ namespace base
      * @param index point's index
      * @param current_dim current working dimension
      * @param level maximum level of the square root grid
+     * @param small_level level of coarsest descretization
      * @param tail true if there is a level of the index>level/2
+     * @param sum sum of all levels
      */
-    void square_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t level,level_t small_level,bool tail,size_t sum)
+    void square_rec(GridStorage* storage, index_type& index,
+    		size_t current_dim, level_t level,level_t small_level,
+    		bool tail,size_t sum)
     {
       index_t source_index;
       level_t source_level;
@@ -990,9 +994,10 @@ namespace base
      * @param current_level the current level of the gridpoint so far, starts from minlevel*dim
      * @param level the maximum level of the gridpoint
      * @param minlevel the level limit given by the user(tells us which fullgrids won't be present in the construction of the sparse grid)
-     * @param tail true if there is a level of the index>level/2
      */
-    void trunc_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level,size_t minlevel)
+    void trunc_rec(GridStorage* storage, index_type& index,
+    		size_t current_dim, level_t current_level,
+    		level_t level,size_t minlevel)
     {
       index_t source_index;
       level_t source_level;
@@ -1053,7 +1058,7 @@ namespace base
       if (source_level<minlevel){
 	/**
 	 * If the source level of the node is smaller than minlevel we don't increase the variable current_level(since we started with minlevel*dim)
-	 * This trick makes it possible to introduce all nodes with source_level<minlevel without a separate treatment
+	 * This trick makes it possible to introduce all nodes with source_level&lt;minlevel without a separate treatment
 	 * */
 	if (source_level == 0 && source_index == 0)
 	  {

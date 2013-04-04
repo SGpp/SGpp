@@ -29,15 +29,21 @@ TruncatedTrapezoidGridGenerator::~TruncatedTrapezoidGridGenerator()
 {
 }
 
-void TruncatedTrapezoidGridGenerator::regular(size_t level)
+void TruncatedTrapezoidGridGenerator::regular(int level)
 {
-	this->truncated( level,1);
+	if (level < 0) {
+	   throw generation_exception("Grid level value is negative");
+	}
+	this->truncated( static_cast<HashGenerator::level_t>(level),1);
 }
 
-void TruncatedTrapezoidGridGenerator::truncated(size_t level,size_t l_user)
+void TruncatedTrapezoidGridGenerator::truncated(int level,size_t l_user)
 {
+	if (level < 0) {
+	   throw generation_exception("Grid level value is negative");
+	}
 	HashGenerator gen;
-	gen.truncated(this->storage, level,l_user);
+	gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level),l_user);
 }
 
 //void BoundaryGridGenerator::refine(RefinementFunctor* func)

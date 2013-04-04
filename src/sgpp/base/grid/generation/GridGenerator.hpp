@@ -39,19 +39,19 @@ public:
 	 *
 	 * @param level Grid level
 	 */
-	virtual void regular(size_t level) = 0;
+	virtual void regular(int level) = 0;
 
 	/**
 	 * Creates a full grid for a certain level @f$ n @f$, i.e., @f$ V_n = \bigoplus_{|\vec{l}|_\infty \leq n} W_{\vec{l}}@f$.
 	 *
 	 * @param level Grid level
 	 */
-	virtual void full(size_t level) = 0;
+	virtual void full(int level) = 0;
 
 	/**
 	 * Creates a grid which doesn't contain the fullgrids with li<l_user, for any li level_t
 	 * */
-	virtual void truncated(size_t level, size_t l_user){};
+	virtual void truncated(int level, size_t l_user){};
 
 	/**
 	 * Refines a grid according to the settings of the RefinementFunctor func.
@@ -99,7 +99,7 @@ public:
 	 * @param func pointer to refinement functor
 	 * @param maxLevel no points on higher levels than maxLevel will be created
 	 */
-	virtual void refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel) = 0;
+	virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel) = 0;
 
 	/**
 	 * Returns the number of points on the grid that can be refined in the next iteration
@@ -109,7 +109,7 @@ public:
 	 *
 	 * @return the number of points on the grid that can be refined
 	 */
-	virtual size_t getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
+	virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel) = 0;
 };
 
 }

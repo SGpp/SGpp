@@ -76,6 +76,11 @@ public:
       refine_gridpoint_1d(storage, *index, d);
     }*/
 
+    /**
+     * Check if the grid point is refinable
+     * @param storage hashmap that stores the grid points
+     * @param index grid point index
+     */
     bool isRefinable(GridStorage* storage, index_type& index);
 
     /**

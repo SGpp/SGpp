@@ -26,16 +26,22 @@ BoundaryGridGenerator::~BoundaryGridGenerator()
 {
 }
 
-void BoundaryGridGenerator::regular(size_t level)
+void BoundaryGridGenerator::regular(int level)
 {
+	if (level < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashGenerator gen;
-	gen.regularWithBoundaries(this->storage, level, false);
+	gen.regularWithBoundaries(this->storage, static_cast<HashGenerator::level_t>(level), false);
 }
 
-void BoundaryGridGenerator::full(size_t level)
+void BoundaryGridGenerator::full(int level)
 {
+	if (level < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashGenerator gen;
-	gen.fullWithBoundary(this->storage, level);
+	gen.fullWithBoundary(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
 void BoundaryGridGenerator::refine(RefinementFunctor* func)
@@ -68,16 +74,22 @@ size_t BoundaryGridGenerator::getNumberOfRemovablePoints()
 	return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel)
 {
+	if (maxLevel < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashRefinementBoundariesMaxLevel refine;
-	refine.refineToMaxLevel(this->storage, func, maxLevel);
+	refine.refineToMaxLevel(this->storage, func, static_cast<HashGenerator::level_t>(maxLevel));
 }
 
-size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel)
 {
+	if (maxLevel < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashRefinementBoundariesMaxLevel refine;
-	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
+	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, static_cast<HashGenerator::level_t>(maxLevel));
 }
 
 }

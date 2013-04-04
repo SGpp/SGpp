@@ -26,16 +26,22 @@ StretchedTrapezoidBoundaryGridGenerator::~StretchedTrapezoidBoundaryGridGenerato
 {
 }
 
-void StretchedTrapezoidBoundaryGridGenerator::regular(size_t level)
+void StretchedTrapezoidBoundaryGridGenerator::regular(int level)
 {
+	if (level < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
 	HashGenerator gen;
-	gen.regularWithBoundaries(this->storage, level, true);
+	gen.regularWithBoundaries(this->storage, static_cast<HashGenerator::level_t>(level), true);
 }
 
-void StretchedTrapezoidBoundaryGridGenerator::full(size_t level)
+void StretchedTrapezoidBoundaryGridGenerator::full(int level)
 {
+	if (level < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
 	HashGenerator gen;
-	gen.fullWithBoundary(this->storage, level);
+	gen.fullWithBoundary(this->storage, static_cast<HashGenerator::level_t>(level));
 }
 
 void StretchedTrapezoidBoundaryGridGenerator::refine(RefinementFunctor* func)
@@ -68,16 +74,22 @@ size_t StretchedTrapezoidBoundaryGridGenerator::getNumberOfRemovablePoints()
 	return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void StretchedTrapezoidBoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+void StretchedTrapezoidBoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel)
 {
+	if (maxLevel < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
 	HashRefinementBoundariesMaxLevel refine;
-	refine.refineToMaxLevel(this->storage, func, maxLevel);
+	refine.refineToMaxLevel(this->storage, func, static_cast<HashGenerator::level_t>(maxLevel));
 }
 
-size_t StretchedTrapezoidBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+size_t StretchedTrapezoidBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel)
 {
+	if (maxLevel < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
 	HashRefinementBoundariesMaxLevel refine;
-	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
+	return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, static_cast<HashGenerator::level_t>(maxLevel));
 }
 
 }

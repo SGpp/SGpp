@@ -36,12 +36,7 @@ namespace sg
 namespace base
 {
 
-/**
- * An adaptive grid with prewavelet ansatz functions requires for operations
- * using the up-down algorithm shadow points. These shadow points a needed just
- * for data transport, thus they do not have an influence on the final function.
- * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
- */
+
 PrewaveletGridGenerator::PrewaveletGridGenerator(GridStorage* storage,
 		GridStorage* shadowstorage) :
 	storage(storage), shadowstorage(shadowstorage)
@@ -52,14 +47,20 @@ PrewaveletGridGenerator::~PrewaveletGridGenerator()
 {
 }
 
-void PrewaveletGridGenerator::regular(size_t level)
+void PrewaveletGridGenerator::regular(int level)
 {
+	if (level < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashGenerator gen;
 	gen.regular(this->storage, level);
 }
 
-void PrewaveletGridGenerator::full(size_t level)
+void PrewaveletGridGenerator::full(int level)
 {
+	if (level < 0) {
+			   throw generation_exception("Grid level value is negative");
+		    }
 	HashGenerator gen;
 	gen.full(this->storage, level);
 }
@@ -298,13 +299,21 @@ size_t PrewaveletGridGenerator::getNumberOfRemovablePoints()
 }
 
 void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor* func,
-		unsigned int maxLevel)
+		int maxLevel)
 {
+	if (maxLevel < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
+		throw generation_exception("PrewaveletGridGenerator::refineMaxLevel is not implemented");
 }
 
 size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
-		unsigned int maxLevel)
+		int maxLevel)
 {
+	if (maxLevel < 0) {
+				   throw generation_exception("Grid level value is negative");
+			    }
+		throw generation_exception("PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
 	return 0;
 }
 }
