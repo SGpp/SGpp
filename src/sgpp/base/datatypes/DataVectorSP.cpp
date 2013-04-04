@@ -240,7 +240,7 @@ void DataVectorSP::sqrt() {
 
 void DataVectorSP::abs() {
 	for (size_t i = 0; i < size; i++) {
-        data[i] = std::abs(data[i]);
+        data[i] = std::fabs(data[i]);
     }
 }
 

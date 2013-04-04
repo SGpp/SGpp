@@ -413,7 +413,7 @@ void DataMatrix::abs() {
 	size_t n = nrows * ncols;
 
 	for (size_t i = 0; i < n; i++) {
-		data[i] = std::abs(data[i]);
+		data[i] = std::fabs(data[i]);
 	}
 }
 
