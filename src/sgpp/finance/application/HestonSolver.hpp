@@ -216,14 +216,8 @@ public:
 	 */
 	virtual void setStochasticData(sg::base::DataVector& thetas_arg, sg::base::DataVector& kappas_arg, sg::base::DataVector& volvols_arg, sg::base::DataMatrix& rhos, double r);
 
-	/**
-	 * Concrete implementation of the implicit Euler solver. This is not yet supported and always throws an application exception.
-	 */
 	void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-	/**
-	 * Concrete implementation of the explicit Euler solver. This is not yet supported and always throws an application exception.
-	 */
 	void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
 	/**
@@ -472,6 +466,16 @@ public:
 	 * @param neval number of evaluations made so far
 	 * @param maxeval maximum number of evaluations which should not be exceeded
 	 * @param acc required accuracy expressed in units of std::numeric_limits<double>::epsilon(). This allows less-than comparison by using addition and equality.
+	 * @param xi Heston parameter
+	 * @param theta Heston parameter
+	 * @param kappa Heston parameter
+	 * @param rho Heston parameter
+	 * @param r discount rate
+	 * @param T Heston parameter
+	 * @param K Heston parameter
+	 * @param S Heston parameter
+	 * @param v Heston parameter
+	 * @param type Heston parameter
 	 *
 	 * @return integral step value
 	 */
@@ -485,6 +489,16 @@ public:
 	 * @param b the upper integration limit
 	 * @param abstol absolute tolerance - integration stops when the error estimate is smaller than this
 	 * @param maxeval maximum of evaluations to make. If this number of evaluations is made without reaching the required accuracy, an exception of type std::runtime_error is thrown.
+	 * @param xi Heston parameter
+	 * @param theta Heston parameter
+	 * @param kappa Heston parameter
+	 * @param rho Heston parameter
+	 * @param r discount rate
+	 * @param T Heston parameter
+	 * @param K Heston parameter
+	 * @param S Heston parameter
+	 * @param v Heston parameter
+	 * @param type Heston parameter
 	 *
 	 * @return integral value
 	 */
