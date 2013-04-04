@@ -1,9 +1,11 @@
-/*
- * combigrid::SerialCombiGrid.hpp
- *
- *  Created on: Feb 24, 2011
- *      Author: benk
- */
+/* ****************************************************************************
+* Copyright (C) 2011 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Janos Benk (benk@in.tum.de)
+// @author Christoph Kowitz (kowitz@in.tum.de)
+
 
 #include "combigrid/combigrid/SerialCombiGrid.hpp"
 
@@ -41,10 +43,10 @@ double combigrid::SerialCombiGrid::eval( std::vector<double>& coords ) const {
 		coords_tmp = coords;
 		coef=combikernel_->getCoef(i);
 
-//		if(coef!=0.0) {
+		if(coef!=0.0) {
 			result = result + combikernel_->getCoef(i) * combikernel_->getFullGrid(i)->eval(coords_tmp);
 //			std::cout<<coords[2]<<'\t'<<combikernel_->getCoef(i)<<'\t'<<combikernel_->getFullGrid(i)->eval(coords_tmp)<<std::endl;
-//		}
+		}
 	}
 	//COMBIGRID_OUT_LEVEL3( 4 , "SerialCombiGrid::eval result=" << result);
 	return result;
