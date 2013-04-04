@@ -34,7 +34,7 @@ protected:
 	/// The Sparse sg::base::Grid needed in this classificator
 	sg::base::Grid* myGrid;
 	/// the number of levels used for an regular grid
-	size_t levels;
+	int levels;
 	/// the dimension of the grid
 	size_t dim;
 	/// stores if the grid was created inside the solver
@@ -72,7 +72,7 @@ public:
 	 * @param myBoundingBox reference to a bounding box that describes the grid
 	 * @param level number of the regular's grid levels
 	 */
-	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level) = 0;
+	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, int level) = 0;
 
 	/**
 	 * Sets the grid used in this BlackScholes Solver by an given serialized string

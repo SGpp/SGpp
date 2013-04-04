@@ -106,7 +106,7 @@ public:
 	 */
 	virtual ~BlackScholesHullWhiteSolver();
 
-	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	/**
 	 * In order to combine the Black Scholes Equation with the Hull White Equation you have to provided

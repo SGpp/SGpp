@@ -40,7 +40,7 @@ HeatEquationSolver::~HeatEquationSolver()
 	}
 }
 
-void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
+void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, int level)
 {
 	this->dim = BoundingBox.getDimensions();
 	this->levels = level;
@@ -48,7 +48,7 @@ void HeatEquationSolver::constructGrid(BoundingBox& BoundingBox, size_t level)
 	this->myGrid = new LinearTrapezoidBoundaryGrid(BoundingBox);
 
 	GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-	myGenerator->regular(this->levels);
+	myGenerator->regular(levels);
 	delete myGenerator;
 
 	this->myBoundingBox = this->myGrid->getBoundingBox();

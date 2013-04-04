@@ -171,7 +171,7 @@ public:
 	 */
 	virtual ~BlackScholesSolver();
 
-	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	/**
 	 * This function tries to refine the grid such that

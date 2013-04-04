@@ -81,7 +81,7 @@ public:
 	 */
 	~BlackScholesSolverWithStretching();
 
-	void constructGridStretching(sg::base::Stretching& myStretching, size_t level);
+	void constructGridStretching(sg::base::Stretching& myStretching, int level);
 
 	void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
 

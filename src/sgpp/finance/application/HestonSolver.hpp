@@ -168,7 +168,7 @@ public:
 	 * @param myBoundingBox bounding box for the sparse grid
 	 * @param level sparse grid level
 	 */
-	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, size_t level);
+	virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
 
 	/**
 	 * This function tries to refine the grid such that

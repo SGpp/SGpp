@@ -96,7 +96,7 @@ void BlackScholesSolverWithStretching::getGridNormalDistribution(sg::base::DataV
 }
 
 
-void BlackScholesSolverWithStretching::constructGridStretching(sg::base::Stretching& stretching, size_t level)
+void BlackScholesSolverWithStretching::constructGridStretching(sg::base::Stretching& stretching, int level)
 {
 	this->dim = stretching.getDimensions();
 	this->levels = level;
