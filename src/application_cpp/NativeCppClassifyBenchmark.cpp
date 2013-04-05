@@ -32,7 +32,7 @@ double gtrainAcc;
 double gtestAcc;
 sg::solver::SLESolverConfiguration gSLEfinal;
 sg::base::AdpativityConfiguration gAdapConfig;
-size_t gstart_level;
+int gstart_level;
 double glambda;
 
 //void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
@@ -342,7 +342,7 @@ int main(int argc, char *argv[])
 	size_t cg_max = 0;
 	size_t refine_count = 0;
 	size_t refine_points = 0;
-	size_t start_level = 0;
+	int start_level = 0;
 	size_t cg_max_learning = 0;
 
 	sg::base::RegularGridConfiguration gridConfig;
