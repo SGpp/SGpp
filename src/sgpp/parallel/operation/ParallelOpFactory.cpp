@@ -65,9 +65,9 @@ namespace sg {
     parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
         int gridFrom, int gridTo, int datasetFrom, int datasetTo) {
       // handle default upper boundaries
-      if (gridTo == -1) gridTo = static_cast<int>(grid.getStorage()->size());
+      if (gridTo == -1) gridTo = (int)(grid.getStorage()->size());
 
-      if (datasetTo == -1) datasetTo = static_cast<int>(dataset->getNcols());
+      if (datasetTo == -1) datasetTo = (int)(dataset->getNcols());
 
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
@@ -169,9 +169,9 @@ namespace sg {
     parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
         int gridFrom, int gridTo, int datasetFrom, int datasetTo) {
       // handle default upper boundaries
-      if (gridTo == -1) gridTo = static_cast<int>(grid.getStorage()->size());
+      if (gridTo == -1) gridTo = (int)(grid.getStorage()->size());
 
-      if (datasetTo == -1) datasetTo = static_cast<int>(dataset->getNcols());
+      if (datasetTo == -1) datasetTo = (int)(dataset->getNcols());
 
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {

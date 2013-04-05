@@ -220,7 +220,7 @@ namespace sg {
          * @param dim dimension index of the type array
          *
          */
-        Stretching1D getStretching1D(int dim);
+        Stretching1D getStretching1D(size_t dim);
 
         /*
          * Prints the lookup table generated. Used for debugging

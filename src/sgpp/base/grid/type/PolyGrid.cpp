@@ -17,7 +17,7 @@
 namespace sg {
   namespace base {
 
-    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(-1) {
+    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(0) {
       istr >> degree;
     }
 

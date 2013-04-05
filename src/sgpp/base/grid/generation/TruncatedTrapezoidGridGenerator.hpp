@@ -41,7 +41,7 @@ namespace sg {
          * @param level the maximum level of the grid
          * @param l_user the number of fullgrids cut off from the boundaries.
          * */
-        virtual void truncated(int level, size_t l_user);
+        virtual void truncated(int level, int l_user);
         virtual void refine(RefinementFunctor* func) {};
         virtual size_t getNumberOfRefinablePoints() {
           return 0;

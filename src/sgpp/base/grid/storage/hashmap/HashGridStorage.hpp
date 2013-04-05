@@ -331,7 +331,7 @@ namespace sg {
                * sinh:3
                */
               for (size_t i = 0; i < DIM; i++) {
-                str1d = stretching->getStretching1D(static_cast<int>(i) );
+                str1d = stretching->getStretching1D(i);
 
                 if (str1d.type == "id") {
                   stretchingType = 1;

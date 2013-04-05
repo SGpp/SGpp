@@ -175,7 +175,7 @@ namespace sg {
          * @param level maximum level of the square root  grid (non-negative value)
          * @param k the parameter which determines the maximum level of the gridpoints for every dimension
          */
-        void truncated(GridStorage* storage, level_t level, int k) {
+        void truncated(GridStorage* storage, level_t level, level_t k) {
           if (storage->size() > 0) {
             throw generation_exception("storage not empty");
           }
@@ -187,9 +187,10 @@ namespace sg {
           }
 
           size_t mydim = storage->dim();
+          //level_t dimt = *reinterpret_cast<level_t*>(&mydim);
           index.setLeaf(true);
-          trunc_rec(storage, index, (mydim - 1), static_cast<level_t>(mydim * k),
-                    static_cast<level_t>(level + k * (mydim - 1)), k);
+          trunc_rec(storage, index, (mydim - 1), *reinterpret_cast<level_t*>(&mydim) * k, 
+                    level + k * (*reinterpret_cast<level_t*>(&mydim) - 1), k);
         }
 
       protected:
@@ -318,7 +319,7 @@ namespace sg {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               // add missing Level 1
-              level_t level_sum = static_cast<level_t>((storage->dim() - 1) - d);
+              level_t level_sum = (level_t)((storage->dim() - 1) - d);
               bool has_level_zero = false;
               index_type idx(storage->get(g));
 
@@ -870,7 +871,7 @@ namespace sg {
          */
         void trunc_rec(GridStorage* storage, index_type& index,
                        size_t current_dim, level_t current_level,
-                       level_t level, size_t minlevel) {
+                       level_t level, level_t minlevel) {
           index_t source_index;
           level_t source_level;
 

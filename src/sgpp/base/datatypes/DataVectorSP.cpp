@@ -287,7 +287,7 @@ namespace sg {
 
     void DataVectorSP::partitionClasses(float threshold) {
       for (size_t i = 0; i < size; i++) {
-        data[i] = data[i] > threshold ? 1.0 : -1.0;
+        data[i] = data[i] > threshold ? 1.0f : -1.0f;
       }
     }
 

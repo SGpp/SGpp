@@ -217,7 +217,7 @@ namespace sg {
       int _1DArrayLength = 0;
 
       for (size_t i = 0; i < nDim; i++) {
-        _1DArrayLength = static_cast<int>(coordinates[i].size());
+        _1DArrayLength = (int)(coordinates[i].size());
         dimensionBoundaries[i].leftBoundary = coordinates[i][0];
         dimensionBoundaries[i].rightBoundary = coordinates[i][_1DArrayLength - 1];
         dimensionBoundaries[i].bDirichletLeft = true;
@@ -252,7 +252,7 @@ namespace sg {
         }
 
         discreteVectorLevel[i] = copyStretching.discreteVectorLevel[i];
-        stretching1Ds[i] = copyStretching.getStretching1D(static_cast<int>(i));
+        stretching1Ds[i] = copyStretching.getStretching1D(*reinterpret_cast<int*>(&i));
 
       }
     }
@@ -513,8 +513,8 @@ namespace sg {
       return 0.0;
     }
 
-    Stretching1D Stretching::getStretching1D(int index) {
-      return stretching1Ds[index];
+    Stretching1D Stretching::getStretching1D(size_t dim) {
+      return stretching1Ds[dim];
     }
 
     void Stretching::printLookupTable() {
@@ -657,7 +657,7 @@ namespace sg {
         vec = new std::vector<double>[nDim];
 
         for (size_t i = 0; i < nDim; i++) {
-          Stretching1D str1d = getStretching1D(static_cast<int>(i));
+          Stretching1D str1d = getStretching1D(*reinterpret_cast<int*>(&i));
           elemsToRead = static_cast<int>((pow(2.0, discreteVectorLevel[i]) - 1));
           vec[i] = std::vector<double>(elemsToRead + 2, 0);
           vec[i][0] = dimensionBoundaries[i].leftBoundary;
