@@ -182,9 +182,9 @@ elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
     env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', 
                            '-fno-strict-aliasing', '-O3',
-                           '-funroll-loops', '-msse3',
-                           '-ipo', '-ip', '-ansi-alias', '-fp-speculation=safe', '-fPIC',
-                           '-Wno-deprecated']) # '-Werror'
+                           '-ip', '-ipo', '-funroll-loops', '-msse3',
+                           '-ansi-alias', '-fp-speculation=safe', '-fPIC',
+                           '-Wno-deprecated', '-wd1125'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: ICC"
