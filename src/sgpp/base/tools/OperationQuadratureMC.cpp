@@ -51,7 +51,7 @@ namespace sg {
           p[d] = static_cast<double>(rand()) / RAND_MAX;
         }
 
-        res += func(static_cast<int>(dim), p, clientdata);
+        res += func(*reinterpret_cast<int*>(&dim), p, clientdata);
       }
 
       delete p;
@@ -75,7 +75,7 @@ namespace sg {
           point[d] = x;
         }
 
-        res += pow(func(static_cast<int>(dim), p, clientdata) - opEval->eval(alpha, point), 2);
+        res += pow(func(*reinterpret_cast<int*>(&dim), p, clientdata) - opEval->eval(alpha, point), 2);
       }
 
       delete p;

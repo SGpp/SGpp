@@ -1,15 +1,8 @@
-/*
- * TruncatedTrapezoidGridGenerator.cpp
- *
- *  Created on: Aug 4, 2010
- *      Author: Aliz Nagy
- */
 /******************************************************************************
 * Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-
 
 #include "base/grid/generation/TruncatedTrapezoidGridGenerator.hpp"
 #include "base/grid/GridStorage.hpp"
@@ -33,13 +26,13 @@ namespace sg {
       this->truncated( static_cast<HashGenerator::level_t>(level), 1);
     }
 
-    void TruncatedTrapezoidGridGenerator::truncated(int level, size_t l_user) {
+    void TruncatedTrapezoidGridGenerator::truncated(int level, int l_user) {
       if (level < 0) {
         throw generation_exception("Grid level value is negative");
       }
 
       HashGenerator gen;
-      gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level), static_cast<int>(l_user));
+      gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level), static_cast<HashGenerator::level_t>(l_user));
     }
 
     //void BoundaryGridGenerator::refine(RefinementFunctor* func)
