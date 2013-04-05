@@ -168,23 +168,22 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long',
+    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
                          '-fno-strict-aliasing', '-O3',
-                         '-funroll-loops', '-mfpmath=sse', '-msse3',
-                         '-Werror', '-Wno-deprecated', '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+                         '-funroll-loops', '-mfpmath=sse', '-msse3', '-fPIC',
+                         '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
     if env['OMP']:
 	env.Append(CPPFLAGS=['-fopenmp'])
-    	env.Append(CPPDEFINES=['USEOMP'])
     	env.Append(LINKFLAGS=['-fopenmp'])
     	
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
-    env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', 
+    env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', '-Wno-deprecated', '-wd1125',  
                            '-fno-strict-aliasing', '-O3',
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
                            '-ansi-alias', '-fp-speculation=safe', '-fPIC',
-                           '-Wno-deprecated', '-wd1125', '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+                           '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: ICC"
@@ -198,7 +197,6 @@ if env['TARGETCPU'] in ['ICC']:
     if env['OMP']:
 	env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
-        env.Append(CPPDEFINES=['USEOMP'])
     
 # sets the architecture option for gcc
 if env.has_key('MARCH'):
@@ -263,6 +261,14 @@ for modl in moduleList.keys():
 for sup in supportList:
     if env[sup]:
         print "Compiling support for", sup
+
+# add C++ defines for all modules
+cppdefines = []
+#for modl in moduleList.keys():
+#    if env[modl]:
+#        cppdefines.append(modl)
+env.Append(CPPDEFINES=cppdefines)
+
 
 
 # Initialize environment + support for Python and Java
