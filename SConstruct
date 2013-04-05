@@ -180,7 +180,7 @@ if env['TARGETCPU'] == 'default':
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
-    env.Append(CPPFLAGS = ['-Wall', '-ansi',
+    env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', 
                            '-fno-strict-aliasing', '-O3',
                            '-funroll-loops', '-msse3',
                            '-ipo', '-ip', '-ansi-alias', '-fp-speculation=safe', '-fPIC',
