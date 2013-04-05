@@ -146,7 +146,7 @@ namespace sg {
          * @param SolverConfig configuration of the SLE solver
          * @param lamda regularization parameter lambda
          */
-        virtual LearnerTiming train(sg::base::DataMatrixSP& testDataset,  sg::base::DataVectorSP& classes,
+        LearnerTiming train(sg::base::DataMatrixSP& testDataset,  sg::base::DataVectorSP& classes,
                                     const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverSPConfiguration& SolverConfig,
                                     const float lamda);
 
