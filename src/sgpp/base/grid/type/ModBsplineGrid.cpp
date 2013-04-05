@@ -18,7 +18,7 @@
 namespace sg {
   namespace base {
 
-    ModBsplineGrid::ModBsplineGrid(std::istream& istr) : Grid(istr), degree(0) {
+    ModBsplineGrid::ModBsplineGrid(std::istream& istr) : Grid(istr), degree(1<<16) {
       istr >> degree;
     }
 
