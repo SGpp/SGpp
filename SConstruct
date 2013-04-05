@@ -264,9 +264,9 @@ for sup in supportList:
 
 # add C++ defines for all modules
 cppdefines = []
-#for modl in moduleList.keys():
-#    if env[modl]:
-#        cppdefines.append(modl)
+for modl in moduleList.keys():
+    if env[modl]:
+        cppdefines.append(modl)
 env.Append(CPPDEFINES=cppdefines)
 
 
