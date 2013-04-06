@@ -128,8 +128,8 @@ namespace sg {
 #ifdef _OPENMP
         } else {
 #endif
-          int worksize = static_cast<int>((storageSize - gpu_partition) / (num_threads));
-          int myStart = static_cast<int>(gpu_partition + (tid - 1) * worksize);
+          size_t worksize = static_cast<size_t>((storageSize - gpu_partition) / (num_threads));
+          size_t myStart = static_cast<size_t>(gpu_partition + (tid - 1) * worksize);
           size_t myEnd = static_cast<size_t>(myStart + worksize);
 
           if (tid == num_threads - 1)
@@ -146,7 +146,7 @@ namespace sg {
           //      }
 #if defined(__SSE3__) && !defined(__AVX__)
 
-          for (size_t j = (size_t)myStart; j < myEnd; j++) {
+          for (size_t j = myStart; j < myEnd; j++) {
             __m128 res = _mm_set1_ps(0.0f);
             int imask = 0x7FFFFFFF;
             float* fmask = (float*)&imask;
@@ -217,7 +217,7 @@ namespace sg {
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
 
-          for (size_t j = (size_t)myStart; j < myEnd; j++) {
+          for (size_t j = myStart; j < myEnd; j++) {
             __m256 res = _mm256_set1_ps(0.0f);
 
             int imask = 0x7FFFFFFF;
@@ -293,7 +293,7 @@ namespace sg {
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
 
-          for (size_t j = (size_t)myStart; j < myEnd; j++) {
+          for (size_t j = myStart; j < myEnd; j++) {
             ptrGlobalResult[j] = 0.0f;
 
             for (size_t i = 0; i < source_size; i++) {
@@ -386,14 +386,14 @@ namespace sg {
             gpu_time = omp_get_wtime() - loc_start;
           }
         } else {
-          int worksize = static_cast<int>((result_size - gpu_partition) / (num_threads));
+          size_t worksize = static_cast<size_t>((result_size - gpu_partition) / (num_threads));
 #if defined(__SSE3__) && !defined(__AVX__)
           worksize = (worksize / 16) * 16;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
           worksize = (worksize / 32) * 32;
 #endif
-          int myStart = static_cast<int>(gpu_partition + (tid - 1) * worksize);
+          size_t myStart = static_cast<size_t>(gpu_partition + (tid - 1) * worksize);
           size_t myEnd = static_cast<size_t>(myStart + worksize);
 
           if (tid == num_threads - 1)
@@ -410,7 +410,7 @@ namespace sg {
           //      }
 #if defined(__SSE3__) && !defined(__AVX__)
 
-          for (size_t i = (size_t)myStart; i < myEnd; i += 16) {
+          for (size_t i = myStart; i < myEnd; i += 16) {
             int imask = 0x7FFFFFFF;
             float* fmask = (float*)&imask;
 
@@ -495,7 +495,7 @@ namespace sg {
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
 
-          for (size_t i = (size_t)myStart; i < myEnd; i += 32) {
+          for (size_t i = myStart; i < myEnd; i += 32) {
             int imask = 0x7FFFFFFF;
             float* fmask = (float*)&imask;
 
@@ -580,7 +580,7 @@ namespace sg {
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
 
-          for (size_t i = (size_t)myStart; i < myEnd; i++) {
+          for (size_t i = myStart; i < myEnd; i++) {
             for (size_t j = 0; j < storageSize; j++) {
               float curSupport = ptrAlpha[j];
 
