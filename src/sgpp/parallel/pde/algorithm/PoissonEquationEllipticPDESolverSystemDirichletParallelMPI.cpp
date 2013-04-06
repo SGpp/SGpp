@@ -41,7 +41,7 @@ namespace sg {
 
           // Apply Laplace, parallel in Dimensions
           for (size_t i = 0; i < nDims; i++) {
-            if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+            if (i % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
               #pragma omp task firstprivate(i) shared(alpha, result, algoDims)
               {
                 sg::base::DataVector myResult(result.getSize());
@@ -75,7 +75,7 @@ namespace sg {
 
           // Apply Laplace, parallel in Dimensions
           for (size_t i = 0; i < nDims; i++) {
-            if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+            if (i % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
               #pragma omp task firstprivate(i) shared(alpha, result, algoDims)
               {
 

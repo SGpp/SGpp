@@ -70,7 +70,7 @@ namespace sg {
       result.setAll(0.0);
       size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
 
-      if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+      if (nDims % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
         sg::base::DataVector temp(alpha.getSize());
 
         ((sg::pde::StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha, temp);
@@ -90,7 +90,7 @@ namespace sg {
 
       // Apply Laplace, parallel in Dimensions
       for (size_t i = 0; i < nDims; i++) {
-        if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+        if (i % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
           #pragma omp task firstprivate(i) shared(alpha, temp, result, algoDims)
           {
             sg::base::DataVector myResult(result.getSize());
@@ -116,7 +116,7 @@ namespace sg {
       result.setAll(0.0);
       size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
 
-      if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+      if (nDims % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
         sg::base::DataVector temp(alpha.getSize());
 
         ((sg::pde::StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha, temp);
@@ -136,7 +136,7 @@ namespace sg {
 
       // Apply Laplace, parallel in Dimensions
       for (size_t i = 0; i < nDims; i++) {
-        if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+        if (i % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
           #pragma omp task firstprivate(i) shared(alpha, temp, result, algoDims)
           {
             sg::base::DataVector myResult(result.getSize());
