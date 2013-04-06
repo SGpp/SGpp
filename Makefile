@@ -61,7 +61,7 @@ UPDOWN_PARADIMS=4
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
+CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
 CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
