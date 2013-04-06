@@ -175,7 +175,9 @@ if env['TARGETCPU'] == 'default':
     if env['OMP']:
 	env.Append(CPPFLAGS=['-fopenmp'])
     	env.Append(LINKFLAGS=['-fopenmp'])
-    	
+    else:
+	# do not stop for unknown pragmas (due to #pragma omp ... )
+        env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
@@ -184,19 +186,23 @@ elif env['TARGETCPU'] == 'ICC':
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
                            '-ansi-alias', '-fp-speculation=safe', '-fPIC',
                            '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+
+    env['CC'] = ('icc')
+    env['LINK'] = ('icpc')
+    env['CXX'] = ('icpc')	    
+
+    if env['OMP']:
+	env.Append(CPPFLAGS=['-openmp'])
+        env.Append(LINKFLAGS=['-openmp']) 
+    else:
+	# do not stop for unknown pragmas (due to #pragma omp ... )
+        env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
+
+
 else:
     print "You must specify a valid value for TARGETCPU."
     print "Available configurations are: ICC"
     Exit(1)
-    
-# sets ICC-wide commen options and the tool chain   
-if env['TARGETCPU'] in ['ICC']:
-    env['CC'] = ('icc')
-    env['LINK'] = ('icpc')
-    env['CXX'] = ('icpc')	    
-    if env['OMP']:
-	env.Append(CPPFLAGS=['-openmp'])
-        env.Append(LINKFLAGS=['-openmp']) 
     
 # sets the architecture option for gcc
 if env.has_key('MARCH'):
