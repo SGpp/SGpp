@@ -72,7 +72,6 @@ namespace sg {
 
     void BlackScholesSolverMPI::getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma) {
       if (this->bGridConstructed) {
-        double tmp;
         double value;
         base::StdNormalDistribution myNormDistr;
         double* s_coords = new double[this->dim];
@@ -460,10 +459,10 @@ namespace sg {
 
         if (this->usePAT == false) {
           myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         }
 
         base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -513,10 +512,10 @@ namespace sg {
 
         if (this->usePAT == false) {
           myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         }
 
         base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -565,10 +564,10 @@ namespace sg {
 
         if (this->usePAT == false) {
           myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         }
 
         base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
@@ -709,7 +708,7 @@ namespace sg {
       this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
     }
 
-    void BlackScholesSolverMPI::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
+    void BlackScholesSolverMPI::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, int refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
       this->useCoarsen = true;
       this->coarsenThreshold = coarsenThreshold;
       this->refineThreshold = refineThreshold;

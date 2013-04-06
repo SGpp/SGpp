@@ -79,7 +79,7 @@ namespace sg {
         /// identifies if the Black Scholes Equation should be solved by using a principal axis transformation
         bool usePAT;
         /// max. level for refinement during solving
-        size_t refineMaxLevel;
+        int refineMaxLevel;
         /// variable to store needed solving iterations
         size_t nNeededIterations;
         /// variable to store the solving time
@@ -254,7 +254,7 @@ namespace sg {
          *  @param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
          *  @param refineThreshold Threshold needed to determine if a grid point should be refined
          */
-        virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, size_t refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+        virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, int refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
         /**
          * Evaluates the current option value

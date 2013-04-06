@@ -27,7 +27,7 @@ namespace sg {
         sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
         double dStrike, std::string option_type, double r,
         bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, size_t refineMaxLevel) : BlackScholesPATParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, lambda,
+        int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel) : BlackScholesPATParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, lambda,
               eigenvecs, mu_hat, TimestepSize, OperationMode, dStrike, option_type, r, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel), rhs_corrector(NULL)
     {}
 
@@ -50,7 +50,7 @@ namespace sg {
 
       // Apply the delta method
       for (size_t i = 0; i < nDims; i++) {
-        if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+        if (i % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
           #pragma omp task firstprivate(i) shared(alpha, LaplaceMutex, LaplaceResult, result, algoDims)
           {
             sg::base::DataVector myResult(result.getSize());
@@ -93,7 +93,7 @@ namespace sg {
 
       // Apply the delta method
       for (size_t i = 0; i < nDims; i++) {
-        if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+        if (i % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
           #pragma omp task firstprivate(i) shared(alpha, LaplaceMutex, LaplaceResult, result, algoDims)
           {
             sg::base::DataVector myResult(result.getSize());
@@ -127,7 +127,7 @@ namespace sg {
       result.setAll(0.0);
       size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
 
-      if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+      if (nDims % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
         ((sg::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
         result.add(temp);
@@ -139,7 +139,7 @@ namespace sg {
       result.setAll(0.0);
       size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
 
-      if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+      if (nDims % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
         ((sg::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
         result.add(temp);
