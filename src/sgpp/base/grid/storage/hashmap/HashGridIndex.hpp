@@ -43,7 +43,7 @@ namespace sg {
          *
          * @param dim the dimension of the gridpoint
          */
-        HashGridIndex(size_t dim) : DIM(dim), level(NULL), index(NULL) {
+        HashGridIndex(size_t dim) : DIM(dim), level(NULL), index(NULL), hash_value(0) {
           level = new level_type[dim];
           index = new index_type[dim];
           Leaf = false;
@@ -52,7 +52,7 @@ namespace sg {
         /**
          * Standard-Constructor
          */
-        HashGridIndex() : DIM(0), level(NULL), index(NULL) {
+        HashGridIndex() : DIM(0), level(NULL), index(NULL), hash_value(0) {
           Leaf = false;
         }
 
@@ -61,7 +61,7 @@ namespace sg {
          *
          * @param o constant pointer to HashGridIndex object
          */
-        HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL) {
+        HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL), hash_value(0) {
           level = new level_type[DIM];
           index = new index_type[DIM];
           Leaf = false;
@@ -81,7 +81,7 @@ namespace sg {
          * @param istream instream object the contains the information about the gridpoint
          * @param version the serialization version of the file
          */
-        HashGridIndex(std::istream& istream, int version) : DIM(0), level(NULL), index(NULL) {
+        HashGridIndex(std::istream& istream, int version) : DIM(0), level(NULL), index(NULL), hash_value(0) {
           size_t temp_leaf;
 
           istream >> DIM;
