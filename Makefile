@@ -287,6 +287,7 @@ endif
 
 CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLE_RES_THRESH)
 CFLAGS:=$(CFLAGS) -DTASKS_PARALLEL_UPDOWN=$(UPDOWN_PARADIMS)
+#CFLAGS:=$(CFLAGS) -DUSE_ENHANCED_UPDOWN
 
 ###################################################################
 # Builds a lib containing all SG Algorithms
