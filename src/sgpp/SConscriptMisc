@@ -1,0 +1,35 @@
+# Copyright (C) 2013 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Alexander Heinecke (alexander.heinecke@mytum.de)
+
+Import("env")
+
+srcs = Split("""
+misc/pde/algorithm/UpDownOneOpDimEnhanced.cpp
+
+misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.cpp
+misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.cpp
+misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.cpp
+
+misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.cpp
+misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.cpp
+misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.cpp
+
+misc/operation/MiscOpFactory.cpp
+""")
+
+
+sg_env = env.Clone()
+
+sg_env.Append(CPPPATH=['#/src/sgpp'])
+
+src_objs_misc = sg_env.SharedObject(srcs)
+Export('src_objs_misc')
+
+libsgppmisc = sg_env.SharedLibrary(target="sgppmisc", source = src_objs_misc, SHLIBPREFIX = 'lib')
+libsgppmiscstatic = sg_env.StaticLibrary(target="sgppmisc", source = src_objs_misc, SHLIBPREFIX = 'lib')
+
+Export('libsgppmisc')
+Export('libsgppmiscstatic')
