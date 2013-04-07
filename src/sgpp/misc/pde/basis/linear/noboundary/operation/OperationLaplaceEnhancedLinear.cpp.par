@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
+#include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
 
-#include "pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp"
-#include "pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp"
+#include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp"
+#include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp"
 
 #include "base/algorithm/sweep.hpp"
 

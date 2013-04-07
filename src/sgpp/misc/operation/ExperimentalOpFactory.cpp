@@ -8,9 +8,9 @@
 #include <cstring>
 #include "base/exception/factory_exception.hpp"
 
-#include "experimental/operation/ExperimentalOpFactory.hpp"
-#include "experimental/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
-#include "experimental/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp"
+#include "misc/operation/ExperimentalOpFactory.hpp"
+#include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
+#include "misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp"
 
 namespace sg
 {
