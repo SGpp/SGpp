@@ -12,44 +12,30 @@
 #include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
 #include "misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp"
 
-namespace sg
-{
+namespace sg {
 
-namespace op_factory
-{
-  base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid)
-  {
+  namespace op_factory {
+    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
+      if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage());
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         return new pde::OperationLaplaceEnhancedLinearBoundary(grid.getStorage());
-      }
-    else
-      {
+      } else {
         throw base::factory_exception("OperationLaplaceEnhanced is not implemented for this grid type.");
       }
-  }
+    }
 
-  base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, sg::base::DataVector& coef)
-  {
+    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, sg::base::DataVector& coef) {
 
-    if(strcmp(grid.getType(), "linear") == 0)
-      {
+      if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage(), coef);
-      }
-    else if(strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0)
-      {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         return new pde::OperationLaplaceEnhancedLinearBoundary(grid.getStorage(), coef);
-      }
-    else
-      {
+      } else {
         throw base::factory_exception("OperationLaplaceEnhanced is not implemented for this grid type.");
       }
+    }
   }
-}
 }
 

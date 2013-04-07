@@ -19,40 +19,36 @@
 
 #define CRNIC_IMEUL_STEPS 3
 
-int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::DimensionBoundary* BoundaryArray)
-{
-	std::fstream file;
-	double cur_right;
-	double cur_left;
+int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::DimensionBoundary* BoundaryArray) {
+  std::fstream file;
+  double cur_right;
+  double cur_left;
 
-	file.open(tFile.c_str());
+  file.open(tFile.c_str());
 
-	if(!file.is_open())
-	{
-		std::cout << "Error cannot read file: " << tFile << std::endl;
-		return -1;
-	}
+  if (!file.is_open()) {
+    std::cout << "Error cannot read file: " << tFile << std::endl;
+    return -1;
+  }
 
-	for (size_t i = 0; i < numAssests; i++)
-	{
-		file >> cur_left;
-		file >> cur_right;
+  for (size_t i = 0; i < numAssests; i++) {
+    file >> cur_left;
+    file >> cur_right;
 
-		BoundaryArray[i].leftBoundary = cur_left;
-		BoundaryArray[i].rightBoundary = cur_right;
-		BoundaryArray[i].bDirichletLeft = true;
-		BoundaryArray[i].bDirichletRight = true;
-	}
+    BoundaryArray[i].leftBoundary = cur_left;
+    BoundaryArray[i].rightBoundary = cur_right;
+    BoundaryArray[i].bDirichletLeft = true;
+    BoundaryArray[i].bDirichletRight = true;
+  }
 
-	file.close();
+  file.close();
 
-	return 0;
+  return 0;
 }
 
-double calculatetheta(double a, double sigma, double T, int count, double stepsize)
-{
-	double theta=0;
-	return theta=0.04*a + pow(sigma,2.0)*(1-exp(-2*a*(T-count*stepsize)))/(2*a);
+double calculatetheta(double a, double sigma, double T, int count, double stepsize) {
+  double theta = 0;
+  return theta = 0.04 * a + pow(sigma, 2.0) * (1 - exp(-2 * a * (T - count * stepsize))) / (2 * a);
 }
 /**
  * Do a Hull White solver test with n assets (ND Sparse Grid) European call option
@@ -69,113 +65,105 @@ double calculatetheta(double a, double sigma, double T, int count, double stepsi
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
  */
 void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std::string payoffType,
-		size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T,double dStrike)
-{
-		size_t level = l;
-		size_t timesteps = timeSt;
-		double stepsize = dt;
-		size_t CGiterations = CGIt;
-		double CGepsilon = CGeps;
+                   size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T, double dStrike) {
+  size_t level = l;
+  size_t timesteps = timeSt;
+  double stepsize = dt;
+  size_t CGiterations = CGIt;
+  double CGepsilon = CGeps;
 
 
-		sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[1];
-		if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0)
-		{
-			return;
-		}
+  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[1];
 
-		sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
-		sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(1, myBoundaries);
-		delete[] myBoundaries;
+  if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0) {
+    return;
+  }
 
-		// init Screen Object
-		myHWSolver->initScreen();
+  sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
+  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(1, myBoundaries);
+  delete[] myBoundaries;
 
-		// Construct a grid
-		myHWSolver->constructGrid(*myBoundingBox, level);
+  // init Screen Object
+  myHWSolver->initScreen();
 
-		// init the basis functions' coefficient vector
-		sg::base::DataVector* alpha = new sg::base::DataVector(myHWSolver->getNumberGridPoints());
+  // Construct a grid
+  myHWSolver->constructGrid(*myBoundingBox, level);
 
-		std::cout << "Grid has " << level << " Levels" << std::endl;
-		std::cout << "Initial Grid size: " << myHWSolver->getNumberGridPoints() << std::endl;
-		std::cout << "Initial Grid size (inner): " << myHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+  // init the basis functions' coefficient vector
+  sg::base::DataVector* alpha = new sg::base::DataVector(myHWSolver->getNumberGridPoints());
 
-		// Init the grid with on payoff function
-		myHWSolver->initGridWithPayoff(*alpha, dStrike, payoffType, sigma, a, t, T);
+  std::cout << "Grid has " << level << " Levels" << std::endl;
+  std::cout << "Initial Grid size: " << myHWSolver->getNumberGridPoints() << std::endl;
+  std::cout << "Initial Grid size (inner): " << myHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-		// Gridpoints @Money
-	//	std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+  // Init the grid with on payoff function
+  myHWSolver->initGridWithPayoff(*alpha, dStrike, payoffType, sigma, a, t, T);
 
-		// Print the payoff function into a gnuplot file
+  // Gridpoints @Money
+  //  std::cout << "Gridpoints @Money: " << myBSSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
 
-
-			myHWSolver->printGrid(*alpha, 20, "payoffHW.gnuplot");
-			myHWSolver->printSparseGrid(*alpha, "payoffHW_surplus.grid.gnuplot", true);
-			myHWSolver->printSparseGrid(*alpha, "payoffHW_nodal.grid.gnuplot", false);
+  // Print the payoff function into a gnuplot file
 
 
-		// Set stochastic data
-		//myHWSolver->setStochasticData(theta, sigma, a);
-
-		// Start solving the Black Scholes Equation
-		if (Solver == "ExEul")
-		{
-			double theta=0;
-			int count=0;
-			for (int i=0; i<T/stepsize; i++)
-			{
-			   theta=calculatetheta(a, sigma, T, count,stepsize);
-			   myHWSolver->setStochasticData(theta, sigma, a);
-			   myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-			   count=count+1;
-		    }
-		}
-		else if (Solver == "ImEul")
-		{
-			double theta=0;
-			int count=0;
-			for (int i=0; i<T/stepsize; i++)
-			{
-			   theta=calculatetheta(a, sigma, T, count,stepsize);
-			   myHWSolver->setStochasticData(theta, sigma, a);
-			   myHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-			   count=count+1;
-		    }
-		}
-		else if (Solver == "CrNic")
-		{
-			myHWSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
-		}
-		/*else if (Solver == "AdBas")
-		{
-			myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-		}
-		else if (Solver == "VaTim")
-		{
-			myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
-		}*/
-		else
-		{
-			std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
-		}
-
-		if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic")
-		{
-
-				// Print the solved Black Scholes Equation into a gnuplot file
-				myHWSolver->printGrid(*alpha, 20, "solvedHW.gnuplot");
-				myHWSolver->printSparseGrid(*alpha, "solvedHW_surplus.grid.gnuplot", true);
-				myHWSolver->printSparseGrid(*alpha, "solvedHW_nodal.grid.gnuplot", false);
+  myHWSolver->printGrid(*alpha, 20, "payoffHW.gnuplot");
+  myHWSolver->printSparseGrid(*alpha, "payoffHW_surplus.grid.gnuplot", true);
+  myHWSolver->printSparseGrid(*alpha, "payoffHW_nodal.grid.gnuplot", false);
 
 
-		}
+  // Set stochastic data
+  //myHWSolver->setStochasticData(theta, sigma, a);
 
-		delete alpha;
-		delete myHWSolver;
-		delete myBoundingBox;
+  // Start solving the Black Scholes Equation
+  if (Solver == "ExEul") {
+    double theta = 0;
+    int count = 0;
 
-	//std::cout << "Nothing has been implemented so far " << std::endl;
+    for (int i = 0; i < T / stepsize; i++) {
+      theta = calculatetheta(a, sigma, T, count, stepsize);
+      myHWSolver->setStochasticData(theta, sigma, a);
+      myHWSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+      count = count + 1;
+    }
+  } else if (Solver == "ImEul") {
+    double theta = 0;
+    int count = 0;
+
+    for (int i = 0; i < T / stepsize; i++) {
+      theta = calculatetheta(a, sigma, T, count, stepsize);
+      myHWSolver->setStochasticData(theta, sigma, a);
+      myHWSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+      count = count + 1;
+    }
+  } else if (Solver == "CrNic") {
+    myHWSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha, CRNIC_IMEUL_STEPS);
+  }
+  /*else if (Solver == "AdBas")
+  {
+    myBSSolver->solveAdamsBashforth(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+  }
+  else if (Solver == "VaTim")
+  {
+    myBSSolver->solveVarTimestep(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false, false, 20);
+  }*/
+  else {
+    std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
+  }
+
+  if (Solver == "ExEul" || Solver == "ImEul" || Solver == "CrNic") {
+
+    // Print the solved Black Scholes Equation into a gnuplot file
+    myHWSolver->printGrid(*alpha, 20, "solvedHW.gnuplot");
+    myHWSolver->printSparseGrid(*alpha, "solvedHW_surplus.grid.gnuplot", true);
+    myHWSolver->printSparseGrid(*alpha, "solvedHW_nodal.grid.gnuplot", false);
+
+
+  }
+
+  delete alpha;
+  delete myHWSolver;
+  delete myBoundingBox;
+
+  //std::cout << "Nothing has been implemented so far " << std::endl;
 
 
 }
@@ -185,45 +173,44 @@ void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std:
  * after creating a screen.
  */
 
-void writeHelp()
-{
-	sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
+void writeHelp() {
+  sg::finance::HullWhiteSolver* myHWSolver = new sg::finance::HullWhiteSolver();
 
-	myHWSolver->initScreen();
+  myHWSolver->initScreen();
 
-	delete myHWSolver;
+  delete myHWSolver;
 
-	std::stringstream mySStream;
+  std::stringstream mySStream;
 
-	mySStream << "Some instructions for the use of 1D Hull White Solver:" << std::endl;
-	mySStream << "------------------------------------------------------" << std::endl << std::endl;
-	mySStream << "Available execution modes are:" << std::endl;
-	mySStream << "  solve1DHullWhite" << std::endl;
-	mySStream << "Execution modes descriptions:" << std::endl;
-	mySStream << "-----------------------------------------------------" << std::endl;
-	mySStream << "solve1DHullWhite" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-	mySStream << "	value of sigma: sigma value-determine overall level of volatility" << std::endl;
-    mySStream << "	value of a: a" << std::endl;
-    mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
-	mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
-	mySStream << "	simeSt: number of time steps of doing HW, default: 1, the total time steps is defined by T/dT" << std::endl;
-	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-	mySStream << "	t: the current time" << std::endl;
-	mySStream << "	T: time to maturity" << std::endl;
-	mySStream << "	Strike: the strike" << std::endl;
+  mySStream << "Some instructions for the use of 1D Hull White Solver:" << std::endl;
+  mySStream << "------------------------------------------------------" << std::endl << std::endl;
+  mySStream << "Available execution modes are:" << std::endl;
+  mySStream << "  solve1DHullWhite" << std::endl;
+  mySStream << "Execution modes descriptions:" << std::endl;
+  mySStream << "-----------------------------------------------------" << std::endl;
+  mySStream << "solve1DHullWhite" << std::endl << "------" << std::endl;
+  mySStream << "the following options must be specified:" << std::endl;
+  mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
+  mySStream << "	value of sigma: sigma value-determine overall level of volatility" << std::endl;
+  mySStream << "	value of a: a" << std::endl;
+  mySStream << "	file_Boundaries: file that contains the bounding box" << std::endl;
+  mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
+  mySStream << "	simeSt: number of time steps of doing HW, default: 1, the total time steps is defined by T/dT" << std::endl;
+  mySStream << "	dT: timestep size" << std::endl;
+  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+  mySStream << "	t: the current time" << std::endl;
+  mySStream << "	T: time to maturity" << std::endl;
+  mySStream << "	Strike: the strike" << std::endl;
 
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "5 0.01 0.1 bound.data " << " std_euro_call "<< "1.0 " << "0.01 "<< "400 " << "0.000001 " << "ImEul " << "0.2 " <<"1.0 "<<"0.6 "<<std::endl;
-	mySStream << std::endl;
+  mySStream << std::endl;
+  mySStream << "Example:" << std::endl;
+  mySStream << "5 0.01 0.1 bound.data " << " std_euro_call " << "1.0 " << "0.01 " << "400 " << "0.000001 " << "ImEul " << "0.2 " << "1.0 " << "0.6 " << std::endl;
+  mySStream << std::endl;
 
-	mySStream << std::endl << std::endl;
-	std::cout << mySStream.str() << std::endl;
+  mySStream << std::endl << std::endl;
+  std::cout << mySStream.str() << std::endl;
 }
 
 /**
@@ -233,48 +220,41 @@ void writeHelp()
  * @param argc contains the number of cli arguments
  * @param argv contains the cli arguments as C-Strings
  */
-int main(int argc, char *argv[])
-{
-	std::string option;
+int main(int argc, char* argv[]) {
+  std::string option;
 
-	if (argc == 1)
-	{
-		writeHelp();
+  if (argc == 1) {
+    writeHelp();
 
-		return 0;
-	}
+    return 0;
+  }
 
-	option.assign(argv[1]);
+  option.assign(argv[1]);
 
-	if (option == "solve1DHullWhite")
-	{
-		if (argc != 15)
-		{
-			writeHelp();
-		}
-		else
-		{
-			std::string solver;
-			std::string payoff;
-			double sigma;
-			double a;
-			double dStrike;
-			std::string fileBound;
-			sigma = atof(argv[3]);
-			a = atof(argv[4]);
-			fileBound.assign(argv[5]);
-			payoff.assign(argv[6]);
-			solver.assign(argv[11]);
-			dStrike = atof(argv[14]);
+  if (option == "solve1DHullWhite") {
+    if (argc != 15) {
+      writeHelp();
+    } else {
+      std::string solver;
+      std::string payoff;
+      double sigma;
+      double a;
+      double dStrike;
+      std::string fileBound;
+      sigma = atof(argv[3]);
+      a = atof(argv[4]);
+      fileBound.assign(argv[5]);
+      payoff.assign(argv[6]);
+      solver.assign(argv[11]);
+      dStrike = atof(argv[14]);
 
-			testHullWhite(atoi(argv[2]), sigma, a, fileBound, payoff, atof(argv[7]), atof(argv[8]), atoi(argv[9]), atof(argv[10]), solver,atof(argv[12]),atof(argv[13]),dStrike);
-		}
-	}
+      testHullWhite(atoi(argv[2]), sigma, a, fileBound, payoff, atof(argv[7]), atof(argv[8]), atoi(argv[9]), atof(argv[10]), solver, atof(argv[12]), atof(argv[13]), dStrike);
+    }
+  }
 
-	else
-	{
-		writeHelp();
-	}
+  else {
+    writeHelp();
+  }
 
-	return 0;
+  return 0;
 }

@@ -108,7 +108,7 @@ namespace sg {
     }
 
     datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSampling(base::Grid& grid) {
-      if(strcmp(grid.getType(), "linear") == 0)
+      if (strcmp(grid.getType(), "linear") == 0)
         return new datadriven::OperationDensityRejectionSamplingLinear(&grid);
       else
         throw base::factory_exception("OperationDensityRejectionSampling is not implemented for this grid type.");

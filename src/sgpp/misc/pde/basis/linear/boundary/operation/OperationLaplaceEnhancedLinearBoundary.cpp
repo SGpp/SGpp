@@ -12,38 +12,31 @@
 
 #include "base/algorithm/sweep.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationLaplaceEnhancedLinearBoundary::OperationLaplaceEnhancedLinearBoundary(sg::base::GridStorage* storage) : UpDownOneOpDimEnhanced(storage)
-{
-}
+    OperationLaplaceEnhancedLinearBoundary::OperationLaplaceEnhancedLinearBoundary(sg::base::GridStorage* storage) : UpDownOneOpDimEnhanced(storage) {
+    }
 
-OperationLaplaceEnhancedLinearBoundary::OperationLaplaceEnhancedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& coef) : UpDownOneOpDimEnhanced(storage, coef)
-{
-}
+    OperationLaplaceEnhancedLinearBoundary::OperationLaplaceEnhancedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& coef) : UpDownOneOpDimEnhanced(storage, coef) {
+    }
 
-OperationLaplaceEnhancedLinearBoundary::~OperationLaplaceEnhancedLinearBoundary()
-{
-}
+    OperationLaplaceEnhancedLinearBoundary::~OperationLaplaceEnhancedLinearBoundary() {
+    }
 
-void OperationLaplaceEnhancedLinearBoundary::up(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim)
-{
-	LaplaceEnhancedUpBBLinearBoundary func(this->storage);
-	sg::base::sweep<LaplaceEnhancedUpBBLinearBoundary> s(func, this->storage);
+    void OperationLaplaceEnhancedLinearBoundary::up(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim) {
+      LaplaceEnhancedUpBBLinearBoundary func(this->storage);
+      sg::base::sweep<LaplaceEnhancedUpBBLinearBoundary> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
-}
+      s.sweep1D_Boundary(alpha, result, dim);
+    }
 
-void OperationLaplaceEnhancedLinearBoundary::down(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim)
-{
-	LaplaceEnhancedDownBBLinearBoundary func(this->storage);
-	sg::base::sweep<LaplaceEnhancedDownBBLinearBoundary> s(func, this->storage);
+    void OperationLaplaceEnhancedLinearBoundary::down(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim) {
+      LaplaceEnhancedDownBBLinearBoundary func(this->storage);
+      sg::base::sweep<LaplaceEnhancedDownBBLinearBoundary> s(func, this->storage);
 
-	s.sweep1D_Boundary(alpha, result, dim);
-}
+      s.sweep1D_Boundary(alpha, result, dim);
+    }
 
-}
+  }
 }

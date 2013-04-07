@@ -384,6 +384,7 @@ namespace sg {
 
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
+
             for (size_t i = start_index_data; i < end_index_data; i += 48) {
               for (size_t j = k; j < k + grid_inc; j++) {
                 __m256 support_0 = _mm256_load_ps(&(ptrSource[i]));

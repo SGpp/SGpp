@@ -14,11 +14,9 @@
 /*
  * This file contains factory methods for operations.
  */
-namespace sg
-{
+namespace sg {
 
-namespace op_factory
-{
+  namespace op_factory {
     /**
      * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
      * Note: object has to be freed after use.
@@ -41,7 +39,7 @@ namespace op_factory
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
     base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, sg::base::DataVector& coef);
-}
+  }
 
 }
 

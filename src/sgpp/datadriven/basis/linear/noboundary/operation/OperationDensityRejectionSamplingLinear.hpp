@@ -11,35 +11,32 @@
 #include "base/grid/Grid.hpp"
 #include "datadriven/operation/OperationDensityRejectionSampling.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-  /**
-   * Sampling with rejection sampling method
-   */
+    /**
+     * Sampling with rejection sampling method
+     */
 
-  class OperationDensityRejectionSamplingLinear : public OperationDensityRejectionSampling
-  {
-    public:
-  	  OperationDensityRejectionSamplingLinear(base::Grid* grid) : grid(grid) {}
-	  virtual ~OperationDensityRejectionSamplingLinear() {}
+    class OperationDensityRejectionSamplingLinear : public OperationDensityRejectionSampling {
+      public:
+        OperationDensityRejectionSamplingLinear(base::Grid* grid) : grid(grid) {}
+        virtual ~OperationDensityRejectionSamplingLinear() {}
 
-	  /**
-	   * Sampling, using rejection sampling method
-	   *
-	   * @param alpha Coefficient vector for current grid
-	   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
-	   * @param num_samples # of samples to draw
-	   */
-	  void doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples, size_t trial_max);
+        /**
+         * Sampling, using rejection sampling method
+         *
+         * @param alpha Coefficient vector for current grid
+         * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+         * @param num_samples # of samples to draw
+         */
+        void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples, size_t trial_max);
 
-    protected:
-      base::Grid* grid;
-  };
+      protected:
+        base::Grid* grid;
+    };
 
-}
+  }
 }
 #endif /* OPERATIONDENSITYREJECTIONSAMPLINGLINEAR_HPP */
 

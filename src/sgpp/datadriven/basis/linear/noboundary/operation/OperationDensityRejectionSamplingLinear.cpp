@@ -10,56 +10,61 @@
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
-	void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples, size_t trial_max) {
+namespace sg {
+  namespace datadriven {
+    void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples, size_t trial_max) {
 
-		size_t num_dims = this->grid->getStorage()->dim();
-		samples = new base::DataMatrix(num_samples, num_dims); //output samples
+      size_t num_dims = this->grid->getStorage()->dim();
+      samples = new base::DataMatrix(num_samples, num_dims); //output samples
 
-		size_t SEARCH_MAX = 100000; //find the approximated maximum of function with 100000 points
-		double maxValue = 0; //the approximated maximum value of function
+      size_t SEARCH_MAX = 100000; //find the approximated maximum of function with 100000 points
+      double maxValue = 0; //the approximated maximum value of function
 
-		base::GridStorage* gridStorage = grid->getStorage();
-		base::DataVector p(gridStorage->dim());
-		base::OperationEval* opEval = op_factory::createOperationEval(*grid);
+      base::GridStorage* gridStorage = grid->getStorage();
+      base::DataVector p(gridStorage->dim());
+      base::OperationEval* opEval = op_factory::createOperationEval(*grid);
 
-		//search for (approx.) maximum of function
-		base::DataMatrix *tmp = new base::DataMatrix(SEARCH_MAX, num_dims);
-		base::DataVector *tmpEval = new base::DataVector(SEARCH_MAX);
-		for(size_t i = 0; i < SEARCH_MAX; i++) {
-		  for(size_t j = 0; j < num_dims; j++)
-	 	    tmp->set(i, j, (double)rand()/RAND_MAX);
-		}
-		base::OperationMultipleEval* opMultEval = op_factory::createOperationMultipleEval(*grid, tmp);
-		opMultEval->mult(*alpha, *tmpEval);
-		maxValue = tmpEval->max();
-		delete tmp; tmp = NULL;
-		delete tmpEval; tmpEval = NULL;
+      //search for (approx.) maximum of function
+      base::DataMatrix* tmp = new base::DataMatrix(SEARCH_MAX, num_dims);
+      base::DataVector* tmpEval = new base::DataVector(SEARCH_MAX);
 
-		double fhat = 0.0;
-		for(size_t i = 0; i < num_samples; i++) { //for every sample
-			//find the appropriate sample within a # of trial
-		    for(size_t j = 0; j < trial_max; j++) {
-		        // pick a random data point "p"
-		    	for(size_t d = 0; d < num_dims; d++)
-		    		p[d] = (double)rand()/RAND_MAX;
-		        // evaluate at this point "p"
-		        fhat = opEval->eval(*alpha, p);
+      for (size_t i = 0; i < SEARCH_MAX; i++) {
+        for (size_t j = 0; j < num_dims; j++)
+          tmp->set(i, j, (double)rand() / RAND_MAX);
+      }
 
-		        if(((double)rand()/RAND_MAX*maxValue < fhat) && (fhat > maxValue*0.050)) {
-			      samples->setRow(i, p);
-			      break;
-		        }
-		        if(j == trial_max-1)
-		          throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
-		    }
-		}
+      base::OperationMultipleEval* opMultEval = op_factory::createOperationMultipleEval(*grid, tmp);
+      opMultEval->mult(*alpha, *tmpEval);
+      maxValue = tmpEval->max();
+      delete tmp;
+      tmp = NULL;
+      delete tmpEval;
+      tmpEval = NULL;
 
-		return;
-	} //end of doSampling()
+      double fhat = 0.0;
 
-}
+      for (size_t i = 0; i < num_samples; i++) { //for every sample
+        //find the appropriate sample within a # of trial
+        for (size_t j = 0; j < trial_max; j++) {
+          // pick a random data point "p"
+          for (size_t d = 0; d < num_dims; d++)
+            p[d] = (double)rand() / RAND_MAX;
+
+          // evaluate at this point "p"
+          fhat = opEval->eval(*alpha, p);
+
+          if (((double)rand() / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.050)) {
+            samples->setRow(i, p);
+            break;
+          }
+
+          if (j == trial_max - 1)
+            throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
+        }
+      }
+
+      return;
+    } //end of doSampling()
+
+  }
 }
