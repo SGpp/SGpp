@@ -37,6 +37,10 @@ namespace combigrid {
        * @param fg [IN] */
       virtual OperatorFG* factory(const FullGridD* fg) const = 0;
 
+      virtual ~OperatorFG(){
+        delete fg_;
+      }
+
       /** method to get the right hand side vector for one level
        * @param rhs [OUT] vector with the right hand side values
        * @param nrSpace [OUT] number of unknowns per node */
