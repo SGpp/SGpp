@@ -8,7 +8,7 @@
 #include <cstring>
 #include "base/exception/factory_exception.hpp"
 
-#include "misc/operation/ExperimentalOpFactory.hpp"
+#include "misc/operation/MiscOpFactory.hpp"
 #include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
 #include "misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp"
 

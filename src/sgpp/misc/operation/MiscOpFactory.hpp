@@ -5,8 +5,8 @@
 ***************************************************************************** */
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#ifndef EXPERIMENTAL_OP_FACTORY_HPP
-#define EXPERIMENTAL_OP_FACTORY_HPP
+#ifndef MISC_OP_FACTORY_HPP
+#define MISC_OP_FACTORY_HPP
 
 #include "base/grid/Grid.hpp"
 #include "base/operation/OperationMatrix.hpp"

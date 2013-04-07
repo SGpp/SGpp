@@ -100,6 +100,7 @@ vars.Add('SG_SOLVER', 'Build Solver Module', False)
 vars.Add('SG_FINANCE', 'Build Finance Module', False)
 vars.Add('SG_PDE', 'Build PDE Module', False)
 vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
+vars.Add('SG_MISC', 'Build Misc Module', False)
 vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
 vars.Add('SG_PYTHON', 'Build Python Support', False)
 vars.Add('SG_JAVA', 'Build Java Support', False)
@@ -110,6 +111,7 @@ moduleList = {'SG_BASE': (),
               'SG_FINANCE': ('SG_BASE', 'SG_PDE'),
               'SG_PDE': ('SG_BASE'), 
               'SG_PARALLEL': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE'), 
+              'SG_MISC': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE', 'SG_PARALLEL'), 
               'SG_COMBIGRID': ('SG_BASE')}
 supportList = ['SG_PYTHON', 'SG_JAVA']
 
@@ -402,6 +404,13 @@ if env['SG_PARALLEL']:
 	Import('libsgppparallelstatic')
 	lib_sgpp_targets.append(libsgppparallel)
 	lib_sgpp_targets.append(libsgppparallelstatic)
+
+if env['SG_MISC']:
+	SConscript('src/sgpp/SConscriptMisc', variant_dir='tmp/build_sgmisc', duplicate=0)
+	Import('libsgppmisc')
+	Import('libsgppmiscstatic')
+	lib_sgpp_targets.append(libsgppmisc)
+	lib_sgpp_targets.append(libsgppmiscstatic)
 
 if env['SG_COMBIGRID']:
 	SConscript('src/sgpp/SConscriptCombigrid', variant_dir='tmp/build_sgcombigrid', duplicate=0)

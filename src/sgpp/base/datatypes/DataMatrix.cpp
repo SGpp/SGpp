@@ -318,6 +318,26 @@ namespace sg {
       }
     }
 
+    void DataMatrix::addReduce(DataVector& reduction, DataVector& beta, size_t start_beta) {
+      if (this->nrows != reduction.getSize() ) {
+        throw new sg::base::data_exception(
+          "DataMatrix::addReduce : Dimensions do not match (reduction)");
+      }
+
+      if (this->ncols + start_beta > beta.getSize() ) {
+        throw new sg::base::data_exception(
+          "DataMatrix::addReduce : Dimensions do not match (beta)");
+      }
+
+      for (size_t i = 0; i < this->nrows; i++) {
+        double tmp = 0.0;
+        for (size_t j = 0; j < this->ncols; j++) {
+          tmp += beta[j+start_beta] * this->data[(i*this->ncols)+j];
+        }
+        reduction.set(i, reduction[i] + tmp);
+      }
+    }
+
     void DataMatrix::expand(const DataVector& expand) {
       if (this->nrows != expand.getSize() ) {
         throw new sg::base::data_exception(
