@@ -144,8 +144,8 @@ namespace sg {
          * @param lamda regularization parameter lambda
          */
         LearnerTiming train(sg::base::DataMatrix& testDataset,  sg::base::DataVector& classes,
-                                    const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
-                                    const double lamda);
+                            const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
+                            const double lamda);
 
         /**
          * executes a Regression test for a given dataset and returns the result

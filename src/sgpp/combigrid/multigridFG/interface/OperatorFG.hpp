@@ -37,7 +37,7 @@ namespace combigrid {
        * @param fg [IN] */
       virtual OperatorFG* factory(const FullGridD* fg) const = 0;
 
-      virtual ~OperatorFG(){
+      virtual ~OperatorFG() {
         delete fg_;
       }
 

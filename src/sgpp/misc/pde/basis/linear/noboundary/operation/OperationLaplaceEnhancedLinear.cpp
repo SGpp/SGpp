@@ -12,38 +12,31 @@
 
 #include "base/algorithm/sweep.hpp"
 
-namespace sg
-{
-namespace pde
-{
+namespace sg {
+  namespace pde {
 
-OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(sg::base::GridStorage* storage) : UpDownOneOpDimEnhanced(storage)
-{
-}
+    OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(sg::base::GridStorage* storage) : UpDownOneOpDimEnhanced(storage) {
+    }
 
-OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(sg::base::GridStorage* storage, sg::base::DataVector& coef) : UpDownOneOpDimEnhanced(storage, coef)
-{
-}
+    OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(sg::base::GridStorage* storage, sg::base::DataVector& coef) : UpDownOneOpDimEnhanced(storage, coef) {
+    }
 
-OperationLaplaceEnhancedLinear::~OperationLaplaceEnhancedLinear()
-{
-}
+    OperationLaplaceEnhancedLinear::~OperationLaplaceEnhancedLinear() {
+    }
 
-void OperationLaplaceEnhancedLinear::up(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim)
-{
-	LaplaceEnhancedUpBBLinear func(this->storage);
-	sg::base::sweep<LaplaceEnhancedUpBBLinear> s(func, this->storage);
+    void OperationLaplaceEnhancedLinear::up(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim) {
+      LaplaceEnhancedUpBBLinear func(this->storage);
+      sg::base::sweep<LaplaceEnhancedUpBBLinear> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
-}
+      s.sweep1D(alpha, result, dim);
+    }
 
-void OperationLaplaceEnhancedLinear::down(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim)
-{
-	LaplaceEnhancedDownBBLinear func(this->storage);
-	sg::base::sweep<LaplaceEnhancedDownBBLinear> s(func, this->storage);
+    void OperationLaplaceEnhancedLinear::down(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim) {
+      LaplaceEnhancedDownBBLinear func(this->storage);
+      sg::base::sweep<LaplaceEnhancedDownBBLinear> s(func, this->storage);
 
-	s.sweep1D(alpha, result, dim);
-}
+      s.sweep1D(alpha, result, dim);
+    }
 
-}
+  }
 }

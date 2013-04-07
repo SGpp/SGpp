@@ -245,7 +245,7 @@ namespace sg {
          * @param beta vector with length of number of columns beta[i] is multiplied to each element row[j][i]
          * @oaram start_beta, where to start using the beta coefficients
          */
-	void addReduce(DataVector& reduction, DataVector& beta, size_t start_beta);
+        void addReduce(DataVector& reduction, DataVector& beta, size_t start_beta);
 
         /**
          * expands a given DataVector into a

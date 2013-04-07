@@ -10,31 +10,28 @@
 
 #include "base/grid/Grid.hpp"
 
-namespace sg
-{
-namespace datadriven
-{
+namespace sg {
+  namespace datadriven {
 
-  /**
-   * Sampling on all dimensions
-   */
+    /**
+     * Sampling on all dimensions
+     */
 
-  class OperationDensityRejectionSampling
-  {
-    public:
-      OperationDensityRejectionSampling() {}
-      virtual ~OperationDensityRejectionSampling() {}
+    class OperationDensityRejectionSampling {
+      public:
+        OperationDensityRejectionSampling() {}
+        virtual ~OperationDensityRejectionSampling() {}
 
-	  /**
-	   * Sampling with mixed starting dimensions
-	   *
-	   * @param alpha Coefficient vector for current grid
-	   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
-	   * @param num_samples # of samples to draw
-	   */
-      virtual void doSampling(base::DataVector* alpha, base::DataMatrix* &samples, size_t num_samples, size_t trial_max) = 0;
-  };
+        /**
+         * Sampling with mixed starting dimensions
+         *
+         * @param alpha Coefficient vector for current grid
+         * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+         * @param num_samples # of samples to draw
+         */
+        virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples, size_t trial_max) = 0;
+    };
 
-}
+  }
 }
 #endif /* OPERATIONDENSITYREJECTIONSAMPLING_HPP_ */

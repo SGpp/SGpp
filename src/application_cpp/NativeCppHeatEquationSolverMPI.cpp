@@ -41,56 +41,56 @@
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim)
-{
-	std::fstream file;
-	double cur_coord;
+int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
+  std::fstream file;
+  double cur_coord;
 
-	file.open(tFile.c_str());
+  file.open(tFile.c_str());
 
-	if(cuboid.getNcols() != dim)
-	{
-		std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
-		return -1;
-	}
+  if (cuboid.getNcols() != dim) {
+    std::cout << "Cuboid-definition file doesn't match: " << tFile << std::endl;
+    return -1;
+  }
 
-	if(!file.is_open())
-	{
-		std::cout << "Error cannot read file: " << tFile << std::endl;
-		return -1;
-	}
+  if (!file.is_open()) {
+    std::cout << "Error cannot read file: " << tFile << std::endl;
+    return -1;
+  }
 
-	// Get number of lines and resize DataMatrix
-	size_t i = 0;
-	while (!file.eof())
-	{
-		for (size_t d = 0; d < dim; d++)
-		{
-			file >> cur_coord;
-		}
-		i++;
-	}
-	file.close();
-	cuboid.resize(i);
+  // Get number of lines and resize DataMatrix
+  size_t i = 0;
 
-	// Read data from file
-	file.open(tFile.c_str());
-	i = 0;
-	while (!file.eof())
-	{
-		sg::base::DataVector line(dim);
-		line.setAll(0.0);
-		for (size_t d = 0; d < dim; d++)
-		{
-			file >> cur_coord;
-			line.set(d, cur_coord);
-		}
-		cuboid.setRow(i, line);
-		i++;
-	}
-	file.close();
+  while (!file.eof()) {
+    for (size_t d = 0; d < dim; d++) {
+      file >> cur_coord;
+    }
 
-	return 0;
+    i++;
+  }
+
+  file.close();
+  cuboid.resize(i);
+
+  // Read data from file
+  file.open(tFile.c_str());
+  i = 0;
+
+  while (!file.eof()) {
+    sg::base::DataVector line(dim);
+    line.setAll(0.0);
+
+    for (size_t d = 0; d < dim; d++) {
+      file >> cur_coord;
+      line.set(d, cur_coord);
+    }
+
+    cuboid.setRow(i, line);
+    i++;
+  }
+
+  file.close();
+
+  return 0;
 }
 
 /**
@@ -100,41 +100,41 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readCuboidValues(sg::base::DataVector& values, std::string tFile)
-{
-	std::fstream file;
-	double cur_value;
+int readCuboidValues(sg::base::DataVector& values, std::string tFile) {
+  std::fstream file;
+  double cur_value;
 
-	file.open(tFile.c_str());
+  file.open(tFile.c_str());
 
-	if(!file.is_open())
-	{
-		std::cout << "Error cannot read file: " << tFile << std::endl;
-		return -1;
-	}
+  if (!file.is_open()) {
+    std::cout << "Error cannot read file: " << tFile << std::endl;
+    return -1;
+  }
 
-	// Count number of lines
-	size_t i = 0;
-	while (!file.eof())
-	{
-		file >> cur_value;
-		i++;
-	}
-	values.resize(i);
-	file.close();
+  // Count number of lines
+  size_t i = 0;
 
-	// Read data from File
-	file.open(tFile.c_str());
-	i = 0;
-	while (!file.eof())
-	{
-		file >> cur_value;
-		values.set(i, cur_value);
-		i++;
-	}
-	file.close();
+  while (!file.eof()) {
+    file >> cur_value;
+    i++;
+  }
 
-	return 0;
+  values.resize(i);
+  file.close();
+
+  // Read data from File
+  file.open(tFile.c_str());
+  i = 0;
+
+  while (!file.eof()) {
+    file >> cur_value;
+    values.set(i, cur_value);
+    i++;
+  }
+
+  file.close();
+
+  return 0;
 }
 
 /**
@@ -145,29 +145,26 @@ int readCuboidValues(sg::base::DataVector& values, std::string tFile)
  *
  * @return error code
  */
-int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile)
-{
-	std::ofstream file;
-	file.open(tFile.c_str());
+int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
+  std::ofstream file;
+  file.open(tFile.c_str());
 
-	if(!file.is_open())
-	{
-		std::cout << "Error cannot write file: " << tFile << std::endl;
-		return -1;
-	}
+  if (!file.is_open()) {
+    std::cout << "Error cannot write file: " << tFile << std::endl;
+    return -1;
+  }
 
-	for (size_t i = 0; i < data.getNrows(); i++)
-	{
-		for (size_t j = 0; j < data.getNcols(); j++)
-		{
-			file << std::scientific << std::setprecision( 16 ) << data.get(i,j) << " ";
-		}
-		file << std::endl;
-	}
+  for (size_t i = 0; i < data.getNrows(); i++) {
+    for (size_t j = 0; j < data.getNcols(); j++) {
+      file << std::scientific << std::setprecision( 16 ) << data.get(i, j) << " ";
+    }
 
-	file.close();
+    file << std::endl;
+  }
 
-	return 0;
+  file.close();
+
+  return 0;
 }
 
 
@@ -179,794 +176,717 @@ int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile)
  *
  * @return error code
  */
-int writeDataVector(sg::base::DataVector& data, std::string tFile)
-{
-	std::ofstream file;
-	file.open(tFile.c_str());
+int writeDataVector(sg::base::DataVector& data, std::string tFile) {
+  std::ofstream file;
+  file.open(tFile.c_str());
 
-	if(!file.is_open())
-	{
-		std::cout << "Error cannot write file: " << tFile << std::endl;
-		return -1;
-	}
+  if (!file.is_open()) {
+    std::cout << "Error cannot write file: " << tFile << std::endl;
+    return -1;
+  }
 
-	for (size_t i = 0; i < data.getSize(); i++)
-	{
+  for (size_t i = 0; i < data.getSize(); i++) {
 
-		file << std::scientific << std::setprecision( 16 ) << data.get(i) << " " << std::endl;
-	}
+    file << std::scientific << std::setprecision( 16 ) << data.get(i) << " " << std::endl;
+  }
 
-	file.close();
+  file.close();
 
-	return 0;
+  return 0;
 }
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object
  * after creating a screen.
  */
-void writeHelp()
-{
-	sg::pde::HeatEquationSolver* myHESolver = new sg::pde::HeatEquationSolver();
+void writeHelp() {
+  sg::pde::HeatEquationSolver* myHESolver = new sg::pde::HeatEquationSolver();
 
-	myHESolver->initScreen();
+  myHESolver->initScreen();
 
-	delete myHESolver;
+  delete myHESolver;
 
-	std::stringstream mySStream;
+  std::stringstream mySStream;
 
-	mySStream << "Some instructions for the use of Poisson/ Heat Equation Solver:" << std::endl;
-	mySStream << "---------------------------------------------------------------" << std::endl << std::endl;
-	mySStream << "Available execution modes are:" << std::endl;
-	mySStream << "  HeatEquation        Solves Heat Equation on a quadratic" << std::endl;
-	mySStream << "                      d-dimensional domain" << std::endl << std::endl;
-	mySStream << "  PoissonEquation     Solves Poisson Equation on a quadratic" << std::endl;
-	mySStream << "                      d-dimensional domain" << std::endl << std::endl << std::endl;
+  mySStream << "Some instructions for the use of Poisson/ Heat Equation Solver:" << std::endl;
+  mySStream << "---------------------------------------------------------------" << std::endl << std::endl;
+  mySStream << "Available execution modes are:" << std::endl;
+  mySStream << "  HeatEquation        Solves Heat Equation on a quadratic" << std::endl;
+  mySStream << "                      d-dimensional domain" << std::endl << std::endl;
+  mySStream << "  PoissonEquation     Solves Poisson Equation on a quadratic" << std::endl;
+  mySStream << "                      d-dimensional domain" << std::endl << std::endl << std::endl;
 
-	mySStream << "Execution modes descriptions:" << std::endl;
-	mySStream << "-----------------------------------------------------" << std::endl;
-	mySStream << "HeatEquation" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-	mySStream << "	start_level: number of start levels of the Sparse Grid" << std::endl;
-	mySStream << "	end_level: number of max. levels of the Sparse Grid" << std::endl;
-	mySStream << "	left_bound: x_i of left boundary" << std::endl;
-	mySStream << "	right_bound: x_i of right boundary" << std::endl;
-	mySStream << "	a: thermal diffusivity" << std::endl;
-	mySStream << "	initHeat: initial heat distribution" << std::endl;
-	mySStream << "	T: time to solve" << std::endl;
-	mySStream << "	dT: timestep size" << std::endl;
-	mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "HESolverMPI HeatEquation 3 2 5 0.0 3.0 1.0 smooth 1.0 0.1 ImEul 0.00001 400" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
-	mySStream << "	heatStart.gnuplot: the start condition" << std::endl;
-	mySStream << "	heatSolved.gnuplot: the numerical solution" << std::endl;
-	mySStream << std::endl << std::endl;
+  mySStream << "Execution modes descriptions:" << std::endl;
+  mySStream << "-----------------------------------------------------" << std::endl;
+  mySStream << "HeatEquation" << std::endl << "------" << std::endl;
+  mySStream << "the following options must be specified:" << std::endl;
+  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "	start_level: number of start levels of the Sparse Grid" << std::endl;
+  mySStream << "	end_level: number of max. levels of the Sparse Grid" << std::endl;
+  mySStream << "	left_bound: x_i of left boundary" << std::endl;
+  mySStream << "	right_bound: x_i of right boundary" << std::endl;
+  mySStream << "	a: thermal diffusivity" << std::endl;
+  mySStream << "	initHeat: initial heat distribution" << std::endl;
+  mySStream << "	T: time to solve" << std::endl;
+  mySStream << "	dT: timestep size" << std::endl;
+  mySStream << "	Solver: the solver to use: ExEul, ImEul, CrNic" << std::endl;
+  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << std::endl;
+  mySStream << "Example:" << std::endl;
+  mySStream << "HESolverMPI HeatEquation 3 2 5 0.0 3.0 1.0 smooth 1.0 0.1 ImEul 0.00001 400" << std::endl;
+  mySStream << std::endl;
+  mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
+  mySStream << "	heatStart.gnuplot: the start condition" << std::endl;
+  mySStream << "	heatSolved.gnuplot: the numerical solution" << std::endl;
+  mySStream << std::endl << std::endl;
 
-	mySStream << "PoissonEquation" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-	mySStream << "	start_level: number of start levels of the Sparse Grid" << std::endl;
-	mySStream << "	end_level: number of max levels of the Sparse Grid" << std::endl;
-	mySStream << "	left_bound: x_i of left boundary" << std::endl;
-	mySStream << "	right_bound: x_i of right boundary" << std::endl;
-	mySStream << "	initHeat: initial heat distribution" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "HESolverMPI PoissonEquation 3 2 5 0.0 3.0 smooth 0.00001 400" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
-	mySStream << "	poissonStart.gnuplot: the start condition" << std::endl;
-	mySStream << "	poissonSolved.gnuplot: the numerical solution" << std::endl;
-	mySStream << std::endl << std::endl;
+  mySStream << "PoissonEquation" << std::endl << "------" << std::endl;
+  mySStream << "the following options must be specified:" << std::endl;
+  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "	start_level: number of start levels of the Sparse Grid" << std::endl;
+  mySStream << "	end_level: number of max levels of the Sparse Grid" << std::endl;
+  mySStream << "	left_bound: x_i of left boundary" << std::endl;
+  mySStream << "	right_bound: x_i of right boundary" << std::endl;
+  mySStream << "	initHeat: initial heat distribution" << std::endl;
+  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << std::endl;
+  mySStream << "Example:" << std::endl;
+  mySStream << "HESolverMPI PoissonEquation 3 2 5 0.0 3.0 smooth 0.00001 400" << std::endl;
+  mySStream << std::endl;
+  mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
+  mySStream << "	poissonStart.gnuplot: the start condition" << std::endl;
+  mySStream << "	poissonSolved.gnuplot: the numerical solution" << std::endl;
+  mySStream << std::endl << std::endl;
 
-	mySStream << "PoissonEquationAdapt" << std::endl << "------" << std::endl;
-	mySStream << "the following options must be specified:" << std::endl;
-	mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-	mySStream << "	start_level: number of start-levels of the Sparse Grid" << std::endl;
-	mySStream << "	refinemode: method used for initial refinement: classic, maxLevel" << std::endl;
-	mySStream << "	max_ref_level: maxLevel used" << std::endl;
-	mySStream << "	num_refines: Number of initial refinements" << std::endl;
-	mySStream << "	refine_thres: Refinement threshold" << std::endl;
-	mySStream << "	left_bound: x_i of left boundary" << std::endl;
-	mySStream << "	right_bound: x_i of right boundary" << std::endl;
-	mySStream << "	initHeat: initial heat distribution" << std::endl;
-	mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-	mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Example:" << std::endl;
-	mySStream << "HESolverMPI PoissonEquationAdapt 3 2 maxLevel 5 5 1e-7 0.0 3.0 smooth 0.00001 400" << std::endl;
-	mySStream << std::endl;
-	mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
-	mySStream << "	poissonStartAdapt.gnuplot: the start condition" << std::endl;
-	mySStream << "	poissonSolvedAdapt.gnuplot: the numerical solution" << std::endl;
-	mySStream << std::endl << std::endl;
+  mySStream << "PoissonEquationAdapt" << std::endl << "------" << std::endl;
+  mySStream << "the following options must be specified:" << std::endl;
+  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "	start_level: number of start-levels of the Sparse Grid" << std::endl;
+  mySStream << "	refinemode: method used for initial refinement: classic, maxLevel" << std::endl;
+  mySStream << "	max_ref_level: maxLevel used" << std::endl;
+  mySStream << "	num_refines: Number of initial refinements" << std::endl;
+  mySStream << "	refine_thres: Refinement threshold" << std::endl;
+  mySStream << "	left_bound: x_i of left boundary" << std::endl;
+  mySStream << "	right_bound: x_i of right boundary" << std::endl;
+  mySStream << "	initHeat: initial heat distribution" << std::endl;
+  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << std::endl;
+  mySStream << "Example:" << std::endl;
+  mySStream << "HESolverMPI PoissonEquationAdapt 3 2 maxLevel 5 5 1e-7 0.0 3.0 smooth 0.00001 400" << std::endl;
+  mySStream << std::endl;
+  mySStream << "Remark: This test generates following files (gnuplot):" << std::endl;
+  mySStream << "	poissonStartAdapt.gnuplot: the start condition" << std::endl;
+  mySStream << "	poissonSolvedAdapt.gnuplot: the numerical solution" << std::endl;
+  mySStream << std::endl << std::endl;
 
-	std::cout << mySStream.str() << std::endl;
+  std::cout << mySStream.str() << std::endl;
 }
 
 void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double bound_left, double bound_right, double a,
-						std::string initFunc, double T, double dt, std::string ODESolver,
-						double cg_eps, size_t cg_its)
-{
-	size_t timesteps = (size_t)(T/dt);
-	sg::parallel::HeatEquationSolverMPI* myHESolver = new sg::parallel::HeatEquationSolverMPI();
-	sg::base::DataVector* alpha = NULL;
-	sg::base::DataMatrix EvalPoints(1, dim);
-	std::string tFileEvalCuboid = "EvalPointsHeatEquationMPI.data";
-	std::string tFileEvalCuboidValues = "EvalValuesHeatEquationMPI.data";
-	size_t evalPoints = NUMEVALPOINTS;
-	std::vector<sg::base::DataVector> results;
+                      std::string initFunc, double T, double dt, std::string ODESolver,
+                      double cg_eps, size_t cg_its) {
+  size_t timesteps = (size_t)(T / dt);
+  sg::parallel::HeatEquationSolverMPI* myHESolver = new sg::parallel::HeatEquationSolverMPI();
+  sg::base::DataVector* alpha = NULL;
+  sg::base::DataMatrix EvalPoints(1, dim);
+  std::string tFileEvalCuboid = "EvalPointsHeatEquationMPI.data";
+  std::string tFileEvalCuboidValues = "EvalValuesHeatEquationMPI.data";
+  size_t evalPoints = NUMEVALPOINTS;
+  std::vector<sg::base::DataVector> results;
 
-	for (size_t l = start_level; l <= end_level; l++)
-	{
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  for (size_t l = start_level; l <= end_level; l++) {
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
-			// set the bounding box
-			for (size_t i = 0; i < dim; i++)
-			{
-				myBoundaries[i].leftBoundary = bound_left;
-				myBoundaries[i].rightBoundary = bound_right;
-				myBoundaries[i].bDirichletLeft = true;
-				myBoundaries[i].bDirichletRight = true;
-			}
+      // set the bounding box
+      for (size_t i = 0; i < dim; i++) {
+        myBoundaries[i].leftBoundary = bound_left;
+        myBoundaries[i].rightBoundary = bound_right;
+        myBoundaries[i].bDirichletLeft = true;
+        myBoundaries[i].bDirichletRight = true;
+      }
 
-			sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-			delete[] myBoundaries;
+      sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+      delete[] myBoundaries;
 
-			// in first iteration -> calculate the evaluation points
-			if (l == start_level)
-			{
-				sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
-				myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myBoundingBox, evalPoints);
-				writeDataMatrix(EvalPoints, tFileEvalCuboid);
-				delete myEvalCuboidGen;
-			}
+      // in first iteration -> calculate the evaluation points
+      if (l == start_level) {
+        sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+        myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myBoundingBox, evalPoints);
+        writeDataMatrix(EvalPoints, tFileEvalCuboid);
+        delete myEvalCuboidGen;
+      }
 
-			// init Screen Object
-			myHESolver->initScreen();
+      // init Screen Object
+      myHESolver->initScreen();
 
-			// Construct a grid
-			myHESolver->constructGrid(*myBoundingBox, l);
+      // Construct a grid
+      myHESolver->constructGrid(*myBoundingBox, l);
 
-			// init the basis functions' coefficient vector (start solution)
-			alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
-			if (initFunc == "smooth")
-			{
-				myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
-			}
-			else
-			{
-				writeHelp();
-				sg::parallel::myGlobalMPIComm->Abort();
-			}
+      // init the basis functions' coefficient vector (start solution)
+      alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
 
-			delete myBoundingBox;
-		}
+      if (initFunc == "smooth") {
+        myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);
+      } else {
+        writeHelp();
+        sg::parallel::myGlobalMPIComm->Abort();
+      }
 
-		// Communicate grid
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			std::string serialized_grid = myHESolver->getGrid();
+      delete myBoundingBox;
+    }
 
-			sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
-		}
-		else
-		{
-			// Now receive the grid
-			std::string serialized_grid = "";
+    // Communicate grid
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      std::string serialized_grid = myHESolver->getGrid();
 
-			sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
-			myHESolver->setGrid(serialized_grid);
+      sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
+    } else {
+      // Now receive the grid
+      std::string serialized_grid = "";
 
-			alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
-		}
+      sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
+      myHESolver->setGrid(serialized_grid);
 
-		// Communicate coefficients
-		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
+      alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
+    }
 
-		// Print initial grid only on rank 0
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			// Print the initial heat function into a gnuplot file
-			if (dim < 3)
-			{
-				myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatStartMPI.gnuplot");
-			}
-		}
+    // Communicate coefficients
+    sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
-		// set heat coefficient
-		myHESolver->setHeatCoefficient(a);
+    // Print initial grid only on rank 0
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      // Print the initial heat function into a gnuplot file
+      if (dim < 3) {
+        myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatStartMPI.gnuplot");
+      }
+    }
 
-		// Start solving the Heat Equation
-		if (ODESolver == "ExEul")
-		{
-			myHESolver->solveExplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps/SOLUTION_FRAMES,(size_t)1));
-		}
-		else if (ODESolver == "ImEul")
-		{
-			myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps/SOLUTION_FRAMES,(size_t)1));
-		}
-		else if (ODESolver == "CrNic")
-		{
-			myHESolver->solveCrankNicolson(timesteps, dt, cg_its, cg_eps, *alpha, CRNIC_IMEUL_STEPS);
-		}
+    // set heat coefficient
+    myHESolver->setHeatCoefficient(a);
 
-		// print solved grid only on rank 0
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			// Print the solved Heat Equation into a gnuplot file
-			if (dim < 3)
-			{
-				myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatSolvedMPI.gnuplot");
-			}
+    // Start solving the Heat Equation
+    if (ODESolver == "ExEul") {
+      myHESolver->solveExplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
+    } else if (ODESolver == "ImEul") {
+      myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
+    } else if (ODESolver == "CrNic") {
+      myHESolver->solveCrankNicolson(timesteps, dt, cg_its, cg_eps, *alpha, CRNIC_IMEUL_STEPS);
+    }
 
-			// Calculate Norms
-			// Evaluate Cuboid
-			sg::base::DataVector PoisEvals(EvalPoints.getNrows());
-			myHESolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
-			results.push_back(PoisEvals);
+    // print solved grid only on rank 0
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      // Print the solved Heat Equation into a gnuplot file
+      if (dim < 3) {
+        myHESolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "heatSolvedMPI.gnuplot");
+      }
 
-			// write solution in a additional file
-			std::stringstream level_string;
-			level_string << l;
-			writeDataVector(PoisEvals, tFileEvalCuboidValues+".level_"+ level_string.str());
-			writeDataVector(PoisEvals, tFileEvalCuboidValues);
+      // Calculate Norms
+      // Evaluate Cuboid
+      sg::base::DataVector PoisEvals(EvalPoints.getNrows());
+      myHESolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
+      results.push_back(PoisEvals);
 
-			if (l > start_level)
-			{
-				std::cout << "=====================================================================" << std::endl;
-				std::cout << "=====================================================================" << std::endl << std::endl;
-				std::cout << "Calculating norms of relative errors to a grid" << std::endl;
-				std::cout << "with " << l << " levels and testing-coboid" << std::endl;
+      // write solution in a additional file
+      std::stringstream level_string;
+      level_string << l;
+      writeDataVector(PoisEvals, tFileEvalCuboidValues + ".level_" + level_string.str());
+      writeDataVector(PoisEvals, tFileEvalCuboidValues);
 
-				double oldMaxNorm = 0.0;
-				double oldTwoNorm = 0.0;
+      if (l > start_level) {
+        std::cout << "=====================================================================" << std::endl;
+        std::cout << "=====================================================================" << std::endl << std::endl;
+        std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+        std::cout << "with " << l << " levels and testing-coboid" << std::endl;
 
-				// Calculate relative errors and some norms
-				for (size_t j = 0; j < l-start_level; j++)
-				{
-					sg::base::DataVector maxLevel(results[l-start_level]);
-					sg::base::DataVector relError(results[j]);
-					double maxNorm = 0.0;
-					double l2Norm = 0.0;
+        double oldMaxNorm = 0.0;
+        double oldTwoNorm = 0.0;
 
-					// calculate relative error
-					relError.sub(maxLevel);
-					relError.componentwise_div(maxLevel);
+        // Calculate relative errors and some norms
+        for (size_t j = 0; j < l - start_level; j++) {
+          sg::base::DataVector maxLevel(results[l - start_level]);
+          sg::base::DataVector relError(results[j]);
+          double maxNorm = 0.0;
+          double l2Norm = 0.0;
 
-					// calculate max. norm of relative error
-					maxNorm = relError.maxNorm();
+          // calculate relative error
+          relError.sub(maxLevel);
+          relError.componentwise_div(maxLevel);
 
-					// calculate two norm of relative error
-					l2Norm = relError.RMSNorm();
+          // calculate max. norm of relative error
+          maxNorm = relError.maxNorm();
 
-					// Printing norms
-					std::cout << "Level " << j + start_level << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+          // calculate two norm of relative error
+          l2Norm = relError.RMSNorm();
 
-					oldMaxNorm = maxNorm;
-					oldTwoNorm = l2Norm;
-				}
-			}
-			std::cout << std::endl << std::endl;
-		}
+          // Printing norms
+          std::cout << "Level " << j + start_level << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm / maxNorm) << "; rate two-norm: " << log(oldTwoNorm / l2Norm) << std::endl;
 
-		myHESolver->deleteGrid();
+          oldMaxNorm = maxNorm;
+          oldTwoNorm = l2Norm;
+        }
+      }
 
-		delete alpha;
-		alpha = NULL;
-	}
+      std::cout << std::endl << std::endl;
+    }
 
-	delete myHESolver;
+    myHESolver->deleteGrid();
+
+    delete alpha;
+    alpha = NULL;
+  }
+
+  delete myHESolver;
 }
 
 void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, double bound_left, double bound_right,
-						std::string initFunc, double cg_eps, size_t cg_its)
-{
-	sg::parallel::PoissonEquationSolverMPI* myPoisSolver = new sg::parallel::PoissonEquationSolverMPI();
-	sg::base::DataVector* alpha = NULL;
-	sg::base::DataMatrix EvalPoints(1, dim);
-	std::string tFileEvalCuboid = "EvalPointsPoissonMPI.data";
-	std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
-	size_t evalPoints = NUMEVALPOINTS;
-	std::vector<sg::base::DataVector> results;
+                         std::string initFunc, double cg_eps, size_t cg_its) {
+  sg::parallel::PoissonEquationSolverMPI* myPoisSolver = new sg::parallel::PoissonEquationSolverMPI();
+  sg::base::DataVector* alpha = NULL;
+  sg::base::DataMatrix EvalPoints(1, dim);
+  std::string tFileEvalCuboid = "EvalPointsPoissonMPI.data";
+  std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
+  size_t evalPoints = NUMEVALPOINTS;
+  std::vector<sg::base::DataVector> results;
 
-	for (size_t l = start_level; l <= end_level; l++)
-	{
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  for (size_t l = start_level; l <= end_level; l++) {
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
-			// set the bounding box
-			for (size_t i = 0; i < dim; i++)
-			{
-				myBoundaries[i].leftBoundary = bound_left;
-				myBoundaries[i].rightBoundary = bound_right;
-				myBoundaries[i].bDirichletLeft = true;
-				myBoundaries[i].bDirichletRight = true;
-			}
-			sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-			delete[] myBoundaries;
+      // set the bounding box
+      for (size_t i = 0; i < dim; i++) {
+        myBoundaries[i].leftBoundary = bound_left;
+        myBoundaries[i].rightBoundary = bound_right;
+        myBoundaries[i].bDirichletLeft = true;
+        myBoundaries[i].bDirichletRight = true;
+      }
 
-			// in first iteration -> calculate the evaluation points
-			if (l == start_level)
-			{
-				sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
-				myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myBoundingBox, evalPoints);
-				writeDataMatrix(EvalPoints, tFileEvalCuboid);
-				delete myEvalCuboidGen;
-			}
+      sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+      delete[] myBoundaries;
 
-			// init Screen Object
-			myPoisSolver->initScreen();
+      // in first iteration -> calculate the evaluation points
+      if (l == start_level) {
+        sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+        myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myBoundingBox, evalPoints);
+        writeDataMatrix(EvalPoints, tFileEvalCuboid);
+        delete myEvalCuboidGen;
+      }
 
-			// Construct a grid
-			myPoisSolver->constructGrid(*myBoundingBox, l);
+      // init Screen Object
+      myPoisSolver->initScreen();
 
-			// init the basis functions' coefficient vector (start solution)
-			alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
-			if (initFunc == "smooth")
-			{
-				myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
-			}
-			else if (initFunc == "exp")
-			{
-				myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
-			}
-			else
-			{
-				writeHelp();
-				sg::parallel::myGlobalMPIComm->Abort();
-				delete alpha,
-				delete myPoisSolver;
-				delete myBoundingBox;
-				return;
-			}
+      // Construct a grid
+      myPoisSolver->constructGrid(*myBoundingBox, l);
 
-			delete myBoundingBox;
-		}
+      // init the basis functions' coefficient vector (start solution)
+      alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
 
-		// Communicate grid
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			std::string serialized_grid = myPoisSolver->getGrid();
+      if (initFunc == "smooth") {
+        myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);
+      } else if (initFunc == "exp") {
+        myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
+      } else {
+        writeHelp();
+        sg::parallel::myGlobalMPIComm->Abort();
+        delete alpha,
+               delete myPoisSolver;
+        delete myBoundingBox;
+        return;
+      }
 
-			sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
-		}
-		else
-		{
-			// Now receive the grid
-			std::string serialized_grid = "";
+      delete myBoundingBox;
+    }
 
-			sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
-			myPoisSolver->setGrid(serialized_grid);
+    // Communicate grid
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      std::string serialized_grid = myPoisSolver->getGrid();
 
-			alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
-		}
+      sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
+    } else {
+      // Now receive the grid
+      std::string serialized_grid = "";
 
-		// Communicate coefficients
-		sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
+      sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
+      myPoisSolver->setGrid(serialized_grid);
 
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			// Print the initial heat function into a gnuplot file
-			if (dim < 3)
-			{
-				myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStartMPI.gnuplot");
-			}
-		}
+      alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
+    }
 
-		// solve Poisson Equation
-		myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
+    // Communicate coefficients
+    sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
-		if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-		{
-			// Print the solved Heat Equation into a gnuplot file
-			if (dim < 3)
-			{
-				myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolvedMPI.gnuplot");
-			}
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      // Print the initial heat function into a gnuplot file
+      if (dim < 3) {
+        myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonStartMPI.gnuplot");
+      }
+    }
 
-			// Calculate Norms
-			// Evaluate Cuboid
-			sg::base::DataVector PoisEvals(EvalPoints.getNrows());
-			myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
-			results.push_back(PoisEvals);
+    // solve Poisson Equation
+    myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
 
-			// write solution in a additional file
-			std::stringstream level_string;
-			level_string << l;
-			writeDataVector(PoisEvals, tFileEvalCuboidValues+".level_"+ level_string.str());
-			writeDataVector(PoisEvals, tFileEvalCuboidValues);
+    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      // Print the solved Heat Equation into a gnuplot file
+      if (dim < 3) {
+        myPoisSolver->printGrid(*alpha, GUNPLOT_RESOLUTION, "poissonSolvedMPI.gnuplot");
+      }
 
-			if (l > start_level)
-			{
-				std::cout << "=====================================================================" << std::endl;
-				std::cout << "=====================================================================" << std::endl << std::endl;
-				std::cout << "Calculating norms of relative errors to a grid" << std::endl;
-				std::cout << "with " << l << " levels and testing-coboid" << std::endl;
+      // Calculate Norms
+      // Evaluate Cuboid
+      sg::base::DataVector PoisEvals(EvalPoints.getNrows());
+      myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
+      results.push_back(PoisEvals);
 
-				double oldMaxNorm = 0.0;
-				double oldTwoNorm = 0.0;
+      // write solution in a additional file
+      std::stringstream level_string;
+      level_string << l;
+      writeDataVector(PoisEvals, tFileEvalCuboidValues + ".level_" + level_string.str());
+      writeDataVector(PoisEvals, tFileEvalCuboidValues);
 
-				// Calculate relative errors and some norms
-				for (size_t j = 0; j < l-start_level; j++)
-				{
-					sg::base::DataVector maxLevel(results[l-start_level]);
-					sg::base::DataVector relError(results[j]);
-					double maxNorm = 0.0;
-					double l2Norm = 0.0;
+      if (l > start_level) {
+        std::cout << "=====================================================================" << std::endl;
+        std::cout << "=====================================================================" << std::endl << std::endl;
+        std::cout << "Calculating norms of relative errors to a grid" << std::endl;
+        std::cout << "with " << l << " levels and testing-coboid" << std::endl;
 
-					// calculate relative error
-					relError.sub(maxLevel);
-					relError.componentwise_div(maxLevel);
+        double oldMaxNorm = 0.0;
+        double oldTwoNorm = 0.0;
 
-					// calculate max. norm of relative error
-					maxNorm = relError.maxNorm();
+        // Calculate relative errors and some norms
+        for (size_t j = 0; j < l - start_level; j++) {
+          sg::base::DataVector maxLevel(results[l - start_level]);
+          sg::base::DataVector relError(results[j]);
+          double maxNorm = 0.0;
+          double l2Norm = 0.0;
 
-					// calculate two norm of relative error
-					l2Norm = relError.RMSNorm();
+          // calculate relative error
+          relError.sub(maxLevel);
+          relError.componentwise_div(maxLevel);
 
-					// Printing norms
-					std::cout << "Level " << j + start_level << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+          // calculate max. norm of relative error
+          maxNorm = relError.maxNorm();
 
-					oldMaxNorm = maxNorm;
-					oldTwoNorm = l2Norm;
-				}
-			}
-			std::cout << std::endl << std::endl;
-		}
+          // calculate two norm of relative error
+          l2Norm = relError.RMSNorm();
 
-		myPoisSolver->deleteGrid();
+          // Printing norms
+          std::cout << "Level " << j + start_level << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm / maxNorm) << "; rate two-norm: " << log(oldTwoNorm / l2Norm) << std::endl;
 
-		delete alpha;
-		alpha = NULL;
-	}
+          oldMaxNorm = maxNorm;
+          oldTwoNorm = l2Norm;
+        }
+      }
 
-	delete myPoisSolver;
+      std::cout << std::endl << std::endl;
+    }
+
+    myPoisSolver->deleteGrid();
+
+    delete alpha;
+    alpha = NULL;
+  }
+
+  delete myPoisSolver;
 }
 
 void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine, size_t max_ref_level, size_t num_refines, double refine_thres, double bound_left, double bound_right,
-						std::string initFunc, double cg_eps, size_t cg_its)
-{
-	sg::parallel::PoissonEquationSolverMPI* myPoisSolver = new sg::parallel::PoissonEquationSolverMPI();
-	sg::base::DataVector* alpha = NULL;
-	std::string tFileEvalCuboid = "EvalPointsPoissonMPI.data";
-	std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
+                              std::string initFunc, double cg_eps, size_t cg_its) {
+  sg::parallel::PoissonEquationSolverMPI* myPoisSolver = new sg::parallel::PoissonEquationSolverMPI();
+  sg::base::DataVector* alpha = NULL;
+  std::string tFileEvalCuboid = "EvalPointsPoissonMPI.data";
+  std::string tFileEvalCuboidValues = "EvalValuesPoissonMPI.data";
 
-	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-	{
-		sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
-		// set the bounding box
-		for (size_t i = 0; i < dim; i++)
-		{
-			myBoundaries[i].leftBoundary = bound_left;
-			myBoundaries[i].rightBoundary = bound_right;
-			myBoundaries[i].bDirichletLeft = true;
-			myBoundaries[i].bDirichletRight = true;
-		}
-		sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-		delete[] myBoundaries;
+    // set the bounding box
+    for (size_t i = 0; i < dim; i++) {
+      myBoundaries[i].leftBoundary = bound_left;
+      myBoundaries[i].rightBoundary = bound_right;
+      myBoundaries[i].bDirichletLeft = true;
+      myBoundaries[i].bDirichletRight = true;
+    }
 
-		// init Screen Object
-		myPoisSolver->initScreen();
+    sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+    delete[] myBoundaries;
 
-		// Construct a grid
-		myPoisSolver->constructGrid(*myBoundingBox, start_level);
+    // init Screen Object
+    myPoisSolver->initScreen();
 
-		// init the basis functions' coefficient vector (start solution)
-		// init the basis functions' coefficient vector (start solution)
-		alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
-		if (initFunc == "smooth")
-		{
-			std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
-			std::cout << "Starting Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl << std::endl;
+    // Construct a grid
+    myPoisSolver->constructGrid(*myBoundingBox, start_level);
 
-			for (size_t i = 0; i < num_refines; i++)
-			{
-				std::cout << "Refining Grid..." << std::endl;
-				myPoisSolver->initGridWithSmoothHeatFullDomain(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
+    // init the basis functions' coefficient vector (start solution)
+    // init the basis functions' coefficient vector (start solution)
+    alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
 
-				if (refine == "classic")
-				{
-					myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
-				}
-				else
-				{
-					myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
-				}
+    if (initFunc == "smooth") {
+      std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+      std::cout << "Starting Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl << std::endl;
 
-				std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
-				std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
-			}
+      for (size_t i = 0; i < num_refines; i++) {
+        std::cout << "Refining Grid..." << std::endl;
+        myPoisSolver->initGridWithSmoothHeatFullDomain(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);
 
-			std::cout << std::endl << std::endl;
+        if (refine == "classic") {
+          myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
+        } else {
+          myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+        }
 
-			myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right/DIV_SIGMA, DISTRI_FACTOR);
-		}
-		else if (initFunc == "exp")
-		{
-			std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
-			std::cout << "Starting Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl << std::endl;
+        std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+        std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
+      }
 
-			for (size_t i = 0; i < num_refines; i++)
-			{
-				std::cout << "Refining Grid..." << std::endl;
-				myPoisSolver->initGridWithExpHeatFullDomain(*alpha, EXP_FACTOR);
+      std::cout << std::endl << std::endl;
 
-				if (refine == "classic")
-				{
-					myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
-				}
-				else
-				{
-					myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
-				}
+      myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);
+    } else if (initFunc == "exp") {
+      std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+      std::cout << "Starting Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl << std::endl;
 
-				std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
-				std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
-			}
+      for (size_t i = 0; i < num_refines; i++) {
+        std::cout << "Refining Grid..." << std::endl;
+        myPoisSolver->initGridWithExpHeatFullDomain(*alpha, EXP_FACTOR);
 
-			std::cout << std::endl << std::endl;
+        if (refine == "classic") {
+          myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
+        } else {
+          myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+        }
 
-			myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
-		}
-		else
-		{
-			writeHelp();
-			sg::parallel::myGlobalMPIComm->Abort();
-			delete alpha,
-			delete myPoisSolver;
-			delete myBoundingBox;
-			return;
-		}
+        std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
+        std::cout << "Refined Grid size (inner): " << myPoisSolver->getNumberInnerGridPoints() << std::endl;
+      }
 
-		delete myBoundingBox;
-	}
+      std::cout << std::endl << std::endl;
 
-	// Communicate grid
-	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-	{
-		std::string serialized_grid = myPoisSolver->getGrid();
+      myPoisSolver->initGridWithExpHeat(*alpha, EXP_FACTOR);
+    } else {
+      writeHelp();
+      sg::parallel::myGlobalMPIComm->Abort();
+      delete alpha,
+             delete myPoisSolver;
+      delete myBoundingBox;
+      return;
+    }
 
-		sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
-	}
-	else
-	{
-		// Now receive the grid
-		std::string serialized_grid = "";
+    delete myBoundingBox;
+  }
 
-		sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
-		myPoisSolver->setGrid(serialized_grid);
+  // Communicate grid
+  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    std::string serialized_grid = myPoisSolver->getGrid();
 
-		alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
-	}
+    sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
+  } else {
+    // Now receive the grid
+    std::string serialized_grid = "";
 
-	// Communicate coefficients
-	sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
+    sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
+    myPoisSolver->setGrid(serialized_grid);
 
-	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-	{
-		// Print the initial heat function into a gnuplot file
-		if (dim < 3)
-		{
-			myPoisSolver->printSparseGrid(*alpha, "poissonStartMPIAdapt.gnuplot", false);
-		}
-	}
+    alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
+  }
 
-	// solve Poisson Equation
-	myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
+  // Communicate coefficients
+  sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
-	if (sg::parallel::myGlobalMPIComm->getMyRank() == 0)
-	{
-		// Print the solved Heat Equation into a gnuplot file
-		if (dim < 3)
-		{
-			myPoisSolver->printSparseGrid(*alpha, "poissonSolvedMPIAdapt.gnuplot", false);
-		}
+  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    // Print the initial heat function into a gnuplot file
+    if (dim < 3) {
+      myPoisSolver->printSparseGrid(*alpha, "poissonStartMPIAdapt.gnuplot", false);
+    }
+  }
 
-		// calculate relative errors
-		////////////////////////////
+  // solve Poisson Equation
+  myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
 
-		// read Evaluation cuboid
-		sg::base::DataMatrix EvalCuboid(1, dim);
-		int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
+  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    // Print the solved Heat Equation into a gnuplot file
+    if (dim < 3) {
+      myPoisSolver->printSparseGrid(*alpha, "poissonSolvedMPIAdapt.gnuplot", false);
+    }
 
-		// read reference values for evaluation cuboid
-		sg::base::DataVector EvalCuboidValues(1);
-		int retCuboidValues = readCuboidValues(EvalCuboidValues, tFileEvalCuboidValues);
+    // calculate relative errors
+    ////////////////////////////
 
-		double maxNorm = 0.0;
-		double l2Norm = 0.0;
+    // read Evaluation cuboid
+    sg::base::DataMatrix EvalCuboid(1, dim);
+    int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
-		if (retCuboid == 0 && retCuboidValues == 0)
-		{
-			std::cout << "Calculating relative errors..." << std::endl;
-			// Evaluate Cuboid
-			sg::base::DataVector curVals(EvalCuboid.getNrows());
-			myPoisSolver->evaluateCuboid(*alpha, curVals, EvalCuboid);
+    // read reference values for evaluation cuboid
+    sg::base::DataVector EvalCuboidValues(1);
+    int retCuboidValues = readCuboidValues(EvalCuboidValues, tFileEvalCuboidValues);
 
-			sg::base::DataVector relError(curVals);
+    double maxNorm = 0.0;
+    double l2Norm = 0.0;
 
-			// calculate relative error
-			relError.sub(EvalCuboidValues);
-			relError.componentwise_div(EvalCuboidValues);
+    if (retCuboid == 0 && retCuboidValues == 0) {
+      std::cout << "Calculating relative errors..." << std::endl;
+      // Evaluate Cuboid
+      sg::base::DataVector curVals(EvalCuboid.getNrows());
+      myPoisSolver->evaluateCuboid(*alpha, curVals, EvalCuboid);
 
-			// calculate max. norm of relative error
-			maxNorm = relError.maxNorm();
+      sg::base::DataVector relError(curVals);
 
-			// calculate two norm of relative error
-			l2Norm = relError.RMSNorm();
+      // calculate relative error
+      relError.sub(EvalCuboidValues);
+      relError.componentwise_div(EvalCuboidValues);
 
-			// Printing norms
-			std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+      // calculate max. norm of relative error
+      maxNorm = relError.maxNorm();
 
-			// reprint data with prefix -> can be easily grep-ed
-			std::cout << std::endl << std::endl;
-		}
-		else
-		{
-			std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
-		}
-	}
+      // calculate two norm of relative error
+      l2Norm = relError.RMSNorm();
 
-	delete alpha;
-	delete myPoisSolver;
+      // Printing norms
+      std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << std::endl;
+
+      // reprint data with prefix -> can be easily grep-ed
+      std::cout << std::endl << std::endl;
+    } else {
+      std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl << std::endl;
+    }
+  }
+
+  delete alpha;
+  delete myPoisSolver;
 }
 
-int main(int argc, char *argv[])
-{
-	std::string option;
-	int mpi_myid;
-	int mpi_ranks;
+int main(int argc, char* argv[]) {
+  std::string option;
+  int mpi_myid;
+  int mpi_ranks;
 
-	MPI_Init(&argc, &argv);
-	MPI_Comm_size(MPI_COMM_WORLD,&mpi_ranks);
-	MPI_Comm_rank(MPI_COMM_WORLD,&mpi_myid);
-	sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_ranks);
+  MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &mpi_ranks);
+  MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
+  sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_ranks);
 
-	if (argc == 1)
-	{
-		if (mpi_myid == 0)
-		{
-			writeHelp();
-		}
-		sg::parallel::myGlobalMPIComm->Abort();
-		return 0;
-	}
+  if (argc == 1) {
+    if (mpi_myid == 0) {
+      writeHelp();
+    }
 
-	option.assign(argv[1]);
+    sg::parallel::myGlobalMPIComm->Abort();
+    return 0;
+  }
 
-	if (option == "HeatEquation")
-	{
-		if (argc != 14)
-		{
-			if (mpi_myid == 0)
-			{
-				writeHelp();
-			}
-			sg::parallel::myGlobalMPIComm->Abort();
-			return 0;
-		}
+  option.assign(argv[1]);
 
-		size_t dim;
-		size_t start_level;
-		size_t end_level;
-		double bound_left;
-		double bound_right;
-		double a;
-		std::string initFunc;
-		double T;
-		double dt;
-		std::string ODESolver;
-		double cg_eps;
-		size_t cg_its;
+  if (option == "HeatEquation") {
+    if (argc != 14) {
+      if (mpi_myid == 0) {
+        writeHelp();
+      }
 
-		dim = atoi(argv[2]);
-		start_level = atoi(argv[3]);
-		end_level = atoi(argv[4]);
-		bound_left = atof(argv[5]);
-		bound_right = atof(argv[6]);
-		a = atof(argv[7]);
-		initFunc.assign(argv[8]);
-		T = atof(argv[9]);
-		dt = atof(argv[10]);
-		ODESolver.assign(argv[11]);
-		cg_eps = atof(argv[12]);
-		cg_its = atoi(argv[13]);
+      sg::parallel::myGlobalMPIComm->Abort();
+      return 0;
+    }
 
-		testHeatEquation(dim, start_level, end_level, bound_left, bound_right, a, initFunc, T, dt, ODESolver, cg_eps, cg_its);
-	}
-	else if (option == "PoissonEquation")
-	{
-		if (argc != 10)
-		{
-			if (mpi_myid == 0)
-			{
-				writeHelp();
-			}
-			sg::parallel::myGlobalMPIComm->Abort();
-			return 0;
-		}
+    size_t dim;
+    size_t start_level;
+    size_t end_level;
+    double bound_left;
+    double bound_right;
+    double a;
+    std::string initFunc;
+    double T;
+    double dt;
+    std::string ODESolver;
+    double cg_eps;
+    size_t cg_its;
 
-		size_t dim;
-		size_t start_level;
-		size_t end_level;
-		double bound_left;
-		double bound_right;
-		std::string initFunc;
-		double cg_eps;
-		size_t cg_its;
+    dim = atoi(argv[2]);
+    start_level = atoi(argv[3]);
+    end_level = atoi(argv[4]);
+    bound_left = atof(argv[5]);
+    bound_right = atof(argv[6]);
+    a = atof(argv[7]);
+    initFunc.assign(argv[8]);
+    T = atof(argv[9]);
+    dt = atof(argv[10]);
+    ODESolver.assign(argv[11]);
+    cg_eps = atof(argv[12]);
+    cg_its = atoi(argv[13]);
 
-		dim = atoi(argv[2]);
-		start_level = atoi(argv[3]);
-		end_level = atoi(argv[4]);
-		bound_left = atof(argv[5]);
-		bound_right = atof(argv[6]);
-		initFunc.assign(argv[7]);
-		cg_eps = atof(argv[8]);
-		cg_its = atoi(argv[9]);
-		testPoissonEquation(dim, start_level, end_level, bound_left, bound_right, initFunc, cg_eps, cg_its);
-	}
-	else if (option == "PoissonEquationAdapt")
-	{
-		if (argc != 13)
-		{
-			if (mpi_myid == 0)
-			{
-				writeHelp();
-			}
-			sg::parallel::myGlobalMPIComm->Abort();
-			return 0;
-		}
+    testHeatEquation(dim, start_level, end_level, bound_left, bound_right, a, initFunc, T, dt, ODESolver, cg_eps, cg_its);
+  } else if (option == "PoissonEquation") {
+    if (argc != 10) {
+      if (mpi_myid == 0) {
+        writeHelp();
+      }
 
-		size_t dim;
-		size_t start_level;
-		std::string refine;
-		size_t max_ref_level;
-		size_t num_refines;
-		double refine_thres;
+      sg::parallel::myGlobalMPIComm->Abort();
+      return 0;
+    }
 
-		double bound_left;
-		double bound_right;
-		std::string initFunc;
-		double cg_eps;
-		size_t cg_its;
+    size_t dim;
+    size_t start_level;
+    size_t end_level;
+    double bound_left;
+    double bound_right;
+    std::string initFunc;
+    double cg_eps;
+    size_t cg_its;
 
-		dim = atoi(argv[2]);
-		start_level = atoi(argv[3]);
-		refine.assign(argv[4]);
-		max_ref_level = atoi(argv[5]);
-		num_refines = atoi(argv[6]);
-		refine_thres = atof(argv[7]);
-		bound_left = atof(argv[8]);
-		bound_right = atof(argv[9]);
-		initFunc.assign(argv[10]);
-		cg_eps = atof(argv[11]);
-		cg_its = atoi(argv[12]);
+    dim = atoi(argv[2]);
+    start_level = atoi(argv[3]);
+    end_level = atoi(argv[4]);
+    bound_left = atof(argv[5]);
+    bound_right = atof(argv[6]);
+    initFunc.assign(argv[7]);
+    cg_eps = atof(argv[8]);
+    cg_its = atoi(argv[9]);
+    testPoissonEquation(dim, start_level, end_level, bound_left, bound_right, initFunc, cg_eps, cg_its);
+  } else if (option == "PoissonEquationAdapt") {
+    if (argc != 13) {
+      if (mpi_myid == 0) {
+        writeHelp();
+      }
 
-		testPoissonEquationAdapt(dim, start_level, refine, max_ref_level, num_refines, refine_thres, bound_left, bound_right, initFunc, cg_eps, cg_its);
-	}
-	else
-	{
-		if (mpi_myid == 0)
-		{
-			writeHelp();
-		}
-	}
+      sg::parallel::myGlobalMPIComm->Abort();
+      return 0;
+    }
 
-	delete sg::parallel::myGlobalMPIComm;
-	MPI_Finalize();
+    size_t dim;
+    size_t start_level;
+    std::string refine;
+    size_t max_ref_level;
+    size_t num_refines;
+    double refine_thres;
 
-	return 0;
+    double bound_left;
+    double bound_right;
+    std::string initFunc;
+    double cg_eps;
+    size_t cg_its;
+
+    dim = atoi(argv[2]);
+    start_level = atoi(argv[3]);
+    refine.assign(argv[4]);
+    max_ref_level = atoi(argv[5]);
+    num_refines = atoi(argv[6]);
+    refine_thres = atof(argv[7]);
+    bound_left = atof(argv[8]);
+    bound_right = atof(argv[9]);
+    initFunc.assign(argv[10]);
+    cg_eps = atof(argv[11]);
+    cg_its = atoi(argv[12]);
+
+    testPoissonEquationAdapt(dim, start_level, refine, max_ref_level, num_refines, refine_thres, bound_left, bound_right, initFunc, cg_eps, cg_its);
+  } else {
+    if (mpi_myid == 0) {
+      writeHelp();
+    }
+  }
+
+  delete sg::parallel::myGlobalMPIComm;
+  MPI_Finalize();
+
+  return 0;
 }
