@@ -352,8 +352,15 @@ OBJS =	DataVector.o\
 	LaplaceUpGradientPrewavelet.o\
 	LaplaceUpPrewavelet.o\
 	ConvertPrewaveletToLinear.o\
-	ConvertLinearToPrewavelet.o
-
+	ConvertLinearToPrewavelet.o\
+	UpDownOneOpDimEnhanced.o\
+	LaplaceEnhancedDownBBLinearBoundary.o\
+	LaplaceEnhancedUpBBLinearBoundary.o\
+	OperationLaplaceEnhancedLinearBoundary.o\
+	LaplaceEnhancedDownBBLinear.o\
+	LaplaceEnhancedUpBBLinear.o\
+	OperationLaplaceEnhancedLinear.o\
+	MiscOpFactory.o
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1533,6 +1540,30 @@ OperationDensityMarginalizeLinear.o : $(SRCDIR)datadriven/basis/linear/noboundar
 
 DMVectorizationPaddingAssistant.o : $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMVectorizationPaddingAssistant.o $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
+
+UpDownOneOpDimEnhanced.o : $(SRCDIR)misc/pde/algorithm/UpDownOneOpDimEnhanced.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)UpDownOneOpDimEnhanced.o $(SRCDIR)misc/pde/algorithm/UpDownOneOpDimEnhanced.cpp
+
+LaplaceEnhancedDownBBLinearBoundary.o : $(SRCDIR)misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceEnhancedDownBBLinearBoundary.o $(SRCDIR)misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.cpp
+
+LaplaceEnhancedUpBBLinearBoundary.o : $(SRCDIR)misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceEnhancedUpBBLinearBoundary.o $(SRCDIR)misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.cpp
+
+OperationLaplaceEnhancedLinearBoundary.o : $(SRCDIR)misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceEnhancedLinearBoundary.o $(SRCDIR)misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.cpp
+
+LaplaceEnhancedDownBBLinear.o : $(SRCDIR)misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceEnhancedDownBBLinear.o $(SRCDIR)misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.cpp
+
+LaplaceEnhancedUpBBLinear.o : $(SRCDIR)misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceEnhancedUpBBLinear.o $(SRCDIR)misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.cpp
+
+OperationLaplaceEnhancedLinear.o : $(SRCDIR)misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceEnhancedLinear.o $(SRCDIR)misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.cpp
+
+MiscOpFactory.o : $(SRCDIR)misc/operation/MiscOpFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)MiscOpFactory.o $(SRCDIR)misc/operation/MiscOpFactory.cpp
 
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp
