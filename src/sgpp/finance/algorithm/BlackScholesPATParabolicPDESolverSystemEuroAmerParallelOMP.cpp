@@ -10,6 +10,9 @@
 
 #include "pde/algorithm/StdUpDown.hpp"
 #include "pde/algorithm/UpDownOneOpDim.hpp"
+#ifdef USE_ENHANCED_UPDOWN
+#include "misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp"
+#endif
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -35,8 +38,13 @@ namespace sg {
     void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
 
+#ifdef USE_ENHANCED_UPDOWN
+      ((sg::pde::UpDownOneOpDimEnhanced*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, result);
+      result.mult(-0.5);
+#else
       std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
       size_t nDims = algoDims.size();
+
 #ifdef _OPENMP
       omp_lock_t LaplaceMutex;
       omp_init_lock(&LaplaceMutex);
@@ -66,15 +74,19 @@ namespace sg {
       #pragma omp taskwait
 
       result.axpy(-0.5, LaplaceResult);
-
 #ifdef _OPENMP
       omp_destroy_lock(&LaplaceMutex);
+#endif
 #endif
     }
 
     void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
 
+#ifdef USE_ENHANCED_UPDOWN
+      ((sg::pde::UpDownOneOpDimEnhanced*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, result);
+      result.mult(-0.5);
+#else
       std::vector<size_t> algoDims = this->BoundGrid->getStorage()->getAlgorithmicDimensions();
       size_t nDims = algoDims.size();
 #ifdef _OPENMP
@@ -109,6 +121,7 @@ namespace sg {
 
 #ifdef _OPENMP
       omp_destroy_lock(&LaplaceMutex);
+#endif
 #endif
     }
 
