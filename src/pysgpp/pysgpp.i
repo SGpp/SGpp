@@ -85,6 +85,9 @@ namespace std {
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"
 #endif
+#ifdef SG_MISC
+#include "sgpp_misc.hpp"
+#endif
 %}
 
 // the Bad
@@ -198,6 +201,7 @@ namespace std {
 %include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
 %include "src/sgpp/pde/operation/PdeOpFactory.hpp"
 %include "src/sgpp/base/operation/BaseOpFactory.hpp"
+%include "src/sgpp/misc/operation/MiscOpFactory.hpp"
 
 %apply std::string *INPUT { std::string& istr };
 

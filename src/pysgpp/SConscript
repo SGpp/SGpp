@@ -31,6 +31,9 @@ if env['SG_PDE']:
 if env['SG_PARALLEL']:
 	Import('src_objs_parallel')
 	src_objs += src_objs_parallel
+if env['SG_MISC']:
+	Import('src_objs_misc')
+	src_objs += src_objs_misc
 if env['SG_COMBIGRID']:
 	Import('src_objs_combigrid')
 	src_objs += src_objs_combigrid
