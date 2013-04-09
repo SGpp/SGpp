@@ -360,7 +360,9 @@ OBJS =	DataVector.o\
 	LaplaceEnhancedDownBBLinear.o\
 	LaplaceEnhancedUpBBLinear.o\
 	OperationLaplaceEnhancedLinear.o\
-	MiscOpFactory.o
+	MiscOpFactory.o\
+	OperationLaplaceVectorizedLinear.o\
+	OperationLaplaceVectorizedLinearBoundary.o
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1564,6 +1566,12 @@ OperationLaplaceEnhancedLinear.o : $(SRCDIR)misc/pde/basis/linear/noboundary/ope
 
 MiscOpFactory.o : $(SRCDIR)misc/operation/MiscOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)MiscOpFactory.o $(SRCDIR)misc/operation/MiscOpFactory.cpp
+
+OperationLaplaceVectorizedLinear.o : $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinear.o $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
+
+OperationLaplaceVectorizedLinearBoundary.o : $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinearBoundary.o $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
 
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp

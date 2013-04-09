@@ -22,6 +22,9 @@ parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
 
 parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
 parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
+parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
+
+parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
 
 parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
 parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp

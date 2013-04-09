@@ -466,6 +466,19 @@ ifeq ($(CC),icl)
 endif
 
 ###################################################################
+# Builds a simple LaplaceTest App
+###################################################################	
+LaplaceTest: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/LaplaceTest_gcc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceTest --directory=./tmp/build_native/LaplaceTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LaplaceTest_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/LaplaceTest_icc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceTest --directory=./tmp/build_native/LaplaceTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaplaceTest_ICC" "EXT=$(EXT)"
+endif
+
+###################################################################
 # test Balck Scholes Solver
 ###################################################################	
 		

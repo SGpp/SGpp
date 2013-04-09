@@ -57,6 +57,9 @@
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdMICModLinear.hpp"
 #endif
 
+#include "parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.hpp"
+#include "parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.hpp"
+
 namespace sg {
 
   namespace op_factory {
@@ -268,6 +271,15 @@ namespace sg {
       }
     }
 
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid) {
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage());
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+        return new parallel::OperationLaplaceVectorizedLinearBoundary(grid.getStorage());
+      } else {
+        throw base::factory_exception("OperationLaplaceVectorized is not implemented for this grid type.");
+      }
+    }
   }
 }
 
