@@ -11,6 +11,7 @@
 #define PARALLEL_OP_FACTORY_HPP
 
 #include "base/grid/Grid.hpp"
+#include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 
@@ -67,6 +68,17 @@ namespace sg {
      */
     parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
         int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
+
+    /**
+     * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * This Laplacian is implemented directly be creating each matrix element on the fly
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid);
   }
 
 }

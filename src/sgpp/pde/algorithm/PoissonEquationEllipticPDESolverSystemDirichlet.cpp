@@ -10,6 +10,7 @@
 #include "pde/operation/PdeOpFactory.hpp"
 #ifdef USE_ENHANCED_UPDOWN
 #include "misc/operation/MiscOpFactory.hpp"
+#include "parallel/operation/ParallelOpFactory.hpp"
 #endif
 
 using namespace sg::op_factory;
@@ -19,8 +20,10 @@ namespace sg {
 
     PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
 #ifdef USE_ENHANCED_UPDOWN
-      this->Laplace_Complete = createOperationLaplaceEnhanced(*this->BoundGrid);
-      this->Laplace_Inner = createOperationLaplaceEnhanced(*this->InnerGrid);
+      //      this->Laplace_Complete = createOperationLaplaceEnhanced(*this->BoundGrid);
+      //      this->Laplace_Inner = createOperationLaplaceEnhanced(*this->InnerGrid);
+      this->Laplace_Complete = createOperationLaplaceVectorized(*this->BoundGrid);
+      this->Laplace_Inner = createOperationLaplaceVectorized(*this->InnerGrid);
 #else
       this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
       this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
