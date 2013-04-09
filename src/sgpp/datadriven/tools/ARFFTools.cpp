@@ -26,7 +26,7 @@ namespace sg {
       size_t numFound = 0;
 
       if (myfile.is_open()) {
-        while (! myfile.eof() ) {
+        while (!myfile.eof() ) {
           getline (myfile, line);
 
           if (line.find("@ATTRIBUTE", 0) != line.npos) {
@@ -54,7 +54,7 @@ namespace sg {
       if (myfile.is_open()) {
         getline (myfile, line);
 
-        while (! myfile.eof() ) {
+        while (!myfile.eof() ) {
           if (line.find("@DATA", 0) != line.npos) {
             numInst = 0;
           } else {
@@ -82,7 +82,7 @@ namespace sg {
       if (myfile.is_open()) {
         getline (myfile, line);
 
-        while (! myfile.eof() ) {
+        while (!myfile.eof() ) {
           if (data == true) {
             writeNewElement(line, destination, instanceNo);
             instanceNo++;
@@ -111,7 +111,7 @@ namespace sg {
       if (myfile.is_open()) {
         getline (myfile, line);
 
-        while (! myfile.eof() ) {
+        while (!myfile.eof() ) {
           if (data == true) {
             writeNewClass(line, destination, instanceNo);
             instanceNo++;

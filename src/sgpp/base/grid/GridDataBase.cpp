@@ -130,7 +130,7 @@ namespace sg {
         // open file
         fout.open(filename.c_str());
 
-        if (! fout.is_open()) {
+        if (!fout.is_open()) {
           std::string msg = "Error! Unable to open file '" + filename + "' for read access.";
           throw new file_exception(msg.c_str());
         }
@@ -158,7 +158,7 @@ namespace sg {
         // open file
         fout.open(filename.c_str(), std::ios::binary);
 
-        if (! fout.is_open()) {
+        if (!fout.is_open()) {
           std::string msg = "Error! Unable to open file '" + filename + "' for read access.";
           throw new file_exception(msg.c_str());
         }
@@ -208,7 +208,7 @@ namespace sg {
       // open file, test in binary mode
       fin.open(filename.c_str(), std::ios::binary);
 
-      if (! fin.is_open()) {
+      if (!fin.is_open()) {
         std::string msg = "GridDataBase: Error! Unable to open file '" + filename + "' for read access.";
         throw new file_exception(msg.c_str());
       }
@@ -239,7 +239,7 @@ namespace sg {
 
     void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
       // check if file handler is allright
-      if (! fin.is_open()) {
+      if (!fin.is_open()) {
         return;
       }
 
@@ -251,7 +251,7 @@ namespace sg {
 
       // ASCII data
       if (ftype == ascii) {
-        while (! fin.eof()) {
+        while (!fin.eof()) {
           for (int d = 0; d < _dim; d++) {
             fin >> lev;
             fin >> ind;
@@ -264,7 +264,7 @@ namespace sg {
       }
       // binary data
       else {
-        while (! fin.eof()) {
+        while (!fin.eof()) {
           for (int d = 0; d < _dim; d++) {
             fin.read((char*)&lev, sizeof(lev));
             fin.read((char*)&ind, sizeof(ind));
