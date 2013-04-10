@@ -9,6 +9,7 @@
 #include "base/operation/BaseOpFactory.hpp"
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
+#include <omp.h>
 
 namespace sg {
   namespace datadriven {
@@ -19,10 +20,6 @@ namespace sg {
 
       size_t SEARCH_MAX = 100000; //find the approximated maximum of function with 100000 points
       double maxValue = 0; //the approximated maximum value of function
-
-      base::GridStorage* gridStorage = grid->getStorage();
-      base::DataVector p(gridStorage->dim());
-      base::OperationEval* opEval = op_factory::createOperationEval(*grid);
 
       //search for (approx.) maximum of function
       base::DataMatrix* tmp = new base::DataMatrix(SEARCH_MAX, num_dims);
@@ -42,21 +39,32 @@ namespace sg {
       tmpEval = NULL;
 
       double fhat = 0.0;
+      size_t j;
+      base::DataVector* p;
+      base::OperationEval* opEval;
 
+	  #pragma omp parallel for private(p, j, opEval) schedule(dynamic) if(omp_get_num_threads() > 1)
       for (size_t i = 0; i < num_samples; i++) { //for every sample
+
+    	p = new base::DataVector(grid->getStorage()->dim());
+    	opEval = op_factory::createOperationEval(*grid);
+
         //find the appropriate sample within a # of trial
-        for (size_t j = 0; j < trial_max; j++) {
+        for (j = 0; j < trial_max; j++) {
+
           // pick a random data point "p"
           for (size_t d = 0; d < num_dims; d++)
-            p[d] = (double)rand() / RAND_MAX;
+              p->set(d, (double)rand() / RAND_MAX);
 
           // evaluate at this point "p"
-          fhat = opEval->eval(*alpha, p);
+          fhat = opEval->eval(*alpha, *p);
 
-          if (((double)rand() / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.050)) {
-            samples->setRow(i, p);
+          if (((double)rand()/RAND_MAX*maxValue < fhat) && (fhat > maxValue*0.050)) {
+            samples->setRow(i, *p);
             break;
           }
+          delete p;
+          delete opEval;
 
           if (j == trial_max - 1)
             throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
