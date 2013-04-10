@@ -11,9 +11,11 @@
 #include "datadriven/operation/OperationDensitySampling1D.hpp"
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
+#include <omp.h>
 
 namespace sg {
   namespace datadriven {
+
     void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples) {
 
       size_t num_dims = this->grid->getStorage()->dim();
@@ -22,10 +24,8 @@ namespace sg {
       samples = new base::DataMatrix(num_samples, num_dims);
 
       size_t size = num_samples / num_dims;
-
       if (size <= 0)
         throw base::operation_exception("Error: # of dimensions greater than # of samples. Operation aborted!");
-
       size_t trunk = size;
 
       for (size_t dim_start = 0; dim_start < num_dims; dim_start++) {
@@ -49,20 +49,23 @@ namespace sg {
         delete a1d;
 
         // 3. for every sample do...
-        base::DataVector* sampleVec = new base::DataVector(num_dims);
+        base::DataVector* sampleVec;
+        size_t j;
+		#pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
+		for (size_t i = 0; i < samples_start->getSize(); i++) {
 
-        for (size_t i = 0; i < samples_start->getSize(); i++) {
+		  sampleVec = new base::DataVector(num_dims);
+		  sampleVec->setAll(0.0);
+		  sampleVec->set(dim_start, samples_start->get(i));
+		  doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec);
 
-          sampleVec->setAll(0.0);
-          sampleVec->set(dim_start, samples_start->get(i));
-          doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec);
+		  for (j = 0; j < num_dims; j++)
+			samples->set(dim_start * trunk + i, j, sampleVec->get(j));
 
-          for (size_t j = 0; j < num_dims; j++)
-            samples->set(dim_start * trunk + i, j, sampleVec->get(j));
-        }
+		  delete sampleVec;
+		}
 
         delete samples_start;
-        delete sampleVec;
       }
 
       return;
@@ -94,21 +97,24 @@ namespace sg {
       delete a1d;
 
       // 3. for every sample do...
-      base::DataVector* sampleVec = new base::DataVector(num_dims);
+      base::DataVector* sampleVec;
+      size_t j;
 
+	  #pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
       for (size_t i = 0; i < num_samples; i++) {
 
+    	sampleVec = new base::DataVector(num_dims);
         sampleVec->setAll(0.0);
         sampleVec->set(dim_x, samples_start->get(i));
         doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec);
 
-        for (size_t j = 0; j < num_dims; j++)
+        for (j = 0; j < num_dims; j++)
           samples->set(i, j, sampleVec->get(j));
+
+        delete sampleVec;
       }
 
       delete samples_start;
-      delete sampleVec;
-
       return;
     }
 
