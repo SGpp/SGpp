@@ -51,11 +51,11 @@ namespace sg {
         DMSystemMatrixVectorizedIdentityOnesidedMPI(
           sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
           : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>(SparseGrid, trainData, lambda, vecMode),
-            _mpi_data_window(),
+            _mpi_grid_window_buffer(NULL),
             _mpi_data_window_buffer(NULL),
             _mpi_grid_window(),
-            _mpi_grid_window_buffer(NULL) {
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+            _mpi_data_window() {
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
           /* calculate distribution of data */
           _chunkCountPerProcData = getMinChunkCountPerProc();
@@ -124,7 +124,7 @@ namespace sg {
           double* ptrResult = result.getPointer();
           double* ptrTemp = temp.getPointer();
 
-          int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
           // we expect that there were no RMA calls before this line
           MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_grid_window);
@@ -218,8 +218,7 @@ namespace sg {
         } //end mult
 
         virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-          int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
           _mpi_grid_window_buffer->setAll(0.0);
           MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_grid_window);
@@ -277,11 +276,11 @@ namespace sg {
             delete[] _mpi_grid_offsets;
           }
 
-          int mpi_size = myGlobalMPIComm->getNumRanks();
+          size_t mpi_size = myGlobalMPIComm->getNumRanks();
 
           _chunkCountPerProcGrid = getMinChunkCountPerProc();
-          int sendChunkSize = 2;
-          int sizePerProc = this->storage_->size() / mpi_size;
+          size_t sendChunkSize = 2;
+          size_t sizePerProc = this->storage_->size() / mpi_size;
           _chunkCountPerProcGrid = sizePerProc / sendChunkSize;
 
           if (myGlobalMPIComm->getMyRank() == 0) {

@@ -99,15 +99,15 @@ namespace sg {
     }
 
     void MPICommunicator::dataVectorAllToAll(base::DataVector& alpha, int* distributionOffsets, int* distributionSizes) {
-      int numRanks = getNumRanks();
-      int myRank = getMyRank();
+      size_t numRanks = getNumRanks();
+      size_t myRank = getMyRank();
       int mySendSize = distributionSizes[myRank];
       int mySendOffset = distributionOffsets[myRank];
 
       int* sendSizes = new int[numRanks];
       int* sendOffsets = new int[numRanks];
 
-      for (int i = 0; i < numRanks; i++) {
+      for (size_t i = 0; i < numRanks; i++) {
         sendSizes[i] = mySendSize;
         sendOffsets[i] = mySendOffset;
       }
@@ -122,15 +122,15 @@ namespace sg {
     }
 
     void MPICommunicator::dataVectorAllToAll(base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes) {
-      int numRanks = getNumRanks();
-      int myRank = getMyRank();
+      size_t numRanks = getNumRanks();
+      size_t myRank = getMyRank();
       int mySendSize = distributionSizes[myRank];
       int mySendOffset = distributionOffsets[myRank];
 
       int* sendSizes = new int[numRanks];
       int* sendOffsets = new int[numRanks];
 
-      for (int i = 0; i < numRanks; i++) {
+      for (size_t i = 0; i < numRanks; i++) {
         sendSizes[i] = mySendSize;
         sendOffsets[i] = mySendOffset;
       }
@@ -145,217 +145,65 @@ namespace sg {
     }
 
     void MPICommunicator::IsendToAll(double* ptr, size_t size, int tag, MPI_Request* reqs) {
-      for (int rank = 0; rank < getNumRanks(); rank++) {
+      for (size_t rank = 0; rank < getNumRanks(); rank++) {
         if (rank == getMyRank()) {
           reqs[rank] = MPI_REQUEST_NULL;
           continue;
         }
 
-        MPI_Isend(ptr, size, MPI_DOUBLE, rank, tag, MPI_COMM_WORLD, &reqs[rank]);
+        int sizeAsInt = static_cast<int>(size);
+        MPI_Isend(ptr, sizeAsInt, MPI_DOUBLE, static_cast<int>(rank), tag, MPI_COMM_WORLD, &reqs[rank]);
       }
     }
 
-    void MPICommunicator::IrecvFromAll(double* ptr, int* global_sizes, int* global_offsets, int* sizes, int* offsets, int* tag, int chunkCount, MPI_Request* dataRecvRequests) {
-      int rank;
-      //posting temp reveices
-      rank = 0;
-
-      for (int i = 0; i < chunkCount; i++) {
-        // adjust rank to match chunk i
-        if (i >= global_offsets[rank] + global_sizes[rank]) {
-          rank++;
-        }
-
-        // skip segments of this process, they are already there
-        if (rank == getMyRank()) {
-          //i=global_offsets[rank] + global_sizes[rank]-1;
-          dataRecvRequests[i] = MPI_REQUEST_NULL;
-          // continue does the i++ (like after every iteration), so we are
-          // at _mpi_data_offsets_global[rank] + _mpi_data_sizes_global[rank] at
-          // the beginning of the next iteration, which means that we skipped rank mpi_myrank
-          continue;
-        }
-
-        MPI_Irecv(&ptr[offsets[i]], sizes[i], MPI_DOUBLE, rank, tag[i], MPI_COMM_WORLD, &dataRecvRequests[i]);
-        //    if (getMyRank() == 0){
-        //      std::cout << "posted receive for offset " << offsets[i] << ", size " << sizes[i] << " rank " << rank << " and tag "<< tag[i] << std::endl;
-        //    }
-      }
-    }
-
-    void MPICommunicator::IrecvFromAll(double* ptr, int chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* dataRecvRequests) {
-      for (int rank = 0; rank < getNumRanks(); rank++) {
-        for (int i = 0; i < chunkSizePerProc; i++) {
-          int reqIdx = rank * chunkSizePerProc + i;
+    void MPICommunicator::IrecvFromAll(double* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* reqs) {
+      for (size_t rank = 0; rank < getNumRanks(); rank++) {
+        for (size_t i = 0; i < chunkSizePerProc; i++) {
+          size_t reqIdx = rank * chunkSizePerProc + i;
 
           if (rank == getMyRank()) {
-            dataRecvRequests[reqIdx] = MPI_REQUEST_NULL;
+            reqs[reqIdx] = MPI_REQUEST_NULL;
           } else {
-            MPI_Irecv(&ptr[offsets[reqIdx]], sizes[reqIdx], MPI_DOUBLE, rank, tag[reqIdx], MPI_COMM_WORLD, &dataRecvRequests[reqIdx]);
+            MPI_Irecv(&ptr[offsets[reqIdx]], sizes[reqIdx], MPI_DOUBLE, static_cast<int>(rank), tag[reqIdx], MPI_COMM_WORLD, &reqs[reqIdx]);
           }
         }
       }
     }
 
-    void MPICommunicator::putToAll(double* ptr, int winOffset, int count, MPI_Win win) {
-      for (int i = 0; i < getNumRanks(); i++) {
-        MPI_Put(ptr, count, MPI_DOUBLE, i, winOffset, count, MPI_DOUBLE, win);
+    void MPICommunicator::putToAll(double* ptr, size_t winOffset, size_t count, MPI_Win win) {
+      for (size_t i = 0; i < getNumRanks(); i++) {
+        int countAsInt = static_cast<int>(count);
+        int winOffsetAsInt = static_cast<int>(winOffset);
+        MPI_Put(ptr, countAsInt, MPI_DOUBLE, static_cast<int>(i), winOffsetAsInt, countAsInt, MPI_DOUBLE, win);
       }
     }
 
-    void MPICommunicator::putToAllInplace(MPI_Win win, int winOffset, int count) {
-      int flag;
-      void* base_addr;
-      MPI_Win_get_attr(win, MPI_WIN_BASE, &base_addr, &flag);
-
-      if (!flag) {
-        fprintf( stderr, "Attribute for key MPI_WIN_BASE not set: %d\n", flag );
-        throw new sg::base::operation_exception("could not get MPI_WIN_BASE!");
-      }
-
-      double* winptr = (double*)base_addr;
-      double* sourcePtr = &winptr[winOffset];
-
-      for (int i = 0; i < getNumRanks(); i++) {
-        if (i == getMyRank()) {
-          // do not send to self, as we are working in place
-          continue;
-        }
-
-        MPI_Put(sourcePtr, count, MPI_DOUBLE, i, winOffset, count, MPI_DOUBLE, win);
-      }
-    }
-
-    int MPICommunicator::getMyRank() {
+    size_t MPICommunicator::getMyRank() {
       return this->myid_;
     }
 
-    int MPICommunicator::getNumRanks() {
+    size_t MPICommunicator::getNumRanks() {
       return this->ranks_;
     }
 
-    void MPICommunicator::dataVectorAllToAll_alltoallv(base::DataVector& alpha, int* distributionOffsets, int* distributionSizes) {
-      int numRanks = getNumRanks();
-      int myRank = getMyRank();
-      int mySendSize = distributionSizes[myRank];
-      int mySendOffset = distributionOffsets[myRank];
-
-      debugMPI(this, "read distribution vars");
-
-      int* sendSizes = new int[numRanks];
-      int* sendOffsets = new int[numRanks];
-
-      for (int i = 0; i < numRanks; i++) {
-        sendSizes[i] = mySendSize;
-        sendOffsets[i] = mySendOffset;
+    void MPICommunicator::waitForAllRequests(size_t size, MPI_Request* reqs) {
+      if (MPI_Waitall(static_cast<int>(size), reqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
+        std::cout << "communication error in waitall" << std::endl;
+        throw new sg::base::operation_exception("Communication Error");
       }
-
-      debugMPI(this, "initialized sendVars");
-
-      //    std::ostringstream strstr;
-
-      //    strstr << "sendSizes: ";
-      //    for(int i = 0; i<numRanks; i++){
-      //        strstr << sendSizes[i] << " - ";
-      //    }
-      //    debugMPI(this, strstr.str());
-      //    strstr.str("");
-
-      //    strstr << "sendOffsets: ";
-      //    for(int i = 0; i<numRanks; i++){
-      //        strstr << sendOffsets[i] << " - ";
-      //    }
-      //    debugMPI(this, strstr.str());
-      //    strstr.str("");
-
-      //    strstr << "distributionSizes: ";
-      //    for(int i = 0; i<numRanks; i++){
-      //        strstr << distributionSizes[i] << " - ";
-      //    }
-      //    debugMPI(this, strstr.str());
-      //    strstr.str("");
-
-      //    strstr << "distributionOffsets: ";
-      //    for(int i = 0; i<numRanks; i++){
-      //        strstr << distributionOffsets[i] << " - ";
-      //    }
-      //    debugMPI(this, strstr.str());
-      //    strstr.str("");
-
-      //    debugMPI(this, strstr.str());
-      //    strstr.str("");
-
-
-      sg::base::DataVector tmp(alpha.getSize());
-      MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
-                    tmp.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
-      alpha.copyFrom(tmp);
-
-
-      // this seems to work, altough the standard does not guarantee this,
-      // also, the standard is inconsistent regarding the use of MPI_IN_PLACE with MPI_Alltoallv()
-      //    MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
-      //                  alpha.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
-
-      //the following does not work, MPI_IN_PLACE is not allowed
-      //    MPI_Alltoallv(MPI_IN_PLACE, distributionSizes, distributionSizes, MPI_DOUBLE,
-      //                  alpha.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
-
-      debugMPI(this, "after communication - alltoallv; ");
-
-      delete[] sendSizes;
-      delete[] sendOffsets;
     }
 
-    void MPICommunicator::dataVectorAllToAll_broadcasts(base::DataVector& alpha, int* distributionOffsets, int* distributionSizes) {
-      double* data = alpha.getPointer();
-
-      for (int i = 0; i < getNumRanks(); i++) {
-        MPI_Bcast(&data[distributionOffsets[i]], distributionSizes[i], MPI_DOUBLE, i, MPI_COMM_WORLD);
-      }
-
-      MPI_Barrier(MPI_COMM_WORLD);
+    void MPICommunicator::waitForAnyRequest(size_t size, MPI_Request* reqs, int* result) {
+      MPI_Waitany(static_cast<int>(size), reqs, result, MPI_STATUS_IGNORE);
     }
 
-    void MPICommunicator::dataVectorAllToAll_sendreceive(base::DataVector& alpha, int* distributionOffsets, int* distributionSizes) {
-      double* data = alpha.getPointer();
-
-      MPI_Request reqs[getNumRanks()];
-      int myRank = getMyRank();
-
-      for (int otherProc = 0; otherProc < getNumRanks(); ++otherProc) {
-        if (otherProc == myRank) {
-          continue;
-        }
-
-        MPI_Request r;
-        MPI_Isend(&data[distributionOffsets[myRank]], distributionSizes[myRank], MPI_DOUBLE, otherProc, 0, MPI_COMM_WORLD, &r);
-        MPI_Request_free(&r);
+    void MPICommunicator::allreduceSum(base::DataVector& source, base::DataVector& result) {
+      if (source.getSize() != result.getSize()) {
+        std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
+        throw new sg::base::operation_exception("DataVector sizes do not match in allreduce!");
       }
 
-      std::cout << "[" << myRank << "] after isend; " << std::endl;
-
-
-      for (int otherProc = 0; otherProc < getNumRanks(); ++otherProc) {
-        std::cout << "[" << myRank << "] before irecv; otherp:" << otherProc << std::endl;
-
-        if (otherProc == myRank) {
-          reqs[otherProc] = MPI_REQUEST_NULL;
-          continue;
-        }
-
-        if (myRank == 2) {
-          std::cout << "[" << myRank << "]  offset: " << distributionOffsets[otherProc] << " sizes:" << distributionSizes[otherProc] << std::endl;
-        }
-
-        MPI_Irecv(&data[distributionOffsets[otherProc]], distributionSizes[otherProc], MPI_DOUBLE, otherProc, 0, MPI_COMM_WORLD, &reqs[otherProc]);
-        std::cout << "[" << myRank << "] after irecv; otherp:" << otherProc << std::endl;
-      }
-
-      MPI_Waitall(getNumRanks(), reqs, MPI_STATUSES_IGNORE);
-      std::cout << "[" << myRank << "] after waitall; " << std::endl;
-
-      MPI_Barrier(MPI_COMM_WORLD);
+      MPI_Allreduce(source.getPointer(), result.getPointer(), static_cast<int>(source.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     }
 
   }

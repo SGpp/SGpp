@@ -25,7 +25,7 @@
 #ifdef ENABLE_DEBUG_MPI
 #define debugMPI(globalComm, messageStream) \
     { \
-        int rank = globalComm->getMyRank(); \
+        int rank = static_cast<int>(globalComm->getMyRank()); \
         int rcvbuffer; \
         int token = 93453; \
         MPI_Barrier(MPI_COMM_WORLD); \
@@ -42,7 +42,7 @@
 
 #define debugMPI_0(messageStream) \
     { \
-        int rank = globalComm->getMyRank(); \
+        size_t rank = globalComm->getMyRank(); \
         MPI_Barrier(MPI_COMM_WORLD); \
         if(rank == 0){ \
             std::cout << "[0] " <<  messageStream << std::endl; \
@@ -71,10 +71,6 @@ namespace sg {
         int myid_;
         /// Number of ranks in the whole system
         int ranks_;
-
-        void dataVectorAllToAll_alltoallv(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
-        void dataVectorAllToAll_broadcasts(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
-        void dataVectorAllToAll_sendreceive(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
 
       public:
         /*
@@ -187,11 +183,17 @@ namespace sg {
         void dataVectorAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
 
         void IsendToAll(double* ptr, size_t size, int tag, MPI_Request* reqs);
-        void IrecvFromAll(double* ptr, int* global_sizes, int* global_offsets, int* sizes, int* offsets, int* tag, int chunkCount, MPI_Request* dataRecvRequests);
-        void IrecvFromAll(double* ptr, int chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* dataRecvRequests);
+        void IrecvFromAll(double* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* reqs);
 
-        void putToAll(double* ptr, int winOffset, int count, MPI_Win win);
-        void putToAllInplace(MPI_Win win, int winOffset, int count);
+        /**
+         * @brief putToAll puts @a count entries that the pointer @a ptr points to into the
+         *        window @a win at offset @a winOffset
+         * @param ptr pointer of the data that should be put to all other processes
+         * @param winOffset offset in window win
+         * @param count how many units (one unit is defined at creation time of the window) should be put
+         * @param win window the data should be put into
+         */
+        void putToAll(double* ptr, size_t winOffset, size_t count, MPI_Win win);
 
         /**
          * Implements a Barrier for all tasks
@@ -206,12 +208,37 @@ namespace sg {
         /**
          * @return return the rank id of the own of this class
          */
-        int getMyRank();
+        size_t getMyRank();
 
         /**
          * @return returns the number of MPI tasks in the parallel environment
          */
-        int getNumRanks();
+        size_t getNumRanks();
+
+        /**
+         * Wrapper for MPI_Waitall, Statuses are ignored. Blocks until all requests have finished
+         *
+         * @param size size of reqeuest array
+         * @param reqs array of requests
+         */
+        void waitForAllRequests(size_t size, MPI_Request* reqs);
+
+        /**
+         * Wrapper for MPI_Allreduce with sum as opearation and double as datatype
+         *
+         * @param source source for allreduce
+         * @param result result for allreduce
+         */
+        void allreduceSum(base::DataVector& source, base::DataVector& result);
+
+        /**
+         * Wrapper for MPI_Waitany; status is ignored
+         *
+         * @param size size of request array
+         * @param reqs array of requests to wait for
+         * @param result index of request that was selected
+         */
+        void waitForAnyRequest(size_t size, MPI_Request* reqs, int* result);
     };
 
   }

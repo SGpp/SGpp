@@ -14,13 +14,14 @@
 #include "base/exception/factory_exception.hpp"
 
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp"
 
 #ifdef USEARBB
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp"
@@ -38,9 +39,6 @@
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdMICModLinear.hpp"
 #endif
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.hpp"
 #ifdef USEARBB
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp"
 #endif
@@ -74,8 +72,7 @@ namespace sg {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return new sg::parallel::OperationMultipleEvalIterative<sg::parallel::X86SimdLinear>(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
-          return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+          return new parallel::OperationMultipleEvalIterative<parallel::X86SimdLinear>(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
 
 #ifdef USEOCL
@@ -109,9 +106,8 @@ namespace sg {
       else if (strcmp(grid.getType(), "linearBoundary") == 0
                || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return new sg::parallel::OperationMultipleEvalIterative<sg::parallel::X86SimdLinear>(
+          return new parallel::OperationMultipleEvalIterative<parallel::X86SimdLinear>(
                    grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
-          return new parallel::OperationMultipleEvalIterativeX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
 
 #ifdef USEOCL
@@ -141,8 +137,7 @@ namespace sg {
         }
       } else if (strcmp(grid.getType(), "modlinear") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
-          //            return new parallel::OperationMultipleEvalIterativeX86SimdModLinear(grid.getStorage(), dataset);
+          return new parallel::OperationMultipleEvalIterative<parallel::X86SimdModLinear>(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
 
 #ifdef USEOCL
@@ -178,9 +173,8 @@ namespace sg {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return new sg::parallel::OperationMultipleEvalIterativeSP<sg::parallel::SPX86SimdLinear>(
+          return new parallel::OperationMultipleEvalIterativeSP<parallel::SPX86SimdLinear>(
                    grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
-          return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
 
 #ifdef USEOCL
@@ -211,9 +205,8 @@ namespace sg {
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
                  || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return new sg::parallel::OperationMultipleEvalIterativeSP<sg::parallel::SPX86SimdLinear>(
+          return new parallel::OperationMultipleEvalIterativeSP<parallel::SPX86SimdLinear>(
                    grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
-          return new parallel::OperationMultipleEvalIterativeSPX86SimdLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
 
 #ifdef USEOCL
@@ -243,8 +236,7 @@ namespace sg {
         }
       } else if (strcmp(grid.getType(), "modlinear") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinear(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
-          //            return new parallel::OperationMultipleEvalIterativeSPX86SimdModLinearMask(grid.getStorage(), dataset);
+          return new parallel::OperationMultipleEvalIterativeSP<parallel::SPX86SimdModLinear>(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
 
 #ifdef USEOCL

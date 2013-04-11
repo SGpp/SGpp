@@ -43,23 +43,24 @@ namespace sg {
       base::DataVector* p;
       base::OperationEval* opEval;
 
-	  #pragma omp parallel for private(p, j, opEval) schedule(dynamic) if(omp_get_num_threads() > 1)
+      #pragma omp parallel for private(p, j, opEval) schedule(dynamic) if(omp_get_num_threads() > 1)
+
       for (size_t i = 0; i < num_samples; i++) { //for every sample
 
-    	p = new base::DataVector(grid->getStorage()->dim());
-    	opEval = op_factory::createOperationEval(*grid);
+        p = new base::DataVector(grid->getStorage()->dim());
+        opEval = op_factory::createOperationEval(*grid);
 
         //find the appropriate sample within a # of trial
         for (j = 0; j < trial_max; j++) {
 
           // pick a random data point "p"
           for (size_t d = 0; d < num_dims; d++)
-              p->set(d, (double)rand() / RAND_MAX);
+            p->set(d, (double)rand() / RAND_MAX);
 
           // evaluate at this point "p"
           fhat = opEval->eval(*alpha, *p);
 
-          if (((double)rand()/RAND_MAX*maxValue < fhat) && (fhat > maxValue*0.050)) {
+          if (((double)rand() / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.050)) {
             samples->setRow(i, *p);
             break;
           }
@@ -67,6 +68,7 @@ namespace sg {
           if (j == trial_max - 1)
             throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
         }
+
         delete p;
         delete opEval;
       }

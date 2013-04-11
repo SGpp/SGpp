@@ -100,7 +100,7 @@ namespace sg {
          * @param blocksize blocksize
          *
          */
-        void calcDistribution(int totalSize, int* sizes, int* offsets, size_t blocksize);
+        void calcDistribution(size_t totalSize, int* sizes, int* offsets, size_t blocksize);
 
     };
 

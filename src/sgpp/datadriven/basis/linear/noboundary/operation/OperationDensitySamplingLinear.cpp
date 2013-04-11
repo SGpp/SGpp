@@ -24,8 +24,10 @@ namespace sg {
       samples = new base::DataMatrix(num_samples, num_dims);
 
       size_t size = num_samples / num_dims;
+
       if (size <= 0)
         throw base::operation_exception("Error: # of dimensions greater than # of samples. Operation aborted!");
+
       size_t trunk = size;
 
       for (size_t dim_start = 0; dim_start < num_dims; dim_start++) {
@@ -51,19 +53,20 @@ namespace sg {
         // 3. for every sample do...
         base::DataVector* sampleVec;
         size_t j;
-		#pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
-		for (size_t i = 0; i < samples_start->getSize(); i++) {
+        #pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
 
-		  sampleVec = new base::DataVector(num_dims);
-		  sampleVec->setAll(0.0);
-		  sampleVec->set(dim_start, samples_start->get(i));
-		  doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec);
+        for (size_t i = 0; i < samples_start->getSize(); i++) {
 
-		  for (j = 0; j < num_dims; j++)
-			samples->set(dim_start * trunk + i, j, sampleVec->get(j));
+          sampleVec = new base::DataVector(num_dims);
+          sampleVec->setAll(0.0);
+          sampleVec->set(dim_start, samples_start->get(i));
+          doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec);
 
-		  delete sampleVec;
-		}
+          for (j = 0; j < num_dims; j++)
+            samples->set(dim_start * trunk + i, j, sampleVec->get(j));
+
+          delete sampleVec;
+        }
 
         delete samples_start;
       }
@@ -100,10 +103,11 @@ namespace sg {
       base::DataVector* sampleVec;
       size_t j;
 
-	  #pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
+      #pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
+
       for (size_t i = 0; i < num_samples; i++) {
 
-    	sampleVec = new base::DataVector(num_dims);
+        sampleVec = new base::DataVector(num_dims);
         sampleVec->setAll(0.0);
         sampleVec->set(dim_x, samples_start->get(i));
         doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec);

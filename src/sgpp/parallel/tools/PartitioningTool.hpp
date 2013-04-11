@@ -37,8 +37,8 @@ namespace sg {
       public:
         PartitioningTool();
 
-        static void getPartitionSegment(int totalSize, int segmentCount, int segmentNumber, size_t* size, size_t* offset, size_t blocksize = 1);
-        static void getPartitionSegment(int start, int end, int segmentCount, int segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
+        static void getPartitionSegment(size_t totalSize, size_t segmentCount, size_t segmentNumber, size_t* size, size_t* offset, size_t blocksize = 1);
+        static void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
 
         /**
          * @brief getOpenMPLoopPartitionSegment uses the number of OpenMP Threads and the threads id for segmentCount and segmentNumber
@@ -47,8 +47,8 @@ namespace sg {
          * then the result is one single partition.
          *
          */
-        static void getOpenMPPartitionSegment(int totalSize, size_t* size, size_t* offset, size_t blocksize = 1);
-        static void getOpenMPPartitionSegment(int start, int end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
+        static void getOpenMPPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize = 1);
+        static void getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
 
         /**
          * @brief calcDistribution calculates a distribution of a domain of size @a totalSize into @a numCunks chunks and
@@ -71,18 +71,17 @@ namespace sg {
          * @param offsets output array to store resulting distribution offsets (array size must be numChunks)
          * @param blocksize resulting sizes are a multiple of this blocksize.
          */
-        static void calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize = 1);
+        static void calcDistribution(size_t totalSize, size_t numChunks, int* sizes, int* offsets, size_t blocksize = 1);
 #ifdef USE_MPI
-        static void calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int* sizes, int* offsets, size_t blocksize);
-        static void calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int* sizes, int* offsets, int* sizesGlobal, int* offsetsGlobal, size_t blocksize);
+        static void calcMPIChunkedDistribution(size_t totalSize, size_t numChunksPerProc, int* sizes, int* offsets, size_t blocksize);
 
         /**
          * @brief getMPIPartitionSegment uses the number of MPI processes and the MPI rank for segmentCount and segmentNumber
          *
          * This function can also be used if MPI is disabled, then the result is one single partition.
          */
-        static void getMPIPartitionSegment(int totalSize, size_t* size, size_t* offset, size_t blocksize = 1);
-        static void getMPIPartitionSegment(int start, int end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
+        static void getMPIPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize = 1);
+        static void getMPIPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
 #endif
     };
 
