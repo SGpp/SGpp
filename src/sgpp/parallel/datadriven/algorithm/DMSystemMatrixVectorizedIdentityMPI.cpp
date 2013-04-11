@@ -32,8 +32,8 @@ namespace sg {
         this->dataset_->transpose();
       }
 
-      int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-      int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
+      size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+      size_t mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
       // arrays for distribution settings
       _mpi_grid_sizes = new int[mpi_size];
@@ -96,7 +96,7 @@ namespace sg {
     void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex() {
       this->B_->rebuildLevelAndIndex();
       sg::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), sg::parallel::myGlobalMPIComm->getNumRanks(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
-      int mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
+      size_t mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
       this->B_->updateGridComputeBoundaries(_mpi_grid_offsets[mpi_rank],
                                             _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank]);

@@ -49,7 +49,7 @@ namespace sg {
          */
         DMSystemMatrixVectorizedIdentityTrueAsyncMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
           : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>(SparseGrid, trainData, lambda, vecMode) {
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
           // arrays for distribution settings
           _mpi_data_sizes = new int[mpi_size];
@@ -82,28 +82,20 @@ namespace sg {
 
           result.setAll(0.0);
           temp.setAll(0.0);
-          double* ptrResult = result.getPointer();
           double* ptrTemp = temp.getPointer();
 
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-          int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-          MPI_Request dataSendReqs[mpi_size];
-          MPI_Request dataRecvReqs[mpi_size]; //allocating a little more than necessary, otherwise complicated index computations needed
-          int tagsData[mpi_size];
+          MPI_Request* dataSendReqs = new MPI_Request[mpi_size];
+          MPI_Request* dataRecvReqs = new MPI_Request[mpi_size]; //allocating a little more than necessary, otherwise complicated index computations needed
+          int* tagsData = new int[mpi_size];
 
-          for (int i = 0; i < mpi_size; i++) {
+          for (size_t i = 0; i < mpi_size; i++) {
             tagsData[i] = _mpi_data_offsets[i] * 2 + 2;
           }
 
-          for (int rank = 0; rank < mpi_size; rank++) {
-            if (rank == mpi_myrank) {
-              dataRecvReqs[rank] = MPI_REQUEST_NULL;
-              continue;
-            }
-
-            MPI_Irecv(&ptrTemp[_mpi_data_offsets[rank]], _mpi_data_sizes[rank], MPI_DOUBLE, rank, tagsData[rank], MPI_COMM_WORLD, &dataRecvReqs[rank]);
-          }
+          myGlobalMPIComm->IrecvFromAll(ptrTemp, 1, _mpi_data_sizes, _mpi_data_offsets, tagsData, dataRecvReqs);
 
           this->myTimer_->start();
 
@@ -113,7 +105,7 @@ namespace sg {
           size_t gridProcessChunkEnd = gridProcessChunkStart + _mpi_grid_sizes[mpi_myrank];
           int idx;
           char complete[20];
-          snprintf(complete, 50, "complete #%d", mpi_myrank);
+          snprintf(complete, 50, "complete #%d", static_cast<int>(mpi_myrank));
           MPI_Pcontrol(1, complete);
           #pragma omp parallel
           {
@@ -174,7 +166,7 @@ namespace sg {
             while (true) {
               #pragma omp single
               {
-                MPI_Waitany(sg::parallel::myGlobalMPIComm->getNumRanks(), dataRecvReqs, &idx, MPI_STATUS_IGNORE);
+                myGlobalMPIComm->waitForAnyRequest(sg::parallel::myGlobalMPIComm->getNumRanks(), dataRecvReqs, &idx);
               }
 
               // implicit barrier, all threads wait here
@@ -216,10 +208,14 @@ namespace sg {
           result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 
           if (mpi_myrank == 0) std::cout << "*";
+
+          delete[] dataSendReqs;
+          delete[] dataRecvReqs;
+          delete[] tagsData;
         }
 
         virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
-          int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
           b.setAll(0.0);
 
           sg::base::DataVector myClasses(classes);
@@ -255,7 +251,7 @@ namespace sg {
         virtual void rebuildLevelAndIndex() {
           DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>::rebuildLevelAndIndex();
 
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
           sg::parallel::PartitioningTool::calcDistribution(this->storage_->size(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
         }

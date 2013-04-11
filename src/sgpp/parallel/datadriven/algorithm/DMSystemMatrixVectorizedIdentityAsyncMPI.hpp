@@ -50,7 +50,7 @@ namespace sg {
          */
         DMSystemMatrixVectorizedIdentityAsyncMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
           : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation::kernelType>(SparseGrid, trainData, lambda, vecMode) {
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
 
           /* calculate distribution of data */
           _chunkCountPerProcData = getChunkCountPerProc();
@@ -87,33 +87,33 @@ namespace sg {
           double* ptrResult = result.getPointer();
           double* ptrTemp = temp.getPointer();
 
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-          int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-          int totalChunkCountGrid = _chunkCountPerProcGrid * mpi_size;
-          int totalChunkCountData = _chunkCountPerProcData * mpi_size;
+          size_t totalChunkCountGrid = _chunkCountPerProcGrid * mpi_size;
+          size_t totalChunkCountData = _chunkCountPerProcData * mpi_size;
 
           /* setup MPI_Requests, tags and post receives for data */
-          MPI_Request dataRecvReqs[totalChunkCountData]; //allocating a little more than necessary, otherwise complicated index computations needed
-          int tagsData[totalChunkCountData];
+          MPI_Request* dataRecvReqs = new MPI_Request[totalChunkCountData]; //allocating a little more than necessary, otherwise complicated index computations needed
+          int* tagsData = new int[totalChunkCountData];
 
-          for (int i = 0; i < totalChunkCountData; i++) {
-            tagsData[i] = i * 2 + 2;
+          for (size_t i = 0; i < totalChunkCountData; i++) {
+            tagsData[i] = static_cast<int>(i * 2 + 2);
           }
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrTemp, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, tagsData, dataRecvReqs);
 
           /* setup MPI_Requests, tags and post receives for grid */
-          MPI_Request gridRecvReqs[totalChunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
-          int tagsGrid[totalChunkCountGrid];
+          MPI_Request* gridRecvReqs = new MPI_Request[totalChunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
+          int* tagsGrid = new int[totalChunkCountGrid];
 
-          for (int i = 0; i < totalChunkCountGrid; i++) {
-            tagsGrid[i] = i * 2 + 3;
+          for (size_t i = 0; i < totalChunkCountGrid; i++) {
+            tagsGrid[i] = static_cast<int>(i * 2 + 3);
           }
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrResult, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, gridRecvReqs);
-          MPI_Request dataSendReqs[totalChunkCountData];
-          MPI_Request gridSendReqs[totalChunkCountGrid];
+          MPI_Request* dataSendReqs = new MPI_Request[totalChunkCountData];
+          MPI_Request* gridSendReqs = new MPI_Request[totalChunkCountGrid];
 
           this->myTimer_->start();
           #pragma omp parallel
@@ -154,17 +154,12 @@ namespace sg {
             {
               double computationTime = this->myTimer_->stop();
               this->computeTimeMult_ += computationTime;
-
-              if (MPI_Waitall(totalChunkCountData, dataRecvReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
-                std::cout << "errors in communication" << std::endl;
-              }
+              myGlobalMPIComm->waitForAllRequests(totalChunkCountData, dataRecvReqs);
 
               // we don't really need to wait for the sends to
               // finish as we don't need (in particular not modify) temp
-              // advantage: it's a lot faster like this
-              //        if(MPI_Waitall(_mpi_data_sizes_global[mpi_myrank] * mpi_size, dataSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS){
-              //          std::cout << "errors in communication (send)" << std::endl;
-              //        }
+              // advantage: it's  faster like this
+              // myGlobalMPIComm->waitForAllRequests(totalChunkCountData, dataSendReqs);
               double completeTime = this->myTimer_->stop();
               this->completeTimeMult_ += completeTime;
 
@@ -217,27 +212,26 @@ namespace sg {
             }
           }
           this->computeTimeMultTrans_ += this->myTimer_->stop();
-
-          if (MPI_Waitall(totalChunkCountGrid, gridRecvReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
-            std::cout << "Communication error (waitall gridrecvreqs)" << std::endl;
-            throw new sg::base::operation_exception("Communication error!");
-          }
-
-          if (MPI_Waitall(totalChunkCountGrid, gridSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
-            std::cout << "Communication error (waitall gridsendreqs)" << std::endl;
-            throw new sg::base::operation_exception("Communication error!");
-          }
+          myGlobalMPIComm->waitForAllRequests(totalChunkCountGrid, gridRecvReqs);
+          myGlobalMPIComm->waitForAllRequests(totalChunkCountGrid, gridSendReqs);
 
           this->completeTimeMultTrans_ += this->myTimer_->stop();
 
           result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
 
           if (mpi_myrank == 0) std::cout << "*";
+
+          delete[] dataSendReqs;
+          delete[] gridSendReqs;
+          delete[] dataRecvReqs;
+          delete[] gridRecvReqs;
+          delete[] tagsData;
+          delete[] tagsGrid;
         } //end mult
 
         virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
-          int mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-          int mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
 
           double* ptrB = b.getPointer();
           b.setAll(0.0);
@@ -249,16 +243,16 @@ namespace sg {
             myClasses.resizeZero(this->numPatchedTrainingInstances_);
           }
 
-          int totalChunkCount = mpi_size * _chunkCountPerProcGrid;
-          MPI_Request gridRecvReqs[totalChunkCount]; //allocating a little more than necessary, otherwise complicated index computations needed
-          int tags[totalChunkCount];
+          size_t totalChunkCount = mpi_size * _chunkCountPerProcGrid;
+          MPI_Request* gridRecvReqs = new MPI_Request[totalChunkCount]; //allocating a little more than necessary, otherwise complicated index computations needed
+          int* tags = new int[totalChunkCount];
 
-          for (int i = 0; i < totalChunkCount; i++) {
-            tags[i] = i + 1;
+          for (size_t i = 0; i < totalChunkCount; i++) {
+            tags[i] = static_cast<int>(i + 1);
           }
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tags, gridRecvReqs);
-          MPI_Request gridSendReqs[totalChunkCount];
+          MPI_Request* gridSendReqs = new MPI_Request[totalChunkCount];
           #pragma omp parallel
           {
             size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
@@ -287,16 +281,11 @@ namespace sg {
               sg::parallel::myGlobalMPIComm->IsendToAll(&ptrB[start], _mpi_grid_sizes[thread_chunk], tags[thread_chunk], &gridSendReqs[(thread_chunk - myGridChunkStart)*mpi_size]);
             }
           }
-
-          if (MPI_Waitall(totalChunkCount, gridRecvReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
-            std::cout << "communication error (recvReqs) in generateB" << std::endl;
-            throw new sg::base::operation_exception("COmmunication Error");
-          }
-
-          if (MPI_Waitall(totalChunkCount, gridSendReqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
-            std::cout << "communication error (sendReqs) in generateB" << std::endl;
-            throw new sg::base::operation_exception("COmmunication Error");
-          }
+          myGlobalMPIComm->waitForAllRequests(totalChunkCount, gridRecvReqs);
+          myGlobalMPIComm->waitForAllRequests(totalChunkCount, gridSendReqs);
+          delete[] gridRecvReqs;
+          delete[] gridSendReqs;
+          delete[] tags;
         }
 
         virtual void rebuildLevelAndIndex() {
@@ -310,9 +299,9 @@ namespace sg {
             delete[] _mpi_grid_offsets;
           }
 
-          int mpi_size = myGlobalMPIComm->getNumRanks();
-          int sendChunkSize = 2;
-          int sizePerProc = this->storage_->size() / mpi_size;
+          size_t mpi_size = myGlobalMPIComm->getNumRanks();
+          size_t sendChunkSize = 2;
+          size_t sizePerProc = this->storage_->size() / mpi_size;
           _chunkCountPerProcGrid = sizePerProc / sendChunkSize;
 
           if (myGlobalMPIComm->getMyRank() == 0) {

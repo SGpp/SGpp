@@ -48,7 +48,7 @@ namespace sg {
       sg::base::DataVector GammaResult(result);
 
       // Apply the riskfree rate
-      if (0 % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+      if (0 % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
         #pragma omp task shared(alpha, result)
         {
           if (this->r != 0.0) {
@@ -65,7 +65,7 @@ namespace sg {
 
       // Apply the delta method
       for (size_t i = 0; i < nDims; i++) {
-        if ((i + 1) % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+        if ((i + 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
           #pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
           {
             sg::base::DataVector myResult(result.getSize());
@@ -90,7 +90,7 @@ namespace sg {
         for (size_t j = 0; j < nDims; j++) {
           size_t job = (((i * (i + 1)) / 2) + j) + (nDims);
 
-          if (job % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+          if (job % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
             // symmetric
             if (j <= i) {
               #pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
@@ -142,7 +142,7 @@ namespace sg {
       sg::base::DataVector GammaResult(result);
 
       // Apply the riskfree rate
-      if (0 % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+      if (0 % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
         #pragma omp task shared(alpha, result)
         {
           if (this->r != 0.0) {
@@ -159,7 +159,7 @@ namespace sg {
 
       // Apply the delta method
       for (size_t i = 0; i < nDims; i++) {
-        if ((i + 1) % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+        if ((i + 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
           #pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
           {
             sg::base::DataVector myResult(result.getSize());
@@ -184,7 +184,7 @@ namespace sg {
         for (size_t j = 0; j < nDims; j++) {
           size_t job = (((i * (i + 1)) / 2) + j) + (nDims);
 
-          if (job % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+          if (job % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
             // symmetric
             if (j <= i) {
               #pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
@@ -226,7 +226,7 @@ namespace sg {
       size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
       size_t jobs = (((nDims * nDims) + 3 * nDims) / 2) + 2;
 
-      if ((jobs - 1) % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+      if ((jobs - 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
         ((sg::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
         result.add(temp);
@@ -239,7 +239,7 @@ namespace sg {
       size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
       size_t jobs = (((nDims * nDims) + 3 * nDims) / 2) + 2;
 
-      if ((jobs - 1) % static_cast<size_t>(myGlobalMPIComm->getNumRanks()) == static_cast<size_t>(myGlobalMPIComm->getMyRank())) {
+      if ((jobs - 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
         ((sg::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
         result.add(temp);

@@ -101,7 +101,7 @@ namespace sg {
               data_offset + data_size);
           }
           this->computeTimeMultTrans_ += this->myTimer_->stop();
-          MPI_Allreduce(this->result_tmp->getPointer(), result.getPointer(), result.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+          myGlobalMPIComm->allreduceSum(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
         }
 
@@ -129,7 +129,7 @@ namespace sg {
               data_offset,
               data_offset + data_size);
           }
-          MPI_Allreduce(this->result_tmp->getPointer(), b.getPointer(), b.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+          myGlobalMPIComm->allreduceSum(*(this->result_tmp), b);
         }
 
         virtual void rebuildLevelAndIndex() {

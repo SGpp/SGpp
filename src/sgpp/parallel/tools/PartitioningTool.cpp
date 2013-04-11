@@ -23,14 +23,14 @@ namespace sg {
     PartitioningTool::PartitioningTool() {
     }
 
-    void PartitioningTool::getPartitionSegment(int totalSize, int segmentCount, int segmentNumber, size_t* size, size_t* offset, size_t blockSize) {
+    void PartitioningTool::getPartitionSegment(size_t totalSize, size_t segmentCount, size_t segmentNumber, size_t* size, size_t* offset, size_t blockSize) {
       size_t end;
       getPartitionSegment(0, totalSize, segmentCount, segmentNumber, offset, &end, blockSize);
       *size = end - *offset;
     }
 
-    void PartitioningTool::getPartitionSegment(int start, int end, int segmentCount, int segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blockSize) {
-      int totalSize = end - start;
+    void PartitioningTool::getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blockSize) {
+      size_t totalSize = end - start;
 
       // check for valid input
       if (totalSize % blockSize != 0 ) {
@@ -43,11 +43,11 @@ namespace sg {
       }
 
       // do all further calculations with complete blocks
-      int blockCount = totalSize / (int)blockSize;
+      size_t blockCount = totalSize / blockSize;
 
-      int blockSegmentSize = blockCount / segmentCount;
-      int remainder = blockCount - blockSegmentSize * segmentCount;
-      int blockSegmentOffset = 0;
+      size_t blockSegmentSize = blockCount / segmentCount;
+      size_t remainder = blockCount - blockSegmentSize * segmentCount;
+      size_t blockSegmentOffset = 0;
 
       if (segmentNumber < remainder) {
         blockSegmentSize++;
@@ -60,15 +60,15 @@ namespace sg {
       *segmentEnd = *segmentStart + blockSegmentSize * blockSize;
     }
 
-    void PartitioningTool::getOpenMPPartitionSegment(int totalSize, size_t* size, size_t* offset, size_t blocksize) {
+    void PartitioningTool::getOpenMPPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize) {
       size_t end;
       getOpenMPPartitionSegment(0, totalSize, offset, &end, blocksize);
       *size = end - *offset;
     }
 
-    void PartitioningTool::getOpenMPPartitionSegment(int start, int end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize) {
-      int threadCount = 1;
-      int myThreadNum = 0;
+    void PartitioningTool::getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize) {
+      size_t threadCount = 1;
+      size_t myThreadNum = 0;
 #ifdef _OPENMP
       threadCount = omp_get_num_threads();
       myThreadNum = omp_get_thread_num();
@@ -77,24 +77,25 @@ namespace sg {
     }
 
 #ifdef USE_MPI
-    void PartitioningTool::getMPIPartitionSegment(int totalSize, size_t* size, size_t* offset, size_t blocksize) {
+    void PartitioningTool::getMPIPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize) {
       size_t end;
       getMPIPartitionSegment(0, totalSize, offset, &end, blocksize);
       *size = end - *offset;
     }
 
-    void PartitioningTool::getMPIPartitionSegment(int start, int end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize) {
-      int myRank = 0;
-      int numRanks = 1;
-#ifdef USE_MPI
+    void PartitioningTool::getMPIPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize) {
+      size_t myRank = 0;
+      size_t numRanks = 1;
+
       myRank = sg::parallel::myGlobalMPIComm->getMyRank();
       numRanks = sg::parallel::myGlobalMPIComm->getNumRanks();
-#endif
+
       getPartitionSegment(start, end, numRanks, myRank, segmentStart, segmentEnd, blocksize);
     }
+#endif
 
-    void PartitioningTool::calcDistribution(int totalSize, int numChunks, int* sizes, int* offsets, size_t blocksize) {
-      for (int chunkID = 0; chunkID < numChunks; ++chunkID) {
+    void PartitioningTool::calcDistribution(size_t totalSize, size_t numChunks, int* sizes, int* offsets, size_t blocksize) {
+      for (size_t chunkID = 0; chunkID < numChunks; ++chunkID) {
         size_t size;
         size_t offset;
         getPartitionSegment(totalSize, numChunks, chunkID, &size, &offset, blocksize);
@@ -103,39 +104,24 @@ namespace sg {
       }
     }
 
-    void PartitioningTool::calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int* sizes, int* offsets, size_t blocksize) {
-      int numRanks = 1;
 #ifdef USE_MPI
+    void PartitioningTool::calcMPIChunkedDistribution(size_t totalSize, size_t numChunksPerProc, int* sizes, int* offsets, size_t blocksize) {
+      size_t numRanks = 1;
+
       numRanks = myGlobalMPIComm->getNumRanks();
-#endif
-      int sizesGlobal[numRanks];
-      int offsetsGlobal[numRanks];
-      calcMPIChunkedDistribution(totalSize, numChunksPerProc, sizes, offsets, sizesGlobal, offsetsGlobal, blocksize);
-    }
 
-    void PartitioningTool::calcMPIChunkedDistribution(int totalSize, int numChunksPerProc, int* sizes, int* offsets, int* sizesGlobal, int* offsetsGlobal, size_t blocksize) {
-      int numRanks = 1;
-#ifdef USE_MPI
-      numRanks = myGlobalMPIComm->getNumRanks();
-#endif
-      calcDistribution(totalSize, numRanks, sizesGlobal, offsetsGlobal, blocksize);
-      int currentGlobalOffset = 0;
+      size_t procSize;
+      size_t procOffset;
 
-      for (int proc = 0; proc < numRanks; proc++) {
-        calcDistribution(sizesGlobal[proc], numChunksPerProc, &sizes[numChunksPerProc * proc], &offsets[numChunksPerProc * proc], blocksize);
-        int thisProcSize = 0;
+      for (size_t proc = 0; proc < numRanks; proc++) {
+        getPartitionSegment(totalSize, numRanks, proc, &procSize, &procOffset, blocksize);
+        calcDistribution(procSize, numChunksPerProc, &sizes[numChunksPerProc * proc], &offsets[numChunksPerProc * proc], blocksize);
 
-        for (int i = 0; i < numChunksPerProc; i++) {
-          offsets[numChunksPerProc * proc + i] += currentGlobalOffset;
-          thisProcSize += sizes[numChunksPerProc * proc + i];
+        for (size_t i = 0; i < numChunksPerProc; i++) {
+          offsets[numChunksPerProc * proc + i] += static_cast<int>(procOffset);
         }
-
-        sizesGlobal[proc] = numChunksPerProc;
-        offsetsGlobal[proc] = proc * numChunksPerProc;
-        currentGlobalOffset += thisProcSize;
       }
     }
 #endif
-
   }
 }
