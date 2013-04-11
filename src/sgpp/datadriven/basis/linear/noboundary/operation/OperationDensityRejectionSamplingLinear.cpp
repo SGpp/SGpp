@@ -63,12 +63,12 @@ namespace sg {
             samples->setRow(i, *p);
             break;
           }
-          delete p;
-          delete opEval;
 
           if (j == trial_max - 1)
             throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
         }
+        delete p;
+        delete opEval;
       }
 
       return;
