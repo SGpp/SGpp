@@ -213,8 +213,6 @@ OBJS =	DataVector.o\
 	DataVectorSP.o\
 	DataMatrixSP.o\
 	ConjugateGradientsSP.o\
-	OperationMultipleEvalIterativeX86SimdLinear.o\
-	OperationMultipleEvalIterativeSPX86SimdLinear.o\
 	DMSystemMatrixSPVectorizedIdentity.o\
 	ModifiedBlackScholesParabolicPDESolverSystem.o\
 	BlackScholesParabolicPDESolverSystemEuroAmer.o\
@@ -298,10 +296,6 @@ OBJS =	DataVector.o\
 	LaserHeatEquationSolver2D.o\
 	Hedging.o\
 	HierarchisationPoly.o\
-	OperationMultipleEvalIterativeSPX86SimdModLinear.o\
-	OperationMultipleEvalIterativeX86SimdModLinear.o\
-	OperationMultipleEvalIterativeSPX86SimdModLinearMask.o\
-	OperationMultipleEvalIterativeX86SimdModLinearMask.o\
 	DensitySystemMatrix.o\
 	DMWeightMatrix.o\
 	DehierarchisationPoly.o\
@@ -659,12 +653,6 @@ OperationMultipleEvalVectorized.o : $(SRCDIR)parallel/datadriven/operation/Opera
 OperationMultipleEvalVectorizedSP.o : $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalVectorizedSP.o $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.cpp
 	
-OperationMultipleEvalIterativeX86SimdLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeX86SimdLinear.cpp
-
-OperationMultipleEvalIterativeSPX86SimdLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPX86SimdLinear.cpp
-
 OperationTestLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationTestLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 
@@ -853,18 +841,6 @@ HierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/Hiera
 
 DehierarchisationModLinear.o : $(SRCDIR)base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DehierarchisationModLinear.o $(SRCDIR)base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.cpp
-
-OperationMultipleEvalIterativeSPX86SimdModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinear.cpp
-
-OperationMultipleEvalIterativeX86SimdModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinear.cpp
-	
-OperationMultipleEvalIterativeSPX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeSPX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPX86SimdModLinearMask.cpp
-
-OperationMultipleEvalIterativeX86SimdModLinearMask.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationMultipleEvalIterativeX86SimdModLinearMask.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeX86SimdModLinearMask.cpp
 
 dPhidPhiDownModLinear.o : $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)dPhidPhiDownModLinear.o $(SRCDIR)pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp

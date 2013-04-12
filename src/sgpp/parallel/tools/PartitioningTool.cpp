@@ -118,7 +118,7 @@ namespace sg {
         calcDistribution(procSize, numChunksPerProc, &sizes[numChunksPerProc * proc], &offsets[numChunksPerProc * proc], blocksize);
 
         for (size_t i = 0; i < numChunksPerProc; i++) {
-          offsets[numChunksPerProc * proc + i] += static_cast<int>(procOffset);
+          offsets[numChunksPerProc * proc + i] += (int)(procOffset);
         }
       }
     }
