@@ -151,8 +151,8 @@ namespace sg {
           continue;
         }
 
-        int sizeAsInt = static_cast<int>(size);
-        MPI_Isend(ptr, sizeAsInt, MPI_DOUBLE, static_cast<int>(rank), tag, MPI_COMM_WORLD, &reqs[rank]);
+        int sizeAsInt = (int)(size);
+        MPI_Isend(ptr, sizeAsInt, MPI_DOUBLE, (int)(rank), tag, MPI_COMM_WORLD, &reqs[rank]);
       }
     }
 
@@ -164,7 +164,7 @@ namespace sg {
           if (rank == getMyRank()) {
             reqs[reqIdx] = MPI_REQUEST_NULL;
           } else {
-            MPI_Irecv(&ptr[offsets[reqIdx]], sizes[reqIdx], MPI_DOUBLE, static_cast<int>(rank), tag[reqIdx], MPI_COMM_WORLD, &reqs[reqIdx]);
+            MPI_Irecv(&ptr[offsets[reqIdx]], sizes[reqIdx], MPI_DOUBLE, (int)(rank), tag[reqIdx], MPI_COMM_WORLD, &reqs[reqIdx]);
           }
         }
       }
@@ -172,9 +172,9 @@ namespace sg {
 
     void MPICommunicator::putToAll(double* ptr, size_t winOffset, size_t count, MPI_Win win) {
       for (size_t i = 0; i < getNumRanks(); i++) {
-        int countAsInt = static_cast<int>(count);
-        int winOffsetAsInt = static_cast<int>(winOffset);
-        MPI_Put(ptr, countAsInt, MPI_DOUBLE, static_cast<int>(i), winOffsetAsInt, countAsInt, MPI_DOUBLE, win);
+        int countAsInt = (int)(count);
+        int winOffsetAsInt = (int)(winOffset);
+        MPI_Put(ptr, countAsInt, MPI_DOUBLE, (int)(i), winOffsetAsInt, countAsInt, MPI_DOUBLE, win);
       }
     }
 
@@ -187,14 +187,14 @@ namespace sg {
     }
 
     void MPICommunicator::waitForAllRequests(size_t size, MPI_Request* reqs) {
-      if (MPI_Waitall(static_cast<int>(size), reqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
+      if (MPI_Waitall((int)(size), reqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
         std::cout << "communication error in waitall" << std::endl;
         throw new sg::base::operation_exception("Communication Error");
       }
     }
 
     void MPICommunicator::waitForAnyRequest(size_t size, MPI_Request* reqs, int* result) {
-      MPI_Waitany(static_cast<int>(size), reqs, result, MPI_STATUS_IGNORE);
+      MPI_Waitany((int)(size), reqs, result, MPI_STATUS_IGNORE);
     }
 
     void MPICommunicator::allreduceSum(base::DataVector& source, base::DataVector& result) {
@@ -203,7 +203,7 @@ namespace sg {
         throw new sg::base::operation_exception("DataVector sizes do not match in allreduce!");
       }
 
-      MPI_Allreduce(source.getPointer(), result.getPointer(), static_cast<int>(source.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+      MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     }
 
   }

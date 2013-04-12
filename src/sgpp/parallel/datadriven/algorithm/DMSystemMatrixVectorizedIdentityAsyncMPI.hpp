@@ -98,7 +98,7 @@ namespace sg {
           int* tagsData = new int[totalChunkCountData];
 
           for (size_t i = 0; i < totalChunkCountData; i++) {
-            tagsData[i] = static_cast<int>(i * 2 + 2);
+            tagsData[i] = (int)(i * 2 + 2);
           }
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrTemp, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, tagsData, dataRecvReqs);
@@ -108,7 +108,7 @@ namespace sg {
           int* tagsGrid = new int[totalChunkCountGrid];
 
           for (size_t i = 0; i < totalChunkCountGrid; i++) {
-            tagsGrid[i] = static_cast<int>(i * 2 + 3);
+            tagsGrid[i] = (int)(i * 2 + 3);
           }
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrResult, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, gridRecvReqs);
@@ -248,7 +248,7 @@ namespace sg {
           int* tags = new int[totalChunkCount];
 
           for (size_t i = 0; i < totalChunkCount; i++) {
-            tags[i] = static_cast<int>(i + 1);
+            tags[i] = (int)(i + 1);
           }
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tags, gridRecvReqs);

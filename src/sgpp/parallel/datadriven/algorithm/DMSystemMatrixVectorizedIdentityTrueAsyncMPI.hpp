@@ -105,7 +105,7 @@ namespace sg {
           size_t gridProcessChunkEnd = gridProcessChunkStart + _mpi_grid_sizes[mpi_myrank];
           int idx;
           char complete[20];
-          snprintf(complete, 50, "complete #%d", static_cast<int>(mpi_myrank));
+          snprintf(complete, 50, "complete #%d", (int)(mpi_myrank));
           MPI_Pcontrol(1, complete);
           #pragma omp parallel
           {

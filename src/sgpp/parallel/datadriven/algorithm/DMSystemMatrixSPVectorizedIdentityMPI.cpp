@@ -139,8 +139,8 @@ namespace sg {
         size_t size;
         size_t offset;
         sg::parallel::PartitioningTool::getPartitionSegment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &size, &offset, blocksize);
-        sizes[rank] = static_cast<int>(size);
-        offsets[rank] = static_cast<int>(offset);
+        sizes[rank] = (int)(size);
+        offsets[rank] = (int)(offset);
       }
     }
 
