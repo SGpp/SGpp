@@ -76,6 +76,7 @@ namespace sg {
 
     void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex() {
       this->B_->rebuildLevelAndIndex();
+      this->B_->updateGridComputeBoundaries(0, -1);
     }
 
   }

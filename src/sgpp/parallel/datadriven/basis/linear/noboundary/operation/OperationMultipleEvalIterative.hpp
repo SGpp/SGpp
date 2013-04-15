@@ -135,8 +135,13 @@ namespace sg {
         }
 
         virtual void updateGridComputeBoundaries(int gridFrom, int gridTo) {
-          m_gridFrom = gridFrom;
-          m_gridTo = gridTo;
+          if (gridFrom == 0 && gridTo == -1) {
+            m_gridFrom = 0;
+            m_gridTo = (int)this->storage_->size();
+          } else {
+            m_gridFrom = gridFrom;
+            m_gridTo = gridTo;
+          }
         }
     };
 
