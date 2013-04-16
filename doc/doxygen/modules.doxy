@@ -24,7 +24,7 @@ digraph G {
 	finance [URL="@ref sg::finance"];
 	solver [URL="@ref sg::solver"];
 	parallel [URL="@ref sg::parallel"];
-	combigrid [URL="@ref sg::combigrid"];
+	combigrid [URL=""];
 
 	pde -> base;
 	pde -> solver;
