@@ -31,6 +31,7 @@
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModMaskLinear.hpp"
 #endif
 #ifdef USEMIC
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeMICLinear.hpp"
@@ -143,6 +144,7 @@ namespace sg {
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL) {
           return new parallel::OperationMultipleEvalIterativeOCLModLinear(grid.getStorage(), dataset);
+          //return new parallel::OperationMultipleEvalIterativeOCLModMaskLinear(grid.getStorage(), dataset);
         } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
           return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
         }
