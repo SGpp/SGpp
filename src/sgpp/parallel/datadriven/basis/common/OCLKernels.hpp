@@ -36,11 +36,15 @@ namespace sg {
         bool isFirstTimeMultSP;
         bool isFirstTimeMultTransModSP;
         bool isFirstTimeMultModSP;
+        bool isFirstTimeMultTransModMaskSP;
+        bool isFirstTimeMultModMaskSP;
 
         bool isFirstTimeMultTransDP;
         bool isFirstTimeMultDP;
         bool isFirstTimeMultTransModDP;
         bool isFirstTimeMultModDP;
+        bool isFirstTimeMultTransModMaskDP;
+        bool isFirstTimeMultModMaskDP;
 
         bool isVeryFirstTimeDP;
         bool isVeryFirstTimeSP;
@@ -69,6 +73,14 @@ namespace sg {
         double multTransModOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition);
 
         double multModOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
+
+        double multTransModMaskSPOCL(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrMask, float* ptrOffset, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition);
+
+        double multModMaskSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrMask, float* ptrOffset, float* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
+
+        double multTransModMaskOCL(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrMask, double* ptrOffset, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims, size_t gpu_partition);
+
+        double multModMaskOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrMask, double* ptrOffset, double* ptrResult, size_t result_size, size_t storageSize, size_t dims, size_t gpu_partition);
     };
 
   }

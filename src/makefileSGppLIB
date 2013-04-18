@@ -379,7 +379,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeOCLModMaskLinear.o
 endif
 
 ifeq ($(EXT), INTELOCL)
@@ -391,7 +392,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeOCLModMaskLinear.o
 endif
 
 ifeq ($(EXT), INTELOCLGPU)
@@ -403,7 +405,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeOCLModMaskLinear.o
 endif
 
 ifeq ($(EXT), AMDOCLGPU)
@@ -415,7 +418,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeOCLModMaskLinear.o
 endif
 
 ifeq ($(EXT), AMDOCLCPU)
@@ -427,7 +431,8 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
 	OperationMultipleEvalIterativeOCLModLinear.o\
 	OperationMultipleEvalIterativeSPOCLModLinear.o\
 	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o
+	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
+	OperationMultipleEvalIterativeOCLModMaskLinear.o
 endif
 
 ifeq ($(EXT), MPI)
@@ -1603,7 +1608,10 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o : $(SRCDIR)parallel/
 	$(CC) $(CFLAGS)$(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
 
 OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp	
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
+
+OperationMultipleEvalIterativeOCLModMaskLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModMaskLinear.cpp
+	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModMaskLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModMaskLinear.cpp
 
 # MPI Extensions:
 MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp

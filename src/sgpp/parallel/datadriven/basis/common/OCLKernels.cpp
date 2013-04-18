@@ -33,7 +33,7 @@ namespace sg {
     cl_command_queue command_queue[MAX_OCL_DEVICE_COUNT];
 
 
-    cl_mem clDataDP[MAX_OCL_DEVICE_COUNT], clLevelDP[MAX_OCL_DEVICE_COUNT], clIndexDP[MAX_OCL_DEVICE_COUNT];
+    cl_mem clDataDP[MAX_OCL_DEVICE_COUNT], clLevelDP[MAX_OCL_DEVICE_COUNT], clIndexDP[MAX_OCL_DEVICE_COUNT], clMaskDP[MAX_OCL_DEVICE_COUNT], clOffsetDP[MAX_OCL_DEVICE_COUNT];
 
     cl_kernel kernel_multTransDP[MAX_OCL_DEVICE_COUNT];
     cl_program program_multTransDP;
@@ -47,8 +47,13 @@ namespace sg {
     cl_kernel kernel_multModDP[MAX_OCL_DEVICE_COUNT];
     cl_program program_multModDP;
 
+    cl_kernel kernel_multTransModMaskDP[MAX_OCL_DEVICE_COUNT];
+    cl_program program_multTransModMaskDP;
 
-    cl_mem clDataSP[MAX_OCL_DEVICE_COUNT], clLevelSP[MAX_OCL_DEVICE_COUNT], clIndexSP[MAX_OCL_DEVICE_COUNT];
+    cl_kernel kernel_multModMaskDP[MAX_OCL_DEVICE_COUNT];
+    cl_program program_multModMaskDP;
+
+    cl_mem clDataSP[MAX_OCL_DEVICE_COUNT], clLevelSP[MAX_OCL_DEVICE_COUNT], clIndexSP[MAX_OCL_DEVICE_COUNT], clMaskSP[MAX_OCL_DEVICE_COUNT], clOffsetSP[MAX_OCL_DEVICE_COUNT];
 
     cl_kernel kernel_multTransSP[MAX_OCL_DEVICE_COUNT];
     cl_program program_multTransSP;
@@ -61,6 +66,12 @@ namespace sg {
 
     cl_kernel kernel_multModSP[MAX_OCL_DEVICE_COUNT];
     cl_program program_multModSP;
+
+    cl_kernel kernel_multTransModMaskSP[MAX_OCL_DEVICE_COUNT];
+    cl_program program_multTransModMaskSP;
+
+    cl_kernel kernel_multModMaskSP[MAX_OCL_DEVICE_COUNT];
+    cl_program program_multModMaskSP;
 
     OCLKernels::OCLKernels() {
       // determine number of available OpenCL platforms
@@ -215,12 +226,16 @@ namespace sg {
       isFirstTimeMultSP = true;
       isFirstTimeMultTransModSP = true;
       isFirstTimeMultModSP = true;
+      isFirstTimeMultTransModMaskSP = true;
+      isFirstTimeMultModMaskSP = true;
       isVeryFirstTimeSP = true;
 
       isFirstTimeMultTransDP = true;
       isFirstTimeMultDP = true;
       isFirstTimeMultTransModDP = true;
       isFirstTimeMultModDP = true;
+      isFirstTimeMultTransModMaskDP = true;
+      isFirstTimeMultModMaskDP = true;
       isVeryFirstTimeDP = true;
     }
 
@@ -255,6 +270,22 @@ namespace sg {
         }
 
         clReleaseProgram(program_multModDP);
+      }
+
+      if (!isFirstTimeMultModMaskSP) {
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseKernel(kernel_multModMaskSP[i]);
+        }
+
+        clReleaseProgram(program_multModMaskSP);
+      }
+
+      if (!isFirstTimeMultModMaskDP) {
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseKernel(kernel_multModMaskDP[i]);
+        }
+
+        clReleaseProgram(program_multModMaskDP);
       }
 
       if (!isFirstTimeMultTransSP) {
@@ -297,6 +328,30 @@ namespace sg {
         clReleaseProgram(program_multTransModDP);
       }
 
+      if (!isFirstTimeMultTransModMaskSP) {
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseMemObject(clLevelSP[i]);
+          clReleaseMemObject(clIndexSP[i]);
+          clReleaseMemObject(clMaskSP[i]);
+          clReleaseMemObject(clOffsetSP[i]);
+          clReleaseKernel(kernel_multTransModMaskSP[i]);
+        }
+
+        clReleaseProgram(program_multTransModMaskSP);
+      }
+
+      if (!isFirstTimeMultTransModMaskDP) {
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseMemObject(clLevelDP[i]);
+          clReleaseMemObject(clIndexDP[i]);
+          clReleaseMemObject(clMaskDP[i]);
+          clReleaseMemObject(clOffsetDP[i]);
+          clReleaseKernel(kernel_multTransModMaskDP[i]);
+        }
+
+        clReleaseProgram(program_multTransModMaskDP);
+      }
+
       if (!isVeryFirstTimeSP) {
         for (size_t i = 0; i < num_devices; i++) {
           clReleaseMemObject(clDataSP[i]);
@@ -322,6 +377,8 @@ namespace sg {
 #include "parallel/datadriven/basis/common/OCLKernels_SP.imp"
 #include "parallel/datadriven/basis/common/OCLKernels_ModDP.imp"
 #include "parallel/datadriven/basis/common/OCLKernels_ModSP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModMaskDP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModMaskSP.imp"
 
     void OCLKernels::resetKernels() {
       // linear float
@@ -393,6 +450,31 @@ namespace sg {
         isFirstTimeMultTransModDP = true;
       }
 
+      // modlinear mask double
+      if (!isFirstTimeMultModMaskDP) {
+        clReleaseProgram(program_multModMaskDP);
+
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseKernel(kernel_multModMaskDP[i]);
+        }
+
+        isFirstTimeMultModMaskDP = true;
+      }
+
+      if (!isFirstTimeMultTransModMaskDP) {
+        clReleaseProgram(program_multTransModMaskDP);
+
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseMemObject(clLevelDP[i]);
+          clReleaseMemObject(clIndexDP[i]);
+          clReleaseMemObject(clMaskDP[i]);
+          clReleaseMemObject(clOffsetDP[i]);
+          clReleaseKernel(kernel_multTransModMaskDP[i]);
+        }
+
+        isFirstTimeMultTransModMaskDP = true;
+      }
+
       // modlinear float
       if (!isFirstTimeMultModSP) {
         clReleaseProgram(program_multModSP);
@@ -414,6 +496,31 @@ namespace sg {
         }
 
         isFirstTimeMultTransModSP = true;
+      }
+
+      // modlinear mask float
+      if (!isFirstTimeMultModMaskSP) {
+        clReleaseProgram(program_multModMaskSP);
+
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseKernel(kernel_multModMaskSP[i]);
+        }
+
+        isFirstTimeMultModMaskSP = true;
+      }
+
+      if (!isFirstTimeMultTransModMaskSP) {
+        clReleaseProgram(program_multTransModMaskSP);
+
+        for (size_t i = 0; i < num_devices; i++) {
+          clReleaseMemObject(clLevelSP[i]);
+          clReleaseMemObject(clIndexSP[i]);
+          clReleaseMemObject(clMaskSP[i]);
+          clReleaseMemObject(clOffsetSP[i]);
+          clReleaseKernel(kernel_multTransModMaskSP[i]);
+        }
+
+        isFirstTimeMultTransModMaskSP = true;
       }
     }
 
