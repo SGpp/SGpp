@@ -27,14 +27,17 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 		stream_program_src << std::endl;
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	float myResult = 0.0f;" << std::endl << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	__local float locData[" << dims*OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << "	__local float locSource[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl << std::endl;
+#endif
 		for (size_t d = 0; d < dims; d++)
 		{
 			stream_program_src << "	float level_" << d << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
 			stream_program_src << "	float index_" << d << " = ptrIndex[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
 		}
 		stream_program_src << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
 		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
@@ -46,8 +49,12 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
 		stream_program_src << "		for(int k = 0; k < " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "; k++)" << std::endl;
 		stream_program_src << "		{" << std::endl;
-
 		stream_program_src << "			curSupport = locSource[k];" << std::endl << std::endl;
+#else
+		stream_program_src << "		for(int k = 0; k < sourceSize; k++)" << std::endl;
+		stream_program_src << "		{" << std::endl;
+		stream_program_src << "			curSupport = ptrSource[k];" << std::endl << std::endl;
+#endif
 		for (size_t d = 0; d < dims; d++)
 		{
 			stream_program_src << "			if ((level_" << d << ") == 2.0f)" << std::endl;
@@ -56,21 +63,35 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
 			stream_program_src << "			}" << std::endl;
 			stream_program_src << "			else if ((index_" << d << ") == 1.0f)" << std::endl;
 			stream_program_src << "			{" << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 			stream_program_src << "				curSupport *= max(2.0f - ( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
+#else
+			stream_program_src << "				curSupport *= max(2.0f - ( (level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
+#endif
 			stream_program_src << "			}" << std::endl;
 			stream_program_src << "			else if ((index_" << d << ") == ((level_" << d << ") - 1.0f))" << std::endl;
 			stream_program_src << "			{" << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 			stream_program_src << "				curSupport *= max(( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") + 1.0f, 0.0f);" << std::endl;
+#else
+			stream_program_src << "				curSupport *= max(( (level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") + 1.0f, 0.0f);" << std::endl;
+#endif
 			stream_program_src << "			}" << std::endl;
 			stream_program_src << "			else " << std::endl;
 			stream_program_src << "			{" << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 			stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
+#else
+			stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
+#endif
 			stream_program_src << "			}" << std::endl;
 		}
 		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
 		stream_program_src << "		}" << std::endl << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
 		stream_program_src << "	}" << std::endl;
+#endif
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
 
@@ -306,10 +327,12 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
 		stream_program_src << "	globalIdx = globalIdx + offset;" << std::endl;
 		stream_program_src << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	__local float locLevel[" << dims * OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << "	__local float locIndex[" << dims * OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << "	__local float locAlpha[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << std::endl;
+#endif
 		stream_program_src << "	float eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	float myResult = 0.0;" << std::endl << std::endl;
 		stream_program_src << "	// Create registers for the data" << std::endl;
@@ -318,6 +341,7 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 			stream_program_src << "	float data_" << d << " = ptrData[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
 		}
 		stream_program_src << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	// Iterate over all grid points (fast ones, with cache)" << std::endl;
 		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
@@ -382,6 +406,33 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 		}
 		stream_program_src << "		myResult += curSupport;" << std::endl;
 		stream_program_src << "	}" << std::endl;
+#else
+		stream_program_src << "	// Iterate over all grid points (slow ones, without cache)" << std::endl;
+		stream_program_src << "	for(int m = 0; m < storageSize; m++)" << std::endl;
+		stream_program_src << "	{" << std::endl;
+		stream_program_src << "		curSupport = ptrAlpha[m];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "		if ((ptrLevel[(m*" << dims << ")+" << d << "]) == 2.0f)" << std::endl;
+			stream_program_src << "		{" << std::endl;
+			stream_program_src << "			curSupport *= 1.0f;" << std::endl;
+			stream_program_src << "		}" << std::endl;
+			stream_program_src << "		else if ((ptrIndex[(m*" << dims << ")+" << d << "]) == 1.0f)" << std::endl;
+			stream_program_src << "		{" << std::endl;
+			stream_program_src << "			curSupport *= max(2.0f - ( (ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << ") ), 0.0f) ;" << std::endl;
+			stream_program_src << "		}" << std::endl;
+			stream_program_src << "		else if ((ptrIndex[(m*" << dims << ")+" << d << "]) == ((ptrLevel[(m*" << dims << ")+" << d << "]) - 1.0f) )" << std::endl;
+			stream_program_src << "		{" << std::endl;
+			stream_program_src << "			curSupport *= max(( (ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) + 1.0f, 0.0f);" << std::endl;
+			stream_program_src << "		}" << std::endl;
+			stream_program_src << "		else " << std::endl;
+			stream_program_src << "		{" << std::endl;
+			stream_program_src << "			curSupport *= max(1.0f - fabs( ( (ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
+			stream_program_src << "		}" << std::endl;
+		}
+		stream_program_src << "		myResult += curSupport;" << std::endl;
+		stream_program_src << "	}" << std::endl;
+#endif
 		stream_program_src << std::endl;
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;

@@ -28,8 +28,10 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		stream_program_src << std::endl;
 		stream_program_src << "	double eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	double myResult = 0.0f;" << std::endl << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	__local double locData[" << dims*OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << "	__local double locSource[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl << std::endl;
+#endif
 		for (size_t d = 0; d < dims; d++)
 		{
 			stream_program_src << "	double level_" << d << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
@@ -37,6 +39,7 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		}
 		stream_program_src << std::endl;
 		stream_program_src << "	// Iterate over all grid points" << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	for(int i = 0; i < sourceSize; i+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
 		for (size_t d = 0; d < dims; d++)
@@ -49,9 +52,19 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		stream_program_src << "		{" << std::endl;
 
 		stream_program_src << "			curSupport = locSource[k];" << std::endl << std::endl;
+#else
+                stream_program_src << "         for(int k = 0; k < sourceSize; k++)" << std::endl;
+                stream_program_src << "         {" << std::endl;
+                stream_program_src << "                 curSupport = ptrSource[k];" << std::endl << std::endl;
+
+#endif
 		for (size_t d = 0; d < dims; d++)
 		{
+#ifdef USEOCL_LOCAL_MEMORY
 			stream_program_src << "			eval = ((level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]));" << std::endl;
+#else
+			stream_program_src << "			eval = ((level_" << d << ") * (ptrData[(k*" << dims << ")+" << d <<"]));" << std::endl;
+#endif
 			stream_program_src << "			index_calc = eval - (index_" << d << ");" << std::endl;
 			stream_program_src << "			abs = fabs(index_calc);" << std::endl;
 			stream_program_src << "			last = 1.0 - abs;" << std::endl;
@@ -60,8 +73,10 @@ double OCLKernels::multTransOCL(double* ptrSource, double* ptrData, double* ptrL
 		}
 		stream_program_src << std::endl << "		myResult += curSupport;" << std::endl;
 		stream_program_src << "		}" << std::endl << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
 		stream_program_src << "	}" << std::endl;
+#endif
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
 
@@ -295,10 +310,12 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 		stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
 		stream_program_src << "	globalIdx = globalIdx + offset;" << std::endl;
 		stream_program_src << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	__local double locLevel[" << dims * OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << "	__local double locIndex[" << dims * OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << "	__local double locAlpha[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
 		stream_program_src << std::endl;
+#endif
 		stream_program_src << "	double eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
 		stream_program_src << "	double myResult = 0.0;" << std::endl << std::endl;
 		stream_program_src << "	// Create registers for the data" << std::endl;
@@ -307,6 +324,7 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 			stream_program_src << "	double data_" << d << " = ptrData[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
 		}
 		stream_program_src << std::endl;
+#ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << "	// Iterate over all grid points (fast ones, with cache)" << std::endl;
 		stream_program_src << "	for(int j = 0; j < fastStorageSize; j+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
 		stream_program_src << "	{" << std::endl;
@@ -351,6 +369,24 @@ double OCLKernels::multOCL(double* ptrAlpha, double* ptrData, double* ptrLevel, 
 		}
 		stream_program_src << "		myResult += curSupport;" << std::endl;
 		stream_program_src << "	}" << std::endl;
+#else
+		stream_program_src << "	// Iterate over all grid points (without cache)" << std::endl;
+		stream_program_src << "	for(int m = 0; m < storageSize; m++)" << std::endl;
+		stream_program_src << "	{" << std::endl;
+		stream_program_src << "		curSupport = ptrAlpha[m];" << std::endl << std::endl;
+		for (size_t d = 0; d < dims; d++)
+		{
+			stream_program_src << "		eval = ((ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << "));" << std::endl;
+			stream_program_src << "		index_calc = eval - (ptrIndex[(m*" << dims << ")+" << d << "]);" << std::endl;
+			stream_program_src << "		abs = fabs(index_calc);" << std::endl;
+			stream_program_src << "		last = 1.0 - abs;" << std::endl;
+			stream_program_src << "		localSupport = fmax(last, 0.0);" << std::endl;
+			stream_program_src << "		curSupport *= localSupport;" << std::endl << std::endl;
+		}
+		stream_program_src << "		myResult += curSupport;" << std::endl;
+		stream_program_src << "	}" << std::endl;
+
+#endif
 		stream_program_src << std::endl;
 		stream_program_src << "	ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
