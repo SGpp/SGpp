@@ -1,5 +1,5 @@
 /* ****************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2010-2013 Technische Universitaet Muenchen                    *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
@@ -11,7 +11,21 @@
 #include <cstdlib>
 
 #define MAX_OCL_DEVICE_COUNT 8
+#ifndef USEOCL_LOCAL_WORKGROUP_SIZE
 #define OCL_SGPP_LOCAL_WORKGROUP_SIZE 64
+#else
+#define OCL_SGPP_LOCAL_WORKGROUP_SIZE USEOCL_LOCAL_WORKGROUP_SIZE 
+#endif
+
+#ifdef USEOCL_NVIDIA
+#define USEOCL_LOCAL_MEMORY
+#endif
+
+#ifdef USEOCL_AMD
+#ifndef USEOCL_CPU
+#define USEOCL_LOCAL_MEMORY
+#endif
+#endif
 
 namespace sg {
   namespace parallel {
