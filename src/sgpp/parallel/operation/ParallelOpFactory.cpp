@@ -143,8 +143,8 @@ namespace sg {
 
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL) {
-          return new parallel::OperationMultipleEvalIterativeOCLModLinear(grid.getStorage(), dataset);
-          //return new parallel::OperationMultipleEvalIterativeOCLModMaskLinear(grid.getStorage(), dataset);
+          //return new parallel::OperationMultipleEvalIterativeOCLModLinear(grid.getStorage(), dataset);
+          return new parallel::OperationMultipleEvalIterativeOCLModMaskLinear(grid.getStorage(), dataset);
         } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
           return new parallel::OperationMultipleEvalIterativeHybridX86SimdOCLModLinear(grid.getStorage(), dataset);
         }
