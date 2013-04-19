@@ -78,7 +78,7 @@ namespace sg {
          *
          * @param source sg::base::DataMatrix that contains the gridpoint's coefficients (values from the vector of the laplace operation)
          * @param result sg::base::DataMatrix that contains the result of the down operation
-         * @param index a iterator object of the grid
+         * @param index an iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          */
         virtual void operator()(sg::base::DataMatrix& source, sg::base::DataMatrix& result, grid_iterator& index, size_t dim);
@@ -90,6 +90,8 @@ namespace sg {
          *
          * @param fl function value on the left boundary
          * @param fr function value on the right boundary
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void rec(double fl, double fr, size_t dim, grid_iterator& index);
 
@@ -99,6 +101,8 @@ namespace sg {
          *
          * @param fl 2 function value on the left boundary, stored in xmm registers
          * @param fr 2 function value on the right boundary, stored in xmm registers
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void rec_LL(__m128d fl, __m128d fr, size_t dim, grid_iterator& index);
 #else
@@ -109,6 +113,8 @@ namespace sg {
          * @param fr first function value on the right boundary
          * @param fl2 second function value on the left boundary
          * @param fr2 second function value on the right boundary
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void rec_LL(double fl, double fr, double fl2, double fr2, size_t dim, grid_iterator& index);
 #endif
@@ -118,6 +124,8 @@ namespace sg {
          *
          * @param fl first function value on the left boundary, L2 scalar product
          * @param fr first function value on the right boundary, L2 scalar product
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void rec_LG(double fl, double fr, size_t dim, grid_iterator& index);
 
@@ -126,11 +134,15 @@ namespace sg {
          *
          * @param fl first function value on the left boundary, L2 scalar product
          * @param fr first function value on the right boundary, L2 scalar product
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void rec_GL(double fl, double fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of Down (gradient) without Bounding Box
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void rec_grad(size_t dim, grid_iterator& index);
 
@@ -139,6 +151,8 @@ namespace sg {
          *
          * @param fl function value on the left boundary
          * @param fr function value on the right boundary
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void recBB(double fl, double fr, size_t dim, grid_iterator& index);
 
@@ -149,6 +163,8 @@ namespace sg {
          * @param fr first function value on the right boundary
          * @param fl2 second function value on the left boundary
          * @param fr2 second function value on the right boundary
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void recBB_LL(double fl, double fr, double fl2, double fr2, size_t dim, grid_iterator& index);
 
@@ -157,6 +173,8 @@ namespace sg {
          *
          * @param fl first function value on the left boundary, L2 scalar product
          * @param fr first function value on the right boundary, L2 scalar product
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void recBB_LG(double fl, double fr, size_t dim, grid_iterator& index);
 
@@ -165,11 +183,15 @@ namespace sg {
          *
          * @param fl first function value on the left boundary, L2 scalar product
          * @param fr first function value on the right boundary, L2 scalar product
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void recBB_GL(double fl, double fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of Down (gradient) with Bounding Box
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
          */
         void recBB_grad(size_t dim, grid_iterator& index);
     };
