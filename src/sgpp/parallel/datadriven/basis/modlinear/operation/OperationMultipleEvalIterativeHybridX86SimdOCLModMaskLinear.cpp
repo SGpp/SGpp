@@ -1,8 +1,8 @@
-/******************************************************************************
-* Copyright (C) 2013 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+/* *****************************************************************************
+* Copyright (C) 2013 Technische Universitaet Muenchen                          *
+* This file is part of the SG++ project. For conditions of distribution and    *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp           *
+***************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.hpp"
@@ -40,13 +40,13 @@ namespace sg {
       _tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage_->size(), 128, 10);
     }
 
-    OperationMultipleEvalIterativeHybridX86SimdOCLLinear::~OperationMultipleEvalIterativeHybridX86SimdOCLLinear() {
+    OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear::~OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear() {
       delete myOCLKernels;
       delete _tuningMult;
       delete _tuningMultTrans;
     }
 
-    void OperationMultipleEvalIterativeHybridX86SimdOCLLinear::rebuildLevelAndIndex() {
+    void OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear::rebuildLevelAndIndex() {
       delete this->level_;
       delete this->index_;
       delete this->mask_;
@@ -57,7 +57,7 @@ namespace sg {
       this->mask_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
       this->offset_ = new sg::base::DataMatrix(storage_->size(), storage_->dim());
 
-      storage->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
+      storage_->getLevelIndexMaskArraysForModEval(*(this->level_), *(this->index_), *(this->mask_), *(this->offset_));
 
       myOCLKernels->resetKernels();
 
@@ -65,7 +65,7 @@ namespace sg {
       _tuningMult->resetAutoTuning();
     }
 
-    double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) {
+    double OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear::multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) {
       size_t source_size = source.getSize();
       size_t dims = storage_->dim();
       size_t storageSize = storage_->size();
@@ -88,6 +88,8 @@ namespace sg {
       double* ptrData = this->dataset_->getPointer();
       double* ptrLevel = this->level_->getPointer();
       double* ptrIndex = this->index_->getPointer();
+      double* ptrMask = this->mask_->getPointer();
+      double* ptrOffset = this->offset_->getPointer();
       double* ptrGlobalResult = result.getPointer();
 
       if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows()) {
@@ -101,7 +103,6 @@ namespace sg {
       double* ptrTransData = new double[dims * source_size];
 
       #pragma omp parallel for
-
       for (size_t n = 0; n < source_size; n++) {
         for (size_t d = 0; d < dims; d++) {
           ptrTransData[(d * source_size) + n] = ptrData[(n * dims) + d];
@@ -121,7 +122,7 @@ namespace sg {
         if (tid == 0) {
           if (gpu_partition > 0) {
             double loc_start = omp_get_wtime();
-            myOCLKernels->multTransOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
+            myOCLKernels->multTransModMaskOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrMask, ptrOffset, ptrGlobalResult, source_size, storageSize, dims, gpu_partition);
             gpu_time = omp_get_wtime() - loc_start;
           }
 
@@ -147,8 +148,6 @@ namespace sg {
 #if defined(__SSE3__) && !defined(__AVX__)
 
           for (size_t j = myStart; j < myEnd; j++) {
-            long long imask = 0x7FFFFFFFFFFFFFFF;
-            double* fmask = (double*)&imask;
 
             __m128d res = _mm_set1_pd(0.0f);
 
@@ -158,9 +157,7 @@ namespace sg {
               __m128d support_2 = _mm_load_pd(&(ptrSource[i + 4]));
               __m128d support_3 = _mm_load_pd(&(ptrSource[i + 6]));
 
-              __m128d one = _mm_set1_pd(1.0);
               __m128d zero = _mm_set1_pd(0.0);
-              __m128d mask = _mm_set1_pd(*fmask);
 
               for (size_t d = 0; d < dims; d++) {
                 __m128d eval_0 = _mm_load_pd(&(ptrTransData[(d * source_size) + i + 0]));
@@ -182,16 +179,18 @@ namespace sg {
                 eval_2 = _mm_sub_pd(_mm_mul_pd(eval_2, level), index);
                 eval_3 = _mm_sub_pd(_mm_mul_pd(eval_3, level), index);
 #endif
+                __m128d mask = _mm_loaddup_pd(&(ptrMask[(j * dims) + d]));
+                __m128d offset = _mm_loaddup_pd(&(ptrOffset[(j * dims) + d]));
 
-                eval_0 = _mm_and_pd(mask, eval_0);
-                eval_1 = _mm_and_pd(mask, eval_1);
-                eval_2 = _mm_and_pd(mask, eval_2);
-                eval_3 = _mm_and_pd(mask, eval_3);
+                eval_0 = _mm_or_pd(mask, eval_0);
+                eval_1 = _mm_or_pd(mask, eval_1);
+                eval_2 = _mm_or_pd(mask, eval_2);
+                eval_3 = _mm_or_pd(mask, eval_3);
 
-                eval_0 = _mm_sub_pd(one, eval_0);
-                eval_1 = _mm_sub_pd(one, eval_1);
-                eval_2 = _mm_sub_pd(one, eval_2);
-                eval_3 = _mm_sub_pd(one, eval_3);
+                eval_0 = _mm_add_pd(offset, eval_0);
+                eval_1 = _mm_add_pd(offset, eval_1);
+                eval_2 = _mm_add_pd(offset, eval_2);
+                eval_3 = _mm_add_pd(offset, eval_3);
 
                 eval_0 = _mm_max_pd(zero, eval_0);
                 eval_1 = _mm_max_pd(zero, eval_1);
@@ -220,8 +219,6 @@ namespace sg {
 #if defined(__SSE3__) && defined(__AVX__)
 
           for (size_t j = myStart; j < myEnd; j++) {
-            long long imask = 0x7FFFFFFFFFFFFFFF;
-            double* fmask = (double*)&imask;
 
             __m256d res = _mm256_set1_pd(0.0f);
 
@@ -231,9 +228,7 @@ namespace sg {
               __m256d support_2 = _mm256_load_pd(&(ptrSource[i + 8]));
               __m256d support_3 = _mm256_load_pd(&(ptrSource[i + 12]));
 
-              __m256d one = _mm256_set1_pd(1.0);
               __m256d zero = _mm256_set1_pd(0.0);
-              __m256d mask = _mm256_set1_pd(*fmask);
 
               for (size_t d = 0; d < dims; d++) {
                 __m256d eval_0 = _mm256_load_pd(&(ptrTransData[(d * source_size) + i + 0]));
@@ -254,15 +249,18 @@ namespace sg {
                 eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
                 eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 #endif
-                eval_0 = _mm256_and_pd(mask, eval_0);
-                eval_1 = _mm256_and_pd(mask, eval_1);
-                eval_2 = _mm256_and_pd(mask, eval_2);
-                eval_3 = _mm256_and_pd(mask, eval_3);
+                __m256d mask = _mm256_broadcast_sd(&(ptrMask[(j * dims) + d]));
+                __m256d offset = _mm256_broadcast_sd(&(ptrOffset[(j * dims) + d]));
 
-                eval_0 = _mm256_sub_pd(one, eval_0);
-                eval_1 = _mm256_sub_pd(one, eval_1);
-                eval_2 = _mm256_sub_pd(one, eval_2);
-                eval_3 = _mm256_sub_pd(one, eval_3);
+                eval_0 = _mm256_or_pd(mask, eval_0);
+                eval_1 = _mm256_or_pd(mask, eval_1);
+                eval_2 = _mm256_or_pd(mask, eval_2);
+                eval_3 = _mm256_or_pd(mask, eval_3);
+
+                eval_0 = _mm256_add_pd(offset, eval_0);
+                eval_1 = _mm256_add_pd(offset, eval_1);
+                eval_2 = _mm256_add_pd(offset, eval_2);
+                eval_3 = _mm256_add_pd(offset, eval_3);
 
                 eval_0 = _mm256_max_pd(zero, eval_0);
                 eval_1 = _mm256_max_pd(zero, eval_1);
@@ -301,10 +299,10 @@ namespace sg {
               double curSupport = ptrSource[i];
 
               for (size_t d = 0; d < dims; d++) {
-                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
-                double index_calc = eval - (ptrIndex[(j * dims) + d]);
-                double abs = fabs(index_calc);
-                double last = 1.0 - abs;
+                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
+                uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) | *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
+                double masking = *reinterpret_cast<double*>( &maskresult );
+                double last = masking + ptrOffset[(j * dims) + d];
                 double localSupport = std::max<double>(last, 0.0);
                 curSupport *= localSupport;
               }
@@ -337,7 +335,7 @@ namespace sg {
       return time;
     }
 
-    double OperationMultipleEvalIterativeHybridX86SimdOCLLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    double OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear::multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       size_t result_size = result.getSize();
       size_t dims = storage_->dim();
       size_t storageSize = storage_->size();
@@ -361,6 +359,8 @@ namespace sg {
       double* ptrResult = result.getPointer();
       double* ptrLevel = this->level_->getPointer();
       double* ptrIndex = this->index_->getPointer();
+      double* ptrMask = this->mask_->getPointer();
+      double* ptrOffset = this->offset_->getPointer();
 
       if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows()) {
         throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
@@ -382,7 +382,7 @@ namespace sg {
         if (tid == 0) {
           if (gpu_partition > 0) {
             double loc_start = omp_get_wtime();
-            myOCLKernels->multOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size, storageSize, dims, gpu_partition);
+            myOCLKernels->multModMaskOCL(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrMask, ptrOffset, ptrResult, result_size, storageSize, dims, gpu_partition);
             gpu_time = omp_get_wtime() - loc_start;
           }
         } else {
@@ -411,8 +411,6 @@ namespace sg {
 #if defined(__SSE3__) && !defined(__AVX__)
 
           for (size_t i = myStart; i < myEnd; i += 8) {
-            long long imask = 0x7FFFFFFFFFFFFFFF;
-            double* fmask = (double*)&imask;
 
             __m128d res_0 = _mm_load_pd(&(ptrResult[i + 0]));
             __m128d res_1 = _mm_load_pd(&(ptrResult[i + 2]));
@@ -434,9 +432,7 @@ namespace sg {
               __m128d support_2 = _mm_loaddup_pd(&(ptrAlpha[j]));
               __m128d support_3 = _mm_loaddup_pd(&(ptrAlpha[j]));
 
-              __m128d one = _mm_set1_pd(1.0);
               __m128d zero = _mm_set1_pd(0.0);
-              __m128d mask = _mm_set1_pd(*fmask);
 
               for (size_t d = 0; d < dims; d++) {
                 __m128d eval_0 = _mm_load_pd(&(ptrTransData[(d * 8) + 0]));
@@ -457,15 +453,18 @@ namespace sg {
                 eval_2 = _mm_sub_pd(_mm_mul_pd(eval_2, level), index);
                 eval_3 = _mm_sub_pd(_mm_mul_pd(eval_3, level), index);
 #endif
-                eval_0 = _mm_and_pd(mask, eval_0);
-                eval_1 = _mm_and_pd(mask, eval_1);
-                eval_2 = _mm_and_pd(mask, eval_2);
-                eval_3 = _mm_and_pd(mask, eval_3);
+                __m128d mask = _mm_loaddup_pd(&(ptrMask[(j * dims) + d]));
+                __m128d offset = _mm_loaddup_pd(&(ptrOffset[(j * dims) + d]));
 
-                eval_0 = _mm_sub_pd(one, eval_0);
-                eval_1 = _mm_sub_pd(one, eval_1);
-                eval_2 = _mm_sub_pd(one, eval_2);
-                eval_3 = _mm_sub_pd(one, eval_3);
+                eval_0 = _mm_or_pd(mask, eval_0);
+                eval_1 = _mm_or_pd(mask, eval_1);
+                eval_2 = _mm_or_pd(mask, eval_2);
+                eval_3 = _mm_or_pd(mask, eval_3);
+
+                eval_0 = _mm_add_pd(offset, eval_0);
+                eval_1 = _mm_add_pd(offset, eval_1);
+                eval_2 = _mm_add_pd(offset, eval_2);
+                eval_3 = _mm_add_pd(offset, eval_3);
 
                 eval_0 = _mm_max_pd(zero, eval_0);
                 eval_1 = _mm_max_pd(zero, eval_1);
@@ -496,8 +495,6 @@ namespace sg {
 #if defined(__SSE3__) && defined(__AVX__)
 
           for (size_t i = myStart; i < myEnd; i += 16) {
-            long long imask = 0x7FFFFFFFFFFFFFFF;
-            double* fmask = (double*)&imask;
 
             __m256d res_0 = _mm256_load_pd(&(ptrResult[i + 0]));
             __m256d res_1 = _mm256_load_pd(&(ptrResult[i + 4]));
@@ -519,9 +516,7 @@ namespace sg {
               __m256d support_2 = _mm256_broadcast_sd(&(ptrAlpha[j]));
               __m256d support_3 = _mm256_broadcast_sd(&(ptrAlpha[j]));
 
-              __m256d one = _mm256_set1_pd(1.0);
               __m256d zero = _mm256_set1_pd(0.0);
-              __m256d mask = _mm256_set1_pd(*fmask);
 
               for (size_t d = 0; d < dims; d++) {
                 __m256d eval_0 = _mm256_load_pd(&(ptrTransData[(d * 16) + 0]));
@@ -542,15 +537,18 @@ namespace sg {
                 eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
                 eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 #endif
-                eval_0 = _mm256_and_pd(mask, eval_0);
-                eval_1 = _mm256_and_pd(mask, eval_1);
-                eval_2 = _mm256_and_pd(mask, eval_2);
-                eval_3 = _mm256_and_pd(mask, eval_3);
+                __m256d mask = _mm256_broadcast_sd(&(ptrMask[(j * dims) + d]));
+                __m256d offset = _mm256_broadcast_sd(&(ptrOffset[(j * dims) + d]));
 
-                eval_0 = _mm256_sub_pd(one, eval_0);
-                eval_1 = _mm256_sub_pd(one, eval_1);
-                eval_2 = _mm256_sub_pd(one, eval_2);
-                eval_3 = _mm256_sub_pd(one, eval_3);
+                eval_0 = _mm256_or_pd(mask, eval_0);
+                eval_1 = _mm256_or_pd(mask, eval_1);
+                eval_2 = _mm256_or_pd(mask, eval_2);
+                eval_3 = _mm256_or_pd(mask, eval_3);
+
+                eval_0 = _mm256_add_pd(offset, eval_0);
+                eval_1 = _mm256_add_pd(offset, eval_1);
+                eval_2 = _mm256_add_pd(offset, eval_2);
+                eval_3 = _mm256_add_pd(offset, eval_3);
 
                 eval_0 = _mm256_max_pd(zero, eval_0);
                 eval_1 = _mm256_max_pd(zero, eval_1);
@@ -585,10 +583,10 @@ namespace sg {
               double curSupport = ptrAlpha[j];
 
               for (size_t d = 0; d < dims; d++) {
-                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
-                double index_calc = eval - (ptrIndex[(j * dims) + d]);
-                double abs = fabs(index_calc);
-                double last = 1.0 - abs;
+                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
+                uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) | *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
+                double masking = *reinterpret_cast<double*>( &maskresult );
+                double last = masking + ptrOffset[(j * dims) + d];
                 double localSupport = std::max<double>(last, 0.0);
                 curSupport *= localSupport;
               }
