@@ -103,6 +103,7 @@ namespace sg {
       double* ptrTransData = new double[dims * source_size];
 
       #pragma omp parallel for
+
       for (size_t n = 0; n < source_size; n++) {
         for (size_t d = 0; d < dims; d++) {
           ptrTransData[(d * source_size) + n] = ptrData[(n * dims) + d];
