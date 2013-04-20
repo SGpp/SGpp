@@ -73,6 +73,7 @@ namespace sg {
         time = myOCLKernels->multTransModMaskOCL(ptrSource, ptrData, ptrLevel, ptrIndex, ptrMask, ptrOffset, ptrGlobalResult, source_size, storageSize, dims, global);
 
       #pragma omp parallel for
+
       for (size_t j = global; j < storageSize; j++) {
         ptrGlobalResult[j] = 0.0f;
 
@@ -80,12 +81,12 @@ namespace sg {
           double curSupport = ptrSource[i];
 
           for (size_t d = 0; d < dims; d++) {
-                    double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
-                    uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) | *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
-                    double masking = *reinterpret_cast<double*>( &maskresult );
-                    double last = masking + ptrOffset[(j * dims) + d];
-                    double localSupport = std::max<double>(last, 0.0);
-                    curSupport *= localSupport;
+            double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
+            uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) | *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
+            double masking = *reinterpret_cast<double*>( &maskresult );
+            double last = masking + ptrOffset[(j * dims) + d];
+            double localSupport = std::max<double>(last, 0.0);
+            curSupport *= localSupport;
           }
 
           ptrGlobalResult[j] += curSupport;
