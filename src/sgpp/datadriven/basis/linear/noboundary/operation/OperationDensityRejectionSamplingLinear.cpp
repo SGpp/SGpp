@@ -47,7 +47,7 @@ namespace sg {
 
       for (size_t i = 0; i < num_samples; i++) { //for every sample
 
-        p = new base::DataVector(grid->getStorage()->dim());
+        p = new base::DataVector(num_dims);
         opEval = op_factory::createOperationEval(*grid);
 
         //find the appropriate sample within a # of trial
@@ -64,10 +64,10 @@ namespace sg {
             samples->setRow(i, *p);
             break;
           }
-
-          if (j == trial_max - 1)
-            throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
         }
+
+        if (j == trial_max)
+          throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
 
         delete p;
         delete opEval;
