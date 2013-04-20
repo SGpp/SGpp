@@ -62,7 +62,7 @@ namespace sg {
 
       for (++it2; it2 != coord_pdf.end(); ++it2) {
         //(*it).first : the coordinate
-        //(*it).second : the alpha
+        //(*it).second : the function value
         area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
         tmp.push_back( area );
         sum += area;
