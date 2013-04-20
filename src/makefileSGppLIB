@@ -1595,7 +1595,7 @@ OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/dat
 OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
 	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
 	
-OCLKernels.o : $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.imp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.imp
+OCLKernels.o : $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModMaskDP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModMaskSP.cpp
 	$(CC) $(CFLAGS) $(NOIPO) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
 	
 OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
