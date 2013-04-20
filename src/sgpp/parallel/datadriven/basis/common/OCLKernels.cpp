@@ -373,12 +373,12 @@ namespace sg {
       delete[] device_ids;
     }
 
-#include "parallel/datadriven/basis/common/OCLKernels_DP.imp"
-#include "parallel/datadriven/basis/common/OCLKernels_SP.imp"
-#include "parallel/datadriven/basis/common/OCLKernels_ModDP.imp"
-#include "parallel/datadriven/basis/common/OCLKernels_ModSP.imp"
-#include "parallel/datadriven/basis/common/OCLKernels_ModMaskDP.imp"
-#include "parallel/datadriven/basis/common/OCLKernels_ModMaskSP.imp"
+#include "parallel/datadriven/basis/common/OCLKernels_DP.cpp"
+#include "parallel/datadriven/basis/common/OCLKernels_SP.cpp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModDP.cpp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModSP.cpp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModMaskDP.cpp"
+#include "parallel/datadriven/basis/common/OCLKernels_ModMaskSP.cpp"
 
     void OCLKernels::resetKernels() {
       // linear float
