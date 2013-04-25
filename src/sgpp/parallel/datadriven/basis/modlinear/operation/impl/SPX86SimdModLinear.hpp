@@ -460,7 +460,7 @@ namespace sg {
                     } else {
                       float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
                       float index_calc = eval - (ptrIndex[(j * dims) + d]);
-                      float abs = fabs(index_calc);
+                      float abs = static_cast<float>(fabs(index_calc));
                       float last = 1.0f - abs;
                       float localSupport = std::max<float>(last, 0.0f);
                       curSupport *= localSupport;
@@ -900,7 +900,7 @@ namespace sg {
                   } else {
                     float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
                     float index_calc = eval - (ptrIndex[(j * dims) + d]);
-                    float abs = fabs(index_calc);
+                    float abs = static_cast<float>(fabs(index_calc));
                     float last = 1.0f - abs;
                     float localSupport = std::max<float>(last, 0.0f);
                     curSupport *= localSupport;

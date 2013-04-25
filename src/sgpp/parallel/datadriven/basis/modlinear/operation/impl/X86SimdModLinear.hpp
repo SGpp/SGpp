@@ -462,7 +462,7 @@ namespace sg {
                       double index_calc = eval - (ptrIndex[(j * dims) + d]);
                       double abs = fabs(index_calc);
                       double last = 1.0 - abs;
-                      double localSupport = std::max<float>(last, 0.0);
+                      double localSupport = std::max<double>(last, 0.0);
                       curSupport *= localSupport;
                     }
                   }

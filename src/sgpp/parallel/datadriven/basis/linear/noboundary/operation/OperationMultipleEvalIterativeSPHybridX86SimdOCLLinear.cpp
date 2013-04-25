@@ -302,7 +302,7 @@ namespace sg {
               for (size_t d = 0; d < dims; d++) {
                 float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
                 float index_calc = eval - (ptrIndex[(j * dims) + d]);
-                float abs = fabs(index_calc);
+                float abs = static_cast<float>(fabs(index_calc));
                 float last = 1.0f - abs;
                 float localSupport = std::max<float>(last, 0.0f);
                 curSupport *= localSupport;
@@ -587,9 +587,9 @@ namespace sg {
               for (size_t d = 0; d < dims; d++) {
                 float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
                 float index_calc = eval - (ptrIndex[(j * dims) + d]);
-                float abs = fabs(index_calc);
+                float abs = static_cast<float>(fabs(index_calc));
                 float last = 1.0f - abs;
-                float localSupport = std::max<double>(last, 0.0f);
+                float localSupport = std::max<float>(last, 0.0f);
                 curSupport *= localSupport;
               }
 
