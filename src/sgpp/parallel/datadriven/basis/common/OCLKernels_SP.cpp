@@ -305,7 +305,7 @@ double OCLKernels::multSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel, f
     stream_program_src << "	// Create registers for the data" << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "	double data_" << d << " = ptrData[globalIdx+(resultSize*" << d << ")];" << std::endl;
+      stream_program_src << "	float data_" << d << " = ptrData[globalIdx+(resultSize*" << d << ")];" << std::endl;
     }
 
     stream_program_src << std::endl;
