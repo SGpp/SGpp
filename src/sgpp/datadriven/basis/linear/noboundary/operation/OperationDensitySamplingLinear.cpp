@@ -53,7 +53,7 @@ namespace sg {
         // 3. for every sample do...
         base::DataVector* sampleVec;
         size_t j;
-        #pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
+        #pragma omp parallel for private(sampleVec,j) schedule(dynamic)
 
         for (size_t i = 0; i < samples_start->getSize(); i++) {
 
@@ -103,7 +103,7 @@ namespace sg {
       base::DataVector* sampleVec;
       size_t j;
 
-      #pragma omp parallel for private(sampleVec,j) schedule(dynamic) if(omp_get_num_threads() > 1)
+      #pragma omp parallel for private(sampleVec,j) schedule(dynamic)
 
       for (size_t i = 0; i < num_samples; i++) {
 

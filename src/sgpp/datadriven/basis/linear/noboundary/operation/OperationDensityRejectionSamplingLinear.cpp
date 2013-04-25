@@ -43,7 +43,7 @@ namespace sg {
       base::DataVector* p;
       base::OperationEval* opEval;
 
-      #pragma omp parallel for private(p, j, opEval) schedule(dynamic) if(omp_get_num_threads() > 1)
+      #pragma omp parallel for private(p, j, opEval) schedule(dynamic)
 
       for (size_t i = 0; i < num_samples; i++) { //for every sample
 
