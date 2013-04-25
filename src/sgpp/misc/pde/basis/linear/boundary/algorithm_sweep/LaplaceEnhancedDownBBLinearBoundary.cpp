@@ -188,7 +188,7 @@ namespace sg {
               index.top(dim);
 
               if (!this->storage->end(index.seq())) {
-                rec_LL(fl, fr, fl, fr, i, index);
+                rec_LL(fl1, fr1, fl2, fr2, i, index);
               }
 
               index.left_levelzero(dim);
