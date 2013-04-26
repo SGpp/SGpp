@@ -74,9 +74,14 @@ namespace sg {
 
             partition2 = static_cast<size_t>(normalized_workingset * partition2_speedup);
 
+            if(partition2 == _problemSize)
+            {
+              partition2 -= _partition2Divider;
+            }
+
             size_t partition2_remainder = partition2 % _partition2Divider;
 
-            if (partition2 + (_partition2Divider - partition2_remainder) > _problemSize) {
+            if (partition2 + (_partition2Divider - partition2_remainder) >= _problemSize) {
               partition2 -=  partition2_remainder;
             } else {
               partition2 +=  (_partition2Divider - partition2_remainder);
