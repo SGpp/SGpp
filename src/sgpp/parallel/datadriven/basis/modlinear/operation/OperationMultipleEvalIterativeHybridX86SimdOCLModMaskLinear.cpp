@@ -36,7 +36,7 @@ namespace sg {
 
       myOCLKernels = new OCLKernels();
 
-      _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10);
+      _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNcols(), 128, 10);
       _tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage_->size(), 128, 10);
     }
 

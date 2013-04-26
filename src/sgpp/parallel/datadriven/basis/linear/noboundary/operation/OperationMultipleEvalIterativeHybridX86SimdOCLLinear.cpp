@@ -34,7 +34,7 @@ namespace sg {
 
       myOCLKernels = new OCLKernels();
 
-      _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10);
+      _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNcols(), 128, 10);
       _tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage_->size(), 128, 10);
       // IVB + GTX680, static
       //  _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 0.085, 128, 1);
@@ -126,10 +126,12 @@ namespace sg {
 #else
           myTimer_->start();
 #endif
-          //      #pragma omp critical
-          //      {
-          //        std::cout << tid << " " << myStart << " " << myEnd << " " << storageSize << std::endl;
-          //      }
+#ifdef DEBUG
+                #pragma omp critical
+                {
+                  std::cout << tid << " " << myStart << " " << myEnd << " " << storageSize << std::endl;
+                }
+#endif
 #if defined(__SSE3__) && !defined(__AVX__)
 
           for (size_t j = myStart; j < myEnd; j++) {
@@ -389,10 +391,12 @@ namespace sg {
 #else
           myTimer_->start();
 #endif
-          //      #pragma omp critical
-          //      {
-          //        std::cout << tid << " " << myStart << " " << myEnd << " " << result_size << std::endl;
-          //      }
+#if DEBUG
+                #pragma omp critical
+                {
+                  std::cout << tid << " " << myStart << " " << myEnd << " " << result_size << std::endl;
+                }
+#endif
 #if defined(__SSE3__) && !defined(__AVX__)
 
           for (size_t i = myStart; i < myEnd; i += 8) {
