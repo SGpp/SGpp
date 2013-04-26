@@ -88,23 +88,12 @@ namespace sg {
       float* ptrIndex = this->index_->getPointer();
       float* ptrGlobalResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
       // split result into GPU and CPU partition
       size_t gpu_partition = storageSize - _tuningMultTrans->getPartition1Size();
-
-      // Do on-demand transpose
-      float* ptrTransData = new float[dims * source_size];
-
-      #pragma omp parallel for
-
-      for (size_t n = 0; n < source_size; n++) {
-        for (size_t d = 0; d < dims; d++) {
-          ptrTransData[(d * source_size) + n] = ptrData[(n * dims) + d];
-        }
-      }
 
       #pragma omp parallel default(shared)
       {
@@ -167,10 +156,10 @@ namespace sg {
                 }
                 // most left basis function on every level
                 else if (ptrIndex[(j * dims) + d] == 1.0f) {
-                  __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * source_size) + i]));
-                  __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 4]));
-                  __m128 eval_2 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 8]));
-                  __m128 eval_3 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 12]));;
+                  __m128 eval_0 = _mm_load_ps(&(ptrData[(d * source_size) + i]));
+                  __m128 eval_1 = _mm_load_ps(&(ptrData[(d * source_size) + i + 4]));
+                  __m128 eval_2 = _mm_load_ps(&(ptrData[(d * source_size) + i + 8]));
+                  __m128 eval_3 = _mm_load_ps(&(ptrData[(d * source_size) + i + 12]));;
 
                   __m128 level = _mm_load1_ps(&(ptrLevel[(j * dims) + d]));
 
@@ -196,10 +185,10 @@ namespace sg {
                 }
                 // most right basis function on every level
                 else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0f)) {
-                  __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * source_size) + i]));
-                  __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 4]));
-                  __m128 eval_2 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 8]));
-                  __m128 eval_3 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 12]));;
+                  __m128 eval_0 = _mm_load_ps(&(ptrData[(d * source_size) + i]));
+                  __m128 eval_1 = _mm_load_ps(&(ptrData[(d * source_size) + i + 4]));
+                  __m128 eval_2 = _mm_load_ps(&(ptrData[(d * source_size) + i + 8]));
+                  __m128 eval_3 = _mm_load_ps(&(ptrData[(d * source_size) + i + 12]));;
 
                   __m128 level = _mm_load1_ps(&(ptrLevel[(j * dims) + d]));
                   __m128 index = _mm_load1_ps(&(ptrIndex[(j * dims) + d]));
@@ -231,10 +220,10 @@ namespace sg {
                 }
                 // all other basis functions
                 else {
-                  __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * source_size) + i]));
-                  __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 4]));
-                  __m128 eval_2 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 8]));
-                  __m128 eval_3 = _mm_load_ps(&(ptrTransData[(d * source_size) + i + 12]));;
+                  __m128 eval_0 = _mm_load_ps(&(ptrData[(d * source_size) + i]));
+                  __m128 eval_1 = _mm_load_ps(&(ptrData[(d * source_size) + i + 4]));
+                  __m128 eval_2 = _mm_load_ps(&(ptrData[(d * source_size) + i + 8]));
+                  __m128 eval_3 = _mm_load_ps(&(ptrData[(d * source_size) + i + 12]));;
 
                   __m128 level = _mm_load1_ps(&(ptrLevel[(j * dims) + d]));
                   __m128 index = _mm_load1_ps(&(ptrIndex[(j * dims) + d]));
@@ -310,10 +299,10 @@ namespace sg {
                 }
                 // most left basis function on every level
                 else if (ptrIndex[(j * dims) + d] == 1.0f) {
-                  __m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i]));
-                  __m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 8]));
-                  __m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 16]));
-                  __m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 24]));
+                  __m256 eval_0 = _mm256_load_ps(&(ptrData[(d * source_size) + i]));
+                  __m256 eval_1 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 8]));
+                  __m256 eval_2 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 16]));
+                  __m256 eval_3 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 24]));
 
                   __m256 level = _mm256_broadcast_ss(&(ptrLevel[(j * dims) + d]));
 
@@ -339,10 +328,10 @@ namespace sg {
                 }
                 // most right basis function on every level
                 else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0f)) {
-                  __m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i]));
-                  __m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 8]));
-                  __m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 16]));
-                  __m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 24]));
+                  __m256 eval_0 = _mm256_load_ps(&(ptrData[(d * source_size) + i]));
+                  __m256 eval_1 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 8]));
+                  __m256 eval_2 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 16]));
+                  __m256 eval_3 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 24]));
 
                   __m256 level = _mm256_broadcast_ss(&(ptrLevel[(j * dims) + d]));
                   __m256 index = _mm256_broadcast_ss(&(ptrIndex[(j * dims) + d]));
@@ -374,10 +363,10 @@ namespace sg {
                 }
                 // all other basis functions
                 else {
-                  __m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i]));
-                  __m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 8]));
-                  __m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 16]));
-                  __m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d * source_size) + i + 24]));
+                  __m256 eval_0 = _mm256_load_ps(&(ptrData[(d * source_size) + i]));
+                  __m256 eval_1 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 8]));
+                  __m256 eval_2 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 16]));
+                  __m256 eval_3 = _mm256_load_ps(&(ptrData[(d * source_size) + i + 24]));
 
                   __m256 level = _mm256_broadcast_ss(&(ptrLevel[(j * dims) + d]));
                   __m256 index = _mm256_broadcast_ss(&(ptrIndex[(j * dims) + d]));
@@ -444,18 +433,18 @@ namespace sg {
                 if (ptrLevel[(j * dims) + d] == 2.0f) {
                   // nothing to do (mult with 1)
                 } else if (ptrIndex[(j * dims) + d] == 1.0f) {
-                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
                   eval = 2.0f - eval;
                   float localSupport = std::max<float>(eval, 0.0f);
                   curSupport *= localSupport;
                 } else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0f)) {
-                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
                   float index_calc = eval - (ptrIndex[(j * dims) + d]);
                   float last = 1.0f + index_calc;
                   float localSupport = std::max<float>(last, 0.0f);
                   curSupport *= localSupport;
                 } else {
-                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
                   float index_calc = eval - (ptrIndex[(j * dims) + d]);
                   float abs = static_cast<float>(fabs(index_calc));
                   float last = 1.0f - abs;
@@ -486,7 +475,6 @@ namespace sg {
 
       double time = std::max<double>(cpu_time, gpu_time);
       //cleanup
-      delete[] ptrTransData;
       delete[] cpu_times;
       return time;
     }
@@ -516,7 +504,7 @@ namespace sg {
       float* ptrLevel = this->level_->getPointer();
       float* ptrIndex = this->index_->getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 
@@ -573,15 +561,6 @@ namespace sg {
             __m128 res_2 = _mm_load_ps(&(ptrResult[i + 8]));
             __m128 res_3 = _mm_load_ps(&(ptrResult[i + 12]));
 
-            // Do on-demand transpose
-            float* ptrTransData = new float[dims * 16];
-
-            for (size_t n = 0; n < 16; n++) {
-              for (size_t d = 0; d < dims; d++) {
-                ptrTransData[(d * 16) + n] = ptrData[((i + n) * dims) + d];
-              }
-            }
-
             for (size_t j = 0; j < storageSize; j++) {
               __m128 support_0 = _mm_load1_ps(&(ptrAlpha[j]));
               __m128 support_1 = _mm_load1_ps(&(ptrAlpha[j]));
@@ -600,10 +579,10 @@ namespace sg {
                 }
                 // most left basis function on every level
                 else if (ptrIndex[(j * dims) + d] == 1.0f) {
-                  __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * 16)]));
-                  __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * 16) + 4]));
-                  __m128 eval_2 = _mm_load_ps(&(ptrTransData[(d * 16) + 8]));
-                  __m128 eval_3 = _mm_load_ps(&(ptrTransData[(d * 16) + 12]));
+                  __m128 eval_0 = _mm_load_ps(&(ptrData[(d * result_size) + i]));
+                  __m128 eval_1 = _mm_load_ps(&(ptrData[(d * result_size) + i + 4]));
+                  __m128 eval_2 = _mm_load_ps(&(ptrData[(d * result_size) + i + 8]));
+                  __m128 eval_3 = _mm_load_ps(&(ptrData[(d * result_size) + i + 12]));
 
                   __m128 level = _mm_load1_ps(&(ptrLevel[(j * dims) + d]));
 
@@ -629,10 +608,10 @@ namespace sg {
                 }
                 // most right basis function on every level
                 else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0f)) {
-                  __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * 16)]));
-                  __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * 16) + 4]));
-                  __m128 eval_2 = _mm_load_ps(&(ptrTransData[(d * 16) + 8]));
-                  __m128 eval_3 = _mm_load_ps(&(ptrTransData[(d * 16) + 12]));
+                  __m128 eval_0 = _mm_load_ps(&(ptrData[(d * result_size) + i]));
+                  __m128 eval_1 = _mm_load_ps(&(ptrData[(d * result_size) + i + 4]));
+                  __m128 eval_2 = _mm_load_ps(&(ptrData[(d * result_size) + i + 8]));
+                  __m128 eval_3 = _mm_load_ps(&(ptrData[(d * result_size) + i + 12]));
 
                   __m128 level = _mm_load1_ps(&(ptrLevel[(j * dims) + d]));
                   __m128 index = _mm_load1_ps(&(ptrIndex[(j * dims) + d]));
@@ -664,10 +643,10 @@ namespace sg {
                 }
                 // all other basis functions
                 else {
-                  __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * 16)]));
-                  __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * 16) + 4]));
-                  __m128 eval_2 = _mm_load_ps(&(ptrTransData[(d * 16) + 8]));
-                  __m128 eval_3 = _mm_load_ps(&(ptrTransData[(d * 16) + 12]));
+                  __m128 eval_0 = _mm_load_ps(&(ptrData[(d * result_size) + i]));
+                  __m128 eval_1 = _mm_load_ps(&(ptrData[(d * result_size) + i + 4]));
+                  __m128 eval_2 = _mm_load_ps(&(ptrData[(d * result_size) + i + 8]));
+                  __m128 eval_3 = _mm_load_ps(&(ptrData[(d * result_size) + i + 12]));
 
                   __m128 level = _mm_load1_ps(&(ptrLevel[(j * dims) + d]));
                   __m128 index = _mm_load1_ps(&(ptrIndex[(j * dims) + d]));
@@ -710,8 +689,6 @@ namespace sg {
               res_3 = _mm_add_ps(res_3, support_3);
             }
 
-            delete[] ptrTransData;
-
             _mm_store_ps(&(ptrResult[i]), res_0);
             _mm_store_ps(&(ptrResult[i + 4]), res_1);
             _mm_store_ps(&(ptrResult[i + 8]), res_2);
@@ -729,15 +706,6 @@ namespace sg {
             __m256 res_1 = _mm256_load_ps(&(ptrResult[i + 8]));
             __m256 res_2 = _mm256_load_ps(&(ptrResult[i + 16]));
             __m256 res_3 = _mm256_load_ps(&(ptrResult[i + 24]));
-
-            // Do on-demand transpose
-            float* ptrTransData = new float[dims * 32];
-
-            for (size_t n = 0; n < 32; n++) {
-              for (size_t d = 0; d < dims; d++) {
-                ptrTransData[(d * 32) + n] = ptrData[((i + n) * dims) + d];
-              }
-            }
 
             for (size_t j = 0; j < storageSize; j++) {
               __m256 support_0 = _mm256_broadcast_ss(&(ptrAlpha[j]));
@@ -757,10 +725,10 @@ namespace sg {
                 }
                 // most left basis function on every level
                 else if (ptrIndex[(j * dims) + d] == 1.0f) {
-                  __m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d * 32)]));
-                  __m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d * 32) + 8]));
-                  __m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d * 32) + 16]));
-                  __m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d * 32) + 24]));
+                  __m256 eval_0 = _mm256_load_ps(&(ptrData[(d * result_size) + i]));
+                  __m256 eval_1 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 8]));
+                  __m256 eval_2 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 16]));
+                  __m256 eval_3 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 24]));
 
                   __m256 level = _mm256_broadcast_ss(&(ptrLevel[(j * dims) + d]));
 
@@ -786,10 +754,10 @@ namespace sg {
                 }
                 // most right basis function on every level
                 else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0f)) {
-                  __m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d * 32)]));
-                  __m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d * 32) + 8]));
-                  __m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d * 32) + 16]));
-                  __m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d * 32) + 24]));
+                  __m256 eval_0 = _mm256_load_ps(&(ptrData[(d * result_size) + i]));
+                  __m256 eval_1 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 8]));
+                  __m256 eval_2 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 16]));
+                  __m256 eval_3 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 24]));
 
                   __m256 level = _mm256_broadcast_ss(&(ptrLevel[(j * dims) + d]));
                   __m256 index = _mm256_broadcast_ss(&(ptrIndex[(j * dims) + d]));
@@ -821,10 +789,10 @@ namespace sg {
                 }
                 // all other basis functions
                 else {
-                  __m256 eval_0 = _mm256_load_ps(&(ptrTransData[(d * 32)]));
-                  __m256 eval_1 = _mm256_load_ps(&(ptrTransData[(d * 32) + 8]));
-                  __m256 eval_2 = _mm256_load_ps(&(ptrTransData[(d * 32) + 16]));
-                  __m256 eval_3 = _mm256_load_ps(&(ptrTransData[(d * 32) + 24]));
+                  __m256 eval_0 = _mm256_load_ps(&(ptrData[(d * result_size) + i]));
+                  __m256 eval_1 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 8]));
+                  __m256 eval_2 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 16]));
+                  __m256 eval_3 = _mm256_load_ps(&(ptrData[(d * result_size) + i + 24]));
 
                   __m256 level = _mm256_broadcast_ss(&(ptrLevel[(j * dims) + d]));
                   __m256 index = _mm256_broadcast_ss(&(ptrIndex[(j * dims) + d]));
@@ -867,8 +835,6 @@ namespace sg {
               res_3 = _mm256_add_ps(res_3, support_3);
             }
 
-            delete[] ptrTransData;
-
             _mm256_store_ps(&(ptrResult[i]), res_0);
             _mm256_store_ps(&(ptrResult[i + 8]), res_1);
             _mm256_store_ps(&(ptrResult[i + 16]), res_2);
@@ -886,18 +852,18 @@ namespace sg {
                 if (ptrLevel[(j * dims) + d] == 2.0f) {
                   // nothing to do (mult with 1)
                 } else if (ptrIndex[(j * dims) + d] == 1.0f) {
-                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
                   eval = 2.0f - eval;
                   float localSupport = std::max<float>(eval, 0.0f);
                   curSupport *= localSupport;
                 } else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0f)) {
-                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
                   float index_calc = eval - (ptrIndex[(j * dims) + d]);
                   float last = 1.0f + index_calc;
                   float localSupport = std::max<float>(last, 0.0f);
                   curSupport *= localSupport;
                 } else {
-                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+                  float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
                   float index_calc = eval - (ptrIndex[(j * dims) + d]);
                   float abs = static_cast<float>(fabs(index_calc));
                   float last = 1.0f - abs;
