@@ -489,10 +489,10 @@ namespace sg {
               __m256d mask = _mm256_set1_pd(*fmask);
 
               for (size_t d = 0; d < dims; d++) {
-                __m256d eval_0 = _mm256_load_pd(&(ptrTransData[(d * result_size) + i + 0]));
-                __m256d eval_1 = _mm256_load_pd(&(ptrTransData[(d * result_size) + i + 4]));
-                __m256d eval_2 = _mm256_load_pd(&(ptrTransData[(d * result_size) + i + 8]));
-                __m256d eval_3 = _mm256_load_pd(&(ptrTransData[(d * result_size) + i + 12]));;
+                __m256d eval_0 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 0]));
+                __m256d eval_1 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 4]));
+                __m256d eval_2 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 8]));
+                __m256d eval_3 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 12]));;
 
                 __m256d level = _mm256_broadcast_sd(&(ptrLevel[(j * dims) + d]));
                 __m256d index = _mm256_broadcast_sd(&(ptrIndex[(j * dims) + d]));
