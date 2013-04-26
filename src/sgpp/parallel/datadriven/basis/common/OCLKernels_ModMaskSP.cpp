@@ -510,8 +510,8 @@ double OCLKernels::multModMaskSPOCL(float* ptrAlpha, float* ptrData, float* ptrL
            clSetKernelArg(kernel_multModMaskSP[i], 6, sizeof(cl_mem), &clResult[i]) ||
            clSetKernelArg(kernel_multModMaskSP[i], 7, sizeof(cl_uint), &clFastStorageSize) ||
            clSetKernelArg(kernel_multModMaskSP[i], 8, sizeof(cl_uint), &clStorageSize) ||
-           clSetKernelArg(kernel_multModMaskSP[i], 7, sizeof(cl_uint), &clOffsets[i]) ||
-           clSetKernelArg(kernel_multModMaskSP[i], 8, sizeof(cl_uint), &clResultSize) != CL_SUCCESS) {
+           clSetKernelArg(kernel_multModMaskSP[i], 9, sizeof(cl_uint), &clOffsets[i]) ||
+           clSetKernelArg(kernel_multModMaskSP[i], 10, sizeof(cl_uint), &clResultSize) != CL_SUCCESS) {
         std::cout << "OCL Error: Failed to create kernel Args!" << std::endl;
         return 0.0;
       }
