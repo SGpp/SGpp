@@ -9,7 +9,6 @@ Import("env")
 srcs = Split("""
 datadriven/algorithm/DMSystemMatrixBaseSP.cpp
 datadriven/algorithm/DMSystemMatrixBase.cpp
-datadriven/algorithm/DMSystemMatrixExplicit.cpp
 datadriven/algorithm/DMSystemMatrix.cpp
 datadriven/algorithm/DensitySystemMatrix.cpp
 datadriven/algorithm/DMWeightMatrix.cpp
