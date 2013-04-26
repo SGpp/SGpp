@@ -42,7 +42,8 @@ double OCLKernels::multTransSPOCL(float* ptrSource, float* ptrData, float* ptrLe
     stream_program_src << "	{" << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "		locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+(localIdx)] = ptrData[(" << d << "*sourceSize)+(localIdx+i)];" << std::endl;    }
+      stream_program_src << "		locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+(localIdx)] = ptrData[(" << d << "*sourceSize)+(localIdx+i)];" << std::endl;
+    }
 
     stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
     stream_program_src << "		barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;

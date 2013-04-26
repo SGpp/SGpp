@@ -42,7 +42,7 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
     stream_program_src << "	{" << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "		locData[(localIdx*" << dims << ")+" << d << "] = ptrData[((i+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+      stream_program_src << "		locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+(localIdx)] = ptrData[(" << d << "*sourceSize)+(localIdx+i)];" << std::endl;
     }
 
     stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
@@ -64,25 +64,25 @@ double OCLKernels::multTransModSPOCL(float* ptrSource, float* ptrData, float* pt
       stream_program_src << "			else if ((index_" << d << ") == 1.0f)" << std::endl;
       stream_program_src << "			{" << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
-      stream_program_src << "				curSupport *= max(2.0f - ( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
+      stream_program_src << "				curSupport *= max(2.0f - ( (level_" << d << ") * (locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+k]) ), 0.0f);" << std::endl;
 #else
-      stream_program_src << "				curSupport *= max(2.0f - ( (level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]) ), 0.0f);" << std::endl;
+      stream_program_src << "				curSupport *= max(2.0f - ( (level_" << d << ") * (ptrData[(" << d << "*sourceSize)+k]) ), 0.0f);" << std::endl;
 #endif
       stream_program_src << "			}" << std::endl;
       stream_program_src << "			else if ((index_" << d << ") == ((level_" << d << ") - 1.0f))" << std::endl;
       stream_program_src << "			{" << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
-      stream_program_src << "				curSupport *= max(( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") + 1.0f, 0.0f);" << std::endl;
+      stream_program_src << "				curSupport *= max(( (level_" << d << ") * (locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+k]) ) - (index_" << d << ") + 1.0f, 0.0f);" << std::endl;
 #else
-      stream_program_src << "				curSupport *= max(( (level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") + 1.0f, 0.0f);" << std::endl;
+      stream_program_src << "				curSupport *= max(( (level_" << d << ") * (ptrData[(" << d << "*sourceSize)+k]) ) - (index_" << d << ") + 1.0f, 0.0f);" << std::endl;
 #endif
       stream_program_src << "			}" << std::endl;
       stream_program_src << "			else " << std::endl;
       stream_program_src << "			{" << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
-      stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
+      stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+k]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
 #else
-      stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
+      stream_program_src << "				curSupport *= max(1.0f - fabs( ( (level_" << d << ") * (ptrData[(" << d << "*sourceSize)+k]) ) - (index_" << d << ") ), 0.0f);" << std::endl;
 #endif
       stream_program_src << "			}" << std::endl;
     }
@@ -307,7 +307,8 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
     stream_program_src << "						__global float* ptrResult," << std::endl;
     stream_program_src << "						uint fastStorageSize," << std::endl;
     stream_program_src << "						uint storageSize," << std::endl;
-    stream_program_src << "						uint offset)" << std::endl;
+    stream_program_src << "						uint offset," << std::endl;
+    stream_program_src << "						uint resultSize)" << std::endl;
     stream_program_src << "{" << std::endl;
     stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl;
     stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
@@ -324,7 +325,7 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
     stream_program_src << "	// Create registers for the data" << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "	float data_" << d << " = ptrData[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+      stream_program_src << "	float data_" << d << " = ptrData[globalIdx+(resultSize*" << d << ")];" << std::endl;
     }
 
     stream_program_src << std::endl;
@@ -526,6 +527,7 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
 
   cl_uint clFastStorageSize = (cl_uint)(oclStorageSize);
   cl_uint clStorageSize = (cl_uint)(storageSize);
+  cl_uint clResultSize = (cl_uint)(result_size);
   cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
   for (size_t i = 0; i < num_devices; i++) {
@@ -540,7 +542,8 @@ double OCLKernels::multModSPOCL(float* ptrAlpha, float* ptrData, float* ptrLevel
            clSetKernelArg(kernel_multModSP[i], 4, sizeof(cl_mem), &clResult[i]) ||
            clSetKernelArg(kernel_multModSP[i], 5, sizeof(cl_uint), &clFastStorageSize) ||
            clSetKernelArg(kernel_multModSP[i], 6, sizeof(cl_uint), &clStorageSize) ||
-           clSetKernelArg(kernel_multModSP[i], 7, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS) {
+           clSetKernelArg(kernel_multModSP[i], 7, sizeof(cl_uint), &clOffsets[i]) ||
+           clSetKernelArg(kernel_multModSP[i], 8, sizeof(cl_uint), &clResultSize) != CL_SUCCESS) {
         std::cout << "Failed to create kernel Args!" << std::endl;
         return 0.0;
       }

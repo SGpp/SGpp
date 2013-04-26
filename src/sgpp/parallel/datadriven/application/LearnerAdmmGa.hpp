@@ -25,10 +25,10 @@ namespace sg {
          * @param isRegression
          * @param verbose
          */
-    	LearnerADMMGa(const sg::base::RegularGridConfiguration& GridConfig, sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true, SolutionType method = Cholesky)
+        LearnerADMMGa(const sg::base::RegularGridConfiguration& GridConfig, sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true, SolutionType method = Cholesky)
           : LearnerAdmm(GridConfig, regularization, isRegression, isVerbose, method) {};
 
-    	LearnerADMMGa(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true, SolutionType method = Cholesky)
+        LearnerADMMGa(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true, SolutionType method = Cholesky)
           : LearnerAdmm(regularization, isRegression, isVerbose, method) {};
         /**
          * Constructor
@@ -38,7 +38,7 @@ namespace sg {
          * @param isRegression set to true if a regression task should be executed
          * @param verbose set to true in order to allow console output
          */
-    	LearnerADMMGa(std::string tGridFilename, std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose, SolutionType method = Cholesky)
+        LearnerADMMGa(std::string tGridFilename, std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose, SolutionType method = Cholesky)
           : LearnerAdmm(tGridFilename, tAlphaFilename, regularization, isRegression, isVerbose, method) {};
 
         /**

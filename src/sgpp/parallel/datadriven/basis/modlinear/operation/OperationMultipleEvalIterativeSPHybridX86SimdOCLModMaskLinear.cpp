@@ -437,7 +437,7 @@ namespace sg {
               __m128 support_3 = _mm_load1_ps(&(ptrAlpha[j]));
 
               __m128 zero = _mm_set1_ps(0.0f);
- 
+
               for (size_t d = 0; d < dims; d++) {
                 __m128 eval_0 = _mm_load_ps(&(ptrTransData[(d * 16)]));
                 __m128 eval_1 = _mm_load_ps(&(ptrTransData[(d * 16) + 4]));
