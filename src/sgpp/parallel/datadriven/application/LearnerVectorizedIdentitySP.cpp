@@ -67,9 +67,9 @@ namespace sg {
 
       classesComputed.setAll(0.0);
 
-      //if (this->vecType_ != OpenCL && this->vecType_ != ArBB && this->vecType_ != Hybrid_X86SIMD_OpenCL) {
-      tmpDataSet.transpose();
-      //}
+      if (this->vecType_ != ArBB) {
+        tmpDataSet.transpose();
+      }
 
       sg::parallel::OperationMultipleEvalVectorizedSP* MultEval = sg::op_factory::createOperationMultipleEvalVectorizedSP(*grid_, vecType_, &tmpDataSet);
       MultEval->multVectorized(*alpha_, classesComputed);
