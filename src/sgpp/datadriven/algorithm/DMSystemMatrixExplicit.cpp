@@ -32,7 +32,7 @@ namespace sg {
       //TODO: impplement the method
     }
 
-    double* DMSystemMatrixExplicit::compileMatrix(sg::base::GridStorage* storage,unsigned int first_index,unsigned int last_index) {
+    double* DMSystemMatrixExplicit::compileMatrix(sg::base::GridStorage* storage, unsigned int first_index, unsigned int last_index) {
       // Right now only support for modlin basis without vectorization is implemented
       //size_t source_size = this->dataset_->getNcols();
       size_t source_size = this->dataset_->getNrows();

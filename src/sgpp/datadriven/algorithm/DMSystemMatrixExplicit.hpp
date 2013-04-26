@@ -40,7 +40,7 @@ namespace sg {
          */
         virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
 
-        virtual double* compileMatrix(sg::base::GridStorage* storage,unsigned int first_index = 0, unsigned int last_index = UINT_MAX);
+        virtual double* compileMatrix(sg::base::GridStorage* storage, unsigned int first_index = 0, unsigned int last_index = UINT_MAX);
 
         /*virtual void serialize(std::ostream& ostr);
         virtual void serialize(const std::string& ostr);

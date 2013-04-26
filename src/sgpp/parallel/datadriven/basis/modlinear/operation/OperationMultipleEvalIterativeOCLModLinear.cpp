@@ -52,7 +52,7 @@ namespace sg {
       double* ptrIndex = this->index_->getPointer();
       double* ptrGlobalResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNcols()) {
         throw base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
@@ -76,11 +76,11 @@ namespace sg {
             if (ptrLevel[(j * dims) + d] == 2.0) {
               curSupport *= 1.0;
             } else if (ptrIndex[(j * dims) + d] == 1.0) {
-              curSupport *= std::max<double>(2.0 - ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])), 0.0);
+              curSupport *= std::max<double>(2.0 - ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i])), 0.0);
             } else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0)) {
-              curSupport *= std::max<double>(((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - ptrIndex[(j * dims) + d] + 1.0, 0.0);
+              curSupport *= std::max<double>(((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i])) - ptrIndex[(j * dims) + d] + 1.0, 0.0);
             } else {
-              curSupport *= std::max<double>(1.0 - fabs( ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - ptrIndex[(j * dims) + d] ), 0.0);
+              curSupport *= std::max<double>(1.0 - fabs( ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i])) - ptrIndex[(j * dims) + d] ), 0.0);
             }
           }
 
@@ -104,7 +104,7 @@ namespace sg {
       double* ptrLevel = this->level_->getPointer();
       double* ptrIndex = this->index_->getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNcols()) {
         throw base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 
