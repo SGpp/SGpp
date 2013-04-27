@@ -50,7 +50,7 @@ namespace sg {
       double* ptrIndex = this->index_->getPointer();
       double* ptrGlobalResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
@@ -71,7 +71,7 @@ namespace sg {
           double curSupport = ptrSource[i];
 
           for (size_t d = 0; d < dims; d++) {
-            double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+            double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
             double index_calc = eval - (ptrIndex[(j * dims) + d]);
             double abs = fabs(index_calc);
             double last = 1.0 - abs;
@@ -99,7 +99,7 @@ namespace sg {
       double* ptrLevel = this->level_->getPointer();
       double* ptrIndex = this->index_->getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 
