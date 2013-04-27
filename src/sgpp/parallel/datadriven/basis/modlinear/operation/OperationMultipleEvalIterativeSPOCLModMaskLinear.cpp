@@ -60,7 +60,7 @@ namespace sg {
       float* ptrOffset = this->offset_->getPointer();
       float* ptrGlobalResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNcols()) {
         throw base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
@@ -81,7 +81,7 @@ namespace sg {
           float curSupport = ptrSource[i];
 
           for (size_t d = 0; d < dims; d++) {
-            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
+            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i])) - (ptrIndex[(j * dims) + d]);
             uint64_t maskresult = *reinterpret_cast<unsigned int*>(&eval) | *reinterpret_cast<unsigned int*>(&(ptrMask[(j * dims) + d]));
             float masking = *reinterpret_cast<float*>( &maskresult );
             float last = masking + ptrOffset[(j * dims) + d];
@@ -111,7 +111,7 @@ namespace sg {
       float* ptrMask = this->mask_->getPointer();
       float* ptrOffset = this->offset_->getPointer();
 
-      if (this->dataset_->getNrows() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNcols()) {
         throw base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 

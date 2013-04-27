@@ -36,7 +36,7 @@ namespace sg {
 
       myOCLKernels = new OCLKernels();
 
-      _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNrows(), 128, 10);
+      _tuningMult = new sg::parallel::TwoPartitionAutoTuning(dataset->getNcols(), 128, 10);
       _tuningMultTrans = new sg::parallel::TwoPartitionAutoTuning(storage_->size(), 128, 10);
     }
 
@@ -92,23 +92,12 @@ namespace sg {
       double* ptrOffset = this->offset_->getPointer();
       double* ptrGlobalResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || source_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
       // split result into GPU and CPU partition
       size_t gpu_partition = storageSize - _tuningMultTrans->getPartition1Size();
-
-      // Do on-demand transpose
-      double* ptrTransData = new double[dims * source_size];
-
-      #pragma omp parallel for
-
-      for (size_t n = 0; n < source_size; n++) {
-        for (size_t d = 0; d < dims; d++) {
-          ptrTransData[(d * source_size) + n] = ptrData[(n * dims) + d];
-        }
-      }
 
       #pragma omp parallel default(shared)
       {
@@ -161,10 +150,10 @@ namespace sg {
               __m128d zero = _mm_set1_pd(0.0);
 
               for (size_t d = 0; d < dims; d++) {
-                __m128d eval_0 = _mm_load_pd(&(ptrTransData[(d * source_size) + i + 0]));
-                __m128d eval_1 = _mm_load_pd(&(ptrTransData[(d * source_size) + i + 2]));
-                __m128d eval_2 = _mm_load_pd(&(ptrTransData[(d * source_size) + i + 4]));
-                __m128d eval_3 = _mm_load_pd(&(ptrTransData[(d * source_size) + i + 6]));;
+                __m128d eval_0 = _mm_load_pd(&(ptrData[(d * source_size) + i + 0]));
+                __m128d eval_1 = _mm_load_pd(&(ptrData[(d * source_size) + i + 2]));
+                __m128d eval_2 = _mm_load_pd(&(ptrData[(d * source_size) + i + 4]));
+                __m128d eval_3 = _mm_load_pd(&(ptrData[(d * source_size) + i + 6]));;
 
                 __m128d level = _mm_loaddup_pd(&(ptrLevel[(j * dims) + d]));
                 __m128d index = _mm_loaddup_pd(&(ptrIndex[(j * dims) + d]));
@@ -232,10 +221,10 @@ namespace sg {
               __m256d zero = _mm256_set1_pd(0.0);
 
               for (size_t d = 0; d < dims; d++) {
-                __m256d eval_0 = _mm256_load_pd(&(ptrTransData[(d * source_size) + i + 0]));
-                __m256d eval_1 = _mm256_load_pd(&(ptrTransData[(d * source_size) + i + 4]));
-                __m256d eval_2 = _mm256_load_pd(&(ptrTransData[(d * source_size) + i + 8]));
-                __m256d eval_3 = _mm256_load_pd(&(ptrTransData[(d * source_size) + i + 12]));;
+                __m256d eval_0 = _mm256_load_pd(&(ptrData[(d * source_size) + i + 0]));
+                __m256d eval_1 = _mm256_load_pd(&(ptrData[(d * source_size) + i + 4]));
+                __m256d eval_2 = _mm256_load_pd(&(ptrData[(d * source_size) + i + 8]));
+                __m256d eval_3 = _mm256_load_pd(&(ptrData[(d * source_size) + i + 12]));;
 
                 __m256d level = _mm256_broadcast_sd(&(ptrLevel[(j * dims) + d]));
                 __m256d index = _mm256_broadcast_sd(&(ptrIndex[(j * dims) + d]));
@@ -300,7 +289,7 @@ namespace sg {
               double curSupport = ptrSource[i];
 
               for (size_t d = 0; d < dims; d++) {
-                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
+                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i])) - (ptrIndex[(j * dims) + d]);
                 uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) | *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
                 double masking = *reinterpret_cast<double*>( &maskresult );
                 double last = masking + ptrOffset[(j * dims) + d];
@@ -330,7 +319,6 @@ namespace sg {
 
       double time = std::max<double>(cpu_time, gpu_time);
       //cleanup
-      delete[] ptrTransData;
       delete[] cpu_times;
 
       return time;
@@ -363,7 +351,7 @@ namespace sg {
       double* ptrMask = this->mask_->getPointer();
       double* ptrOffset = this->offset_->getPointer();
 
-      if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % OCL_SGPP_LOCAL_WORKGROUP_SIZE != 0 || result_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 
@@ -418,15 +406,6 @@ namespace sg {
             __m128d res_2 = _mm_load_pd(&(ptrResult[i + 4]));
             __m128d res_3 = _mm_load_pd(&(ptrResult[i + 6]));
 
-            // Do on-demand transpose
-            double* ptrTransData = new double[dims * 8];
-
-            for (size_t n = 0; n < 8; n++) {
-              for (size_t d = 0; d < dims; d++) {
-                ptrTransData[(d * 8) + n] = ptrData[((i + n) * dims) + d];
-              }
-            }
-
             for (size_t j = 0; j < storageSize; j++) {
               __m128d support_0 = _mm_loaddup_pd(&(ptrAlpha[j]));
               __m128d support_1 = _mm_loaddup_pd(&(ptrAlpha[j]));
@@ -436,10 +415,10 @@ namespace sg {
               __m128d zero = _mm_set1_pd(0.0);
 
               for (size_t d = 0; d < dims; d++) {
-                __m128d eval_0 = _mm_load_pd(&(ptrTransData[(d * 8) + 0]));
-                __m128d eval_1 = _mm_load_pd(&(ptrTransData[(d * 8) + 2]));
-                __m128d eval_2 = _mm_load_pd(&(ptrTransData[(d * 8) + 4]));
-                __m128d eval_3 = _mm_load_pd(&(ptrTransData[(d * 8) + 6]));;
+                __m128d eval_0 = _mm_load_pd(&(ptrData[(d * result_size) + i + 0]));
+                __m128d eval_1 = _mm_load_pd(&(ptrData[(d * result_size) + i + 2]));
+                __m128d eval_2 = _mm_load_pd(&(ptrData[(d * result_size) + i + 4]));
+                __m128d eval_3 = _mm_load_pd(&(ptrData[(d * result_size) + i + 6]));;
 
                 __m128d level = _mm_loaddup_pd(&(ptrLevel[(j * dims) + d]));
                 __m128d index = _mm_loaddup_pd(&(ptrIndex[(j * dims) + d]));
@@ -484,8 +463,6 @@ namespace sg {
               res_3 = _mm_add_pd(res_3, support_3);
             }
 
-            delete[] ptrTransData;
-
             _mm_store_pd(&(ptrResult[i + 0]), res_0);
             _mm_store_pd(&(ptrResult[i + 2]), res_1);
             _mm_store_pd(&(ptrResult[i + 4]), res_2);
@@ -502,15 +479,6 @@ namespace sg {
             __m256d res_2 = _mm256_load_pd(&(ptrResult[i + 8]));
             __m256d res_3 = _mm256_load_pd(&(ptrResult[i + 12]));
 
-            // Do on-demand transpose
-            double* ptrTransData = new double[dims * 16];
-
-            for (size_t n = 0; n < 16; n++) {
-              for (size_t d = 0; d < dims; d++) {
-                ptrTransData[(d * 16) + n] = ptrData[((i + n) * dims) + d];
-              }
-            }
-
             for (size_t j = 0; j < storageSize; j++) {
               __m256d support_0 = _mm256_broadcast_sd(&(ptrAlpha[j]));
               __m256d support_1 = _mm256_broadcast_sd(&(ptrAlpha[j]));
@@ -520,10 +488,10 @@ namespace sg {
               __m256d zero = _mm256_set1_pd(0.0);
 
               for (size_t d = 0; d < dims; d++) {
-                __m256d eval_0 = _mm256_load_pd(&(ptrTransData[(d * 16) + 0]));
-                __m256d eval_1 = _mm256_load_pd(&(ptrTransData[(d * 16) + 4]));
-                __m256d eval_2 = _mm256_load_pd(&(ptrTransData[(d * 16) + 8]));
-                __m256d eval_3 = _mm256_load_pd(&(ptrTransData[(d * 16) + 12]));;
+                __m256d eval_0 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 0]));
+                __m256d eval_1 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 4]));
+                __m256d eval_2 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 8]));
+                __m256d eval_3 = _mm256_load_pd(&(ptrData[(d * result_size) + i + 12]));;
 
                 __m256d level = _mm256_broadcast_sd(&(ptrLevel[(j * dims) + d]));
                 __m256d index = _mm256_broadcast_sd(&(ptrIndex[(j * dims) + d]));
@@ -568,8 +536,6 @@ namespace sg {
               res_3 = _mm256_add_pd(res_3, support_3);
             }
 
-            delete[] ptrTransData;
-
             _mm256_store_pd(&(ptrResult[i + 0]), res_0);
             _mm256_store_pd(&(ptrResult[i + 4]), res_1);
             _mm256_store_pd(&(ptrResult[i + 8]), res_2);
@@ -584,7 +550,7 @@ namespace sg {
               double curSupport = ptrAlpha[j];
 
               for (size_t d = 0; d < dims; d++) {
-                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d])) - (ptrIndex[(j * dims) + d]);
+                double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i])) - (ptrIndex[(j * dims) + d]);
                 uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) | *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
                 double masking = *reinterpret_cast<double*>( &maskresult );
                 double last = masking + ptrOffset[(j * dims) + d];

@@ -7,12 +7,13 @@
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
+//#define USEOCL_NONMASK_MODLINEAR
+
 #include "parallel/operation/ParallelOpFactory.hpp"
 
 #include <cstring>
 
 #include "base/exception/factory_exception.hpp"
-
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp"
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp"

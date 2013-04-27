@@ -47,7 +47,7 @@ double OCLKernels::multTransModMaskOCL(double* ptrSource, double* ptrData, doubl
     stream_program_src << "	{" << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "		locData[(localIdx*" << dims << ")+" << d << "] = ptrData[((i+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+      stream_program_src << "		locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+(localIdx)] = ptrData[(" << d << "*sourceSize)+(localIdx+i)];" << std::endl;
     }
 
     stream_program_src << "		locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
@@ -65,9 +65,9 @@ double OCLKernels::multTransModMaskOCL(double* ptrSource, double* ptrData, doubl
 
     for (size_t d = 0; d < dims; d++) {
 #ifdef USEOCL_LOCAL_MEMORY
-      stream_program_src << "			eval = ((level_" << d << ") * (locData[(k*" << dims << ")+" << d << "]));" << std::endl;
+      stream_program_src << "			eval = ((level_" << d << ") * (locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+k]));" << std::endl;
 #else
-      stream_program_src << "			eval = ((level_" << d << ") * (ptrData[(k*" << dims << ")+" << d << "]));" << std::endl;
+      stream_program_src << "			eval = ((level_" << d << ") * (ptrData[(" << d << "*sourceSize)+k]));" << std::endl;
 #endif
       stream_program_src << "			index_calc = eval - (index_" << d << ");" << std::endl;
       stream_program_src << "			abs = as_double(as_ulong(index_calc) | as_ulong(mask_" << d << "));" << std::endl;
@@ -301,7 +301,8 @@ double OCLKernels::multModMaskOCL(double* ptrAlpha, double* ptrData, double* ptr
     stream_program_src << "						__global double* ptrResult," << std::endl;
     stream_program_src << "						uint fastStorageSize," << std::endl;
     stream_program_src << "						uint storageSize," << std::endl;
-    stream_program_src << "						uint offset)" << std::endl;
+    stream_program_src << "						uint offset," << std::endl;
+    stream_program_src << "						uint resultSize)" << std::endl;
     stream_program_src << "{" << std::endl;
     stream_program_src << "	int globalIdx = get_global_id(0);" << std::endl;
     stream_program_src << "	int localIdx = get_local_id(0);" << std::endl;
@@ -320,7 +321,7 @@ double OCLKernels::multModMaskOCL(double* ptrAlpha, double* ptrData, double* ptr
     stream_program_src << "	// Create registers for the data" << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "	double data_" << d << " = ptrData[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+      stream_program_src << "	double data_" << d << " = ptrData[globalIdx+(resultSize*" << d << ")];" << std::endl;
     }
 
     stream_program_src << std::endl;
@@ -496,6 +497,7 @@ double OCLKernels::multModMaskOCL(double* ptrAlpha, double* ptrData, double* ptr
 
   cl_uint clFastStorageSize = (cl_uint)(oclStorageSize);
   cl_uint clStorageSize = (cl_uint)(storageSize);
+  cl_uint clResultSize = (cl_uint)(result_size);
   cl_uint clOffsets[MAX_OCL_DEVICE_COUNT];
 
   for (size_t i = 0; i < num_devices; i++) {
@@ -512,7 +514,8 @@ double OCLKernels::multModMaskOCL(double* ptrAlpha, double* ptrData, double* ptr
            clSetKernelArg(kernel_multModMaskDP[i], 6, sizeof(cl_mem), &clResult[i]) ||
            clSetKernelArg(kernel_multModMaskDP[i], 7, sizeof(cl_uint), &clFastStorageSize) ||
            clSetKernelArg(kernel_multModMaskDP[i], 8, sizeof(cl_uint), &clStorageSize) ||
-           clSetKernelArg(kernel_multModMaskDP[i], 9, sizeof(cl_uint), &clOffsets[i]) != CL_SUCCESS) {
+           clSetKernelArg(kernel_multModMaskDP[i], 9, sizeof(cl_uint), &clOffsets[i]) ||
+           clSetKernelArg(kernel_multModMaskDP[i], 10, sizeof(cl_uint), &clResultSize) != CL_SUCCESS) {
         std::cout << "OCL Error: Failed to create kernel Args!" << std::endl;
         return 0.0;
       }
