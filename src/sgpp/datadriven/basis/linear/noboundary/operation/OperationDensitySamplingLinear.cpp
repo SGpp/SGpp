@@ -45,28 +45,35 @@ namespace sg {
         // 2. 1D sampling on dim_start
         base::DataVector* samples_start = NULL;
         OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
-        samp1d->doSampling1D(a1d, size, samples_start);
+	drand48_data tseedp;
+	srand48_r(time(NULL)*0.0001, &tseedp);
+        samp1d->doSampling1D(a1d, size, samples_start, &tseedp);
         delete samp1d;
         delete g1d;
         delete a1d;
 
         // 3. for every sample do...
-        base::DataVector* sampleVec;
-        size_t j;
-        #pragma omp parallel for private(sampleVec,j) schedule(dynamic)
-
-        for (size_t i = 0; i < samples_start->getSize(); i++) {
-
-          sampleVec = new base::DataVector(num_dims);
-          sampleVec->setAll(0.0);
-          sampleVec->set(dim_start, samples_start->get(i));
-          doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec);
-
-          for (j = 0; j < num_dims; j++)
-            samples->set(dim_start * trunk + i, j, sampleVec->get(j));
-
-          delete sampleVec;
-        }
+        #pragma omp parallel
+	{
+	  base::DataVector *sampleVec = new base::DataVector(num_dims);
+	  drand48_data seedp;
+	  #pragma omp critical
+	  {
+	    double a = 0;
+	    long int b = 0;
+	    drand48_r(&tseedp, &a);
+	    lrand48_r(&tseedp, &b);
+	    srand48_r(time(NULL)*a + (omp_get_thread_num() + 1)*1000*b, &seedp);
+	  } 
+          #pragma omp for schedule(dynamic)
+	  for (size_t i = 0; i < samples_start->getSize(); i++) {
+	    sampleVec->set(dim_start, samples_start->get(i));
+	    doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec, &seedp);
+	    for (size_t j = 0; j < num_dims; j++)
+	      samples->set(dim_start * trunk + i, j, sampleVec->get(j));
+	  }
+	  delete sampleVec;
+	}
 
         delete samples_start;
       }
@@ -94,41 +101,46 @@ namespace sg {
       // 2. 1D sampling on dim_start
       base::DataVector* samples_start = NULL;
       OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
-      samp1d->doSampling1D(a1d, num_samples, samples_start);
+      drand48_data tseedp;
+      srand48_r(time(NULL)*0.0001, &tseedp);
+      samp1d->doSampling1D(a1d, num_samples, samples_start, &tseedp);
       delete samp1d;
       delete g1d;
       delete a1d;
 
       // 3. for every sample do...
-      base::DataVector* sampleVec;
-      size_t j;
-
-      #pragma omp parallel for private(sampleVec,j) schedule(dynamic)
-
-      for (size_t i = 0; i < num_samples; i++) {
-
-        sampleVec = new base::DataVector(num_dims);
-        sampleVec->setAll(0.0);
-        sampleVec->set(dim_x, samples_start->get(i));
-        doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec);
-
-        for (j = 0; j < num_dims; j++)
-          samples->set(i, j, sampleVec->get(j));
-
-        delete sampleVec;
+      #pragma omp parallel 
+      {
+	base::DataVector *sampleVec = new base::DataVector(num_dims);
+	drand48_data* seedp = new drand48_data;
+	#pragma omp critical
+	{
+	  double a = 0;
+	  long int b = 0;
+	  drand48_r(&tseedp, &a);
+	  lrand48_r(&tseedp, &b);
+	  srand48_r(time(NULL)*a + omp_get_thread_num()*1000*b, seedp);
+	}
+        #pragma omp for schedule(dynamic)
+	for (size_t i = 0; i < num_samples; i++) {
+	  sampleVec->set(dim_x, samples_start->get(i));
+	  doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec, seedp);
+	  for (size_t j = 0; j < num_dims; j++)
+	    samples->set(i, j, sampleVec->get(j));
+	}
+	delete seedp;
       }
-
       delete samples_start;
       return;
     }
 
-    void OperationDensitySamplingLinear::doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector*& sampleVec) {
+    void OperationDensitySamplingLinear::doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector*& sampleVec, drand48_data* seedp) {
 
       size_t dims = sampleVec->getSize(); // total dimensions
 
       if ((dims > 1) && (dim_start <= dims - 1)) {
         size_t curr_dim = dim_start;
-        doSampling_in_next_dim(g_in, a_in, dim_start, sampleVec, curr_dim);
+        doSampling_in_next_dim(g_in, a_in, dim_start, sampleVec, curr_dim, seedp);
       } else if (dims == 1) {
         throw base::operation_exception("Error: # of dimensions = 1. No operation needed!");
       } else {
@@ -138,7 +150,7 @@ namespace sg {
       return;
     }
 
-    void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim) {
+    void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim, drand48_data* seedp) {
 
       size_t dims = sampleVec->getSize();  // total dimensions
       unsigned int op_dim = (curr_dim < dim_x) ? 0 : (unsigned int)dim_x; // actual dim to be operated on
@@ -168,7 +180,7 @@ namespace sg {
 
         // Draw a sample in next dimension
         OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
-        samp1d->doSampling1D(a1d, 1, sample);
+        samp1d->doSampling1D(a1d, 1, sample, seedp);
         delete samp1d;
         delete g1d;
         delete a1d;
@@ -176,7 +188,7 @@ namespace sg {
       } else {
         // skip Marginalize, directly draw a sample in next dimension
         OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g_out);
-        samp1d->doSampling1D(a_out, 1, sample);
+        samp1d->doSampling1D(a_out, 1, sample, seedp);
         delete samp1d;
       }
 
@@ -186,7 +198,7 @@ namespace sg {
 
       /* Step 4: sample in next dimension */
       if (g_out->getStorage()->dim() > 1)
-        doSampling_in_next_dim(g_out, a_out, dim_x, sampleVec, curr_dim);
+        doSampling_in_next_dim(g_out, a_out, dim_x, sampleVec, curr_dim, seedp);
 
       delete g_out;
       delete a_out;

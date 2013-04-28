@@ -29,7 +29,7 @@ namespace sg {
       // TODO Auto-generated destructor stub
     }
 
-    void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples) {
+    void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, drand48_data *seedp) {
 
       /***************** STEP 1. Compute CDF  ********************/
 
@@ -92,12 +92,10 @@ namespace sg {
       samples = new base::DataVector(num_samples);
 
       double y, x1, x2, y1, y2;
-
       for (size_t i = 0; i < num_samples; i++) {
-        // seed is set in the calling function, not here
-        // generate random number uniformly on [0,1]
-        y = (double)rand() / ((double)RAND_MAX + 1);
-
+        // drand48_r() is thread_safe
+        drand48_r(seedp, &y);
+	
         // find cdf interval
         for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1)
           if ((*it1).second >= y) break;

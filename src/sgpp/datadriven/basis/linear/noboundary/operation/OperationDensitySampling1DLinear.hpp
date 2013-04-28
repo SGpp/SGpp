@@ -26,8 +26,9 @@ namespace sg {
          * @param alpha Coefficient vector for current grid (1D grid)
          * @param num_samples # of samples to draw
          * @param samples Output DataVector
+	 * @param seedp seed
          */
-        void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples);
+      void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, drand48_data* seedp);
     };
 
   }
