@@ -58,14 +58,11 @@ namespace sg {
 	  for (; j < trial_max; j++) {
 	    
 	    // pick a random data point "p"
-	    #pragma omp critical
-	    {
 	    for (size_t d = 0; d < num_dims; d++)
 	      p[d] = static_cast<double>(rand_r(&seedp))/RAND_MAX;
 	    
 	    // evaluate at this point "p"
 	    fhat = opEval->eval(*alpha, p);
-	    }
 	    if ((static_cast<double>(rand_r(&seedp))/RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
 	      samples->setRow(i, p);
 	      break;
