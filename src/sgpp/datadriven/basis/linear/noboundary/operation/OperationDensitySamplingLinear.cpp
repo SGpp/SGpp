@@ -52,11 +52,21 @@ namespace sg {
         delete g1d;
         delete a1d;
 
+	std::string strgrid = this->grid->serialize();
+
         // 3. for every sample do...
         #pragma omp parallel
 	{
+	  #pragma omp critical
+	  {
+		std::cout << dim_start << ":" << omp_get_thread_num() << ": " << time(NULL) << std::endl;
+	  }
 	  base::DataVector *sampleVec = new base::DataVector(num_dims);
+	  //base::DataVector ownAlpha(*alpha);
+          base::Grid* ownGrid = NULL;
 	  drand48_data seedp;
+ 	  size_t samplesSize = samples_start->getSize();
+	  //ownGrid = base::Grid::unserialize(strgrid);
 	  #pragma omp critical
 	  {
 	    double a = 0;
@@ -64,17 +74,22 @@ namespace sg {
 	    drand48_r(&tseedp, &a);
 	    lrand48_r(&tseedp, &b);
 	    srand48_r(time(NULL)*a + (omp_get_thread_num() + 1)*1000*b, &seedp);
+	    ownGrid = base::Grid::unserialize(strgrid);
 	  } 
+ 	  #pragma omp critical
+	  {
+		std::cout << dim_start << ":" << omp_get_thread_num() << ": " << time(NULL) << std::endl;
+	  }
           #pragma omp for schedule(dynamic)
-	  for (size_t i = 0; i < samples_start->getSize(); i++) {
+	  for (size_t i = 0; i < samplesSize; i++) {
 	    sampleVec->set(dim_start, samples_start->get(i));
 	    doSampling_start_dimX(this->grid, alpha, dim_start, sampleVec, &seedp);
 	    for (size_t j = 0; j < num_dims; j++)
 	      samples->set(dim_start * trunk + i, j, sampleVec->get(j));
 	  }
 	  delete sampleVec;
+	  delete ownGrid;
 	}
-
         delete samples_start;
       }
 

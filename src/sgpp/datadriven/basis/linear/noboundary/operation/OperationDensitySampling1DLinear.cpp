@@ -47,6 +47,8 @@ namespace sg {
         coord_cdf.insert( std::pair<double, double>(coord[0], i) );
       }
 
+      delete opEval;
+      opEval = NULL;
       // include values at the boundary [0,1]
       coord_pdf.insert( std::pair<double, double>(0.0, 0.0) );
       coord_pdf.insert( std::pair<double, double>(1.0, 0.0) );
