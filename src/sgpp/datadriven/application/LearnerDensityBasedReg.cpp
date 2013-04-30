@@ -257,7 +257,7 @@ namespace sg {
 
           delete cond;
 
-          if (j > 1) {
+          if (j > 0) {
             delete lastAlpha;
             delete lastGrid;
           }
@@ -300,7 +300,7 @@ namespace sg {
 
         delete cond;
 
-        if (j > 1) {
+        if (j > 0) {
           delete lastAlpha;
           delete lastGrid;
         }
