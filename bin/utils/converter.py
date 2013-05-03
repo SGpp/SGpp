@@ -28,7 +28,7 @@
 
 from optparse import OptionParser
 import sys, os
-sys.path.append(os.path.join(sys.path[0], "../.."))
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], "..", "..")))
 from bin.tools import *
 
 if __name__=='__main__':
@@ -145,6 +145,7 @@ if __name__=='__main__':
     
     # omitt certain attributes?
     if options.omitt:
+        print "Omitting out of function!"
         dim = data[0]["data"].getNcols()
         attribs = range(dim)
         for a in options.omitt:

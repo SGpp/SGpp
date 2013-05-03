@@ -784,14 +784,8 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
 def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1, verbose=False):
     if verbose:
         print "Cut-off at", border
-    def separate(x):
-        if x >= border or x < minborder:
-            return 1
-        else:
-            return -1
-        
     for dataset in data:
-        dataset["classes"] = map(separate, dataset["classes"])
+        dataset["classes"].partitionClasses(border)
     return
 
 #-------------------------------------------------------------------------------
