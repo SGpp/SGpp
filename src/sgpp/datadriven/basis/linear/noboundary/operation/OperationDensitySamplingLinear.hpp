@@ -44,8 +44,8 @@ namespace sg {
 
       protected:
         base::Grid* grid;
-      void doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector*& sampleVec, drand48_data* seedp);
-      void doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim, drand48_data* seedp);
+        void doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector*& sampleVec, drand48_data* seedp);
+        void doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim, drand48_data* seedp);
     };
 
   }

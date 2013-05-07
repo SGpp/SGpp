@@ -127,10 +127,10 @@ namespace sg {
           myTimer_->start();
 #endif
 #ifdef DEBUG
-                #pragma omp critical
-                {
-                  std::cout << tid << " " << myStart << " " << myEnd << " " << storageSize << std::endl;
-                }
+          #pragma omp critical
+          {
+            std::cout << tid << " " << myStart << " " << myEnd << " " << storageSize << std::endl;
+          }
 #endif
 #if defined(__SSE3__) && !defined(__AVX__)
 
@@ -392,10 +392,10 @@ namespace sg {
           myTimer_->start();
 #endif
 #if DEBUG
-                #pragma omp critical
-                {
-                  std::cout << tid << " " << myStart << " " << myEnd << " " << result_size << std::endl;
-                }
+          #pragma omp critical
+          {
+            std::cout << tid << " " << myStart << " " << myEnd << " " << result_size << std::endl;
+          }
 #endif
 #if defined(__SSE3__) && !defined(__AVX__)
 
