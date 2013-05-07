@@ -24,6 +24,20 @@ namespace sg {
 
       storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
       storage->getLevelForIntegral(*(this->level_int_));
+      this->lambda_ = new sg::base::DataVector(storage->dim());
+      this->lambda_->setAll(1.0);
+    }
+
+    OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
+      this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      lcl_q = new double[this->storage->dim()];
+      lcl_q_inv = new double[this->storage->dim()];
+
+      storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+      storage->getLevelForIntegral(*(this->level_int_));
+      this->lambda_ = new sg::base::DataVector(lambda);
     }
 
     OperationLaplaceVectorizedLinear::~OperationLaplaceVectorizedLinear() {
@@ -32,6 +46,9 @@ namespace sg {
       delete this->index_;
       delete[] lcl_q;
       delete[] lcl_q_inv;
+
+      if (this->lambda_ != NULL)
+        delete this->lambda_;
     }
 
     double OperationLaplaceVectorizedLinear::gradient(size_t i, size_t j, size_t dim) {
@@ -197,7 +214,7 @@ namespace sg {
                   element *= ((dot_temp[d_inner] * (d_outer != d_inner)) + (gradient_temp[d_inner] * (d_outer == d_inner)));
                 }
 
-                result[ii] += element;
+                result[ii] += (this->lambda_->get(d_outer) * element);
               }
 
               //        lcl_count++;
@@ -230,7 +247,7 @@ namespace sg {
               element *= ((l2dot(i, j, d_inner) * (d_outer != d_inner)) + (gradient(i, j, d_inner) * (d_outer == d_inner)));
             }
 
-            result[i] += element;
+            result[i] += (this->lambda_->get(d_outer) * element);
           }
         }
       }

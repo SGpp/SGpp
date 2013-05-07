@@ -12,6 +12,7 @@
 
 #include "base/grid/Grid.hpp"
 #include "base/operation/OperationMatrix.hpp"
+#include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 
@@ -79,6 +80,18 @@ namespace sg {
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
     base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid);
+
+    /**
+     * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * This Laplacian is implemented directly be creating each matrix element on the fly
+     *
+     * @param grid Grid which is to be used
+     * @param lambda Vector which contains pre-factors for every dimension of the operator
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda);
   }
 
 }

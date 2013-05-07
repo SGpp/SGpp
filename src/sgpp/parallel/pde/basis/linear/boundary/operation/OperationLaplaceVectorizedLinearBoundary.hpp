@@ -28,6 +28,7 @@ namespace sg {
         sg::base::DataMatrix* index_;
         double* lcl_q;
         double* lcl_q_inv;
+        sg::base::DataVector* lambda_;
 
         double gradient_dirichlet(size_t i, size_t j, size_t dim);
 
@@ -42,6 +43,14 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          */
         OperationLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage);
+
+        /**
+         * Construtor of OperationLaplaceLinear
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         * @param lambda Vector which contains pre-factors for every dimension of the operator
+         */
+        OperationLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
         /**
          * Destructor

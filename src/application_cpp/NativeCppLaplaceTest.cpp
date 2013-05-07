@@ -24,11 +24,12 @@ int main(int argc, char* argv[]) {
   double bound_left;
   double bound_right;
   int dirichlet;
+  int lmb;
   std::string test;
   std::string grid_selection;
 
-  if (argc != 8) {
-    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B]" << std::endl << std::endl;
+  if (argc != 9) {
+    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]" << std::endl << std::endl;
     exit(-1);
   }
 
@@ -39,6 +40,7 @@ int main(int argc, char* argv[]) {
   dirichlet = atoi(argv[5]);
   test.assign(argv[6]);
   grid_selection.assign(argv[7]);
+  lmb = atoi(argv[8]);
 
   sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
 
@@ -59,6 +61,16 @@ int main(int argc, char* argv[]) {
   sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
 
+  // Generate lambda for test if needed
+  sg::base::DataVector lambda(dim);
+
+  if (lmb == 1) {
+    for (size_t d = 0; d < dim; d++)
+      lambda.set(d, ((double)(d + 1) / (double)dim));
+  } else {
+    lambda.setAll(1.0);
+  }
+
   // Test inner grid
   sg::base::Grid* myGrid;
 
@@ -67,7 +79,7 @@ int main(int argc, char* argv[]) {
   } else if (grid_selection == "B") {
     myGrid = new sg::base::LinearTrapezoidBoundaryGrid(*myBoundingBox);
   } else {
-    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B]" << std::endl << std::endl;
+    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]" << std::endl << std::endl;
     exit(-1);
   }
 
@@ -81,8 +93,16 @@ int main(int argc, char* argv[]) {
   sg::base::DataVector* result_updown = new sg::base::DataVector(gridsize);
   sg::base::DataVector* result_vector = new sg::base::DataVector(gridsize);
 
-  sg::base::OperationMatrix* updown = sg::op_factory::createOperationLaplace(*myGrid);
-  sg::base::OperationMatrix* vect = sg::op_factory::createOperationLaplaceVectorized(*myGrid);
+  sg::base::OperationMatrix* updown;
+  sg::base::OperationMatrix* vect;
+
+  if (lmb == 1) {
+    updown = sg::op_factory::createOperationLaplace(*myGrid, lambda);
+    vect = sg::op_factory::createOperationLaplaceVectorized(*myGrid, lambda);
+  } else {
+    updown = sg::op_factory::createOperationLaplace(*myGrid);
+    vect = sg::op_factory::createOperationLaplaceVectorized(*myGrid);
+  }
 
   std::cout << std::endl;
   std::cout << "Laplace Test Application" << std::endl;
@@ -93,7 +113,13 @@ int main(int argc, char* argv[]) {
   std::cout << "Left Bound.:  " << bound_left << std::endl;
   std::cout << "Right Bound.: " << bound_right << std::endl;
   std::cout << "Gridsize:     " << gridsize << std::endl;
-  std::cout << "chosen Test:  " << test << std::endl << std::endl;
+  std::cout << "chosen Test:  " << test << std::endl;
+  std::cout << "Lambda:       ";
+
+  for (size_t d = 0; d < dim; d++)
+    std::cout << lambda.get(d) << " ";
+
+  std::cout << std::endl << std::endl;
 
   double max_error = 0.0;
 

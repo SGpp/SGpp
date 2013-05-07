@@ -293,6 +293,16 @@ namespace sg {
         throw base::factory_exception("OperationLaplaceVectorized is not implemented for this grid type.");
       }
     }
+
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda) {
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage(), lambda);
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+        return new parallel::OperationLaplaceVectorizedLinearBoundary(grid.getStorage(), lambda);
+      } else {
+        throw base::factory_exception("OperationLaplaceVectorized is not implemented for this grid type.");
+      }
+    }
   }
 }
 
