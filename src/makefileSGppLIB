@@ -337,8 +337,6 @@ OBJS =	DataVector.o\
 	OperationSecondMomentLinear.o\
 	OperationFirstMomentLinear.o\
 	PartitioningTool.o\
-	OperationDensityMarginalizeLinear.o\
-	OperationDensityConditionalLinear.o\
 	DMVectorizationPaddingAssistant.o\
 	OperationMatrixLTwoDotExplicitLinear.o\
 	OperationMatrixLTwoDotExplicitLinearBoundary.o\
@@ -1537,12 +1535,6 @@ OperationSecondMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/
 
 OperationFirstMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationFirstMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
-	
-OperationDensityConditionalLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityConditionalLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
-	
-OperationDensityMarginalizeLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityMarginalizeLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
 
 DMVectorizationPaddingAssistant.o : $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMVectorizationPaddingAssistant.o $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
