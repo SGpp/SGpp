@@ -1,14 +1,14 @@
 #!/bin/sh
 # run specific variables, please adjust
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=8
 # prefix for result files
-RESPRE=K20m
+RESPRE=W8000
 VECTYPE="OCL"
 PRECISION="SP DP"
 
 ###### DO NOT MODIFY BELOW THIS LINE #######
-export KMP_AFFINITY=proclist=[0-15],granularity=thread,verbose
-#export GOMP_CPU_AFFINITY="0-7"
+#export KMP_AFFINITY=proclist=[0-15],granularity=thread,verbose
+export GOMP_CPU_AFFINITY="0-7"
 #. /opt/intel/bin/compilervars.sh intel64
 #. /opt/intel/arbb/1.0.0.026/tools/arbbvars.sh intel64
 for VEC in $VECTYPE
