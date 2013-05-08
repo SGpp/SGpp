@@ -364,8 +364,7 @@ OBJS =	DataVector.o\
 	OperationDensitySamplingLinear.o\
 	OperationDensityConditionalLinear.o\
 	OperationDensityMarginalizeLinear.o\
-	OperationDensityRejectionSamplingLinear.o\
-	OperationDensityConditionalLinear.o 
+	OperationDensityRejectionSamplingLinear.o
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
