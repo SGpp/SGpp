@@ -46,7 +46,7 @@ namespace sg {
         base::DataVector* samples_start = NULL;
         OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
         drand48_data tseedp;
-        srand48_r(time(NULL) * 0.0001, &tseedp);
+        srand48_r(static_cast<long int>(static_cast<double>(time(NULL)) * 0.0001), &tseedp);
         samp1d->doSampling1D(a1d, size, samples_start, &tseedp);
         delete samp1d;
         delete g1d;
@@ -65,7 +65,7 @@ namespace sg {
             long int b = 0;
             drand48_r(&tseedp, &a);
             lrand48_r(&tseedp, &b);
-            srand48_r(time(NULL)*a + (omp_get_thread_num() + 1) * 1000 * b, &seedp);
+            srand48_r(static_cast<long int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b)), &seedp);
           }
           #pragma omp for schedule(dynamic)
 
@@ -106,7 +106,7 @@ namespace sg {
       base::DataVector* samples_start = NULL;
       OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
       drand48_data tseedp;
-      srand48_r(time(NULL) * 0.0001, &tseedp);
+      srand48_r(static_cast<long int>(static_cast<double>(time(NULL)) * 0.0001), &tseedp);
       samp1d->doSampling1D(a1d, num_samples, samples_start, &tseedp);
       delete samp1d;
       delete g1d;
@@ -123,7 +123,7 @@ namespace sg {
           long int b = 0;
           drand48_r(&tseedp, &a);
           lrand48_r(&tseedp, &b);
-          srand48_r(time(NULL)*a + omp_get_thread_num() * 1000 * b, seedp);
+          srand48_r(static_cast<long int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b)), seedp);
         }
         #pragma omp for schedule(dynamic)
 
