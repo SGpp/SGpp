@@ -356,7 +356,16 @@ OBJS =	DataVector.o\
 	OperationLaplaceEnhancedLinear.o\
 	MiscOpFactory.o\
 	OperationLaplaceVectorizedLinear.o\
-	OperationLaplaceVectorizedLinearBoundary.o
+	OperationLaplaceVectorizedLinearBoundary.o\
+	LearnerDensityBased.o\
+	LearnerDensityBasedReg.o\
+	OperationDensityMargTo1DLinear.o\
+	OperationDensitySampling1DLinear.o\
+	OperationDensitySamplingLinear.o\
+	OperationDensityConditionalLinear.o\
+	OperationDensityMarginalizeLinear.o\
+	OperationDensityRejectionSamplingLinear.o\
+	OperationDensityConditionalLinear.o 
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1568,6 +1577,30 @@ OperationLaplaceVectorizedLinear.o : $(SRCDIR)parallel/pde/basis/linear/nobounda
 
 OperationLaplaceVectorizedLinearBoundary.o : $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinearBoundary.o $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
+
+LearnerDensityBased.o : $(SRCDIR)datadriven/application/LearnerDensityBased.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerDensityBased.o $(SRCDIR)datadriven/application/LearnerDensityBased.cpp
+
+LearnerDensityBasedReg.o : $(SRCDIR)datadriven/application/LearnerDensityBasedReg.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerDensityBasedReg.o $(SRCDIR)datadriven/application/LearnerDensityBasedReg.cpp
+
+OperationDensityMarginalizeLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityMarginalizeLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
+
+OperationDensityMargTo1DLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityMargTo1DLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.cpp
+
+OperationDensitySampling1DLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensitySampling1DLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.cpp
+
+OperationDensitySamplingLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensitySamplingLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.cpp
+
+OperationDensityRejectionSamplingLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityRejectionSamplingLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.cpp
+
+OperationDensityConditionalLinear.o : $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationDensityConditionalLinear.o $(SRCDIR)datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
 
 # ArBB Extensions:
 OperationMultipleEvalIterativeArBBLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.cpp

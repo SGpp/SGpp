@@ -171,7 +171,7 @@ if env['TARGETCPU'] == 'default':
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
-                         '-fno-strict-aliasing', '-O3',
+                         '-fno-strict-aliasing', '-O3', '-Wconversion',
                          '-funroll-loops', '-mfpmath=sse', '-msse3', '-fPIC',
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
     if env['OMP']:
