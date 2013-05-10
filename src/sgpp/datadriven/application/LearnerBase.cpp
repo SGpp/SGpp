@@ -176,7 +176,11 @@ namespace sg {
         if (isVerbose_)
           std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
+#ifdef USE_MPI
+        // This barrier is needed since just the time measurement
+        // of process 0 is printed
         MPI_Barrier(MPI_COMM_WORLD);
+#endif
         myStopwatch->start();
 
         // Do Refinements
@@ -209,7 +213,11 @@ namespace sg {
 
         myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
+#ifdef USE_MPI
+        // This barrier is needed since just the time measurement
+        // of process 0 is printed
         MPI_Barrier(MPI_COMM_WORLD);
+#endif
         execTime_ += myStopwatch->stop();
 
         if (isVerbose_) {

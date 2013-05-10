@@ -27,7 +27,7 @@ namespace sg {
 
       #pragma omp parallel
       {
-        unsigned int seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * (omp_get_thread_num() + 1));
+        unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (omp_get_thread_num() + 1));
         #pragma omp for
 
         for (size_t i = 0; i < SEARCH_MAX; i++) {
@@ -47,7 +47,7 @@ namespace sg {
 
       #pragma omp parallel
       {
-        unsigned int seedp = static_cast<unsigned int>(time(NULL)) * (omp_get_thread_num() + 1);
+        unsigned int seedp = (unsigned int)(time(NULL)) * (omp_get_thread_num() + 1);
         base::DataVector p(num_dims);
         double fhat = 0.0;
         base::OperationEval* opEval = op_factory::createOperationEval(*grid);
