@@ -176,6 +176,7 @@ namespace sg {
         if (isVerbose_)
           std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
+        MPI_Barrier(MPI_COMM_WORLD);
         myStopwatch->start();
 
         // Do Refinements
@@ -208,6 +209,7 @@ namespace sg {
 
         myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
+        MPI_Barrier(MPI_COMM_WORLD);
         execTime_ += myStopwatch->stop();
 
         if (isVerbose_) {
