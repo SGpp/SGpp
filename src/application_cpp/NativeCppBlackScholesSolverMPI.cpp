@@ -563,7 +563,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
   }
 
   for (size_t i = start_l; i <= end_l; i++) {
-    size_t level = i;
+    int level = (int)i;
 
     // Reset Solve Time
     myBSSolver->resetSolveTime();
@@ -817,7 +817,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
                                   std::string Solver, std::string refinementMode, int numRefinePoints, size_t maxRefineLevel, size_t nIterAdaptSteps, double dRefineThreshold,
                                   bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold, std::string coordsType, bool useNormalDist) {
   size_t dim = d;
-  size_t level = l;
+  int level = (int)l;
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
@@ -865,7 +865,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
   // Enable Coarsening
   if (useCoarsen == true) {
-    myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
+    myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, (int)maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
   }
 
   if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
@@ -951,9 +951,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
           std::cout << "Refining Grid..." << std::endl;
 
           if (useNormalDist == true) {
-            myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
+            myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha, dRefineThreshold, (int)maxRefineLevel, norm_mu, norm_sigma);
           } else {
-            myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, maxRefineLevel);
+            myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold, (int)maxRefineLevel);
           }
 
           myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
