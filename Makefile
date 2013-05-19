@@ -65,7 +65,7 @@ CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-long-long -pedantic 
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
 CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
-LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3 -static-intel
+LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3
 #CFLAGS_ICC:=-Wall -Wconversion -Wno-deprecated -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
 #LFLAGS_ICC:=-Wall -ansi -O3
 
