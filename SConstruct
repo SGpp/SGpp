@@ -77,11 +77,15 @@ def CheckJNI(context):
 # Definition of flags / command line parameters for SCons
 #########################################################################
 
+def multiParamConverter(s):
+    print s
+    return s.split(',')
+
 vars = Variables("custom.py")
 
 # define the flags 
-vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended','')
-vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended','')
+vars.Add('CPPFLAGS','Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
+vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
 
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
