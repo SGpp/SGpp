@@ -216,6 +216,13 @@ namespace sg {
     }
 
     sg::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
+      // We have no adaptivity during solving and we already have a rhs
+      // --> just return
+      //if (this->rhs != NULL && this->useCoarsen == false)
+      //{
+      //  return this->rhs;
+      //}
+
       // distribute the current grid coefficients
       myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
 
@@ -250,8 +257,20 @@ namespace sg {
         rhs_complete.axpy(this->TimestepSize, temp2);
       } else if (this->tOperationMode == "ImEul") {
         rhs_complete.setAll(0.0);
+        sg::base::DataVector myAlpha(*this->alpha_complete);
 
-        applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
+        #pragma omp parallel shared (myAlpha, rhs_complete)
+        {
+          #pragma omp single nowait
+          {
+            #pragma omp task shared (rhs_complete)
+            {
+              applyMassMatrixComplete(myAlpha, rhs_complete);
+            }
+
+            #pragma omp taskwait
+          }
+        }
       } else if (this->tOperationMode == "CrNic") {
         rhs_complete.setAll(0.0);
 
