@@ -472,8 +472,10 @@ namespace sg {
           std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
         }
 
+        MPI_Barrier(MPI_COMM_WORLD);
         myStopwatch->start();
         myEuler->solve(*myCG, *myBSSystem, true, verbose);
+        MPI_Barrier(MPI_COMM_WORLD);
         this->dNeededTime = myStopwatch->stop();
 
         if (myGlobalMPIComm->getMyRank() == 0) {
@@ -525,8 +527,10 @@ namespace sg {
           std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
         }
 
+        MPI_Barrier(MPI_COMM_WORLD);
         myStopwatch->start();
         myEuler->solve(*myCG, *myBSSystem, true, verbose);
+        MPI_Barrier(MPI_COMM_WORLD);
         this->dNeededTime = myStopwatch->stop();
 
         if (myGlobalMPIComm->getMyRank() == 0) {
@@ -587,6 +591,7 @@ namespace sg {
         solver::Euler* myEuler = new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
         solver::CrankNicolson* myCN = new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 
+        MPI_Barrier(MPI_COMM_WORLD);
         myStopwatch->start();
 
         if (numIESteps > 0) {
@@ -604,6 +609,7 @@ namespace sg {
 
         myBSSystem->setODESolver("CrNic");
         myCN->solve(*myCG, *myBSSystem, true, false);
+        MPI_Barrier(MPI_COMM_WORLD);
         this->dNeededTime = myStopwatch->stop();
 
         if (myGlobalMPIComm->getMyRank() == 0) {
