@@ -240,7 +240,20 @@ namespace sg {
       } else if (this->tOperationMode == "ImEul") {
         rhs_complete.setAll(0.0);
 
-        applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
+        sg::base::DataVector myAlpha(*this->alpha_complete);
+
+        #pragma omp parallel shared (myAlpha, rhs_complete)
+        {
+          #pragma omp single nowait
+          {
+            #pragma omp task shared (rhs_complete)
+            {
+              applyMassMatrixComplete(myAlpha, rhs_complete);
+            }
+
+            #pragma omp taskwait
+          }
+        }
       } else if (this->tOperationMode == "CrNic") {
         rhs_complete.setAll(0.0);
 
