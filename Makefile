@@ -93,6 +93,9 @@ endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
+ifeq ($(VEC),avx2)
+CFLAGS:=$(CFLAGS) -mavx2 -mfma
+endif
 ifeq ($(VEC),bd_avx128)
 CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__USEAVX128__
 endif
@@ -140,7 +143,7 @@ ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
 ifeq ($(VEC),avx2)
-CFLAGS:=$(CFLAGS) -xCORE-AVX2
+CFLAGS:=$(CFLAGS) -march=core-avx2 -fma
 endif
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -openmp
@@ -229,6 +232,9 @@ endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
 endif
+ifeq ($(VEC),avx2)
+CFLAGS:=$(CFLAGS) -mavx2 -fma
+endif
 ifeq ($(VEC),bd_avx128)
 CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__USEAVX128__
 endif
@@ -273,6 +279,9 @@ CFLAGS:=$(CFLAGS) -msse4.2
 endif
 ifeq ($(VEC),avx)
 CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(VEC),avx2)
+CFLAGS:=$(CFLAGS) -march=core-avx2 -fma
 endif
 ifeq ($(VEC),avx128)
 CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
