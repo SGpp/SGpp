@@ -10,15 +10,21 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-
+#ifdef USE_MPI
+#include "parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.hpp"
+#endif
 #include "parallel/operation/ParallelOpFactory.hpp"
 
 namespace sg {
 
   namespace parallel {
 
-    LearnerVectorizedIdentitySP::LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool verbose)
-      : sg::datadriven::LearnerBaseSP(isRegression, verbose), vecType_(vecType) {
+    LearnerVectorizedIdentitySP::LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose)
+      : sg::datadriven::LearnerBaseSP(isRegression, isVerbose), vecType_(vecType), mpiType_(MPINone) {
+    }
+
+    LearnerVectorizedIdentitySP::LearnerVectorizedIdentitySP(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool isVerbose)
+      : sg::datadriven::LearnerBaseSP(isRegression, isVerbose), vecType_(vecType), mpiType_(mpiType) {
     }
 
     LearnerVectorizedIdentitySP::LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename,
@@ -37,7 +43,7 @@ namespace sg {
 #ifndef USE_MPI
       return new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 #else
-      return new sg::parallel::DMSystemMatrixSPVectorizedIdentityMPI(*(this->grid_), trainDataset, lambda, this->vecType_);
+      return sg::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrixSP(*(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
 #endif
     }
 

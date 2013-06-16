@@ -17,7 +17,7 @@ namespace sg {
     class SPX86SimdModLinearMask : public SPX86SimdKernelBase {
       public:
         static const KernelType kernelType = Mask;
-        static inline void mult(
+        static inline void multImpl(
           sg::base::DataMatrixSP* level,
           sg::base::DataMatrixSP* index,
           sg::base::DataMatrixSP* mask,
@@ -269,7 +269,7 @@ namespace sg {
           }
         }
 
-        static inline void multTranspose(
+        static inline void multTransposeImpl(
           sg::base::DataMatrixSP* level,
           sg::base::DataMatrixSP* index,
           sg::base::DataMatrixSP* mask,

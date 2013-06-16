@@ -1,5 +1,5 @@
 /* ****************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2013 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
@@ -17,7 +17,7 @@ namespace sg {
     class SPX86SimdLinear : public SPX86SimdKernelBase {
       public:
         static const KernelType kernelType = Standard;
-        static inline void mult(
+        static inline void multImpl(
           sg::base::DataMatrixSP* level,
           sg::base::DataMatrixSP* index,
           sg::base::DataMatrixSP* /*mask*/, //unused for this specialization
@@ -271,7 +271,7 @@ namespace sg {
           }
         }
 
-        static inline void multTranspose(
+        static inline void multTransposeImpl(
           sg::base::DataMatrixSP* level,
           sg::base::DataMatrixSP* index,
           sg::base::DataMatrixSP* /*mask*/, //unused for this specialization

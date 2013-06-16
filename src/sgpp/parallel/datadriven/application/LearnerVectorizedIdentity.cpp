@@ -24,8 +24,8 @@ namespace sg {
       : sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone) {
     }
 
-    LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool verbose):
-      sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {
+    LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool verbose)
+      : sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {
     }
 
     LearnerVectorizedIdentity::LearnerVectorizedIdentity(const std::string tGridFilename, const std::string tAlphaFilename,

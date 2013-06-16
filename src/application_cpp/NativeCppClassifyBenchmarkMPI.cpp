@@ -18,6 +18,7 @@
 
 #include <string>
 #include <iostream>
+#include <ostream>
 #include <cstdlib>
 #include <fstream>
 
@@ -232,18 +233,6 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
   // training
   gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,  SolverConfigFinal, AdaptConfig, false, lambda);
 
-  // testing
-  gtrainAcc = myLearner->getAccuracy(data, classes);
-  //gtestAcc = myLearner->getAccuracy(testdata, testclasses);
-
-  if (!isRegression) {
-    gTrainQual = myLearner->getCassificatorQuality(data, classes);
-    //gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
-  }
-
-  /*
-  we don't do extensive tests for performance measuring
-
   double time_gTrainAcc = 0;
   double time_gTrainQual = 0;
   double time_gTestQual = 0;
@@ -259,24 +248,23 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
   gtestAcc = myLearner->getAccuracy(testdata, testclasses);
   time_gTestAcc = myStopwatch->stop();
 
-  if (!isRegression)
-  {
-      myStopwatch->start();
-      gTrainQual = myLearner->getCassificatorQuality(data, classes);
-      time_gTrainQual = myStopwatch->stop();
+  if (!isRegression) {
+    myStopwatch->start();
+    gTrainQual = myLearner->getCassificatorQuality(data, classes);
+    time_gTrainQual = myStopwatch->stop();
 
-      myStopwatch->start();
-      gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
-      time_gTestQual = myStopwatch->stop();
+    myStopwatch->start();
+    gTestQual = myLearner->getCassificatorQuality(testdata, testclasses);
+    time_gTestQual = myStopwatch->stop();
   }
 
-  if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-      std::cout << "Times for Testing: " << std::endl
-                << "Train Acc:  " << time_gTrainAcc << " s"<< std::endl
-                << "Test  Acc:  " << time_gTestAcc << " s"<< std::endl
-                << "Train Qual: " << time_gTrainQual << " s"<< std::endl
-                << "Test  Qual: " << time_gTestQual << " s" << std::endl;
-  }*/
+  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    std::cout << "Times for Testing: " << std::endl
+              << "Train Acc:  " << time_gTrainAcc << " s" << std::endl
+              << "Test  Acc:  " << time_gTestAcc << " s" << std::endl
+              << "Train Qual: " << time_gTrainQual << " s" << std::endl
+              << "Test  Qual: " << time_gTestQual << " s" << std::endl;
+  }
 
 #ifdef GNUPLOT
 #endif
@@ -323,10 +311,10 @@ void adaptClassificationTestRecursive(sg::base::DataMatrix& data, sg::base::Data
 void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVectorSP& classesSP, sg::base::DataMatrixSP& testdataSP, sg::base::DataVectorSP& testclassesSP, bool isRegression,
                                sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                const sg::solver::SLESolverSPConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-                               const float lambda, const sg::parallel::VectorizationType vecType) {
+                               const float lambda, const sg::parallel::VectorizationType vecType, const sg::parallel::MPIType mpiType) {
   sg::datadriven::LearnerBaseSP* myLearner;
 
-  myLearner = new sg::parallel::LearnerVectorizedIdentitySP(vecType, isRegression, true);
+  myLearner = new sg::parallel::LearnerVectorizedIdentitySP(vecType, mpiType, isRegression, true);
 
   // training
   gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,  SolverConfigFinal, AdaptConfig, false, lambda);
@@ -372,7 +360,7 @@ void printHelp() {
   std::cout << "	CG epsilon, first refinement steps" << std::endl;
   std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
   std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl << std::endl << std::endl;
-  std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync, TrueAsyncAlltoallv; " << std::endl;
+  std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync; " << std::endl;
   std::cout << "Example call:" << std::endl;
   std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD" << std::endl << std::endl << std::endl;
 }
@@ -408,6 +396,12 @@ int main(int argc, char* argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
   sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_size);
+
+  std::streambuf* stdoutBuf = std::cout.rdbuf();
+  std::ofstream dummy_out("/dev/null");
+  if (mpi_myid != 0) { // disable output for all processes but proc 0
+    std::cout.rdbuf(dummy_out.rdbuf());
+  }
 
   //std::cout << "Startup of Process " << mpi_myid << std::endl;
 
@@ -615,7 +609,7 @@ int main(int argc, char* argv[]) {
                       SLESolverConfigFinal, adaptConfig, lambda, vecType);
 
         adaptClassificationTestSP(dataSP, classesSP, testdataSP, testclassesSP, regression, gridConfig, SLESolverSPConfigRefine,
-                                  SLESolverSPConfigFinal, adaptConfig, (float)lambda, vecType);
+                                  SLESolverSPConfigFinal, adaptConfig, (float)lambda, vecType, mpiType);
       } else if (precision == "DP") {
         bUseFloat = false;
 
@@ -631,6 +625,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  if (mpi_myid != 0) { // restore stdout buffer
+    std::cout.rdbuf(stdoutBuf);
+  }
   MPI_Finalize();
 
   return 0;

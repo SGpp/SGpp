@@ -17,7 +17,7 @@ namespace sg {
     class X86SimdModLinear : public X86SimdKernelBase {
       public:
         static const KernelType kernelType = Standard;
-        static inline void mult(
+        static inline void multImpl(
           sg::base::DataMatrix* level,
           sg::base::DataMatrix* index,
           sg::base::DataMatrix* /*mask*/, //unused for this specialization
@@ -476,7 +476,7 @@ namespace sg {
           }
         }
 
-        static inline void multTranspose(
+        static inline void multTransposeImpl(
           sg::base::DataMatrix* level,
           sg::base::DataMatrix* index,
           sg::base::DataMatrix* /*mask*/, //unused for this specialization
@@ -910,6 +910,137 @@ namespace sg {
             }
 
 #endif
+          }
+        }
+    };
+
+    class X86SimdModLinear1 : public X86SimdKernelBase1 {
+      public:
+        static const KernelType kernelType = Standard;
+        static inline void multImpl(
+          sg::base::DataMatrix* level,
+          sg::base::DataMatrix* index,
+          sg::base::DataMatrix* /*mask*/, //unused for this specialization
+          sg::base::DataMatrix* /*offset*/, //unused for this specialization
+          sg::base::DataMatrix* dataset,
+          sg::base::DataVector& alpha,
+          sg::base::DataVector& result,
+          const size_t start_index_grid,
+          const size_t end_index_grid,
+          const size_t start_index_data,
+          const size_t end_index_data) {
+          double* ptrLevel = level->getPointer();
+          double* ptrIndex = index->getPointer();
+          double* ptrAlpha = alpha.getPointer();
+          double* ptrData = dataset->getPointer();
+          double* ptrResult = result.getPointer();
+          size_t result_size = result.getSize();
+          size_t dims = dataset->getNrows();
+
+          CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid, start_index_data, end_index_data);
+
+          for (size_t c = start_index_data; c < end_index_data; c += std::min<size_t>((size_t)getChunkDataPoints(), (end_index_data - c))) {
+            size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c, end_index_data);
+
+            for (size_t i = c; i < data_end; i++) {
+              ptrResult[i] = 0.0;
+            }
+
+            for (size_t m = start_index_grid; m < end_index_grid; m += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m))) {
+
+              size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m, end_index_grid);
+
+              for (size_t i = c; i < data_end; i++) {
+                for (size_t j = m; j < grid_end; j++) {
+                  double curSupport = ptrAlpha[j];
+
+                  for (size_t d = 0; d < dims; d++) {
+                    if (ptrLevel[(j * dims) + d] == 2.0) {
+                      // nothing to do (mult with 1)
+                    } else if (ptrIndex[(j * dims) + d] == 1.0) {
+                      double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
+                      eval = 2.0 - eval;
+                      double localSupport = std::max<double>(eval, 0.0);
+                      curSupport *= localSupport;
+                    } else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0)) {
+                      double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
+                      double index_calc = eval - (ptrIndex[(j * dims) + d]);
+                      double last = 1.0 + index_calc;
+                      double localSupport = std::max<double>(last, 0.0);
+                      curSupport *= localSupport;
+                    } else {
+                      double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
+                      double index_calc = eval - (ptrIndex[(j * dims) + d]);
+                      double abs = fabs(index_calc);
+                      double last = 1.0 - abs;
+                      double localSupport = std::max<double>(last, 0.0);
+                      curSupport *= localSupport;
+                    }
+                  }
+
+                  ptrResult[i] += curSupport;
+                }
+              }
+            }
+          }
+        }
+
+        static inline void multTransposeImpl(
+          sg::base::DataMatrix* level,
+          sg::base::DataMatrix* index,
+          sg::base::DataMatrix* /*mask*/, //unused for this specialization
+          sg::base::DataMatrix* /*offset*/, //unused for this specialization
+          sg::base::DataMatrix* dataset,
+          sg::base::DataVector& source,
+          sg::base::DataVector& result,
+          const size_t start_index_grid,
+          const size_t end_index_grid,
+          const size_t start_index_data,
+          const size_t end_index_data) {
+          double* ptrLevel = level->getPointer();
+          double* ptrIndex = index->getPointer();
+          double* ptrSource = source.getPointer();
+          double* ptrData = dataset->getPointer();
+          double* ptrResult = result.getPointer();
+          size_t source_size = source.getSize();
+          size_t dims = dataset->getNrows();
+
+          CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid, start_index_data, end_index_data);
+
+          for (size_t k = start_index_grid; k < end_index_grid; k += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k))) {
+            size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
+
+            for (size_t i = start_index_data; i < end_index_data; i++) {
+              for (size_t j = k; j < k + grid_inc; j++) {
+                double curSupport = ptrSource[i];
+
+                for (size_t d = 0; d < dims; d++) {
+                  if (ptrLevel[(j * dims) + d] == 2.0) {
+                    // nothing to do (mult with 1)
+                  } else if (ptrIndex[(j * dims) + d] == 1.0) {
+                    double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
+                    eval = 2.0 - eval;
+                    double localSupport = std::max<double>(eval, 0.0);
+                    curSupport *= localSupport;
+                  } else if (ptrIndex[(j * dims) + d] == (ptrLevel[(j * dims) + d] - 1.0)) {
+                    double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
+                    double index_calc = eval - (ptrIndex[(j * dims) + d]);
+                    double last = 1.0 + index_calc;
+                    double localSupport = std::max<double>(last, 0.0);
+                    curSupport *= localSupport;
+                  } else {
+                    double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
+                    double index_calc = eval - (ptrIndex[(j * dims) + d]);
+                    double abs = fabs(index_calc);
+                    double last = 1.0 - abs;
+                    double localSupport = std::max<double>(last, 0.0);
+                    curSupport *= localSupport;
+                  }
+                }
+
+                ptrResult[j] += curSupport;
+              }
+            }
           }
         }
     };

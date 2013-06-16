@@ -82,7 +82,10 @@ namespace sg {
          */
         static void getMPIPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize = 1);
         static void getMPIPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
+
 #endif
+
+        static void calcAlmostBlockedDistribution(size_t totalSize, size_t numChunksPerProc, int* sizes, int* offsets, size_t blocksize);
     };
 
   }

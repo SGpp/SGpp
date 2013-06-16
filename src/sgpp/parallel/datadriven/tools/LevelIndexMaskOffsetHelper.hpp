@@ -8,7 +8,7 @@
 #ifndef LEVELINDEXMASKOFFSETHELPER_HPP
 #define LEVELINDEXMASKOFFSETHELPER_HPP
 
-#include "parallel/datadriven/basis/common/KernelIncludesAndMacros.hpp"
+#include "parallel/datadriven/basis/common/KernelBase.hpp"
 #include "base/exception/operation_exception.hpp"
 
 namespace sg {

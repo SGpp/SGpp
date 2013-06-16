@@ -32,6 +32,17 @@ namespace sg {
 
     LearnerBaseSP::LearnerBaseSP(const bool isRegression, const bool isVerbose)
       : alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(0.0), GFlop_(0.0), GByte_(0.0) {
+#ifdef USE_MPI
+
+      // suppress output from all process but proc0,
+      // output is (in the normal, correctly working
+      // case) the same for all MPI processes, so no
+      // need to see output more than once
+      if (sg::parallel::myGlobalMPIComm->getMyRank() != 0) {
+        this->isVerbose_ = false;
+      }
+
+#endif
     }
 
     LearnerBaseSP::LearnerBaseSP(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression, const bool isVerbose)

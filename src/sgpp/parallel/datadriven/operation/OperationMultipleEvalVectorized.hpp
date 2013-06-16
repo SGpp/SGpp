@@ -9,6 +9,8 @@
 #ifndef OPERATIONMULTIPLEEVALVECTORIZED_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZED_HPP
 
+#include <limits>
+
 #include "base/grid/GridStorage.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/tools/SGppStopwatch.hpp"
@@ -43,10 +45,11 @@ namespace sg {
         /// Timer object to handle time measurements
         sg::base::SGppStopwatch* myTimer_;
 
-        int m_gridFrom;
-        int m_gridTo;
-        int m_datasetFrom;
-        int m_datasetTo;
+        /// @todo add boundaries to constructor of this class
+        size_t m_gridFrom;
+        size_t m_gridTo;
+        size_t m_datasetFrom;
+        size_t m_datasetTo;
 
       public:
         /**
@@ -93,19 +96,13 @@ namespace sg {
         /**
          * rebuilds the DataMatrix for Level and Index in Derivatives
          * needed for vectorization.
-         */
-        virtual void rebuildLevelAndIndex() = 0;
-
-        /**
-         * @brief updates the compute boundaries for the grid, after this has been resized
          *
-         * @todo for now, the default implementation does nothing. perhaps remove default implementation.
-         * it would be an idea to integrate this with rebuildLevelAndIndex
+         * @param gridFrom  the new lower bound for the grid this process should handle (inclusive)
+         * @param gridTo  the new upper bound for the grid this process should handle (exclusive)
          *
-         * @param gridFrom
-         * @param gridTo
+         * if you don't supply the optional parameters, this process will handle the complete grid
          */
-        virtual void updateGridComputeBoundaries(int gridFrom, int gridTo) {}
+        virtual void rebuildLevelAndIndex(size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max()) = 0;
 
         // we have to make sure that all implemented Kernel Types can see the fields they require.
         // this has to be done here and only here because friends are checked at compile time and we use

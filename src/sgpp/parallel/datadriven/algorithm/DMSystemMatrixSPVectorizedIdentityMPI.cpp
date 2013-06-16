@@ -18,7 +18,7 @@ namespace sg {
   namespace parallel {
 
     DMSystemMatrixSPVectorizedIdentityMPI::DMSystemMatrixSPVectorizedIdentityMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
-      :  DMSystemMatrixBaseSP(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid) {
+      : DMSystemMatrixBaseSP(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid) {
       // handle unsupported vector extensions
       if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
         throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
@@ -28,7 +28,7 @@ namespace sg {
       this->numTrainingInstances_ = this->dataset_->getNrows();
       this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
-      if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+      if (this->vecMode_ != ArBB) {
         this->dataset_->transpose();
       }
 
@@ -42,21 +42,17 @@ namespace sg {
       _mpi_data_offsets = new int[mpi_size];
 
       // calculate distribution
-      calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
-      calcDistribution(this->numPatchedTrainingInstances_, _mpi_data_sizes, _mpi_data_offsets,
-                       sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
-
-      debugMPI(sg::parallel::myGlobalMPIComm, "storage: " << _mpi_grid_offsets[mpi_rank] << " -- " << _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank] - 1 << "size: " <<  _mpi_grid_sizes[mpi_rank]);
-      debugMPI(sg::parallel::myGlobalMPIComm, "data:" << _mpi_data_offsets[mpi_rank]  << " -- " << _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank] - 1 << "size: " <<  _mpi_data_sizes[mpi_rank]);
-
-      //std::cout << "gridtype: " << SparseGrid.getType() << std::endl;
+      sg::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), mpi_size, _mpi_grid_sizes, _mpi_grid_offsets, 1);
+      sg::parallel::PartitioningTool::calcDistribution(this->numPatchedTrainingInstances_, mpi_size, _mpi_data_sizes, _mpi_data_offsets,
+          sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
 
       this->B_ = sg::op_factory::createOperationMultipleEvalVectorizedSP(m_grid, this->vecMode_, this->dataset_,
                  _mpi_grid_offsets[mpi_rank],
                  _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank],
                  _mpi_data_offsets[mpi_rank],
                  _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]
-                                                                        );
+                                                                      );
+      waitting_time = 0.0;
     }
 
     DMSystemMatrixSPVectorizedIdentityMPI::~DMSystemMatrixSPVectorizedIdentityMPI() {
@@ -67,6 +63,26 @@ namespace sg {
       delete[] this->_mpi_grid_offsets;
       delete[] this->_mpi_data_sizes;
       delete[] this->_mpi_data_offsets;
+      double* allwaittime = new double [sg::parallel::myGlobalMPIComm->getNumRanks()];
+      double* allcomptimemultTrans = new double [sg::parallel::myGlobalMPIComm->getNumRanks()];
+      double* allcomptimemult = new double [sg::parallel::myGlobalMPIComm->getNumRanks()];
+      MPI_Gather(&waitting_time, 1, MPI_DOUBLE, allwaittime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&computeTimeMultTrans_, 1, MPI_DOUBLE, allcomptimemultTrans, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&computeTimeMult_, 1, MPI_DOUBLE, allcomptimemult, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+          std::cout << "waiting time for process " << i << " is: " << allwaittime[i] << std::endl;
+        }
+        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+          std::cout << "comp time multtrans for process " << i << " is: " << allcomptimemultTrans[i] << std::endl;
+        }
+        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+          std::cout << "comp time mult for process " << i << " is: " << allcomptimemult[i] << std::endl;
+        }
+      }
+      delete[] allwaittime;
+      delete[] allcomptimemultTrans;
+      delete[] allcomptimemult;
     }
 
     void DMSystemMatrixSPVectorizedIdentityMPI::mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
@@ -96,18 +112,14 @@ namespace sg {
       }
 
       multTransposeVec(myClasses, b);
-
-      debugMPI(sg::parallel::myGlobalMPIComm, "end generate b");
     }
 
     void DMSystemMatrixSPVectorizedIdentityMPI::rebuildLevelAndIndex() {
-      this->B_->rebuildLevelAndIndex();
-
-      calcDistribution(m_grid.getStorage()->size(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
+      sg::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), sg::parallel::myGlobalMPIComm->getNumRanks(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
       size_t mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-      this->B_->updateGridComputeBoundaries(_mpi_grid_offsets[mpi_rank],
-                                            _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank]);
+      this->B_->rebuildLevelAndIndex(_mpi_grid_offsets[mpi_rank],
+                                     _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank]);
     }
 
     void DMSystemMatrixSPVectorizedIdentityMPI::multVec(base::DataVectorSP& alpha, base::DataVectorSP& result) {
@@ -115,33 +127,19 @@ namespace sg {
 
       this->computeTimeMult_ += this->B_->multVectorized(alpha, result);
 
-      debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_offsets[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_offsets[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
-      debugMPI(sg::parallel::myGlobalMPIComm, "_mpi_data_sizes[" << sg::parallel::myGlobalMPIComm->getMyRank() << "] = " << _mpi_data_sizes[sg::parallel::myGlobalMPIComm->getMyRank()] << std::endl);
-
-      debugMPI(sg::parallel::myGlobalMPIComm, "result.size() = " << result.getSize());
-
-      sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
+      sg::parallel::myGlobalMPIComm->dataVectorSPAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
 
       this->completeTimeMult_ += this->myTimer_->stop();
+
     }
 
     void DMSystemMatrixSPVectorizedIdentityMPI::multTransposeVec(base::DataVectorSP& source, base::DataVectorSP& result) {
       this->myTimer_->start();
       this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
 
-      sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
+      sg::parallel::myGlobalMPIComm->dataVectorSPAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
 
       this->completeTimeMultTrans_ += this->myTimer_->stop();
-    }
-
-    void DMSystemMatrixSPVectorizedIdentityMPI::calcDistribution(size_t totalSize, int* sizes, int* offsets, size_t blocksize) {
-      for (size_t rank = 0; rank < sg::parallel::myGlobalMPIComm->getNumRanks(); ++rank) {
-        size_t size;
-        size_t offset;
-        sg::parallel::PartitioningTool::getPartitionSegment(totalSize, sg::parallel::myGlobalMPIComm->getNumRanks(), rank, &size, &offset, blocksize);
-        sizes[rank] = (int)(size);
-        offsets[rank] = (int)(offset);
-      }
     }
 
   }

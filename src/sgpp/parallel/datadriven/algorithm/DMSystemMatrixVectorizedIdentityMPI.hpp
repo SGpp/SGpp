@@ -42,6 +42,7 @@ namespace sg {
         /// OperationB for calculating the data matrix
         sg::parallel::OperationMultipleEvalVectorized* B_;
 
+        double waitting_time;
       public:
         /**
          * Std-Constructor

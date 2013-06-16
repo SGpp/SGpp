@@ -6,13 +6,12 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYALLREDUCE_H
-#define DMSYSTEMMATRIXVECTORIZEDIDENTITYALLREDUCE_H
+#ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H
+#define DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H
 
-#include "base/datatypes/DataVector.hpp"
 #include "base/exception/operation_exception.hpp"
 #include "base/grid/Grid.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPIBase.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
 #include "parallel/tools/MPI/SGppMPITools.hpp"
@@ -22,23 +21,23 @@
 namespace sg {
   namespace parallel {
     template<typename KernelImplementation>
-    class DMSystemMatrixVectorizedIdentityAllreduce : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+    class DMSystemMatrixSPVectorizedIdentityAllreduce : public sg::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
       private:
         // which part of the dataset this process handles, it always handles the complete grid
         size_t data_size;
         size_t data_offset;
 
       public:
-        DMSystemMatrixVectorizedIdentityAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-          : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
-          sg::parallel::PartitioningTool::getMPIPartitionSegment(this->numPatchedTrainingInstances_, &data_size, &data_offset, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+        DMSystemMatrixSPVectorizedIdentityAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+          : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
+          sg::parallel::PartitioningTool::getMPIPartitionSegment(this->numPatchedTrainingInstances_, &data_size, &data_offset, sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
           rebuildLevelAndIndex();
         }
 
-        virtual void mult(base::DataVector& alpha, base::DataVector& result) {
-          this->tempData->setAll(0.0);
-          this->result_tmp->setAll(0.0);
-          result.setAll(0.0);
+        virtual void mult(base::DataVectorSP& alpha, base::DataVectorSP& result) {
+          this->tempData->setAll(0.0f);
+          this->result_tmp->setAll(0.0f);
+          result.setAll(0.0f);
 
           this->myTimer_->start();
           #pragma omp parallel
@@ -63,7 +62,7 @@ namespace sg {
             {
               // patch result -> set additional entries zero
               for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++) {
-                this->tempData->set(i, 0.0);
+                this->tempData->set(i, 0.0f);
               }
 
               // the time measured here does not represent the complete
@@ -95,14 +94,14 @@ namespace sg {
           }
           myGlobalMPIComm->Barrier();
           this->computeTimeMultTrans_ += this->myTimer_->stop();
-          myGlobalMPIComm->allreduceSum(*(this->result_tmp), result);
+          myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
         }
 
-        virtual void generateb(base::DataVector& classes, base::DataVector& b) {
-          this->tempData->setAll(0.0);
+        virtual void generateb(base::DataVectorSP& classes, base::DataVectorSP& b) {
+          this->tempData->setAll(0.0f);
           this->tempData->copyFrom(classes);
-          this->result_tmp->setAll(0.0);
+          this->result_tmp->setAll(0.0f);
 
           #pragma omp parallel
           {
@@ -119,11 +118,11 @@ namespace sg {
               data_offset,
               data_offset + data_size);
           }
-          myGlobalMPIComm->allreduceSum(*(this->result_tmp), b);
+          myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
         }
 
         virtual void rebuildLevelAndIndex() {
-          DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
+          DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
         }
 
     };
@@ -131,4 +130,4 @@ namespace sg {
   }
 }
 
-#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYALLREDUCE_H
+#endif // DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H

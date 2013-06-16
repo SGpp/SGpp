@@ -47,7 +47,8 @@ namespace sg {
      * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
      */
     parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
-        int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
+        size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(),
+        size_t datasetFrom = 0, size_t datasetTo = std::numeric_limits<size_t>::max());
     /**
      * Factory method, returning an OperationMultipleEvalVectorizedSP for the grid at hand,
      * single precision.
@@ -68,7 +69,8 @@ namespace sg {
      * @return Pointer to the new OperationMultipleEvalVectorizedSP for the Grid grid
      */
     parallel::OperationMultipleEvalVectorizedSP* createOperationMultipleEvalVectorizedSP(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
-        int gridFrom = 0, int gridTo = -1, int datasetFrom = 0, int datasetTo = -1);
+        size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(),
+        size_t datasetFrom = 0, size_t datasetTo = std::numeric_limits<size_t>::max());
 
     /**
      * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
