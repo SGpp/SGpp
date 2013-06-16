@@ -327,8 +327,8 @@ namespace sg {
 
           // set kernel arguments
           cl_uint clResultSize = (cl_uint)(result.getSize());
-          cl_uint gpu_start_grid = start_index_grid;
-          cl_uint gpu_end_grid = end_index_grid;
+          cl_uint gpu_start_grid = (cl_uint)start_index_grid;
+          cl_uint gpu_end_grid = (cl_uint)end_index_grid;
 
           for (size_t i = 0; i < num_devices; i++) {
             cl_uint gpu_start_data = (cl_uint)gpu_start_index_data[i];
@@ -484,8 +484,8 @@ namespace sg {
 
           // set kernel arguments
           cl_uint clSourceSize = (cl_uint)sourceSize;
-          cl_uint gpu_start_data = start_index_data;
-          cl_uint gpu_end_data = end_index_data;
+          cl_uint gpu_start_data = (cl_uint)start_index_data;
+          cl_uint gpu_end_data = (cl_uint)end_index_data;
 
           for (size_t i = 0; i < num_devices; i++) {
             cl_uint gpu_start_grid = (cl_uint)gpu_start_index_grid[i];
