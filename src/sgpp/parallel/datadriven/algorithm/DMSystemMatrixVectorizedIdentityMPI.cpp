@@ -28,7 +28,7 @@ namespace sg {
       this->numTrainingInstances_ = this->dataset_->getNrows();
       this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
-      if (this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+      if (this->vecMode_ != ArBB) {
         this->dataset_->transpose();
       }
 
@@ -52,6 +52,7 @@ namespace sg {
                  _mpi_data_offsets[mpi_rank],
                  _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]
                                                                       );
+      waitting_time = 0.0;
     }
 
     DMSystemMatrixVectorizedIdentityMPI::~DMSystemMatrixVectorizedIdentityMPI() {
@@ -62,6 +63,26 @@ namespace sg {
       delete[] this->_mpi_grid_offsets;
       delete[] this->_mpi_data_sizes;
       delete[] this->_mpi_data_offsets;
+      double* allwaittime = new double [sg::parallel::myGlobalMPIComm->getNumRanks()];
+      double* allcomptimemultTrans = new double [sg::parallel::myGlobalMPIComm->getNumRanks()];
+      double* allcomptimemult = new double [sg::parallel::myGlobalMPIComm->getNumRanks()];
+      MPI_Gather(&waitting_time, 1, MPI_DOUBLE, allwaittime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&computeTimeMultTrans_, 1, MPI_DOUBLE, allcomptimemultTrans, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Gather(&computeTimeMult_, 1, MPI_DOUBLE, allcomptimemult, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
+        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+          std::cout << "waiting time for process " << i << " is: " << allwaittime[i] << std::endl;
+        }
+        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+          std::cout << "comp time multtrans for process " << i << " is: " << allcomptimemultTrans[i] << std::endl;
+        }
+        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+          std::cout << "comp time mult for process " << i << " is: " << allcomptimemult[i] << std::endl;
+        }
+      }
+      delete[] allwaittime;
+      delete[] allcomptimemultTrans;
+      delete[] allcomptimemult;
     }
 
     void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
@@ -94,22 +115,23 @@ namespace sg {
     }
 
     void DMSystemMatrixVectorizedIdentityMPI::rebuildLevelAndIndex() {
-      this->B_->rebuildLevelAndIndex();
       sg::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), sg::parallel::myGlobalMPIComm->getNumRanks(), _mpi_grid_sizes, _mpi_grid_offsets, 1);
       size_t mpi_rank = sg::parallel::myGlobalMPIComm->getMyRank();
 
-      this->B_->updateGridComputeBoundaries(_mpi_grid_offsets[mpi_rank],
-                                            _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank]);
+      this->B_->rebuildLevelAndIndex(_mpi_grid_offsets[mpi_rank],
+                                     _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank]);
     }
 
     void DMSystemMatrixVectorizedIdentityMPI::multVec(base::DataVector& alpha, base::DataVector& result) {
       this->myTimer_->start();
 
-      double funComputationTime = this->B_->multVectorized(alpha, result);
-      this->computeTimeMult_ += funComputationTime;
+      //double funComputationTime = this->B_->multVectorized(alpha, result);
+      this->B_->multVectorized(alpha, result);
+      //this->computeTimeMult_ += funComputationTime;
 
-      //  double computationTime = this->myTimer_->stop();
-
+      myGlobalMPIComm->Barrier();
+      this->computeTimeMult_ += this->myTimer_->stop();
+      //double waitTime = this->myTimer_->stop() - computationTime;
       sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_data_offsets, _mpi_data_sizes);
 
       double completeTime = this->myTimer_->stop();
@@ -135,8 +157,16 @@ namespace sg {
     }
 
     void DMSystemMatrixVectorizedIdentityMPI::multTransposeVec(base::DataVector& source, base::DataVector& result) {
+      myGlobalMPIComm->Barrier();
       this->myTimer_->start();
-      this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(source, result);
+      //this->computeTimeMultTrans_ +=
+          this->B_->multTransposeVectorized(source, result);
+
+      myGlobalMPIComm->Barrier();
+      double comp_time = this->myTimer_->stop();
+      this->computeTimeMultTrans_ +=comp_time;
+      double comp_wait_time = this->myTimer_->stop();
+      waitting_time += comp_wait_time - comp_time;
 
       sg::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
 

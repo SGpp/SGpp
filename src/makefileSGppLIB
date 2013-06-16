@@ -316,6 +316,8 @@ OBJS =	DataVector.o\
 	ParallelOpFactory.o\
 	PdeOpFactory.o\
 	TwoPartitionAutoTuning.o\
+	StaticTwoPartitionAutoTuning.o\
+	DynamicTwoPartitionAutoTuning.o\
 	DMWeightMatrixVectorizedIdentity.o\
 	OperationRegularizationDiagonalLinearBoundary.o\
 	OperationRegularizationDiagonal.o\
@@ -376,87 +378,7 @@ OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
  	ArBBKernels10D.o
 endif
 
-ifeq ($(EXT), NVOCL)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
-	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
-	OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o\
-	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o
-endif
-
-ifeq ($(EXT), INTELOCL)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
- 	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
-	OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o\
-	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o
-endif
-
-ifeq ($(EXT), INTELOCLGPU)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
- 	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
-	OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o\
-	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o
-endif
-
-ifeq ($(EXT), AMDOCLGPU)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
- 	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
-	OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o\
-	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o
-endif
-
-ifeq ($(EXT), AMDOCLCPU)
-OBJS:=$(OBJS) OperationMultipleEvalIterativeOCLLinear.o\
- 	OperationMultipleEvalIterativeSPOCLLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o\
-	OCLKernels.o\
-	OperationMultipleEvalIterativeOCLModLinear.o\
-	OperationMultipleEvalIterativeSPOCLModLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o\
-	OperationMultipleEvalIterativeOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o\
-	OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o
-endif
-
-ifeq ($(EXT), MPI)
+ifeq ($(MPI), 1)
 OBJS:=$(OBJS) MPICommunicator.o\
 	GlobalMPIComm.o\
 	ConjugateGradientsMPI.o\
@@ -1304,12 +1226,28 @@ $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMa
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp \
-$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPIBase.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOnesidedMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
 
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
@@ -1469,8 +1407,18 @@ FinanceOpFactory.o : $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)FinanceOpFactory.o $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 
 ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp \
-$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterative.hpp \
-$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSP.hpp
+$(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalIterative.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/OCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
+$(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalIterativeSP.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
@@ -1478,6 +1426,12 @@ PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	
 TwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)TwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/TwoPartitionAutoTuning.cpp
+
+DynamicTwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/DynamicTwoPartitionAutoTuning.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DynamicTwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/DynamicTwoPartitionAutoTuning.cpp
+
+StaticTwoPartitionAutoTuning.o : $(SRCDIR)parallel/tools/StaticTwoPartitionAutoTuning.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)StaticTwoPartitionAutoTuning.o $(SRCDIR)parallel/tools/StaticTwoPartitionAutoTuning.cpp
 
 PartitioningTool.o : $(SRCDIR)parallel/tools/PartitioningTool.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PartitioningTool.o $(SRCDIR)parallel/tools/PartitioningTool.cpp
@@ -1620,46 +1574,6 @@ ArBBKernels5D.o : $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels5D.cpp
 	
 ArBBKernels10D.o : $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels10D.cpp
 	$(CC) $(CFLAGS) -o ArBBKernels10D.o $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels10D.cpp
-
-# OCL Extensions:
-OperationMultipleEvalIterativeOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeOCLLinear.cpp
-
-OperationMultipleEvalIterativeSPOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPOCLLinear.cpp
-	
-OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLLinear.cpp	
-
-OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o : $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLLinear.o $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeHybridX86SimdOCLLinear.cpp	
-	
-OCLKernels.o : $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_DP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_SP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModDP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModSP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModMaskDP.cpp $(SRCDIR)parallel/datadriven/basis/common/OCLKernels_ModMaskSP.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o OCLKernels.o $(SRCDIR)parallel/datadriven/basis/common/OCLKernels.cpp
-	
-OperationMultipleEvalIterativeOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModLinear.cpp
-
-OperationMultipleEvalIterativeSPOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModLinear.cpp
-	
-OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS)$(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModLinear.cpp	
-
-OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModLinear.cpp
-
-OperationMultipleEvalIterativeOCLModMaskLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModMaskLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeOCLModMaskLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeOCLModMaskLinear.cpp
-
-OperationMultipleEvalIterativeSPOCLModMaskLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModMaskLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPOCLModMaskLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPOCLModMaskLinear.cpp
-
-OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeHybridX86SimdOCLModMaskLinear.cpp
-
-OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o : $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.cpp
-	$(CC) $(CFLAGS) $(NOIPO) -o $(OUTDIR)OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.o $(SRCDIR)parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeSPHybridX86SimdOCLModMaskLinear.cpp
 
 # MPI Extensions:
 MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp

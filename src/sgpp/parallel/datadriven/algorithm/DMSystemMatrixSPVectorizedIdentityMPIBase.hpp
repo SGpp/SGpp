@@ -6,10 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYMPIBASE_HPP
-#define DMSYSTEMMATRIXVECTORIZEDIDENTITYMPIBASE_HPP
+#ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPIBASE_HPP
+#define DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPIBASE_HPP
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
@@ -23,7 +23,7 @@
 namespace sg {
   namespace parallel {
     template<typename KernelImplementation>
-    class DMSystemMatrixVectorizedIdentityMPIBase : public sg::datadriven::DMSystemMatrixBase {
+    class DMSystemMatrixSPVectorizedIdentityMPIBase : public sg::datadriven::DMSystemMatrixBaseSP {
       protected:
         VectorizationType vecMode_;
         size_t numTrainingInstances_;
@@ -32,22 +32,22 @@ namespace sg {
         /// Pointer to the grid's gridstorage object
         sg::base::GridStorage* storage_;
         /// Member to store the sparse grid's levels for better vectorization
-        sg::base::DataMatrix* level_;
+        sg::base::DataMatrixSP* level_;
         /// Member to store the sparse grid's indices for better vectorization
-        sg::base::DataMatrix* index_;
+        sg::base::DataMatrixSP* index_;
         /// Member to store for masks per grid point for better vectorization of modlinear operations
-        sg::base::DataMatrix* mask_;
+        sg::base::DataMatrixSP* mask_;
         /// Member to store offsets per grid point for better vecotrization of modlinear operations
-        sg::base::DataMatrix* offset_;
+        sg::base::DataMatrixSP* offset_;
 
         KernelImplementation kernel_;
 
         /// only allocate temporary arrays once
-        sg::base::DataVector* tempData;
-        sg::base::DataVector* result_tmp;
+        sg::base::DataVectorSP* tempData;
+        sg::base::DataVectorSP* result_tmp;
       public:
-        DMSystemMatrixVectorizedIdentityMPIBase(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-          : DMSystemMatrixBase(trainData, lambda),
+        DMSystemMatrixSPVectorizedIdentityMPIBase(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+          : DMSystemMatrixBaseSP(trainData, lambda),
             vecMode_(vecMode),
             numTrainingInstances_(0),
             numPatchedTrainingInstances_(0),
@@ -66,19 +66,19 @@ namespace sg {
             throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
           }
 
-          this->dataset_ = new sg::base::DataMatrix(trainData);
+          this->dataset_ = new sg::base::DataMatrixSP(trainData);
           this->numTrainingInstances_ = this->dataset_->getNrows();
           this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
-          this->tempData = new sg::base::DataVector(this->numPatchedTrainingInstances_);
+          this->tempData = new sg::base::DataVectorSP(this->numPatchedTrainingInstances_);
 
           if (this->vecMode_ != ArBB) {
             this->dataset_->transpose();
           }
 
-          this->result_tmp = new sg::base::DataVector(storage_->size());
+          this->result_tmp = new sg::base::DataVectorSP(storage_->size());
         }
 
-        virtual ~DMSystemMatrixVectorizedIdentityMPIBase() {
+        virtual ~DMSystemMatrixSPVectorizedIdentityMPIBase() {
           if (this->level_ != NULL)
             delete this->level_;
 
@@ -97,19 +97,19 @@ namespace sg {
         }
 
         virtual void rebuildLevelAndIndex() {
-          LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType, DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> >(this);
+          LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType, DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> >(this);
 
           if (this->result_tmp != NULL) {
             delete this->result_tmp;
           }
 
-          this->result_tmp = new sg::base::DataVector(storage_->size());
+          this->result_tmp = new sg::base::DataVectorSP(storage_->size());
           kernel_.resetKernel();
         }
-        friend struct LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType, DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> >;
+        friend struct LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType, DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> >;
     };
 
   }
 }
 
-#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYMPIBASE_HPP
+#endif // DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPIBASE_HPP

@@ -121,7 +121,7 @@ namespace sg {
       delete[] sendOffsets;
     }
 
-    void MPICommunicator::dataVectorAllToAll(base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes) {
+    void MPICommunicator::dataVectorSPAllToAll(base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes) {
       size_t numRanks = getNumRanks();
       size_t myRank = getMyRank();
       int mySendSize = distributionSizes[myRank];
@@ -170,11 +170,48 @@ namespace sg {
       }
     }
 
+    void MPICommunicator::IsendToAllSP(float *ptr, size_t size, int tag, MPI_Request *reqs)
+    {
+      for (size_t rank = 0; rank < getNumRanks(); rank++) {
+        if (rank == getMyRank()) {
+          reqs[rank] = MPI_REQUEST_NULL;
+          continue;
+        }
+
+        int sizeAsInt = (int)(size);
+        MPI_Isend(ptr, sizeAsInt, MPI_FLOAT, (int)(rank), tag, MPI_COMM_WORLD, &reqs[rank]);
+      }
+    }
+
+    void MPICommunicator::IrecvFromAllSP(float *ptr, size_t chunkSizePerProc, int *sizes, int *offsets, int *tag, MPI_Request *reqs)
+    {
+      for (size_t rank = 0; rank < getNumRanks(); rank++) {
+        for (size_t i = 0; i < chunkSizePerProc; i++) {
+          size_t reqIdx = rank * chunkSizePerProc + i;
+
+          if (rank == getMyRank()) {
+            reqs[reqIdx] = MPI_REQUEST_NULL;
+          } else {
+            MPI_Irecv(&ptr[offsets[reqIdx]], sizes[reqIdx], MPI_FLOAT, (int)(rank), tag[reqIdx], MPI_COMM_WORLD, &reqs[reqIdx]);
+          }
+        }
+      }
+    }
+
     void MPICommunicator::putToAll(double* ptr, size_t winOffset, size_t count, MPI_Win win) {
       for (size_t i = 0; i < getNumRanks(); i++) {
         int countAsInt = (int)(count);
         int winOffsetAsInt = (int)(winOffset);
         MPI_Put(ptr, countAsInt, MPI_DOUBLE, (int)(i), winOffsetAsInt, countAsInt, MPI_DOUBLE, win);
+      }
+    }
+
+    void MPICommunicator::putToAllSP(float *ptr, size_t winOffset, size_t count, MPI_Win win)
+    {
+      for (size_t i = 0; i < getNumRanks(); i++) {
+        int countAsInt = (int)(count);
+        int winOffsetAsInt = (int)(winOffset);
+        MPI_Put(ptr, countAsInt, MPI_FLOAT, (int)(i), winOffsetAsInt, countAsInt, MPI_FLOAT, win);
       }
     }
 
@@ -204,6 +241,15 @@ namespace sg {
       }
 
       MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    }
+
+    void MPICommunicator::allreduceSumSP(base::DataVectorSP& source, base::DataVectorSP& result) {
+      if (source.getSize() != result.getSize()) {
+        std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
+        throw new sg::base::operation_exception("DataVector sizes do not match in allreduce!");
+      }
+
+      MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
     }
 
   }

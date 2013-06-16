@@ -30,6 +30,8 @@ namespace sg {
         /// vectorization selector
         VectorizationType vecType_;
 
+        MPIType mpiType_;
+
         virtual sg::datadriven::DMSystemMatrixBaseSP* createDMSystem(sg::base::DataMatrixSP& trainDataset, float lambda);
 
         virtual void postProcessing(const sg::base::DataMatrixSP& trainDataset, const sg::solver::SLESolverType& solver,
@@ -44,6 +46,7 @@ namespace sg {
          * @param isVerbose set to true in order to allow console output
          */
         LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+        LearnerVectorizedIdentitySP(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
 
         /**
          * Constructor

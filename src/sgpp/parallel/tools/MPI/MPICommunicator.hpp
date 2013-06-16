@@ -180,10 +180,12 @@ namespace sg {
          * @param distributionSizes array containing the sizes of data to distribute
          */
         void dataVectorAllToAll(sg::base::DataVector& alpha, int* distributionOffsets, int* distributionSizes);
-        void dataVectorAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
+        void dataVectorSPAllToAll(sg::base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes);
 
         void IsendToAll(double* ptr, size_t size, int tag, MPI_Request* reqs);
         void IrecvFromAll(double* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* reqs);
+        void IsendToAllSP(float* ptr, size_t size, int tag, MPI_Request* reqs);
+        void IrecvFromAllSP(float* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* reqs);
 
         /**
          * @brief putToAll puts @a count entries that the pointer @a ptr points to into the
@@ -194,6 +196,7 @@ namespace sg {
          * @param win window the data should be put into
          */
         void putToAll(double* ptr, size_t winOffset, size_t count, MPI_Win win);
+        void putToAllSP(float* ptr, size_t winOffset, size_t count, MPI_Win win);
 
         /**
          * Implements a Barrier for all tasks
@@ -230,6 +233,7 @@ namespace sg {
          * @param result result for allreduce
          */
         void allreduceSum(base::DataVector& source, base::DataVector& result);
+        void allreduceSumSP(base::DataVectorSP& source, base::DataVectorSP& result);
 
         /**
          * Wrapper for MPI_Waitany; status is ignored

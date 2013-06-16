@@ -12,41 +12,16 @@
 
 namespace sg {
   namespace parallel {
-
-    /**
-     * This class provides functionality to split a workload range
-     * into two parts based on timing results from previous executions. The
-     * second partition is forced to be dividable by a given divider.
-     *
-     * For instance this class is used in datadriven application for solving
-     * systems of linear equations concurrently on hybrid platforms using standard
-     * CPUs and accelerators.
-     */
     class TwoPartitionAutoTuning {
       public:
         /**
-         * Constructor for dynamic load balancing
+         * Constructor
          *
          * @param problemSize contains the overall size which should be partitioned
          * @param partition2Divider the second partition divider, partition2's size is a multiple
          * @param retune_cycles number of iteration after which the problem's separation is re-considered
          */
         TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
-
-        /**
-         * Constructor for static load balancing
-         *
-         * @param problemSize contains the overall size which should be partitioned
-         * @param percentPartion1 how big is the first, non accelerated portion?
-         * @param partition2Divider the second partition divider, partition2's size is a multiple
-         * @param OutputFreq how often should we print timings?
-         */
-        TwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider, size_t OutputFreq);
-
-        /**
-         * Destructor
-         */
-        virtual ~TwoPartitionAutoTuning();
 
         /**
          * get problem size
@@ -56,12 +31,11 @@ namespace sg {
         size_t getProblemSize();
 
         /**
-         * gets size of partition 1 based on the currently stored
-         * runtimes for partition 1 and 2
+         * sets the problem size
          *
-         * @return size of partition 1
+         * @param problemSize problem size
          */
-        virtual size_t getPartition1Size();
+        void setProblemSize(size_t problemSize);
 
         /**
          * Update execution times in order to allow
@@ -73,11 +47,18 @@ namespace sg {
         void setExecutionTimes(double timePartition1, double timePartition2);
 
         /**
-         * sets the problem size
+         * gets size of partition 1 based on the currently stored
+         * runtimes for partition 1 and 2
          *
-         * @param problemSize problem size
+         * @return size of partition 1
          */
-        void setProblemSize(size_t problemSize);
+        size_t getPartition1Size();
+
+        /**
+         * resets all auto tuning parameter
+         */
+        virtual void resetAutoTuning();
+
 
         /**
          * set the possible divider of partition 2
@@ -85,18 +66,20 @@ namespace sg {
          * @param partition2Divider the divider of partition 2
          */
         void setPartition2Divider(size_t partition2Divider);
-
-        /**
-         * resets all auto tuning parameter
-         */
-        void resetAutoTuning();
-
       protected:
+        /**
+         * @brief autoTune this function is called
+         * - after the executionTimes are set to adapt the partitions or
+         * - after the total size changed
+         */
+        virtual void autoTune() = 0;
+
+        void doTune();
+        /// size of partition1
+        size_t _sizePartition1;
+
         /// store problemsize
         size_t _problemSize;
-
-        /// store required divider of partition 2
-        size_t _partition2Divider;
 
         /// time needed to execute partition 1
         double _timePartition1;
@@ -104,30 +87,14 @@ namespace sg {
         /// time needed to execute partition 2
         double _timePartition2;
 
-        /// (old) size of partition1
-        size_t _oldSizePartition1;
-
-        /// first run, do initial calibration
-        bool _isFirstTuning;
+        /// store required divider of partition 2
+        size_t _partition2Divider;
 
         /// counter for timer updates
         size_t _tuneCounter;
 
         /// number of updates that cause a tuning update
         size_t _retune;
-
-        /// if static load balancing is enabled
-        bool _isStatic;
-
-        /// static, percent threshold of partition 1
-        double _percentPartion1;
-
-        /**
-         * re-scale the data and tuning parameter due to workload change
-         *
-         * @param newProblemSize new workload size
-         */
-        void rescaleAutoTuning(size_t newProblemSize);
     };
 
   }

@@ -34,14 +34,14 @@ namespace sg {
          * @param datasetTo local part of dataset (end)
          */
         OperationMultipleEvalIterativeSP(base::GridStorage* storage, base::DataMatrixSP* dataset,
-                                         int gridFrom, int gridTo, int datasetFrom, int datasetTo):
+                                         size_t gridFrom, size_t gridTo, size_t datasetFrom, size_t datasetTo):
           OperationMultipleEvalVectorizedSP(storage, dataset) {
           m_gridFrom = gridFrom;
           m_gridTo = gridTo;
           m_datasetFrom = datasetFrom;
           m_datasetTo = datasetTo;
 
-          rebuildLevelAndIndex();
+          rebuildLevelAndIndex(m_gridFrom, m_gridTo);
         }
 
         virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
@@ -50,11 +50,7 @@ namespace sg {
 
           #pragma omp parallel
           {
-            size_t start;
-            size_t end;
-            PartitioningTool::getOpenMPPartitionSegment(m_datasetFrom, m_datasetTo, &start, &end, KernelImplementation::getChunkDataPoints());
-
-            KernelImplementation::mult(
+            m_kernel.mult(
               level_,
               index_,
               mask_,
@@ -64,8 +60,8 @@ namespace sg {
               result,
               0,
               alpha.getSize(),
-              start,
-              end);
+              m_datasetFrom,
+              m_datasetTo);
           }
           return myTimer_->stop();
         }
@@ -76,11 +72,7 @@ namespace sg {
 
           #pragma omp parallel
           {
-            size_t start;
-            size_t end;
-            PartitioningTool::getOpenMPPartitionSegment(m_gridFrom, m_gridTo, &start, &end, 1);
-
-            KernelImplementation::multTranspose(
+            m_kernel.multTranspose(
               level_,
               index_,
               mask_,
@@ -88,8 +80,8 @@ namespace sg {
               dataset_,
               source,
               result,
-              start,
-              end,
+              m_gridFrom,
+              m_gridTo,
               0,
               dataset_->getNcols());
           }
@@ -97,19 +89,18 @@ namespace sg {
           return myTimer_->stop();
         }
 
-        virtual void rebuildLevelAndIndex() {
+        virtual void rebuildLevelAndIndex(size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max()) {
           LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType, OperationMultipleEvalVectorizedSP >(this);
-        }
-
-        virtual void updateGridComputeBoundaries(int gridFrom, int gridTo) {
-          if (gridFrom == 0 && gridTo == -1) {
-            m_gridFrom = 0;
-            m_gridTo = (int)this->storage_->size();
-          } else {
-            m_gridFrom = gridFrom;
-            m_gridTo = gridTo;
+          if (gridTo == std::numeric_limits<size_t>::max()) {
+            gridTo = this->storage_->size();
           }
+
+          m_gridFrom = gridFrom;
+          m_gridTo = gridTo;
+          m_kernel.resetKernel();
         }
+      private:
+        KernelImplementation m_kernel;
     };
 
   }

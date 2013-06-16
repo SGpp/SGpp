@@ -22,10 +22,10 @@ OCLLIB = /usr/lib64/
 IOCLINCLUDE = /usr/include
 IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 # AMD OpenCL
-AMDOCLINCLUDE = /opt/AMDAPP/include
-AMDOCLLIB = /opt/AMDAPP/lib/x86_64
-#AMDOCLINCLUDE = /lrz/sys/parallel/amdapp/2.7/include
-#AMDOCLLIB = /lrz/sys/parallel/amdapp/2.7/lib/x86_64
+#AMDOCLINCLUDE = /opt/AMDAPP/include
+#AMDOCLLIB = /opt/AMDAPP/lib/x86_64
+AMDOCLINCLUDE = /lrz/sys/parallel/amdapp/2.7/include
+AMDOCLLIB = /lrz/sys/parallel/amdapp/2.7/lib/x86_64
 # Intel OpenCL, Windows
 IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include\"
 IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
@@ -48,9 +48,10 @@ VEC=sse3
 # extensions, manages extensions to be included, possible values (only when using Intel Compiler):
 #	ArBB - Intel Array Building Blocks support
 #	OCL - NVIDIA OpenCL support
-#	MPI - Intel MPI support
 #	NO - no extensions, default
 EXT=NO
+#	MPI - MPI support
+MPI=0
 # instances used to compile
 JOBS=4
 # Default residual threshold
@@ -211,7 +212,7 @@ ifeq ($(CC),mpigxx)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
 CFLAGS:=$(CFLAGS) -DUSE_MPI
-EXT=MPI
+MPI=1
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -fopenmp
 LFLAGS:=$(LFLAGS) -fopenmp
@@ -263,7 +264,7 @@ ifeq ($(CC),mpiicpc)
 CFLAGS:=$(CFLAGS_ICC)
 LFLAGS:=$(LFLAGS_ICC)
 CFLAGS:=$(CFLAGS) -DUSE_MPI
-EXT=MPI
+MPI=1
 ifeq ($(VEC),sse3)
 CFLAGS:=$(CFLAGS) -msse3
 endif
@@ -282,6 +283,26 @@ LFLAGS:=$(LFLAGS) -openmp
 endif
 ifeq ($(TR1),1)
 CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), ArBB)
+CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
+LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
+endif
+ifeq ($(EXT), NVOCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
 endif
 
@@ -311,11 +332,11 @@ ifeq ($(CC),icl)
 endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/sgpplib_mpiicc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc" "EXT=$(EXT)" "MPI=$(MPI)"
 endif
 ifeq ($(CC),mpigxx)
 	mkdir -p tmp/build_native/sgpplib_mpigxx
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx" "EXT=$(EXT)" "MPI=$(MPI)"
 endif
 
 

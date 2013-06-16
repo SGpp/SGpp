@@ -33,13 +33,13 @@ namespace sg {
       size_t totalSize = end - start;
 
       // check for valid input
+      if (blockSize == 0 ) {
+        throw sg::base::operation_exception("blockSize must not be zero!");
+      }
+
       if (totalSize % blockSize != 0 ) {
         std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
         throw sg::base::operation_exception("totalSize must be divisible by blockSize without remainder, but it is not!");
-      }
-
-      if (blockSize == 0 ) {
-        throw sg::base::operation_exception("blockSize must not be zero!");
       }
 
       // do all further calculations with complete blocks

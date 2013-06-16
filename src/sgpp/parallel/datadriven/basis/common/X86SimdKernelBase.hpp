@@ -9,7 +9,7 @@
 #ifndef X86SIMDKERNELBASE_HPP
 #define X86SIMDKERNELBASE_HPP
 
-#include "KernelIncludesAndMacros.hpp"
+#include "CommonX86SimdKernelBase.hpp"
 
 namespace sg {
   namespace parallel {
@@ -22,6 +22,18 @@ namespace sg {
         static inline size_t getChunkDataPoints() {
           return 24; // must be divisible by 24
         }
+        static inline void resetKernel() {}
+    };
+
+    class X86SimdKernelBase1 {
+      public:
+        static inline size_t getChunkGridPoints() {
+          return 1;
+        }
+        static inline size_t getChunkDataPoints() {
+          return 1;
+        }
+        static inline void resetKernel() {}
     };
 
   }

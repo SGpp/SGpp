@@ -1,5 +1,5 @@
 /* ****************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2010-2013 Technische Universitaet Muenchen                    *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
@@ -9,7 +9,7 @@
 #ifndef SPX86SIMDKERNELBASE_HPP
 #define SPX86SIMDKERNELBASE_HPP
 
-#include "KernelIncludesAndMacros.hpp"
+#include "CommonX86SimdKernelBase.hpp"
 
 namespace sg {
   namespace parallel {
@@ -22,6 +22,7 @@ namespace sg {
         static inline size_t getChunkDataPoints() {
           return 48; //must be divisible by 48
         }
+        static inline void resetKernel() {}
     };
 
   }

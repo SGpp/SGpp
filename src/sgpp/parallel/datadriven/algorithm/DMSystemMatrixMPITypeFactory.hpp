@@ -12,6 +12,7 @@
 #include "base/grid/Grid.hpp"
 #include "parallel/tools/TypesParallel.hpp"
 #include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
 
 namespace sg {
   namespace parallel {
@@ -21,8 +22,12 @@ namespace sg {
         template<typename Kernel>
         static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
 
+        template<typename Kernel>
+        static sg::datadriven::DMSystemMatrixBaseSP* createDMSystemMatrixMPITypeSP(sg::base::Grid& grid, sg::base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType);
+
       public:
         static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+        static sg::datadriven::DMSystemMatrixBaseSP* getDMSystemMatrixSP(sg::base::Grid& grid, sg::base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType);
 
     };
 

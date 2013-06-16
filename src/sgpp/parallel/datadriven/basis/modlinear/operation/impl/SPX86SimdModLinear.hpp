@@ -17,7 +17,7 @@ namespace sg {
     class SPX86SimdModLinear : public SPX86SimdKernelBase {
       public:
         static const KernelType kernelType = Standard;
-        static inline void mult(
+        static inline void multImpl(
           sg::base::DataMatrixSP* level,
           sg::base::DataMatrixSP* index,
           sg::base::DataMatrixSP* /*mask*/, //unused for this specialization
@@ -476,7 +476,7 @@ namespace sg {
           }
         }
 
-        static inline void multTranspose(
+        static inline void multTransposeImpl(
           sg::base::DataMatrixSP* level,
           sg::base::DataMatrixSP* index,
           sg::base::DataMatrixSP* /*mask*/, //unused for this specialization
