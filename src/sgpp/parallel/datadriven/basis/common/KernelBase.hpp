@@ -11,7 +11,7 @@
 
 #include "base/grid/GridStorage.hpp"
 
-#define CHECK_KERNEL_CALLS
+//#define CHECK_KERNEL_CALLS
 #ifdef CHECK_KERNEL_CALLS
 #include "base/exception/operation_exception.hpp"
 
