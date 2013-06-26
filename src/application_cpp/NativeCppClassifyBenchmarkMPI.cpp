@@ -386,9 +386,9 @@ int main(int argc, char* argv[]) {
   int mpi_size;
 
   int threadLevelProvided;
-  MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &threadLevelProvided);
+  MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &threadLevelProvided);
 
-  if (threadLevelProvided != MPI_THREAD_MULTIPLE) {
+  if (threadLevelProvided != MPI_THREAD_FUNNELED) {
     std::cout << "MPI Library does not support Multithreaded Processes" << MPI_Finalize();
     return -1;
   }

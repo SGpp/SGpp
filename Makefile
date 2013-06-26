@@ -266,6 +266,62 @@ LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
 endif
 
+ifeq ($(CC),CC)
+CFLAGS:=-target=compute_node $(CFLAGS_GCC)
+LFLAGS:=-target=compute_node $(LFLAGS_GCC)
+CFLAGS:=$(CFLAGS) -DUSE_MPI
+MPI=1
+ifeq ($(OMP),1)
+CFLAGS:=$(CFLAGS) -fopenmp
+LFLAGS:=$(LFLAGS) -fopenmp
+endif
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) -msse3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) -msse4.2
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(VEC),avx2)
+CFLAGS:=$(CFLAGS) -mavx2 -fma
+endif
+ifeq ($(VEC),bd_avx128)
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1 -D__USEAVX128__
+endif
+ifeq ($(VEC),bd_avx)
+CFLAGS:=$(CFLAGS) -mavx -mfma4 -mxop -march=bdver1
+endif
+ifeq ($(TR1),1)
+CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), ArBB)
+CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
+LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
+endif
+ifeq ($(EXT), NVOCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
+endif
+endif
+
+
 ifeq ($(CC),mpiicpc)
 CFLAGS:=$(CFLAGS_ICC)
 LFLAGS:=$(LFLAGS_ICC)
@@ -338,6 +394,10 @@ endif
 ifeq ($(CC),icl)
 	mkdir -p tmp/build_native/sgpplib_icl
 	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icl "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icl" "EXT=$(EXT)"
+endif
+ifeq ($(CC),CC)
+	mkdir -p tmp/build_native/sgpplib_cray
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_cray "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_cray" "EXT=$(EXT)" "MPI=$(MPI)"
 endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/sgpplib_mpiicc
@@ -470,6 +530,10 @@ endif
 # Builds a ClassifyBenchmark Application
 ###################################################################	
 ClassifyBenchmark: default
+ifeq ($(CC),CC)
+	mkdir -p tmp/build_native/ClassifyBenchmark_cray
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmarkMPI --directory=./tmp/build_native/ClassifyBenchmark_cray "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_cray.a" "BINNAME=ClassifyBenchmark_CRAY_MPI" "EXT=$(EXT)"
+endif
 ifeq ($(CC),g++)
 	mkdir -p tmp/build_native/ClassifyBenchmark_gcc
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=ClassifyBenchmark_GCC" "EXT=$(EXT)"
