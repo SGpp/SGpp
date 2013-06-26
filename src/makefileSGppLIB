@@ -420,6 +420,16 @@ default : $(OBJS)
 	$(CC) -shared -fopenmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
 endif
 
+ifeq ($(CC),CC)
+NOIPO=
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	ar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -fopenmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
 
 ifeq ($(CC),icpc)
 NOIPO=-no-ipo -no-ip
