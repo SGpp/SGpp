@@ -38,7 +38,7 @@ namespace sg {
           const size_t end_index_data) {
           #pragma omp master
           {
-            double time = m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
+            m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
             start_index_grid, end_index_grid, start_index_data, end_index_data);
           }
 
@@ -68,8 +68,7 @@ namespace sg {
           size_t numWGs = range / OCL_SGPP_LOCAL_WORKGROUP_SIZE;
           size_t end_index_grid_gpu = start_index_grid + numWGs * OCL_SGPP_LOCAL_WORKGROUP_SIZE;
           if (tid == 0) {
-            double time = 0.0;
-            time = m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
+            m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
                                                  start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
           }
           size_t start_grid_cpu = end_index_grid_gpu;
