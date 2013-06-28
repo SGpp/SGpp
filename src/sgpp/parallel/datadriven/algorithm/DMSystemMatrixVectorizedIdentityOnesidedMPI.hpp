@@ -164,7 +164,7 @@ namespace sg {
             // the last put won't be taken into account for the synchronization.
             #pragma omp barrier
 
-            #pragma omp single
+            #pragma omp master
             {
               this->computeTimeMult_ += this->myTimer_->stop();
 
@@ -181,7 +181,8 @@ namespace sg {
               this->completeTimeMult_ += this->myTimer_->stop();
               this->myTimer_->start();
 
-            } //implicit OpenMP barrier here
+            }
+            #pragma omp barrier
 
             size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
             size_t myGridChunkEnd = (mpi_myrank + 1) * _chunkCountPerProcGrid;

@@ -151,7 +151,7 @@ namespace sg {
               }
             }
 
-            #pragma omp single
+            #pragma omp master
             {
               double computationTime = this->myTimer_->stop();
               this->computeTimeMult_ += computationTime;
@@ -165,7 +165,8 @@ namespace sg {
 
               this->myTimer_->start();
 
-            } //implicit OpenMP barrier here
+            }
+            #pragma omp barrier
 
             size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
             size_t myGridChunkEnd = (mpi_myrank + 1) * _chunkCountPerProcGrid;

@@ -130,7 +130,7 @@ namespace sg {
             // implicit openMP barrier here (after omp single): we have to make sure that we do not
             // read non-zeros from padded temp range
 
-            #pragma omp single nowait
+            #pragma omp master
             {
               sg::parallel::myGlobalMPIComm->IsendToAllSP(&ptrTemp[dataProcessChunkStart], _mpi_data_sizes[mpi_myrank],
                   tagsData[mpi_myrank], dataSendReqs);
@@ -154,12 +154,13 @@ namespace sg {
 
             // after this, we receive the temp chunks from all the other processes and do the calculations for them
             while (true) {
-              #pragma omp single
+              #pragma omp master
               {
                 myGlobalMPIComm->waitForAnyRequest(sg::parallel::myGlobalMPIComm->getNumRanks(), dataRecvReqs, &idx);
               }
+              #pragma omp barrier
+              // let all threads wait here
 
-              // implicit barrier, all threads wait here
               if (idx == MPI_UNDEFINED) {
                 // no more active request, everything is done
                 break;
