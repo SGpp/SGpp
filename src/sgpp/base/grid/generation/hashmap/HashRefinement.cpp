@@ -157,6 +157,7 @@ namespace sg {
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
             counter++;
+            break;
           }
 
           // test existance of right child
@@ -165,6 +166,7 @@ namespace sg {
 
           if (child_iter == end_iter) {
             counter++;
+            break;
           }
 
           // reset current grid point in dimension d
