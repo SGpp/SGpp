@@ -31,7 +31,7 @@ namespace sg {
          * @param samples Output DataVector
         * @param seedp seed
          */
-        virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, drand48_data* seedp) = 0;
+        virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, unsigned int* seedp) = 0;
     };
 
   }
