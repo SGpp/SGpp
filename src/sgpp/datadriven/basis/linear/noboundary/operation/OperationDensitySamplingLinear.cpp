@@ -45,8 +45,7 @@ namespace sg {
         // 2. 1D sampling on dim_start
         base::DataVector* samples_start = NULL;
         OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
-        drand48_data tseedp;
-        srand48_r(static_cast<long int>(static_cast<double>(time(NULL)) * 0.0001), &tseedp);
+        unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * 0.0001);
         samp1d->doSampling1D(a1d, size, samples_start, &tseedp);
         delete samp1d;
         delete g1d;
@@ -57,15 +56,13 @@ namespace sg {
         {
 
           base::DataVector* sampleVec = new base::DataVector(num_dims);
-          drand48_data seedp;
+          unsigned int seedp;
           size_t samplesSize = samples_start->getSize();
           #pragma omp critical
           {
-            double a = 0;
-            long int b = 0;
-            drand48_r(&tseedp, &a);
-            lrand48_r(&tseedp, &b);
-            srand48_r(static_cast<long int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b)), &seedp);
+            double a = static_cast<double>(rand_r(&tseedp))/RAND_MAX;
+            long int b = static_cast<long int>(rand_r(&tseedp));
+            seedp = static_cast<unsigned int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
           }
           #pragma omp for schedule(dynamic)
 
@@ -105,8 +102,7 @@ namespace sg {
       // 2. 1D sampling on dim_start
       base::DataVector* samples_start = NULL;
       OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
-      drand48_data tseedp;
-      srand48_r(static_cast<long int>(static_cast<double>(time(NULL)) * 0.0001), &tseedp);
+      unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * 0.0001);
       samp1d->doSampling1D(a1d, num_samples, samples_start, &tseedp);
       delete samp1d;
       delete g1d;
@@ -116,32 +112,29 @@ namespace sg {
       #pragma omp parallel
       {
         base::DataVector* sampleVec = new base::DataVector(num_dims);
-        drand48_data* seedp = new drand48_data;
+        unsigned int seedp = 0;;
         #pragma omp critical
         {
-          double a = 0;
-          long int b = 0;
-          drand48_r(&tseedp, &a);
-          lrand48_r(&tseedp, &b);
-          srand48_r(static_cast<long int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b)), seedp);
+          double a = static_cast<double>(rand_r(&tseedp))/RAND_MAX;
+          long int b = static_cast<long int>(rand_r(&tseedp));
+	  seedp = static_cast<unsigned int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
         }
         #pragma omp for schedule(dynamic)
 
         for (size_t i = 0; i < num_samples; i++) {
           sampleVec->set(dim_x, samples_start->get(i));
-          doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec, seedp);
+          doSampling_start_dimX(this->grid, alpha, dim_x, sampleVec, &seedp);
 
           for (size_t j = 0; j < num_dims; j++)
             samples->set(i, j, sampleVec->get(j));
         }
 
-        delete seedp;
       }
       delete samples_start;
       return;
     }
 
-    void OperationDensitySamplingLinear::doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector*& sampleVec, drand48_data* seedp) {
+    void OperationDensitySamplingLinear::doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector*& sampleVec, unsigned int* seedp) {
 
       size_t dims = sampleVec->getSize(); // total dimensions
 
@@ -157,7 +150,7 @@ namespace sg {
       return;
     }
 
-    void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim, drand48_data* seedp) {
+    void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim, unsigned int* seedp) {
 
       size_t dims = sampleVec->getSize();  // total dimensions
       unsigned int op_dim = (curr_dim < dim_x) ? 0 : (unsigned int)dim_x; // actual dim to be operated on

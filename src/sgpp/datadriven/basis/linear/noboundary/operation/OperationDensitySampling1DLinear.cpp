@@ -29,7 +29,7 @@ namespace sg {
       // TODO Auto-generated destructor stub
     }
 
-    void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, drand48_data* seedp) {
+    void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, unsigned int* seedp) {
 
       /***************** STEP 1. Compute CDF  ********************/
 
@@ -97,7 +97,7 @@ namespace sg {
 
       for (size_t i = 0; i < num_samples; i++) {
         // drand48_r() is thread_safe
-        drand48_r(seedp, &y);
+        y = static_cast<double>(rand_r(seedp))/RAND_MAX;
 
         // find cdf interval
         for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1)
