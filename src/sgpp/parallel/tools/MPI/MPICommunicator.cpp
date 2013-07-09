@@ -170,8 +170,7 @@ namespace sg {
       }
     }
 
-    void MPICommunicator::IsendToAllSP(float *ptr, size_t size, int tag, MPI_Request *reqs)
-    {
+    void MPICommunicator::IsendToAllSP(float* ptr, size_t size, int tag, MPI_Request* reqs) {
       for (size_t rank = 0; rank < getNumRanks(); rank++) {
         if (rank == getMyRank()) {
           reqs[rank] = MPI_REQUEST_NULL;
@@ -183,8 +182,7 @@ namespace sg {
       }
     }
 
-    void MPICommunicator::IrecvFromAllSP(float *ptr, size_t chunkSizePerProc, int *sizes, int *offsets, int *tag, MPI_Request *reqs)
-    {
+    void MPICommunicator::IrecvFromAllSP(float* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag, MPI_Request* reqs) {
       for (size_t rank = 0; rank < getNumRanks(); rank++) {
         for (size_t i = 0; i < chunkSizePerProc; i++) {
           size_t reqIdx = rank * chunkSizePerProc + i;
@@ -206,8 +204,7 @@ namespace sg {
       }
     }
 
-    void MPICommunicator::putToAllSP(float *ptr, size_t winOffset, size_t count, MPI_Win win)
-    {
+    void MPICommunicator::putToAllSP(float* ptr, size_t winOffset, size_t count, MPI_Win win) {
       for (size_t i = 0; i < getNumRanks(); i++) {
         int countAsInt = (int)(count);
         int winOffsetAsInt = (int)(winOffset);

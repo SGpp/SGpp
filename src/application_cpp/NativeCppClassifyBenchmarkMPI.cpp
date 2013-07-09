@@ -399,6 +399,7 @@ int main(int argc, char* argv[]) {
 
   std::streambuf* stdoutBuf = std::cout.rdbuf();
   std::ofstream dummy_out("/dev/null");
+
   if (mpi_myid != 0) { // disable output for all processes but proc 0
     std::cout.rdbuf(dummy_out.rdbuf());
   }
@@ -628,6 +629,7 @@ int main(int argc, char* argv[]) {
   if (mpi_myid != 0) { // restore stdout buffer
     std::cout.rdbuf(stdoutBuf);
   }
+
   MPI_Finalize();
 
   return 0;

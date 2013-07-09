@@ -67,23 +67,27 @@ namespace sg {
           size_t range = end_index_grid - start_index_grid;
           size_t numWGs = range / OCL_SGPP_LOCAL_WORKGROUP_SIZE;
           size_t end_index_grid_gpu = start_index_grid + numWGs * OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+
           if (tid == 0) {
             m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
-                                                 start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
+                                          start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
           }
+
           size_t start_grid_cpu = end_index_grid_gpu;
           size_t end_grid_cpu = end_index_grid;
-          if(num_threads > 1){
+
+          if (num_threads > 1) {
             if (tid == 0) {
               // don't do anything for thread 0 when there is more than one thread
               start_grid_cpu = end_grid_cpu = 0;
             } else {
               // distribute work evenly across all threads but thread 0
-              PartitioningTool::getPartitionSegment(end_index_grid_gpu, end_index_grid, num_threads-1, tid-1, &start_grid_cpu, &end_grid_cpu, 1);
+              PartitioningTool::getPartitionSegment(end_index_grid_gpu, end_index_grid, num_threads - 1, tid - 1, &start_grid_cpu, &end_grid_cpu, 1);
             }
           }
+
           OCLBasisType::multTransposeDefault(level, index, mask, offset, dataset, source, result,
-                                 start_grid_cpu, end_grid_cpu, start_index_data, end_index_data);
+                                             start_grid_cpu, end_grid_cpu, start_index_data, end_index_data);
         }
 
         void resetKernel() {

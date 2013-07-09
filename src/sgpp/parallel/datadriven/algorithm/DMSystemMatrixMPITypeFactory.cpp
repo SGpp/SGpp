@@ -211,7 +211,7 @@ namespace sg {
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
             return createDMSystemMatrixMPIType<CPUKernel<X86SimdModLinearMask> >
-                (grid, trainDataset, lambda, vecType, mpiType);
+                   (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
@@ -272,6 +272,7 @@ namespace sg {
           return createDMSystemMatrixMPITypeSP<SPOCLCPUHybridKernel<SPX86SimdLinear, OCLLinear<float > > >
                  (grid, trainDataset, lambda, vecType, mpiType);
         }
+
 #endif
         else {
           return new sg::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
@@ -281,10 +282,10 @@ namespace sg {
         if (vecType == parallel::X86SIMD) {
           if (strcmp(modlinear_mode, "orig") == 0) {
             return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdModLinear> >
-                 (grid, trainDataset, lambda, vecType, mpiType);
+                   (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
             return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdModLinearMask> >
-                 (grid, trainDataset, lambda, vecType, mpiType);
+                   (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }

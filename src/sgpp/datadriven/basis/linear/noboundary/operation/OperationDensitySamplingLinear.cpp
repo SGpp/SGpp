@@ -60,9 +60,9 @@ namespace sg {
           size_t samplesSize = samples_start->getSize();
           #pragma omp critical
           {
-            double a = static_cast<double>(rand_r(&tseedp))/RAND_MAX;
+            double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
             long int b = static_cast<long int>(rand_r(&tseedp));
-            seedp = static_cast<unsigned int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
+            seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
           }
           #pragma omp for schedule(dynamic)
 
@@ -115,9 +115,9 @@ namespace sg {
         unsigned int seedp = 0;;
         #pragma omp critical
         {
-          double a = static_cast<double>(rand_r(&tseedp))/RAND_MAX;
+          double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
           long int b = static_cast<long int>(rand_r(&tseedp));
-	  seedp = static_cast<unsigned int>(static_cast<double>(time(NULL))*a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
+          seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
         }
         #pragma omp for schedule(dynamic)
 

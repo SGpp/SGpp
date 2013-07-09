@@ -91,6 +91,7 @@ namespace sg {
 
         virtual void rebuildLevelAndIndex(size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max()) {
           LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType, OperationMultipleEvalVectorizedSP >(this);
+
           if (gridTo == std::numeric_limits<size_t>::max()) {
             gridTo = this->storage_->size();
           }

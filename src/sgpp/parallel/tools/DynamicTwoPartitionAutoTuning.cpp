@@ -18,8 +18,7 @@ namespace sg {
       doTune();
     }
 
-    void DynamicTwoPartitionAutoTuning::resetAutoTuning()
-    {
+    void DynamicTwoPartitionAutoTuning::resetAutoTuning() {
       _partition2_speedup = INITIAL_SPEEDUP_PARTITION_2;
       TwoPartitionAutoTuning::resetAutoTuning();
     }
@@ -36,7 +35,7 @@ namespace sg {
       size_t partition2 = 0;
 
       if (((_tuneCounter % _retune) == 0)) {
-        if(_timePartition1 != 0 && _timePartition2 != 0){
+        if (_timePartition1 != 0 && _timePartition2 != 0) {
           double partition1_element_time = static_cast<double>(_sizePartition1) / static_cast<double>(_timePartition1);
           double partition2_element_time = static_cast<double>(_problemSize - _sizePartition1) / static_cast<double>(_timePartition2);
           _partition2_speedup = partition2_element_time / partition1_element_time;
@@ -47,7 +46,7 @@ namespace sg {
 
       partition2 = static_cast<size_t>(normalized_workingset * _partition2_speedup);
 
-      if(partition2 < _partition2Divider/2) {      // don't use an accelerator for too small chunks
+      if (partition2 < _partition2Divider / 2) {   // don't use an accelerator for too small chunks
         _sizePartition1 = _problemSize;
         return;
       }

@@ -102,7 +102,7 @@ namespace sg {
          *
          * if you don't supply the optional parameters, this process will handle the complete grid
          */
-        virtual void rebuildLevelAndIndex(size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max())= 0;
+        virtual void rebuildLevelAndIndex(size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max()) = 0;
 
         // we have to make sure that all implemented Kernel Types can see the fields they require.
         // this has to be done here and only here because friends are checked at compile time and we use
