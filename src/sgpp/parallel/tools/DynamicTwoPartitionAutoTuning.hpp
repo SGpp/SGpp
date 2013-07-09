@@ -18,7 +18,7 @@ namespace sg {
       public:
         DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
         virtual void resetAutoTuning();
-    protected:
+      protected:
         void autoTune();
         double _partition2_speedup;
     };

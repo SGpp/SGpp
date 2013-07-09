@@ -14,7 +14,7 @@ namespace sg {
   namespace parallel {
 
 
-    class StaticTwoPartitionAutoTuning : public TwoPartitionAutoTuning{
+    class StaticTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
 
         /**
          * Constructor for static load balancing

@@ -51,7 +51,7 @@ namespace sg {
                  _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank],
                  _mpi_data_offsets[mpi_rank],
                  _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]
-                                                                      );
+                                                                        );
       waitting_time = 0.0;
     }
 
@@ -69,17 +69,21 @@ namespace sg {
       MPI_Gather(&waitting_time, 1, MPI_DOUBLE, allwaittime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
       MPI_Gather(&computeTimeMultTrans_, 1, MPI_DOUBLE, allcomptimemultTrans, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
       MPI_Gather(&computeTimeMult_, 1, MPI_DOUBLE, allcomptimemult, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-      if(sg::parallel::myGlobalMPIComm->getMyRank() == 0){
-        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+
+      if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+        for (size_t i = 0; i < sg::parallel::myGlobalMPIComm->getNumRanks(); i++) {
           std::cout << "waiting time for process " << i << " is: " << allwaittime[i] << std::endl;
         }
-        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+
+        for (size_t i = 0; i < sg::parallel::myGlobalMPIComm->getNumRanks(); i++) {
           std::cout << "comp time multtrans for process " << i << " is: " << allcomptimemultTrans[i] << std::endl;
         }
-        for(size_t i = 0; i<sg::parallel::myGlobalMPIComm->getNumRanks(); i++){
+
+        for (size_t i = 0; i < sg::parallel::myGlobalMPIComm->getNumRanks(); i++) {
           std::cout << "comp time mult for process " << i << " is: " << allcomptimemult[i] << std::endl;
         }
       }
+
       delete[] allwaittime;
       delete[] allcomptimemultTrans;
       delete[] allcomptimemult;

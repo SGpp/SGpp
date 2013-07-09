@@ -37,7 +37,7 @@ namespace sg {
           PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data, &start, &end,
               KernelImplementation::getChunkDataPoints());
           KernelImplementation::multImpl(level, index, mask, offset, dataset, alpha, result,
-                                     start_index_grid, end_index_grid, start, end);
+                                         start_index_grid, end_index_grid, start, end);
         }
         static inline void multTranspose(
           sg::base::DataMatrix* level,
@@ -56,9 +56,9 @@ namespace sg {
           size_t end;
           PartitioningTool::getOpenMPPartitionSegment(start_index_grid, end_index_grid, &start, &end, 1);
           KernelImplementation::multTransposeImpl(level, index, mask, offset, dataset, source, result,
-                                 start, end, start_index_data, end_index_data);
+                                                  start, end, start_index_data, end_index_data);
         }
-        static inline void resetKernel(){}
+        static inline void resetKernel() {}
     };
   }
 }

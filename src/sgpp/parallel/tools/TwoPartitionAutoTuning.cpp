@@ -28,23 +28,24 @@ namespace sg {
     }
 
     void TwoPartitionAutoTuning::setProblemSize(size_t problemSize) {
-      if(_problemSize == problemSize){
+      if (_problemSize == problemSize) {
         return;
       }
+
       _problemSize = problemSize;
       doTune();
     }
 
     void TwoPartitionAutoTuning::setPartition2Divider(size_t partition2Divider) {
-      if(_partition2Divider == partition2Divider){
+      if (_partition2Divider == partition2Divider) {
         return;
       }
+
       _partition2Divider = partition2Divider;
       doTune();
     }
 
-    void TwoPartitionAutoTuning::doTune()
-    {
+    void TwoPartitionAutoTuning::doTune() {
       autoTune();
       std::cout << "AUTOTUNING-PARTITION-SIZES (" << _problemSize << "):"
                 << " Time1: " << _timePartition1
@@ -57,7 +58,8 @@ namespace sg {
       _timePartition1 += timePartition1;
       _timePartition2 += timePartition2;
       _tuneCounter++;
-      if(_tuneCounter % _retune == 0){
+
+      if (_tuneCounter % _retune == 0) {
         doTune();
         _tuneCounter = 0;
         _timePartition1 = 0;
@@ -72,8 +74,7 @@ namespace sg {
       doTune();
     }
 
-    size_t TwoPartitionAutoTuning::getPartition1Size()
-    {
+    size_t TwoPartitionAutoTuning::getPartition1Size() {
       return _sizePartition1;
     }
 
