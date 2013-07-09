@@ -23,7 +23,9 @@ namespace sg {
         virtual std::string generateSourceMult(size_t dims) {
           std::stringstream stream_program_src;
 
-          stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+          if (getType<real_type>::asString() == "double") {
+            stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+          }
           stream_program_src << "__kernel" << std::endl;
           stream_program_src << "__attribute__((reqd_work_group_size(" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ", 1, 1)))" << std::endl;
           stream_program_src << "void multOCL(__global const " << getType<real_type>::asString() << "* ptrLevel," << std::endl;
@@ -134,7 +136,9 @@ namespace sg {
         virtual std::string generateSourceMultTrans(size_t dims) {
           std::stringstream stream_program_src;
 
-          stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+          if (getType<real_type>::asString() == "double") {
+            stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
+          }
           stream_program_src << "__kernel" << std::endl;;
           stream_program_src << "__attribute__((reqd_work_group_size(" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ", 1, 1)))" << std::endl;
           stream_program_src << "void multTransOCL(__global const " << getType<real_type>::asString() << "* ptrLevel," << std::endl;
