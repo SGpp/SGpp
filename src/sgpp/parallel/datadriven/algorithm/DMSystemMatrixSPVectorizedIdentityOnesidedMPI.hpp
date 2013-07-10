@@ -85,7 +85,7 @@ namespace sg {
           _mpi_grid_window_buffer = new sg::base::DataVectorSP(this->storage_->size());
 
           MPI_Win_create(_mpi_grid_window_buffer->getPointer(), this->storage_->size()*sizeof(float),
-                         sizeof(float), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_grid_window);
+                         static_cast<int>(sizeof(float)), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_grid_window);
           MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_grid_window);
         }
 
@@ -98,7 +98,7 @@ namespace sg {
 
           _mpi_data_window_buffer = new sg::base::DataVectorSP(this->numPatchedTrainingInstances_);
           MPI_Win_create(_mpi_data_window_buffer->getPointer(), this->numPatchedTrainingInstances_ * sizeof(float),
-                         sizeof(float), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_data_window);
+                         static_cast<int>(sizeof(float)), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_data_window);
           MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_data_window);
         }
 
