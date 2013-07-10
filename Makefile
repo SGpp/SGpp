@@ -18,6 +18,8 @@ ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
 OCLINCLUDE = /usr/local/cuda/include
 OCLLIB = /usr/lib64/
+#OCLINCLUDE = ${CUDATOOLKIT_HOME}/include
+#OCLLIB = /opt/cray/nvidia/default/lib64
 # Intel OpenCL
 IOCLINCLUDE = /usr/include
 IOCLLIB = /usr/lib64/OpenCL/vendors/intel

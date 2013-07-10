@@ -50,7 +50,7 @@ namespace sg {
         void operator()(BASIS& basis, std::vector<double>& point, double alpha, DataVector& result) {
           GridStorage::grid_iterator working(storage);
 
-          typedef GridStorage::index_type::level_type level_type;
+          //typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
           size_t bits = sizeof(index_type) * 8; // how many levels can we store in a index_type?
