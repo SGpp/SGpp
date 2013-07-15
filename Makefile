@@ -263,7 +263,7 @@ CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
-CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
 endif
@@ -318,7 +318,7 @@ CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
-CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
 endif
@@ -368,7 +368,56 @@ CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
-CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -DNO_OCL_OPTS -fopenmp
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
+LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
+endif
+endif
+
+ifeq ($(CC),mpiCC)
+CFLAGS:=$(CFLAGS_ICC)
+LFLAGS:=$(LFLAGS_ICC)
+CFLAGS:=$(CFLAGS) -DUSE_MPI
+MPI=1
+ifeq ($(VEC),sse3)
+CFLAGS:=$(CFLAGS) -msse3
+endif
+ifeq ($(VEC),sse4)
+CFLAGS:=$(CFLAGS) -msse4.2
+endif
+ifeq ($(VEC),avx)
+CFLAGS:=$(CFLAGS) -mavx
+endif
+ifeq ($(VEC),avx2)
+CFLAGS:=$(CFLAGS) -march=core-avx2 -fma
+endif
+ifeq ($(VEC),avx128)
+CFLAGS:=$(CFLAGS) -mavx -D__USEAVX128__
+endif
+ifeq ($(OMP),1)
+CFLAGS:=$(CFLAGS) -openmp
+LFLAGS:=$(LFLAGS) -openmp
+endif
+ifeq ($(TR1),1)
+CFLAGS:=$(CFLAGS) -DUSETRONE -std=c++0x
+endif
+ifeq ($(EXT), ArBB)
+CFLAGS:=$(CFLAGS) -I$(ARBBINCLUDE) -DUSEARBB
+LFLAGS:=$(LFLAGS) -L$(ARBBLIB) -larbb -ltbb
+endif
+ifeq ($(EXT), NVOCL)
+CFLAGS:=$(CFLAGS) -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
+LFLAGS:=$(LFLAGS) -L$(OCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCL)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), AMDOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
 endif
@@ -408,6 +457,10 @@ endif
 ifeq ($(CC),mpigxx)
 	mkdir -p tmp/build_native/sgpplib_mpigxx
 	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx" "EXT=$(EXT)" "MPI=$(MPI)"
+endif
+ifeq ($(CC),mpiCC)
+	mkdir -p tmp/build_native/sgpplib_ibm
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_ibm "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_ibm" "EXT=$(EXT)" "MPI=$(MPI)"
 endif
 
 
@@ -559,6 +612,10 @@ endif
 ifeq ($(CC),icl)
 	mkdir -p tmp/build_native/ClassifyBenchmark_icl
 	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmark --directory=./tmp/build_native/ClassifyBenchmark_icl "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icl.lib" "BINNAME=ClassifyBenchmark_ICL.exe" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiCC)
+	mkdir -p tmp/build_native/ClassifyBenchmark_ibm
+	make -j $(JOBS) -f ./../../../src/makefileNativeClassifyBenchmarkMPI --directory=./tmp/build_native/ClassifyBenchmark_ibm "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_ibm.a" "BINNAME=ClassifyBenchmark_IBM_MPI" "EXT=$(EXT)"
 endif
 
 ###################################################################
