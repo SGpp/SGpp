@@ -2,12 +2,12 @@
 # run specific variables, please adjust
 export OMP_NUM_THREADS=16
 # prefix for result files
-RESPRE=SNB-EP
+RESPRE=SNB-EP_E5-2670
 VECTYPE="X86SIMD"
 PRECISION="SP DP"
 
 ###### DO NOT MODIFY BELOW THIS LINE #######
-export KMP_AFFINITY=proclist=[0-15],granularity=thread,verbose
+export KMP_AFFINITY=proclist=[0-15],granularity=thread,explicit,verbose
 #export GOMP_CPU_AFFINITY="0-15"
 for VEC in $VECTYPE
 do
