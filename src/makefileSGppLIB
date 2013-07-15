@@ -453,6 +453,17 @@ default : $(OBJS)
 	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
 endif
 
+ifeq ($(CC),mpiCC)
+NOIPO=-no-ipo -no-ip
+default : $(OBJS)
+	mkdir -p $(BINDIR)
+	rm -f $(BINDIR)$(LIBNAME).a
+	rm -f $(BINDIR)$(LIBNAME).so
+	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	ranlib $(BINDIR)$(LIBNAME).a
+	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+endif
+
 ifeq ($(CC),icl)
 NOIPO=
 default : $(OBJS)
