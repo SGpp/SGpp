@@ -101,6 +101,17 @@ namespace sg {
       return gridSer;
     }
 
+    sg::base::Grid* PDESolver::getGridPointer() const {
+	  if (bGridConstructed) {
+		return myGrid;
+	  } else {
+		throw new sg::base::application_exception(
+				"PDESolver::getGrid : The grid wasn't initialized before!");
+	  }
+
+	  return myGrid;
+    }
+
     void PDESolver::refineInitialGridSurplus(sg::base::DataVector& alpha, int numRefinePoints, double dThreshold) {
       size_t nRefinements;
 
@@ -207,6 +218,11 @@ namespace sg {
       } else {
         throw new sg::base::application_exception("PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
       }
+    }
+
+    void PDESolver::printLevelIndexGrid(std::string tfilename) const {
+      sg::base::GridPrinter myPrinter(*this->myGrid);
+      myPrinter.printLevelIndexGrid(tfilename);
     }
 
     void PDESolver::printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const {
