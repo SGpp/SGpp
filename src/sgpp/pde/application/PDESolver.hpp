@@ -28,8 +28,6 @@ namespace sg {
      */
     class PDESolver {
       protected:
-        /// The Sparse sg::base::Grid needed in this classificator
-        sg::base::Grid* myGrid;
         /// the number of levels used for an regular grid
         int levels;
         /// the dimension of the grid
@@ -40,7 +38,8 @@ namespace sg {
         sg::base::BoundingBox* myBoundingBox;
         /// Stores Pointer to the Girs's Storage
         sg::base::GridStorage* myGridStorage;
-
+        /// The Sparse sg::base::Grid needed in this classificator
+        sg::base::Grid* myGrid;
         /**
          * This function calculates for every grid point the value
          * of a normal distribution given by norm_mu and norm_sigma.
@@ -53,6 +52,8 @@ namespace sg {
         virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
       public:
+
+
         /**
          * Std-Constructor of the solver
          */
@@ -85,6 +86,13 @@ namespace sg {
          * @return a string containing a serialized grid
          */
         std::string getGrid() const;
+
+        /**
+         * Returns a Pointer to the currently used grid
+         *
+         * @return pointer to the currently used grid
+         */
+        sg::base::Grid* getGridPointer() const;
 
         /**
          * deletes the grid created within that solver
@@ -178,6 +186,13 @@ namespace sg {
          * @param EvaluationPoints sg::base::DataMatrix that contains the points at which the sparse grid's function is evaluated
          */
         void evaluateCuboid(sg::base::DataVector& alpha, sg::base::DataVector& FunctionValues, sg::base::DataMatrix& EvaluationPoints);
+
+        /**
+         * Prints the level,index pairs of the grid for each Gridpoint to a file.
+         *
+         * @param tfilename relative path to file into which the grid's evaluation is written
+         */
+        virtual void printLevelIndexGrid(std::string tfilename) const;
 
         /**
          * This is some kind of debug functionality. It writes a file,
