@@ -88,13 +88,6 @@ namespace sg {
         std::string getGrid() const;
 
         /**
-         * Returns a Pointer to the currently used grid
-         *
-         * @return pointer to the currently used grid
-         */
-        sg::base::Grid* getGridPointer() const;
-
-        /**
          * deletes the grid created within that solver
          */
         void deleteGrid();
