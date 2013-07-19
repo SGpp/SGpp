@@ -101,17 +101,6 @@ namespace sg {
       return gridSer;
     }
 
-    sg::base::Grid* PDESolver::getGridPointer() const {
-	  if (bGridConstructed) {
-		return myGrid;
-	  } else {
-		throw new sg::base::application_exception(
-				"PDESolver::getGrid : The grid wasn't initialized before!");
-	  }
-
-	  return myGrid;
-    }
-
     void PDESolver::refineInitialGridSurplus(sg::base::DataVector& alpha, int numRefinePoints, double dThreshold) {
       size_t nRefinements;
 
