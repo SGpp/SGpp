@@ -97,6 +97,8 @@ namespace sg {
           this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSum(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
+          
+          result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
         }
 
         virtual void generateb(base::DataVector& classes, base::DataVector& b) {
