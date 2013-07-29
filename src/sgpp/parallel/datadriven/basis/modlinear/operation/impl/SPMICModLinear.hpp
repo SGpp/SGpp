@@ -23,7 +23,6 @@ namespace sg {
      *
      * multImpl and multTransImpl have to be run on the mic, either in offload mode or native
      */
-#pragma offload_attribute(push, target(mic))
     class SPMICModLinear : public SPMICKernelBase {
       public:
         static const KernelType kernelType = Standard;
@@ -2214,7 +2213,6 @@ namespace sg {
         }
 
     };
-#pragma offload_attribute(pop)
   }
 }
 #endif // USEMIC

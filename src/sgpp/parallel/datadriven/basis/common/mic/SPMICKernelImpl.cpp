@@ -1,8 +1,22 @@
+/* ****************************************************************************
+* Copyright (C) 2010-2013 Technische Universitaet Muenchen                    *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Roman Karlstetter (karlstetter@mytum.de)
+
+#ifdef USEMIC
+
+#ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
+#endif
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
+#endif
 
 #include "parallel/datadriven/basis/common/mic/SPMICKernelImpl.hpp"
 #include <offload.h>
@@ -153,41 +167,51 @@ namespace sg {
 
       void deleteGrid() {
         if (ptrLevel != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrLevel:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+#endif
 
           ptrLevel = NULL;
         }
 
         if (ptrIndex != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrIndex:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+#endif
 
           ptrIndex = NULL;
         }
 
         if (ptrMask != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrMask:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+#endif
 
           ptrMask = NULL;
         }
 
         if (ptrOffset != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrOffset:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+#endif
 
           ptrOffset = NULL;
         }
 
         if (ptrAlphaMic != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrAlphaMic:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+#endif
 
           delete[] ptrAlphaMic;
           ptrAlphaMic = NULL;
@@ -196,23 +220,28 @@ namespace sg {
 
       void deleteData() {
         if (ptrData != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrData:length(0) alloc_if(0) free_if(1))
           }
+#endif
 
           ptrData = NULL;
         }
 
         if (ptrDataMic != NULL) {
+#ifdef __INTEL_OFFLOAD
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrDataMic:length(0) alloc_if(0) free_if(1))
           }
+#endif
 
           delete[] ptrDataMic;
           ptrDataMic = NULL;
         }
       }
 
+#ifdef __INTEL_OFFLOAD
       /**
        * @brief transferResultMult workaround for intel compiler bug: it's not possible to have an into clause in a templated class
        * @param offset offset of the result to copy
@@ -245,7 +274,10 @@ namespace sg {
 #pragma offload_transfer target(mic:device) in(ptrSource[offsetSource:chunkSource] : into(ptrDataMic[offsetSource:chunkSource]) free_if(0) alloc_if(0) align(64))
 #pragma offload_transfer target(mic:device) in(ptrResult[offsetResult:chunkResult] : into(ptrAlphaMic[offsetResult:chunkResult]) free_if(0) alloc_if(0) align(64))
       }
+#endif
 
     }
   }
 }
+
+#endif // USEMIC

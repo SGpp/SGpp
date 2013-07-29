@@ -11,6 +11,8 @@
 
 #include "../KernelBase.hpp"
 
+#ifdef USEMIC
+
 #ifndef MIC_UNROLLING_WIDTH
 #define MIC_UNROLLING_WIDTH 96
 #endif
@@ -45,27 +47,25 @@ namespace sg {
 
     class MICKernelBase {
       public:
-#pragma offload_attribute(push, target(mic))
         static inline size_t getChunkGridPoints() {
           return 12;
         }
         static inline size_t getChunkDataPoints() {
           return MIC_UNROLLING_WIDTH;
         }
-#pragma offload_attribute(pop)
     };
 
     class SPMICKernelBase {
       public:
-#pragma offload_attribute(push, target(mic))
         static inline size_t getChunkGridPoints() {
           return 24;
         }
         static inline size_t getChunkDataPoints() {
           return MIC_UNROLLING_WIDTH_SP; // must be divisible by 96
         }
-#pragma offload_attribute(pop)
     };
   }
 }
+
+#endif // USEMIC
 #endif // MICKERNELBASE_HPP
