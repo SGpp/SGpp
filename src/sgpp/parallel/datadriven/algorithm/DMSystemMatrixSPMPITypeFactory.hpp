@@ -6,26 +6,27 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#ifndef DMSYSTEMMATRIXMPITYPEFACTORY_HPP
-#define DMSYSTEMMATRIXMPITYPEFACTORY_HPP
+#ifndef DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP
+#define DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP
 
 #include "base/grid/Grid.hpp"
 #include "parallel/tools/TypesParallel.hpp"
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
 
 namespace sg {
   namespace parallel {
 
-    class DMSystemMatrixMPITypeFactory {
+    class DMSystemMatrixSPMPITypeFactory {
       private:
         template<typename Kernel>
-        static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+        static sg::datadriven::DMSystemMatrixBaseSP* createDMSystemMatrixMPITypeSP(sg::base::Grid& grid, sg::base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType);
 
       public:
-        static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+        static sg::datadriven::DMSystemMatrixBaseSP* getDMSystemMatrixSP(sg::base::Grid& grid, sg::base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType);
+
     };
 
   }
 }
 
-#endif // DMSYSTEMMATRIXMPITYPEFACTORY_HPP
+#endif // DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP

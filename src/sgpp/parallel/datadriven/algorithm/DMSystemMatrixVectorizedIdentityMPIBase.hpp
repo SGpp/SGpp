@@ -63,12 +63,13 @@ namespace sg {
               this->vecMode_ != OpenCL &&
               this->vecMode_ != ArBB &&
               this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
-            throw new sg::base::operation_exception("DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
+            throw sg::base::operation_exception("DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
           }
 
           this->dataset_ = new sg::base::DataMatrix(trainData);
           this->numTrainingInstances_ = this->dataset_->getNrows();
           this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+          std::cout << "Padding Dataset to " << numPatchedTrainingInstances_ << " Instances. " << std::endl;
           this->tempData = new sg::base::DataVector(this->numPatchedTrainingInstances_);
 
           if (this->vecMode_ != ArBB) {
@@ -104,7 +105,7 @@ namespace sg {
           }
 
           this->result_tmp = new sg::base::DataVector(storage_->size());
-          kernel_.resetKernel();
+          this->kernel_.resetKernel();
         }
         friend struct LevelIndexMaskOffsetHelper::rebuild<KernelImplementation::kernelType, DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> >;
     };

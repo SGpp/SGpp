@@ -11,9 +11,9 @@
 #include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #ifdef USE_MPI
-#include "parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.hpp"
 #endif
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/operation/SPParallelOpFactory.hpp"
 
 namespace sg {
 
@@ -43,7 +43,7 @@ namespace sg {
 #ifndef USE_MPI
       return new sg::parallel::DMSystemMatrixSPVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 #else
-      return sg::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrixSP(*(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
+      return sg::parallel::DMSystemMatrixSPMPITypeFactory::getDMSystemMatrixSP(*(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
 #endif
     }
 

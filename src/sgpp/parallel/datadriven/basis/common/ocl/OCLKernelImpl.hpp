@@ -15,233 +15,15 @@
 #include <string.h>
 
 #include "parallel/datadriven/basis/common/KernelBase.hpp"
+#include "parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
-
-#define MAX_OCL_DEVICE_COUNT 8
-#ifndef USEOCL_LOCAL_WORKGROUP_SIZE
-#define OCL_SGPP_LOCAL_WORKGROUP_SIZE 64
-#else
-#define OCL_SGPP_LOCAL_WORKGROUP_SIZE USEOCL_LOCAL_WORKGROUP_SIZE
-#endif
-
-#ifdef USEOCL_NVIDIA
-#define USEOCL_LOCAL_MEMORY
-#endif
-
-#ifdef USEOCL_AMD
-#ifndef USEOCL_CPU
-#define USEOCL_LOCAL_MEMORY
-#endif
-#endif
 
 namespace sg {
   namespace parallel {
-
     template<typename OCLBasisType>
-    class OCLKernelImpl {
-      protected:
-        cl_int err;
-        cl_platform_id platform_id;
-        cl_platform_id* platform_ids;
-        cl_device_id* device_ids;
-        cl_uint num_platforms;
-        cl_uint num_devices;
-        cl_context context;
-
-        cl_command_queue command_queue[MAX_OCL_DEVICE_COUNT];
-
-        cl_mem clData[MAX_OCL_DEVICE_COUNT];
-        cl_mem clLevel[MAX_OCL_DEVICE_COUNT];
-        cl_mem clIndex[MAX_OCL_DEVICE_COUNT];
-        cl_mem clMask[MAX_OCL_DEVICE_COUNT];
-        cl_mem clOffset[MAX_OCL_DEVICE_COUNT];
-
-        cl_kernel kernel_multTrans[MAX_OCL_DEVICE_COUNT];
-        cl_kernel kernel_mult[MAX_OCL_DEVICE_COUNT];
-
+    class OCLKernelImpl: public OCLKernelImplBase {
       public:
-        OCLKernelImpl() {
-          // initialize arrays
-          for (int i = 0; i < MAX_OCL_DEVICE_COUNT; i++) {
-            command_queue[i] = NULL;
-
-            clData[i] = NULL;
-            clLevel[i] = NULL;
-            clIndex[i] = NULL;
-            clMask[i] = NULL;
-            clOffset[i] = NULL;
-
-            kernel_mult[i] = NULL;
-            kernel_multTrans[i] = NULL;
-          }
-
-          // determine number of available OpenCL platforms
-          err = clGetPlatformIDs(0, NULL, &num_platforms);
-
-          if (err != CL_SUCCESS) {
-            std::cout << "OCL Error: Unable to get number of OpenCL platforms. Error Code: " << err << std::endl;
-          }
-
-          std::cout << "OCL Info: " << num_platforms << " OpenCL Platforms have been found" << std::endl;
-
-          // get available platforms
-          platform_ids = new cl_platform_id[num_platforms];
-          err = clGetPlatformIDs(num_platforms, platform_ids, NULL);
-
-          if (err != CL_SUCCESS) {
-            std::cout << "OCL Error: Unable to get Platform ID. Error Code: " << err << std::endl;
-          }
-
-          for (cl_uint ui = 0; ui < num_platforms; ui++) {
-            char vendor_name[128] = {0};
-            err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name, NULL);
-
-            if (CL_SUCCESS != err) {
-              std::cout << "OCL Error: Can't get platform vendor!" << std::endl;
-            } else {
-              if (vendor_name != NULL) {
-                std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name << std::endl;
-              }
-
-#ifdef USEOCL_INTEL
-
-              if (strcmp(vendor_name, "Intel(R) Corporation") == 0) {
-#ifdef USEOCL_CPU
-                std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
-#else
-                std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-#endif
-                platform_id = platform_ids[ui];
-              }
-
-#endif
-#ifdef USEOCL_AMD
-
-              if (strcmp(vendor_name, "Advanced Micro Devices, Inc.") == 0) {
-#ifdef USEOCL_CPU
-                std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
-#else
-                std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-#endif
-                platform_id = platform_ids[ui];
-              }
-
-#endif
-#ifdef USEOCL_NVIDIA
-
-              if (strcmp(vendor_name, "NVIDIA Corporation") == 0) {
-                std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-                platform_id = platform_ids[ui];
-              }
-
-#endif
-            }
-          }
-
-          std::cout << std::endl;
-
-          // Find out how many devices there are
-#ifdef USEOCL_INTEL
-          device_ids = new cl_device_id[1];
-#ifdef USEOCL_CPU
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, device_ids, NULL);
-#else
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, device_ids, NULL);
-#endif
-
-          if (err != CL_SUCCESS) {
-            std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-          }
-
-          num_devices = 1;
-#endif
-#ifdef USEOCL_AMD
-          device_ids = new cl_device_id[MAX_OCL_DEVICE_COUNT];
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, MAX_OCL_DEVICE_COUNT, device_ids, &num_devices);
-
-          if (num_devices == 0) {
-            std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
-          }
-
-          // set max number of devices
-          if (num_devices > MAX_OCL_DEVICE_COUNT) {
-            num_devices = MAX_OCL_DEVICE_COUNT;
-          }
-
-#ifdef USEOCL_CPU
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 2, device_ids, NULL);
-#else
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 2, device_ids, NULL);
-#endif
-
-          if (err != CL_SUCCESS) {
-            std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-          }
-
-#endif
-#ifdef USEOCL_NVIDIA
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, MAX_OCL_DEVICE_COUNT, NULL, &num_devices);
-
-          if (num_devices == 0) {
-            std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
-          }
-
-          // set max number of devices
-          if (num_devices > MAX_OCL_DEVICE_COUNT) {
-            num_devices = MAX_OCL_DEVICE_COUNT;
-          }
-
-          device_ids = new cl_device_id[num_devices];
-          err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
-
-          if (err != CL_SUCCESS) {
-            std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-          }
-
-#endif
-          std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
-
-          // Create OpenCL context
-          context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
-
-          if (err != CL_SUCCESS) {
-            std::cout << "OCL Error: Failed to create OpenCL context! Error Code: " << err << std::endl;
-          }
-
-          // Creating the command queues
-          for (size_t i = 0; i < num_devices; i++) {
-            // TODO FIXME whats the difference here?
-#ifdef USEOCL_CPU
-            command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
-#else
-            command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
-#endif
-
-            if (err != CL_SUCCESS) {
-              std::cout << "OCL Error: Failed to create command queue! Error Code: " << err << std::endl;
-            }
-          }
-
-          std::cout << "OCL Info: Successfully initialized OpenCL (local workgroup size: " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl << std::endl;
-        }
-
-        ~OCLKernelImpl() {
-          releaseDataBuffers();
-          releaseGridBuffers();
-          releaseKernelsAndPrograms();
-
-          // release command queue
-          for (size_t i = 0; i < num_devices; i++) {
-            if (command_queue[i]) {
-              clReleaseCommandQueue(command_queue[i]);
-            }
-          }
-
-          // release context
-          clReleaseContext(context);
-
-          delete[] device_ids;
-        }
+        OCLKernelImpl():OCLKernelImplBase(){}
 
         inline void initOCLBuffers(
           sg::base::DataMatrix* level,
@@ -305,12 +87,13 @@ namespace sg {
           if (kernel_mult[0] == NULL) {
             OCLBasisType basis;
             size_t dims = dataset->getNrows();
-            basis.createMult(dims, context, num_devices, device_ids, kernel_mult);
+            basis.createMult(dims, ocl_local_size, context, num_devices, device_ids, kernel_mult);
           }
 
           initOCLBuffers(level, index, mask, offset, dataset);
 
-          cl_mem clAlpha[MAX_OCL_DEVICE_COUNT], clResult[MAX_OCL_DEVICE_COUNT];
+          cl_mem* clAlpha = new cl_mem[num_devices];
+          cl_mem* clResult = new cl_mem[num_devices];
 
           for (size_t i = 0; i < num_devices; i++) {
             clAlpha[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * alpha.getSize(), alpha.getPointer(), NULL);
@@ -318,11 +101,11 @@ namespace sg {
           }
 
           // determine best fit
-          size_t gpu_start_index_data[MAX_OCL_DEVICE_COUNT];
-          size_t gpu_end_index_data[MAX_OCL_DEVICE_COUNT];
+          size_t* gpu_start_index_data = new size_t[num_devices];
+          size_t* gpu_end_index_data = new size_t[num_devices];
 
           for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
-            sg::parallel::PartitioningTool::getPartitionSegment(start_index_data, end_index_data, num_devices, gpu_num, &gpu_start_index_data[gpu_num], &gpu_end_index_data[gpu_num], OCL_SGPP_LOCAL_WORKGROUP_SIZE);
+            sg::parallel::PartitioningTool::getPartitionSegment(start_index_data, end_index_data, num_devices, gpu_num, &gpu_start_index_data[gpu_num], &gpu_end_index_data[gpu_num], ocl_local_size);
           }
 
           // set kernel arguments
@@ -351,11 +134,11 @@ namespace sg {
             }
           }
 
-          cl_event clTimings[MAX_OCL_DEVICE_COUNT];
-          cl_event GPUDone[MAX_OCL_DEVICE_COUNT];
+          cl_event* clTimings = new cl_event[num_devices];
+          cl_event* GPUDone = new cl_event[num_devices];
 
           // enqueue kernel
-          size_t local = OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+          size_t local = ocl_local_size;
           size_t active_devices = 0;
 
           for (size_t i = 0; i < num_devices; i++) {
@@ -434,6 +217,15 @@ namespace sg {
             }
           }
 
+          delete[] clAlpha;
+          delete[] clResult;
+
+          delete[] gpu_start_index_data;
+          delete[] gpu_end_index_data;
+
+          delete[] clTimings;
+          delete[] GPUDone;
+
           return time;
         }
 
@@ -461,12 +253,13 @@ namespace sg {
 
           if (kernel_multTrans[0] == NULL) {
             OCLBasisType basis;
-            basis.createMultTrans(dims, context, num_devices, device_ids, kernel_multTrans);
+            basis.createMultTrans(dims, ocl_local_size, context, num_devices, device_ids, kernel_multTrans);
           }
 
           initOCLBuffers(level, index, mask, offset, dataset);
 
-          cl_mem clSource[MAX_OCL_DEVICE_COUNT], clResult[MAX_OCL_DEVICE_COUNT];
+          cl_mem* clSource = new cl_mem[num_devices];
+          cl_mem* clResult = new cl_mem[num_devices];
 
           // create buffers for this execution
           for (size_t i = 0; i < num_devices; i++) {
@@ -475,11 +268,11 @@ namespace sg {
           }
 
           // determine best fit
-          size_t gpu_start_index_grid[MAX_OCL_DEVICE_COUNT];
-          size_t gpu_end_index_grid[MAX_OCL_DEVICE_COUNT];
+          size_t* gpu_start_index_grid = new size_t[num_devices];
+          size_t* gpu_end_index_grid = new size_t[num_devices];
 
           for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
-            sg::parallel::PartitioningTool::getPartitionSegment(start_index_grid, end_index_grid, num_devices, gpu_num, &gpu_start_index_grid[gpu_num], &gpu_end_index_grid[gpu_num], OCL_SGPP_LOCAL_WORKGROUP_SIZE);
+            sg::parallel::PartitioningTool::getPartitionSegment(start_index_grid, end_index_grid, num_devices, gpu_num, &gpu_start_index_grid[gpu_num], &gpu_end_index_grid[gpu_num], ocl_local_size);
           }
 
           // set kernel arguments
@@ -508,11 +301,11 @@ namespace sg {
             }
           }
 
-          cl_event clTimings[MAX_OCL_DEVICE_COUNT];
-          cl_event GPUDone[MAX_OCL_DEVICE_COUNT];
+          cl_event* clTimings = new cl_event[num_devices];
+          cl_event* GPUDone = new cl_event[num_devices];
 
           // enqueue kernels
-          size_t local = OCL_SGPP_LOCAL_WORKGROUP_SIZE;
+          size_t local = ocl_local_size;
           size_t active_devices = 0;
 
           for (size_t i = 0; i < num_devices; i++) {
@@ -591,68 +384,16 @@ namespace sg {
             }
           }
 
+          delete[] clSource;
+          delete[] clResult;
+
+          delete[] gpu_start_index_grid;
+          delete[] gpu_end_index_grid;
+
+          delete[] clTimings;
+          delete[] GPUDone;
+
           return time;
-        }
-
-        void resetKernel() {
-          // releaseKernelsAndPrograms();
-          releaseGridBuffers();
-        }
-
-        static inline size_t getChunkGridPoints() {
-          return 12;
-        }
-
-        static inline size_t getChunkDataPoints() {
-          return OCL_SGPP_LOCAL_WORKGROUP_SIZE; /// TODO does this make sense?
-        }
-
-      private:
-        void releaseGridBuffers() {
-          for (size_t i = 0; i < num_devices; i++) {
-            if (clLevel[i]) {
-              clReleaseMemObject(clLevel[i]);
-              clLevel[i] = NULL;
-            }
-
-            if (clIndex[i]) {
-              clReleaseMemObject(clIndex[i]);
-              clIndex[i] = NULL;
-            }
-
-            if (clMask[i]) {
-              clReleaseMemObject(clMask[i]);
-              clMask[i] = NULL;
-            }
-
-            if (clOffset[i]) {
-              clReleaseMemObject(clOffset[i]);
-              clOffset[i] = NULL;
-            }
-          }
-        }
-
-        void releaseDataBuffers() {
-          for (size_t i = 0; i < num_devices; i++) {
-            if (clData[i]) {
-              clReleaseMemObject(clData[i]);
-              clData[i] = NULL;
-            }
-          }
-        }
-
-        void releaseKernelsAndPrograms() {
-          for (size_t i = 0; i < num_devices; i++) {
-            if (kernel_mult[i]) {
-              clReleaseKernel(kernel_mult[i]);
-              kernel_mult[i] = NULL;
-            }
-
-            if (kernel_multTrans[i]) {
-              clReleaseKernel(kernel_multTrans[i]);
-              kernel_multTrans[i] = NULL;
-            }
-          }
         }
     };
 

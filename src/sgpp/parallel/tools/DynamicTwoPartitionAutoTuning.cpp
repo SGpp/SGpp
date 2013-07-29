@@ -40,6 +40,18 @@ namespace sg {
           double partition2_element_time = static_cast<double>(_problemSize - _sizePartition1) / static_cast<double>(_timePartition2);
           _partition2_speedup = partition2_element_time / partition1_element_time;
         }
+
+        // If for some reason partition2 doesn't get any chunks (too small problemsize e.g.),
+        // _partition2_speedup will be 0. If something (problem size, workload per element, etc.)
+        // changes, speedup will stay at 0 because the size of partition 2 will
+        // stay at 0 and therefore partition2_element_time == 0.
+        // Thus, if the time for partition1 is 3 times bigger than the one for partition2, we
+        // can try again with a small chunksize for partition2. The speedup assigned inside the if results in a size of
+        // artition 2 that is near 2*_partition2Divider
+        // Then, autotuning can continue normally, as there are valid partition2_element_time values.
+        if(_partition2_speedup == 0 && _timePartition1/_timePartition2 > 3) {
+          _partition2_speedup = 2.0*_partition2Divider/(_problemSize-_partition2Divider);
+        }
       }
 
       double normalized_workingset = static_cast<double>(_problemSize) / (_partition2_speedup + 0.93);

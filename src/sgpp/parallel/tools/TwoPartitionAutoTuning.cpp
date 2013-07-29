@@ -8,6 +8,7 @@
 #include "parallel/tools/TwoPartitionAutoTuning.hpp"
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 
 #define INITIAL_SPEEDUP_PARTITION_2 20.0;
 
@@ -47,11 +48,20 @@ namespace sg {
 
     void TwoPartitionAutoTuning::doTune() {
       autoTune();
-      std::cout << "AUTOTUNING-PARTITION-SIZES (" << _problemSize << "):"
+      std::ios_base::fmtflags f = std::cout.flags();
+      std::streamsize prec = std::cout.precision();
+      std::cout << "AUTOTUNING-PARTITION-SIZES (" << std::setw(8) << _problemSize << "):"
+                << std::setiosflags(std::ios::fixed) << std::setprecision(3)
                 << " Time1: " << _timePartition1
-                << " Size1: " << getPartition1Size() << "(" << 100.0 * (double)getPartition1Size() / (double)_problemSize << "%); "
-                << " Time2: " << _timePartition2
-                << " Size2: " << _problemSize - getPartition1Size() << " (" << 100.0 * (double)(_problemSize - getPartition1Size()) / (double)_problemSize << "%)" << std::endl;
+                << " Size1: " << std::setw(8) << getPartition1Size()
+                << std::setprecision(1)
+                << "(" << 100.0 * (double)getPartition1Size() / (double)_problemSize << "%); ";
+      std::cout << " Time2: " << std::setprecision(3) << _timePartition2
+                << " Size2: " << std::setw(8) << _problemSize - getPartition1Size()
+                << std::setprecision(1)
+                << " ("<< 100.0 * (double)(_problemSize - getPartition1Size()) / (double)_problemSize << "%)" << std::endl;
+      std::cout.flags(f);
+      std::cout.precision(prec);
     }
 
     void TwoPartitionAutoTuning::setExecutionTimes(double timePartition1, double timePartition2) {

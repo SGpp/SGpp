@@ -93,6 +93,7 @@ namespace sg {
          * @param alpha grid coefficients that should be sent
          */
         void broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha);
+        void broadcastSPGridCoefficientsFromRank0(sg::base::DataVectorSP& alpha);
 
         /**
          * Reduces the grid coefficients on rank 0 using

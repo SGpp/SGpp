@@ -44,20 +44,21 @@ namespace sg {
 
     class OCLKernelBase {
       private:
-        virtual std::string generateSourceMultTrans(size_t dims) = 0;
-        virtual std::string generateSourceMult(size_t dims) = 0;
+        virtual std::string generateSourceMultTrans(size_t dims, size_t local_workgroup_size) = 0;
+        virtual std::string generateSourceMult(size_t dims, size_t local_workgroup_size) = 0;
       public:
-        cl_int createMultTrans(size_t dims, cl_context context, size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
-          std::string program_src = generateSourceMultTrans(dims);
+        cl_int createMultTrans(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
+          std::string program_src = generateSourceMultTrans(dims, local_workgroup_size);
           return OCLKernelBase::buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel);
         }
 
-        cl_int createMult(size_t dims, cl_context context, size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
-          std::string program_src = generateSourceMult(dims);
+        cl_int createMult(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
+          std::string program_src = generateSourceMult(dims, local_workgroup_size);
           return OCLKernelBase::buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel);
         }
 
       private:
+
         /**
          * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects
          * that are stored into the array @a kernel (must be already allocated with at least @a num_devices )
@@ -68,7 +69,7 @@ namespace sg {
          * @param num_devices number of OpenCL devices
          * @param device_ids array with device ids, necessary for displaying build info
          * @param kernel already allocated array: the resulting kernels are put into this array, one for each device (=> at least num_devices entries)
-         * @return OpenCL error code
+         * @return
          */
         static inline cl_int buildKernel(const std::string& program_src, const char* kernel_name,
                                          cl_context context, size_t num_devices,

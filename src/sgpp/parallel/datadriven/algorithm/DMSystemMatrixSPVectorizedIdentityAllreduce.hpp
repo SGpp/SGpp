@@ -35,6 +35,9 @@ namespace sg {
         }
 
         virtual void mult(base::DataVectorSP& alpha, base::DataVectorSP& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
+#endif
           this->tempData->setAll(0.0f);
           this->result_tmp->setAll(0.0f);
           result.setAll(0.0f);
@@ -96,7 +99,7 @@ namespace sg {
           this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
-          
+
           result.axpy(static_cast<float>(this->numTrainingInstances_)*this->lambda_, alpha);
         }
 

@@ -5,6 +5,9 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#ifdef X86_MIC_SYMMETRIC
+#include <mpi.h>
+#endif
 #include "solver/sle/ConjugateGradients.hpp"
 
 namespace sg {
@@ -99,6 +102,10 @@ namespace sg {
         delta_old = delta_new;
         delta_new = r.dotProduct(r);
         beta = delta_new / delta_old;
+
+#ifdef X86_MIC_SYMMETRIC
+        MPI_Bcast(&delta_new, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+#endif
 
         this->residuum = delta_new;
         this->iterationComplete();

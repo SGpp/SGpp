@@ -6,7 +6,7 @@
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
 #include "parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/operation/SPParallelOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
 
 namespace sg {
@@ -24,7 +24,7 @@ namespace sg {
       } else if (this->vecMode == parallel::ArBB) {
         this->vecWidth = 16;
       } else {
-        throw new sg::base::operation_exception("DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
+        throw sg::base::operation_exception("DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
       }
 
       resetTimers();

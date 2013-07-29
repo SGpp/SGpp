@@ -7,32 +7,32 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifdef USEMIC
-#include "parallel/datadriven/basis/common/mic/MICKernel.hpp"
-#include "parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/MICLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/MICModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp"
+#include "parallel/datadriven/basis/common/mic/SPMICKernel.hpp"
+#include "parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPMICLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinearMask.hpp"
 #endif
 
-#include "DMSystemMatrixMPITypeFactory.hpp"
+#include "DMSystemMatrixSPMPITypeFactory.hpp"
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp"
+#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
 
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
+#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp"
 
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOnesidedMPI.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp"
 
-#include "parallel/datadriven/basis/common/CPUKernel.hpp"
+#include "parallel/datadriven/basis/common/SPCPUKernel.hpp"
 #ifdef USEOCL
-#include "parallel/datadriven/basis/common/ocl/OCLKernel.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp"
+#include "parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp"
+#include "parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp"
+#include "parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp"
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp"
@@ -47,43 +47,43 @@
 namespace sg {
   namespace parallel {
     template<typename KernelImplementation>
-    datadriven::DMSystemMatrixBase* DMSystemMatrixMPITypeFactory::createDMSystemMatrixMPIType(base::Grid& grid, base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType) {
+    datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::createDMSystemMatrixMPITypeSP(base::Grid& grid, base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType) {
       std::string parallelizationType;
-      datadriven::DMSystemMatrixBase* result = 0;
+      datadriven::DMSystemMatrixBaseSP* result = 0;
 
       switch (mpiType) {
         case MPIAllreduce:
           parallelizationType = "Allreduce";
-          result = new sg::parallel::DMSystemMatrixVectorizedIdentityAllreduce<KernelImplementation>(
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityAllreduce<KernelImplementation>(
             grid, trainDataset, lambda, vecType);
           break;
 
         case MPIAlltoallv:
           parallelizationType = "Alltoallv";
-          result = new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
           break;
 
         case MPIAsync:
           parallelizationType = "Asynchronous Communication";
-          result = new sg::parallel::DMSystemMatrixVectorizedIdentityAsyncMPI<KernelImplementation>(
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityAsyncMPI<KernelImplementation>(
             grid, trainDataset, lambda, vecType);
           break;
 
         case MPITrueAsync:
           parallelizationType = "True Asynchronous Communication";
-          result = new sg::parallel::DMSystemMatrixVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
             grid, trainDataset, lambda, vecType);
           break;
 
         case MPIOnesided:
           parallelizationType = "Onesided Communication";
-          result = new sg::parallel::DMSystemMatrixVectorizedIdentityOnesidedMPI<KernelImplementation>(
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityOnesidedMPI<KernelImplementation>(
             grid, trainDataset, lambda, vecType);
           break;
 
         case MPINone:
           parallelizationType = "No MPI Implementation is used.";
-          result = new sg::parallel::DMSystemMatrixVectorizedIdentity(grid, trainDataset, lambda, vecType);
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentity(grid, trainDataset, lambda, vecType);
           break;
 
         default:
@@ -106,7 +106,7 @@ namespace sg {
       return result;
     }
 
-    datadriven::DMSystemMatrixBase* DMSystemMatrixMPITypeFactory::getDMSystemMatrix(base::Grid& grid, base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType) {
+    datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::getDMSystemMatrixSP(base::Grid& grid, base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType) {
       const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
 
       if (modlinear_mode == NULL) {
@@ -116,29 +116,29 @@ namespace sg {
       if (strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
           || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-          return createDMSystemMatrixMPIType<CPUKernel<X86SimdLinear> >
+          return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdLinear> >
                  (grid, trainDataset, lambda, vecType, mpiType);
         }
 
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL) {
-          return createDMSystemMatrixMPIType<OCLKernel<OCLLinear<double> > >
+          return createDMSystemMatrixMPITypeSP<SPOCLKernel<OCLLinear<float> > >
                  (grid, trainDataset, lambda, vecType, mpiType);
         } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
-          return createDMSystemMatrixMPIType<OCLCPUHybridKernel<X86SimdLinear, OCLLinear<double > > >
+          return createDMSystemMatrixMPITypeSP<SPOCLCPUHybridKernel<SPX86SimdLinear, OCLLinear<float > > >
                  (grid, trainDataset, lambda, vecType, mpiType);
         }
 
 #endif
 #ifdef USEMIC
         else if (vecType == parallel::MIC) {
-          return createDMSystemMatrixMPIType<MICKernel<MICLinear> >
+          return createDMSystemMatrixMPITypeSP<SPMICKernel<SPMICLinear> >
                  (grid, trainDataset, lambda, vecType, mpiType);
         }
 
 #ifdef __INTEL_OFFLOAD // Hybrid CPU MIC Mode only makes sense in offload mode
         else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
-          return createDMSystemMatrixMPIType<MICCPUHybridKernel<X86SimdLinear, MICLinear> >
+          return createDMSystemMatrixMPITypeSP<SPMICCPUHybridKernel<SPX86SimdLinear, SPMICLinear> >
                  (grid, trainDataset, lambda, vecType, mpiType);
         }
 
@@ -146,16 +146,16 @@ namespace sg {
 #endif
         else {
           std::cout << "WARNING: vectorization not implemented for this type of MPI-Communication. Using default (alltoallv). Please fix this in MPITypeFactory!!!!!! (" << __LINE__ << "in" << __FILE__ << ")" << std::endl;
-          return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
+          return new sg::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
         }
       } else if (strcmp(grid.getType(), "modlinear") == 0) {
         if (vecType == parallel::X86SIMD) {
           if (strcmp(modlinear_mode, "orig") == 0) {
-            return createDMSystemMatrixMPIType<CPUKernel<X86SimdModLinear> >
+            return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdModLinear> >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
-            return createDMSystemMatrixMPIType<CPUKernel<X86SimdModLinearMask> >
-                (grid, trainDataset, lambda, vecType, mpiType);
+            return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdModLinearMask> >
+                   (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
@@ -164,20 +164,20 @@ namespace sg {
 #ifdef USEOCL
         else if (vecType == parallel::OpenCL) {
           if (strcmp(modlinear_mode, "orig") == 0) {
-            return createDMSystemMatrixMPIType<OCLKernel<OCLModLinear<double > > >
+            return createDMSystemMatrixMPITypeSP<SPOCLKernel<OCLModLinear<float > > >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
-            return createDMSystemMatrixMPIType<OCLKernel<OCLModLinearMask<double> > >
+            return createDMSystemMatrixMPITypeSP<SPOCLKernel<OCLModLinearMask<float> > >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
         } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
           if (strcmp(modlinear_mode, "orig") == 0) {
-            return createDMSystemMatrixMPIType<OCLCPUHybridKernel<X86SimdModLinear, OCLModLinear<double > > >
+            return createDMSystemMatrixMPITypeSP<SPOCLCPUHybridKernel<SPX86SimdModLinear, OCLModLinear<float > > >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
-            return createDMSystemMatrixMPIType<OCLCPUHybridKernel<X86SimdModLinearMask, OCLModLinearMask<double > > >
+            return createDMSystemMatrixMPITypeSP<SPOCLCPUHybridKernel<SPX86SimdModLinearMask, OCLModLinearMask<float > > >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -189,10 +189,10 @@ namespace sg {
 #ifdef USEMIC
         else if (vecType == parallel::MIC) {
           if (strcmp(modlinear_mode, "orig") == 0) {
-            return createDMSystemMatrixMPIType<MICKernel<MICModLinear> >
+            return createDMSystemMatrixMPITypeSP<SPMICKernel<SPMICModLinear> >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
-            return createDMSystemMatrixMPIType<MICKernel<MICModLinearMask> >
+            return createDMSystemMatrixMPITypeSP<SPMICKernel<SPMICModLinearMask> >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -201,10 +201,10 @@ namespace sg {
 #ifdef __INTEL_OFFLOAD // Hybrid CPU MIC Mode only makes sense in offload mode
         else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
           if (strcmp(modlinear_mode, "orig") == 0) {
-            return createDMSystemMatrixMPIType<MICCPUHybridKernel<X86SimdModLinear, MICModLinear> >
+            return createDMSystemMatrixMPITypeSP<SPMICCPUHybridKernel<SPX86SimdModLinear, SPMICModLinear> >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
-            return createDMSystemMatrixMPIType<MICCPUHybridKernel<X86SimdModLinearMask, MICModLinearMask> >
+            return createDMSystemMatrixMPITypeSP<SPMICCPUHybridKernel<SPX86SimdModLinearMask, SPMICModLinearMask> >
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -214,7 +214,7 @@ namespace sg {
 #endif
         else {
           std::cout << "WARNING: vectorization not implemented for this type of MPI-Communication. Using default (alltoallv). Please fix this in MPITypeFactory." << std::endl;
-          return new sg::parallel::DMSystemMatrixVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
+          return new sg::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda, vecType);
         }
       } else {
         throw base::factory_exception("MPITypeFactory: OperationMultipleEvalVectorized is not implemented for this grid type.");

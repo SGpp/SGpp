@@ -314,6 +314,7 @@ OBJS =	DataVector.o\
 	DatadrivenOpFactory.o\
 	FinanceOpFactory.o\
 	ParallelOpFactory.o\
+	SPParallelOpFactory.o\
 	PdeOpFactory.o\
 	TwoPartitionAutoTuning.o\
 	StaticTwoPartitionAutoTuning.o\
@@ -364,7 +365,10 @@ OBJS =	DataVector.o\
 	OperationDensitySamplingLinear.o\
 	OperationDensityConditionalLinear.o\
 	OperationDensityMarginalizeLinear.o\
-	OperationDensityRejectionSamplingLinear.o
+	OperationDensityRejectionSamplingLinear.o\
+	MICKernelImpl.o\
+	SPMICKernelImpl.o\
+	OCLKernelImplBase.o
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -393,6 +397,7 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	DMSystemMatrixVectorizedIdentityMPI.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
 	DMSystemMatrixMPITypeFactory.o\
+	DMSystemMatrixSPMPITypeFactory.o\
 
 endif
 
@@ -437,9 +442,9 @@ default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	xiar $(XIAR_OPTS) rc $(BINDIR)$(LIBNAME).a $(OBJS)
 	ranlib $(BINDIR)$(LIBNAME).a
-	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+	$(CC) $(LIB_OPTS) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
 endif
 
 ifeq ($(CC),mpiicpc)
@@ -448,9 +453,9 @@ default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
-	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
+	xiar $(XIAR_OPTS) rc $(BINDIR)$(LIBNAME).a $(OBJS)
 	ranlib $(BINDIR)$(LIBNAME).a
-	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
+	$(CC) $(LIB_OPTS) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
 endif
 
 ifeq ($(CC),mpiCC)
@@ -1241,39 +1246,64 @@ DMSystemMatrixSPVectorizedIdentityMPI.o : $(SRCDIR)parallel/datadriven/algorithm
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPVectorizedIdentityMPI.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.cpp
 
 DMSystemMatrixMPITypeFactory.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp \
-$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp \
-$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp \
-$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLKernelBase.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLKernelImpl.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLKernel.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLCPUHybridKernel.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernelImpl.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernel.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/MICLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/MICModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp \
-$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp \
+$(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
+
+DMSystemMatrixSPMPITypeFactory.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.cpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/SPMICKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPIBase.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOnesidedMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.cpp
+
+MICKernelImpl.o : $(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelImpl.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)MICKernelImpl.o $(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelImpl.cpp
+
+SPMICKernelImpl.o : $(SRCDIR)parallel/datadriven/basis/common/mic/SPMICKernelImpl.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SPMICKernelImpl.o $(SRCDIR)parallel/datadriven/basis/common/mic/SPMICKernelImpl.cpp
+
+OCLKernelImplBase.o : $(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelImplBase.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OCLKernelImplBase.o $(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelImplBase.cpp
 
 ConjugateGradients.o : $(SRCDIR)solver/sle/ConjugateGradients.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradients.o $(SRCDIR)solver/sle/ConjugateGradients.cpp
-	
+
 ConjugateGradientsSP.o : $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsSP.o $(SRCDIR)solver/sle/ConjugateGradientsSP.cpp
 
@@ -1429,18 +1459,43 @@ FinanceOpFactory.o : $(SRCDIR)finance/operation/FinanceOpFactory.cpp
 
 ParallelOpFactory.o : $(SRCDIR)parallel/operation/ParallelOpFactory.cpp \
 $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalIterative.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLKernelBase.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLKernelImpl.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLKernel.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/OCLCPUHybridKernel.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernelImpl.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/SPOCLKernel.hpp \
-$(SRCDIR)parallel/datadriven/basis/common/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/MICLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/MICModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalIterativeSP.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
+
+
+SPParallelOpFactory.o : $(SRCDIR)parallel/operation/SPParallelOpFactory.cpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/SPMICKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPMICLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinear.hpp \
+$(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinearMask.hpp \
+$(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalIterativeSP.hpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)SPParallelOpFactory.o $(SRCDIR)parallel/operation/SPParallelOpFactory.cpp
+
 
 PdeOpFactory.o : $(SRCDIR)pde/operation/PdeOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PdeOpFactory.o $(SRCDIR)pde/operation/PdeOpFactory.cpp
@@ -1511,7 +1566,11 @@ OperationSecondMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/
 OperationFirstMomentLinear.o : $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationFirstMomentLinear.o $(SRCDIR)base/basis/linear/noboundary/operation/OperationFirstMomentLinear.cpp
 
-DMVectorizationPaddingAssistant.o : $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
+DMVectorizationPaddingAssistant.o : $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp \
+$(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/X86SimdKernelBase.hpp \
+$(SRCDIR)parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DMVectorizationPaddingAssistant.o $(SRCDIR)parallel/datadriven/tools/DMVectorizationPaddingAssistant.cpp
 
 UpDownOneOpDimEnhanced.o : $(SRCDIR)misc/pde/algorithm/UpDownOneOpDimEnhanced.cpp

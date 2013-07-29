@@ -115,6 +115,9 @@ namespace sg {
         }
 
         virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
+#endif
           sg::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
 
           result.setAll(0.0f);

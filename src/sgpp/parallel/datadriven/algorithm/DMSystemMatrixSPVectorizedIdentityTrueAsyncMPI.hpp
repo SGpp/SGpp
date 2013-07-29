@@ -78,6 +78,9 @@ namespace sg {
         }
 
         virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
+#endif
           result.setAll(0.0f);
           this->tempData->setAll(0.0f);
           float* ptrTemp = this->tempData->getPointer();
