@@ -36,7 +36,6 @@ namespace sg {
     class PartitioningTool {
       public:
         PartitioningTool();
-#pragma offload_attribute(push, target(mic))
         static void getPartitionSegment(size_t totalSize, size_t segmentCount, size_t segmentNumber, size_t* size, size_t* offset, size_t blocksize = 1);
         static void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
 
@@ -49,7 +48,6 @@ namespace sg {
          */
         static void getOpenMPPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize = 1);
         static void getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd, size_t blocksize = 1);
-#pragma offload_attribute(pop)
         /**
          * @brief calcDistribution calculates a distribution of a domain of size @a totalSize into @a numCunks chunks and
          * fills the two arrays @a sizes and @a offsets with the respective offsets and sizes (both arrays have to be

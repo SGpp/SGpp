@@ -9,9 +9,15 @@
 #ifdef USEMIC
 #include "parallel/datadriven/basis/common/mic/MICKernel.hpp"
 #include "parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp"
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(push, target(mic))
+#endif
 #include "parallel/datadriven/basis/linear/noboundary/operation/impl/MICLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/MICModLinear.hpp"
 #include "parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp"
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(pop)
+#endif
 #endif
 
 #include "DMSystemMatrixMPITypeFactory.hpp"

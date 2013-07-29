@@ -75,12 +75,12 @@ X86_MIC_SYMMETRIC=0
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-unknown-pragmas -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR)
+CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR)
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-#CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -Wno-unknown-pragmas -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+#CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
 #LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3
-CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -Wno-unknown-pragmas -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
 LFLAGS_ICC:=-Wall -ansi -O3
 
 CFLAGS_ICL:=/Wall /Qipo /Qip /Oa /Qansi_alias /Qfp-speculation=safe /c /O3 /Qunroll-aggressive /I$(SRCDIR) /DUSETRONE /Qcxx-features /D_WIN32 /DNOMINMAX
@@ -201,9 +201,6 @@ ifeq ($(EXT), MIC_OFFLOAD)
 CFLAGS:=$(CFLAGS) -no-ipo -no-ip -DUSEMIC -opt-report-phase:offload -openmp-report2 -offload-option,mic,compiler,\"-Wall -ansi -fPIC -c -ansi-alias -O3 -I$(SRCDIR) -openmp -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F\"
 LFLAGS:=$(LFLAGS) -no-ipo -no-ip -DUSEMIC -offload-option,mic,link,\"--no-undefined\" 
 XIAR_OPTS:=$(XIAR_OPTS) -qoffload-build
-else
-CFLAGS:=$(CFLAGS) -no-offload
-LFLAGS:=$(LFLAGS) -no-offload
 endif
 ifeq ($(EXT), MIC_NATIVE)
 CFLAGS:=$(CFLAGS) -mmic -DUSEMIC -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F -fp-speculation=fast
@@ -423,9 +420,6 @@ ifeq ($(EXT), MIC_OFFLOAD)
 CFLAGS:=$(CFLAGS) -no-ipo -no-ip -DUSEMIC -opt-report-phase:offload -openmp-report2 -offload-option,mic,compiler,\"-Wall -ansi -fPIC -c -ansi-alias -O3 -I$(SRCDIR) -openmp -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F\"
 LFLAGS:=$(LFLAGS) -no-ipo -no-ip -DUSEMIC -offload-option,mic,link,\"--no-undefined\" 
 XIAR_OPTS:=$(XIAR_OPTS) -qoffload-build
-else
-CFLAGS:=$(CFLAGS) -no-offload
-LFLAGS:=$(LFLAGS) -no-offload
 endif
 ifeq ($(EXT), MIC_NATIVE)
 CFLAGS:=$(CFLAGS) -mmic -DUSEMIC -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F -fp-speculation=fast

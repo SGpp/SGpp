@@ -15,7 +15,9 @@
 namespace sg {
   namespace parallel {
     namespace micsp {
+#ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
+#endif
       extern float* ptrLevel;
       extern float* ptrIndex;
       extern float* ptrMask;
@@ -23,7 +25,9 @@ namespace sg {
       extern float* ptrData;
       extern float* ptrDataMic;
       extern float* ptrAlphaMic;
+#ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
+#endif
       extern int number_mic_devices;
       extern bool multicard_multtrans_fast;
       extern float **tempgrid;

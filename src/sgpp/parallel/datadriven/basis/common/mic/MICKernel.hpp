@@ -10,15 +10,19 @@
 #define MICKERNEL_HPP
 
 #ifdef USEMIC
+#ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
+#endif
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include "parallel/tools/PartitioningTool.hpp"
+#ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
+#endif
 
 #include "base/grid/GridStorage.hpp"
 #include "parallel/datadriven/basis/common/mic/MICKernelBase.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
 
 #include "parallel/datadriven/basis/common/mic/MICKernelImpl.hpp"
 

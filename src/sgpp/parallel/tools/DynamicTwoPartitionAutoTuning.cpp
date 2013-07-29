@@ -50,7 +50,7 @@ namespace sg {
         // artition 2 that is near 2*_partition2Divider
         // Then, autotuning can continue normally, as there are valid partition2_element_time values.
         if(_partition2_speedup == 0 && _timePartition1/_timePartition2 > 3) {
-          _partition2_speedup = 2.0*_partition2Divider/(_problemSize-_partition2Divider);
+          _partition2_speedup = 2.0*static_cast<double>(_partition2Divider)/static_cast<double>(_problemSize - _partition2Divider);
         }
       }
 
