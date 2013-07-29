@@ -11,7 +11,7 @@
 
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/operation/SPParallelOpFactory.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 
 namespace sg {
@@ -21,7 +21,7 @@ namespace sg {
       : DMSystemMatrixBaseSP(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid) {
       // handle unsupported vector extensions
       if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
-        throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
+        throw sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
       }
 
       this->dataset_ = new sg::base::DataMatrixSP(trainData);
@@ -90,6 +90,9 @@ namespace sg {
     }
 
     void DMSystemMatrixSPVectorizedIdentityMPI::mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
+#endif
       sg::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
 
       // Operation B

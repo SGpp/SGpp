@@ -9,7 +9,7 @@
 
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/operation/SPParallelOpFactory.hpp"
 
 namespace sg {
   namespace parallel {
@@ -18,7 +18,7 @@ namespace sg {
       :  DMSystemMatrixBaseSP(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0) {
       // handle unsupported vector extensions
       if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
-        throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
+        throw sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
       }
 
       // create the operations needed in ApplyMatrix

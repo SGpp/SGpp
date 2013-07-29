@@ -1,13 +1,13 @@
 /* ****************************************************************************
-* Copyright (C) 2010-2013 Technische Universitaet Muenchen                    *
+* Copyright (C) 2013 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#ifndef SPOCLCPUHYBRIDKERNEL_HPP
-#define SPOCLCPUHYBRIDKERNEL_HPP
+#ifndef OCLCPUHYBRIDKERNEL_HPP
+#define OCLCPUHYBRIDKERNEL_HPP
 
 // OpenMP is required for hybrid execution
 #ifdef _OPENMP
@@ -16,18 +16,19 @@
 #include "base/grid/GridStorage.hpp"
 #include "parallel/tools/DynamicTwoPartitionAutoTuning.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/datadriven/basis/common/SPOCLKernelImpl.hpp"
+#include "parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp"
 #include "base/exception/operation_exception.hpp"
+#include "base/tools/SGppStopwatch.hpp"
 
 namespace sg {
   namespace parallel {
 
     template<typename CPUImplementation, typename OCLBasisType>
-    class SPOCLCPUHybridKernel {
+    class OCLCPUHybridKernel {
       public:
-        SPOCLCPUHybridKernel() {
-          tuningMult = new sg::parallel::DynamicTwoPartitionAutoTuning(1, OCL_SGPP_LOCAL_WORKGROUP_SIZE, 10);;
-          tuningMultTrans = new sg::parallel::DynamicTwoPartitionAutoTuning(1, OCL_SGPP_LOCAL_WORKGROUP_SIZE, 10);;
+        OCLCPUHybridKernel() {
+          tuningMult = new sg::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkDataPoints(), 10);
+          tuningMultTrans = new sg::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkGridPoints(), 10);;
           int num_threads = 1;
           #pragma omp parallel
           {
@@ -40,19 +41,21 @@ namespace sg {
 
           cpu_times = new double[num_threads];
         }
-        ~SPOCLCPUHybridKernel() {
+        ~OCLCPUHybridKernel() {
           delete[] cpu_times;
+          delete tuningMult;
+          delete tuningMultTrans;
         }
 
-        static const KernelType kernelType = CPUImplementation::kernelType;
+        static const KernelType kernelType = CPUImplementation::kernelType; // should match GPUImplementation::kernelType
         inline void mult(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& alpha,
-          sg::base::DataVectorSP& result,
+          sg::base::DataMatrix* level,
+          sg::base::DataMatrix* index,
+          sg::base::DataMatrix* mask,
+          sg::base::DataMatrix* offset,
+          sg::base::DataMatrix* dataset,
+          sg::base::DataVector& alpha,
+          sg::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -85,7 +88,7 @@ namespace sg {
                                  start_index_grid, end_index_grid, start_index_data, end_index_data_gpu);
             gpu_time = omp_get_wtime() - loc_start;
           } else {
-            // distribute work evenly across all threads but thread 0 (it starts OpenCL kernels)
+            // distribute work evenly across all threads but thread 0 (it handles OpenCL kernels)
             size_t cpu_size = end_index_data - end_index_data_gpu;
             size_t blocksize = CPUImplementation::getChunkDataPoints();
             cpu_size = (cpu_size / blocksize ) * blocksize;
@@ -128,13 +131,13 @@ namespace sg {
         }
 
         inline void multTranspose(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& source,
-          sg::base::DataVectorSP& result,
+          sg::base::DataMatrix* level,
+          sg::base::DataMatrix* index,
+          sg::base::DataMatrix* mask,
+          sg::base::DataMatrix* offset,
+          sg::base::DataMatrix* dataset,
+          sg::base::DataVector& source,
+          sg::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -198,12 +201,14 @@ namespace sg {
           }
           #pragma omp barrier
         }
+
         inline void resetKernel() {
           m_oclkernel.resetKernel();
         }
+
       private:
         double* cpu_times;
-        SPOCLKernelImpl<OCLBasisType> m_oclkernel;
+        OCLKernelImpl<OCLBasisType> m_oclkernel;
         sg::base::SGppStopwatch myTimer;
 
         /// Autotuning object for mult routine
@@ -213,6 +218,6 @@ namespace sg {
     };
   }
 }
-#endif
+#endif // _OPENMP
 
-#endif // SPOCLCPUHYBRIDKERNEL_HPP
+#endif // OCLCPUHYBRIDKERNEL_HPP

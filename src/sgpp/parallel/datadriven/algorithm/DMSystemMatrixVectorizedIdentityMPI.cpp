@@ -21,7 +21,7 @@ namespace sg {
       : DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0), m_grid(SparseGrid) {
       // handle unsupported vector extensions
       if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
-        throw new sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
+        throw sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
       }
 
       this->dataset_ = new sg::base::DataMatrix(trainData);
@@ -90,6 +90,9 @@ namespace sg {
     }
 
     void DMSystemMatrixVectorizedIdentityMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+#endif
       sg::base::DataVector temp(this->numPatchedTrainingInstances_);
 
       // Operation B

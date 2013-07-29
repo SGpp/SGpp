@@ -133,7 +133,12 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
   } else if (GridConfig.type_ == sg::base::LinearTrapezoidBoundary) {
     std::cout << "chosen gridtype: LinearTrapezoidBoundary" << std::endl << std::endl;
   } else {
-    std::cout << "chosen gridtype: ModLinear" << std::endl << std::endl;
+    const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
+
+    if (modlinear_mode == NULL) {
+      modlinear_mode = "mask";
+    }
+    std::cout << "chosen gridtype: ModLinear (" << modlinear_mode << ")" << std::endl << std::endl;
   }
 
 
@@ -472,16 +477,11 @@ int main(int argc, char* argv[]) {
       vecType = sg::parallel::Hybrid_X86SIMD_OpenCL;
     } else if  (vectorization == "ArBB") {
       vecType = sg::parallel::ArBB;
-    }
-    //    else if  (vectorization == "MIC")
-    //    {
-    //      vecType = sg::parallel::MIC;
-    //    }
-    //    else if  (vectorization == "HYBRID_X86SIMD_MIC")
-    //    {
-    //      vecType = sg::parallel::Hybrid_X86SIMD_MIC;
-    //    }
-    else {
+    } else if  (vectorization == "MIC") {
+      vecType = sg::parallel::MIC;
+    } else if  (vectorization == "HYBRID_X86SIMD_MIC") {
+      vecType = sg::parallel::Hybrid_X86SIMD_MIC;
+    } else {
       vecType = sg::parallel::X86SIMD;
     }
 

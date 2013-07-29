@@ -1,5 +1,5 @@
 /* ****************************************************************************
-* Copyright (C) 2013 Technische Universitaet Muenchen                    *
+* Copyright (C) 2013 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
@@ -10,7 +10,7 @@
 #define OCLLINEAR_HPP
 
 #include <sstream>
-#include "parallel/datadriven/basis/common/OCLKernelBase.hpp"
+#include "parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp"
 #include "base/grid/GridStorage.hpp"
 
 namespace sg {
@@ -20,7 +20,7 @@ namespace sg {
       public:
         static const KernelType kernelType = Standard;
       private:
-        virtual std::string generateSourceMult(size_t dims) {
+        virtual std::string generateSourceMult(size_t dims, size_t local_workgroup_size) {
           std::stringstream stream_program_src;
 
           if (getType<real_type>::asString() == "double") {
@@ -28,7 +28,7 @@ namespace sg {
           }
 
           stream_program_src << "__kernel" << std::endl;
-          stream_program_src << "__attribute__((reqd_work_group_size(" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ", 1, 1)))" << std::endl;
+          stream_program_src << "__attribute__((reqd_work_group_size(" << local_workgroup_size << ", 1, 1)))" << std::endl;
           stream_program_src << "void multOCL(__global const " << getType<real_type>::asString() << "* ptrLevel," << std::endl;
           stream_program_src << "           __global const " << getType<real_type>::asString() << "* ptrIndex," << std::endl;
           stream_program_src << "           __global const " << getType<real_type>::asString() << "* ptrMask," << std::endl; // not needed for this kernel, but there for uniformity
@@ -44,9 +44,9 @@ namespace sg {
           stream_program_src << " int localIdx = get_local_id(0);" << std::endl;
           stream_program_src << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
-          stream_program_src << " __local " << getType<real_type>::asString() << " locLevel[" << dims* OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
-          stream_program_src << " __local " << getType<real_type>::asString() << " locIndex[" << dims* OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
-          stream_program_src << " __local " << getType<real_type>::asString() << " locAlpha[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
+          stream_program_src << " __local " << getType<real_type>::asString() << " locLevel[" << dims* local_workgroup_size << "];" << std::endl;
+          stream_program_src << " __local " << getType<real_type>::asString() << " locIndex[" << dims* local_workgroup_size << "];" << std::endl;
+          stream_program_src << " __local " << getType<real_type>::asString() << " locAlpha[" << local_workgroup_size << "];" << std::endl;
           stream_program_src << std::endl;
 #endif
           stream_program_src << " " << getType<real_type>::asString() << " eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
@@ -61,8 +61,8 @@ namespace sg {
 #ifdef USEOCL_LOCAL_MEMORY
           stream_program_src << " // Iterate over all grid points (fast ones, with cache)" << std::endl;
           stream_program_src << " uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
-          stream_program_src << " uint fastChunkSizeGrid = (chunkSizeGrid / " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ") * " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ";" << std::endl;
-          stream_program_src << " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
+          stream_program_src << " uint fastChunkSizeGrid = (chunkSizeGrid / " << local_workgroup_size << ") * " << local_workgroup_size << ";" << std::endl;
+          stream_program_src << " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+=" << local_workgroup_size << ")" << std::endl;
           stream_program_src << " {" << std::endl;
 
           for (size_t d = 0; d < dims; d++) {
@@ -73,7 +73,7 @@ namespace sg {
           stream_program_src << "   locAlpha[localIdx] = ptrAlpha[j+localIdx];" << std::endl;
           stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
           stream_program_src << std::endl;
-          stream_program_src << "   for(int k = 0; k < " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "; k++)" << std::endl;
+          stream_program_src << "   for(int k = 0; k < " << local_workgroup_size << "; k++)" << std::endl;
           stream_program_src << "   {" << std::endl;
           stream_program_src << "     curSupport = locAlpha[k];" << std::endl << std::endl;
 
@@ -134,7 +134,7 @@ namespace sg {
           return stream_program_src.str();
         }
 
-        virtual std::string generateSourceMultTrans(size_t dims) {
+        virtual std::string generateSourceMultTrans(size_t dims, size_t local_workgroup_size) {
           std::stringstream stream_program_src;
 
           if (getType<real_type>::asString() == "double") {
@@ -142,7 +142,7 @@ namespace sg {
           }
 
           stream_program_src << "__kernel" << std::endl;;
-          stream_program_src << "__attribute__((reqd_work_group_size(" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ", 1, 1)))" << std::endl;
+          stream_program_src << "__attribute__((reqd_work_group_size(" << local_workgroup_size << ", 1, 1)))" << std::endl;
           stream_program_src << "void multTransOCL(__global const " << getType<real_type>::asString() << "* ptrLevel," << std::endl;
           stream_program_src << "           __global const " << getType<real_type>::asString() << "* ptrIndex," << std::endl;
           stream_program_src << "           __global const " << getType<real_type>::asString() << "* ptrMask," << std::endl; // not needed for this kernel, but there for uniformity
@@ -160,8 +160,8 @@ namespace sg {
           stream_program_src << " " << getType<real_type>::asString() << " eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
           stream_program_src << " " << getType<real_type>::asString() << " myResult = ptrResult[globalIdx];" << std::endl << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
-          stream_program_src << " __local " << getType<real_type>::asString() << " locData[" << dims* OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl;
-          stream_program_src << " __local " << getType<real_type>::asString() << " locSource[" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "];" << std::endl << std::endl;
+          stream_program_src << " __local " << getType<real_type>::asString() << " locData[" << dims* local_workgroup_size << "];" << std::endl;
+          stream_program_src << " __local " << getType<real_type>::asString() << " locSource[" << local_workgroup_size << "];" << std::endl << std::endl;
 #endif
 
           for (size_t d = 0; d < dims; d++) {
@@ -172,16 +172,16 @@ namespace sg {
           stream_program_src << std::endl;
           stream_program_src << " // Iterate over all grid points" << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
-          stream_program_src << " for(int i = start_data; i < end_data; i+=" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")" << std::endl;
+          stream_program_src << " for(int i = start_data; i < end_data; i+=" << local_workgroup_size << ")" << std::endl;
           stream_program_src << " {" << std::endl;
 
           for (size_t d = 0; d < dims; d++) {
-            stream_program_src << "   locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+(localIdx)] = ptrData[(" << d << "*sourceSize)+(localIdx+i)];" << std::endl;
+            stream_program_src << "   locData[(" << d << "*" << local_workgroup_size << ")+(localIdx)] = ptrData[(" << d << "*sourceSize)+(localIdx+i)];" << std::endl;
           }
 
           stream_program_src << "   locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
           stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
-          stream_program_src << "   for(int k = 0; k < " << OCL_SGPP_LOCAL_WORKGROUP_SIZE << "; k++)" << std::endl;
+          stream_program_src << "   for(int k = 0; k < " << local_workgroup_size << "; k++)" << std::endl;
           stream_program_src << "   {" << std::endl;
 
           stream_program_src << "     curSupport = locSource[k];" << std::endl << std::endl;
@@ -194,7 +194,7 @@ namespace sg {
 
           for (size_t d = 0; d < dims; d++) {
 #ifdef USEOCL_LOCAL_MEMORY
-            stream_program_src << "     eval = ((level_" << d << ") * (locData[(" << d << "*" << OCL_SGPP_LOCAL_WORKGROUP_SIZE << ")+k]));" << std::endl;
+            stream_program_src << "     eval = ((level_" << d << ") * (locData[(" << d << "*" << local_workgroup_size << ")+k]));" << std::endl;
 #else
             stream_program_src << "     eval = ((level_" << d << ") * (ptrData[(" << d << "*sourceSize)+k]));" << std::endl;
 #endif

@@ -16,6 +16,7 @@ OBJS = NativeCppClassifyBenchmarkMPI.o
 default: $(OBJS)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmarkMPI.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmarkMPI
+	cp $(BINDIR)$(BINNAME) $(BINDIR)$(BINNAME)_$(EXT)
 	
 NativeCppClassifyBenchmarkMPI.o : $(SRCDIR)NativeCppClassifyBenchmarkMPI.cpp
 	$(CC) $(CFLAGS) -o $(BUILDDIR)NativeCppClassifyBenchmarkMPI.o $(SRCDIR)NativeCppClassifyBenchmarkMPI.cpp

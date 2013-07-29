@@ -186,9 +186,28 @@ namespace sg {
         // Do Refinements
         if (i > 0) {
           myStopwatch2->start();
-          sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
-          grid_->createGridGenerator()->refine(myRefineFunc);
-          delete myRefineFunc;
+
+#ifdef USE_MPI
+
+          if (parallel::myGlobalMPIComm->getMyRank() == 0) {
+#endif
+            sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
+            grid_->createGridGenerator()->refine(myRefineFunc);
+            delete myRefineFunc;
+#ifdef USE_MPI
+            std::string serialized_grid = grid_->getStorage()->serialize();
+
+            parallel::myGlobalMPIComm->broadcastGridStorage(serialized_grid);
+          } else {
+            std::string serialized_grid = "";
+
+            parallel::myGlobalMPIComm->receiveGridStorage(serialized_grid);
+
+            grid_->getStorage()->emptyStorage();
+            grid_->getStorage()->unserialize_noAlgoDims(serialized_grid);
+          }
+
+#endif
 
           DMSystem->rebuildLevelAndIndex();
 
@@ -204,7 +223,6 @@ namespace sg {
 
         sg::base::DataVector b(alpha_->getSize());
         DMSystem->generateb(classes, b);
-        //std::cout<< "generated b" << std::endl;
 
         if (i == AdaptConfig.numRefinements_) {
           myCG->setMaxIterations(SolverConfigFinal.maxIterations_);

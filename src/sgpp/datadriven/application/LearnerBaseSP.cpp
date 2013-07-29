@@ -187,19 +187,35 @@ namespace sg {
 
         // Do Refinements
         if (i > 0) {
-          sg::base::DataVector alphaDP(alpha_->getSize());
-          sg::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, alphaDP);
-          sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alphaDP, AdaptConfig.noPoints_, AdaptConfig.threshold_);
-          grid_->createGridGenerator()->refine(myRefineFunc);
-          delete myRefineFunc;
+#ifdef USE_MPI
 
+          if (parallel::myGlobalMPIComm->getMyRank() == 0) {
+#endif
+            sg::base::DataVector alphaDP(alpha_->getSize());
+            sg::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, alphaDP);
+            sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alphaDP, AdaptConfig.noPoints_, AdaptConfig.threshold_);
+            grid_->createGridGenerator()->refine(myRefineFunc);
+            delete myRefineFunc;
+#ifdef USE_MPI
+            std::string serialized_grid = grid_->getStorage()->serialize();
+
+            parallel::myGlobalMPIComm->broadcastGridStorage(serialized_grid);
+          } else {
+            std::string serialized_grid = "";
+
+            parallel::myGlobalMPIComm->receiveGridStorage(serialized_grid);
+
+            grid_->getStorage()->emptyStorage();
+            grid_->getStorage()->unserialize_noAlgoDims(serialized_grid);
+          }
+
+#endif
           DMSystem->rebuildLevelAndIndex();
 
           if (isVerbose_)
             std::cout << "New Grid Size: " << grid_->getSize() << std::endl;
 
           alpha_->resizeZero(grid_->getSize());
-          alphaDP.resizeZero(grid_->getSize());
         } else {
           if (isVerbose_)
             std::cout << "Grid Size: " << grid_->getSize() << std::endl;

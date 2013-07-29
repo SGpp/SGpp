@@ -20,6 +20,11 @@ namespace sg {
       MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
 
+    void MPICommunicator::broadcastSPGridCoefficientsFromRank0(base::DataVectorSP &alpha)
+    {
+      MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_FLOAT, 0, MPI_COMM_WORLD);
+    }
+
     void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha) {
       if (myid_ == 0) {
         MPI_Reduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -223,7 +228,7 @@ namespace sg {
     void MPICommunicator::waitForAllRequests(size_t size, MPI_Request* reqs) {
       if (MPI_Waitall((int)(size), reqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
         std::cout << "communication error in waitall" << std::endl;
-        throw new sg::base::operation_exception("Communication Error");
+        throw sg::base::operation_exception("Communication Error");
       }
     }
 
@@ -234,7 +239,7 @@ namespace sg {
     void MPICommunicator::allreduceSum(base::DataVector& source, base::DataVector& result) {
       if (source.getSize() != result.getSize()) {
         std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
-        throw new sg::base::operation_exception("DataVector sizes do not match in allreduce!");
+        throw sg::base::operation_exception("DataVector sizes do not match in allreduce!");
       }
 
       MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -243,7 +248,7 @@ namespace sg {
     void MPICommunicator::allreduceSumSP(base::DataVectorSP& source, base::DataVectorSP& result) {
       if (source.getSize() != result.getSize()) {
         std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
-        throw new sg::base::operation_exception("DataVector sizes do not match in allreduce!");
+        throw sg::base::operation_exception("DataVector sizes do not match in allreduce!");
       }
 
       MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);

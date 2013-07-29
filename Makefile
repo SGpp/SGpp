@@ -21,13 +21,15 @@ OCLLIB = /usr/lib64/
 #OCLINCLUDE = ${CUDATOOLKIT_HOME}/include
 #OCLLIB = /opt/cray/nvidia/default/lib64
 # Intel OpenCL
-IOCLINCLUDE = /usr/include
-IOCLLIB = /usr/lib64/OpenCL/vendors/intel
+# IOCLINCLUDE = /usr/include
+# IOCLLIB = /usr/lib64/OpenCL/vendors/intel
+IOCLINCLUDE = /etc/alternatives/opencl-headers
+IOCLLIB = /etc/alternatives/opencl-intel-runtime/lib64
 # AMD OpenCL
-AMDOCLINCLUDE = /opt/AMDAPP/include
-AMDOCLLIB = /opt/AMDAPP/lib/x86_64
-#AMDOCLINCLUDE = /lrz/sys/parallel/amdapp/2.7/include
-#AMDOCLLIB = /lrz/sys/parallel/amdapp/2.7/lib/x86_64
+# AMDOCLINCLUDE = /opt/AMDAPP/include
+# AMDOCLLIB = /opt/AMDAPP/lib/x86_64
+AMDOCLINCLUDE = /lrz/sys/parallel/amdapp/2.7/include
+AMDOCLLIB = /lrz/sys/parallel/amdapp/2.7/lib/x86_64
 # Intel OpenCL, Windows
 IOCLINCLUDEWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include\"
 IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
@@ -48,9 +50,15 @@ CC=g++
 #  avx
 VEC=sse3
 # extensions, manages extensions to be included, possible values (only when using Intel Compiler):
-#	ArBB - Intel Array Building Blocks support
-#	OCL - NVIDIA OpenCL support
-#	NO - no extensions, default
+#       ArBB - Intel Array Building Blocks support
+#       AMDOCLGPU - AMD GPU OpenCL support
+#       INTELOCL - Intel CPU OpenCL support
+#       INTELOCLGPU - Intel GPU OpenCL support
+#       INTELOCLMIC - Intel MIC OpenCL support (Phi coprocessor)
+#       NVOCL - NVIDIA OpenCL support
+#       MIC_OFFLOAD - Intel MIC coprocessor in offload mode
+#       MIC_NATIVE - compile for native execution on Intel MIC coprocessor
+#       NO - no extensions, default
 EXT=NO
 #	MPI - MPI support
 MPI=0
@@ -60,20 +68,27 @@ JOBS=4
 SLE_RES_THRESH=-1.0
 # Default number of parallel dimensions for the parallelization of the recursive up down scheme
 UPDOWN_PARADIMS=4
+# Compile for x86, but change vector width to match the one of MIC_NATIVE. This is needed for symmetric MPI execution. This option only has an effect for compilation with mpiicpc.
+X86_MIC_SYMMETRIC=0
+
 
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR) 
+CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-unknown-pragmas -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR)
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
-CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
-LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3
-#CFLAGS_ICC:=-Wall -Wconversion -Wno-deprecated -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
-#LFLAGS_ICC:=-Wall -ansi -O3
+#CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -Wno-unknown-pragmas -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+#LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3
+CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -Wno-unknown-pragmas -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+LFLAGS_ICC:=-Wall -ansi -O3
 
 CFLAGS_ICL:=/Wall /Qipo /Qip /Oa /Qansi_alias /Qfp-speculation=safe /c /O3 /Qunroll-aggressive /I$(SRCDIR) /DUSETRONE /Qcxx-features /D_WIN32 /DNOMINMAX
 LFLAGS_ICL:=/Wall /Qipo /Qip /Qansi_alias /O3
+
+ifeq ($(EXT), MIC_NATIVE)
+VEC:=""
+endif
 
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
@@ -123,6 +138,10 @@ ifeq ($(EXT), INTELOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
+ifeq ($(EXT), INTELOCLMIC)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DUSEOCL_MIC
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL
+endif
 ifeq ($(EXT), AMDOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
@@ -170,9 +189,26 @@ ifeq ($(EXT), INTELOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -openmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -openmp
 endif
+ifeq ($(EXT), INTELOCLMIC)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DUSEOCL_MIC
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL
+endif
 ifeq ($(EXT), AMDOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -openmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -openmp
+endif
+ifeq ($(EXT), MIC_OFFLOAD)
+CFLAGS:=$(CFLAGS) -no-ipo -no-ip -DUSEMIC -opt-report-phase:offload -openmp-report2 -offload-option,mic,compiler,\"-Wall -ansi -fPIC -c -ansi-alias -O3 -I$(SRCDIR) -openmp -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F\"
+LFLAGS:=$(LFLAGS) -no-ipo -no-ip -DUSEMIC -offload-option,mic,link,\"--no-undefined\" 
+XIAR_OPTS:=$(XIAR_OPTS) -qoffload-build
+else
+CFLAGS:=$(CFLAGS) -no-offload
+LFLAGS:=$(LFLAGS) -no-offload
+endif
+ifeq ($(EXT), MIC_NATIVE)
+CFLAGS:=$(CFLAGS) -mmic -DUSEMIC -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F -fp-speculation=fast
+LFLAGS:=$(LFLAGS) -mmic
+LIB_OPTS:=-mmic
 endif
 endif
 
@@ -205,6 +241,10 @@ LFLAGS:=$(LFLAGS) $(IOCLLIBWIN) /Qopenmp
 endif
 ifeq ($(EXT), INTELOCLGPU)
 CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDEWIN) /DUSEOCL /DUSEOCL_INTEL /Qopenmp
+LFLAGS:=$(LFLAGS) $(IOCLLIBWIN) /Qopenmp
+endif
+ifeq ($(EXT), INTELOCLMIC)
+CFLAGS:=$(CFLAGS) /I$(IOCLINCLUDE) /DUSEOCL /DUSEOCL_INTEL /DUSEOCL_MIC
 LFLAGS:=$(LFLAGS) $(IOCLLIBWIN) /Qopenmp
 endif
 ifeq ($(EXT), AMDOCLGPU)
@@ -261,6 +301,10 @@ endif
 ifeq ($(EXT), INTELOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), INTELOCLMIC)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DUSEOCL_MIC
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL
 endif
 ifeq ($(EXT), AMDOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
@@ -367,9 +411,29 @@ ifeq ($(EXT), INTELOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
 LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL -fopenmp
 endif
+ifeq ($(EXT), INTELOCLGPU)
+CFLAGS:=$(CFLAGS) -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -DUSEOCL_MIC
+LFLAGS:=$(LFLAGS) -L$(IOCLLIB) -lOpenCL
+endif
 ifeq ($(EXT), AMDOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
+endif
+ifeq ($(EXT), MIC_OFFLOAD)
+CFLAGS:=$(CFLAGS) -no-ipo -no-ip -DUSEMIC -opt-report-phase:offload -openmp-report2 -offload-option,mic,compiler,\"-Wall -ansi -fPIC -c -ansi-alias -O3 -I$(SRCDIR) -openmp -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F\"
+LFLAGS:=$(LFLAGS) -no-ipo -no-ip -DUSEMIC -offload-option,mic,link,\"--no-undefined\" 
+XIAR_OPTS:=$(XIAR_OPTS) -qoffload-build
+else
+CFLAGS:=$(CFLAGS) -no-offload
+LFLAGS:=$(LFLAGS) -no-offload
+endif
+ifeq ($(EXT), MIC_NATIVE)
+CFLAGS:=$(CFLAGS) -mmic -DUSEMIC -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F -fp-speculation=fast
+LFLAGS:=$(LFLAGS) -mmic
+LIB_OPTS:=-mmic
+endif
+ifeq ($(X86_MIC_SYMMETRIC), 1)
+CFLAGS:=$(CFLAGS) -DX86_MIC_SYMMETRIC
 endif
 endif
 
@@ -440,7 +504,7 @@ ifeq ($(CC),opencc)
 endif
 ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/sgpplib_icc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc" "EXT=$(EXT)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc" "EXT=$(EXT)" "XIAR_OPTS=$(XIAR_OPTS)" "LIB_OPTS=$(LIB_OPTS)"
 endif
 ifeq ($(CC),icl)
 	mkdir -p tmp/build_native/sgpplib_icl
@@ -452,7 +516,7 @@ ifeq ($(CC),CC)
 endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/sgpplib_mpiicc
-	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc" "EXT=$(EXT)" "MPI=$(MPI)"
+	make -j $(JOBS) -f ./../../../src/makefileSGppLIB --directory=./tmp/build_native/sgpplib_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc" "EXT=$(EXT)" "MPI=$(MPI)" "XIAR_OPTS=$(XIAR_OPTS)" "LIB_OPTS=$(LIB_OPTS)"
 endif
 ifeq ($(CC),mpigxx)
 	mkdir -p tmp/build_native/sgpplib_mpigxx

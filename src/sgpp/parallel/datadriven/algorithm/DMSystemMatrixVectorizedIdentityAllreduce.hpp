@@ -31,11 +31,14 @@ namespace sg {
       public:
         DMSystemMatrixVectorizedIdentityAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
           : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
-          sg::parallel::PartitioningTool::getMPIPartitionSegment(this->numPatchedTrainingInstances_, &data_size, &data_offset, sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+          sg::parallel::PartitioningTool::getMPIPartitionSegment(this->numPatchedTrainingInstances_, &data_size, &data_offset,                sg::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
           rebuildLevelAndIndex();
         }
 
         virtual void mult(base::DataVector& alpha, base::DataVector& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+#endif
           this->tempData->setAll(0.0);
           this->result_tmp->setAll(0.0);
           result.setAll(0.0);
@@ -97,7 +100,7 @@ namespace sg {
           this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSum(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
-          
+
           result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_, alpha);
         }
 

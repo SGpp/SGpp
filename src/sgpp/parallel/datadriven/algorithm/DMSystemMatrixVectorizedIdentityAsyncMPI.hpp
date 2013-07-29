@@ -80,6 +80,9 @@ namespace sg {
         }
 
         virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+#ifdef X86_MIC_SYMMETRIC
+          myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
+#endif
           sg::base::DataVector temp(this->numPatchedTrainingInstances_);
           result.setAll(0.0);
           temp.setAll(0.0);
