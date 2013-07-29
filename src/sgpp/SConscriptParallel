@@ -28,6 +28,7 @@ parallel/tools/TwoPartitionAutoTuning.cpp
 parallel/tools/PartitioningTool.cpp
 
 parallel/operation/ParallelOpFactory.cpp
+parallel/operation/SPParallelOpFactory.cpp
 """)
 
 sg_env = env.Clone()
