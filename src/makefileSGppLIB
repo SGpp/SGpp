@@ -1,4 +1,4 @@
-#################################################################################
+###############################################################################
 # Copyright (C) 2009-2011 Technische Universitaet Muenchen                      #
 # This file is part of the SG++ project. For conditions of distribution and     #
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
@@ -476,6 +476,8 @@ default : $(OBJS)
 	rm -f $(BINDIR)$(LIBNAME).lib
 	xilib /OUT:$(BINDIR)$(LIBNAME).lib $(WINOBJS)
 endif
+
+#SCALASCA=scalasca -instrument 
 
 DataVector.o : $(SRCDIR)base/datatypes/DataVector.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)DataVector.o $(SRCDIR)base/datatypes/DataVector.cpp
@@ -1268,7 +1270,7 @@ $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedM
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixMPITypeFactory.cpp
 
 DMSystemMatrixSPMPITypeFactory.o : $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.cpp \
 $(SRCDIR)parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp \
@@ -1290,7 +1292,7 @@ $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOneside
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp \
 $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.cpp
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)DMSystemMatrixSPMPITypeFactory.o $(SRCDIR)parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.cpp
 
 MICKernelImpl.o : $(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelImpl.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)MICKernelImpl.o $(SRCDIR)parallel/datadriven/basis/common/mic/MICKernelImpl.cpp
@@ -1476,7 +1478,7 @@ $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp \
 $(SRCDIR)parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp \
 $(SRCDIR)parallel/datadriven/operation/OperationMultipleEvalIterativeSP.hpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)ParallelOpFactory.o $(SRCDIR)parallel/operation/ParallelOpFactory.cpp
 
 
 SPParallelOpFactory.o : $(SRCDIR)parallel/operation/SPParallelOpFactory.cpp \
@@ -1657,13 +1659,13 @@ ArBBKernels10D.o : $(SRCDIR)parallel/datadriven/basis/common/ArBBKernels10D.cpp
 
 # MPI Extensions:
 MPICommunicator.o : $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)MPICommunicator.o $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)MPICommunicator.o $(SRCDIR)parallel/tools/MPI/MPICommunicator.cpp
 	
 GlobalMPIComm.o : $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)GlobalMPIComm.o $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp	
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)GlobalMPIComm.o $(SRCDIR)parallel/tools/MPI/GlobalMPIComm.cpp	
 	
 ConjugateGradientsMPI.o : $(SRCDIR)parallel/solver/sle/ConjugateGradientsMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)parallel/solver/sle/ConjugateGradientsMPI.cpp
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)ConjugateGradientsMPI.o $(SRCDIR)parallel/solver/sle/ConjugateGradientsMPI.cpp
 	
 PoissonEquationSolverMPI.o : $(SRCDIR)parallel/pde/application/PoissonEquationSolverMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolverMPI.o $(SRCDIR)parallel/pde/application/PoissonEquationSolverMPI.cpp
@@ -1681,7 +1683,7 @@ BlackScholesSolverMPI.o : $(SRCDIR)parallel/finance/application/BlackScholesSolv
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesSolverMPI.o $(SRCDIR)parallel/finance/application/BlackScholesSolverMPI.cpp
 	
 BiCGStabMPI.o : $(SRCDIR)parallel/solver/sle/BiCGStabMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)parallel/solver/sle/BiCGStabMPI.cpp
+	$(SCALASCA)$(CC) $(CFLAGS) -o $(OUTDIR)BiCGStabMPI.o $(SRCDIR)parallel/solver/sle/BiCGStabMPI.cpp
 	
 BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	

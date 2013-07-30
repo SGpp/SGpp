@@ -12,10 +12,12 @@ BUILDDIR = ./
 BINDIR = ./../../../bin/
 LIBDIR = ./../../../lib/sgpp/
 OBJS = NativeCppClassifyBenchmarkMPI.o
+#SCALASCA = scalasca -instrument 
+#POSTFIX = scalasca
 
 default: $(OBJS)
-	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmarkMPI.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
-	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmarkMPI
+	$(SCALASCA)$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmarkMPI.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)$(POSTFIX)
+	cp $(BINDIR)$(BINNAME)$(POSTFIX) $(BINDIR)ClassifyBenchmarkMPI$(POSTFIX)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)$(BINNAME)_$(EXT)
 	
 NativeCppClassifyBenchmarkMPI.o : $(SRCDIR)NativeCppClassifyBenchmarkMPI.cpp
