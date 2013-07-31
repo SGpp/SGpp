@@ -7,8 +7,14 @@
 
 #include "parallel/tools/PartitioningTool.hpp"
 
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(push, target(mic))
+#endif
 #include "base/exception/operation_exception.hpp"
 #include <iostream>
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(pop)
+#endif
 
 #ifdef USE_MPI
 #include "parallel/tools/MPI/SGppMPITools.hpp"
@@ -24,6 +30,9 @@ namespace sg {
     PartitioningTool::PartitioningTool() {
     }
 
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(push, target(mic))
+#endif
     void PartitioningTool::getPartitionSegment(size_t totalSize, size_t segmentCount, size_t segmentNumber, size_t* size, size_t* offset, size_t blockSize) {
       size_t end;
       getPartitionSegment(0, totalSize, segmentCount, segmentNumber, offset, &end, blockSize);
@@ -76,6 +85,10 @@ namespace sg {
 #endif
       getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart, segmentEnd, blocksize);
     }
+
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(pop)
+#endif
 
 #ifdef USE_MPI
     void PartitioningTool::getMPIPartitionSegment(size_t totalSize, size_t* size, size_t* offset, size_t blocksize) {
