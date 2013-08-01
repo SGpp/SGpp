@@ -442,6 +442,7 @@ default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
+	rm -f $(BINDIR)$(LIBNAME)MIC.a
 	xiar $(XIAR_OPTS) rc $(BINDIR)$(LIBNAME).a $(OBJS)
 	ranlib $(BINDIR)$(LIBNAME).a
 	$(CC) $(LIB_OPTS) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
@@ -453,6 +454,7 @@ default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
+	rm -f $(BINDIR)$(LIBNAME)MIC.a
 	xiar $(XIAR_OPTS) rc $(BINDIR)$(LIBNAME).a $(OBJS)
 	ranlib $(BINDIR)$(LIBNAME).a
 	$(CC) $(LIB_OPTS) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)
@@ -464,6 +466,7 @@ default : $(OBJS)
 	mkdir -p $(BINDIR)
 	rm -f $(BINDIR)$(LIBNAME).a
 	rm -f $(BINDIR)$(LIBNAME).so
+	rm -f $(BINDIR)$(LIBNAME)MIC.a
 	xiar rc $(BINDIR)$(LIBNAME).a $(OBJS)
 	ranlib $(BINDIR)$(LIBNAME).a
 	$(CC) -shared -openmp -o $(BINDIR)$(LIBNAME).so $(OBJS)

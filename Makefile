@@ -88,6 +88,11 @@ ifeq ($(EXT), MIC_NATIVE)
 VEC:=""
 endif
 
+ifneq ($(EXT), MIC_OFFLOAD)
+CFLAGS_ICC:=$(CFLAGS_ICC) -no-offload
+LFLAGS_ICC:=$(LFLAGS_ICC) -no-offload
+endif
+
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
