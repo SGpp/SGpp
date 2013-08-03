@@ -104,49 +104,29 @@ namespace sg {
     }
 
     void MPICommunicator::dataVectorAllToAll(base::DataVector& alpha, int* distributionOffsets, int* distributionSizes) {
-      size_t numRanks = getNumRanks();
       size_t myRank = getMyRank();
       int mySendSize = distributionSizes[myRank];
       int mySendOffset = distributionOffsets[myRank];
 
-      int* sendSizes = new int[numRanks];
-      int* sendOffsets = new int[numRanks];
-
-      for (size_t i = 0; i < numRanks; i++) {
-        sendSizes[i] = mySendSize;
-        sendOffsets[i] = mySendOffset;
-      }
-
       sg::base::DataVector tmp(alpha.getSize());
-      MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_DOUBLE,
-                    tmp.getPointer(), distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
+      double* sendbuf = alpha.getPointer();
+      MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_DOUBLE,
+                         tmp.getPointer(), distributionSizes, distributionOffsets,
+                         MPI_DOUBLE, MPI_COMM_WORLD);
       alpha.copyFrom(tmp);
-
-      delete[] sendSizes;
-      delete[] sendOffsets;
     }
 
     void MPICommunicator::dataVectorSPAllToAll(base::DataVectorSP& alpha, int* distributionOffsets, int* distributionSizes) {
-      size_t numRanks = getNumRanks();
       size_t myRank = getMyRank();
       int mySendSize = distributionSizes[myRank];
       int mySendOffset = distributionOffsets[myRank];
 
-      int* sendSizes = new int[numRanks];
-      int* sendOffsets = new int[numRanks];
-
-      for (size_t i = 0; i < numRanks; i++) {
-        sendSizes[i] = mySendSize;
-        sendOffsets[i] = mySendOffset;
-      }
-
       sg::base::DataVectorSP tmp(alpha.getSize());
-      MPI_Alltoallv(alpha.getPointer(), sendSizes, sendOffsets, MPI_FLOAT,
-                    tmp.getPointer(), distributionSizes, distributionOffsets, MPI_FLOAT, MPI_COMM_WORLD);
+      float* sendbuf = alpha.getPointer();
+      MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_FLOAT,
+                         tmp.getPointer(), distributionSizes, distributionOffsets,
+                         MPI_FLOAT, MPI_COMM_WORLD);
       alpha.copyFrom(tmp);
-
-      delete[] sendSizes;
-      delete[] sendOffsets;
     }
 
     void MPICommunicator::IsendToAll(double* ptr, size_t size, int tag, MPI_Request* reqs) {
