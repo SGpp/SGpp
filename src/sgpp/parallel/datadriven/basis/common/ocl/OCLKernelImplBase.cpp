@@ -202,7 +202,7 @@ namespace sg {
       kernel_multTrans = new cl_kernel[num_devices];
 
       // initialize arrays
-      for (int i = 0; i < num_devices; i++) {
+      for (size_t i = 0; i < num_devices; i++) {
         command_queue[i] = NULL;
 
         clData[i] = NULL;
