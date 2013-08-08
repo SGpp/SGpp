@@ -24,6 +24,9 @@ namespace sg {
         _retune(retune_cycles) {
     }
 
+    TwoPartitionAutoTuning::~TwoPartitionAutoTuning() {
+    }
+
     size_t TwoPartitionAutoTuning::getProblemSize() {
       return _problemSize;
     }

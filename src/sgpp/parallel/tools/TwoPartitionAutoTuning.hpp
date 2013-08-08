@@ -24,6 +24,11 @@ namespace sg {
         TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
 
         /**
+         * Destructor
+         */
+        virtual ~TwoPartitionAutoTuning();
+
+        /**
          * get problem size
          *
          * @return problem size to should partitioned
