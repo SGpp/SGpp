@@ -38,7 +38,8 @@ namespace sg {
           const size_t end_index_data) {
           #pragma omp master
           {
-            double time = m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
+            //double time = m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
+            m_oclkernel.multImpl(level, index, mask, offset, dataset, alpha, result,
             start_index_grid, end_index_grid, start_index_data, end_index_data);
           }
         }
@@ -69,8 +70,9 @@ namespace sg {
           size_t end_index_grid_gpu = start_index_grid + numWGs * m_oclkernel.getChunkGridPoints();
 
           if (tid == 0) {
-            double time = 0.0;
-            time = m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
+            //double time = 0.0;
+            //time = m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
+            m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
                                                  start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
           }
 
