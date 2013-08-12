@@ -536,7 +536,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
   }
 
   // create Black Scholes Solver Object
-  sg::parallel::BlackScholesSolverMPI* myBSSolver;
+  sg::parallel::BlackScholesSolverMPI* myBSSolver = NULL;
 
   if (coordsType == "log") {
     myBSSolver = new sg::parallel::BlackScholesSolverMPI(true);
@@ -843,7 +843,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     return;
   }
 
-  sg::parallel::BlackScholesSolverMPI* myBSSolver;
+  sg::parallel::BlackScholesSolverMPI* myBSSolver = NULL;
 
   if (coordsType == "log") {
     myBSSolver = new sg::parallel::BlackScholesSolverMPI(true);
