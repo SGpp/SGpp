@@ -316,7 +316,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
   for (size_t l = start_level; l <= end_level; l++) {
     // Construct a grid
-    myHESolver->constructGrid(*myBoundingBox, l);
+    myHESolver->constructGrid(*myBoundingBox, (int)l);
 
     // in first iteration -> calculate the evaluation points
     if (l == start_level) {
@@ -524,7 +524,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
   for (size_t l = start_level; l <= end_level; l++) {
     // Construct a grid
-    myPoisSolver->constructGrid(*myBoundingBox, l);
+    myPoisSolver->constructGrid(*myBoundingBox, (int)l);
 
     // in first iteration -> calculate the evaluation points
     if (l == start_level) {
@@ -706,7 +706,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
   myPoisSolver->initScreen();
 
   // Construct a grid
-  myPoisSolver->constructGrid(*myBoundingBox, start_level);
+  myPoisSolver->constructGrid(*myBoundingBox, (int)start_level);
 
   // init the basis functions' coefficient vector (start solution)
   alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
@@ -722,7 +722,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
       if (refine == "classic") {
         myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
       } else {
-        myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+        myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, (int)max_ref_level);
       }
 
       std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
@@ -743,7 +743,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
       if (refine == "classic") {
         myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
       } else {
-        myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+        myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, (int)max_ref_level);
       }
 
       std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
