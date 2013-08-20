@@ -368,7 +368,8 @@ OBJS =	DataVector.o\
 	OperationDensityRejectionSamplingLinear.o\
 	MICKernelImpl.o\
 	SPMICKernelImpl.o\
-	OCLKernelImplBase.o
+	OCLKernelImplBase.o\
+	DatasetGenerator.o
 
 ifeq ($(EXT), ArBB)
 OBJS:=$(OBJS) OperationMultipleEvalIterativeArBBLinear.o\
@@ -1420,6 +1421,9 @@ EvalCuboidGeneratorForStretching.o : $(SRCDIR)base/tools/EvalCuboidGeneratorForS
 ARFFTools.o : $(SRCDIR)datadriven/tools/ARFFTools.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ARFFTools.o $(SRCDIR)datadriven/tools/ARFFTools.cpp
 	
+DatasetGenerator.o : $(SRCDIR)datadriven/tools/DatasetGenerator.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)DatasetGenerator.o $(SRCDIR)datadriven/tools/DatasetGenerator.cpp
+
 StdUpDown.o : $(SRCDIR)pde/algorithm/StdUpDown.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)StdUpDown.o $(SRCDIR)pde/algorithm/StdUpDown.cpp
 	

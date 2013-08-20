@@ -14,7 +14,7 @@
 #include "sgpp_base.hpp"
 #include "sgpp_parallel.hpp"
 #include "sgpp_datadriven.hpp"
-
+#include "datadriven/tools/DatasetGenerator.hpp"
 
 #include <string>
 #include <iostream>
@@ -138,6 +138,7 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
     if (modlinear_mode == NULL) {
       modlinear_mode = "mask";
     }
+
     std::cout << "chosen gridtype: ModLinear (" << modlinear_mode << ")" << std::endl << std::endl;
   }
 
@@ -365,7 +366,7 @@ void printHelp() {
   std::cout << "	CG epsilon, first refinement steps" << std::endl;
   std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
   std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl << std::endl << std::endl;
-  std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync; " << std::endl;
+  std::cout << "	MPI Communication Method: NONE, Allreduce, Alltoallv, Async, Onesided, TrueAsync, Bigdata; " << std::endl;
   std::cout << "Example call:" << std::endl;
   std::cout << "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD" << std::endl << std::endl << std::endl;
 }
@@ -494,10 +495,10 @@ int main(int argc, char* argv[]) {
       mpiType = sg::parallel::MPIAsync;
     } else if (mpiConfValue == "TrueAsync") {
       mpiType = sg::parallel::MPITrueAsync;
-    } else if (mpiConfValue == "TrueAsyncAlltoallv") {
-      mpiType = sg::parallel::MPITrueAsyncAlltoallv;
     } else if (mpiConfValue == "Onesided") {
       mpiType = sg::parallel::MPIOnesided;
+    } else if (mpiConfValue == "Bigdata") {
+      mpiType = sg::parallel::MPIBigdata;
     } else {
       mpiType = sg::parallel::MPINone;
     }
@@ -535,9 +536,40 @@ int main(int argc, char* argv[]) {
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
 
-    size_t nDim = ARFFTool.getDimension(tfileTrain);
-    size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
-    size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+    size_t nDim;
+    size_t nInstancesNo;
+    size_t nInstancesTestNo;
+
+    sg::datadriven::DatasetGenerator* g = NULL;
+
+    if (mpiType == sg::parallel::MPIBigdata) {
+      if (dataFile.find("friedman1") != std::string::npos) {
+        g = new sg::datadriven::Friedman1Generator();
+      } else if (dataFile.find("friedman2") != std::string::npos) {
+        g = new sg::datadriven::Friedman2Generator();
+      } else if (dataFile.find("friedman3") != std::string::npos) {
+        g = new sg::datadriven::Friedman3Generator();
+      } else {
+        std::cout << "cannot generate dataset for " << dataFile <<std::endl;
+        throw sg::base::operation_exception("cannot generate dataset");
+      }
+
+      nDim = g->getDims();
+      nInstancesNo = 100000; // number of instances per node
+
+      const char* dataset_generation_count = getenv("SGPP_DATASET_GENERATION_COUNT");
+      if (dataset_generation_count != NULL) {
+        nInstancesNo = (int)(strtoul (dataset_generation_count, NULL, 0));
+      }
+
+      std::cout << "Generating " << nInstancesNo << " datasets per node (for " << mpi_size << " nodes)." << std::endl;
+
+    } else {
+      nDim = ARFFTool.getDimension(tfileTrain);
+      nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
+    }
+
+    nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
 
     // Define DP data
     sg::base::DataMatrix data(nInstancesNo, nDim);
@@ -551,10 +583,17 @@ int main(int argc, char* argv[]) {
     sg::base::DataMatrixSP testdataSP(nInstancesTestNo, nDim);
     sg::base::DataVectorSP testclassesSP(nInstancesTestNo);
 
-    // Read data from file
-    ARFFTool.readTrainingData(tfileTrain, data);
+
+    if (mpiType == sg::parallel::MPIBigdata) {
+      g->createData(mpi_myid * nInstancesNo, nInstancesNo, data, classes);
+      delete g;
+    } else {
+      // Read data from file
+      ARFFTool.readTrainingData(tfileTrain, data);
+      ARFFTool.readClasses(tfileTrain, classes);
+    }
+
     ARFFTool.readTrainingData(tfileTest, testdata);
-    ARFFTool.readClasses(tfileTrain, classes);
     ARFFTool.readClasses(tfileTest, testclasses);
 
     sg::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);

@@ -22,8 +22,10 @@ namespace sg {
   namespace parallel {
     template<typename OCLBasisType>
     class OCLKernelImpl: public OCLKernelImplBase {
+        double* pinnedGrid;
+        double* pinnedTmp;
       public:
-        OCLKernelImpl():OCLKernelImplBase(){}
+        OCLKernelImpl(): OCLKernelImplBase() {}
 
         inline void initOCLBuffers(
           sg::base::DataMatrix* level,
@@ -64,6 +66,47 @@ namespace sg {
           }
         }
 
+        inline void initParams(sg::base::DataVector& grid,
+                               sg::base::DataVector& tmp) {
+          if (clPinnedGrid == NULL) {
+            size_t mem_size = sizeof(double) * grid.getSize();
+            clPinnedGrid = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, NULL, NULL);
+
+            for (size_t i = 0; i < num_devices; i++) {
+              clDevGrid[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, mem_size, NULL, NULL);
+            }
+
+            pinnedGrid = (double*) clEnqueueMapBuffer(command_queue[0], clPinnedGrid, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE , 0, mem_size, 0, NULL, NULL, NULL);
+          }
+
+          for (size_t i = 0; i < grid.getSize(); i++) {
+            pinnedGrid[i] = grid[i];
+          }
+
+          for (size_t i = 0; i < num_devices; i++) {
+            clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE, 0, sizeof(double) * grid.getSize(), pinnedGrid, 0, NULL, NULL);
+          }
+
+          if (clPinnedTmp == NULL) {
+            size_t mem_size = sizeof(double) * tmp.getSize();
+            clPinnedTmp = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, NULL, NULL);
+
+            for (size_t i = 0; i < num_devices; i++) {
+              clDevTmp[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, mem_size, NULL, NULL);
+            }
+
+            pinnedTmp = (double*) clEnqueueMapBuffer(command_queue[0], clPinnedTmp, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE, 0, mem_size, 0, NULL, NULL, NULL);
+          }
+
+          for (size_t i = 0; i < tmp.getSize(); i++) {
+            pinnedTmp[i] = tmp[i];
+          }
+
+          for (size_t i = 0; i < num_devices; i++) {
+            clEnqueueWriteBuffer(command_queue[i], clDevTmp[i], CL_TRUE, 0, sizeof(double) * tmp.getSize(), pinnedTmp, 0, NULL, NULL);
+          }
+        }
+
         double multImpl(
           sg::base::DataMatrix* level,
           sg::base::DataMatrix* index,
@@ -81,7 +124,6 @@ namespace sg {
             return 0.0;
           }
 
-          double* ptrResult = result.getPointer();
           double time = 0.0;
 
           if (kernel_mult[0] == NULL) {
@@ -91,14 +133,7 @@ namespace sg {
           }
 
           initOCLBuffers(level, index, mask, offset, dataset);
-
-          cl_mem* clAlpha = new cl_mem[num_devices];
-          cl_mem* clResult = new cl_mem[num_devices];
-
-          for (size_t i = 0; i < num_devices; i++) {
-            clAlpha[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * alpha.getSize(), alpha.getPointer(), NULL);
-            clResult[i] = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(double) * result.getSize(), result.getPointer(), NULL);
-          }
+          initParams(alpha, result);
 
           // determine best fit
           size_t* gpu_start_index_data = new size_t[num_devices];
@@ -123,8 +158,8 @@ namespace sg {
                   clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), &clMask[i]) || // only needed for masked version of modlinear
                   clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), &clOffset[i]) || //only needed for masked version of modlinear
                   clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), &clData[i]) ||
-                  clSetKernelArg(kernel_mult[i], 5, sizeof(cl_mem), &clAlpha[i]) ||
-                  clSetKernelArg(kernel_mult[i], 6, sizeof(cl_mem), &clResult[i]) ||
+                  clSetKernelArg(kernel_mult[i], 5, sizeof(cl_mem), &clDevGrid[i]) ||
+                  clSetKernelArg(kernel_mult[i], 6, sizeof(cl_mem), &clDevTmp[i]) ||
                   clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
                   clSetKernelArg(kernel_mult[i], 8, sizeof(cl_uint), &gpu_start_grid) ||
                   clSetKernelArg(kernel_mult[i], 9, sizeof(cl_uint), &gpu_end_grid) != CL_SUCCESS) {
@@ -166,7 +201,7 @@ namespace sg {
 
             if (rangeSize > 0) {
               size_t offset = gpu_start_index_data[i];
-              err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double) * offset, sizeof(double) * rangeSize, &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
+              err = clEnqueueReadBuffer(command_queue[i], clDevTmp[i], CL_FALSE, sizeof(double) * offset, sizeof(double) * rangeSize, &(pinnedTmp[offset]), 0, NULL, &(GPUDone[i]));
 
               if (err != CL_SUCCESS) {
                 std::cout << "OCL Error: Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
@@ -177,6 +212,10 @@ namespace sg {
 
           // sync GPUs
           clWaitForEvents((cl_uint)active_devices, GPUDone);
+
+          for (size_t i = start_index_data; i < end_index_data; i++) {
+            result[i] = pinnedTmp[i];
+          }
 
           // determine kernel execution time
           for (size_t i = 0; i < num_devices; i++) {
@@ -208,17 +247,11 @@ namespace sg {
 
           // clean up
           for (size_t i = 0; i < num_devices; i++) {
-            clReleaseMemObject(clAlpha[i]);
-            clReleaseMemObject(clResult[i]);
-
             if (gpu_end_index_data[i] > gpu_start_index_data[i]) {
               clReleaseEvent(clTimings[i]);
               clReleaseEvent(GPUDone[i]);
             }
           }
-
-          delete[] clAlpha;
-          delete[] clResult;
 
           delete[] gpu_start_index_data;
           delete[] gpu_end_index_data;
@@ -248,7 +281,6 @@ namespace sg {
 
           size_t dims = dataset->getNrows();
           size_t sourceSize = source.getSize();
-          double* ptrResult = result.getPointer();
           double time = 0.0;
 
           if (kernel_multTrans[0] == NULL) {
@@ -257,15 +289,7 @@ namespace sg {
           }
 
           initOCLBuffers(level, index, mask, offset, dataset);
-
-          cl_mem* clSource = new cl_mem[num_devices];
-          cl_mem* clResult = new cl_mem[num_devices];
-
-          // create buffers for this execution
-          for (size_t i = 0; i < num_devices; i++) {
-            clSource[i] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * sourceSize, source.getPointer(), NULL);
-            clResult[i] = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(double) * result.getSize(), result.getPointer(), NULL);
-          }
+          initParams(result, source);
 
           // determine best fit
           size_t* gpu_start_index_grid = new size_t[num_devices];
@@ -290,8 +314,8 @@ namespace sg {
                   clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), &clMask[i]) ||
                   clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), &clOffset[i]) ||
                   clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), &clData[i]) ||
-                  clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_mem), &clSource[i]) ||
-                  clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_mem), &clResult[i]) ||
+                  clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_mem), &clDevTmp[i]) ||
+                  clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_mem), &clDevGrid[i]) ||
                   clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
                   clSetKernelArg(kernel_multTrans[i], 8, sizeof(cl_uint), &gpu_start_data) ||
                   clSetKernelArg(kernel_multTrans[i], 9, sizeof(cl_uint), &gpu_end_data) != CL_SUCCESS ) {
@@ -333,10 +357,10 @@ namespace sg {
 
             if (rangeSize > 0) {
               size_t offset = gpu_start_index_grid[i];
-              err = clEnqueueReadBuffer(command_queue[i], clResult[i], CL_FALSE, sizeof(double) * offset, sizeof(double) * rangeSize, &(ptrResult[offset]), 0, NULL, &(GPUDone[i]));
+              err = clEnqueueReadBuffer(command_queue[i], clDevGrid[i], CL_FALSE, sizeof(double) * offset, sizeof(double) * rangeSize, &(pinnedGrid[offset]), 0, NULL, &(GPUDone[i]));
 
               if (err != CL_SUCCESS) {
-                std::cout << "OCL Error: Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
+                std::cout << "OCL Error: Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
                 return 0.0;
               }
             }
@@ -344,6 +368,10 @@ namespace sg {
 
           // sync GPUs
           clWaitForEvents((cl_uint)active_devices, GPUDone);
+
+          for (size_t i = start_index_grid; i < end_index_grid; i++) {
+            result[i] = pinnedGrid[i];
+          }
 
           // determine kernel execution time
           for (size_t i = 0; i < num_devices; i++) {
@@ -375,17 +403,11 @@ namespace sg {
 
           // clean up
           for (size_t i = 0; i < num_devices; i++) {
-            clReleaseMemObject(clSource[i]);
-            clReleaseMemObject(clResult[i]);
-
             if (gpu_end_index_grid[i] > gpu_start_index_grid[i]) {
               clReleaseEvent(clTimings[i]);
               clReleaseEvent(GPUDone[i]);
             }
           }
-
-          delete[] clSource;
-          delete[] clResult;
 
           delete[] gpu_start_index_grid;
           delete[] gpu_end_index_grid;

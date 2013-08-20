@@ -68,6 +68,12 @@ namespace sg {
         cl_mem* clMask;
         cl_mem* clOffset;
 
+        // use pinned memory (on host and device) to speed up data transfers from/to GPU
+        cl_mem* clDevGrid;
+        cl_mem* clDevTmp;
+        cl_mem clPinnedGrid;
+        cl_mem clPinnedTmp;
+
         cl_kernel* kernel_multTrans;
         cl_kernel* kernel_mult;
 
