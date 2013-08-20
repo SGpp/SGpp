@@ -200,6 +200,11 @@ namespace sg {
       clMask = new cl_mem[num_devices];
       clOffset = new cl_mem[num_devices];
 
+      clDevGrid = new cl_mem[num_devices];
+      clDevTmp = new cl_mem[num_devices];
+      clPinnedGrid = NULL;
+      clPinnedTmp = NULL;
+
       kernel_mult = new cl_kernel[num_devices];
       kernel_multTrans = new cl_kernel[num_devices];
 
@@ -212,6 +217,9 @@ namespace sg {
         clIndex[i] = NULL;
         clMask[i] = NULL;
         clOffset[i] = NULL;
+
+        clDevGrid[i] = NULL;
+        clDevTmp[i] = NULL;
 
         kernel_mult[i] = NULL;
         kernel_multTrans[i] = NULL;
@@ -264,6 +272,9 @@ namespace sg {
       delete[] clMask;
       delete[] clOffset;
 
+      delete[] clDevGrid;
+      delete[] clDevTmp;
+
       delete[] kernel_mult;
       delete[] kernel_multTrans;
 
@@ -291,6 +302,15 @@ namespace sg {
           clReleaseMemObject(clOffset[i]);
           clOffset[i] = NULL;
         }
+
+        if (clDevGrid[i]) {
+          clReleaseMemObject(clDevGrid[i]);
+          clDevGrid[i] = NULL;
+        }
+      }
+      if(clPinnedGrid){
+        clReleaseMemObject(clPinnedGrid);
+        clPinnedGrid = NULL;
       }
     }
 
@@ -300,6 +320,15 @@ namespace sg {
           clReleaseMemObject(clData[i]);
           clData[i] = NULL;
         }
+
+        if (clDevTmp[i]) {
+          clReleaseMemObject(clDevTmp[i]);
+          clDevTmp[i] = NULL;
+        }
+      }
+      if(clPinnedTmp){
+        clReleaseMemObject(clPinnedTmp);
+        clPinnedTmp = NULL;
       }
     }
 

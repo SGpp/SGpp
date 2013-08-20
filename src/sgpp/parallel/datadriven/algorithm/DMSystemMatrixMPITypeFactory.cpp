@@ -33,6 +33,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityTrueAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityAllreduce.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityBigdataAllreduce.hpp"
 
 #include "parallel/datadriven/basis/common/CPUKernel.hpp"
 #ifdef USEOCL
@@ -84,6 +85,12 @@ namespace sg {
         case MPIOnesided:
           parallelizationType = "Onesided Communication";
           result = new sg::parallel::DMSystemMatrixVectorizedIdentityOnesidedMPI<KernelImplementation>(
+            grid, trainDataset, lambda, vecType);
+          break;
+
+        case MPIBigdata:
+          parallelizationType = "MPI Bigdata";
+          result = new sg::parallel::DMSystemMatrixVectorizedIdentityBigdataAllreduce<KernelImplementation>(
             grid, trainDataset, lambda, vecType);
           break;
 
@@ -161,7 +168,7 @@ namespace sg {
                    (grid, trainDataset, lambda, vecType, mpiType);
           } else if (strcmp(modlinear_mode, "mask") == 0) {
             return createDMSystemMatrixMPIType<CPUKernel<X86SimdModLinearMask> >
-                (grid, trainDataset, lambda, vecType, mpiType);
+                   (grid, trainDataset, lambda, vecType, mpiType);
           } else {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
@@ -204,6 +211,7 @@ namespace sg {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
         }
+
 #ifdef __INTEL_OFFLOAD // Hybrid CPU MIC Mode only makes sense in offload mode
         else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
           if (strcmp(modlinear_mode, "orig") == 0) {
@@ -216,6 +224,7 @@ namespace sg {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
         }
+
 #endif
 #endif
         else {

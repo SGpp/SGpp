@@ -29,7 +29,7 @@ namespace sg {
       MPIOnesided,
       MPIAlltoallv,
       MPITrueAsync,
-      MPITrueAsyncAlltoallv
+      MPIBigdata
     };
 
   }
