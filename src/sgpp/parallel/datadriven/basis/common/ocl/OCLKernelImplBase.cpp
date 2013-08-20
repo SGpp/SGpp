@@ -44,6 +44,8 @@ namespace sg {
         } else {
           std::cout << "Ignoring value: \"" << num_ocl_devices_env << "\" for SGPP_NUM_OCL_DEVICES" << std::endl;
         }
+      } else {
+        max_number_ocl_devices = 8;
       }
 
       // determine number of available OpenCL platforms
