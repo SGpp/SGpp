@@ -237,6 +237,7 @@ namespace sg {
             myClasses.resizeZero(this->numPatchedTrainingInstances_);
           }
 
+          this->myTimer_->start();
           #pragma omp parallel
           {
             size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
@@ -266,7 +267,9 @@ namespace sg {
             }
           }
 
+          this->computeTimeMultTrans_ += this->myTimer_->stop();
           MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_grid_window);
+          this->completeTimeMultTrans_ += this->myTimer_->stop();
           b.copyFrom(*_mpi_grid_window_buffer);
         }
 

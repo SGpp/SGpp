@@ -100,6 +100,7 @@ namespace sg {
         }
 
         virtual void generateb(base::DataVectorSP& classes, base::DataVectorSP& b) {
+          this->myTimer_->start();
           this->tempData->setAll(0.0);
           this->tempData->copyFrom(classes);
           this->result_tmp->setAll(0.0);
@@ -119,7 +120,9 @@ namespace sg {
               0,
               this->numPatchedTrainingInstances_);
           }
+          this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
+          this->completeTimeMultTrans_ += this->myTimer_->stop();
         }
 
         virtual void rebuildLevelAndIndex() {

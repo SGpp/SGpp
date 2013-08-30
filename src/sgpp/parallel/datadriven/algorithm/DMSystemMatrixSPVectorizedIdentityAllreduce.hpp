@@ -95,7 +95,7 @@ namespace sg {
               data_offset,
               data_offset + data_size);
           }
-          myGlobalMPIComm->Barrier();
+          //myGlobalMPIComm->Barrier();
           this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
@@ -104,6 +104,7 @@ namespace sg {
         }
 
         virtual void generateb(base::DataVectorSP& classes, base::DataVectorSP& b) {
+          this->myTimer_->start();
           this->tempData->setAll(0.0f);
           this->tempData->copyFrom(classes);
           this->result_tmp->setAll(0.0f);
@@ -123,7 +124,9 @@ namespace sg {
               data_offset,
               data_offset + data_size);
           }
+          this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
+          this->completeTimeMultTrans_ += this->myTimer_->stop();
         }
 
         virtual void rebuildLevelAndIndex() {

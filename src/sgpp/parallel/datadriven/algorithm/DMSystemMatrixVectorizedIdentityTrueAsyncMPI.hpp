@@ -213,6 +213,7 @@ namespace sg {
           this->tempData->setAll(0.0);
           this->tempData->copyFrom(classes);
 
+          this->myTimer_->start();
           #pragma omp parallel
           {
             this->kernel_.multTranspose(
@@ -228,7 +229,9 @@ namespace sg {
               0,
               this->numPatchedTrainingInstances_);
           }
+          this->computeTimeMultTrans_ += this->myTimer_->stop();
           sg::parallel::myGlobalMPIComm->dataVectorAllToAll(b, _mpi_grid_offsets, _mpi_grid_sizes);
+          this->completeTimeMultTrans_ += this->myTimer_->stop();
         }
 
         virtual void rebuildLevelAndIndex() {
