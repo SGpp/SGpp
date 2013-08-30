@@ -260,6 +260,7 @@ namespace sg {
 
           sg::parallel::myGlobalMPIComm->IrecvFromAll(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tags, gridRecvReqs);
           MPI_Request* gridSendReqs = new MPI_Request[totalChunkCount];
+          this->myTimer_->start();
           #pragma omp parallel
           {
             size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
@@ -288,8 +289,10 @@ namespace sg {
               }
             }
           }
+          this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->waitForAllRequests(totalChunkCount, gridRecvReqs);
           myGlobalMPIComm->waitForAllRequests(totalChunkCount, gridSendReqs);
+          this->completeTimeMultTrans_ += this->myTimer_->stop();
           delete[] gridRecvReqs;
           delete[] gridSendReqs;
           delete[] tags;

@@ -1,5 +1,5 @@
 /* ****************************************************************************
-* Copyright (C) 2013 Technische Universitaet Muenchen                         *
+* Copyright (C) 2010 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
@@ -100,6 +100,7 @@ namespace sg {
         }
 
         virtual void generateb(base::DataVector& classes, base::DataVector& b) {
+          this->myTimer_->start();
           this->tempData->setAll(0.0);
           this->tempData->copyFrom(classes);
           this->result_tmp->setAll(0.0);
@@ -119,7 +120,9 @@ namespace sg {
               0,
               this->numPatchedTrainingInstances_);
           }
+          this->computeTimeMultTrans_ += this->myTimer_->stop();
           myGlobalMPIComm->allreduceSum(*(this->result_tmp), b);
+          this->completeTimeMultTrans_ += this->myTimer_->stop();
         }
 
         virtual void rebuildLevelAndIndex() {
