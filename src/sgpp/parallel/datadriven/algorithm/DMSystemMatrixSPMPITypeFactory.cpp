@@ -33,6 +33,7 @@
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOnesidedMPI.hpp"
 #include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityBigdataAllreduce.hpp"
 
 #include "parallel/datadriven/basis/common/SPCPUKernel.hpp"
 #ifdef USEOCL
@@ -84,6 +85,12 @@ namespace sg {
         case MPIOnesided:
           parallelizationType = "Onesided Communication";
           result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityOnesidedMPI<KernelImplementation>(
+            grid, trainDataset, lambda, vecType);
+          break;
+
+        case MPIBigdata:
+          parallelizationType = "MPI Bigdata";
+          result = new sg::parallel::DMSystemMatrixSPVectorizedIdentityBigdataAllreduce<KernelImplementation>(
             grid, trainDataset, lambda, vecType);
           break;
 
@@ -204,6 +211,7 @@ namespace sg {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
         }
+
 #ifdef __INTEL_OFFLOAD // Hybrid CPU MIC Mode only makes sense in offload mode
         else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
           if (strcmp(modlinear_mode, "orig") == 0) {
@@ -216,6 +224,7 @@ namespace sg {
             throw base::factory_exception("MPITypeFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
           }
         }
+
 #endif
 #endif
         else {
