@@ -6,13 +6,13 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYBIGDATAALLREDUCE_H
-#define DMSYSTEMMATRIXVECTORIZEDIDENTITYBIGDATAALLREDUCE_H
+#ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITYBIGDATAALLREDUCE_H
+#define DMSYSTEMMATRIXSPVECTORIZEDIDENTITYBIGDATAALLREDUCE_H
 
-#include "base/datatypes/DataVector.hpp"
+#include "base/datatypes/DataVectorSP.hpp"
 #include "base/exception/operation_exception.hpp"
 #include "base/grid/Grid.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPIBase.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
 #include "parallel/tools/MPI/SGppMPITools.hpp"
@@ -22,19 +22,19 @@
 namespace sg {
   namespace parallel {
     template<typename KernelImplementation>
-    class DMSystemMatrixVectorizedIdentityBigdataAllreduce : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+    class DMSystemMatrixSPVectorizedIdentityBigdataAllreduce : public sg::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
       private:
         // size of complete dataset (this process handles this->numPatchedTrainingInstances_)
         size_t complete_data_size;
 
       public:
-        DMSystemMatrixVectorizedIdentityBigdataAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
-          : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
+        DMSystemMatrixSPVectorizedIdentityBigdataAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+          : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
           complete_data_size = this->numPatchedTrainingInstances_ * myGlobalMPIComm->getNumRanks();
           rebuildLevelAndIndex();
         }
 
-        virtual void mult(base::DataVector& alpha, base::DataVector& result) {
+        virtual void mult(base::DataVectorSP& alpha, base::DataVectorSP& result) {
           this->tempData->setAll(0.0);
           this->result_tmp->setAll(0.0);
           result.setAll(0.0);
@@ -93,13 +93,13 @@ namespace sg {
               this->numPatchedTrainingInstances_);
           }
           this->computeTimeMultTrans_ += this->myTimer_->stop();
-          myGlobalMPIComm->allreduceSum(*(this->result_tmp), result);
+          myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), result);
           this->completeTimeMultTrans_ += this->myTimer_->stop();
 
-          result.axpy(static_cast<double>(this->complete_data_size)*this->lambda_, alpha);
+          result.axpy(static_cast<float>(this->complete_data_size)*this->lambda_, alpha);
         }
 
-        virtual void generateb(base::DataVector& classes, base::DataVector& b) {
+        virtual void generateb(base::DataVectorSP& classes, base::DataVectorSP& b) {
           this->tempData->setAll(0.0);
           this->tempData->copyFrom(classes);
           this->result_tmp->setAll(0.0);
@@ -119,11 +119,11 @@ namespace sg {
               0,
               this->numPatchedTrainingInstances_);
           }
-          myGlobalMPIComm->allreduceSum(*(this->result_tmp), b);
+          myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
         }
 
         virtual void rebuildLevelAndIndex() {
-          DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
+          DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
         }
 
     };
