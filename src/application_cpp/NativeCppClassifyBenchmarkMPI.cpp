@@ -559,7 +559,7 @@ int main(int argc, char* argv[]) {
 
       const char* dataset_generation_count = getenv("SGPP_DATASET_GENERATION_COUNT");
       if (dataset_generation_count != NULL) {
-        nInstancesNo = (int)(strtoul (dataset_generation_count, NULL, 0));
+        nInstancesNo = (size_t)(strtoul (dataset_generation_count, NULL, 0));
       }
 
       std::cout << "Generating " << nInstancesNo << " datasets per node (for " << mpi_size << " nodes)." << std::endl;
@@ -585,7 +585,7 @@ int main(int argc, char* argv[]) {
 
 
     if (mpiType == sg::parallel::MPIBigdata) {
-      g->createData(mpi_myid * nInstancesNo, nInstancesNo, data, classes);
+      g->createData(mpi_myid, nInstancesNo, data, classes);
       delete g;
     } else {
       // Read data from file
