@@ -74,7 +74,7 @@ namespace sg {
         classes.set(i, cls);
       }
 
-      for (int i = 0; i < 4; i++) {
+      for (size_t i = 0; i < 4; i++) {
         trData.normalizeDimension(i);
       }
     }
@@ -99,7 +99,7 @@ namespace sg {
         classes.set(i, cls);
       }
 
-      for (int i = 0; i < 4; i++) {
+      for (size_t i = 0; i < 4; i++) {
         trData.normalizeDimension(i);
       }
     }
