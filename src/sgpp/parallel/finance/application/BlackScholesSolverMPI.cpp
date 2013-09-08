@@ -462,12 +462,16 @@ namespace sg {
           myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           // read env variable, which solver type should be selected
-          char* SGPP_PDE_SOLVER_ALG = getenv("SGPP_PDE_SOLVER_ALG");
-          if(! strcmp(SGPP_PDE_SOLVER_ALG, "X86SIMD")) {
-             throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : X86SIMD is not available as PDE solver implementation!");
-          } else if (! strcmp(SGPP_PDE_SOLVER_ALG, "OCL")) {
-            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
-            myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          char*alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+          if (alg_selector != NULL) {
+            if(! strcmp(alg_selector, "X86SIMD")) {
+              throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : X86SIMD is not available as PDE solver implementation!");
+            } else if (! strcmp(alg_selector, "OCL")) {
+              myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+              myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+            } else {
+              throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : You have selected an unsupport vectorization method!");
+            }
           } else {
             myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
             myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
@@ -526,12 +530,16 @@ namespace sg {
           myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           // read env variable, which solver type should be selected
-          char* SGPP_PDE_SOLVER_ALG = getenv("SGPP_PDE_SOLVER_ALG");
-          if(! strcmp(SGPP_PDE_SOLVER_ALG, "X86SIMD")) {
-             throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : X86SIMD is not available as PDE solver implementation!");
-          } else if (! strcmp(SGPP_PDE_SOLVER_ALG, "OCL")) {
-            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
-            myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+          if (alg_selector != NULL) {
+            if(! strcmp(alg_selector, "X86SIMD")) {
+               throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : X86SIMD is not available as PDE solver implementation!");
+            } else if (! strcmp(alg_selector, "OCL")) {
+              myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+              myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+            } else {
+              throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+            }
           } else {
             myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
             myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
@@ -589,12 +597,16 @@ namespace sg {
           myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           // read env variable, which solver type should be selected
-          char* SGPP_PDE_SOLVER_ALG = getenv("SGPP_PDE_SOLVER_ALG");
-          if(! strcmp(SGPP_PDE_SOLVER_ALG, "X86SIMD")) {
-             throw new base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : X86SIMD is not available as PDE solver implementation!");
-          } else if (! strcmp(SGPP_PDE_SOLVER_ALG, "OCL")) {
-            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
-            myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+          char*alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+          if (alg_selector != NULL) {
+            if(! strcmp(alg_selector, "X86SIMD")) {
+              throw new base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : X86SIMD is not available as PDE solver implementation!");
+            } else if (! strcmp(alg_selector, "OCL")) {
+              myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+              myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+            } else {
+              throw new base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
+            }
           } else {
             myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
             myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));

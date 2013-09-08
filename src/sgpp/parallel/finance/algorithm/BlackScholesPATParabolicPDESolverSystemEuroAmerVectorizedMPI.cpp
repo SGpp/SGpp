@@ -93,7 +93,7 @@ namespace sg {
       if(! strcmp(SGPP_PDE_SOLVER_ALG, "X86SIMD")) {
          throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : X86SIMD is not available as PDE solver implementation!");
       } else if (! strcmp(SGPP_PDE_SOLVER_ALG, "OCL")) {
-#ifdef USE_OCL
+#ifdef USEOCL
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::OpenCL);
         this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::OpenCL);
         this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::OpenCL);
