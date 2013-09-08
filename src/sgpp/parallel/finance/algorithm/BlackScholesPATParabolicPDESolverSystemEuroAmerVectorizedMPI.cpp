@@ -92,19 +92,17 @@ namespace sg {
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
       if(! strcmp(alg_selector, "X86SIMD")) {
          throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : X86SIMD is not available as PDE solver implementation!");
-      } else if (! strcmp(alg_selector, "OCL")) {
 #ifdef USEOCL
+      } else if (! strcmp(alg_selector, "OCL")) {
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::OpenCL);
         this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::OpenCL);
         this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::OpenCL);
         this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProductVectorized(*this->BoundGrid, sg::parallel::OpenCL);
         this->OpLTwoDotLaplaceInner = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::OpenCL);
         this->OpLTwoDotLaplaceBound = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::OpenCL);
-#else
-        throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : OCL was selected but the code was not compiled for OCL usage!");
 #endif
       } else {
-        throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : no vectorization was selected!");        
+        throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : no supported vectorization was selected!");        
       }
 
       // right hand side if System
