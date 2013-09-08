@@ -18,7 +18,7 @@
 namespace sg {
   namespace parallel {
 
-    OperationLTwoDotProductVectorizedLinearBoundaryOCL::OperationLTwoDotProductOCLLinearBoundary(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLTwoDotProductVectorizedLinearBoundaryOCL::OperationLTwoDotProductVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage) : storage(storage) {
       this->OCLPDEKernelsHandle = OCLPDEKernels();
       this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
       this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
