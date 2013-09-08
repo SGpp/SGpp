@@ -9,14 +9,14 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedOCLLinear.hpp"
+#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinearOCL.hpp"
 
 #include <cmath>
 
 namespace sg {
   namespace parallel {
 
-    OperationLTwoDotProductVectorizedOCLLinear::OperationLTwoDotProductVectorizedOCLLinear(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLTwoDotProductVectorizedLinearOCL::OperationLTwoDotProductVectorizedLinearOCL(sg::base::GridStorage* storage) : storage(storage) {
 
       this->lcl_q = new double[this->storage->dim()];
       this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -30,7 +30,7 @@ namespace sg {
 
     }
 
-    OperationLTwoDotProductVectorizedOCLLinear::~OperationLTwoDotProductVectorizedOCLLinear() {
+    OperationLTwoDotProductVectorizedLinearOCL::~OperationLTwoDotProductVectorizedLinearOCL() {
       delete this->level_;
       delete this->level_int_;
       delete this->index_;
@@ -38,7 +38,7 @@ namespace sg {
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLTwoDotProductVectorizedOCLLinear::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotProductVectorizedLinearOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
       for (size_t d = 0; d < this->storage->dim(); d++) {
         sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();

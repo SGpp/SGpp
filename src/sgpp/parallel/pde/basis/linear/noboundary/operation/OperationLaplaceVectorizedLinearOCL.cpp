@@ -9,12 +9,12 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedOCLLinear.hpp"
+#include "parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinearOCL.hpp"
 
 namespace sg {
   namespace parallel {
 
-    OperationLaplaceVectorizedOCLLinear::OperationLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage){
+    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage){
       this->lambda = new sg::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
       this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
@@ -27,7 +27,7 @@ namespace sg {
       storage->getLevelForIntegral(*(this->level_int_));
     }
 
-    OperationLaplaceVectorizedOCLLinear::OperationLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage) : storage(storage) {
       this->lambda = new base::DataVector(storage->dim());
       this->lambda->setAll(1.0);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -42,7 +42,7 @@ namespace sg {
     }
 
 
-    OperationLaplaceVectorizedOCLLinear::~OperationLaplaceVectorizedOCLLinear() {
+    OperationLaplaceVectorizedLinearOCL::~OperationLaplaceVectorizedLinearOCL() {
       delete this->level_;
       delete this->level_int_;
       delete this->index_;
@@ -51,7 +51,7 @@ namespace sg {
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLaplaceVectorizedOCLLinear::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLaplaceVectorizedLinearOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
 
       // fill q array

@@ -9,8 +9,9 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 #include "base/exception/operation_exception.hpp"
+#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 
-#include "parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedOCLLinearBoundary.hpp"
+#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.hpp"
 
 #include <cmath>
 #include <assert.h>
@@ -18,8 +19,9 @@
 namespace sg {
   namespace parallel {
 
-    OperationLaplaceVectorizedOCLLinearBoundary::OperationLaplaceVectorizedOCLLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
 
+      this->TimestepCoeff = 0.0;
       this->lambda = new sg::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
       this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
@@ -32,9 +34,10 @@ namespace sg {
 
     }
 
-    OperationLaplaceVectorizedOCLLinearBoundary::OperationLaplaceVectorizedOCLLinearBoundary(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage) : storage(storage) {
 
 
+      this->TimestepCoeff = 0.0;
       this->lambda = new base::DataVector(storage->dim());
       this->lambda->setAll(1.0);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -49,32 +52,33 @@ namespace sg {
     }
 
 
-    OperationLaplaceVectorizedOCLLinearBoundary::~OperationLaplaceVectorizedOCLLinearBoundary() {
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL() {
       delete this->level_;
       delete this->level_int_;
       delete this->index_;
       delete[] lcl_q;
       delete[] lcl_q_inv;
-
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLaplaceVectorizedOCLLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
 
-      this->OCLPDEKernelsHandle.RunOCLKernelLaplaceBound(alpha, result, lcl_q, lcl_q_inv,
-				 this->level_->getPointer(),
-				 this->index_->getPointer(),
-				 this->level_int_->getPointer(),
-				 lambda->getPointer(),
-				 storage->size(),
-				 storage->dim(),
-				 storage);
-
+      this->OCLPDEKernelsHandle.
+	RunOCLKernelLTwoDotLaplaceBound(alpha, result, lcl_q, lcl_q_inv,
+					this->level_->getPointer(),
+					this->index_->getPointer(),
+					this->level_int_->getPointer(),
+					lambda->getPointer(),
+					(unsigned) storage->size(),
+					(unsigned) storage->dim(),
+					storage,
+					this->TimestepCoeff);
 
     }
 
-    void OperationLaplaceVectorizedOCLLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+
       result.setAll(0.0);
       bool dirichlet = true;
       // fill q array
@@ -89,7 +93,7 @@ namespace sg {
       if (dirichlet) {
         mult_dirichlet(alpha, result);
       } else {
-        throw new sg::base::operation_exception("OperationLaplaceVectorizedOCLLinearBoundary::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+        throw new sg::base::operation_exception("OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
       }
     }
   }

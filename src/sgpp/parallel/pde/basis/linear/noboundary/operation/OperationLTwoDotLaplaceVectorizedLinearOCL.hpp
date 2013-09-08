@@ -6,23 +6,23 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDOCLLINEAR_HPP
-#define OPERATIONLTWODOTLAPLACEVECTORIZEDOCLLINEAR_HPP
+#ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAROCL_HPP
+#define OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAROCL_HPP
 
-#include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
 #include "parallel/pde/basis/common/OCLPDEKernels.hpp" 
+#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
 
 namespace sg {
   namespace parallel {
 
     /**
-     * Implementation for linear functions of LTwoDotLaplace Operation, linear grids without boundaries
+     * Implementation for linear functions of LTwoDotLaplace Operation, linear grids without boundaries using OpenCL
      *
      * @version $HEAD$
      */
-    class OperationLTwoDotLaplaceVectorizedOCLLinear: public sg::base::OperationMatrix {
+    class OperationLTwoDotLaplaceVectorizedLinearOCL: public OperationParabolicPDEMatrixCombined {
     private:
       sg::base::GridStorage* storage;
       sg::base::DataMatrix* level_;
@@ -31,7 +31,6 @@ namespace sg {
       double* lcl_q;
       double* lcl_q_inv;
       sg::base::DataVector* lambda;
-      double TimestepCoeff;
 
       OCLPDEKernels OCLPDEKernelsHandle ;
       size_t padding_size;
@@ -40,43 +39,27 @@ namespace sg {
 
     public:
       /**
-       * Construtor of OperationLTwoDotLaplaceLinear
+       * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
        *
        * @param storage Pointer to the grid's gridstorage obejct
        * @param lambda Vector which contains pre-factors for every dimension of the operator
        */
-      OperationLTwoDotLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+      OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
       /**
-       * Construtor of OperationLTwoDotLaplaceLinear
+       * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
        *
        * @param storage Pointer to the grid's gridstorage obejct
        */
-      OperationLTwoDotLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage);
+      OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage);
 
       /**
        * Destructor
        */
-      virtual ~OperationLTwoDotLaplaceVectorizedOCLLinear();
+      virtual ~OperationLTwoDotLaplaceVectorizedLinearOCL();
 
       virtual void mult(sg::base::DataVector& alpha, 
 			sg::base::DataVector& result);
-
-      /**
-       * Sets the timestep coefficient
-       *
-       * @param newTimestepCoeff The new timestep coefficient for the chosen 
-       * numerical approximation scheme. 
-       */
-      void setTimestepCoeff(double newTimestepCoeff);
-
-      /**
-       * Gets the timestep coefficient
-       *
-       * @return newTimestepCoeff The new timestep coefficient for the chosen 
-       * numerical approximation scheme. 
-       */
-      double getTimestepCoeff();
 
     };
 
@@ -84,4 +67,4 @@ namespace sg {
 
 }
 
-#endif /* OPERATIONLTWODOTLAPLACEVECTORIZEDOCLLINEAR_HPP */
+#endif /* OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAROCL_HPP */

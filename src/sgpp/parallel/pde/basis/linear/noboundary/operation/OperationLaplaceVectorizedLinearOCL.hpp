@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#ifndef OPERATIONLAPLACEVECTORIZEDOCLLINEAR_HPP
-#define OPERATIONLAPLACEVECTORIZEDOCLLINEAR_HPP
+#ifndef OPERATIONLAPLACEVECTORIZEDLINEAROCL_HPP
+#define OPERATIONLAPLACEVECTORIZEDLINEAROCL_HPP
 
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
@@ -22,7 +22,7 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLaplaceVectorizedOCLLinear: public sg::base::OperationMatrix {
+    class OperationLaplaceVectorizedLinearOCL: public sg::base::OperationMatrix {
     private:
       sg::base::GridStorage* storage;
       sg::base::DataMatrix* level_;
@@ -31,7 +31,7 @@ namespace sg {
       double* lcl_q;
       double* lcl_q_inv;
       sg::base::DataVector* lambda;
-      OCLPDEKernels OCLPDEKernelsHandle ;
+      OCLPDEKernels OCLPDEKernelsHandle;
 
       public:
       /**
@@ -40,19 +40,19 @@ namespace sg {
        * @param storage Pointer to the grid's gridstorage obejct
        * @param lambda Vector which contains pre-factors for every dimension of the operator
        */
-	OperationLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+	OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
 	/**
 	 * Construtor of OperationLaplaceLinear
 	 *
 	 * @param storage Pointer to the grid's gridstorage obejct
 	 */
-	OperationLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage);
+	OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~OperationLaplaceVectorizedOCLLinear();
+	virtual ~OperationLaplaceVectorizedLinearOCL();
 
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
       };
@@ -61,4 +61,4 @@ namespace sg {
 
   }
 
-#endif /* OPERATIONLAPLACEVECTORIZEDOCLLINEAR_HPP */
+#endif /* OPERATIONLAPLACEVECTORIZEDLINEAROCL_HPP */

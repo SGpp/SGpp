@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#ifndef OPERATIONLTWODOTPRODUCTVECTORIZEDOCLLINEARBOUNDARY_HPP
-#define OPERATIONLTWODOTPRODUCTVECTORIZEDOCLLINEARBOUNDARY_HPP
+#ifndef OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP
+#define OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP
 
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
@@ -23,7 +23,7 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLTwoDotProductVectorizedOCLLinearBoundary: public sg::base::OperationMatrix {
+    class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public sg::base::OperationMatrix {
     
     private:
       sg::base::GridStorage* storage;
@@ -39,12 +39,12 @@ namespace sg {
        *
        * @param storage the grid's sg::base::GridStorage object
        */
-      OperationLTwoDotProductVectorizedOCLLinearBoundary(sg::base::GridStorage* storage);
+      OperationLTwoDotProductVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
 
       /**
        * Destructor
        */
-      virtual ~OperationLTwoDotProductVectorizedOCLLinearBoundary();
+      virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
 
     protected:
       virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
@@ -53,4 +53,4 @@ namespace sg {
   }
 }
 
-#endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDOCLLINEARBOUNDARY_HPP */
+#endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP */

@@ -21,10 +21,12 @@ OCLLIB = /usr/lib64/
 #OCLINCLUDE = ${CUDATOOLKIT_HOME}/include
 #OCLLIB = /opt/cray/nvidia/default/lib64
 # Intel OpenCL
-# IOCLINCLUDE = /usr/include
-# IOCLLIB = /usr/lib64/OpenCL/vendors/intel
-IOCLINCLUDE = /etc/alternatives/opencl-headers
-IOCLLIB = /etc/alternatives/opencl-intel-runtime/lib64
+#IOCLINCLUDE = /usr/include
+#IOCLLIB = /usr/lib64/OpenCL/vendors/intel
+#IOCLINCLUDE = /etc/alternatives/opencl-headers
+#IOCLLIB = /etc/alternatives/opencl-intel-runtime/lib64
+IOCLINCLUDE = /opt/intel/opencl/include
+IOCLLIB = /opt/intel/opencl/lib64
 # AMD OpenCL
 # AMDOCLINCLUDE = /opt/AMDAPP/include
 # AMDOCLLIB = /opt/AMDAPP/lib/x86_64
@@ -540,6 +542,10 @@ endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/BSSolver_mpiicc
 	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=BSSolver_ICC_MPI" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpigxx)
+	mkdir -p tmp/build_native/BSSolver_mpigxx
+	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx.a" "BINNAME=BSSolver_GCC_MPI" "EXT=$(EXT)"
 endif
 ifeq ($(CC),CC)
 	mkdir -p tmp/build_native/BSSolver_cray
