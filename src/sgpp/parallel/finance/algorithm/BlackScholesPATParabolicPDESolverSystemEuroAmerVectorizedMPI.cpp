@@ -89,10 +89,10 @@ namespace sg {
       this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
       // Create operations
-      char* SGPP_PDE_SOLVER_ALG = getenv("SGPP_PDE_SOLVER_ALG");
-      if(! strcmp(SGPP_PDE_SOLVER_ALG, "X86SIMD")) {
+      char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+      if(! strcmp(alg_selector, "X86SIMD")) {
          throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : X86SIMD is not available as PDE solver implementation!");
-      } else if (! strcmp(SGPP_PDE_SOLVER_ALG, "OCL")) {
+      } else if (! strcmp(alg_selector, "OCL")) {
 #ifdef USEOCL
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::OpenCL);
         this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::OpenCL);
