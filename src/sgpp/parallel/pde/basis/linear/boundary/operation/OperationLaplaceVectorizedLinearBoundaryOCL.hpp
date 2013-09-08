@@ -34,6 +34,8 @@ namespace sg {
       sg::base::DataVector* lambda;
       OCLPDEKernels OCLPDEKernelsHandle;
 
+      void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
+
     public:
       /**
        * Construtor of OperationLaplaceLinear
