@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#ifndef OPERATIONLTWODOTPRODUCTVECTORIZEDOCLLINEAR_HPP
-#define OPERATIONLTWODOTPRODUCTVECTORIZEDOCLLINEAR_HPP
+#ifndef OPERATIONLTWODOTPRODUCTVECTORIZEDLINEAROCL_HPP
+#define OPERATIONLTWODOTPRODUCTVECTORIZEDLINEAROCL_HPP
 
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
@@ -22,7 +22,7 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLTwoDotProductVectorizedOCLLinear : public sg::base::OperationMatrix {
+    class OperationLTwoDotProductVectorizedLinearOCL : public sg::base::OperationMatrix {
 
     private:
       sg::base::GridStorage* storage;
@@ -38,12 +38,12 @@ namespace sg {
        *
        * @param storage the grid's sg::base::GridStorage object
        */
-      OperationLTwoDotProductVectorizedOCLLinear(sg::base::GridStorage* storage);
+      OperationLTwoDotProductVectorizedLinearOCL(sg::base::GridStorage* storage);
 
       /**
        * Destructor
        */
-      virtual ~OperationLTwoDotProductVectorizedOCLLinear();
+      virtual ~OperationLTwoDotProductVectorizedLinearOCL();
 
     protected:
       virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
@@ -54,4 +54,4 @@ namespace sg {
   }
 }
 
-#endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDOCLLINEAR_HPP */
+#endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDLINEAROCL_HPP */

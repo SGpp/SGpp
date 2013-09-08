@@ -27,9 +27,9 @@ OBJS =	DataVector.o\
 	TruncatedTrapezoidGrid.o\
 	PolyGrid.o\
 	AbstractRefinement.o\
-    HashRefinement.o\
-    HashRefinementBoundaries.o\
-    HashRefinementBoundariesMaxLevel.o\
+	HashRefinement.o\
+	HashRefinementBoundaries.o\
+	HashRefinementBoundariesMaxLevel.o\
 	StandardGridGenerator.o\
 	BoundaryGridGenerator.o\
 	TrapezoidBoundaryGridGenerator.o\
@@ -399,7 +399,31 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
 	DMSystemMatrixMPITypeFactory.o\
 	DMSystemMatrixSPMPITypeFactory.o\
-
+	OperationParabolicPDESolverSystemDirichletCombined.o\
+	BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.o
+ifeq ($(EXT), INTELOCL)
+OBJS:=$(OBJS) OCLMPILTwoDotLaplaceInnerExec.o\
+	OCLMPILTwoDotLaplaceBoundExec.o\
+	OCLMPILaplaceInnerExec.o\
+	OCLMPILaplaceBoundExec.o\
+	OCLMPILTwoDotInnerExec.o\
+	OCLMPILTwoDotBoundExec.o\
+	OCLPDEKernels.o\
+	OCLPDEInner.o\
+	OCLPDEBound.o\
+	OCLLaplaceInner.o\
+	OCLLaplaceBound.o\
+	OCLLTwoDotInner.o\
+	OCLLTwoDotLaplaceInner.o\
+	OCLLTwoDotLaplaceBound.o\
+	OCLLTwoDotBound.o\
+	OperationLaplaceVectorizedLinearOCL.o\
+	OperationLaplaceVectorizedLinearBoundaryOCL.o\
+	OperationLTwoDotLaplaceVectorizedLinearOCL.o\
+	OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.o\
+	OperationLTwoDotProductVectorizedLinearBoundaryOCL.o\
+	OperationLTwoDotProductVectorizedLinearOCL.o
+endif
 endif
 
 WINOBJS=$(OBJS:.o=.obj)
@@ -1696,7 +1720,10 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/fi
 	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o : $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp	
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp
+
+BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.o : $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.o $(SRCDIR)parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.cpp	
 
 LaplaceDownGradientPrewavelet.o :  $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LaplaceDownGradientPrewavelet.o $(SRCDIR)pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
@@ -1712,6 +1739,57 @@ ConvertPrewaveletToLinear.o :  $(SRCDIR)base/basis/prewavelet/algorithm_sweep/Co
 
 ConvertLinearToPrewavelet.o :  $(SRCDIR)base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)ConvertLinearToPrewavelet.o $(SRCDIR)base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.cpp
+
+OCLPDEKernels.o : $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLPDEKernels.o $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.cpp
+
+OCLPDEInner.o : $(SRCDIR)parallel/pde/basis/common/OCLPDEInner.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLPDEInner.o $(SRCDIR)parallel/pde/basis/common/OCLPDEInner.cpp
+
+OCLPDEBound.o : $(SRCDIR)parallel/pde/basis/common/OCLPDEBound.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLPDEBound.o $(SRCDIR)parallel/pde/basis/common/OCLPDEBound.cpp
+
+OCLLaplaceInner.o : $(SRCDIR)parallel/pde/basis/common/OCLLaplaceInner.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLaplaceInner.o $(SRCDIR)parallel/pde/basis/common/OCLLaplaceInner.cpp
+
+OCLMPILaplaceInnerExec.o : $(SRCDIR)parallel/pde/basis/common/OCLMPILaplaceInnerExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLMPILaplaceInnerExec.o $(SRCDIR)parallel/pde/basis/common/OCLMPILaplaceInnerExec.cpp
+
+OCLMPILTwoDotLaplaceInnerExec.o : $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotLaplaceInnerExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLMPILTwoDotLaplaceInnerExec.o $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotLaplaceInnerExec.cpp
+
+OCLMPILTwoDotLaplaceBoundExec.o : $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotLaplaceBoundExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLMPILTwoDotLaplaceBoundExec.o $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotLaplaceBoundExec.cpp
+
+OCLLaplaceBound.o : $(SRCDIR)parallel/pde/basis/common/OCLLaplaceBound.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLaplaceBound.o $(SRCDIR)parallel/pde/basis/common/OCLLaplaceBound.cpp
+
+OCLLaplaceBoundExec.o : $(SRCDIR)parallel/pde/basis/common/OCLLaplaceBoundExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLaplaceBoundExec.o $(SRCDIR)parallel/pde/basis/common/OCLLaplaceBoundExec.cpp
+
+OCLMPILaplaceBoundExec.o : $(SRCDIR)parallel/pde/basis/common/OCLMPILaplaceBoundExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLMPILaplaceBoundExec.o $(SRCDIR)parallel/pde/basis/common/OCLMPILaplaceBoundExec.cpp
+
+OCLLTwoDotInner.o : $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotInner.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLTwoDotInner.o $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotInner.cpp
+
+OCLLTwoDotLaplaceBound.o : $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotLaplaceBound.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLTwoDotLaplaceBound.o $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotLaplaceBound.cpp
+
+OCLLTwoDotLaplaceInner.o : $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotLaplaceInner.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLTwoDotLaplaceInner.o $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotLaplaceInner.cpp
+
+OCLMPILTwoDotInnerExec.o : $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotInnerExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLMPILTwoDotInnerExec.o $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotInnerExec.cpp
+
+OCLLTwoDotBound.o : $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotBound.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLLTwoDotBound.o $(SRCDIR)parallel/pde/basis/common/OCLLTwoDotBound.cpp
+
+OCLMPILTwoDotBoundExec.o : $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotBoundExec.cpp $(SRCDIR)parallel/pde/basis/common/OCLPDEKernels.hpp
+	$(CC) $(CFLAGS) $(NOIPO) -o OCLMPILTwoDotBoundExec.o $(SRCDIR)parallel/pde/basis/common/OCLMPILTwoDotBoundExec.cpp
+
+OperationParabolicPDESolverSystemDirichletCombined.o : $(SRCDIR)parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationParabolicPDESolverSystemDirichletCombined.o $(SRCDIR)parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.cpp
 
 clean:
 	rm *

@@ -9,14 +9,14 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedOCLLinear.hpp"
+#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinearOCL.hpp"
 
 #include <cmath>
 
 namespace sg {
   namespace parallel {
 
-    OperationLTwoDotLaplaceVectorizedOCLLinear::OperationLTwoDotLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage){
+    OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage){
       this->TimestepCoeff = 0.0;
       this->lambda = new sg::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -30,7 +30,7 @@ namespace sg {
       storage->getLevelForIntegral(*(this->level_int_));
     }
 
-    OperationLTwoDotLaplaceVectorizedOCLLinear::OperationLTwoDotLaplaceVectorizedOCLLinear(sg::base::GridStorage* storage) : storage(storage) {      
+    OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage) : storage(storage) {      
       this->TimestepCoeff = 0.0;
       this->lambda = new base::DataVector(storage->dim());
       this->lambda->setAll(1.0);
@@ -46,7 +46,7 @@ namespace sg {
     }
 
 
-    OperationLTwoDotLaplaceVectorizedOCLLinear::~OperationLTwoDotLaplaceVectorizedOCLLinear() {
+    OperationLTwoDotLaplaceVectorizedLinearOCL::~OperationLTwoDotLaplaceVectorizedLinearOCL() {
       delete this->level_;
       delete this->level_int_;
       delete this->index_;
@@ -55,7 +55,7 @@ namespace sg {
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLTwoDotLaplaceVectorizedOCLLinear::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotLaplaceVectorizedLinearOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
 
       // fill q array
@@ -76,16 +76,6 @@ namespace sg {
 						 this->storage,
 						 this->TimestepCoeff);
     }
-
-    void OperationLTwoDotLaplaceVectorizedOCLLinear::SetTimestepCoeff(double newTimestepCoeff) {
-      this->TimestepCoeff = newTimestepCoeff;
-    }
-
-    double OperationLTwoDotLaplaceVectorizedOCLLinear::GetTimestepCoeff() {
-      return this->TimestepCoeff;
-    }
-
-
   }
 
 }

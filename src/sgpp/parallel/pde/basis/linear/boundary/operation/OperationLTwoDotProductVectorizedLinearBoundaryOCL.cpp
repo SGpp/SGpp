@@ -10,7 +10,7 @@
 #include "base/grid/generation/GridGenerator.hpp"
 #include "base/exception/operation_exception.hpp"
 
-#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductOCLLinearBoundary.hpp"
+#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundaryOCL.hpp"
 
 #include <cmath>
 #include <assert.h>
@@ -18,7 +18,7 @@
 namespace sg {
   namespace parallel {
 
-    OperationLTwoDotProductVectorizedOCLLinearBoundary::OperationLTwoDotProductOCLLinearBoundary(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLTwoDotProductVectorizedLinearBoundaryOCL::OperationLTwoDotProductOCLLinearBoundary(sg::base::GridStorage* storage) : storage(storage) {
       this->OCLPDEKernelsHandle = OCLPDEKernels();
       this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
       this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
@@ -29,7 +29,7 @@ namespace sg {
     }
 
 
-    OperationLTwoDotProductVectorizedOCLLinearBoundary::~OperationLTwoDotProductVectorizedOCLLinearBoundary() {
+    OperationLTwoDotProductVectorizedLinearBoundaryOCL::~OperationLTwoDotProductVectorizedLinearBoundaryOCL() {
       delete this->level_;
       delete this->level_int_;
       delete this->index_;
@@ -37,7 +37,7 @@ namespace sg {
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLTwoDotProductVectorizedOCLLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
 
       this->OCLPDEKernelsHandle.
@@ -51,7 +51,7 @@ namespace sg {
 				 storage);
     }
 
-    void OperationLTwoDotProductVectorizedOCLLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
       bool dirichlet = true;
       // fill q array
@@ -65,7 +65,7 @@ namespace sg {
       if (dirichlet) {
 	mult_dirichlet(alpha, result);
       } else {
-	throw new sg::base::operation_exception("OperationLTwoDotProductVectorizedOCLLinearBoundary::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+	throw new sg::base::operation_exception("OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
       }
     }
     

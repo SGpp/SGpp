@@ -6,13 +6,13 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDOCLLINEARBOUNDARY_HPP
-#define OPERATIONLTWODOTLAPLACEVECTORIZEDOCLLINEARBOUNDARY_HPP
+#ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDLINEARBOUNDARYOCL_HPP
+#define OPERATIONLTWODOTLAPLACEVECTORIZEDLINEARBOUNDARYOCL_HPP
 
-#include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
-#include "parallel/pde/basis/common/OCLPDEKernels.hpp" 
+#include "parallel/pde/basis/common/OCLPDEKernels.hpp"
+#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
 
 namespace sg {
   namespace parallel {
@@ -22,7 +22,7 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLTwoDotLaplaceVectorizedOCLLinearBoundary: public sg::base::OperationMatrix {
+    class OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL: public OperationParabolicPDEMatrixCombined {
     private:
       sg::base::GridStorage* storage;
       sg::base::DataMatrix* level_;
@@ -31,8 +31,6 @@ namespace sg {
       double* lcl_q;
       double* lcl_q_inv;
       sg::base::DataVector* lambda;
-      double TimestepCoeff;
-
       OCLPDEKernels OCLPDEKernelsHandle ;
 
     public:
@@ -41,7 +39,7 @@ namespace sg {
        *
        * @param storage Pointer to the grid's gridstorage obejct
        */
-      OperationLTwoDotLaplaceVectorizedOCLLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+      OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
         /**
          * Construtor of OperationLTwoDotLaplaceLinear
@@ -49,28 +47,14 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-      OperationLTwoDotLaplaceVectorizedOCLLinearBoundary(sg::base::GridStorage* storage);
+      OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
 
       /**
        * Destructor
        */
-      virtual ~OperationLTwoDotLaplaceVectorizedOCLLinearBoundary();
+      virtual ~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL();
 
       virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
-      
-      /**
-       * set timestep coefficient
-       *
-       * @param newTimestepCoeff new timestep coefficient
-       */
-      void setTimestepCoeff(double newTimestepCoeff);
-      
-      /**
-       * get current timestep coefficient
-       *
-       * @return current timestep coefficient
-       */
-      double getTimestepCoeff();
     };
   }
 }
