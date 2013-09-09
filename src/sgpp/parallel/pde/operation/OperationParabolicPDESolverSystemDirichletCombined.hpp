@@ -9,8 +9,6 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 
-#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
-
 #include "pde/operation/OperationParabolicPDESolverSystem.hpp"
 
 #include "base/grid/common/DirichletUpdateVector.hpp"

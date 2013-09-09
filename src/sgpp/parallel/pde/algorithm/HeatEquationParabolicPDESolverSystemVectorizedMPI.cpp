@@ -38,8 +38,10 @@ namespace sg {
       } else if (! strcmp(alg_selector, "OCL")) {
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, sg::parallel::OpenCL);
         this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, sg::parallel::OpenCL);
-        this->OpMassInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::OpenCL);
-        this->OpMassBound = sg::op_factory::createOperationLTwoDotProductVectorized(*this->BoundGrid, sg::parallel::OpenCL);
+        this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::OpenCL);
+        this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProductVectorized(*this->BoundGrid, sg::parallel::OpenCL);
+        this->OpLTwoDotLaplaceInner = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->InnerGrid, sg::parallel::OpenCL);
+        this->OpLTwoDotLaplaceBound = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->BoundGrid, sg::parallel::OpenCL);
 #endif
       } else {
         throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");        
@@ -50,10 +52,12 @@ namespace sg {
     }
 
     HeatEquationParabolicPDESolverSystemVectorizedMPI::~HeatEquationParabolicPDESolverSystemVectorizedMPI() {
-      delete this->OpLaplaceBound;
-      delete this->OpMassBound;
       delete this->OpLaplaceInner;
-      delete this->OpMassInner;
+      delete this->OpLaplaceBound;
+      delete this->OpLTwoInner;
+      delete this->OpLTwoBound;
+      delete this->OpLTwoDotLaplaceInner;
+      delete this->OpLTwoDotLaplaceBound;
 
       delete this->BoundaryUpdate;
       delete this->GridConverter;
@@ -69,46 +73,72 @@ namespace sg {
       delete this->rhs;
     }
 
-    void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      result.setAll(0.0);
-
-      sg::base::DataVector temp(alpha.getSize());
-
-      // Apply the mass matrix
-      this->OpMassBound->mult(alpha, temp);
-
-      result.add(temp);
-    }
-
     void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      result.setAll(0.0);
-
       sg::base::DataVector temp(alpha.getSize());
 
-      // Apply the laplace Operator rate
+      result.setAll(0.0);
+      // Apply the Laplace operator
       this->OpLaplaceBound->mult(alpha, temp);
-      result.axpy((-1.0)*this->a, temp);
-    }
-
-    void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      result.setAll(0.0);
-
-      sg::base::DataVector temp(alpha.getSize());
-
-      // Apply the mass matrix
-      this->OpMassInner->mult(alpha, temp);
-
-      result.add(temp);
+      result.axpy(-0.5, temp);
     }
 
     void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(alpha.getSize());
       result.setAll(0.0);
 
+      // Apply the Laplace operator
+      this->OpLaplaceInner->mult(alpha, temp);
+      result.axpy(-0.5, temp);
+    }
+
+    void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       sg::base::DataVector temp(alpha.getSize());
 
-      // Apply the laplace Operator rate
-      this->OpLaplaceInner->mult(alpha, temp);
-      result.axpy((-1.0)*this->a, temp);
+      result.setAll(0.0);
+
+      // Apply the mass matrix
+      this->OpLTwoBound->mult(alpha, temp);
+
+      result.add(temp);
+    }
+
+    void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(alpha.getSize());
+
+      result.setAll(0.0);
+
+      // Apply the mass matrix
+      this->OpLTwoInner->mult(alpha, temp);
+
+      result.add(temp);
+    }
+    
+    void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(alpha.getSize());
+
+      result.setAll(0.0);
+
+      this->OpLTwoDotLaplaceInner->mult(alpha, temp);
+
+      result.add(temp);
+    }
+
+    void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(alpha.getSize());
+
+      result.setAll(0.0);
+
+      this->OpLTwoDotLaplaceBound->mult(alpha, temp);
+
+      result.add(temp);
+    }
+    
+    void HeatEquationParabolicPDESolverSystemVectorizedMPI::setTimestepCoefficientInner(double timestep_coefficient) {
+      this->OpLTwoDotLaplaceInner->setTimestepCoeff(timestep_coefficient);
+    }
+    
+    void HeatEquationParabolicPDESolverSystemVectorizedMPI::setTimestepCoefficientBound(double timestep_coefficient) {
+      this->OpLTwoDotLaplaceBound->setTimestepCoeff(timestep_coefficient);
     }
 
     void HeatEquationParabolicPDESolverSystemVectorizedMPI::finishTimestep() {

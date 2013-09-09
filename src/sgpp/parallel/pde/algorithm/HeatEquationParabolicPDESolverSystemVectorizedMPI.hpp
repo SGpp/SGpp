@@ -8,9 +8,11 @@
 #ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP
 #define HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP
 
+#include "parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp"
+#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
+
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
 
 namespace sg {
   namespace parallel {
@@ -19,26 +21,38 @@ namespace sg {
      * This class implements the ParabolicPDESolverSystem for the
      * Heat Equation using vectorized and iterative operators
      */
-    class HeatEquationParabolicPDESolverSystemVectorizedMPI : public sg::pde::OperationParabolicPDESolverSystemDirichlet {
+    class HeatEquationParabolicPDESolverSystemVectorizedMPI : public sg::parallel::OperationParabolicPDESolverSystemDirichletCombined {
       private:
         /// the heat coefficient
         double a;
-        /// the Laplace Operation (Stiffness Matrix), on boundary grid
+        /// the Laplace Operation, on boundary grid
         sg::base::OperationMatrix* OpLaplaceBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        sg::base::OperationMatrix* OpMassBound;
-        /// the Laplace Operation (Stiffness Matrix), on inner grid
+        sg::base::OperationMatrix* OpLTwoBound;
+        /// the Laplace Operation, on Inner grid
         sg::base::OperationMatrix* OpLaplaceInner;
-        /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
-        sg::base::OperationMatrix* OpMassInner;
+        /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
+        sg::base::OperationMatrix* OpLTwoInner;
+        /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Inner grid
+        sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
+        /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Bound grid
+        sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
 
-        void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-        void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-        void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-        void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        
+        virtual void applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+
+        virtual void applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result);
+      
+        virtual void setTimestepCoefficientInner(double timestep_coefficient);
+      
+        virtual void setTimestepCoefficientBound(double timestep_coefficient);
 
       public:
         /**
@@ -58,9 +72,9 @@ namespace sg {
          */
         virtual ~HeatEquationParabolicPDESolverSystemVectorizedMPI();
 
-        void finishTimestep();
+        virtual void finishTimestep();
 
-        void coarsenAndRefine(bool isLastTimestep = false);
+        virtual void coarsenAndRefine(bool isLastTimestep = false);
 
         void startTimestep();
     };
