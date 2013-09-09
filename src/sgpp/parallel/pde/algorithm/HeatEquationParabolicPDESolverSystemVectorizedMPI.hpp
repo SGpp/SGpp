@@ -1,12 +1,12 @@
 /* ****************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2013 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP
-#define HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP
+#ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP
+#define HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/Grid.hpp"
@@ -17,9 +17,9 @@ namespace sg {
 
     /**
      * This class implements the ParabolicPDESolverSystem for the
-     * Heat Equation parallelized with MPI.
+     * Heat Equation using vectorized and iterative operators
      */
-    class HeatEquationParabolicPDESolverSystemParallelMPI : public sg::pde::OperationParabolicPDESolverSystemDirichlet {
+    class HeatEquationParabolicPDESolverSystemVectorizedMPI : public sg::pde::OperationParabolicPDESolverSystemDirichlet {
       private:
         /// the heat coefficient
         double a;
@@ -48,28 +48,24 @@ namespace sg {
          * @param alpha the sparse grid's coefficients
          * @param a the heat coefficient
          * @param TimestepSize the size of one timestep used in the ODE Solver
-         * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+         * @param OperationMode specifies in which solver this matrix is used, valid values are:
          *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
          */
-        HeatEquationParabolicPDESolverSystemParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+        HeatEquationParabolicPDESolverSystemVectorizedMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ImEul");
 
         /**
          * Std-Destructor
          */
-        virtual ~HeatEquationParabolicPDESolverSystemParallelMPI();
+        virtual ~HeatEquationParabolicPDESolverSystemVectorizedMPI();
 
         void finishTimestep();
-        
+
         void coarsenAndRefine(bool isLastTimestep = false);
 
         void startTimestep();
-
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
-        virtual sg::base::DataVector* generateRHS();
     };
 
   }
 }
 
-#endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP */
+#endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP */
