@@ -425,6 +425,52 @@ OBJS:=$(OBJS) OCLMPILTwoDotLaplaceInnerExec.o\
 	OperationLTwoDotProductVectorizedLinearBoundaryOCL.o\
 	OperationLTwoDotProductVectorizedLinearOCL.o
 endif
+ifeq ($(EXT), NVOCL)
+OBJS:=$(OBJS) OCLMPILTwoDotLaplaceInnerExec.o\
+        OCLMPILTwoDotLaplaceBoundExec.o\
+        OCLMPILaplaceInnerExec.o\
+        OCLMPILaplaceBoundExec.o\
+        OCLMPILTwoDotInnerExec.o\
+        OCLMPILTwoDotBoundExec.o\
+        OCLPDEKernels.o\
+        OCLPDEInner.o\
+        OCLPDEBound.o\
+        OCLLaplaceInner.o\
+        OCLLaplaceBound.o\
+        OCLLTwoDotInner.o\
+        OCLLTwoDotLaplaceInner.o\
+        OCLLTwoDotLaplaceBound.o\
+        OCLLTwoDotBound.o\
+        OperationLaplaceVectorizedLinearOCL.o\
+        OperationLaplaceVectorizedLinearBoundaryOCL.o\
+        OperationLTwoDotLaplaceVectorizedLinearOCL.o\
+        OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.o\
+        OperationLTwoDotProductVectorizedLinearBoundaryOCL.o\
+        OperationLTwoDotProductVectorizedLinearOCL.o
+endif
+ifeq ($(EXT), AMDOCLGPU)
+OBJS:=$(OBJS) OCLMPILTwoDotLaplaceInnerExec.o\
+        OCLMPILTwoDotLaplaceBoundExec.o\
+        OCLMPILaplaceInnerExec.o\
+        OCLMPILaplaceBoundExec.o\
+        OCLMPILTwoDotInnerExec.o\
+        OCLMPILTwoDotBoundExec.o\
+        OCLPDEKernels.o\
+        OCLPDEInner.o\
+        OCLPDEBound.o\
+        OCLLaplaceInner.o\
+        OCLLaplaceBound.o\
+        OCLLTwoDotInner.o\
+        OCLLTwoDotLaplaceInner.o\
+        OCLLTwoDotLaplaceBound.o\
+        OCLLTwoDotBound.o\
+        OperationLaplaceVectorizedLinearOCL.o\
+        OperationLaplaceVectorizedLinearBoundaryOCL.o\
+        OperationLTwoDotLaplaceVectorizedLinearOCL.o\
+        OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.o\
+        OperationLTwoDotProductVectorizedLinearBoundaryOCL.o\
+        OperationLTwoDotProductVectorizedLinearOCL.o
+endif
 endif
 
 WINOBJS=$(OBJS:.o=.obj)

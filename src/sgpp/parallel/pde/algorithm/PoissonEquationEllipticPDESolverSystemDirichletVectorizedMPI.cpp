@@ -22,8 +22,8 @@ namespace sg {
          throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : X86SIMD is not available as PDE solver implementation!");
 #ifdef USEOCL
       } else if (! strcmp(alg_selector, "OCL")) {
-        this->Laplace_Inner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::OpenCL);
-        this->Laplace_Complete = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::OpenCL);
+        this->Laplace_Inner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, sg::parallel::OpenCL);
+        this->Laplace_Complete = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, sg::parallel::OpenCL);
 #endif
       } else {
         throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");        
