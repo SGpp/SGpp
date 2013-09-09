@@ -625,6 +625,10 @@ ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/HESolver_mpiicc
 	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=HESolver_ICC_MPI" "EXT=$(EXT)"
 endif
+ifeq ($(CC),mpigxx)
+	mkdir -p tmp/build_native/HESolver_mpigxx
+	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx.a" "BINNAME=HESolver_GCC_MPI" "EXT=$(EXT)"
+endif
 
 ###################################################################
 # Builds a simple Heat Equation Solver (rotating Laser test case)
