@@ -67,7 +67,7 @@ namespace sg {
           this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
         }
         sg::solver::SLESolver* myCG;
-        sg::pde::OperationParabolicPDESolverSystemDirichlet* myHESolver;
+        sg::pde::OperationParabolicPDESolverSystem* myHESolver;
 
         double dNeededTime;
         sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
@@ -116,7 +116,7 @@ namespace sg {
           this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
         }
         sg::solver::SLESolver* myCG;
-        sg::pde::OperationParabolicPDESolverSystemDirichlet* myHESolver; 
+        sg::pde::OperationParabolicPDESolverSystem* myHESolver; 
         double dNeededTime;
 
         char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
