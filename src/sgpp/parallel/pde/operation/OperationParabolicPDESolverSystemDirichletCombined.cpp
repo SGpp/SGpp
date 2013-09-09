@@ -20,66 +20,30 @@ namespace sg {
     OperationParabolicPDESolverSystemDirichletCombined::~OperationParabolicPDESolverSystemDirichletCombined() {
     }
 
-
-    void OperationParabolicPDESolverSystemDirichletCombined::applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp(alpha.getSize());
-
-      result.setAll(0.0);
-
-      this->OpLTwoDotLaplaceInner->mult(alpha, temp);
-
-      result.add(temp);
-    }
-
-    void OperationParabolicPDESolverSystemDirichletCombined::applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp(alpha.getSize());
-
-      result.setAll(0.0);
-
-      this->OpLTwoDotLaplaceBound->mult(alpha, temp);
-
-      result.add(temp);
-    }
-
-
     void OperationParabolicPDESolverSystemDirichletCombined::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
       
-//       std::cout << " mult:this->tOperationMode " << this->tOperationMode << std::endl;
-      if (this->tOperationMode == "ExEul") {
-        applyMassMatrixInner(alpha, result);
-      } else if (this->tOperationMode == "ImEul") {
+      if (this->tOperationMode == "ImEul") {
         result.setAll(0.0);
 
 	// Combined
         sg::base::DataVector temp(result.getSize());
-	this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+
+	//this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+        setTimestepCoefficientInner(-0.5*(-1.0)*this->TimestepSize);
+
 	applyMassMatrixLOperatorInner(alpha, temp);
 	result.add(temp);
-
-	// Normal
-//         sg::base::DataVector temp(result.getSize());
-//         sg::base::DataVector temp2(result.getSize());
-// 	applyMassMatrixInner(alpha, temp);
-// 	applyLOperatorInner(alpha, temp2);
-//         result.add(temp);
-//         result.axpy((-1.0)*this->TimestepSize, temp2);
-
-
 
       } else if (this->tOperationMode == "CrNic") {
         result.setAll(0.0);
         sg::base::DataVector temp(result.getSize());
 	
-	this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+	//this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+	setTimestepCoefficientInner(-0.5*(-0.5)*this->TimestepSize);
 
-//         sg::base::DataVector temp2(this->alpha_complete->getSize());
-//         sg::base::DataVector myAlpha(*this->alpha_complete);
-// 	applyMassMatrixLOperatorBound(myAlpha, temp2);
 	applyMassMatrixLOperatorInner(alpha, temp);
 
-	// 	applyLOperatorInner(alpha, temp);
-	//        result.add(temp2);
 	result.add(temp);
       } else {
         throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
@@ -88,21 +52,7 @@ namespace sg {
 
     sg::base::DataVector* OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
       sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
-
-//             std::cout << " generateRHS:this->tOperationMode " << this->tOperationMode << std::endl;
-      if (this->tOperationMode == "ExEul") {
-        rhs_complete.setAll(0.0);
-
-        sg::base::DataVector temp(rhs_complete.getSize());
-        sg::base::DataVector temp2(rhs_complete.getSize());
-        sg::base::DataVector myAlpha(*this->alpha_complete);
-
-	applyMassMatrixComplete(myAlpha, temp);
-	applyLOperatorComplete(myAlpha, temp2);
-
-        rhs_complete.add(temp);
-        rhs_complete.axpy(this->TimestepSize, temp2);
-      } else if (this->tOperationMode == "ImEul") {
+      if (this->tOperationMode == "ImEul") {
         rhs_complete.setAll(0.0);
 
         applyMassMatrixComplete(*this->alpha_complete, rhs_complete);
@@ -113,16 +63,12 @@ namespace sg {
         sg::base::DataVector temp2(rhs_complete.getSize());
         sg::base::DataVector myAlpha(*this->alpha_complete);
 
-	this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(0.5)*this->TimestepSize);
+	//this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(0.5)*this->TimestepSize);
+	setTimestepCoefficientBound(-0.5*(0.5)*this->TimestepSize);
 
 	applyMassMatrixLOperatorBound(myAlpha, temp);
 
-
-	// 	applyMassMatrixComplete(myAlpha, temp);
-	// 	applyLOperatorComplete(myAlpha, temp2);
-
         rhs_complete.add(temp);
-	//         rhs_complete.axpy((0.5)*this->TimestepSize, temp2);
       } else {
         throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
       }
@@ -139,33 +85,26 @@ namespace sg {
       this->BoundaryUpdate->setInnerPointsToZero(alpha_bound);
 
       // apply CG Matrix
-      if (this->tOperationMode == "ExEul") {
-        applyMassMatrixComplete(alpha_bound, result_complete);
-      } else if (this->tOperationMode == "ImEul") {
+      if (this->tOperationMode == "ImEul") {
         sg::base::DataVector temp(alpha_bound.getSize());
         sg::base::DataVector temp2(alpha_bound.getSize());
 
-	this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+	//this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+	setTimestepCoefficientBound(-0.5*(-1.0)*this->TimestepSize);
 
 	applyMassMatrixLOperatorBound(alpha_bound, temp);
-	// 	applyMassMatrixComplete(alpha_bound, temp);
-	// 	applyLOperatorComplete(alpha_bound, temp2);
 
         result_complete.add(temp);
-	//         result_complete.axpy((-1.0)*this->TimestepSize, temp2);
       } else if (this->tOperationMode == "CrNic") {
         sg::base::DataVector temp(alpha_bound.getSize());
         sg::base::DataVector temp2(alpha_bound.getSize());
 
-	this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+	//this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+	setTimestepCoefficientBound(-0.5*(-0.5)*this->TimestepSize);
 
 	applyMassMatrixLOperatorBound(alpha_bound, temp);
 
-	// 	applyMassMatrixComplete(alpha_bound, temp);
-	// 	applyLOperatorComplete(alpha_bound, temp2);
-
         result_complete.add(temp);
-	//         result_complete.axpy((-0.5)*this->TimestepSize, temp2);
       } else {
         throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
       }

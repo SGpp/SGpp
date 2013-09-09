@@ -196,6 +196,34 @@ namespace sg {
 
       result.add(temp);
     }
+    
+    void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(alpha.getSize());
+
+      result.setAll(0.0);
+
+      this->OpLTwoDotLaplaceInner->mult(alpha, temp);
+
+      result.add(temp);
+    }
+
+    void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+      sg::base::DataVector temp(alpha.getSize());
+
+      result.setAll(0.0);
+
+      this->OpLTwoDotLaplaceBound->mult(alpha, temp);
+
+      result.add(temp);
+    }
+    
+    void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::setTimestepCoefficientInner(double timestep_coefficient) {
+      this->OpLTwoDotLaplaceInner->setTimestepCoeff(timestep_coefficient);
+    }
+    
+    void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::setTimestepCoefficientBound(double timestep_coefficient) {
+      this->OpLTwoDotLaplaceBound->setTimestepCoeff(timestep_coefficient);
+    }
 
     void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimestep() {
       // Replace the inner coefficients on the boundary grid
