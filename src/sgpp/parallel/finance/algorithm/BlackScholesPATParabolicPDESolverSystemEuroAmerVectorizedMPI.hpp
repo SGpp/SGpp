@@ -36,6 +36,10 @@ namespace sg {
       sg::base::OperationMatrix* OpLaplaceInner;
       /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
       sg::base::OperationMatrix* OpLTwoInner;
+      /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Inner grid
+      sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
+      /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Bound grid
+      sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
       /// Pointer to the lambda (coefficients of the needed Laplace operator)
       sg::base::DataVector* lambda;
       /// Eigenvectors of the covariance matrix
@@ -75,7 +79,13 @@ namespace sg {
 
       virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
+      virtual void applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
+      virtual void applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result);
+      
+      virtual void setTimestepCoefficientInner(double timestep_coefficient);
+      
+      virtual void setTimestepCoefficientBound(double timestep_coefficient);
 
     public:
       /**

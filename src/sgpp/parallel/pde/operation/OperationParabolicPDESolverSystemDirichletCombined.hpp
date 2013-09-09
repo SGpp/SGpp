@@ -48,11 +48,6 @@ namespace sg {
       sg::base::DirichletGridConverter* GridConverter;
       /// Pointer to the inner grid object
       sg::base::Grid* InnerGrid;
-      /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Inner grid
-      sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
-      /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Bound grid
-      sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
-
 
       /**
        * applies the PDE's mass matrix, on complete grid - with boundaries
@@ -85,7 +80,36 @@ namespace sg {
        * @param result reference to the sg::base::DataVector into which the result is written
        */
       virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+      
+      /**
+       * applies the both PDE's mass matrix and system matrix, on inner grid only
+       *
+       * @param alpha the coefficients of the sparse grid's ansatzfunctions
+       * @param result reference to the sg::base::DataVector into which the result is written
+       */
+      virtual void applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
 
+      /**
+       * applies the both PDE's mass matrix and system matrix, on boundary grid only
+       *
+       * @param alpha the coefficients of the sparse grid's ansatzfunctions
+       * @param result reference to the sg::base::DataVector into which the result is written
+       */
+      virtual void applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+      
+      /**
+       * sets the timestep coefficient for the combined inner operator
+       *
+       * @param timestep_coefficient new timestep coefficient
+       */
+      virtual void setTimestepCoefficientInner(double timestep_coefficient) = 0;
+      
+      /**
+       * sets the timestep coefficient for the combined bound operator
+       *
+       * @param timestep_coefficient new timestep coefficient
+       */
+      virtual void setTimestepCoefficientBound(double timestep_coefficient) = 0;
 
     public:
       /**
@@ -97,22 +121,6 @@ namespace sg {
        * Destructor
        */
       virtual ~OperationParabolicPDESolverSystemDirichletCombined();
-
-      /**
-       * applies the both PDE's mass matrix and system matrix, on inner grid only
-       *
-       * @param alpha the coefficients of the sparse grid's ansatzfunctions
-       * @param result reference to the sg::base::DataVector into which the result is written
-       */
-      void applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
-
-      /**
-       * applies the both PDE's mass matrix and system matrix, on boundary grid only
-       *
-       * @param alpha the coefficients of the sparse grid's ansatzfunctions
-       * @param result reference to the sg::base::DataVector into which the result is written
-       */
-      void applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
       /**
        * Multiplicates a vector with the matrix
