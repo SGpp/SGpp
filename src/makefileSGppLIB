@@ -385,20 +385,21 @@ ifeq ($(MPI), 1)
 OBJS:=$(OBJS) MPICommunicator.o\
 	GlobalMPIComm.o\
 	ConjugateGradientsMPI.o\
+	BiCGStabMPI.o\
 	PoissonEquationSolverMPI.o\
-	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o\
-	PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o\
-	HeatEquationParabolicPDESolverSystemParallelMPI.o\
 	HeatEquationSolverMPI.o\
 	BlackScholesSolverMPI.o\
-	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o\
-	BiCGStabMPI.o\
-	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
+	OperationParabolicPDESolverSystemDirichletCombined.o\
 	DMSystemMatrixVectorizedIdentityMPI.o\
 	DMSystemMatrixSPVectorizedIdentityMPI.o\
 	DMSystemMatrixMPITypeFactory.o\
 	DMSystemMatrixSPMPITypeFactory.o\
-	OperationParabolicPDESolverSystemDirichletCombined.o\
+	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o\
+	PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o\
+	HeatEquationParabolicPDESolverSystemParallelMPI.o\
+	HeatEquationParabolicPDESolverSystemVectorizedMPI.o\
+	BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.o\
+	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.o\
 	OperationLaplaceVectorizedLinear.o\
 	OperationLaplaceVectorizedLinearBoundary.o
@@ -1755,7 +1756,10 @@ PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o : $(SRCDIR)parall
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.cpp
 
 HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
+	
+HeatEquationParabolicPDESolverSystemVectorizedMPI.o : $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemVectorizedMPI.o $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.cpp
 
 HeatEquationSolverMPI.o : $(SRCDIR)parallel/pde/application/HeatEquationSolverMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationSolverMPI.o $(SRCDIR)parallel/pde/application/HeatEquationSolverMPI.cpp

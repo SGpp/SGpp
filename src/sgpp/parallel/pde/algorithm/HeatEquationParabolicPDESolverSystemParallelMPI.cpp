@@ -158,9 +158,12 @@ namespace sg {
       result.axpy((-1.0)*this->a, temp);
     }
 
-    void HeatEquationParabolicPDESolverSystemParallelMPI::finishTimestep(bool isLastTimestep) {
+    void HeatEquationParabolicPDESolverSystemParallelMPI::finishTimestep() {
       // Replace the inner coefficients on the boundary grid
       this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
+    }
+    
+    void HeatEquationParabolicPDESolverSystemParallelMPI::coarsenAndRefine(bool isLastTimestep) {
     }
 
     void HeatEquationParabolicPDESolverSystemParallelMPI::startTimestep() {

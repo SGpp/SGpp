@@ -452,71 +452,7 @@ namespace sg {
     }
 
     void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
-      if (this->bGridConstructed && this->bStochasticDataAlloc) {
-        solver::Euler* myEuler = new solver::Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
-        solver::SLESolver* myCG;
-        pde::OperationParabolicPDESolverSystem* myBSSystem = NULL;
-
-        if (this->usePAT == false) {
-          myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ExEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
-        } else {
-          // read env variable, which solver type should be selected
-          char*alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
-          if (alg_selector != NULL) {
-            if(! strcmp(alg_selector, "X86SIMD")) {
-              throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : X86SIMD is not available as PDE solver implementation!");
-            } else if (! strcmp(alg_selector, "OCL")) {
-              myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
-              myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
-            } else {
-              throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : You have selected an unsupport vectorization method!");
-            }
-          } else {
-            myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-            myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ExEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
-          }
-        }
-
-        base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
-        this->staInnerGridSize = getNumberInnerGridPoints();
-
-        if (myGlobalMPIComm->getMyRank() == 0) {
-          std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
-        }
-
-        MPI_Barrier(MPI_COMM_WORLD);
-        myStopwatch->start();
-        myEuler->solve(*myCG, *myBSSystem, true, verbose);
-        MPI_Barrier(MPI_COMM_WORLD);
-        this->dNeededTime = myStopwatch->stop();
-
-        if (myGlobalMPIComm->getMyRank() == 0) {
-          std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
-          std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
-          std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
-          std::cout << "Average Grid size: " << static_cast<double>(myBSSystem->getSumGridPointsComplete()) / static_cast<double>(numTimesteps) << std::endl;
-          std::cout << "Average Grid size (Inner): " << static_cast<double>(myBSSystem->getSumGridPointsInner()) / static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
-
-          if (this->myScreen != NULL) {
-            std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
-            this->myScreen->writeEmptyLines(2);
-          }
-        }
-
-        this->finInnerGridSize = getNumberInnerGridPoints();
-        this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) / static_cast<double>(numTimesteps)) + 0.5);
-        this->nNeededIterations = myEuler->getNumberIterations();
-
-        delete myBSSystem;
-        delete myCG;
-        delete myEuler;
-        delete myStopwatch;
-
-        this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
-      } else {
-        throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
-      }
+      throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this setting!");
     }
 
     void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {

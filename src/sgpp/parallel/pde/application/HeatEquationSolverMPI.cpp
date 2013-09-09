@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2009-2013 Technische Universitaet Muenchen                    *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -9,15 +9,19 @@
 #include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
 #include "parallel/pde/application/HeatEquationSolverMPI.hpp"
 #include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
+#include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.hpp"
 
 #include "solver/ode/Euler.hpp"
 #include "solver/ode/CrankNicolson.hpp"
+#include "solver/sle/ConjugateGradients.hpp"
+
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
-#include "stdlib.h"
 #include "base/operation/BaseOpFactory.hpp"
-#include <sstream>
 
+#include <sstream>
+#include <cstdlib>
+#include <cstring>
 
 namespace sg {
   namespace parallel {
@@ -54,33 +58,7 @@ namespace sg {
     }
 
     void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
-      if (this->bGridConstructed) {
-        if (this->myScreen != NULL) {
-          this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        }
-
-        double dNeededTime;
-        sg::solver::Euler* myEuler = new sg::solver::Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
-        ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-        //does not compile with mpiicpc
-        HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = 0;//new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ExEul");
-        sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
-
-        myStopwatch->start();
-        myEuler->solve(*myCG, *myHESolver, verbose);
-        dNeededTime = myStopwatch->stop();
-
-        if (this->myScreen != NULL) {
-          std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
-          this->myScreen->writeEmptyLines(2);
-        }
-
-        delete myStopwatch;
-        delete myCG;
-        delete myEuler;
-      } else {
-        throw new sg::base::application_exception("HeatEquationSolver::solveExplicitEuler : A grid wasn't constructed before!");
-      }
+      throw new sg::base::application_exception("HeatEquationSolver::solveExplicitEuler : Explicit Euler is not supported!");
     }
 
     void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
@@ -88,16 +66,34 @@ namespace sg {
         if (this->myScreen != NULL) {
           this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
         }
+        sg::solver::SLESolver* myCG;
+        sg::pde::OperationParabolicPDESolverSystemDirichlet* myHESolver;
 
         double dNeededTime;
         sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
-        ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-        //does not compile with mpiicpc
-        HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = 0;//new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        
+        // read env variable, which solver type should be selected
+        char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+        if (alg_selector != NULL) {
+          if(! strcmp(alg_selector, "X86SIMD")) {
+            throw new base::application_exception("HeatEquationSolverMPI::solveImplicitEuler : X86SIMD is not available as PDE solver implementation!");
+          } else if (! strcmp(alg_selector, "OCL")) {
+            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+            myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+          } else {
+            throw new base::application_exception("HeatEquationSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+          }
+        } else {
+          myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
+          myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
+        }
+
         sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
+        MPI_Barrier(MPI_COMM_WORLD);
         myStopwatch->start();
         myEuler->solve(*myCG, *myHESolver, verbose);
+        MPI_Barrier(MPI_COMM_WORLD);
         dNeededTime = myStopwatch->stop();
 
         if (this->myScreen != NULL) {
@@ -119,11 +115,25 @@ namespace sg {
         if (this->myScreen != NULL) {
           this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
         }
-
+        sg::solver::SLESolver* myCG;
+        sg::pde::OperationParabolicPDESolverSystemDirichlet* myHESolver; 
         double dNeededTime;
-        ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-        //does not compile with mpiicpc
-        HeatEquationParabolicPDESolverSystemParallelMPI* myHESolver = 0;//new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+
+        char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+        if (alg_selector != NULL) {
+          if(! strcmp(alg_selector, "X86SIMD")) {
+            throw new base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : X86SIMD is not available as PDE solver implementation!");
+          } else if (! strcmp(alg_selector, "OCL")) {
+            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+            myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+          } else {
+            throw new base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
+          }
+        } else {        
+          myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
+          myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
+        }
+        
         sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
         size_t numCNSteps;
@@ -140,13 +150,17 @@ namespace sg {
         sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
         sg::solver::CrankNicolson* myCN = new sg::solver::CrankNicolson(numCNSteps, timestepsize);
 
+        MPI_Barrier(MPI_COMM_WORLD);
         myStopwatch->start();
 
         if (numIESteps > 0) {
+          myHESolver->setODESolver("ImEul");
           myEuler->solve(*myCG, *myHESolver, false);
         }
 
+        myHESolver->setODESolver("CrNic");
         myCN->solve(*myCG, *myHESolver, false);
+        MPI_Barrier(MPI_COMM_WORLD);
         dNeededTime = myStopwatch->stop();
 
         if (this->myScreen != NULL) {
