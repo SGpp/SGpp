@@ -387,6 +387,7 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	ConjugateGradientsMPI.o\
 	PoissonEquationSolverMPI.o\
 	PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o\
+	PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o\
 	HeatEquationParabolicPDESolverSystemParallelMPI.o\
 	HeatEquationSolverMPI.o\
 	BlackScholesSolverMPI.o\
@@ -1703,6 +1704,9 @@ PoissonEquationSolverMPI.o : $(SRCDIR)parallel/pde/application/PoissonEquationSo
 	
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o : $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.o $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.cpp
+
+PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o : $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.o $(SRCDIR)parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.cpp
 
 HeatEquationParabolicPDESolverSystemParallelMPI.o : $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)HeatEquationParabolicPDESolverSystemParallelMPI.o $(SRCDIR)parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.cpp	

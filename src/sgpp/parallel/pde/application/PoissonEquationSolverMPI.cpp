@@ -10,13 +10,18 @@
 #include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
 #include "parallel/pde/application/PoissonEquationSolverMPI.hpp"
 #include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
+#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp"
+
 #include "solver/sle/ConjugateGradients.hpp"
+
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 #include "base/operation/BaseOpFactory.hpp"
-#include "stdlib.h"
+
+#include <cstdlib>
 #include <sstream>
+#include <cstring>
 
 
 namespace sg {
@@ -65,7 +70,7 @@ namespace sg {
           throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : X86SIMD is not available as PDE solver implementation!");
         } else if (! strcmp(alg_selector, "OCL")) {
           myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
-          myBSSystem = ;
+          mySystem = new PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(*(this->myGrid), rhs);
         } else {
           throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
         }
