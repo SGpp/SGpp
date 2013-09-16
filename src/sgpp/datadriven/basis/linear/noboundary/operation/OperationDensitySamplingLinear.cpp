@@ -60,8 +60,13 @@ namespace sg {
           size_t samplesSize = samples_start->getSize();
           #pragma omp critical
           {
+#ifdef _WIN32
+            double a = static_cast<double>(rand()) / RAND_MAX;
+            long int b = static_cast<long int>(rand());
+#else
             double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
             long int b = static_cast<long int>(rand_r(&tseedp));
+#endif
             seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
           }
           #pragma omp for schedule(dynamic)
@@ -115,8 +120,13 @@ namespace sg {
         unsigned int seedp = 0;;
         #pragma omp critical
         {
+#ifdef _WIN32
+          double a = static_cast<double>(rand()) / RAND_MAX;
+          long int b = static_cast<long int>(rand());
+#else
           double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
           long int b = static_cast<long int>(rand_r(&tseedp));
+#endif
           seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
         }
         #pragma omp for schedule(dynamic)
