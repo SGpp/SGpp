@@ -402,7 +402,12 @@ OBJS:=$(OBJS) MPICommunicator.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.o\
 	BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.o\
 	OperationLaplaceVectorizedLinear.o\
-	OperationLaplaceVectorizedLinearBoundary.o
+	OperationLaplaceVectorizedLinearBoundary.o\
+	OperationLTwoDotProductVectorizedLinear.o\
+	OperationLTwoDotProductVectorizedLinearBoundary.o\
+	OperationLTwoDotLaplaceVectorizedLinear.o\
+	OperationLTwoDotLaplaceVectorizedLinearBoundary.o
+	
 ifeq ($(EXT), INTELOCL)
 OBJS:=$(OBJS) OCLMPILTwoDotLaplaceInnerExec.o\
 	OCLMPILTwoDotLaplaceBoundExec.o\
@@ -1863,5 +1868,24 @@ OperationLTwoDotLaplaceVectorizedLinearOCL.o : $(SRCDIR)parallel/pde/basis/linea
 OperationLaplaceVectorizedLinearOCL.o : $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinearOCL.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinearOCL.o $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinearOCL.cpp
 
+OperationLaplaceVectorizedLinear.o : $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinear.o $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
+
+OperationLaplaceVectorizedLinearBoundary.o : $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinearBoundary.o $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
+
+OperationLTwoDotProductVectorizedLinear.o : $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductVectorizedLinear.o $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinear.cpp
+
+OperationLTwoDotProductVectorizedLinearBoundary.o : $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotProductVectorizedLinearBoundary.o $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundary.cpp
+
+OperationLTwoDotLaplaceVectorizedLinear.o : $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotLaplaceVectorizedLinear.o $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.cpp
+
+OperationLTwoDotLaplaceVectorizedLinearBoundary.o : $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLTwoDotLaplaceVectorizedLinearBoundary.o $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp	
+	
+	
 clean:
 	rm *

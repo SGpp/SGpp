@@ -72,7 +72,8 @@ SLE_RES_THRESH=-1.0
 UPDOWN_PARADIMS=4
 # Compile for x86, but change vector width to match the one of MIC_NATIVE. This is needed for symmetric MPI execution. This option only has an effect for compilation with mpiicpc.
 X86_MIC_SYMMETRIC=0
-
+# Enable/Disable Operation Matrix Results
+STORE_OP_MA=0
 
 ###################################################################
 # Compiler Flags
@@ -94,6 +95,17 @@ ifneq ($(EXT), MIC_OFFLOAD)
 CFLAGS_ICC:=$(CFLAGS_ICC) -no-offload
 LFLAGS_ICC:=$(LFLAGS_ICC) -no-offload
 endif
+
+
+
+ifeq ($(STORE_OP_MA), 1)
+CFLAGS_ICC:=$(CFLAGS_ICC) -DSTORE_MATRIX=1
+LFLAGS_ICC:=$(LFLAGS_ICC) -DSTORE_MATRIX=1
+
+CFLAGS_GCC:=$(CFLAGS_GCC) -DSTORE_MATRIX=1
+LFLAGS_GCC:=$(LFLAGS_GCC) -DSTORE_MATRIX=1
+endif
+
 
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
