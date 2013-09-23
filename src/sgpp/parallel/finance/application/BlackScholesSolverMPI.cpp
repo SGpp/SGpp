@@ -468,8 +468,9 @@ namespace sg {
           // read env variable, which solver type should be selected
           char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
           if (alg_selector != NULL) {
-            if(! strcmp(alg_selector, "X86SIMD")) {
-               throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : X86SIMD is not available as PDE solver implementation!");
+            if(! strcmp(alg_selector, "X86SIMD")) {  
+			  myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+              myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
             } else if (! strcmp(alg_selector, "OCL")) {
               myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
               myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
@@ -536,8 +537,9 @@ namespace sg {
           char*alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
           if (alg_selector != NULL) {
             if(! strcmp(alg_selector, "X86SIMD")) {
-              throw new base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : X86SIMD is not available as PDE solver implementation!");
-            } else if (! strcmp(alg_selector, "OCL")) {
+              myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+              myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
+			} else if (! strcmp(alg_selector, "OCL")) {
               myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
               myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
             } else {

@@ -76,7 +76,8 @@ namespace sg {
         char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
         if (alg_selector != NULL) {
           if(! strcmp(alg_selector, "X86SIMD")) {
-            throw new base::application_exception("HeatEquationSolverMPI::solveImplicitEuler : X86SIMD is not available as PDE solver implementation!");
+            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+            myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
           } else if (! strcmp(alg_selector, "OCL")) {
             myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
             myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
@@ -122,7 +123,8 @@ namespace sg {
         char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
         if (alg_selector != NULL) {
           if(! strcmp(alg_selector, "X86SIMD")) {
-            throw new base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : X86SIMD is not available as PDE solver implementation!");
+            myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+            myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
           } else if (! strcmp(alg_selector, "OCL")) {
             myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
             myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");

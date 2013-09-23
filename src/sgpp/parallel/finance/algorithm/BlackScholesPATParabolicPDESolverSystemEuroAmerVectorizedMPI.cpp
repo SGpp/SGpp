@@ -91,7 +91,12 @@ namespace sg {
       // Create operations
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
       if(! strcmp(alg_selector, "X86SIMD")) {
-         throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : X86SIMD is not available as PDE solver implementation!");
+        this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::X86SIMD);
+        this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::X86SIMD);
+        this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::X86SIMD);
+        this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProductVectorized(*this->BoundGrid, sg::parallel::X86SIMD);
+        this->OpLTwoDotLaplaceInner = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::X86SIMD);
+        this->OpLTwoDotLaplaceBound = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::X86SIMD);
 #ifdef USEOCL
       } else if (! strcmp(alg_selector, "OCL")) {
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::OpenCL);
