@@ -1683,12 +1683,6 @@ OperationLaplaceEnhancedLinear.o : $(SRCDIR)misc/pde/basis/linear/noboundary/ope
 MiscOpFactory.o : $(SRCDIR)misc/operation/MiscOpFactory.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)MiscOpFactory.o $(SRCDIR)misc/operation/MiscOpFactory.cpp
 
-OperationLaplaceVectorizedLinear.o : $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinear.o $(SRCDIR)parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.cpp
-
-OperationLaplaceVectorizedLinearBoundary.o : $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)OperationLaplaceVectorizedLinearBoundary.o $(SRCDIR)parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.cpp
-
 LearnerDensityBased.o : $(SRCDIR)datadriven/application/LearnerDensityBased.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)LearnerDensityBased.o $(SRCDIR)datadriven/application/LearnerDensityBased.cpp
 
