@@ -767,6 +767,13 @@ int main(int argc, char* argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
   sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_ranks);
 
+  std::streambuf* stdoutBuf = std::cout.rdbuf();
+  std::ofstream dummy_out("/dev/null");
+
+  if (mpi_myid != 0) { // disable output for all processes but proc 0
+    std::cout.rdbuf(dummy_out.rdbuf());
+  }
+
   if (argc == 1) {
     if (mpi_myid == 0) {
       writeHelp();
@@ -886,6 +893,11 @@ int main(int argc, char* argv[]) {
   }
 
   delete sg::parallel::myGlobalMPIComm;
+
+  if (mpi_myid != 0) { // restore stdout buffer
+    std::cout.rdbuf(stdoutBuf);
+  }
+
   MPI_Finalize();
 
   return 0;
