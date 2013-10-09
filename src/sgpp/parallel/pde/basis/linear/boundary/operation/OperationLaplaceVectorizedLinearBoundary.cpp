@@ -88,6 +88,7 @@ namespace sg {
 			operation_result_matrix_(NULL)
 #endif
 		{
+std::cout<<"IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::endl;
             init_constants();
 			init_grid_storage();
 			
@@ -117,6 +118,7 @@ namespace sg {
 			operation_result_matrix_(NULL)
 #endif
 		{
+std::cout<<"IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::endl;
             init_constants();
 			init_grid_storage();
 			

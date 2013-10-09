@@ -76,6 +76,7 @@ namespace sg {
 			operation_result_generated_(false)
 #endif 
 		{
+std::cout<<"IN CONSTRUSTOR: OperationLTwoDotProductVectorizedLinear" << std::endl;
             init_constants();
 			init_grid_storage();
         }
