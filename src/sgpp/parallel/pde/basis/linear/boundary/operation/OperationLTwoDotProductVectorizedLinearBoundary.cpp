@@ -78,7 +78,7 @@ namespace sg {
              index_boundary_filtered_(NULL),
 			gradient_temp(NULL),
 			l2dot_temp(NULL)
-#if defined(STORE_MATRIX)
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
 			,
 			operation_result_matrix_(NULL)
 #endif
@@ -103,7 +103,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
              delete index_boundary_filtered_;
 			 delete gradient_temp;
 			 delete l2dot_temp;
-#if defined(STORE_MATRIX)
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
 			 delete operation_result_matrix_;
 #endif
         }
@@ -298,7 +298,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
             }
 			
 			
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 			size_t result_matrix_rows = all_i_size[process_index];
 			size_t result_matrix_cols = storage->size(); //(size_t) (ceil((double)storage->size() / BLOCK_LENGTH) * BLOCK_LENGTH);
 			
@@ -436,7 +436,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
             stopWatch.start();
             #endif
 			
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 			if(! operation_result_generated_)
 			{
 				operation_result_generated_ = true;
@@ -453,7 +453,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
             {
 				std::size_t padded_size = this->level_->getNcols();               
 				double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
-#if ! defined (STORE_MATRIX)
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 				double* result_ptr_ = result_boundary_filtered_->getPointer();
 #endif
 				double* level_ptr_ = this->level_->getPointer();
@@ -595,7 +595,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
 
                                 ++i_idx;
                             }
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 						double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
 						_mm256_store_pd(operation_result_dest_ptr + j, mm_element);
 						_mm256_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_element2);
@@ -623,7 +623,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
 
 				std::size_t padded_size = this->level_->getNcols();               
 				double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
-#if ! defined (STORE_MATRIX)
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 				double* result_ptr_ = result_boundary_filtered_->getPointer();
 #endif
 				double* level_ptr_ = this->level_->getPointer();
@@ -765,7 +765,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
                                 ++i_idx;
                             }
 
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 							double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
 							_mm_store_pd(operation_result_dest_ptr + j, mm_element);
 							_mm_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_element2);
@@ -790,7 +790,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
 #endif
 
 
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 	}
 	
 	std::size_t original_size = alpha.getSize();

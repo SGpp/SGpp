@@ -58,7 +58,7 @@ namespace sg {
 			sg::base::DataVector** gradient_temp;
 			sg::base::DataVector** l2dot_temp;
 
-#if defined(STORE_MATRIX)
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
 		sg::base::DataMatrix* operation_result_matrix_;
 		bool operation_result_generated_;
 #endif
