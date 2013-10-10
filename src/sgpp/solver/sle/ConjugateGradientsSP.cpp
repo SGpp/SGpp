@@ -135,10 +135,6 @@ namespace sg {
 
     void ConjugateGradientsSP::complete() {
     }
-	
-	size_t ConjugateGradientsSP::getIterations() {
-		return this->nIterations;
-	}
 
   }
 }

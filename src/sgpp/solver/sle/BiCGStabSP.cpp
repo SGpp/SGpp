@@ -120,10 +120,6 @@ namespace sg {
         this->nIterations++;
       }
     }
-	
-	size_t BiCGStabSP::getIterations() {
-		return this->nIterations;
-	}
 
   }
 }
