@@ -140,6 +140,10 @@ namespace sg {
 
     void ConjugateGradients::complete() {
     }
+	
+	size_t ConjugateGradients::getIterations() {
+		return this->nIterations;
+	}
 
   }
 }

@@ -42,6 +42,8 @@ namespace sg {
          * http://netlib.org
          */
         virtual void solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
+		
+		virtual size_t getIterations();
     };
 
   }

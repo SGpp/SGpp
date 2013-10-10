@@ -160,6 +160,10 @@ namespace sg {
         }
       } while (ctrl != 'T');
     }
+	
+	size_t ConjugateGradientsMPI::getIterations() {
+		return this->nIterations;
+	}
 
   }
 }
