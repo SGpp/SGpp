@@ -124,7 +124,9 @@ namespace sg {
         std::cout << "Time for creating CG coeffs: " << dTimeAlpha << std::endl;
         std::cout << "Time for creating RHS: " << dTimeRHS << std::endl;
         std::cout << "Time for solving: " << dTimeSolver << std::endl << std::endl;
-        std::cout << "Time: " << dTimeAlpha + dTimeRHS + dTimeSolver << std::endl << std::endl << std::endl;
+        std::cout << "Time: " << dTimeAlpha + dTimeRHS + dTimeSolver << std::endl;
+		size_t flop = (26 * this->dim + this->dim * this->dim) * mySystem->getNumGridPointsInner() * mySystem->getNumGridPointsInner();
+        std::cout << "GFLOPS: " << 1.0 * (double) (myCG->getIterations() * flop) / dTimeSolver / 1000000000 << std::endl << std::endl << std::endl;
       } 
 
       delete myCG;

@@ -51,6 +51,8 @@ namespace sg {
          * function that signals the finish of the cg method (used in python)
          */
         virtual void complete();
+		
+		virtual size_t getIterations();
     };
 
   }
