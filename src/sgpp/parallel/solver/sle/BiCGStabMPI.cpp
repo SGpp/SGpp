@@ -152,10 +152,6 @@ namespace sg {
         }
       } while (ctrl != 'T');
     }
-	
-	size_t BiCGStabMPI::getIterations() {
-		return this->nIterations;
-	}
 
   }
 

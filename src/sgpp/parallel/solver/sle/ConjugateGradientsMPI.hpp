@@ -34,8 +34,6 @@ namespace sg {
         virtual ~ConjugateGradientsMPI();
 
         virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
-		
-		virtual size_t getIterations();
     };
 
   }

@@ -47,8 +47,6 @@ namespace sg {
          * @param max_threshold additional abort criteria for solver, default value is 10^-9!
          */
         virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = DEFAULT_RES_THRESHOLD) = 0;
-		
-		virtual size_t getIterations() = 0;
     };
 
   }
