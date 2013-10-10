@@ -81,7 +81,7 @@ namespace sg {
              index_boundary_filtered_(NULL),
 			gradient_temp(NULL),
 			l2dot_temp(NULL)
-#if defined(STORE_MATRIX)
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
 		,
 		operation_result_matrix_(NULL)
 #endif
@@ -111,7 +111,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
              index_boundary_filtered_(NULL),
 			gradient_temp(NULL),
 			l2dot_temp(NULL)
-#if defined(STORE_MATRIX)
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
 		,
 		operation_result_matrix_(NULL)
 #endif
@@ -142,7 +142,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
              delete index_boundary_filtered_;
 			 delete gradient_temp;
 			 delete l2dot_temp;
-#if defined(STORE_MATRIX)
+#if defined(STORE_PDE_MATRIX_BOUNDARY)
 			 delete operation_result_matrix_;
 #endif
         }
@@ -333,7 +333,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
             }
 
 			
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 			size_t result_matrix_rows = all_i_size[process_index];
 			size_t result_matrix_cols = storage->size(); //(size_t) (ceil((double)storage->size() / BLOCK_LENGTH) * BLOCK_LENGTH);
 			
@@ -490,7 +490,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
             #endif
 
 
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 			if(! operation_result_generated_)
 			{
 				operation_result_generated_ = true;
@@ -508,7 +508,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
             {
 				std::size_t padded_size = this->level_->getNcols();               
 				double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
-#if ! defined (STORE_MATRIX)
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 				double* result_ptr_ = result_boundary_filtered_->getPointer();
 #endif
 				double* level_ptr_ = this->level_->getPointer();
@@ -554,7 +554,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
                         
                         for(size_t j = 0; j < padded_size; j+= VECTOR_SIZE * REG_BCOUNT)
                         {
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 						mm_result = _mm256_setzero_pd();
 						mm_result2 = _mm256_setzero_pd();
 #endif	
@@ -759,14 +759,14 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
 							mm_result2 = _mm256_add_pd(mm_result2, mm_temp2);
 							
 														
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 						double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
 						_mm256_store_pd(operation_result_dest_ptr + j, mm_result);
 						_mm256_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
 #endif
                         }
 
-#if ! defined (STORE_MATRIX)
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 			
 						mm_result = _mm256_add_pd(mm_result, mm_result2);
 						mm_result = _mm256_hadd_pd(mm_result, _mm256_setzero_pd());
@@ -787,7 +787,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
             {
 				std::size_t padded_size = this->level_->getNcols();               
 				double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
-#if ! defined (STORE_MATRIX)
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 				double* result_ptr_ = result_boundary_filtered_->getPointer();
 #endif				
 				double* level_ptr_ = this->level_->getPointer();
@@ -833,7 +833,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
                         
                         for(size_t j = 0; j < padded_size; j+= VECTOR_SIZE * REG_BCOUNT)
                         {
-#if ! defined (STORE_MATRIX)
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 						mm_result = _mm_setzero_pd();
 						mm_result2 = _mm_setzero_pd();
 #endif
@@ -1034,14 +1034,14 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
 							mm_result = _mm_add_pd(mm_result, mm_temp);
 							mm_result2 = _mm_add_pd(mm_result2, mm_temp2);
 							
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 							double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
 							_mm_store_pd(operation_result_dest_ptr + j, mm_result);
 							_mm_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
 #endif
                         }
 
-#if ! defined (STORE_MATRIX)                        
+#if ! defined (STORE_PDE_MATRIX_BOUNDARY)                        
 						mm_result = _mm_add_pd(mm_result, mm_result2);
 						mm_result = _mm_hadd_pd(mm_result, _mm_setzero_pd());
 						
@@ -1057,7 +1057,7 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << 
 #endif
 
 
-#if defined (STORE_MATRIX)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 	}
 	
 	std::size_t original_size = alpha.getSize();
