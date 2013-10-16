@@ -14,6 +14,7 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
 
+#include "base/tools/SGppStopwatch.hpp"
 
 #include "parallel/tools/TypesParallel.hpp"
 
@@ -83,6 +84,9 @@ namespace sg {
             double l2dot_dirichlet(size_t i, size_t j, size_t dim);
 
             void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
+double all_time;
+double all_iterations;
+sg::base::SGppStopwatch stopWatch;
 
         public:
             /**

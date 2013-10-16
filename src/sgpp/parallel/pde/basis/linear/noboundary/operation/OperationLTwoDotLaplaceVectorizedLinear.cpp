@@ -14,6 +14,8 @@
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 
+#include "base/tools/SGppStopwatch.hpp"
+
 #include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.hpp"
 
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
@@ -111,6 +113,11 @@ std::cout<<"IN CONSTRUSTOR: OperationLTwoDotLaplaceVectorizedLinear" << std::end
         }
         
         OperationLTwoDotLaplaceVectorizedLinear::~OperationLTwoDotLaplaceVectorizedLinear() {
+double flop = ((double) 26 * storage->dim() + storage->dim() * storage->dim()) * storage->size() * storage->size();
+double gflops = (all_iterations * flop / all_time) / 1000000000;
+double bandwidth = all_iterations* sizeof(double) * storage->size() * storage->size() / all_time ;
+std::cout<<"IN OPERATOR : COMBINED, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations <<" TIME :" << all_time << std::endl;
+
             delete this->level_;
             delete this->level_int_;
             delete this->index_;
@@ -141,7 +148,10 @@ std::cout<<"IN CONSTRUSTOR: OperationLTwoDotLaplaceVectorizedLinear" << std::end
 		}
         
         void OperationLTwoDotLaplaceVectorizedLinear::init_constants() {
-		
+	
+all_time = 0.0;
+all_iterations = 0.0;
+	
 #if defined(__SSE4_2__)
             this->constants_ = new sg::base::DataVector(0);
             
@@ -420,6 +430,7 @@ std::cout<<"IN CONSTRUSTOR: OperationLTwoDotLaplaceVectorizedLinear" << std::end
         void OperationLTwoDotLaplaceVectorizedLinear::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
             result.setAll(0.0);
 
+stopWatch.start();
             size_t process_i_start = all_i_start[process_index];
             size_t process_i_end = process_i_start + all_i_size[process_index];
 
@@ -1065,6 +1076,9 @@ std::cout<<"IN CONSTRUSTOR: OperationLTwoDotLaplaceVectorizedLinear" << std::end
 		std::cout.flush();
 	}
 #endif
+
+all_time += stopWatch.stop();
+all_iterations += 1.0;
 
 }
 

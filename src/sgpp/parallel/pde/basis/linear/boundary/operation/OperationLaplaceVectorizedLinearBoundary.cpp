@@ -126,6 +126,13 @@ std::cout<<"IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::en
         }
         
         OperationLaplaceVectorizedLinearBoundary::~OperationLaplaceVectorizedLinearBoundary() {
+
+double flop = ((double) (28) * storage->dim() + storage->dim() * storage->dim()) * storage->size() * all_i_size[process_index];
+
+double gflops = (all_iterations * flop / all_time) / 1000000000;
+double bandwidth = all_iterations* sizeof(double) * storage->size() * storage->size() / all_time ;
+std::cout<<"IN OPERATOR : LAPLACE BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations <<" TIME :" << all_time << std::endl;
+
 			delete this->level_;
             delete this->level_int_;
             delete this->index_;
@@ -154,6 +161,11 @@ std::cout<<"IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::en
 		}
 		
 		void OperationLaplaceVectorizedLinearBoundary::init_constants(){		
+
+
+all_time = 0.0;
+all_iterations = 0.0;
+
             #if defined(__SSE4_2__)
             this->constants_ = new sg::base::DataVector(0);
             
@@ -481,7 +493,8 @@ std::cout<<"IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::en
         }
         
         void OperationLaplaceVectorizedLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-            
+           
+stopWatch.start(); 
             size_t process_i_start = all_i_start[process_index];
             size_t process_i_end = process_i_start + all_i_size[process_index];
 
@@ -1129,6 +1142,8 @@ std::cout<<"IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::en
 	}
 #endif
 
+all_time += stopWatch.stop();
+all_iterations += 1.0;
 }
 
 void OperationLaplaceVectorizedLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {

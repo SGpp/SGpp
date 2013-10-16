@@ -11,6 +11,7 @@
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
+#include "base/tools/SGppStopwatch.hpp"
 
 
 #include "parallel/tools/TypesParallel.hpp"
@@ -70,7 +71,10 @@ namespace sg {
 			void init_grid_storage();
             
 			double l2dot(size_t i, size_t j, size_t dim);
-            
+           double all_time;
+double all_iterations;
+sg::base::SGppStopwatch stopWatch;
+             
         public:
             /**
              * Construtor of OperationLTwoDotProductVectorizedLinear
