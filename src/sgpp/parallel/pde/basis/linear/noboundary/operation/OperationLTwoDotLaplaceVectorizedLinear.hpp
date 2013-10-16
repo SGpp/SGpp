@@ -72,7 +72,9 @@ namespace sg {
 		
         double gradient(size_t i, size_t j, size_t dim);
         double l2dot(size_t i, size_t j, size_t dim);
-
+double all_time;
+double all_iterations;
+sg::base::SGppStopwatch stopWatch;
       public:
         /**
          * Construtor of OperationLaplaceLinear

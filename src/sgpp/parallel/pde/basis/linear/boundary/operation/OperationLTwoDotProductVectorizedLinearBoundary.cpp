@@ -89,6 +89,13 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
         }
 
         OperationLTwoDotProductVectorizedLinearBoundary::~OperationLTwoDotProductVectorizedLinearBoundary() {
+
+double flop = ((double) 23 * storage->dim() ) * storage->size() * all_i_size[process_index];
+
+double gflops = (all_iterations * flop / all_time) / 1000000000;
+double bandwidth = all_iterations* sizeof(double) * storage->size() * storage->size() / all_time ;
+std::cout<<"IN OPERATOR : LTDOT BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations <<" TIME :" << all_time << std::endl;
+
 			delete this->level_;
             delete this->level_int_;
             delete this->index_;
@@ -114,7 +121,12 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
 		}
 		
 		void OperationLTwoDotProductVectorizedLinearBoundary::init_constants(){		
-            #if defined(__SSE4_2__)
+
+
+all_time = 0.0;
+all_iterations = 0.0;
+ 
+           #if defined(__SSE4_2__)
             this->constants_ = new sg::base::DataVector(0);
             
             this->constants_->append(0);
@@ -425,6 +437,8 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
         }
 
         void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+
+stopWatch.start();
 
             size_t process_i_start = all_i_start[process_index];
             size_t process_i_end = process_i_start + all_i_size[process_index];
@@ -900,6 +914,9 @@ std::cout<<"IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << 
 #endif
 
 
+
+all_time += stopWatch.stop();
+all_iterations += 1.0;
             }
 
             void OperationLTwoDotProductVectorizedLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
