@@ -563,6 +563,10 @@ ifeq ($(CC),CC)
 	mkdir -p tmp/build_native/BSSolver_cray
 	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_cray "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_cray.a" "BINNAME=BSSolver_CRAY_MPI" "EXT=$(EXT)"
 endif
+ifeq ($(CC),mpiCC)
+	mkdir -p tmp/build_native/BSSolver_ibm
+	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_ibm "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_ibm.a" "BINNAME=BSSolver_IBM_MPI" "EXT=$(EXT)"
+endif
 
 ###################################################################
 # Builds a Black Scholes Solver with Stretching
@@ -640,6 +644,10 @@ endif
 ifeq ($(CC),mpigxx)
 	mkdir -p tmp/build_native/HESolver_mpigxx
 	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx.a" "BINNAME=HESolver_GCC_MPI" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiCC)
+	mkdir -p tmp/build_native/HESolver_ibm
+	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_ibm "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_ibm.a" "BINNAME=HESolver_IBM_MPI" "EXT=$(EXT)"
 endif
 
 ###################################################################
