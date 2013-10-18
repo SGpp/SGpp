@@ -93,7 +93,7 @@ namespace sg {
 
               // if there no more grid points --> test if we should refine the grid
               if (child_iter == end_iter) {
-                RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
+                RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
                 // DEBUG
                 //std::cout << "iter-second: " << iter->second << " current_value: " << current_value << std::endl;
@@ -112,7 +112,7 @@ namespace sg {
               child_iter = storage->find(&index);
 
               if (child_iter == end_iter) {
-                RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
+                RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
                 // DEBUG
                 //std::cout << "iter-second: " << iter->second << " current_value: " << current_value << std::endl;
