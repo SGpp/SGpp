@@ -759,10 +759,13 @@ stopWatch.start();
 	MPI_Alltoallv(result_ptr, send_size.data(), send_start.data(), MPI_DOUBLE,
 				   result_ptr, recv_size.data(), recv_start.data(), MPI_DOUBLE,
 				   MPI_COMM_WORLD);
-	*/
+	
 	MPI_Allgatherv(MPI_IN_PLACE, send_size[0], MPI_DOUBLE,
 				   result_ptr, recv_size.data(), recv_start.data(), 
 				   MPI_DOUBLE, MPI_COMM_WORLD);
+        */
+        MPI_Allreduce(MPI_IN_PLACE, result_ptr, (int)result.getSize(), MPI_DOUBLE,
+                                   MPI_SUM, MPI_COMM_WORLD);
 #endif
 
 
