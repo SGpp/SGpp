@@ -795,14 +795,14 @@ stopWatch.start();
             }
             
 #elif defined(__SSE4_2__) && !defined(__AVX__)
-
+						
             #pragma omp parallel
             {
 				std::size_t padded_size = this->level_->getNcols();               
 				double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
 #if ! defined (STORE_PDE_MATRIX_BOUNDARY)
 				double* result_ptr_ = result_boundary_filtered_->getPointer();
-#endif				
+#endif
 				double* level_ptr_ = this->level_->getPointer();
 				double* level_int_ptr_ = this->level_int_->getPointer();
 				double* index_ptr_ = this->index_->getPointer();
@@ -846,10 +846,10 @@ stopWatch.start();
                         
                         for(size_t j = 0; j < padded_size; j+= VECTOR_SIZE * REG_BCOUNT)
                         {
-#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
+#if defined (STORE_PDE_MATRIX_BOUNDARY)
 						mm_result = _mm_setzero_pd();
 						mm_result2 = _mm_setzero_pd();
-#endif
+#endif	
                             double* gradient_temp_ptr1 = gradient_temp_ptr;
                             double* l2dot_temp_ptr1 = l2dot_temp_ptr;
                             
@@ -865,9 +865,9 @@ stopWatch.start();
                                 __m128d mm_ljd = _mm_load_pd(temp_level_ptr);
                                 __m128d mm_ijd = _mm_load_pd(temp_index_ptr);
                                 
-                                __m128d mm_doGrad = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd),
-                                                                  _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd),
-                                                                                _mm_cmpneq_pd(mm_lid, mm_one))); //+5
+                                __m128d mm_doGrad = _mm_and_pd(_mm_cmp_pd(mm_lid, mm_ljd, _CMP_EQ_OQ),
+                                                                  _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ),
+                                                                                _mm_cmp_pd(mm_lid, mm_one, _CMP_NEQ_OQ))); //+5
                                 
                                 
                                 __m128d mm_grad = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad)); //1+1
@@ -880,9 +880,9 @@ stopWatch.start();
                                 __m128d mm_in_lid = _mm_loaddup_pd(level_int_boundary_filtered_ptr_ + i_idx);
                                 __m128d mm_in_ljd = _mm_load_pd(temp_level_int_ptr);
                                 
-                                __m128d mm_res_one = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd), _mm_cmpneq_pd(mm_ljd, mm_one)))); //1+2
+                                __m128d mm_res_one = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ), _mm_cmp_pd(mm_ljd, mm_one, _CMP_NEQ_OQ)))); //1+2
                                 
-                                __m128d mm_selector = _mm_cmple_pd(mm_lid, mm_ljd);//+6
+                                __m128d mm_selector = _mm_cmp_pd(mm_lid, mm_ljd, _CMP_LE_OQ);//+6
                                 __m128d mm_i1d = _mm_blendv_pd(mm_iid, mm_ijd, mm_selector);
                                 __m128d mm_in_l1d = _mm_blendv_pd(mm_in_lid, mm_in_ljd, mm_selector);
                                 __m128d mm_in_l2d = _mm_blendv_pd(mm_in_ljd, mm_in_lid, mm_selector);
@@ -891,8 +891,9 @@ stopWatch.start();
                                 
                                 __m128d mm_q = _mm_mul_pd(_mm_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
                                 __m128d mm_p = _mm_mul_pd(_mm_add_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
-                                __m128d mm_overlap = _mm_cmplt_pd(_mm_max_pd(mm_q, _mm_mul_pd(_mm_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                                                   _mm_min_pd(mm_p, _mm_mul_pd(_mm_add_pd(mm_i2d, mm_one), mm_in_l2d))); //6+1
+                                __m128d mm_overlap = _mm_cmp_pd(_mm_max_pd(mm_q, _mm_mul_pd(_mm_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                                                   _mm_min_pd(mm_p, _mm_mul_pd(_mm_add_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                                                   _CMP_LT_OQ); //6+1
                                 
                                 __m128d mm_temp_res_inner = _mm_sub_pd(_mm_sub_pd(mm_two,
                                                                                         _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d, mm_q), mm_i2d)))),
@@ -902,14 +903,14 @@ stopWatch.start();
                                                                           __m128d mm_temp_res_leftbound = _mm_sub_pd(mm_two, mm_temp_res_rightbound); //1
                                                                           
                                                                           __m128d mm_temp_res = _mm_blendv_pd(mm_temp_res_inner,
-                                                                                                                 _mm_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm_cmpeq_pd(mm_i2d, mm_one)),
-                                                                                                                 _mm_cmpeq_pd(mm_l2d, mm_one));
+                                                                                                                 _mm_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm_cmp_pd(mm_i2d, mm_one, _CMP_EQ_OQ)),
+                                                                                                                 _mm_cmp_pd(mm_l2d, mm_one, _CMP_EQ_OQ));
                                                                           
                                                                           
                                                                           
                                                                           mm_temp_res = _mm_mul_pd(mm_temp_res, _mm_mul_pd(mm_half, mm_in_l1d)); // 2 flops
                                 __m128d mm_res_two = _mm_and_pd(mm_temp_res, mm_overlap); // Now mask result //+1
-                                mm_selector = _mm_cmpneq_pd(mm_lid, mm_ljd); // +1
+                                mm_selector = _mm_cmp_pd(mm_lid, mm_ljd, _CMP_NEQ_OQ); // +1
                                 
                                 __m128d mm_val = _mm_blendv_pd(mm_res_one, mm_res_two, mm_selector);  // +1
                                 mm_val = _mm_mul_pd(mm_val, mm_lcl_q); //1 flop
@@ -918,9 +919,9 @@ stopWatch.start();
                                 ////////////////////////////////////////////////////////
                                 __m128d mm_ljd2 = _mm_load_pd(temp_level_ptr + VECTOR_SIZE);
                                 __m128d mm_ijd2 = _mm_load_pd(temp_index_ptr + VECTOR_SIZE);
-                                __m128d mm_doGrad2 = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd2),
-                                                                   _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd2),
-                                                                                 _mm_cmpneq_pd(mm_lid, mm_one))); //1 // +2
+                                __m128d mm_doGrad2 = _mm_and_pd(_mm_cmp_pd(mm_lid, mm_ljd2, _CMP_EQ_OQ),
+                                                                   _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ),
+                                                                                 _mm_cmp_pd(mm_lid, mm_one, _CMP_NEQ_OQ))); //1 // +2
                                 
                                 
                                 __m128d mm_grad2 = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad2)); //2
@@ -930,9 +931,9 @@ stopWatch.start();
                                 
                                 __m128d mm_in_ljd2 = _mm_load_pd(temp_level_int_ptr + VECTOR_SIZE);
                                 
-                                __m128d mm_res_one2 = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd2), _mm_cmpneq_pd(mm_ljd2, mm_one)))); //2 // +1
+                                __m128d mm_res_one2 = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ), _mm_cmp_pd(mm_ljd2, mm_one, _CMP_NEQ_OQ)))); //2 // +1
                                 
-                                __m128d mm_selector2 = _mm_cmple_pd(mm_lid, mm_ljd2);
+                                __m128d mm_selector2 = _mm_cmp_pd(mm_lid, mm_ljd2, _CMP_LE_OQ);
                                 __m128d mm_i1d2 = _mm_blendv_pd(mm_iid, mm_ijd2, mm_selector2);
                                 __m128d mm_in_l1d2 = _mm_blendv_pd(mm_in_lid, mm_in_ljd2, mm_selector2);
                                 __m128d mm_i2d2 = _mm_blendv_pd(mm_ijd2, mm_iid, mm_selector2);
@@ -943,8 +944,9 @@ stopWatch.start();
                                 __m128d mm_q2 = _mm_mul_pd(_mm_sub_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
                                 __m128d mm_p2 = _mm_mul_pd(_mm_add_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
                                 
-                                __m128d mm_overlap2 = _mm_cmplt_pd(_mm_max_pd(mm_q2, _mm_mul_pd(_mm_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                                                    _mm_min_pd(mm_p2, _mm_mul_pd(_mm_add_pd(mm_i2d2, mm_one), mm_in_l2d2))); //6 flop // +1
+                                __m128d mm_overlap2 = _mm_cmp_pd(_mm_max_pd(mm_q2, _mm_mul_pd(_mm_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                                                    _mm_min_pd(mm_p2, _mm_mul_pd(_mm_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                                                    _CMP_LT_OQ); //6 flop // +1
                                 
                                 __m128d mm_temp_res_inner2 = _mm_sub_pd(_mm_sub_pd(mm_two,
                                                                                          _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
@@ -954,13 +956,13 @@ stopWatch.start();
                                                                            __m128d mm_temp_res_leftbound2 = _mm_sub_pd(mm_two, mm_temp_res_rightbound2);
                                                                            
                                                                            __m128d mm_temp_res2 = _mm_blendv_pd(mm_temp_res_inner2,
-                                                                                                                   _mm_blendv_pd(mm_temp_res_leftbound2, mm_temp_res_rightbound2, _mm_cmpeq_pd(mm_i2d2, mm_one)),
-                                                                                                                   _mm_cmpeq_pd(mm_l2d2, mm_one));
+                                                                                                                   _mm_blendv_pd(mm_temp_res_leftbound2, mm_temp_res_rightbound2, _mm_cmp_pd(mm_i2d2, mm_one, _CMP_EQ_OQ)),
+                                                                                                                   _mm_cmp_pd(mm_l2d2, mm_one, _CMP_EQ_OQ));
                                                                            
                                                                            mm_temp_res2 = _mm_mul_pd(mm_temp_res2, _mm_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
                                 __m128d mm_res_two2 = _mm_and_pd(mm_temp_res2, mm_overlap2); // Now mask result //1 flop
                                 
-                                mm_selector2 = _mm_cmpneq_pd(mm_lid, mm_ljd2);
+                                mm_selector2 = _mm_cmp_pd(mm_lid, mm_ljd2, _CMP_NEQ_OQ);
                                 
                                 __m128d mm_val2 = _mm_blendv_pd(mm_res_one2, mm_res_two2, mm_selector2);
                                 
@@ -1037,6 +1039,7 @@ stopWatch.start();
                                 
                                 gradient_temp_ptr1 += VECTOR_SIZE;
                             }
+							
 							__m128d mm_temp = _mm_load_pd(l2dot_temp_ptr + VECTOR_SIZE * (max_dims - 1));
 							__m128d mm_temp2 = _mm_load_pd(l2dot_temp_ptr + temp_cols + VECTOR_SIZE * (max_dims - 1));
 							
@@ -1045,8 +1048,7 @@ stopWatch.start();
 							
 							
 							mm_result = _mm_add_pd(mm_result, mm_temp);
-							mm_result2 = _mm_add_pd(mm_result2, mm_temp2);
-							
+							mm_result2 = _mm_add_pd(mm_result2, mm_temp2);	
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
 							double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
 							_mm_store_pd(operation_result_dest_ptr + j, mm_result);
