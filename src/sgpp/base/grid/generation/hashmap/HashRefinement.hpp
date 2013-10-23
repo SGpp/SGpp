@@ -56,6 +56,13 @@ namespace sg {
           refineGridpoint1D(storage, *index, d);
         }
 
+        /**
+         * Create all missing grid points in a hierarchical difference space (index set usually named with W(level)) on the provided level.
+         * @param storage hashmap that stores the grid points
+         * @param array containing the levels on which to create the difference space.
+         */
+        void refineSubspace(GridStorage* storage, level_t* level);
+
       protected:
         /**
          * This method refines a grid point by generating the children in every dimension
@@ -73,6 +80,8 @@ namespace sg {
          * @param index The point that should be inserted
          */
         void createGridpoint(GridStorage* storage, index_type& index);
+
+        void createSubspace(GridStorage* storage, index_type& index);
 
         /**
          * Examines the grid points and stores the indices those that can be refined
@@ -103,8 +112,11 @@ namespace sg {
                                                 RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
                                                 RefinementFunctor::value_type* max_values);
 
-    };
 
+    	private:
+        //@TODO (lettrich, high) documentation
+        void createSubspaceHelper(GridStorage* storage, index_type& index, size_t dim);
+    };
   }
 }
 
