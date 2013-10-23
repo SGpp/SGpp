@@ -84,6 +84,10 @@ namespace sg {
       }
     }
 
+//void HashRefinement::createSubspace(GridStorage* storage,
+//		level_t* levelVector) {
+//}
+
     void HashRefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
       RefinementFunctor::value_type max_value;
       size_t max_index;
@@ -202,6 +206,22 @@ namespace sg {
       index.set(d, source_level, source_index);
     }
 
+//    void HashRefinement::refineSubspace(GridStorage* storage, level_t* level) {
+//    	//index_type storageIndex = storage->end()->first;
+//    	index_type storageIndex;
+//    	//2^l objekte
+//    	size_t maxIndex = 2 << level[];
+//
+//    	for (size_t d = 0; d < storage->dim(); ++d) {
+//			for (int i = 0; i < maxIndex; ++i) {
+//				storageIndex.set(d,level,i);
+//				storage->find(&storageIndex);
+//
+//			}
+//		}
+//
+//    }
+
 
     void HashRefinement::refineGridpoint(GridStorage* storage, size_t refine_index) {
       index_type index((*storage)[refine_index]);
@@ -221,12 +241,52 @@ namespace sg {
       index_t source_index;
       level_t source_level;
 
+      //index_t l;
+      //level_t i;
+
+      std::cout << "creating a new gridpoint\n";
       for (size_t d = 0; d < storage->dim(); d++) {
+    	//index.get(d,l,i);
+    	//std::cout << "Adding Gridpoint in dimension" <<  d  << "; level " << l  << "; index " << i << ";\n";
         createGridpoint1D(index, d, storage, source_index, source_level);
       }
 
       storage->insert(index);
     }
 
+    void HashRefinement::createSubspace(GridStorage* storage, index_type& index) {
+    	createSubspaceHelper(storage,index,0);
+    }
+
+    //@TODO (lettrich, low) improve performance by iterative algorithm
+    void HashRefinement::createSubspaceHelper(GridStorage* storage,index_type& storageIndex, size_t dim){
+
+    	//go through every dimension
+    	if (dim < storageIndex.dim()) {
+
+    		//get level of subspace on that dimension
+    		u_int dummy;
+    		u_int level;
+    		storageIndex.get(dim,dummy,level);
+
+    		//start with index 1
+    		u_int index=1;
+    		//iterate over all allowed indices on that level, in that dimension
+    		while(index < static_cast <size_t>( 1 << level)){
+
+    			//set gridpoint's index accordingly
+    			storageIndex.set(dim,level,index);
+    			//recursive call, so that we iterate over all indices on all levels in all dimensions
+    			createSubspaceHelper(storage,storageIndex,dim+1);
+    			//move to next admissible
+    			index=index+2;
+    		}
+
+		} else {
+			//reached end of recursion scheme. add a new grid point.
+			createGridpoint(storage,storageIndex);
+		}
+    }
   }
 }
+
