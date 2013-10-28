@@ -29,7 +29,7 @@
 #include <cstring>
 #include <iostream>
 
-#if defined(__SSE4_2__) || defined(__AVX__)
+#if defined(__SSE4_2__) || defined(__AVX__) || defined(__MIC__)
 #include <immintrin.h>
 #endif
 #if defined(__FMA4__)
@@ -40,7 +40,9 @@
 #undef __AVX__
 #endif
 
-#if defined(__SSE4_2__) && !defined(__AVX__)
+#if defined(__MIC__)
+#define VECTOR_SIZE 8
+#elif defined(__SSE4_2__) && !defined(__AVX__)
 #define VECTOR_SIZE 2
 #else
 #define VECTOR_SIZE 4
@@ -152,7 +154,7 @@ std::cout<<"IN OPERATOR : COMBINED, GFLOPS :" << gflops << " BANDWIDTH :" << ban
 all_time = 0.0;
 all_iterations = 0.0;
 	
-#if defined(__SSE4_2__)
+#if defined(__SSE4_2__) || defined(__MIC__)
             this->constants_ = new sg::base::DataVector(0);
             
             this->constants_->append(0);
@@ -454,7 +456,268 @@ stopWatch.start();
 #endif
 
 
-#if defined(__SSE4_2__) && defined(__AVX__)
+#if defined(__MIC__)
+#elif defined 0
+			
+            #pragma omp parallel
+            {		
+				std::size_t padded_size = this->level_->getNcols();               
+				double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
+#if ! defined (STORE_MATRIX)
+				double* result_ptr_ = result.getPointer();
+#endif
+				double* level_ptr_ = this->level_->getPointer();
+				double* level_int_ptr_ = this->level_int_->getPointer();
+				double* index_ptr_ = this->index_->getPointer();
+
+				double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
+				double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
+				double* lambda_ptr_ = this->lambda_->getPointer();
+				size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
+				
+				double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
+				double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
+				double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
+				
+				size_t max_dims = this->storage->dim();
+				size_t page_cap_rounded = max_dims * BLOCK_LENGTH;
+				
+				__m512d mm_half = _mm512_extload_pd(constants + 1, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				__m512d mm_two_thirds = _mm512_extload_pd(constants + 2, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				__m512d mm_one = _mm512_extload_pd(constants + 3, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				__m512d mm_two = _mm512_extload_pd(constants + 4, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				__m512d mm_abs = _mm512_extload_pd(constants + 5, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				
+				
+				__m512d mm_timestep_coeff = _mm512_broadcast_sd(&TimestepCoeff);
+                
+				size_t thr_start;
+				size_t thr_end;
+				sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+
+                for(size_t i = thr_start; i < thr_end; i++)
+                {
+                    __m512d mm_result = _mm512_setzero_pd();
+                    __m512d mm_result2 = _mm512_setzero_pd();
+                    
+                    size_t i_page = i / BLOCK_LENGTH;
+                    size_t i_offset = i_page *  page_cap_rounded + i % BLOCK_LENGTH;
+                    
+                    double* temp_level_ptr = level_ptr_;
+                    double* temp_level_int_ptr = level_int_ptr_;
+                    double* temp_index_ptr = index_ptr_;
+                    
+                    for(size_t j = 0; j < padded_size; j+= VECTOR_SIZE * REG_BCOUNT)
+                    {
+#if defined (STORE_MATRIX)
+						mm_result = _mm512_setzero_pd();
+						mm_result2 = _mm512_setzero_pd();
+#endif					
+                        double* gradient_temp_ptr1 = gradient_temp_ptr;
+                        double* l2dot_temp_ptr1 = l2dot_temp_ptr;
+                        
+                        size_t i_idx = i_offset;
+						
+                        for(size_t dim = 0; dim < max_dims; dim++)
+                        {                            
+                            __m512d mm_lcl_q = _mm512_extload_pd(lcl_q_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+                            __m512d mm_lcl_q_inv = _mm512_extload_pd(lcl_q_inv_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+							
+                            __m512d mm_lid = _mm512_extload_pd(level_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+                            __m512d mm_iid = _mm512_extload_pd(index_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+                            __m512d mm_ljd = _mm512_load_pd(temp_level_ptr);
+                            __m512d mm_ijd = _mm512_load_pd(temp_index_ptr);
+                            
+                            __m512d mm_doGrad = _mm512_and_pd(_mm512_cmp_pd(mm_lid, mm_ljd, _CMP_EQ_OQ),
+                                                              _mm512_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ)); //+3
+                                                              
+                                                              
+                                                              __m512d mm_grad = _mm512_mul_pd(mm_lid, _mm512_and_pd(mm_two, mm_doGrad)); //1+1
+                                                              
+                                                              mm_grad = _mm512_mul_pd(mm_grad, mm_lcl_q_inv); //1
+                                                              
+                                                              _mm512_store_pd(gradient_temp_ptr1, mm_grad);
+                                                              
+                                                              
+                                                              __m512d mm_in_lid = _mm512_broadcast_sd(level_int_ptr_ + i_idx);
+                                                              __m512d mm_in_ljd = _mm512_load_pd(temp_level_int_ptr);
+                                                              
+                                                              __m512d mm_res_one = _mm512_mul_pd(mm_two_thirds, _mm512_and_pd(mm_in_lid, _mm512_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ))); //1+2
+                                                              
+                                                              __m512d mm_selector = _mm512_cmp_pd(mm_lid, mm_ljd, _CMP_LE_OQ);//+6
+                                                              __m512d mm_i1d = _mm512_blendv_pd(mm_iid, mm_ijd, mm_selector);
+                                                              __m512d mm_in_l1d = _mm512_blendv_pd(mm_in_lid, mm_in_ljd, mm_selector);
+                                                              __m512d mm_in_l2d = _mm512_blendv_pd(mm_in_ljd, mm_in_lid, mm_selector);
+                                                              __m512d mm_i2d = _mm512_blendv_pd(mm_ijd, mm_iid, mm_selector);
+                                                              __m512d mm_l2d = _mm512_blendv_pd(mm_ljd, mm_lid, mm_selector);
+                                                              
+                                                              __m512d mm_q = _mm512_mul_pd(_mm512_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
+                                                              __m512d mm_p = _mm512_mul_pd(_mm512_add_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
+                                                              __m512d mm_overlap = _mm512_cmp_pd(_mm512_max_pd(mm_q, _mm512_mul_pd(_mm512_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                                                                                 _mm512_min_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                                                                                 _CMP_LT_OQ); //6+1
+                                                              
+                                                              __m512d mm_temp_res = _mm512_sub_pd(_mm512_sub_pd(mm_two,
+                                                                                                                _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_q), mm_i2d)))),
+                                                                                                  _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_p), mm_i2d)))); // 8 flops
+                                                              mm_temp_res = _mm512_mul_pd(mm_temp_res, _mm512_mul_pd(mm_half, mm_in_l1d)); // 2 flops
+                                                              __m512d mm_res_two = _mm512_and_pd(mm_temp_res, mm_overlap); // Now mask result //+1
+                            mm_selector = _mm512_cmp_pd(mm_lid, mm_ljd, _CMP_NEQ_OQ); // +1
+                            
+                            __m512d mm_val = _mm512_blendv_pd(mm_res_one, mm_res_two, mm_selector);  // +1
+                            mm_val = _mm512_mul_pd(mm_val, mm_lcl_q); //1 flop
+                            _mm512_store_pd(l2dot_temp_ptr1, mm_val);
+                            
+                            ////////////////////////////////////////////////////////
+                            __m512d mm_ljd2 = _mm512_load_pd(temp_level_ptr + VECTOR_SIZE);
+                            __m512d mm_ijd2 = _mm512_load_pd(temp_index_ptr + VECTOR_SIZE);
+                            __m512d mm_doGrad2 = _mm512_and_pd(_mm512_cmp_pd(mm_lid, mm_ljd2, _CMP_EQ_OQ),
+                                                               _mm512_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ)); //1 // +2
+                                                               
+                                                               __m512d mm_grad2 = _mm512_mul_pd(mm_lid, _mm512_and_pd(mm_two, mm_doGrad2)); //2
+                                                               
+                                                               mm_grad2 = _mm512_mul_pd(mm_grad2, mm_lcl_q_inv); //1
+                                                               _mm512_store_pd(gradient_temp_ptr1 + temp_cols, mm_grad2);
+                                                               
+                                                               __m512d mm_in_ljd2 = _mm512_load_pd(temp_level_int_ptr + VECTOR_SIZE);
+                                                               
+                                                               __m512d mm_res_one2 = _mm512_mul_pd(mm_two_thirds, _mm512_and_pd(mm_in_lid, _mm512_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ))); //2 // +1
+                                                               __m512d mm_selector2 = _mm512_cmp_pd(mm_lid, mm_ljd2, _CMP_LE_OQ);
+                                                               __m512d mm_i1d2 = _mm512_blendv_pd(mm_iid, mm_ijd2, mm_selector2);
+                                                               __m512d mm_in_l1d2 = _mm512_blendv_pd(mm_in_lid, mm_in_ljd2, mm_selector2);
+                                                               __m512d mm_i2d2 = _mm512_blendv_pd(mm_ijd2, mm_iid, mm_selector2);
+                                                               __m512d mm_l2d2 = _mm512_blendv_pd(mm_ljd2, mm_lid, mm_selector2);
+                                                               __m512d mm_in_l2d2 = _mm512_blendv_pd(mm_in_ljd2, mm_in_lid, mm_selector2);
+                                                               
+                                                               
+                                                               __m512d mm_q2 = _mm512_mul_pd(_mm512_sub_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
+                                                               __m512d mm_p2 = _mm512_mul_pd(_mm512_add_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
+                                                               
+                                                               __m512d mm_overlap2 = _mm512_cmp_pd(_mm512_max_pd(mm_q2, _mm512_mul_pd(_mm512_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                                                                                   _mm512_min_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                                                                                   _CMP_LT_OQ); //6 flop // +1
+                                                               
+                                                               __m512d mm_temp_res2 = _mm512_sub_pd(_mm512_sub_pd(mm_two,
+                                                                                                                  _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
+                                                                                                    _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d2, mm_p2), mm_i2d2)))); // 8 flops
+                                                               
+                                                               
+                                                               mm_temp_res2 = _mm512_mul_pd(mm_temp_res2, _mm512_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
+                                                               __m512d mm_res_two2 = _mm512_and_pd(mm_temp_res2, mm_overlap2); // Now mask result //1 flop
+                                                               
+                                                               mm_selector2 = _mm512_cmp_pd(mm_lid, mm_ljd2, _CMP_NEQ_OQ);
+                                                               
+                                                               __m512d mm_val2 = _mm512_blendv_pd(mm_res_one2, mm_res_two2, mm_selector2);
+                                                               
+                                                               
+                                                               mm_val2 = _mm512_mul_pd(mm_val2, mm_lcl_q); //1 flop
+                                                               
+                                                               _mm512_store_pd(l2dot_temp_ptr1 + temp_cols, mm_val2);
+                                                               
+                                                               
+                                                               gradient_temp_ptr1 += VECTOR_SIZE;
+                                                               l2dot_temp_ptr1 += VECTOR_SIZE;
+                                                               
+                                                               temp_level_ptr += BLOCK_LENGTH;
+                                                               temp_level_int_ptr += BLOCK_LENGTH;
+                                                               temp_index_ptr += BLOCK_LENGTH;
+                                                               
+                                                               i_idx += BLOCK_LENGTH;
+                        }
+                        
+                        gradient_temp_ptr1 = gradient_temp_ptr;
+						
+						__m512d mm_element = _mm512_setzero_pd();
+                        __m512d mm_element2 = _mm512_setzero_pd();
+						
+                        for(size_t d_outer = 0; d_outer < max_dims; d_outer++) // D + 2
+                        {
+                            mm_element =  _mm512_load_pd(alpha_padded_temp_ptr_ + j);
+							
+                            mm_element2 = _mm512_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);    
+                            
+                            l2dot_temp_ptr1 = l2dot_temp_ptr;
+                            
+                            for(size_t d_inner = 0; d_inner < d_outer; d_inner++)
+                            {
+                                //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
+                                __m512d mm_temp = _mm512_load_pd(l2dot_temp_ptr1);
+                                mm_element = _mm512_mul_pd(mm_element, mm_temp);
+                                __m512d mm_temp2 = _mm512_load_pd(l2dot_temp_ptr1 + temp_cols);
+                                mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
+                                
+                                l2dot_temp_ptr1 += VECTOR_SIZE;
+                            }
+                            
+                            l2dot_temp_ptr1 += VECTOR_SIZE;
+                            
+                            for(size_t d_inner = d_outer + 1; d_inner < max_dims; d_inner++)
+                            {
+                                //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
+                                __m512d mm_temp = _mm512_load_pd(l2dot_temp_ptr1);
+                                mm_element = _mm512_mul_pd(mm_element, mm_temp);
+                                __m512d mm_temp2 = _mm512_load_pd(l2dot_temp_ptr1 + temp_cols);
+                                mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
+                                
+                                l2dot_temp_ptr1 += VECTOR_SIZE;
+                            }
+                            
+                            __m512d mm_lambda = _mm512_broadcast_sd(lambda_ptr_ + d_outer);
+							
+							__m512d mm_temp = _mm512_load_pd(gradient_temp_ptr1);
+							__m512d mm_temp2 = _mm512_load_pd(gradient_temp_ptr1 + temp_cols);
+							
+                            mm_temp = _mm512_mul_pd(mm_temp, mm_lambda);
+                            mm_temp2 = _mm512_mul_pd(mm_temp2, mm_lambda);
+                            
+							mm_temp = _mm512_mul_pd(mm_temp, mm_element);
+                            mm_temp2 = _mm512_mul_pd(mm_temp2, mm_element2);
+                            
+                            
+                            mm_temp = _mm512_mul_pd(mm_temp, mm_timestep_coeff);
+                            mm_temp2 = _mm512_mul_pd(mm_temp2, mm_timestep_coeff);
+							
+							
+                            mm_result = _mm512_add_pd(mm_result, mm_temp);
+                            mm_result2 = _mm512_add_pd(mm_result2, mm_temp2);
+                            
+                            gradient_temp_ptr1 += VECTOR_SIZE;
+                        }
+						
+						__m512d mm_temp = _mm512_load_pd(l2dot_temp_ptr + VECTOR_SIZE * (max_dims - 1));
+						__m512d mm_temp2 = _mm512_load_pd(l2dot_temp_ptr + temp_cols + VECTOR_SIZE * (max_dims - 1));
+						
+						mm_temp = _mm512_mul_pd(mm_element, mm_temp);
+                        mm_temp2 = _mm512_mul_pd(mm_element2, mm_temp2);
+						
+						
+						mm_result = _mm512_add_pd(mm_result, mm_temp);
+                        mm_result2 = _mm512_add_pd(mm_result2, mm_temp2);
+						
+#if defined (STORE_MATRIX)
+						double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
+						_mm512_store_pd(operation_result_dest_ptr + j, mm_result);
+						_mm512_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
+#endif						
+					}
+                    
+                    
+                    
+#if ! defined (STORE_MATRIX)
+		
+					mm_result = _mm512_add_pd(mm_result, mm_result2);
+					mm_result = _mm512_hadd_pd(mm_result, _mm512_setzero_pd());
+                    
+					double s_result;
+					__m512d hsum = _mm512_add_pd(mm_result, _mm512_permute2f128_pd(mm_result, mm_result, 0x1));
+					_mm_store_sd(&s_result, _mm_hadd_pd( _mm512_castpd256_pd128(hsum), _mm512_castpd256_pd128(hsum) ) );
+			  
+					result_ptr_[i] += s_result;
+#endif					
+                }
+            }
+       
+#elif defined(__SSE4_2__) && defined(__AVX__)
 			
             #pragma omp parallel
             {		
@@ -971,7 +1234,7 @@ stopWatch.start();
             }
             
 #else
-#error "Needs SSE4.2 or AVX to compile"
+#error "Needs SSE4.2 or AVX or MIC to compile"
 #endif
 
 

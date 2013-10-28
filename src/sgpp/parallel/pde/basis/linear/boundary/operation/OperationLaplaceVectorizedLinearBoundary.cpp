@@ -33,7 +33,7 @@
 #include <iostream>
 #include <vector>
 	
-#if defined(__SSE4_2__) || defined(__AVX__)
+#if defined(__SSE4_2__) || defined(__AVX__) || defined(__MIC__)
 #include <immintrin.h>
 #endif
 #if defined(__FMA4__)
@@ -44,7 +44,9 @@
 #undef __AVX__
 #endif
 
-#if defined(__SSE4_2__) && !defined(__AVX__)
+#if defined(__MIC__)
+#define VECTOR_SIZE 8
+#elif defined(__SSE4_2__) && !defined(__AVX__)
 #define VECTOR_SIZE 2
 #else
 #define VECTOR_SIZE 4
@@ -166,7 +168,7 @@ std::cout<<"IN OPERATOR : LAPLACE BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :
 all_time = 0.0;
 all_iterations = 0.0;
 
-            #if defined(__SSE4_2__)
+            #if defined(__SSE4_2__) || defined(__MIC__)
             this->constants_ = new sg::base::DataVector(0);
             
             this->constants_->append(0);
@@ -516,7 +518,8 @@ stopWatch.start();
             memcpy(alpha_padded_->getPointer(), alpha.getPointer(), original_size * sizeof(double));
 #endif
 
-#if defined(__SSE4_2__) && defined(__AVX__)
+#if defined(__MIC__)
+#elif defined(__SSE4_2__) && defined(__AVX__)
 
             #pragma omp parallel
             {
@@ -1030,7 +1033,7 @@ stopWatch.start();
                                 
                                 }
 #else
-#error "Needs SSE4.2 or AVX to compile"
+#error "Needs SSE4.2 or AVX or MIC to compile"
 #endif
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
