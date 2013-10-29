@@ -482,6 +482,7 @@ stopWatch.start();
 				size_t max_dims = this->storage->dim();
 				size_t page_cap_rounded = max_dims * BLOCK_LENGTH;
 				
+				__m512d mm_zero = _mm512_extload_pd(constants + 0, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 				__m512d mm_half = _mm512_extload_pd(constants + 1, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 				__m512d mm_two_thirds = _mm512_extload_pd(constants + 2, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 				__m512d mm_one = _mm512_extload_pd(constants + 3, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
@@ -495,8 +496,8 @@ stopWatch.start();
                 for(size_t i = thr_start; i < thr_end; i++)
                 {
 
-                    __m512d mm_result = _mm512_setzero_pd();
-                    __m512d mm_result2 = _mm512_setzero_pd();
+                    __m512d mm_result = mm_zero;
+                    __m512d mm_result2 = mm_zero;
                     
                     size_t i_page = i / BLOCK_LENGTH;
                     size_t i_offset = i_page *  page_cap_rounded + i % BLOCK_LENGTH;
@@ -508,8 +509,8 @@ stopWatch.start();
                     for(size_t j = 0; j < padded_size; j+= VECTOR_SIZE * REG_BCOUNT)
                     {
 #if defined (STORE_MATRIX)
-						mm_result = _mm512_setzero_pd();
-						mm_result2 = _mm512_setzero_pd();
+						mm_result = mm_zero;
+						mm_result2 = mm_zero;
 #endif					
                         double* gradient_temp_ptr1 = gradient_temp_ptr;
                         double* l2dot_temp_ptr1 = l2dot_temp_ptr;
@@ -530,24 +531,22 @@ stopWatch.start();
                                                               _mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ)); //+3
                                                               
                                                               
-							  __m512d mm_grad = _mm512_mul_pd(mm_lid, _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_setzero_epi32(), mm_doGrad, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_two)))); //1+1
-							  
+							  __m512d mm_grad = _mm512_mask_mul_pd(mm_zero, mm_doGrad, mm_lid, mm_two); 
 							  mm_grad = _mm512_mul_pd(mm_grad, mm_lcl_q_inv); //1
 							  
 							  _mm512_store_pd(gradient_temp_ptr1, mm_grad);
-							  
-							  
+							
                             __m512d mm_in_lid = _mm512_extload_pd(level_int_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                             __m512d mm_in_ljd = _mm512_load_pd(temp_level_int_ptr);
 
-                            __m512d mm_res_one = _mm512_mul_pd(mm_two_thirds, _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_setzero_epi32(), _mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ ), _mm512_setzero_epi32(), _mm512_castpd_si512(mm_in_lid)))); //1+2
+                            __m512d mm_res_one = _mm512_mask_mul_pd(mm_zero, _mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ ), mm_two_thirds, mm_in_lid); //1+2
                                                               
 							  __mmask8 mm_selector = _mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_LE );//+6
-							  __m512d mm_i1d = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_iid), mm_selector, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_ijd)));
-							  __m512d mm_in_l1d = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_in_lid), mm_selector, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_in_ljd)));
-							  __m512d mm_in_l2d = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_in_ljd), mm_selector, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_in_lid)));
-							  __m512d mm_i2d = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_ijd), mm_selector, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_iid)));
-							  __m512d mm_l2d = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_ljd), mm_selector, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_lid)));
+							  __m512d mm_i1d = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_iid), mm_selector, _mm512_castpd_si512(mm_ijd), _mm512_castpd_si512(mm_ijd)));
+							  __m512d mm_in_l1d = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_in_lid), mm_selector, _mm512_castpd_si512(mm_in_ljd), _mm512_castpd_si512(mm_in_ljd)));
+							  __m512d mm_in_l2d = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_in_ljd), mm_selector, _mm512_castpd_si512(mm_in_lid), _mm512_castpd_si512(mm_in_lid)));
+							  __m512d mm_i2d = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_ijd), mm_selector, _mm512_castpd_si512(mm_iid), _mm512_castpd_si512(mm_iid)));
+							  __m512d mm_l2d = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_ljd), mm_selector, _mm512_castpd_si512(mm_lid), _mm512_castpd_si512(mm_lid)));
 							  
 
                             __m512d mm_q = _mm512_mul_pd(_mm512_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
@@ -560,10 +559,10 @@ stopWatch.start();
                                                                              _mm512_castsi512_pd(_mm512_and_epi64(_mm512_castpd_si512(mm_abs), _mm512_castpd_si512(_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_q), mm_i2d))))),
                                                                 _mm512_castsi512_pd(_mm512_and_epi64(_mm512_castpd_si512(mm_abs), _mm512_castpd_si512(_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_p), mm_i2d))))); // 8 flops
                             mm_temp_res = _mm512_mul_pd(mm_temp_res, _mm512_mul_pd(mm_half, mm_in_l1d)); // 2 flops
-                            __m512i mm_res_two = _mm512_mask_or_epi64(_mm512_setzero_epi32(), mm_overlap, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_temp_res)); // Now mask result //+1
+                            __m512i mm_res_two = _mm512_mask_and_epi64(_mm512_castpd_si512(mm_zero), mm_overlap, _mm512_castpd_si512(mm_temp_res), _mm512_castpd_si512(mm_temp_res)); // Now mask result //+1
                             mm_selector = _mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_NE); // +1
                             
-                            __m512d mm_val = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_res_one), mm_selector, _mm512_setzero_epi32(), (mm_res_two)));  // +1
+                            __m512d mm_val = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_res_one), mm_selector, mm_res_two, mm_res_two));  // +1
                             mm_val = _mm512_mul_pd(mm_val, mm_lcl_q); //1 flop
                             _mm512_store_pd(l2dot_temp_ptr1, mm_val);
                             
@@ -573,21 +572,21 @@ stopWatch.start();
                             __mmask8 mm_doGrad2 = (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_EQ),
                                                                _mm512_cmp_pd_mask(mm_iid, mm_ijd2, _MM_CMPINT_EQ)); //1 // +2
 															   
-						   __m512d mm_grad2 = _mm512_mul_pd(mm_lid, _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_setzero_epi32(), mm_doGrad2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_two)))); //1+1
-							  
+							__m512d mm_grad2 = _mm512_mask_mul_pd(mm_zero, mm_doGrad2, mm_lid, mm_two); 
 						   mm_grad2 = _mm512_mul_pd(mm_grad2, mm_lcl_q_inv); //1
 						   _mm512_store_pd(gradient_temp_ptr1 + temp_cols, mm_grad2);
 						                           
                             __m512d mm_in_ljd2 = _mm512_load_pd(temp_level_int_ptr + VECTOR_SIZE);
 							
-						   __m512d mm_res_one2 = _mm512_mul_pd(mm_two_thirds, _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_setzero_epi32(), _mm512_cmp_pd_mask(mm_iid, mm_ijd2, _MM_CMPINT_EQ ), _mm512_setzero_epi32(), _mm512_castpd_si512(mm_in_lid)))); //1+2
-								  
+							__m512d mm_res_one2 = _mm512_mask_mul_pd(mm_zero, _mm512_cmp_pd_mask(mm_iid, mm_ijd2, _MM_CMPINT_EQ ), mm_two_thirds, mm_in_lid); //1+2
+                            
+							
 						   __mmask8 mm_selector2 = _mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_LE);
-						   __m512d mm_i1d2 = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_iid), mm_selector2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_ijd2)));
-						   __m512d mm_in_l1d2 = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_in_lid), mm_selector2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_in_ljd2)));
-						   __m512d mm_i2d2 = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_ijd2), mm_selector2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_iid)));
-						   __m512d mm_l2d2 = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_ljd2), mm_selector2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_lid)));
-						   __m512d mm_in_l2d2 = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_in_ljd2), mm_selector2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_in_lid)));
+						   __m512d mm_i1d2 = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_iid), mm_selector2, _mm512_castpd_si512(mm_ijd2), _mm512_castpd_si512(mm_ijd2)));
+						   __m512d mm_in_l1d2 = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_in_lid), mm_selector2, _mm512_castpd_si512(mm_in_ljd2), _mm512_castpd_si512(mm_in_ljd2)));
+						   __m512d mm_i2d2 = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_ijd2), mm_selector2, _mm512_castpd_si512(mm_iid), _mm512_castpd_si512(mm_iid)));
+						   __m512d mm_l2d2 = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_ljd2), mm_selector2, _mm512_castpd_si512(mm_lid), _mm512_castpd_si512(mm_lid)));
+						   __m512d mm_in_l2d2 = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_in_ljd2), mm_selector2, _mm512_castpd_si512(mm_in_lid), _mm512_castpd_si512(mm_in_lid)));
 
 
                             __m512d mm_q2 = _mm512_mul_pd(_mm512_sub_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
@@ -603,11 +602,11 @@ stopWatch.start();
 						   
 						   
 						   mm_temp_res2 = _mm512_mul_pd(mm_temp_res2, _mm512_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
-						   __m512i mm_res_two2 = _mm512_mask_or_epi64(_mm512_setzero_epi32(), mm_overlap2, _mm512_setzero_epi32(), _mm512_castpd_si512(mm_temp_res2)); // Now mask result //1 flop
+						   __m512i mm_res_two2 = _mm512_mask_and_epi64(_mm512_castpd_si512(mm_zero), mm_overlap2, _mm512_castpd_si512(mm_temp_res2), _mm512_castpd_si512(mm_temp_res2)); // Now mask result //1 flop
 						   
 						   mm_selector2 = _mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_NE);
 						   
-						   __m512d mm_val2 = _mm512_castsi512_pd(_mm512_mask_or_epi64(_mm512_castpd_si512(mm_res_one2), mm_selector2, _mm512_setzero_epi32(), (mm_res_two2)));
+						   __m512d mm_val2 = _mm512_castsi512_pd(_mm512_mask_and_epi64(_mm512_castpd_si512(mm_res_one2), mm_selector2, mm_res_two2, mm_res_two2));
 						   mm_val2 = _mm512_mul_pd(mm_val2, mm_lcl_q); //1 flop
                                                                
 						   _mm512_store_pd(l2dot_temp_ptr1 + temp_cols, mm_val2);
