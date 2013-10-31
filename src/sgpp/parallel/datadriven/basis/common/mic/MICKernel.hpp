@@ -181,6 +181,7 @@ namespace sg {
 
             if (mic::ptrLevel == NULL) {
               mic::uploadGrid(level, index, mask, offset);
+
               if (mic::multicard_multtrans_fast) {
                 for (int i = 0; i < mic::number_mic_devices; i++) {
                   mic::tempgrid[i] = new double[result.getSize()];

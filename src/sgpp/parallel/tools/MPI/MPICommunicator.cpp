@@ -20,8 +20,7 @@ namespace sg {
       MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
 
-    void MPICommunicator::broadcastSPGridCoefficientsFromRank0(base::DataVectorSP &alpha)
-    {
+    void MPICommunicator::broadcastSPGridCoefficientsFromRank0(base::DataVectorSP& alpha) {
       MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_FLOAT, 0, MPI_COMM_WORLD);
     }
 
@@ -111,8 +110,8 @@ namespace sg {
       sg::base::DataVector tmp(alpha.getSize());
       double* sendbuf = alpha.getPointer();
       MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_DOUBLE,
-                         tmp.getPointer(), distributionSizes, distributionOffsets,
-                         MPI_DOUBLE, MPI_COMM_WORLD);
+                     tmp.getPointer(), distributionSizes, distributionOffsets,
+                     MPI_DOUBLE, MPI_COMM_WORLD);
       alpha.copyFrom(tmp);
     }
 
@@ -124,8 +123,8 @@ namespace sg {
       sg::base::DataVectorSP tmp(alpha.getSize());
       float* sendbuf = alpha.getPointer();
       MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_FLOAT,
-                         tmp.getPointer(), distributionSizes, distributionOffsets,
-                         MPI_FLOAT, MPI_COMM_WORLD);
+                     tmp.getPointer(), distributionSizes, distributionOffsets,
+                     MPI_FLOAT, MPI_COMM_WORLD);
       alpha.copyFrom(tmp);
     }
 

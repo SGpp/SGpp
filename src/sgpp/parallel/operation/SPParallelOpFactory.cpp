@@ -94,10 +94,12 @@ namespace sg {
         else if (vecType == parallel::MIC) {
           return new parallel::OperationMultipleEvalIterativeSP<parallel::SPMICKernel<parallel::SPMICLinear> > (grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
+
 #ifdef __INTEL_OFFLOAD // Hybrid CPU MIC Mode only makes sense in offload mode
         else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
           return new parallel::OperationMultipleEvalIterativeSP<parallel::SPMICCPUHybridKernel<parallel::SPX86SimdLinear, parallel::SPMICLinear> > (grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
         }
+
 #endif
 #endif
         else {

@@ -168,9 +168,11 @@ namespace sg {
       void deleteGrid() {
         if (ptrLevel != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrLevel:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+
 #endif
 
           ptrLevel = NULL;
@@ -178,9 +180,11 @@ namespace sg {
 
         if (ptrIndex != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrIndex:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+
 #endif
 
           ptrIndex = NULL;
@@ -188,9 +192,11 @@ namespace sg {
 
         if (ptrMask != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrMask:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+
 #endif
 
           ptrMask = NULL;
@@ -198,9 +204,11 @@ namespace sg {
 
         if (ptrOffset != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrOffset:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+
 #endif
 
           ptrOffset = NULL;
@@ -208,9 +216,11 @@ namespace sg {
 
         if (ptrAlphaMic != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrAlphaMic:length(0) alloc_if(0) free_if(1)) // alloc_if(0) is default for nocopy, length is ignored for free
           }
+
 #endif
 
           delete[] ptrAlphaMic;
@@ -221,9 +231,11 @@ namespace sg {
       void deleteData() {
         if (ptrData != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrData:length(0) alloc_if(0) free_if(1))
           }
+
 #endif
 
           ptrData = NULL;
@@ -231,9 +243,11 @@ namespace sg {
 
         if (ptrDataMic != NULL) {
 #ifdef __INTEL_OFFLOAD
+
           for (size_t d = 0; d < number_mic_devices; d++) {
 #pragma offload_transfer target(mic:d) nocopy(ptrDataMic:length(0) alloc_if(0) free_if(1))
           }
+
 #endif
 
           delete[] ptrDataMic;
