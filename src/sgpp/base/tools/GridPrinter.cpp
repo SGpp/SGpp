@@ -27,27 +27,29 @@ namespace sg {
 
 
     void GridPrinter::printLevelIndexGrid(std::string tFilename) {
-	std::ofstream fileout;
+      std::ofstream fileout;
 
-	  if (myGrid->getStorage()->size() > 0) {
+      if (myGrid->getStorage()->size() > 0) {
 
-		// Open filehandle
-		fileout.open(tFilename.c_str());
+        // Open filehandle
+        fileout.open(tFilename.c_str());
 
-		for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
-			for (size_t j = 0; j < myGrid->getStorage()->get(i)->dim(); j++) {
-				fileout << myGrid->getStorage()->get(i)->getLevel(j) << " "
-						<< myGrid->getStorage()->get(i)->getIndex(j) << " ";
-			}
-			fileout<<std::endl;
-		}
-		// close filehandle
-		fileout.close();
+        for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
+          for (size_t j = 0; j < myGrid->getStorage()->get(i)->dim(); j++) {
+            fileout << myGrid->getStorage()->get(i)->getLevel(j) << " "
+                    << myGrid->getStorage()->get(i)->getIndex(j) << " ";
+          }
 
-	  } else {
-		throw new tool_exception(
-				"GridPrinter::printLevelIndexGrid : The grid has no dimensions. Thus it cannot be printed!");
-	  }
+          fileout << std::endl;
+        }
+
+        // close filehandle
+        fileout.close();
+
+      } else {
+        throw new tool_exception(
+          "GridPrinter::printLevelIndexGrid : The grid has no dimensions. Thus it cannot be printed!");
+      }
     }
 
     void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, size_t PointsPerDimension) {

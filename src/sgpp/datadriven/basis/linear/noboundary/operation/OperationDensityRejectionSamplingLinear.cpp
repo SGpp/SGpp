@@ -34,6 +34,7 @@ namespace sg {
           for (size_t j = 0; j < num_dims; j++)
 #ifdef _WIN32
             tmp->set(i, j, (double)rand() / RAND_MAX);
+
 #else
             tmp->set(i, j, (double)rand_r(&seedp) / RAND_MAX);
 #endif
@@ -67,7 +68,8 @@ namespace sg {
             // pick a random data point "p"
             for (size_t d = 0; d < num_dims; d++)
 #ifdef _WIN32
-			  p[d] = static_cast<double>(rand()) / RAND_MAX;
+              p[d] = static_cast<double>(rand()) / RAND_MAX;
+
 #else
               p[d] = static_cast<double>(rand_r(&seedp)) / RAND_MAX;
 #endif
@@ -76,8 +78,10 @@ namespace sg {
             fhat = opEval->eval(*alpha, p);
 
 #ifdef _WIN32
-			if ((static_cast<double>(rand()) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
+
+            if ((static_cast<double>(rand()) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
 #else
+
             if ((static_cast<double>(rand_r(&seedp)) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
 #endif
               samples->setRow(i, p);
