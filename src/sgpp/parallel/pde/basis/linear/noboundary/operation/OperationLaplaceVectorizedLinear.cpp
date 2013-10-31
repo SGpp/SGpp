@@ -508,6 +508,7 @@ namespace sg {
             double* temp_level_int_ptr = level_int_ptr_;
             double* temp_index_ptr = index_ptr_;
 
+            #pragma prefetch(temp_level_ptr, temp_index_ptr)
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
 #if defined (STORE_MATRIX)
               mm_result = mm_zero;
@@ -518,6 +519,7 @@ namespace sg {
 
               size_t i_idx = i_offset;
 
+              #pragma prefetch(temp_level_ptr, temp_index_ptr)
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m512d mm_lcl_q = _mm512_extload_pd(lcl_q_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_lcl_q_inv = _mm512_extload_pd(lcl_q_inv_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
@@ -526,7 +528,7 @@ namespace sg {
                 __m512d mm_iid = _mm512_extload_pd(index_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_ljd = _mm512_load_pd(temp_level_ptr);
                 __m512d mm_ijd = _mm512_load_pd(temp_index_ptr);
-
+                
                 __mmask8 mm_doGrad = (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_EQ),
                                      _mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ)); //+3
 
@@ -1177,6 +1179,9 @@ namespace sg {
 
         double* alpha_padded_ptr_ = alpha_padded_->getPointer();
 
+#if defined(__MIC__)
+        #pragma prefetch
+#endif
         for (size_t i = thr_start; i < thr_end; i++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
 
@@ -1228,6 +1233,8 @@ namespace sg {
 #else
           double element = 0.0;
 
+          #pragma simd
+          #pragma prefetch 
           for (size_t j = 0 ; j < storage->size() ; ++j) {
             element += alpha[j] * *(operation_result_dest_ptr + j);
           }
