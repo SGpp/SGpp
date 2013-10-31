@@ -162,7 +162,7 @@ namespace sg {
       // Replace the inner coefficients on the boundary grid
       this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
     }
-    
+
     void HeatEquationParabolicPDESolverSystemParallelMPI::coarsenAndRefine(bool isLastTimestep) {
     }
 

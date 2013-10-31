@@ -65,8 +65,9 @@ namespace sg {
 
       // read env variable, which solver type should be selected
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+
       if (alg_selector != NULL) {
-        if(! strcmp(alg_selector, "X86SIMD")) {
+        if (! strcmp(alg_selector, "X86SIMD")) {
           myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
           mySystem = new PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(*(this->myGrid), rhs);
         } else if (! strcmp(alg_selector, "OCL")) {
@@ -102,11 +103,11 @@ namespace sg {
       rhs_solve = mySystem->generateRHS();
       MPI_Barrier(MPI_COMM_WORLD);
       dTimeRHS = myStopwatch->stop();
-        
+
       if (myGlobalMPIComm->getMyRank() == 0)
         std::cout << "right hand side has been initialized for solving!" << std::endl << std::endl << std::endl;
 
-      MPI_Barrier(MPI_COMM_WORLD);      
+      MPI_Barrier(MPI_COMM_WORLD);
       myStopwatch->start();
       myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, verbose, 0.0);
       // Copy result into coefficient vector of the boundary grid
@@ -129,7 +130,7 @@ namespace sg {
         size_t flop = (26 * this->dim + this->dim * this->dim) * entries;
         std::cout << "GFLOPS: " << 1.0 * (double) (myCG->getNumberIterations() * flop) / dTimeSolver / 1000000000.0 << std::endl;
         std::cout << "GB/s: " << ((double) (myCG->getNumberIterations() * entries * sizeof(double))) / dTimeSolver / 1000000000.0 << std::endl << std::endl << std::endl;
-      } 
+      }
 
       delete myCG;
       delete mySystem; // alpha_solver and rhs_solve are allocated and freed here!!

@@ -41,34 +41,35 @@ namespace sg {
       result.setAll(0.0);
 
       this->OCLPDEKernelsHandle.
-	RunOCLKernelLTwoDotBound(alpha, result,
-				 this->lcl_q,
-				 this->level_->getPointer(),
-				 this->index_->getPointer(),
-				 this->level_int_->getPointer(),
-				 storage->size(),
-				 storage->dim(),
-				 storage);
+      RunOCLKernelLTwoDotBound(alpha, result,
+                               this->lcl_q,
+                               this->level_->getPointer(),
+                               this->index_->getPointer(),
+                               this->level_int_->getPointer(),
+                               storage->size(),
+                               storage->dim(),
+                               storage);
     }
 
     void OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
       bool dirichlet = true;
+
       // fill q array
       for (size_t d = 0; d < this->storage->dim(); d++) {
-	sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
-	lcl_q[d] = boundingBox->getIntervalWidth(d);
-	dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);
-	dirichlet = dirichlet && boundingBox->hasDirichletBoundaryRight(d);
+        sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+        lcl_q[d] = boundingBox->getIntervalWidth(d);
+        dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);
+        dirichlet = dirichlet && boundingBox->hasDirichletBoundaryRight(d);
       }
 
       if (dirichlet) {
-	mult_dirichlet(alpha, result);
+        mult_dirichlet(alpha, result);
       } else {
-	throw new sg::base::operation_exception("OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+        throw new sg::base::operation_exception("OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
       }
     }
-    
+
   }
 }
 

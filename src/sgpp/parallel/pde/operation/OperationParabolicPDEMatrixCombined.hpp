@@ -15,7 +15,7 @@ namespace sg {
   namespace parallel {
 
     /**
-     * Abstract definition of a matrix operator interface used for 
+     * Abstract definition of a matrix operator interface used for
      * solving parabolic PDEs. It allows for applying both, the mass and stiffness
      * matrix in one mult-call.
      */
@@ -35,25 +35,25 @@ namespace sg {
          */
         virtual ~OperationParabolicPDEMatrixCombined() {}
 
-      /**
-       * Sets the timestep coefficient
-       *
-       * @param newTimestepCoeff The new timestep coefficient for the chosen 
-       * numerical approximation scheme. 
-       */
-      void setTimestepCoeff(double newTimestepCoeff) {
-        this->TimestepCoeff = newTimestepCoeff;
-      }
+        /**
+         * Sets the timestep coefficient
+         *
+         * @param newTimestepCoeff The new timestep coefficient for the chosen
+         * numerical approximation scheme.
+         */
+        void setTimestepCoeff(double newTimestepCoeff) {
+          this->TimestepCoeff = newTimestepCoeff;
+        }
 
-      /**
-       * Gets the timestep coefficient
-       *
-       * @return newTimestepCoeff The new timestep coefficient for the chosen 
-       * numerical approximation scheme. 
-       */
-      double getTimestepCoeff() {
-        return this->TimestepCoeff;
-      }
+        /**
+         * Gets the timestep coefficient
+         *
+         * @return newTimestepCoeff The new timestep coefficient for the chosen
+         * numerical approximation scheme.
+         */
+        double getTimestepCoeff() {
+          return this->TimestepCoeff;
+        }
 
     };
 

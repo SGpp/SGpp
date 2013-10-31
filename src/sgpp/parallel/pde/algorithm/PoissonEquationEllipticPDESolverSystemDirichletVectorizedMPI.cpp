@@ -18,7 +18,8 @@ namespace sg {
     PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
       // Create operations
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
-      if(! strcmp(alg_selector, "X86SIMD")) {
+
+      if (! strcmp(alg_selector, "X86SIMD")) {
         this->Laplace_Inner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, sg::parallel::X86SIMD);
         this->Laplace_Complete = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, sg::parallel::X86SIMD);
 #ifdef USEOCL
@@ -27,7 +28,7 @@ namespace sg {
         this->Laplace_Complete = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, sg::parallel::OpenCL);
 #endif
       } else {
-        throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");        
+        throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");
       }
     }
 

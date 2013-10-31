@@ -14,7 +14,7 @@ namespace sg {
       extern double LTwoDotBoundExecTime;
       extern double LTwoDotBoundAllReduceTime;
       extern SGppStopwatch* myStopwatch;
-      
+
       /// Generates and compiles the OpenCL code for the function for the LTwoDot operator on the boundary grid.
       void CompileLTwoDotBound(int id, std::string kernel_src, cl_kernel* kernel);
 
