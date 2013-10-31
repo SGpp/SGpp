@@ -22,29 +22,29 @@ namespace sg {
 
     void OperationParabolicPDESolverSystemDirichletCombined::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
-      
+
       if (this->tOperationMode == "ImEul") {
         result.setAll(0.0);
 
-	// Combined
+        // Combined
         sg::base::DataVector temp(result.getSize());
 
-	//this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
-        setTimestepCoefficientInner(-0.5*(-1.0)*this->TimestepSize);
+        //this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+        setTimestepCoefficientInner(-0.5 * (-1.0)*this->TimestepSize);
 
-	applyMassMatrixLOperatorInner(alpha, temp);
-	result.add(temp);
+        applyMassMatrixLOperatorInner(alpha, temp);
+        result.add(temp);
 
       } else if (this->tOperationMode == "CrNic") {
         result.setAll(0.0);
         sg::base::DataVector temp(result.getSize());
-	
-	//this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
-	setTimestepCoefficientInner(-0.5*(-0.5)*this->TimestepSize);
 
-	applyMassMatrixLOperatorInner(alpha, temp);
+        //this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+        setTimestepCoefficientInner(-0.5 * (-0.5)*this->TimestepSize);
 
-	result.add(temp);
+        applyMassMatrixLOperatorInner(alpha, temp);
+
+        result.add(temp);
       } else {
         throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
       }
@@ -52,6 +52,7 @@ namespace sg {
 
     sg::base::DataVector* OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
       sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
+
       if (this->tOperationMode == "ImEul") {
         rhs_complete.setAll(0.0);
 
@@ -63,10 +64,10 @@ namespace sg {
         sg::base::DataVector temp2(rhs_complete.getSize());
         sg::base::DataVector myAlpha(*this->alpha_complete);
 
-	//this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(0.5)*this->TimestepSize);
-	setTimestepCoefficientBound(-0.5*(0.5)*this->TimestepSize);
+        //this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(0.5)*this->TimestepSize);
+        setTimestepCoefficientBound(-0.5 * (0.5)*this->TimestepSize);
 
-	applyMassMatrixLOperatorBound(myAlpha, temp);
+        applyMassMatrixLOperatorBound(myAlpha, temp);
 
         rhs_complete.add(temp);
       } else {
@@ -89,20 +90,20 @@ namespace sg {
         sg::base::DataVector temp(alpha_bound.getSize());
         sg::base::DataVector temp2(alpha_bound.getSize());
 
-	//this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
-	setTimestepCoefficientBound(-0.5*(-1.0)*this->TimestepSize);
+        //this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+        setTimestepCoefficientBound(-0.5 * (-1.0)*this->TimestepSize);
 
-	applyMassMatrixLOperatorBound(alpha_bound, temp);
+        applyMassMatrixLOperatorBound(alpha_bound, temp);
 
         result_complete.add(temp);
       } else if (this->tOperationMode == "CrNic") {
         sg::base::DataVector temp(alpha_bound.getSize());
         sg::base::DataVector temp2(alpha_bound.getSize());
 
-	//this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
-	setTimestepCoefficientBound(-0.5*(-0.5)*this->TimestepSize);
+        //this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+        setTimestepCoefficientBound(-0.5 * (-0.5)*this->TimestepSize);
 
-	applyMassMatrixLOperatorBound(alpha_bound, temp);
+        applyMassMatrixLOperatorBound(alpha_bound, temp);
 
         result_complete.add(temp);
       } else {

@@ -16,7 +16,7 @@
 namespace sg {
   namespace parallel {
 
-    OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage){
+    OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
       this->TimestepCoeff = 0.0;
       this->lambda = new sg::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -30,7 +30,7 @@ namespace sg {
       storage->getLevelForIntegral(*(this->level_int_));
     }
 
-    OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage) : storage(storage) {      
+    OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage) : storage(storage) {
       this->TimestepCoeff = 0.0;
       this->lambda = new base::DataVector(storage->dim());
       this->lambda->setAll(1.0);
@@ -60,21 +60,21 @@ namespace sg {
 
       // fill q array
       for (size_t d = 0; d < this->storage->dim(); d++) {
-	sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
-	lcl_q[d] = boundingBox->getIntervalWidth(d);
-	lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
+        sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+        lcl_q[d] = boundingBox->getIntervalWidth(d);
+        lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
       }
-      
-      this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotLaplaceInner(alpha, result, 
-						 this->lcl_q, this->lcl_q_inv,
-						 this->level_->getPointer(),
-						 this->index_->getPointer(),
-						 this->level_int_->getPointer(),
-						 this->lambda->getPointer(),
-						 this->storage->size(),
-						 this->storage->dim(),
-						 this->storage,
-						 this->TimestepCoeff);
+
+      this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotLaplaceInner(alpha, result,
+          this->lcl_q, this->lcl_q_inv,
+          this->level_->getPointer(),
+          this->index_->getPointer(),
+          this->level_int_->getPointer(),
+          this->lambda->getPointer(),
+          this->storage->size(),
+          this->storage->dim(),
+          this->storage,
+          this->TimestepCoeff);
     }
   }
 

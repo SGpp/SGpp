@@ -12,7 +12,7 @@ namespace sg {
       extern double LTwoDotLaplaceBoundExecTime;
       extern double CounterLTwoDotLaplaceBound;
       extern double LTwoDotLaplaceBoundStartupTime;
-      extern double * LTwoDotLaplaceBoundAll;
+      extern double* LTwoDotLaplaceBoundAll;
 
       /// Returns the string with the OpenCL code for the function declaration for the combined LTwoDot + Laplace operator on the boundary grid.
       std::string LTwoDotLaplaceBoundHeader();

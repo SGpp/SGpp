@@ -257,10 +257,10 @@ namespace sg {
         }
       } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-	return new parallel::OperationLTwoDotProductVectorizedLinearBoundary(grid.getStorage());
+          return new parallel::OperationLTwoDotProductVectorizedLinearBoundary(grid.getStorage());
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	return new parallel::OperationLTwoDotProductVectorizedLinearBoundaryOCL(grid.getStorage());
+          return new parallel::OperationLTwoDotProductVectorizedLinearBoundaryOCL(grid.getStorage());
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
@@ -270,75 +270,75 @@ namespace sg {
       }
     }
 
-    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid,sg::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
+    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinear(grid.getStorage(), lambda);
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinear(grid.getStorage(), lambda);
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(grid.getStorage(), lambda);
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(grid.getStorage(), lambda);
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(grid.getStorage(), lambda);
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(grid.getStorage(), lambda);
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(grid.getStorage(), lambda);
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(grid.getStorage(), lambda);
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else {
-	throw base::factory_exception("OperationLTwoDotLaplaceVectorized is not implemented for this grid type.");
+        throw base::factory_exception("OperationLTwoDotLaplaceVectorized is not implemented for this grid type.");
       }
     }
 
     parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, const parallel::VectorizationType& vecType) {
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinear(grid.getStorage());
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinear(grid.getStorage());
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(grid.getStorage());
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinearOCL(grid.getStorage());
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(grid.getStorage());
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(grid.getStorage());
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(grid.getStorage());
+          return new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(grid.getStorage());
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else {
-	throw base::factory_exception("OperationLTwoDotLaplaceVectorized is not implemented for this grid type.");
+        throw base::factory_exception("OperationLTwoDotLaplaceVectorized is not implemented for this grid type.");
       }
     }
 
     base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, const parallel::VectorizationType& vecType) {
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage());
+          return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage());
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLaplaceVectorizedLinearOCL(grid.getStorage());
+          return new parallel::OperationLaplaceVectorizedLinearOCL(grid.getStorage());
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLaplaceVectorizedLinearBoundary(grid.getStorage());
+          return new parallel::OperationLaplaceVectorizedLinearBoundary(grid.getStorage());
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(grid.getStorage());
+          return new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(grid.getStorage());
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
@@ -351,26 +351,26 @@ namespace sg {
     base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage(), lambda);
+          return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage(), lambda);
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLaplaceVectorizedLinearOCL(grid.getStorage(), lambda);
+          return new parallel::OperationLaplaceVectorizedLinearOCL(grid.getStorage(), lambda);
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
-	  return new parallel::OperationLaplaceVectorizedLinearBoundary(grid.getStorage(), lambda);
+          return new parallel::OperationLaplaceVectorizedLinearBoundary(grid.getStorage(), lambda);
 #ifdef USEOCL
         } else if (vecType == parallel::OpenCL) {
-	  return new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(grid.getStorage(), lambda);
+          return new parallel::OperationLaplaceVectorizedLinearBoundaryOCL(grid.getStorage(), lambda);
 #endif
         } else {
           throw base::factory_exception("Unsupported vectorization type");
         }
       } else {
-	throw base::factory_exception("OperationLaplaceVectorized is not implemented for this grid type.");
+        throw base::factory_exception("OperationLaplaceVectorized is not implemented for this grid type.");
       }
     }
 #endif

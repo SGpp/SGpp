@@ -40,21 +40,22 @@ namespace sg {
 
     void OperationLTwoDotProductVectorizedLinearOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
+
       for (size_t d = 0; d < this->storage->dim(); d++) {
         sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
         this->lcl_q[d] = boundingBox->getIntervalWidth(d);
       }
 
       this->OCLPDEKernelsHandle.
-	RunOCLKernelLTwoDotInner(alpha, result,
-				 this->lcl_q,
-				 this->level_->getPointer(),
-				 this->index_->getPointer(),
-				 this->level_int_->getPointer(),
-				 storage->size(),
-				 storage->dim(),
-				 storage);
-   }
-    
+      RunOCLKernelLTwoDotInner(alpha, result,
+                               this->lcl_q,
+                               this->level_->getPointer(),
+                               this->index_->getPointer(),
+                               this->level_int_->getPointer(),
+                               storage->size(),
+                               storage->dim(),
+                               storage);
+    }
+
   }
 }

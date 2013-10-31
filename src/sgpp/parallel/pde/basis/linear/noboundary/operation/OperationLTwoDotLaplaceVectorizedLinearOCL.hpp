@@ -11,7 +11,7 @@
 
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
-#include "parallel/pde/basis/common/OCLPDEKernels.hpp" 
+#include "parallel/pde/basis/common/OCLPDEKernels.hpp"
 #include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
 
 namespace sg {
@@ -23,43 +23,43 @@ namespace sg {
      * @version $HEAD$
      */
     class OperationLTwoDotLaplaceVectorizedLinearOCL: public OperationParabolicPDEMatrixCombined {
-    private:
-      sg::base::GridStorage* storage;
-      sg::base::DataMatrix* level_;
-      sg::base::DataMatrix* level_int_;
-      sg::base::DataMatrix* index_;
-      double* lcl_q;
-      double* lcl_q_inv;
-      sg::base::DataVector* lambda;
+      private:
+        sg::base::GridStorage* storage;
+        sg::base::DataMatrix* level_;
+        sg::base::DataMatrix* level_int_;
+        sg::base::DataMatrix* index_;
+        double* lcl_q;
+        double* lcl_q_inv;
+        sg::base::DataVector* lambda;
 
-      OCLPDEKernels OCLPDEKernelsHandle ;
-      size_t padding_size;
-      size_t sizepad;
-      double* subresult;
+        OCLPDEKernels OCLPDEKernelsHandle ;
+        size_t padding_size;
+        size_t sizepad;
+        double* subresult;
 
-    public:
-      /**
-       * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
-       *
-       * @param storage Pointer to the grid's gridstorage obejct
-       * @param lambda Vector which contains pre-factors for every dimension of the operator
-       */
-      OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+      public:
+        /**
+         * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         * @param lambda Vector which contains pre-factors for every dimension of the operator
+         */
+        OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
-      /**
-       * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
-       *
-       * @param storage Pointer to the grid's gridstorage obejct
-       */
-      OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage);
+        /**
+         * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         */
+        OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage);
 
-      /**
-       * Destructor
-       */
-      virtual ~OperationLTwoDotLaplaceVectorizedLinearOCL();
+        /**
+         * Destructor
+         */
+        virtual ~OperationLTwoDotLaplaceVectorizedLinearOCL();
 
-      virtual void mult(sg::base::DataVector& alpha, 
-			sg::base::DataVector& result);
+        virtual void mult(sg::base::DataVector& alpha,
+                          sg::base::DataVector& result);
 
     };
 

@@ -14,7 +14,7 @@
 namespace sg {
   namespace parallel {
 
-    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage){
+    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
       this->lambda = new sg::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
       this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
@@ -62,15 +62,15 @@ namespace sg {
       }
 
       this->OCLPDEKernelsHandle.
-      	RunOCLKernelLaplaceInner(alpha,result, lcl_q, lcl_q_inv,
-					  this->level_->getPointer(),
-					  this->index_->getPointer(),
-					  this->level_int_->getPointer(),
-					  lambda->getPointer(),
-					  storage->size(),
-					  storage->dim(),
-					  storage);
-   }
+      RunOCLKernelLaplaceInner(alpha, result, lcl_q, lcl_q_inv,
+                               this->level_->getPointer(),
+                               this->index_->getPointer(),
+                               this->level_int_->getPointer(),
+                               lambda->getPointer(),
+                               storage->size(),
+                               storage->dim(),
+                               storage);
+    }
 
   }
 

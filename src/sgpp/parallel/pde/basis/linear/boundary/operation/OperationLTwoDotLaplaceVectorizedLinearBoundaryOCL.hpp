@@ -23,25 +23,25 @@ namespace sg {
      * @version $HEAD$
      */
     class OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL: public OperationParabolicPDEMatrixCombined {
-    private:
-      sg::base::GridStorage* storage;
-      sg::base::DataMatrix* level_;
-      sg::base::DataMatrix* level_int_;
-      sg::base::DataMatrix* index_;
-      double* lcl_q;
-      double* lcl_q_inv;
-      sg::base::DataVector* lambda;
-      OCLPDEKernels OCLPDEKernelsHandle ;
+      private:
+        sg::base::GridStorage* storage;
+        sg::base::DataMatrix* level_;
+        sg::base::DataMatrix* level_int_;
+        sg::base::DataMatrix* index_;
+        double* lcl_q;
+        double* lcl_q_inv;
+        sg::base::DataVector* lambda;
+        OCLPDEKernels OCLPDEKernelsHandle ;
 
-      void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-    public:
-      /**
-       * Construtor of OperationLTwoDotLaplaceLinear
-       *
-       * @param storage Pointer to the grid's gridstorage obejct
-       */
-      OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+      public:
+        /**
+         * Construtor of OperationLTwoDotLaplaceLinear
+         *
+         * @param storage Pointer to the grid's gridstorage obejct
+         */
+        OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
         /**
          * Construtor of OperationLTwoDotLaplaceLinear
@@ -49,14 +49,14 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-      OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
+        OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
 
-      /**
-       * Destructor
-       */
-      virtual ~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL();
+        /**
+         * Destructor
+         */
+        virtual ~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL();
 
-      virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
     };
   }
 }

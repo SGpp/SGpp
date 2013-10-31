@@ -21,10 +21,10 @@ namespace sg {
   namespace parallel {
 
     BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-												     sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
-												     double dStrike, std::string option_type, double r,
-												     bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-												     int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel) {
+        sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
+        double dStrike, std::string option_type, double r,
+        bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel) {
 
 
       this->BoundGrid = &SparseGrid;
@@ -90,7 +90,8 @@ namespace sg {
 
       // Create operations
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
-      if(! strcmp(alg_selector, "X86SIMD")) {
+
+      if (! strcmp(alg_selector, "X86SIMD")) {
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, *this->lambda, sg::parallel::X86SIMD);
         this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::X86SIMD);
         this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::X86SIMD);
@@ -107,7 +108,7 @@ namespace sg {
         this->OpLTwoDotLaplaceBound = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->BoundGrid, *this->lambda, sg::parallel::OpenCL);
 #endif
       } else {
-        throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : no supported vectorization was selected!");        
+        throw sg::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : no supported vectorization was selected!");
       }
 
       // right hand side if System
@@ -201,7 +202,7 @@ namespace sg {
 
       result.add(temp);
     }
-    
+
     void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       sg::base::DataVector temp(alpha.getSize());
 
@@ -221,11 +222,11 @@ namespace sg {
 
       result.add(temp);
     }
-    
+
     void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::setTimestepCoefficientInner(double timestep_coefficient) {
       this->OpLTwoDotLaplaceInner->setTimestepCoeff(timestep_coefficient);
     }
-    
+
     void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::setTimestepCoefficientBound(double timestep_coefficient) {
       this->OpLTwoDotLaplaceBound->setTimestepCoeff(timestep_coefficient);
     }
@@ -291,7 +292,7 @@ namespace sg {
       this->numSumGridpointsComplete += this->BoundGrid->getSize();
 
       if (this->useCoarsen == true && isLastTimestep == false) {
-         std::cout << std::endl << "WARNING!: Adaptivity during solution was requested but is not implemented ATM and is therefore skipped!!" << std::endl << std::endl;
+        std::cout << std::endl << "WARNING!: Adaptivity during solution was requested but is not implemented ATM and is therefore skipped!!" << std::endl << std::endl;
 #if 0
         ///////////////////////////////////////////////////
         // Start integrated refinement & coarsening

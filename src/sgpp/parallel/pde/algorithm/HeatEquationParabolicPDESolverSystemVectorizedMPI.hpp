@@ -45,13 +45,13 @@ namespace sg {
         virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
         virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
-        
+
         virtual void applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
         virtual void applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result);
-      
+
         virtual void setTimestepCoefficientInner(double timestep_coefficient);
-      
+
         virtual void setTimestepCoefficientBound(double timestep_coefficient);
 
       public:

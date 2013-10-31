@@ -37,7 +37,7 @@ namespace sg {
 
 
     /**
-     * Implementation for 
+     * Implementation for
      *   - linear functions of Laplace Operation, linear grids without boundaries
      *   - linear functions of Laplace Operation, linear grids with boundaries
      *   - linear functions of LTwoDot Operation, linear grids without boundaries
@@ -50,158 +50,158 @@ namespace sg {
      */
     class OCLPDEKernels {
 
-    public:
-      OCLPDEKernels() {};
-      /**
-       * Carries out the multiplication of a vector with the matrix for the Laplace operator on the inner grid.
-       *
-       * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
-       * @param result sg::base::DataVector into which the result of the space discretization operation is stored
-       * @param lcl_q Array with the interval width for each dimension
-       * @param lcl_q_inv Array with the reciprocal interval width for each dimension
-       * @param ptrLevel Array with the level of each ansatzfunction.
-       * @param ptrIndex Array with the Index of each ansatzfunction.
-       * @param ptrLevel_int Array with the level for the integral of each ansatzfunction.
-       * @param argStorageSize Size of the outer dimension of the ptrLevel, ptrIndex and ptrLevel_int arrays.
-       * @param argStorageDim Size of the inner dimension of the ptrLevel, ptrIndex and ptrLevel_int arrays.
-       * @param storage Grid which is to be used for evaluation.
-       */
-      void RunOCLKernelLaplaceInner(sg::base::DataVector& alpha,
-				    sg::base::DataVector& result,
-				    REAL * lcl_q,
-				    REAL * lcl_q_inv,
-				    REAL * ptrLevel,
-				    REAL * ptrIndex,
-				    REAL * ptrLevel_int,
-				    REAL * ptrLambda,
-				    size_t argStorageSize,
-				    size_t argStorageDim,
-				    sg::base::GridStorage * storage);
-      
-      /**
-       * Carries out the multiplication of a vector with the matrix for the Laplace operator on the boundary grid.
-       *
-       */
-      void RunOCLKernelLaplaceBound(sg::base::DataVector& alpha,
-				    sg::base::DataVector& result,
-				    REAL * lcl_q,
-				    REAL * lcl_q_inv,
-				    REAL * ptrLevel,
-				    REAL * ptrIndex,
-				    REAL * ptrLevel_int,
-				    REAL * ptrLambda,
-				    size_t argStorageSize,
-				    size_t argStorageDim,
-				    sg::base::GridStorage* storage);
+      public:
+        OCLPDEKernels() {};
+        /**
+         * Carries out the multiplication of a vector with the matrix for the Laplace operator on the inner grid.
+         *
+         * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
+         * @param result sg::base::DataVector into which the result of the space discretization operation is stored
+         * @param lcl_q Array with the interval width for each dimension
+         * @param lcl_q_inv Array with the reciprocal interval width for each dimension
+         * @param ptrLevel Array with the level of each ansatzfunction.
+         * @param ptrIndex Array with the Index of each ansatzfunction.
+         * @param ptrLevel_int Array with the level for the integral of each ansatzfunction.
+         * @param argStorageSize Size of the outer dimension of the ptrLevel, ptrIndex and ptrLevel_int arrays.
+         * @param argStorageDim Size of the inner dimension of the ptrLevel, ptrIndex and ptrLevel_int arrays.
+         * @param storage Grid which is to be used for evaluation.
+         */
+        void RunOCLKernelLaplaceInner(sg::base::DataVector& alpha,
+                                      sg::base::DataVector& result,
+                                      REAL* lcl_q,
+                                      REAL* lcl_q_inv,
+                                      REAL* ptrLevel,
+                                      REAL* ptrIndex,
+                                      REAL* ptrLevel_int,
+                                      REAL* ptrLambda,
+                                      size_t argStorageSize,
+                                      size_t argStorageDim,
+                                      sg::base::GridStorage* storage);
 
-      /**
-       * Carries out the multiplication of a vector with the matrix for the LTwoDot operator on the inner grid.
-       *
-       */
-      void RunOCLKernelLTwoDotInner(sg::base::DataVector& alpha,
-				    sg::base::DataVector& result,
-				    REAL * lcl_q,
-				    REAL * ptrLevel,
-				    REAL * ptrIndex,
-				    REAL * ptrLevel_int,
-				    size_t argStorageSize,
-				    size_t argStorageDim,
-				    sg::base::GridStorage* storage);
+        /**
+         * Carries out the multiplication of a vector with the matrix for the Laplace operator on the boundary grid.
+         *
+         */
+        void RunOCLKernelLaplaceBound(sg::base::DataVector& alpha,
+                                      sg::base::DataVector& result,
+                                      REAL* lcl_q,
+                                      REAL* lcl_q_inv,
+                                      REAL* ptrLevel,
+                                      REAL* ptrIndex,
+                                      REAL* ptrLevel_int,
+                                      REAL* ptrLambda,
+                                      size_t argStorageSize,
+                                      size_t argStorageDim,
+                                      sg::base::GridStorage* storage);
 
-      /**
-       * Carries out the multiplication of a vector with the matrix for the LTwoDot operator on the boundary grid.
-       *
-       */
-      void RunOCLKernelLTwoDotBound(sg::base::DataVector& alpha,
-				    sg::base::DataVector& result,
-				    REAL * lcl_q,
-				    REAL * ptrLevel,
-				    REAL * ptrIndex,
-				    REAL * ptrLevel_int,
-				    size_t argStorageSize,
-				    size_t argStorageDim,
-				    sg::base::GridStorage* storage);
+        /**
+         * Carries out the multiplication of a vector with the matrix for the LTwoDot operator on the inner grid.
+         *
+         */
+        void RunOCLKernelLTwoDotInner(sg::base::DataVector& alpha,
+                                      sg::base::DataVector& result,
+                                      REAL* lcl_q,
+                                      REAL* ptrLevel,
+                                      REAL* ptrIndex,
+                                      REAL* ptrLevel_int,
+                                      size_t argStorageSize,
+                                      size_t argStorageDim,
+                                      sg::base::GridStorage* storage);
 
-      /**
-       * Carries out the multiplication of a vector with the matrix for the combined LTwoDot+Laplace operator on the inner grid.
-       *
-       */
-      void RunOCLKernelLTwoDotLaplaceInner(sg::base::DataVector& alpha,
-					   sg::base::DataVector& result,
-					   REAL * lcl_q,
-					   REAL * lcl_q_inv,
-					   REAL * ptrLevel,
-					   REAL * ptrIndex,
-					   REAL * ptrLevel_int,
-					   REAL * ptrLambda,
-					   size_t argStorageSize,
-					   size_t argStorageDim,
-					   sg::base::GridStorage * storage,
-					   REAL tsCoeff);
+        /**
+         * Carries out the multiplication of a vector with the matrix for the LTwoDot operator on the boundary grid.
+         *
+         */
+        void RunOCLKernelLTwoDotBound(sg::base::DataVector& alpha,
+                                      sg::base::DataVector& result,
+                                      REAL* lcl_q,
+                                      REAL* ptrLevel,
+                                      REAL* ptrIndex,
+                                      REAL* ptrLevel_int,
+                                      size_t argStorageSize,
+                                      size_t argStorageDim,
+                                      sg::base::GridStorage* storage);
 
-      void RunOCLKernelSymmetricLTwoDotLaplaceInner(sg::base::DataVector& alpha,
-					   sg::base::DataVector& result,
-					   REAL * lcl_q,
-					   REAL * lcl_q_inv,
-					   REAL * ptrLevel,
-					   REAL * ptrIndex,
-					   REAL * ptrLevel_int,
-					   REAL * ptrLambda,
-					   size_t argStorageSize,
-					   size_t argStorageDim,
-					   sg::base::GridStorage * storage,
-					   REAL tsCoeff);
+        /**
+         * Carries out the multiplication of a vector with the matrix for the combined LTwoDot+Laplace operator on the inner grid.
+         *
+         */
+        void RunOCLKernelLTwoDotLaplaceInner(sg::base::DataVector& alpha,
+                                             sg::base::DataVector& result,
+                                             REAL* lcl_q,
+                                             REAL* lcl_q_inv,
+                                             REAL* ptrLevel,
+                                             REAL* ptrIndex,
+                                             REAL* ptrLevel_int,
+                                             REAL* ptrLambda,
+                                             size_t argStorageSize,
+                                             size_t argStorageDim,
+                                             sg::base::GridStorage* storage,
+                                             REAL tsCoeff);
+
+        void RunOCLKernelSymmetricLTwoDotLaplaceInner(sg::base::DataVector& alpha,
+            sg::base::DataVector& result,
+            REAL* lcl_q,
+            REAL* lcl_q_inv,
+            REAL* ptrLevel,
+            REAL* ptrIndex,
+            REAL* ptrLevel_int,
+            REAL* ptrLambda,
+            size_t argStorageSize,
+            size_t argStorageDim,
+            sg::base::GridStorage* storage,
+            REAL tsCoeff);
 
 
-      void RunOCLKernelLTwoDotLaplaceInnerCPU(sg::base::DataVector& alpha,
-					      sg::base::DataVector& result,
-					      REAL * lcl_q,
-					      REAL * lcl_q_inv,
-					      REAL * ptrLevel,
-					      REAL * ptrIndex,
-					      REAL * ptrLevel_int,
-					      REAL * ptrLambda,
-					      size_t argStorageSize,
-					      size_t argStorageDim,
-					      sg::base::GridStorage * storage,
-					      REAL tsCoeff);    
-      /**
-       * Carries out the multiplication of a vector with the matrix for the combined LTwoDot+Laplace operator on the boundary grid.
-       *
-       */
-	void RunOCLKernelLTwoDotLaplaceBound(sg::base::DataVector& alpha,
-					     sg::base::DataVector& result,
-					     REAL * lcl_q,
-					     REAL * lcl_q_inv,
-					     REAL * ptrLevel,
-					     REAL * ptrIndex,
-					     REAL * ptrLevel_int,
-					     REAL * ptrLambda,
-					     size_t argStorageSize,
-					     size_t argStorageDim,
-					     sg::base::GridStorage * storage,
-					     REAL tsCoeff);
+        void RunOCLKernelLTwoDotLaplaceInnerCPU(sg::base::DataVector& alpha,
+                                                sg::base::DataVector& result,
+                                                REAL* lcl_q,
+                                                REAL* lcl_q_inv,
+                                                REAL* ptrLevel,
+                                                REAL* ptrIndex,
+                                                REAL* ptrLevel_int,
+                                                REAL* ptrLambda,
+                                                size_t argStorageSize,
+                                                size_t argStorageDim,
+                                                sg::base::GridStorage* storage,
+                                                REAL tsCoeff);
+        /**
+         * Carries out the multiplication of a vector with the matrix for the combined LTwoDot+Laplace operator on the boundary grid.
+         *
+         */
+        void RunOCLKernelLTwoDotLaplaceBound(sg::base::DataVector& alpha,
+                                             sg::base::DataVector& result,
+                                             REAL* lcl_q,
+                                             REAL* lcl_q_inv,
+                                             REAL* ptrLevel,
+                                             REAL* ptrIndex,
+                                             REAL* ptrLevel_int,
+                                             REAL* ptrLambda,
+                                             size_t argStorageSize,
+                                             size_t argStorageDim,
+                                             sg::base::GridStorage* storage,
+                                             REAL tsCoeff);
 
-      /**
-       * Generates the full matrix for the combined LTwoDot operator on the inner grid.
-       *
-       */
-      void RunOCLKernelGenAInner(sg::base::DataVector& alpha,
-				 REAL * ptrA,
-				 REAL * lcl_q,
-				 REAL * lcl_q_inv,
-				 REAL * ptrLevel,
-				 REAL * ptrIndex,
-				 REAL * ptrLevel_int,
-				 REAL * ptrLambda,
-				 size_t argStorageSize,
-				 size_t argStorageDim,
-				 sg::base::GridStorage * storage);
+        /**
+         * Generates the full matrix for the combined LTwoDot operator on the inner grid.
+         *
+         */
+        void RunOCLKernelGenAInner(sg::base::DataVector& alpha,
+                                   REAL* ptrA,
+                                   REAL* lcl_q,
+                                   REAL* lcl_q_inv,
+                                   REAL* ptrLevel,
+                                   REAL* ptrIndex,
+                                   REAL* ptrLevel_int,
+                                   REAL* ptrLambda,
+                                   size_t argStorageSize,
+                                   size_t argStorageDim,
+                                   sg::base::GridStorage* storage);
 
-      /**
-       * Deallocates data pertaining to all the operators.
-       */
-      void CleanUpGPU();
+        /**
+         * Deallocates data pertaining to all the operators.
+         */
+        void CleanUpGPU();
     }; // Class OCLPDEKernels
 
     namespace oclpdekernels {
@@ -227,8 +227,8 @@ namespace sg {
       extern cl_uint num_devices;
       extern cl_uint num_platforms;
       extern cl_platform_id platform_id;
-      extern cl_platform_id * platform_ids;
-      extern cl_device_id * device_ids;
+      extern cl_platform_id* platform_ids;
+      extern cl_device_id* device_ids;
       extern cl_context context;
       extern cl_command_queue command_queue[NUMDEVS];
 
@@ -243,19 +243,19 @@ namespace sg {
       extern size_t LastRunBound;
 
       /// Write an error and stops program if an error occurs.
-      void oclCheckErr(cl_int err, const char * function);
+      void oclCheckErr(cl_int err, const char* function);
 
       /// Initializes the platform, CPU or GPU, and the command queues.
       void StartUpGPU();
 
       /// Class for passing timing results for individual Operators
       class Timing {
-      public:
-	double GFLOPS;
-	double GOPS;
-	double time;
-	Timing() : GFLOPS(0.0), GOPS(0.0), time(0.0) {}
-	Timing(double iGFLOPS, double iGOPS, double itime) : GFLOPS(iGFLOPS),GOPS(iGOPS), time(itime) {}
+        public:
+          double GFLOPS;
+          double GOPS;
+          double time;
+          Timing() : GFLOPS(0.0), GOPS(0.0), time(0.0) {}
+          Timing(double iGFLOPS, double iGOPS, double itime) : GFLOPS(iGFLOPS), GOPS(iGOPS), time(itime) {}
       };
 
       /// Deallocates all data pertaining to operators working on the inner grid
@@ -277,9 +277,9 @@ namespace sg {
       /// Prints and returns timing results for the Laplace Operator on the boundary grid
       Timing PrintGFLOPSLTwoDotLaplaceBound();
       /// returns the timing (nanoseconds) of a kernel execution given by GPUExecution
-      double AccumulateTiming(cl_event *GPUExecution,  size_t gpuid);
+      double AccumulateTiming(cl_event* GPUExecution,  size_t gpuid);
       /// returns the timing (nanoseconds) of a kernel waiting in the queue given by GPUExecution
-      double AccumulateWaiting(cl_event *GPUExecution, size_t gpuid);
+      double AccumulateWaiting(cl_event* GPUExecution, size_t gpuid);
     }
   }
 }

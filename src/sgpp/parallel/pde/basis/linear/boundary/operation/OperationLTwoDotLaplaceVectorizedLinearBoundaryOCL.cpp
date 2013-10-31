@@ -65,15 +65,15 @@ namespace sg {
       result.setAll(0.0);
 
       this->OCLPDEKernelsHandle.
-	RunOCLKernelLTwoDotLaplaceBound(alpha, result, lcl_q, lcl_q_inv,
-					this->level_->getPointer(),
-					this->index_->getPointer(),
-					this->level_int_->getPointer(),
-					lambda->getPointer(),
-					(unsigned) storage->size(),
-					(unsigned) storage->dim(),
-					storage,
-					this->TimestepCoeff);
+      RunOCLKernelLTwoDotLaplaceBound(alpha, result, lcl_q, lcl_q_inv,
+                                      this->level_->getPointer(),
+                                      this->index_->getPointer(),
+                                      this->level_int_->getPointer(),
+                                      lambda->getPointer(),
+                                      (unsigned) storage->size(),
+                                      (unsigned) storage->dim(),
+                                      storage,
+                                      this->TimestepCoeff);
 
     }
 
@@ -81,6 +81,7 @@ namespace sg {
 
       result.setAll(0.0);
       bool dirichlet = true;
+
       // fill q array
       for (size_t d = 0; d < this->storage->dim(); d++) {
         sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();

@@ -29,10 +29,11 @@ namespace sg {
 
       // create the inner grid
       this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
-      
+
       // Create operations
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
-      if(! strcmp(alg_selector, "X86SIMD")) {
+
+      if (! strcmp(alg_selector, "X86SIMD")) {
         this->OpLaplaceInner = sg::op_factory::createOperationLaplaceVectorized(*this->InnerGrid, sg::parallel::X86SIMD);
         this->OpLaplaceBound = sg::op_factory::createOperationLaplaceVectorized(*this->BoundGrid, sg::parallel::X86SIMD);
         this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProductVectorized(*this->InnerGrid, sg::parallel::X86SIMD);
@@ -49,7 +50,7 @@ namespace sg {
         this->OpLTwoDotLaplaceBound = sg::op_factory::createOperationLTwoDotLaplaceVectorized(*this->BoundGrid, sg::parallel::OpenCL);
 #endif
       } else {
-        throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");        
+        throw sg::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");
       }
 
       // right hand side if System
@@ -117,7 +118,7 @@ namespace sg {
 
       result.add(temp);
     }
-    
+
     void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       sg::base::DataVector temp(alpha.getSize());
 
@@ -137,11 +138,11 @@ namespace sg {
 
       result.add(temp);
     }
-    
+
     void HeatEquationParabolicPDESolverSystemVectorizedMPI::setTimestepCoefficientInner(double timestep_coefficient) {
       this->OpLTwoDotLaplaceInner->setTimestepCoeff(timestep_coefficient);
     }
-    
+
     void HeatEquationParabolicPDESolverSystemVectorizedMPI::setTimestepCoefficientBound(double timestep_coefficient) {
       this->OpLTwoDotLaplaceBound->setTimestepCoeff(timestep_coefficient);
     }

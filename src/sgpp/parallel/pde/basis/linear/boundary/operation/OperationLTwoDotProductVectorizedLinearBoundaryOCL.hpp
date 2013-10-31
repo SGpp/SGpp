@@ -13,7 +13,7 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
 
-#include "parallel/pde/basis/common/OCLPDEKernels.hpp" 
+#include "parallel/pde/basis/common/OCLPDEKernels.hpp"
 
 namespace sg {
   namespace parallel {
@@ -24,32 +24,32 @@ namespace sg {
      * @version $HEAD$
      */
     class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public sg::base::OperationMatrix {
-    
-    private:
-      sg::base::GridStorage* storage;
-      sg::base::DataMatrix* level_;
-      sg::base::DataMatrix* level_int_;
-      sg::base::DataMatrix* index_;
-      double* lcl_q;
-      OCLPDEKernels OCLPDEKernelsHandle;
 
-      void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
+      private:
+        sg::base::GridStorage* storage;
+        sg::base::DataMatrix* level_;
+        sg::base::DataMatrix* level_int_;
+        sg::base::DataMatrix* index_;
+        double* lcl_q;
+        OCLPDEKernels OCLPDEKernelsHandle;
 
-    public:
-      /**
-       * Constructor
-       *
-       * @param storage the grid's sg::base::GridStorage object
-       */
-      OperationLTwoDotProductVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
+        void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
-      /**
-       * Destructor
-       */
-      virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
+      public:
+        /**
+         * Constructor
+         *
+         * @param storage the grid's sg::base::GridStorage object
+         */
+        OperationLTwoDotProductVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
 
-    protected:
-      virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        /**
+         * Destructor
+         */
+        virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
+
+      protected:
+        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
     };
 
   }

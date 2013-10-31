@@ -17,9 +17,9 @@ namespace sg {
       extern double CounterLTwoDotLaplaceInnerRest;
       extern double CounterLTwoDotLaplaceInnerLast;
       extern double LTwoDotLaplaceInnerStartupTime;
-      extern double * LTwoDotLaplaceInnerAll;
-      extern double * LTwoDotLaplaceInnerProfiling;
-      extern double * LTwoDotLaplaceInnerWaiting;
+      extern double* LTwoDotLaplaceInnerAll;
+      extern double* LTwoDotLaplaceInnerProfiling;
+      extern double* LTwoDotLaplaceInnerWaiting;
       extern double LTwoDotLaplaceInnerProfilingAcc ;
       extern double LTwoDotLaplaceInnerProfilingWait;
 
@@ -35,7 +35,7 @@ namespace sg {
       /// Sets arguments for all kernels pertaining to the combined LTwoDot+Laplace operator on inner grids.
       void SetArgumentsLTwoDotLaplaceInner();
 
-      /// Deallocates all data pertaining to the combined LTwoDot+Laplace Operator working on the inner grid  
+      /// Deallocates all data pertaining to the combined LTwoDot+Laplace Operator working on the inner grid
       void CleanUpLTwoDotLaplaceInner();
     }
   }

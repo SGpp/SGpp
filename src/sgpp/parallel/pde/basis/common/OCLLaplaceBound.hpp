@@ -16,9 +16,9 @@ namespace sg {
       extern double LaplaceBoundAllReduceTime;
       extern SGppStopwatch* myStopwatch;
 
-     /// Allocates extra buffer for the Lambda parameter needed for the Laplace Operator.
-      void SetLambdaBufferLaplaceBound(REAL * ptrLambda,
-				       size_t localdim);
+      /// Allocates extra buffer for the Lambda parameter needed for the Laplace Operator.
+      void SetLambdaBufferLaplaceBound(REAL* ptrLambda,
+                                       size_t localdim);
       /// Returns the string with the OpenCL code for the function declaration for the Laplace operator on the boundary grid.
       std::string LaplaceBoundHeader();
       /// Returns the string with the OpenCL code for the function for the Gradient function on the boundary grid.

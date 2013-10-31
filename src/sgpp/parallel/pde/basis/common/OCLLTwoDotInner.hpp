@@ -6,7 +6,7 @@ namespace sg {
   namespace parallel {
     namespace oclpdekernels {
 
-      
+
       extern cl_kernel LTwoDotInnerKernel[NUMDEVS];
       extern double MultTimeLTwoDotInner;
       extern double ReduTimeLTwoDotInner;
@@ -25,9 +25,9 @@ namespace sg {
       /// Sets arguments for all kernels pertaining to the LTwoDot operator on inner grids.
       void SetArgumentsLTwoDotInner();
 
-      /// Deallocates all data pertaining to LTwoDot Operator working on the inner grid     
+      /// Deallocates all data pertaining to LTwoDot Operator working on the inner grid
       void CleanUpLTwoDotInner();
-      
+
     } // namespace parallel
   }
 }

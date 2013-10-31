@@ -38,7 +38,7 @@ namespace sg {
     class OperationLaplaceVectorizedLinear: public sg::base::OperationMatrix {
       private:
 
-        
+
         sg::base::GridStorage* storage;
         sg::base::DataMatrix* level_;
         sg::base::DataMatrix* level_int_;
@@ -48,36 +48,36 @@ namespace sg {
         sg::base::DataVector* lambda_;
         sg::base::DataVector* alpha_padded_;
         sg::base::DataVector* constants_;
-		
-		sg::base::DataVector** gradient_temp; 
-		sg::base::DataVector** l2dot_temp;
+
+        sg::base::DataVector** gradient_temp;
+        sg::base::DataVector** l2dot_temp;
 
 #if defined(STORE_MATRIX)
-		sg::base::DataMatrix* operation_result_matrix_;
-		bool operation_result_generated_;
+        sg::base::DataMatrix* operation_result_matrix_;
+        bool operation_result_generated_;
 #endif
 
-		int process_count;
-		int process_index;
+        int process_count;
+        int process_index;
 
-		std::vector<int> all_i_start;
-		std::vector<int> all_i_size;
-		
-		std::vector<int> send_start;
-		std::vector<int> send_size;
-		
-		std::vector<int> recv_start;
-		std::vector<int> recv_size;
+        std::vector<int> all_i_start;
+        std::vector<int> all_i_size;
+
+        std::vector<int> send_start;
+        std::vector<int> send_size;
+
+        std::vector<int> recv_start;
+        std::vector<int> recv_size;
 
 
         void init_constants();
-		void init_grid_storage();
+        void init_grid_storage();
 
         double gradient(size_t i, size_t j, size_t dim);
         double l2dot(size_t i, size_t j, size_t dim);
-double all_time;
-double all_iterations;
-sg::base::SGppStopwatch stopWatch;
+        double all_time;
+        double all_iterations;
+        sg::base::SGppStopwatch stopWatch;
 
       public:
         /**
@@ -101,8 +101,8 @@ sg::base::SGppStopwatch stopWatch;
         virtual ~OperationLaplaceVectorizedLinear();
 
         virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
-		
-		virtual void reset();
+
+        virtual void reset();
     };
 
   }

@@ -66,16 +66,18 @@ namespace sg {
         if (this->myScreen != NULL) {
           this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
         }
+
         sg::solver::SLESolver* myCG;
         sg::pde::OperationParabolicPDESolverSystem* myHESolver;
 
         double dNeededTime;
         sg::solver::Euler* myEuler = new sg::solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
-        
+
         // read env variable, which solver type should be selected
         char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+
         if (alg_selector != NULL) {
-          if(! strcmp(alg_selector, "X86SIMD")) {
+          if (! strcmp(alg_selector, "X86SIMD")) {
             myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
             myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
           } else if (! strcmp(alg_selector, "OCL")) {
@@ -116,13 +118,15 @@ namespace sg {
         if (this->myScreen != NULL) {
           this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
         }
+
         sg::solver::SLESolver* myCG;
-        sg::pde::OperationParabolicPDESolverSystem* myHESolver; 
+        sg::pde::OperationParabolicPDESolverSystem* myHESolver;
         double dNeededTime;
 
         char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+
         if (alg_selector != NULL) {
-          if(! strcmp(alg_selector, "X86SIMD")) {
+          if (! strcmp(alg_selector, "X86SIMD")) {
             myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
             myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
           } else if (! strcmp(alg_selector, "OCL")) {
@@ -131,11 +135,11 @@ namespace sg {
           } else {
             throw new base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
           }
-        } else {        
+        } else {
           myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
           myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
         }
-        
+
         sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
         size_t numCNSteps;
