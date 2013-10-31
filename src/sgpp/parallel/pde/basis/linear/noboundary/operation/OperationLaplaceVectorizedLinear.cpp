@@ -468,7 +468,6 @@ namespace sg {
           double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
 #if ! defined (STORE_MATRIX)
           double* result_ptr_ = result.getPointer();
-          __declspec(align(64)) int result_permutation_vector[16] = {8, 9};
 #endif
           double* level_ptr_ = this->level_->getPointer();
           double* level_int_ptr_ = this->level_int_->getPointer();
@@ -684,17 +683,7 @@ namespace sg {
 
 #if ! defined (STORE_MATRIX)
             mm_result = _mm512_add_pd(mm_result, mm_result2);
-            double s_result;
-
-            __m512d hsum = mm_result;
-            hsum = _mm512_add_pd(hsum, _mm512_swizzle_pd((mm_result), _MM_SWIZ_REG_CDAB ));
-            hsum = _mm512_add_pd(hsum, _mm512_swizzle_pd((mm_result), _MM_SWIZ_REG_BADC ));
-            hsum = _mm512_add_pd(hsum, _mm512_swizzle_pd((mm_result), _MM_SWIZ_REG_DDDD ));
-
-            hsum = _mm512_add_pd(hsum, _mm512_castsi512_pd(_mm512_permutevar_epi32(_mm512_load_epi32(result_permutation_vector), _mm512_castpd_si512(hsum))));
-
-            _mm512_mask_extpackstorelo_pd(&s_result, 0x0001, hsum, _MM_DOWNCONV_PD_NONE, _MM_HINT_NONE);
-            result_ptr_[i] += s_result;
+            result_ptr_[i] += _mm512_reduce_add_pd(mm_result);
 #endif
           }
         }
