@@ -98,7 +98,7 @@ namespace sg {
       for (size_t i = 0; i < num_samples; i++) {
         // drand48_r() is thread_safe
 #ifdef _WIN32
-	    y = static_cast<double>(rand()) / RAND_MAX;
+        y = static_cast<double>(rand()) / RAND_MAX;
 #else
         y = static_cast<double>(rand_r(seedp)) / RAND_MAX;
 #endif

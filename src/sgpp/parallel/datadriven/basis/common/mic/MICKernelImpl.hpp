@@ -30,7 +30,7 @@ namespace sg {
 #endif
       extern int number_mic_devices;
       extern bool multicard_multtrans_fast;
-      extern double **tempgrid;
+      extern double** tempgrid;
 
       void uploadGrid(sg::base::DataMatrix* level, sg::base::DataMatrix* index, sg::base::DataMatrix* mask, sg::base::DataMatrix* offset);
 
