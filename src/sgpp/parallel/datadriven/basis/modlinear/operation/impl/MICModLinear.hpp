@@ -990,6 +990,7 @@ namespace sg {
             }
 
 #else
+
             for (size_t ii = i; ii < i + getChunkDataPoints(); ii++) {
               for (size_t j = start_index_grid; j < end_index_grid; j++) {
                 double curSupport = ptrAlpha[j];
