@@ -467,6 +467,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
       sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
       delete[] myBoundaries;
 
+#ifndef __MIC__
       // in first iteration -> calculate the evaluation points
       if (l == start_level) {
         sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
@@ -474,7 +475,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
         writeDataMatrix(EvalPoints, tFileEvalCuboid);
         delete myEvalCuboidGen;
       }
-
+#endif
       // init Screen Object
       myPoisSolver->initScreen();
 
@@ -528,6 +529,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
     // solve Poisson Equation
     myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
 
+#ifndef __MIC__
     if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
       // Print the solved Heat Equation into a gnuplot file
       if (dim < 3) {
@@ -582,6 +584,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
       std::cout << std::endl << std::endl;
     }
+#endif
 
     myPoisSolver->deleteGrid();
 
