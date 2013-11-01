@@ -508,7 +508,7 @@ namespace sg {
             double* temp_level_int_ptr = level_int_ptr_;
             double* temp_index_ptr = index_ptr_;
 
-            #pragma prefetch(temp_level_ptr, temp_index_ptr)
+            #pragma prefetch(temp_level_ptr, temp_index_ptr, alpha_padded_temp_ptr_)
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
 #if defined (STORE_MATRIX)
               mm_result = mm_zero;
@@ -519,7 +519,7 @@ namespace sg {
 
               size_t i_idx = i_offset;
 
-              #pragma prefetch(temp_level_ptr, temp_index_ptr)
+              #pragma prefetch(temp_level_ptr, temp_index_ptr, alpha_padded_temp_ptr_)
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m512d mm_lcl_q = _mm512_extload_pd(lcl_q_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_lcl_q_inv = _mm512_extload_pd(lcl_q_inv_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
@@ -613,6 +613,7 @@ namespace sg {
 
               gradient_temp_ptr1 = gradient_temp_ptr;
 
+              #pragma prefetch(alpha_padded_temp_ptr_)
               for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
                 __m512d mm_element = _mm512_load_pd(alpha_padded_temp_ptr_ + j);
                 __m512d mm_temp = _mm512_load_pd(gradient_temp_ptr1);
