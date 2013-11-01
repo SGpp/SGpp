@@ -548,8 +548,8 @@ namespace sg {
 
                 __m512d mm_q = _mm512_mul_pd(_mm512_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
                 __m512d mm_p = _mm512_mul_pd(_mm512_add_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
-                __mmask8 mm_overlap = _mm512_cmp_pd_mask(_mm512_gmax_pd(mm_q, _mm512_mul_pd(_mm512_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                      _mm512_gmin_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
+                __mmask8 mm_overlap = _mm512_cmp_pd_mask(_mm512_max_pd(mm_q, _mm512_mul_pd(_mm512_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                      _mm512_min_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
                                       _MM_CMPINT_LT); //6+1
 
                 __m512d mm_temp_res = _mm512_sub_pd(_mm512_sub_pd(mm_two,
@@ -586,8 +586,8 @@ namespace sg {
                 __m512d mm_q2 = _mm512_mul_pd(_mm512_sub_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
                 __m512d mm_p2 = _mm512_mul_pd(_mm512_add_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
 
-                __mmask8 mm_overlap2 = _mm512_cmp_pd_mask(_mm512_gmax_pd(mm_q2, _mm512_mul_pd(_mm512_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                       _mm512_gmin_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                __mmask8 mm_overlap2 = _mm512_cmp_pd_mask(_mm512_max_pd(mm_q2, _mm512_mul_pd(_mm512_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                       _mm512_min_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
                                        _MM_CMPINT_LT); //6 flop // +1
 
                 __m512d mm_temp_res2 = _mm512_sub_pd(_mm512_sub_pd(mm_two,
