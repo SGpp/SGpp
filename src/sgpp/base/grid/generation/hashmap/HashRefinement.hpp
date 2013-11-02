@@ -34,6 +34,16 @@ namespace sg {
          */
         void free_refine(GridStorage* storage, RefinementFunctor* functor);
 
+        /**
+         * Refines a grid by adding additional Subspaces according to a RefinementFunctor provided.
+         * Refines up to RefinementFunctor::getRefinementsNum() grid points if
+         * possible, and if their refinement value is larger than RefinementFunctor::start()
+         * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
+         *
+         * @param storage hashmap that stores the grid points
+         * @param functor a RefinementFunctor specifying the refinement criteria
+         */
+        void freeRefineSubspace(GridStorage* storage, RefinementFunctor* functor);
 
         /**
          * Computes and returns the number of grid points, which can be refined.
@@ -56,13 +66,6 @@ namespace sg {
           refineGridpoint1D(storage, *index, d);
         }
 
-        /**
-         * Create all missing grid points in a hierarchical difference space (index set usually named with W(level)) on the provided level.
-         * @param storage hashmap that stores the grid points
-         * @param array containing the levels on which to create the difference space.
-         */
-        void refineSubspace(GridStorage* storage, level_t* level);
-
       protected:
         /**
          * This method refines a grid point by generating the children in every dimension
@@ -81,6 +84,7 @@ namespace sg {
          */
         void createGridpoint(GridStorage* storage, index_type& index);
 
+        //@TODO (lettrich, high) documentation
         void createSubspace(GridStorage* storage, index_type& index);
 
         /**
@@ -98,6 +102,22 @@ namespace sg {
                                             RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
                                             RefinementFunctor::value_type* max_values);
 
+        /**
+         * Examines the grid points, finds which ones are refinable and adds
+         * the error indicators of all points which belong to the same subspace.
+         * It returns an unsroted array with the refinements_num subspaces with the highest error indicator. (not sorted)
+         *
+         * @param storage hashmap that stores the grid points
+         * @param functor a RefinementFunctor specifying the refinement criteria
+         * @param refinements_num number of points to refine
+         * @param maxErrorSubspaces the array of hash grid indices, containing the level vector of the subspace
+         * @param maxErrorValues the array with the indicator values corresponding to the level of the subspace.
+         */
+        virtual void collectRefinableSubspaces(GridStorage* storage,
+        									   RefinementFunctor* functor,
+        									   size_t refinements_num,
+        									   AbstractRefinement::index_type* maxSubspaces,
+        									   RefinementFunctor::value_type* maxErrors);
 
         /**
          * Refines the collection of points.
@@ -111,11 +131,50 @@ namespace sg {
         virtual void refineGridpointsCollection(GridStorage* storage,
                                                 RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
                                                 RefinementFunctor::value_type* max_values);
-
-
-    	private:
         //@TODO (lettrich, high) documentation
+        virtual void refineSubspaceCollection(GridStorage* storage,
+        									  RefinementFunctor* functor,
+        									  size_t refinements_num,
+        									  index_type* maxErrorSubspaces,
+        									  RefinementFunctor::value_type* maxErrorValues);
+    	private:
+
+
+        /**
+         * recursive function to create all points on a subspace.
+         *
+         * @param storage
+         * @param index
+         * @param dim
+         *
+         */
         void createSubspaceHelper(GridStorage* storage, index_type& index, size_t dim);
+
+
+        /**
+         * Sets all the elements of the index vector of a grid point to 1.
+         * @param gridPoint pointer to the grid point with the index array to be changed
+         */
+        void resetIndexVector(index_type* gridPoint);
+    };
+
+    //@TODO (lettrich, high) documentation
+    struct compareLevels
+    {
+    	bool operator()(AbstractRefinement::index_type gridPointA, AbstractRefinement::index_type gridPointB)
+    	{
+    		size_t dim = gridPointA.dim();
+
+    		//iterate over all dimensions
+    		for(size_t i = 0; i< dim; ++i)
+    		{
+    			//compare level in each dimension
+    			if (gridPointA.getLevel(i) < gridPointB.getLevel(i)){
+    				return true;
+    			}
+    		}
+    		return false;
+    	}
     };
   }
 }
