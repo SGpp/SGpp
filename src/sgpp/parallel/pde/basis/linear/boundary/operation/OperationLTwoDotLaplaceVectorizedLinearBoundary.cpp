@@ -1091,7 +1091,21 @@ namespace sg {
         for (size_t ii = thr_start; ii < thr_end; ii++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
 
-#if defined(__SSE4_2__) && defined(__AVX__)
+#if defined(__MIC__)
+          __m512d mm_element = _mm512_setzero_pd();
+
+        #pragma prefetch
+          for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
+            __m512d mm_temp1 = _mm512_load_pd(alpha_padded_ptr_ + j);
+
+            __m512d mm_temp2 = _mm512_load_pd(operation_result_dest_ptr + j);
+
+            mm_element = _mm512_add_pd(mm_element, _mm512_mul_pd(mm_temp1, mm_temp2));
+          }
+
+          result_ptr[i] = _mm512_reduce_add_pd(mm_element);
+
+#elif defined(__SSE4_2__) && defined(__AVX__)		  
           __m256d mm_element = _mm256_setzero_pd();
 
           for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
