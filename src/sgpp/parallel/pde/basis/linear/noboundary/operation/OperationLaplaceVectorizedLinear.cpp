@@ -1162,13 +1162,25 @@ namespace sg {
 
         double* alpha_padded_ptr_ = alpha_padded_->getPointer();
 
-#if defined(__MIC__)
-        #pragma prefetch
-#endif
         for (size_t i = thr_start; i < thr_end; i++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
 
-#if defined(__SSE4_2__) && defined(__AVX__)
+
+#if defined(__MIC__)
+          __m512d mm_element = _mm512_setzero_pd();
+
+        #pragma prefetch
+          for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
+            __m512d mm_temp1 = _mm512_load_pd(alpha_padded_ptr_ + j);
+
+            __m512d mm_temp2 = _mm512_load_pd(operation_result_dest_ptr + j);
+
+            mm_element = _mm512_add_pd(mm_element, _mm512_mul_pd(mm_temp1, mm_temp2));
+          }
+
+          result_ptr[i] = _mm512_reduce_add_pd(mm_element);
+
+#elif defined(__SSE4_2__) && defined(__AVX__)
           __m256d mm_element = _mm256_setzero_pd();
 
           for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
@@ -1181,24 +1193,6 @@ namespace sg {
 
           __m256d hsum = _mm256_add_pd(mm_element, _mm256_permute2f128_pd(mm_element, mm_element, 0x1));
           _mm_store_sd(result_ptr + i, _mm_hadd_pd( _mm256_castpd256_pd128(hsum), _mm256_castpd256_pd128(hsum) ) );
-
-
-
-          /*
-          mm_element = _mm256_hadd_pd(mm_element, _mm256_setzero_pd());
-
-          mm_element = _mm256_permute2f128_pd(mm_element, mm_element, 0x21);
-          mm_element = _mm256_hadd_pd(mm_element, _mm256_setzero_pd());
-          __m256i storeMask = _mm256_set_epi32(0, 0, 0, 0, 0, 0, 0, 1);
-          _mm256_maskstore_pd(result_ptr + i, storeMask, mm_element);
-          */
-
-          /*
-          mm_element = _mm256_hadd_pd(mm_element, _mm256_setzero_pd());
-          sg::base::DataVector temp_vector(VECTOR_SIZE);
-          _mm256_store_pd(temp_vector.getPointer(), mm_element);
-          result_ptr[i] = temp_vector[0] + temp_vector[2];
-          */
 
 #elif defined(__SSE4_2__) && !defined(__AVX__)
           __m128d mm_element = _mm_setzero_pd();
