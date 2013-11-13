@@ -1432,14 +1432,13 @@ namespace sg {
        MPI_Alltoallv(result_boundary_filtered_ptr, send_size.data(), send_start.data(), MPI_DOUBLE,
                result_boundary_filtered_ptr, recv_size.data(), recv_start.data(), MPI_DOUBLE,
                MPI_COMM_WORLD);
-*/
+
       MPI_Allgatherv(MPI_IN_PLACE, send_size[0], MPI_DOUBLE,
                result_boundary_filtered_ptr, recv_size.data(), recv_start.data(),
                MPI_DOUBLE, MPI_COMM_WORLD);
-           /*
+            */
       MPI_Allreduce(MPI_IN_PLACE, result_boundary_filtered_ptr, (int)result_boundary_filtered_->getSize(), MPI_DOUBLE,
                     MPI_SUM, MPI_COMM_WORLD);
-*/
 #endif
 
       //move to result vector
