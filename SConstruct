@@ -90,24 +90,24 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended (mul
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
-vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
-vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
+vars.Add(BoolVariable('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False))
+vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", False))
 
 # for compiling on LRZ without errors: omit unit tests
-vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
+vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 
 # for compiling different modules
-vars.Add('SG_ALL', 'Build all modules', False)
-vars.Add('SG_BASE', 'Build Basis Module', False)
-vars.Add('SG_DATADRIVEN', 'Build Datadriven Module', False)
-vars.Add('SG_SOLVER', 'Build Solver Module', False)
-vars.Add('SG_FINANCE', 'Build Finance Module', False)
-vars.Add('SG_PDE', 'Build PDE Module', False)
-vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
-vars.Add('SG_MISC', 'Build Misc Module', False)
-vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
-vars.Add('SG_PYTHON', 'Build Python Support', False)
-vars.Add('SG_JAVA', 'Build Java Support', False)
+vars.Add(BoolVariable('SG_ALL', 'Build all modules', False))
+vars.Add(BoolVariable('SG_BASE', 'Build Basis Module', False))
+vars.Add(BoolVariable('SG_DATADRIVEN', 'Build Datadriven Module', False))
+vars.Add(BoolVariable('SG_SOLVER', 'Build Solver Module', False))
+vars.Add(BoolVariable('SG_FINANCE', 'Build Finance Module', False))
+vars.Add(BoolVariable('SG_PDE', 'Build PDE Module', False))
+vars.Add(BoolVariable('SG_PARALLEL', 'Build Parallel Module', False))
+vars.Add(BoolVariable('SG_MISC', 'Build Misc Module', False))
+vars.Add(BoolVariable('SG_COMBIGRID', 'Build Combigrid Module', False))
+vars.Add(BoolVariable('SG_PYTHON', 'Build Python Support', False))
+vars.Add(BoolVariable('SG_JAVA', 'Build Java Support', False))
 # modules and dependencies
 moduleList = {'SG_BASE': (), 
               'SG_DATADRIVEN': ('SG_BASE'), 
