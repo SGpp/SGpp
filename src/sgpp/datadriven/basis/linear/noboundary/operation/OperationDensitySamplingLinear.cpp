@@ -11,7 +11,9 @@
 #include "datadriven/operation/OperationDensitySampling1D.hpp"
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 namespace sg {
   namespace datadriven {
@@ -67,7 +69,11 @@ namespace sg {
             double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
             long int b = static_cast<long int>(rand_r(&tseedp));
 #endif
+#ifdef _OPENMP
             seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
+#else
+	    seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((1 + 1) * 1000 * b));
+#endif
           }
           #pragma omp for schedule(dynamic)
 
