@@ -119,6 +119,10 @@ moduleList = {'SG_BASE': (),
               'SG_COMBIGRID': ('SG_BASE')}
 supportList = ['SG_PYTHON', 'SG_JAVA']
 
+# verbosity options
+vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
+vars.Add('CMD_LOGFILE','Specifies a file to capture the build log','build_log.txt')
+
 # initialize environment
 env = Environment(variables = vars, ENV = os.environ)
 
@@ -153,6 +157,23 @@ Parameters are:
 """ +
 vars.GenerateHelpText(env))
 
+# clear build_log file
+logfile = open(env['CMD_LOGFILE'], 'a')
+logfile.seek(0)
+logfile.truncate()
+
+# detour compiler output
+def print_cmd_line(s, target, src, env):
+    if env['VERBOSE']:
+        sys.stdout.write(u'%s\n'%s);
+    else:
+        sys.stdout.write(u'.');
+        sys.stdout.flush();
+    if env['CMD_LOGFILE']:
+        open(env['CMD_LOGFILE'], 'a').write('%s\n'%s);
+
+
+env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 
 
 # Set compiler switches and check architectures
