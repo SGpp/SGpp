@@ -59,7 +59,11 @@ namespace sg {
 
       #pragma omp parallel
       {
+#ifdef _OPENMP
         unsigned int seedp = (unsigned int)(time(NULL)) * (omp_get_thread_num() + 1);
+#else
+	unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
+#endif
         base::DataVector p(num_dims);
         double fhat = 0.0;
         base::OperationEval* opEval = op_factory::createOperationEval(*grid);
