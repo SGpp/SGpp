@@ -99,7 +99,7 @@ namespace sg {
          * Constructor, reading from existing database.
          * @param filename filename of database file
          */
-        GridDataBase(std::string& filename);
+        GridDataBase(const std::string& filename);
 
         /**
          * Destructor
