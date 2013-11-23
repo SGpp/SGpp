@@ -107,7 +107,7 @@ void GreedyPQRefinement::freeRefineSubspace(GridStorage* storage,
 	gridObjectsSortedByError.collectHighestErrorIndicators(refinements_num,max_values,max_indices);
 
 	//refine them
-	refineSubspaceCollection(storage,functor,refinements_num,max_indices, max_values);
+	//refineSubspaceCollection(storage,functor,refinements_num,max_indices, max_values);
 
 	//the points were refined. clean up multimap.
 	gridObjectsSortedByError.removeAddedErrorIndicators(refinements_num,max_values,max_indices);
@@ -258,5 +258,23 @@ const SortedGridObjectContainer& GreedyPQRefinement::getGridObjectsSortedByError
 	return gridObjectsSortedByError;
 }
 
+const DataMatrix*& GreedyPQRefinement::getDataSet() const {
+	return dataSet;
+}
+
+void GreedyPQRefinement::setDataSet(const DataMatrix*& dataSet) {
+	this->dataSet = dataSet;
+}
+
+const SortedGridObjectContainer& GreedyPQRefinement::getGridObjectsSortedByError() const {
+	return gridObjectsSortedByError;
+}
+
+void sg::base::GreedyPQRefinement::addErrorObject() {
+}
+
 } /* namespace base */
 } /* namespace sg */
+
+
+

@@ -9,7 +9,7 @@
 
 #include "RefinementDecorator.hpp"
 #include "../../Grid.hpp"
-#include "SortedGridObjectContainer.hpp"
+#include "dataStructures/SortedGridObjectContainer.hpp"
 #include <map>
 
 using namespace std;
