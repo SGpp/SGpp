@@ -61,8 +61,6 @@
 #define ROUND_UP(X, Y) (std::ceil((1.0 * X) / (Y)) * (Y))
 
 
-// #define WITH_GLFOPS_CALCULATION
-
 namespace sg {
   namespace parallel {
 
@@ -93,10 +91,10 @@ namespace sg {
 
     OperationLTwoDotProductVectorizedLinearBoundary::~OperationLTwoDotProductVectorizedLinearBoundary() {
 
-      double flop = ((double) 23 * storage->dim() ) * storage->size() * all_i_size[process_index];
+      double flop = (double) (23 * storage->dim() ) * (double) (storage->size() * all_i_size[process_index]);
 
       double gflops = (all_iterations * flop / all_time) / 1000000000;
-      double bandwidth = all_iterations * sizeof(double) * storage->size() * storage->size() / all_time ;
+      double bandwidth = all_iterations * (double) (sizeof(double) * storage->size() * storage->size()) / all_time ;
       std::cout << "IN OPERATOR : LTDOT BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations << " TIME :" << all_time << std::endl;
 
       delete this->level_;
@@ -225,10 +223,22 @@ namespace sg {
         index_boundary_filtered_->setRow(i, index_copy_vector);
       }
 
+#if defined(__MIC__)
+      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::MIC, BLOCK_LENGTH);
+      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::MIC, BLOCK_LENGTH);
+#elif defined(__SSE4_2__) || defined(__AVX__)
       storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::X86SIMD, BLOCK_LENGTH);
       storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::X86SIMD, BLOCK_LENGTH);
+#else
+      storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+      storage->getLevelForIntegral(*(this->level_int_));
+#endif
 
+#if defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
       std::size_t padded_size = this->level_->getNcols();
+#else
+	  std::size_t padded_size = this->level_->getNrows();
+#endif
 
       if (alpha_padded_)
         delete alpha_padded_;
@@ -451,11 +461,6 @@ namespace sg {
       size_t process_i_end = process_i_start + all_i_size[process_index];
 
       //std::cout << "PROCESS :" << process_index << " START :" << process_i_start << " END :" << process_i_end << " COUNT :" << (process_i_end - process_i_start) <<std::endl;
-
-#ifdef WITH_GLFOPS_CALCULATION
-      sg::base::SGppStopwatch stopWatch;
-      stopWatch.start();
-#endif
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
 
@@ -958,7 +963,28 @@ namespace sg {
 
         }
 #else
-#error "Needs SSE4.2 or AVX or MIC to compile"
+
+
+#pragma omp parallel
+      {
+	  size_t thr_start;
+	  size_t thr_end;
+	  sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+
+	for (size_t ii = thr_start; ii < thr_end; ii++) {
+	    for (size_t jj = 0; jj < this->storage->size(); jj++) {
+
+	      double element = alpha[jj];
+
+	      for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+			element *= l2dot_dirichlet(i_boundary_filtered[ii], jj, d_inner);
+		 }
+
+	      (result_boundary_filtered_->getPointer()[ii]) += element;
+	    }
+	}
+
+      }
 #endif
 
 
@@ -981,58 +1007,17 @@ namespace sg {
 
         for (size_t ii = thr_start; ii < thr_end; ii++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
-
-#if defined(__MIC__)
-          __m512d mm_element = mm_zero;
-
-        #pragma prefetch
-          for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
-            __m512d mm_temp1 = _mm512_load_pd(alpha_padded_ptr_ + j);
-
-            __m512d mm_temp2 = _mm512_load_pd(operation_result_dest_ptr + j);
-
-            mm_element = _mm512_add_pd(mm_element, _mm512_mul_pd(mm_temp1, mm_temp2));
-          }
-
-          result_ptr[i] = _mm512_reduce_add_pd(mm_element);
-
-#elif defined(__SSE4_2__) && defined(__AVX__)		  
-          __m256d mm_element = _mm256_setzero_pd();
-
-          for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
-            __m256d mm_temp1 = _mm256_load_pd(alpha_padded_ptr_ + j);
-
-            __m256d mm_temp2 = _mm256_load_pd(operation_result_dest_ptr + j);
-
-            mm_element = _mm256_add_pd(mm_element, _mm256_mul_pd(mm_temp1, mm_temp2));
-          }
-
-          __m256d hsum = _mm256_add_pd(mm_element, _mm256_permute2f128_pd(mm_element, mm_element, 0x1));
-          _mm_store_sd(result_boundary_filtered_ptr + ii, _mm_hadd_pd( _mm256_castpd256_pd128(hsum), _mm256_castpd256_pd128(hsum) ) );
-
-#elif defined(__SSE4_2__) && !defined(__AVX__)
-          __m128d mm_element = _mm_setzero_pd();
-
-          for (size_t j = 0; j < padded_size; j += VECTOR_SIZE) {
-            __m128d mm_temp1 = _mm_load_pd(alpha_padded_ptr_ + j);
-
-            __m128d mm_temp2 = _mm_load_pd(operation_result_dest_ptr + j);
-
-            mm_element = _mm_add_pd(mm_element, _mm_mul_pd(mm_temp1, mm_temp2));
-          }
-
-          mm_element = _mm_hadd_pd(mm_element, _mm_setzero_pd());
-          _mm_store_sd(result_boundary_filtered_ptr + ii, mm_element);
-#else
+        
           double element = 0.0;
-
+		
+#if defined(__MIC__)
+          #pragma prefetch
+#endif		  
           for (size_t j = 0 ; j < storage->size() ; ++j) {
             element += alpha[j] * *(operation_result_dest_ptr + j);
           }
 
           result_boundary_filtered_ptr[ii] = element;
-#endif
-
         }
       }
 #endif
@@ -1063,31 +1048,6 @@ namespace sg {
       for (size_t i = 0; i < i_boundary_filtered.size(); ++i) {
         result_ptr[i_boundary_filtered[i]] = result_boundary_filtered_ptr[i];
       }
-
-#ifdef WITH_GLFOPS_CALCULATION
-      double needed_time = stopWatch.stop();
-
-      size_t flop = (23 * storage->dim() )* storage->size()* all_i_size[process_index];
-      double gflops = (flop / needed_time) / 1000000000;
-      //wrong calculation //size_t gop = ((54) * storage->dim() + storage->dim() * storage->dim()) * storage->size() * all_i_size[process_index];
-      //double gops = (gop / needed_time) / 1000000000;
-
-      for (int i = 0; i < process_count ; i++) {
-#ifdef USE_MPI
-        MPI_Barrier(MPI_COMM_WORLD);
-#endif
-
-        if (i == process_index) {
-          //if (process_index == 0)
-          std::cout << "[PROCESS :" << process_index << "] GFLOPS :" << gflops << " = (" << (flop / 1000000000) << " / " << needed_time << ")" << std::endl;
-        }
-
-        std::cout.flush();
-      }
-
-#endif
-
-
 
       all_time += stopWatch.stop();
       all_iterations += 1.0;
