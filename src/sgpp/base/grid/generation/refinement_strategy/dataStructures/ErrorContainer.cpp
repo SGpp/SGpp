@@ -13,16 +13,20 @@ ErrorContainer::ErrorContainer(RefinementFunctor::value_type error,
 		size_t contributionCounter) {
 	this->error = error;
 	this->contributionCounter = contributionCounter;
+	admissible = true;
+
 }
 
 ErrorContainer::ErrorContainer(RefinementFunctor::value_type error) {
 	this->error = error;
 	this->contributionCounter = 1;
+	admissible = true;
 }
 
 ErrorContainer::ErrorContainer() {
 	error = 0;
 	contributionCounter = 0;
+	admissible = true;
 }
 
 RefinementFunctor::value_type ErrorContainer::getError() {
@@ -125,10 +129,17 @@ RefinementFunctor::value_type ErrorContainer::getContribPerPoint() {
 
 std::string ErrorContainer::toString() {
 	std::ostringstream tmp;
-	tmp << "error: " << error << ", iterations: " << contributionCounter << ",contrib: " << getContribPerPoint() <<  "\n";
+	tmp << "error: " << error << ", iterations: " << contributionCounter << ",contrib: " << getContribPerPoint() << ". Refining this Object is admissible: " << admissible <<  "\n";
 	return  tmp.str();
 }
 
+bool ErrorContainer::isAdmissible() const {
+	return admissible;
+}
+
+void ErrorContainer::setAdmissible(bool admissible) {
+	this->admissible = admissible;
+}
 
 } /* namespace base */
 } /* namespace sg */

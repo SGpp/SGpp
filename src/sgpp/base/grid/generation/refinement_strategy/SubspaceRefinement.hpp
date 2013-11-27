@@ -60,10 +60,13 @@ protected:
 	 */
 	virtual void collectRefinableSubspaces(GridStorage* storage,
 			RefinementFunctor* functor,
-			size_t refinements_num,
-			AbstractRefinement::index_type* maxSubspaces,
-			RefinementFunctor::value_type* maxErrors);
+			SubspaceErrorStorage* errorStorage);
 
+
+	virtual void selectHighestErrorSubspaces(SubspaceErrorStorage* errorStorage,
+											 size_t refinements_num,
+											 AbstractRefinement::index_type* maxSubspaces,
+											 RefinementFunctor::value_type* maxErrors);
 	/**
 	 * Creates all subspaces that are passed in the maxErrorSubspaces array according to
 	 * the specifications in the refinement functor.
@@ -81,6 +84,18 @@ protected:
 			index_type* maxErrorSubspaces,
 			RefinementFunctor::value_type* maxErrorValues);
 
+	/*
+	 * calculates the
+	 */
+	bool getParentLevelAndIndex(index_type* child,size_t dim);
+
+
+	/**
+	 * Sets all the elements of the index vector of a grid point to 1.
+	 * @param gridPoint pointer to the grid point with the index array to be changed
+	 */
+	void resetIndexVector(index_type* gridPoint);
+
 private:
 
 	/**
@@ -94,17 +109,6 @@ private:
 	void createSubspaceHelper(GridStorage* storage, index_type& index, size_t dim);
 
 	void createGridPointWithParents(GridStorage* storage, index_type& child);
-
-	/*
-	 * calculates the
-	 */
-	bool getParentLevelAndIndex(index_type* child,size_t dim);
-
-	/**
-	 * Sets all the elements of the index vector of a grid point to 1.
-	 * @param gridPoint pointer to the grid point with the index array to be changed
-	 */
-	void resetIndexVector(index_type* gridPoint);
 
 	//void testAdmissibility(SubspaceErrorStorage* subspaceError);
 

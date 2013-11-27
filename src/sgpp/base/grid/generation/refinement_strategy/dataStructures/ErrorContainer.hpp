@@ -54,12 +54,16 @@ public:
 
 	RefinementFunctor::value_type getContribPerPoint();
 
+	bool isAdmissible() const;
+	void setAdmissible(bool admissible);
+
 	std::string toString();
 
 private:
 
 	RefinementFunctor::value_type error;
 	size_t contributionCounter;
+	bool admissible;
 
 
 };
