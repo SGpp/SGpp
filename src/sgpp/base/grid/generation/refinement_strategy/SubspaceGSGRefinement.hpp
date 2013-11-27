@@ -14,7 +14,8 @@ namespace base {
 
 class SubspaceGSGRefinement: public SubspaceRefinement {
 public:
-	typedef std::vector<index_type> ErrorVector;
+	typedef std::vector<index_type> SubspaceVector;
+	typedef std::vector<index_type> GridPointVector;
 
 
 	SubspaceGSGRefinement(RefinementDecorator* decorator);
@@ -25,36 +26,29 @@ public:
 protected:
 
 
-	SubspaceErrorStorage admissibleSubspaces;
-	SubspaceErrorStorage nonAdmissibleSubspaces;
-	ErrorVector addedInLastRefinement;
+	SubspaceErrorStorage availableSubspaces;
+	SubspaceVector addedInLastRefinement;
 
-	void filterAdmissibleSubspaces(GridStorage* storage,
-								   SubspaceErrorStorage* admissibleSubspaces);
+	bool checkAdmissible(GridStorage* storage, index_type& subspace);
+
+	virtual void refineSubspaceCollection(GridStorage* storage,
+			SubspaceErrorStorage* errorStorage,
+			SubspaceVector* addedInLastStep,
+			RefinementFunctor* functor,
+			size_t refinements_num,
+			index_type* maxErrorSubspaces,
+			RefinementFunctor::value_type* maxErrorValues);
 
 	void updateAdmissibleSubspaces(GridStorage* storage,
-								   RefinementFunctor* functor,
-								   SubspaceErrorStorage* admissibleSubspaces);
+			RefinementFunctor* functor,
+			SubspaceVector* addedInLastRefinement,
+			SubspaceErrorStorage* admissibleSubspaces);
 
-	void hasParentsChecker(GridStorage* storage, index_type& gridPoint, size_t dim, bool result);
-
-	void cleanUpAdmissibleSubspaces(SubspaceErrorStorage* errorStorage,
-									ErrorVector* addedInLastStep,
-									size_t refinements_num,
-									index_type* maxSubspaces
-									);
+	void createAllGridPointsOfSubspace(index_type& subspace, GridPointVector* gridPoints);
 
 private:
 
-
-	bool hasParentHelper(GridStorage* storage, index_type& gridPoint, size_t dim);
-
-	void updateAdmissibleSubspacesHelper(GridStorage* storage,
-										 RefinementFunctor* functor,
-										 SubspaceErrorStorage* errorStorage,
-										 ErrorVector* newSubspaces,
-										 index_type& storageIndex,
-										 size_t dim);
+	void createAllGridPointsOfSubspaceHelper(GridPointVector* gridPoints,index_type& gridObject,size_t dim);
 };
 
 } /* namespace base */

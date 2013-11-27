@@ -14,12 +14,11 @@ namespace base {
 
 void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 											   RefinementFunctor* functor,
-											   size_t refinements_num,
-											   index_type* maxErrorSubspaces,
-											   RefinementFunctor::value_type* maxErrorValues) {
+											   SubspaceErrorStorage* subspaceError)
+{
 
 	//storage for accumulated errors on each subspace
-	SubspaceErrorStorage subspaceError;
+	//SubspaceErrorStorage subspaceError;
 
 
 	//work through all refinable points
@@ -54,10 +53,10 @@ void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 
 				//check if already in map
 				//cout << "running find operation \n";
-				SubspaceErrorStorage::iterator subSpaceErrorIterator = subspaceError.find(index);
+				SubspaceErrorStorage::iterator subSpaceErrorIterator = subspaceError->find(index);
 
 				//not found
-				if(subSpaceErrorIterator == subspaceError.end())
+				if(subSpaceErrorIterator == subspaceError->end())
 				{
 					//cout << "inserting new subspace " << index.toString() <<"\n";
 					//insert new subspace
@@ -65,7 +64,7 @@ void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 					//reset the index vector to one.
 					resetIndexVector(&indexCopy);
 					//cout << indexCopy.toString() << "\n";
-					subspaceError.insert(make_pair(indexCopy, ErrorContainer(gridPointError)));
+					subspaceError->insert(make_pair(indexCopy, ErrorContainer(gridPointError)));
 				}
 				//found
 				else
@@ -89,10 +88,10 @@ void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 				RefinementFunctor::value_type gridPointError = (*functor)(storage, iter->second);
 
 				//check if already in map
-				SubspaceErrorStorage::iterator subSpaceErrorIterator = subspaceError.find(index);
+				SubspaceErrorStorage::iterator subSpaceErrorIterator = subspaceError->find(index);
 
 				//not found
-				if(subSpaceErrorIterator == subspaceError.end())
+				if(subSpaceErrorIterator == subspaceError->end())
 				{
 					//cout << "inserting new subspace " << index.toString() <<"\n";
 					//insert new subspace
@@ -100,7 +99,7 @@ void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 					//reset the index vector to one.
 					resetIndexVector(&indexCopy);
 					//cout << indexCopy.toString() << "\n";
-					subspaceError.insert(make_pair(indexCopy, ErrorContainer(gridPointError)));
+					subspaceError->insert(make_pair(indexCopy, ErrorContainer(gridPointError)));
 				}
 				//found
 				else
@@ -118,56 +117,14 @@ void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 		}
 	}
 
-	//cout << "validating adminssebility\n";
-	//testAdmissibility(&subspaceError);
-
-
-	//cout << "sorting refinable subspaces\n";
-	//select the subspaces with highest error
-
-
 	cout << "Map contains:\n";
 
 	//debug method - print map
-	for (SubspaceErrorStorage::iterator errorIter = subspaceError.begin();errorIter != subspaceError.end(); errorIter++)
+	for (SubspaceErrorStorage::iterator errorIter = subspaceError->begin();errorIter != subspaceError->end(); errorIter++)
 	{
 		cout << "Subspace" << ((index_type) (errorIter->first)).toString() << " with error " <<  ((ErrorContainer) errorIter->second).getContribPerPoint() <<"\n";
 
 	}
-
-
-	//variables for subspaces
-	size_t smallestMaxErrorIndex = 0;
-	RefinementFunctor::value_type smallestMaxErrorValue = maxErrorValues[smallestMaxErrorIndex];
-
-	//init arrays
-	for (size_t i = 0; i < refinements_num; ++i) {
-		//maxErrorSubspaces[i] = ;
-		maxErrorValues[i] = 0;
-	}
-
-	for (SubspaceErrorStorage::iterator subspaceErrorIterator = subspaceError.begin(); subspaceErrorIterator != subspaceError.end(); subspaceErrorIterator++)
-	{
-		//run test: when the error is smaller, add. When the errors are equal, test which subspace adds less gridpoints.
-		if (((ErrorContainer) subspaceErrorIterator->second).getContribPerPoint() > smallestMaxErrorValue ||
-				(((ErrorContainer) subspaceErrorIterator->second).getContribPerPoint()== smallestMaxErrorValue &&
-					((index_type) (subspaceErrorIterator->first)).getLevelSum() < maxErrorSubspaces[smallestMaxErrorIndex].getLevelSum()
-						))
-		{
-			maxErrorValues[smallestMaxErrorIndex] = ((ErrorContainer) subspaceErrorIterator->second).getContribPerPoint();
-			maxErrorSubspaces[smallestMaxErrorIndex] = subspaceErrorIterator->first;
-			smallestMaxErrorIndex = getIndexOfMin(maxErrorValues, refinements_num);
-			smallestMaxErrorValue = maxErrorValues[smallestMaxErrorIndex];
-		}
-	}
-
-
-	//debug method print errors
-	cout << "Selected:\n";
-	for (size_t i = 0; i < refinements_num; ++i) {
-		cout << "Subspace" << maxErrorSubspaces[i].toString() << "," << maxErrorValues[i] <<"\n";
-	}
-
 }
 
 void SubspaceRefinement::refineSubspaceCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, index_type* maxErrorSubspaces, RefinementFunctor::value_type* maxErrorValues) {
@@ -206,7 +163,11 @@ void SubspaceRefinement::freeRefineSubspace(GridStorage* storage, RefinementFunc
 
 	//accumulate error on refinable subspaces
 	cout << "collecting refinable subspaces\n";
-	collectRefinableSubspaces(storage,functor,refinements_num,maxSubspaces,errorsPerSubspace);
+	SubspaceErrorStorage errorStorage;
+	collectRefinableSubspaces(storage,functor,&errorStorage);
+
+	//select refinements_num highest indicator subspaces
+	selectHighestErrorSubspaces(&errorStorage,refinements_num,maxSubspaces,errorsPerSubspace);
 
 	//refine all subspaces which satisfy the refinement criteria
 	cout << "refining subspaces\n";
@@ -226,6 +187,48 @@ void SubspaceRefinement::createSubspace(GridStorage* storage, index_type& index)
 	}
 	//start recursive call
 	createSubspaceHelper(storage,index,0);
+}
+
+
+
+void SubspaceRefinement::selectHighestErrorSubspaces(SubspaceErrorStorage* subspaceError,
+		size_t refinements_num,
+		AbstractRefinement::index_type* maxErrorSubspaces,
+		RefinementFunctor::value_type* maxErrorValues)
+{
+
+	//variables for subspaces
+	size_t smallestMaxErrorIndex = 0;
+	RefinementFunctor::value_type smallestMaxErrorValue = maxErrorValues[smallestMaxErrorIndex];
+
+	//init arrays
+	for (size_t i = 0; i < refinements_num; ++i) {
+		//maxErrorSubspaces[i] = ;
+		maxErrorValues[i] = 0;
+	}
+
+	for (SubspaceErrorStorage::iterator subspaceErrorIterator = subspaceError->begin(); subspaceErrorIterator != subspaceError->end(); subspaceErrorIterator++)
+	{
+		//run test: when the error is smaller, add. When the errors are equal, test which subspace adds less gridpoints.
+		if (((ErrorContainer) subspaceErrorIterator->second).getContribPerPoint() > smallestMaxErrorValue ||
+				(((ErrorContainer) subspaceErrorIterator->second).getContribPerPoint()== smallestMaxErrorValue &&
+						((index_type) (subspaceErrorIterator->first)).getLevelSum() < maxErrorSubspaces[smallestMaxErrorIndex].getLevelSum()
+				))
+		{
+			maxErrorValues[smallestMaxErrorIndex] = ((ErrorContainer) subspaceErrorIterator->second).getContribPerPoint();
+			maxErrorSubspaces[smallestMaxErrorIndex] = subspaceErrorIterator->first;
+			smallestMaxErrorIndex = getIndexOfMin(maxErrorValues, refinements_num);
+			smallestMaxErrorValue = maxErrorValues[smallestMaxErrorIndex];
+		}
+	}
+
+
+
+	//debug method print errors
+	cout << "Selected:\n";
+	for (size_t i = 0; i < refinements_num; ++i) {
+		cout << "Subspace" << maxErrorSubspaces[i].toString() << "," << maxErrorValues[i] <<"\n";
+	}
 }
 
 void SubspaceRefinement::createSubspaceHelper(GridStorage* storage,index_type& storageIndex, size_t dim){
@@ -256,8 +259,7 @@ void SubspaceRefinement::createSubspaceHelper(GridStorage* storage,index_type& s
 
 	} else {
 		//reached end of recursion scheme. add a new grid point.
-		cout << "creating gridpoint " << storageIndex.toString() << "\n";
-		//createGridpoint(storage,storageIndex);
+		//cout << "creating gridpoint " << storageIndex.toString() << "\n";
 		createGridPointWithParents(storage,storageIndex);
 	}
 }
