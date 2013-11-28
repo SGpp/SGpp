@@ -65,10 +65,17 @@ base/grid/common/DirichletGridConverter.cpp
 base/grid/common/DirichletUpdateVector.cpp
 base/grid/generation/hashmap/AbstractRefinement.cpp
 base/grid/generation/hashmap/HashRefinement.cpp
+base/grid/generation/hashmap/SubspaceCoarsening.cpp
 base/grid/generation/hashmap/HashRefinementBoundaries.cpp
 base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
 base/grid/generation/refinement_strategy/RefinementDecorator.cpp
 base/grid/generation/refinement_strategy/ANOVARefinement.cpp
+base/grid/generation/refinement_strategy/dataStructures/SortedGridObjectContainer.cpp
+base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.cpp
+base/grid/generation/refinement_strategy/SubspaceRefinement.cpp
+base/grid/generation/refinement_strategy/SubspaceGSGRefinement.cpp
+base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.cpp
+base/grid/generation/refinement_strategy/PredictiveRefinement.cpp
 base/grid/generation/BoundaryGridGenerator.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp
@@ -76,6 +83,7 @@ base/grid/generation/StandardGridGenerator.cpp
 base/grid/generation/functors/ANOVACoarseningFunctor.cpp
 base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 base/grid/generation/functors/SurplusRefinementFunctor.cpp
+base/grid/generation/functors/PredictiveRefinementIndicator.cpp
 base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
 base/grid/Grid.cpp
