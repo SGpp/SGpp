@@ -118,6 +118,7 @@ namespace std {
 %include "src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/SubspaceCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+%include "src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/dataStructures/SortedGridObjectContainer.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/dataStructures/SubspaceErrorMap.hpp"
@@ -138,7 +139,6 @@ namespace std {
 %include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-%include "src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "src/sgpp/base/grid/GridDataBase.hpp"
 
 
