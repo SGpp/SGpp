@@ -61,7 +61,28 @@ namespace sg {
          *
          * @param o constant pointer to HashGridIndex object
          */
+        HashGridIndex(const HashGridIndex<LT, IT>& o) : DIM(o.DIM), level(NULL), index(NULL), hash_value(0) {
+
+        	level = new level_type[DIM];
+        	index = new index_type[DIM];
+        	Leaf = false;
+
+        	for (size_t d = 0; d < DIM; d++) {
+        		level[d] = o.level[d];
+        		index[d] = o.index[d];
+        	}
+
+        	Leaf = o.Leaf;
+        	rehash();
+        }
+
+        /**
+         * Copy-Constructor
+         *
+         * @param o constant pointer to HashGridIndex object
+         */
         HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL), hash_value(0) {
+
           level = new level_type[DIM];
           index = new index_type[DIM];
           Leaf = false;
