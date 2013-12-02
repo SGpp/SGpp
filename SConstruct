@@ -7,6 +7,7 @@
 
 import os, sys
 import distutils.sysconfig
+import glob
 
 # Check for versions of Scons and Python
 EnsureSConsVersion(1, 0)
@@ -73,6 +74,18 @@ def CheckJNI(context):
     context.Result('... nothing found!')
     return 0
 
+# get all files in a folder matching "SConscript*"
+def getModules(path):
+    modules = glob.glob(path + '/SConscript*')
+    for i in range(len(modules)):            
+        modules[i] = modules[i].split('SConscript', 1)[1]
+    
+    # filter out backup files        
+    for module in modules:
+        if '~' in module:
+            modules.remove(module)
+        
+    return modules
 
 # Definition of flags / command line parameters for SCons
 #########################################################################
@@ -96,28 +109,37 @@ vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 
+# modules and dependencies
+moduleList = {}
+src_files = {}
+supportList = ['SG_PYTHON', 'SG_JAVA']
+
+# find all modules
+modules = getModules('src/sgpp')
+
+# check dependencies and import src file locations
+for name in modules:
+    SConscript('src/sgpp/SConscript' + name, variant_dir='tmp/build_sg' + name.lower(), duplicate=0)
+    Import('srcs')
+    Import('dependencies')
+    moduleList['SG_' + name.upper()] = dependencies
+    print 'Module SG_' + name.upper() + ' depends on:'
+    for dep in dependencies:
+        print '\t' + dep
+        if not dep in modules:
+            print "Error!"
+            print name + " depends on non-existent module " + dep
+            Exit(1)
+    src_files[name.lower()] = srcs
+
 # for compiling different modules
+for module in moduleList:
+    vars.Add(BoolVariable(module, 'Build  Module: ' + module, False))
+
 vars.Add(BoolVariable('SG_ALL', 'Build all modules', False))
-vars.Add(BoolVariable('SG_BASE', 'Build Basis Module', False))
-vars.Add(BoolVariable('SG_DATADRIVEN', 'Build Datadriven Module', False))
-vars.Add(BoolVariable('SG_SOLVER', 'Build Solver Module', False))
-vars.Add(BoolVariable('SG_FINANCE', 'Build Finance Module', False))
-vars.Add(BoolVariable('SG_PDE', 'Build PDE Module', False))
-vars.Add(BoolVariable('SG_PARALLEL', 'Build Parallel Module', False))
-vars.Add(BoolVariable('SG_MISC', 'Build Misc Module', False))
-vars.Add(BoolVariable('SG_COMBIGRID', 'Build Combigrid Module', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build Python Support', False))
 vars.Add(BoolVariable('SG_JAVA', 'Build Java Support', False))
-# modules and dependencies
-moduleList = {'SG_BASE': (), 
-              'SG_DATADRIVEN': ('SG_BASE'), 
-              'SG_SOLVER': ('SG_BASE'), 
-              'SG_FINANCE': ('SG_BASE', 'SG_PDE'),
-              'SG_PDE': ('SG_BASE'), 
-              'SG_PARALLEL': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE'), 
-              'SG_MISC': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE', 'SG_PARALLEL'), 
-              'SG_COMBIGRID': ('SG_BASE')}
-supportList = ['SG_PYTHON', 'SG_JAVA']
+
 
 # verbosity options
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
@@ -165,10 +187,10 @@ logfile.truncate()
 # detour compiler output
 def print_cmd_line(s, target, src, env):
     if env['VERBOSE']:
-        sys.stdout.write(u'%s\n'%s);
+        sys.stdout.write(u'%s\n'%s)
     else:
-        sys.stdout.write(u'.');
-        sys.stdout.flush();
+        sys.stdout.write(u'.')
+        sys.stdout.flush()
     if env['CMD_LOGFILE']:
         open(env['CMD_LOGFILE'], 'a').write('%s\n'%s);
 
@@ -200,10 +222,10 @@ if env['TARGETCPU'] == 'default':
                          '-funroll-loops', '-mfpmath=sse', '-msse3', '-fPIC',
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
     if env['OMP']:
-	env.Append(CPPFLAGS=['-fopenmp'])
-    	env.Append(LINKFLAGS=['-fopenmp'])
+        env.Append(CPPFLAGS=['-fopenmp'])
+        env.Append(LINKFLAGS=['-fopenmp'])
     else:
-	# do not stop for unknown pragmas (due to #pragma omp ... )
+        # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
 
 elif env['TARGETCPU'] == 'ICC':
@@ -216,13 +238,13 @@ elif env['TARGETCPU'] == 'ICC':
 
     env['CC'] = ('icc')
     env['LINK'] = ('icpc')
-    env['CXX'] = ('icpc')	    
+    env['CXX'] = ('icpc')        
 
     if env['OMP']:
-	env.Append(CPPFLAGS=['-openmp'])
+        env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
     else:
-	# do not stop for unknown pragmas (due to #pragma omp ... )
+        # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
 
 
@@ -286,7 +308,8 @@ if env['SG_ALL']:
 for modl in moduleList.keys():
     if env[modl]:
         for dep in moduleList[modl]:
-            env[dep] = True
+            env['SG_' + dep.upper()] = True
+
 for modl in moduleList.keys():
     if env[modl]:
         print "Compiling module", modl
@@ -382,75 +405,43 @@ if not env.GetOption('clean'):
 # End of configuration
 #########################################################################
 Export('env')
+Export('moduleList')
 
 
 # Now compile
 #########################################################################
 lib_sgpp_targets = []
+src_objs = {}
 
-if env['SG_BASE']:
-	SConscript('src/sgpp/SConscriptBase', variant_dir='tmp/build_sgbase', duplicate=0)
-	Import('libsgppbase')
-	Import('libsgppbasestatic')
-	lib_sgpp_targets.append(libsgppbase)
-	lib_sgpp_targets.append(libsgppbasestatic)
-	
-if env['SG_PDE']:
-	SConscript('src/sgpp/SConscriptPde', variant_dir='tmp/build_sgpde', duplicate=0)
-	Import('libsgpppde')
-	Import('libsgpppdestatic')
-	lib_sgpp_targets.append(libsgpppde)
-	lib_sgpp_targets.append(libsgpppdestatic)
-	
-if env['SG_DATADRIVEN']:
-	SConscript('src/sgpp/SConscriptDatadriven', variant_dir='tmp/build_sgdatadriven', duplicate=0)
-	Import('libsgppdatadriven')
-	Import('libsgppdatadrivenstatic')
-	lib_sgpp_targets.append(libsgppdatadriven)
-	lib_sgpp_targets.append(libsgppdatadrivenstatic)
-	
-if env['SG_SOLVER']:
-	SConscript('src/sgpp/SConscriptSolver', variant_dir='tmp/build_sgsolver', duplicate=0)
-	Import('libsgppsolver')
-	Import('libsgppsolverstatic')
-	lib_sgpp_targets.append(libsgppsolver)
-	lib_sgpp_targets.append(libsgppsolverstatic)
-	
-if env['SG_FINANCE']:
-	SConscript('src/sgpp/SConscriptFinance', variant_dir='tmp/build_sgfinance', duplicate=0)
-	Import('libsgppfinance')
-	Import('libsgppfinancestatic')
-	lib_sgpp_targets.append(libsgppfinance)
-	lib_sgpp_targets.append(libsgppfinancestatic)
-	
-if env['SG_PARALLEL']:
-	SConscript('src/sgpp/SConscriptParallel', variant_dir='tmp/build_sgparallel', duplicate=0)
-	Import('libsgppparallel')
-	Import('libsgppparallelstatic')
-	lib_sgpp_targets.append(libsgppparallel)
-	lib_sgpp_targets.append(libsgppparallelstatic)
+    
+    
+# compile libraries
+for name in modules:
+    if env['SG_' + name.upper()]:
+        print 'Building: ' + name
+        name = name.lower()
+        env.Append(CPPPATH=['#/src/sgpp'])
+        
+        # there is probably a more elgant way to do this
+        for index in range(0, len(src_files[name])):
+           src_files[name][index] = 'src/sgpp/' + src_files[name][index]
 
-if env['SG_MISC']:
-	SConscript('src/sgpp/SConscriptMisc', variant_dir='tmp/build_sgmisc', duplicate=0)
-	Import('libsgppmisc')
-	Import('libsgppmiscstatic')
-	lib_sgpp_targets.append(libsgppmisc)
-	lib_sgpp_targets.append(libsgppmiscstatic)
+        src_objs[name] = env.SharedObject(src_files[name])
+        lib = env.SharedLibrary(target="sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        libstatic = env.StaticLibrary(target="sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        lib_sgpp_targets.append(lib)
+        lib_sgpp_targets.append(libstatic)
 
-if env['SG_COMBIGRID']:
-	SConscript('src/sgpp/SConscriptCombigrid', variant_dir='tmp/build_sgcombigrid', duplicate=0)
-	Import('libsgppcombigrid')
-	Import('libsgppcombigridstatic')
-	lib_sgpp_targets.append(libsgppcombigrid)
-	lib_sgpp_targets.append(libsgppcombigridstatic)
+Export('src_objs')
 
 # build python lib
 if env['SG_PYTHON'] and swigAvail and pyAvail:
-	libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
-	pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	Depends(pyinst, libpysgpp)
-	pybin = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	Depends(pybin, libpysgpp)
+
+    libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
+    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pyinst, libpysgpp)
+    pybin = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pybin, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['SG_JAVA']:
@@ -460,7 +451,7 @@ if swigAvail and javaAvail and env['SG_JAVA']:
 #                             variant_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
     jinst = env.Install('lib/jsgpp', [libjsgpp])
-	
+    
 env.Install('#lib/sgpp', lib_sgpp_targets)
 
 # Unit tests
