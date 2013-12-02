@@ -131,40 +131,8 @@ namespace std {
 %include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/GridDataBase.hpp"
 
-
-// and the rest
-#ifdef SG_DATADRIVEN
-%include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
-%include "src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
-%include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
-#endif
-
-#ifdef SG_PDE
-%include "src/sgpp/pde/application/PDESolver.hpp"
-%include "src/sgpp/pde/application/ParabolicPDESolver.hpp"
-%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
-%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
-%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
-%include "src/sgpp/pde/application/HeatEquationSolver.hpp"
-#endif
-
-#ifdef SG_FINANCE
-%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
-%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
-%include "src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
-%include "src/sgpp/finance/application/BlackScholesSolver.hpp"
-%include "src/sgpp/finance/application/BlackScholesSolverWithStretching.hpp"
-%include "src/sgpp/pde/application/HeatEquationSolver.hpp"
-%include "src/sgpp/pde/application/HeatEquationSolverWithStretching.hpp"
-%include "src/sgpp/pde/application/EllipticPDESolver.hpp"
-%include "src/sgpp/pde/application/PoissonEquationSolver.hpp"
-%include "src/sgpp/finance/application/VariableDiscountFactor.hpp"
-#endif
-
 %include "src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
-
 %include "src/sgpp/base/algorithm/GetAffectedBasisFunctions.hpp"
 %include "src/sgpp/base/algorithm/AlgorithmEvaluation.hpp"
 %include "src/sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp"
@@ -183,6 +151,48 @@ namespace std {
 %include "src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
 %include "src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
+// static factory methods
+%include "src/sgpp/base/operation/BaseOpFactory.hpp"
+
+
+// and the rest
+#ifdef SG_DATADRIVEN
+%include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
+%include "src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
+%include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
+
+%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+#endif
+
+#ifdef SG_PDE
+%include "src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
+
+%include "src/sgpp/pde/application/PDESolver.hpp"
+%include "src/sgpp/pde/application/ParabolicPDESolver.hpp"
+%include "src/sgpp/pde/application/HeatEquationSolver.hpp"
+%include "src/sgpp/pde/application/HeatEquationSolver.hpp"
+%include "src/sgpp/pde/application/HeatEquationSolverWithStretching.hpp"
+%include "src/sgpp/pde/application/EllipticPDESolver.hpp"
+%include "src/sgpp/pde/application/PoissonEquationSolver.hpp"
+
+%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
+%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
+%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
+%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
+#endif
+
+#ifdef SG_FINANCE
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
+%include "src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
+
+%include "src/sgpp/finance/application/BlackScholesSolver.hpp"
+%include "src/sgpp/finance/application/BlackScholesSolverWithStretching.hpp"
+%include "src/sgpp/finance/application/VariableDiscountFactor.hpp"
+
+%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
+#endif
+
 #ifdef SG_SOLVER
 %include "src/sgpp/solver/SGSolver.hpp"
 %include "src/sgpp/solver/SLESolver.hpp"
@@ -194,42 +204,13 @@ namespace std {
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
 #endif
 
-// static factory methods
-//%include "src/sgpp/base/basis/operations_factory.hpp"
-%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+#ifdef SG_PARALLEL
 %include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
-%include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
-%include "src/sgpp/pde/operation/PdeOpFactory.hpp"
-%include "src/sgpp/base/operation/BaseOpFactory.hpp"
+#endif
+
+#ifdef SG_MISC
 %include "src/sgpp/misc/operation/MiscOpFactory.hpp"
-
-%apply std::string *INPUT { std::string& istr };
-
-%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
-
-%template(GridIndex) sg::base::HashGridIndex<unsigned int, unsigned int>;
-%template(GridStorage) sg::base::HashGridStorage<sg::base::GridIndex>;
-
-%template(SLinearBase) sg::base::LinearBasis<unsigned int, unsigned int>;
-%template(SLinearBoundaryBase) sg::base::LinearBoundaryBasis<unsigned int, unsigned int>;
-%template(SLinearStretchedBase) sg::base::LinearStretchedBasis<unsigned int, unsigned int>;
-%template(SLinearStretchedBoundaryBase) sg::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-%template(SModLinearBase) sg::base::ModifiedLinearBasis<unsigned int, unsigned int>;
-%template(SPolyBase) sg::base::PolyBasis<unsigned int, unsigned int>;
-%template(SModPolyBase) sg::base::ModifiedPolyBasis<unsigned int, unsigned int>;
-%template(SModWaveletBase) sg::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
-%template(SModBsplineBase) sg::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
-%template(SPrewaveletBase) sg::base::PrewaveletBasis<unsigned int, unsigned int>;
-
-%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-%apply std::vector<double> *INPUT { std::vector<double>& point }; 
-
-%template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::base::SLinearBase>;
-%template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::base::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearBoundaryBase>;
-%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
-%template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
+#endif
 
 // the new combigrid!
 
@@ -277,3 +258,33 @@ namespace std {
 //  $1 = static_cast<sg::base::HashGenerator::level_t>(PyInt_AsLong($input));
 //}
 #endif
+
+%apply std::string *INPUT { std::string& istr };
+
+%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
+
+%template(GridIndex) sg::base::HashGridIndex<unsigned int, unsigned int>;
+%template(GridStorage) sg::base::HashGridStorage<sg::base::GridIndex>;
+
+%template(SLinearBase) sg::base::LinearBasis<unsigned int, unsigned int>;
+%template(SLinearBoundaryBase) sg::base::LinearBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearStretchedBase) sg::base::LinearStretchedBasis<unsigned int, unsigned int>;
+%template(SLinearStretchedBoundaryBase) sg::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
+%template(SModLinearBase) sg::base::ModifiedLinearBasis<unsigned int, unsigned int>;
+%template(SPolyBase) sg::base::PolyBasis<unsigned int, unsigned int>;
+%template(SModPolyBase) sg::base::ModifiedPolyBasis<unsigned int, unsigned int>;
+%template(SModWaveletBase) sg::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
+%template(SModBsplineBase) sg::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
+%template(SPrewaveletBase) sg::base::PrewaveletBasis<unsigned int, unsigned int>;
+
+%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
+%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+
+%template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::base::SLinearBase>;
+%template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::base::SLinearBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
+%template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
+%template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
+
+

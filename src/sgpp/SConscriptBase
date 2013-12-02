@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-Import("env")
+dependencies = []
 
 srcs = Split("""
 base/application/ScreenOutput.cpp
@@ -122,18 +122,5 @@ base/tools/PrecisionConverter.cpp
 base/operation/BaseOpFactory.cpp
 """)
 
-
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_base = sg_env.SharedObject(srcs)
-Export('src_objs_base')
-
-libsgppbase = sg_env.SharedLibrary(target="sgppbase", source = src_objs_base, SHLIBPREFIX = 'lib')
-libsgppbasestatic = sg_env.StaticLibrary(target="sgppbase", source = src_objs_base, SHLIBPREFIX = 'lib')
-
-Export('libsgppbase')
-Export('libsgppbasestatic')
-
+Export('srcs')
+Export('dependencies')

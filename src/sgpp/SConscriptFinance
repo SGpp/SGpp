@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-Import("env")
+dependencies = ["Base", "Pde"]
 
 srcs = Split("""
 finance/algorithm/BlackScholesParabolicPDESolverSystem.cpp
@@ -129,17 +129,5 @@ finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretc
 finance/operation/FinanceOpFactory.cpp
 """)
 
-
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_finance = sg_env.SharedObject(srcs)
-Export('src_objs_finance')
-
-libsgppfinance = sg_env.SharedLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
-libsgppfinancestatic = sg_env.StaticLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
-
-Export('libsgppfinance')
-Export('libsgppfinancestatic')
+Export('srcs')
+Export('dependencies')
