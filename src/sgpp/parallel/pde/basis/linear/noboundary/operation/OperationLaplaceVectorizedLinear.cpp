@@ -1192,14 +1192,9 @@ namespace sg {
 
       #pragma omp parallel
       {
-        double* result_ptr = result.getPointer();
-        size_t padded_size = this->operation_result_matrix_->getNcols();
         size_t thr_start;
         size_t thr_end;
         sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
-
-
-        double* alpha_padded_ptr_ = alpha_padded_->getPointer();
 
         for (size_t i = thr_start; i < thr_end; i++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
