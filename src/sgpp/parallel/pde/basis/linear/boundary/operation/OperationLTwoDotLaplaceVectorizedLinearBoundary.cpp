@@ -1145,9 +1145,9 @@ namespace sg {
                 __m128d mm_ljd = _mm_load_pd(temp_level_ptr);
                 __m128d mm_ijd = _mm_load_pd(temp_index_ptr);
 
-                __m128d mm_doGrad = _mm_and_pd(_mm_cmp_pd(mm_lid, mm_ljd, _CMP_EQ_OQ),
-                                               _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ),
-                                                   _mm_cmp_pd(mm_lid, mm_one, _CMP_NEQ_OQ))); //+5
+                __m128d mm_doGrad = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd),
+                                               _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd),
+                                                   _mm_cmpneq_pd(mm_lid, mm_one))); //+5
 
 
                 __m128d mm_grad = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad)); //1+1
@@ -1160,9 +1160,9 @@ namespace sg {
                 __m128d mm_in_lid = _mm_loaddup_pd(level_int_boundary_filtered_ptr_ + i_idx);
                 __m128d mm_in_ljd = _mm_load_pd(temp_level_int_ptr);
 
-                __m128d mm_res_one = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ), _mm_cmp_pd(mm_ljd, mm_one, _CMP_NEQ_OQ)))); //1+2
+                __m128d mm_res_one = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd), _mm_cmpneq_pd(mm_ljd, mm_one)))); //1+2
 
-                __m128d mm_selector = _mm_cmp_pd(mm_lid, mm_ljd, _CMP_LE_OQ);//+6
+                __m128d mm_selector = _mm_cmple_pd(mm_lid, mm_ljd);//+6
                 __m128d mm_i1d = _mm_blendv_pd(mm_iid, mm_ijd, mm_selector);
                 __m128d mm_in_l1d = _mm_blendv_pd(mm_in_lid, mm_in_ljd, mm_selector);
                 __m128d mm_in_l2d = _mm_blendv_pd(mm_in_ljd, mm_in_lid, mm_selector);
@@ -1171,9 +1171,8 @@ namespace sg {
 
                 __m128d mm_q = _mm_mul_pd(_mm_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
                 __m128d mm_p = _mm_mul_pd(_mm_add_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
-                __m128d mm_overlap = _mm_cmp_pd(_mm_max_pd(mm_q, _mm_mul_pd(_mm_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                                _mm_min_pd(mm_p, _mm_mul_pd(_mm_add_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                                _CMP_LT_OQ); //6+1
+                __m128d mm_overlap = _mm_cmplt_pd(_mm_max_pd(mm_q, _mm_mul_pd(_mm_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                                _mm_min_pd(mm_p, _mm_mul_pd(_mm_add_pd(mm_i2d, mm_one), mm_in_l2d))); //6+1
 
                 __m128d mm_temp_res_inner = _mm_sub_pd(_mm_sub_pd(mm_two,
                                                        _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d, mm_q), mm_i2d)))),
@@ -1183,14 +1182,14 @@ namespace sg {
                 __m128d mm_temp_res_leftbound = _mm_sub_pd(mm_two, mm_temp_res_rightbound); //1
 
                 __m128d mm_temp_res = _mm_blendv_pd(mm_temp_res_inner,
-                                                    _mm_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm_cmp_pd(mm_i2d, mm_one, _CMP_EQ_OQ)),
-                                                    _mm_cmp_pd(mm_l2d, mm_one, _CMP_EQ_OQ));
+                                                    _mm_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm_cmpeq_pd(mm_i2d, mm_one)),
+                                                    _mm_cmpeq_pd(mm_l2d, mm_one));
 
 
 
                 mm_temp_res = _mm_mul_pd(mm_temp_res, _mm_mul_pd(mm_half, mm_in_l1d)); // 2 flops
                 __m128d mm_res_two = _mm_and_pd(mm_temp_res, mm_overlap); // Now mask result //+1
-                mm_selector = _mm_cmp_pd(mm_lid, mm_ljd, _CMP_NEQ_OQ); // +1
+                mm_selector = _mm_cmpneq_pd(mm_lid, mm_ljd); // +1
 
                 __m128d mm_val = _mm_blendv_pd(mm_res_one, mm_res_two, mm_selector);  // +1
                 mm_val = _mm_mul_pd(mm_val, mm_lcl_q); //1 flop
@@ -1199,9 +1198,9 @@ namespace sg {
                 ////////////////////////////////////////////////////////
                 __m128d mm_ljd2 = _mm_load_pd(temp_level_ptr + VECTOR_SIZE);
                 __m128d mm_ijd2 = _mm_load_pd(temp_index_ptr + VECTOR_SIZE);
-                __m128d mm_doGrad2 = _mm_and_pd(_mm_cmp_pd(mm_lid, mm_ljd2, _CMP_EQ_OQ),
-                                                _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ),
-                                                    _mm_cmp_pd(mm_lid, mm_one, _CMP_NEQ_OQ))); //1 // +2
+                __m128d mm_doGrad2 = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd2),
+                                                _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd2),
+                                                    _mm_cmpneq_pd(mm_lid, mm_one))); //1 // +2
 
 
                 __m128d mm_grad2 = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad2)); //2
@@ -1211,9 +1210,9 @@ namespace sg {
 
                 __m128d mm_in_ljd2 = _mm_load_pd(temp_level_int_ptr + VECTOR_SIZE);
 
-                __m128d mm_res_one2 = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ), _mm_cmp_pd(mm_ljd2, mm_one, _CMP_NEQ_OQ)))); //2 // +1
+                __m128d mm_res_one2 = _mm_mul_pd(mm_two_thirds, _mm_and_pd(mm_in_lid, _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd2), _mm_cmpneq_pd(mm_ljd2, mm_one)))); //2 // +1
 
-                __m128d mm_selector2 = _mm_cmp_pd(mm_lid, mm_ljd2, _CMP_LE_OQ);
+                __m128d mm_selector2 = _mm_cmple_pd(mm_lid, mm_ljd2);
                 __m128d mm_i1d2 = _mm_blendv_pd(mm_iid, mm_ijd2, mm_selector2);
                 __m128d mm_in_l1d2 = _mm_blendv_pd(mm_in_lid, mm_in_ljd2, mm_selector2);
                 __m128d mm_i2d2 = _mm_blendv_pd(mm_ijd2, mm_iid, mm_selector2);
@@ -1224,9 +1223,8 @@ namespace sg {
                 __m128d mm_q2 = _mm_mul_pd(_mm_sub_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
                 __m128d mm_p2 = _mm_mul_pd(_mm_add_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
 
-                __m128d mm_overlap2 = _mm_cmp_pd(_mm_max_pd(mm_q2, _mm_mul_pd(_mm_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                                 _mm_min_pd(mm_p2, _mm_mul_pd(_mm_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                                 _CMP_LT_OQ); //6 flop // +1
+                __m128d mm_overlap2 = _mm_cmplt_pd(_mm_max_pd(mm_q2, _mm_mul_pd(_mm_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                                 _mm_min_pd(mm_p2, _mm_mul_pd(_mm_add_pd(mm_i2d2, mm_one), mm_in_l2d2))); //6 flop // +1
 
                 __m128d mm_temp_res_inner2 = _mm_sub_pd(_mm_sub_pd(mm_two,
                                                         _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
@@ -1236,13 +1234,13 @@ namespace sg {
                 __m128d mm_temp_res_leftbound2 = _mm_sub_pd(mm_two, mm_temp_res_rightbound2);
 
                 __m128d mm_temp_res2 = _mm_blendv_pd(mm_temp_res_inner2,
-                                                     _mm_blendv_pd(mm_temp_res_leftbound2, mm_temp_res_rightbound2, _mm_cmp_pd(mm_i2d2, mm_one, _CMP_EQ_OQ)),
-                                                     _mm_cmp_pd(mm_l2d2, mm_one, _CMP_EQ_OQ));
+                                                     _mm_blendv_pd(mm_temp_res_leftbound2, mm_temp_res_rightbound2, _mm_cmpeq_pd(mm_i2d2, mm_one)),
+                                                     _mm_cmpeq_pd(mm_l2d2, mm_one));
 
                 mm_temp_res2 = _mm_mul_pd(mm_temp_res2, _mm_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
                 __m128d mm_res_two2 = _mm_and_pd(mm_temp_res2, mm_overlap2); // Now mask result //1 flop
 
-                mm_selector2 = _mm_cmp_pd(mm_lid, mm_ljd2, _CMP_NEQ_OQ);
+                mm_selector2 = _mm_cmpneq_pd(mm_lid, mm_ljd2);
 
                 __m128d mm_val2 = _mm_blendv_pd(mm_res_one2, mm_res_two2, mm_selector2);
 
