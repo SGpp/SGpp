@@ -15,30 +15,19 @@ namespace base {
 
 class PredictiveSubspaceGSGRefinement: public sg::base::SubspaceGSGRefinement {
 public:
-	PredictiveSubspaceGSGRefinement(RefinementDecorator* decorator);
-
-	void freeRefineSubspace(GridStorage* storage,PredictiveRefinementIndicator* errorIndicator);
+	PredictiveSubspaceGSGRefinement(AbstractRefinement* refinement,size_t dim): SubspaceGSGRefinement(refinement,dim){};
 
 
 protected:
 
 	void updateAdmissibleSubspaces(GridStorage* storage,
-			PredictiveRefinementIndicator* errorIndicator,
-			SubspaceVector* addedInLastRefinement,
-			SubspaceErrorStorage* admissibleSubspaces);
+			RefinementFunctor* functor,
+			ErrorVector* addedInLastRefinement,
+			ErrorStorage* admissibleSubspaces);
 
 	virtual void collectRefinableSubspaces(GridStorage* storage,
-				PredictiveRefinementIndicator* errorIndicator,
-				SubspaceErrorStorage* errorStorage);
-
-
-	virtual void refineSubspaceCollection(GridStorage* storage,
-				SubspaceErrorStorage* errorStorage,
-				SubspaceVector* addedInLastStep,
-				PredictiveRefinementIndicator* errorIndicator,
-				size_t refinements_num,
-				index_type* maxErrorSubspaces,
-				RefinementFunctor::value_type* maxErrorValues);
+				RefinementFunctor* functor,
+				HashErrorStorage* errorStorage);
 };
 
 

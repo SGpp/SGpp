@@ -12,8 +12,8 @@
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 #include "dataStructures/ErrorContainer.hpp"
+#include "dataStructures/ErrorStorage.hpp"
 #include "RefinementDecorator.hpp"
-#include "dataStructures/SubspaceErrorMap.hpp"
 
 namespace sg {
 namespace base {
@@ -22,7 +22,12 @@ namespace base {
 class SubspaceRefinement: public sg::base::RefinementDecorator {
 public:
 
-	SubspaceRefinement(RefinementDecorator* decorator):RefinementDecorator(decorator){};
+	typedef std::vector<index_type> SubspaceVector;
+	typedef std::vector<index_type> GridPointVector;
+	typedef std::vector<ErrorType> ErrorVector;
+
+
+	SubspaceRefinement(AbstractRefinement* refinement):RefinementDecorator(refinement){};
 
 	/**
 	 * Refines a grid by adding additional Subspaces according to a RefinementFunctor provided.
@@ -33,7 +38,7 @@ public:
 	 * @param storage hashmap that stores the grid points
 	 * @param functor a RefinementFunctor specifying the refinement criteria
 	 */
-	void freeRefineSubspace(GridStorage* storage, RefinementFunctor* functor);
+	virtual void freeRefineSubspace(GridStorage* storage, RefinementFunctor* functor);
 
 	/**
 	 * This method creates a new subspace in the grid. It checks if some parents or
@@ -43,7 +48,9 @@ public:
 	 * @param index - the index containing the level vector for the new subspace.
 	 * the index vector of the object has to be set to 1 for all dimensions!.
 	 */
-	void createSubspace(GridStorage* storage, index_type& index);
+	virtual void createSubspace(GridStorage* storage, index_type& index, bool isLeaf);
+
+	void createAllGridPointsOfSubspace(index_type& subspace, GridPointVector* gridPoints);
 
 protected:
 
@@ -60,13 +67,12 @@ protected:
 	 */
 	virtual void collectRefinableSubspaces(GridStorage* storage,
 			RefinementFunctor* functor,
-			SubspaceErrorStorage* errorStorage);
+			HashErrorStorage* errorStorage);
 
 
-	virtual void selectHighestErrorSubspaces(SubspaceErrorStorage* errorStorage,
+	virtual void selectHighestErrorSubspaces(HashErrorStorage* errorStorage,
 											 size_t refinements_num,
-											 AbstractRefinement::index_type* maxSubspaces,
-											 RefinementFunctor::value_type* maxErrors);
+											 ErrorVector* maxSubspaces);
 	/**
 	 * Creates all subspaces that are passed in the maxErrorSubspaces array according to
 	 * the specifications in the refinement functor.
@@ -81,22 +87,23 @@ protected:
 	virtual void refineSubspaceCollection(GridStorage* storage,
 			RefinementFunctor* functor,
 			size_t refinements_num,
-			index_type* maxErrorSubspaces,
-			RefinementFunctor::value_type* maxErrorValues);
+			ErrorVector* maxErrorSubspaces);
 
 	/*
 	 * calculates the
 	 */
-	bool getParentLevelAndIndex(index_type* child,size_t dim);
+	//bool getParentLevelAndIndex(index_type* child,size_t dim);
 
 
 	/**
 	 * Sets all the elements of the index vector of a grid point to 1.
 	 * @param gridPoint pointer to the grid point with the index array to be changed
 	 */
-	void resetIndexVector(index_type* gridPoint);
+	//void resetIndexVector(index_type* gridPoint);
 
 private:
+
+	void createAllGridPointsOfSubspaceHelper(GridPointVector* gridPoints,index_type& gridObject,size_t dim);
 
 	/**
 	 * recursive function to create all points on a subspace.
@@ -106,14 +113,17 @@ private:
 	 * @param dim
 	 *
 	 */
-	void createSubspaceHelper(GridStorage* storage, index_type& index, size_t dim);
 
-	void createGridPointWithParents(GridStorage* storage, index_type& child);
+	//void createGridPointWithParents(GridStorage* storage, index_type& child);
 
-	//void testAdmissibility(SubspaceErrorStorage* subspaceError);
+};
 
-
-
+struct smallestErrorFirst
+{
+	bool operator() (const ErrorType& lhs, const ErrorType& rhs) const
+	{
+		return lhs>rhs;
+	}
 };
 
 } /* namespace base */

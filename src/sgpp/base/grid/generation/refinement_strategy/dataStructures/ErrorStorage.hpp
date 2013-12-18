@@ -27,29 +27,33 @@ public:
 
 	ErrorStorage(size_t dim);
 
+	ErrorStorage();
+
 	size_t push(ErrorType& container);
 
-	void pop(ErrorType* container);
+	ErrorType pop();
 
-	void peek(ErrorType* container);
+	ErrorType popNext();
 
-	void popBack(ErrorType* container);
+	ErrorType* peek();
 
-	void peekBack(ErrorType* container);
+	ErrorType* peekNext();
 
-	void getErrorMap(ErrorMap* errorMap);
+	ErrorType popBack();
 
-	void getHashErrorStorage(HashErrorStorage* hashErrorStorage);
+	ErrorType popBackNext();
 
-	void updateErrors(std::vector<size_t>* posVector, std::vector<ErrorType> newValVector);
+	ErrorType* peekBack();
 
-	void updateError(ErrorType newErrorObject);
+	ErrorType* peekBackNext();
+
+	ErrorMap* getErrorMap();
+
+	HashErrorStorage* getHashErrorStorage();
+
+	void addToOldError(ErrorType& newErrorObject);
 
 	void updateErrors(HashErrorStorage* newErrors);
-
-	void insertErrors(std::vector<ErrorType>* newErrorObjectsVector);
-
-	void insertIntoErrorMap(std::vector<size_t>* newErrorObjectsVector);
 
 	void insertAllIntoErrorMap();
 
@@ -59,6 +63,9 @@ protected:
 	HashErrorStorage hashErrorStorage;
 	ErrorMap errorMap;
 
+private:
+
+	ErrorType popSubroutine(ErrorMap::iterator iter);
 };
 
 } /* namespace base */

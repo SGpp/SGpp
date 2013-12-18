@@ -76,6 +76,8 @@ namespace sg {
          */
         virtual void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
 
+        bool checkAdmissibility(GridStorage* storage,index_type& subspace);
+
       protected:
 
         /**
