@@ -68,14 +68,14 @@ base/grid/generation/hashmap/HashRefinement.cpp
 base/grid/generation/hashmap/SubspaceCoarsening.cpp
 base/grid/generation/hashmap/HashRefinementBoundaries.cpp
 base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
+base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.cpp
 base/grid/generation/refinement_strategy/RefinementDecorator.cpp
 base/grid/generation/refinement_strategy/ANOVARefinement.cpp
-base/grid/generation/refinement_strategy/dataStructures/SortedGridObjectContainer.cpp
-base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.cpp
+base/grid/generation/refinement_strategy/PredictiveRefinement.cpp
 base/grid/generation/refinement_strategy/SubspaceRefinement.cpp
 base/grid/generation/refinement_strategy/SubspaceGSGRefinement.cpp
 base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.cpp
-base/grid/generation/refinement_strategy/PredictiveRefinement.cpp
+base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.cpp
 base/grid/generation/BoundaryGridGenerator.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp
