@@ -8,10 +8,35 @@
 #define SUBSPACECOARSENINGERRORCONTAINER_HPP_
 
 #include <map>
-#include "base/grid/generation/refinement_strategy/dataStructures/SubspaceErrorMap.hpp"
+#include "base/grid/generation/hashmap/HashCoarsening.hpp"
 
 namespace sg {
 namespace base {
+
+struct compareLevels
+{
+
+	bool operator()(HashCoarsening::index_type gridPointA, HashCoarsening::index_type gridPointB)
+	{
+		size_t dim = gridPointA.dim();
+		//std::cout<< "comparing " << gridPointA.toString() << " & " << gridPointB.toString();
+		//iterate over all dimensions
+		for(size_t i = 0; i< dim; ++i)
+		{
+			//compare level in each dimension
+			//std::cout << gridPointA.getLevel(i) << "<" << gridPointB.getLevel(i) << "? , ";
+			if (gridPointA.getLevel(i) < gridPointB.getLevel(i)){
+				//std::cout << " - SMALLER\n";
+				return true;
+			}else if (gridPointA.getLevel(i) > gridPointB.getLevel(i)) {
+				//std::cout << " - LARGER\n";
+				return false;
+			}
+		}
+		//std::cout << " - LARGER\n";
+		return false;
+	}
+};
 
 class SubspaceCoarseningErrorContainer {
 public:
