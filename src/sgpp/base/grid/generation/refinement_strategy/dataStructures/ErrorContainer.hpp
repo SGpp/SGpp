@@ -33,7 +33,7 @@ public:
 		admissible = true;
 	}
 
-	ErrorContainer(HashGridIndex<LT,IT>& index):HashGridIndex<LT,IT>()
+	ErrorContainer(HashGridIndex<LT,IT>& index):HashGridIndex<LT,IT>(index)
 	{
 		error = 0;
 		contributionCounter = 0;
@@ -211,6 +211,12 @@ public:
 	void setAdmissible(bool admissible)
 	{
 		this->admissible = admissible;
+	}
+
+	void resetError()
+	{
+		error = 0;
+		contributionCounter = 0;
 	}
 
 	std::string toString()

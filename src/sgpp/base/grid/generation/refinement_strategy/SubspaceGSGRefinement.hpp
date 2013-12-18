@@ -8,49 +8,40 @@
 #define SUBSPACEGSGREFINEMENT_HPP_
 
 #include "SubspaceRefinement.hpp"
+#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
+#include "base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
 
 namespace sg {
 namespace base {
 
 class SubspaceGSGRefinement: public SubspaceRefinement {
 public:
-	typedef std::vector<index_type> SubspaceVector;
-	typedef std::vector<index_type> GridPointVector;
 
 
-	SubspaceGSGRefinement(RefinementDecorator* decorator);
-
+	SubspaceGSGRefinement(AbstractRefinement* refinement, size_t dim);
 
 	void freeRefineSubspace(GridStorage* storage,RefinementFunctor* functor);
 
 protected:
 
 
-	SubspaceErrorStorage availableSubspaces;
-	SubspaceVector addedInLastRefinement;
+	ErrorStorage availableSubspaces;
+	ErrorVector addedInLastRefinement;
+	bool firstRefinement;
 
 	bool checkAdmissible(GridStorage* storage, index_type& subspace);
 
 	virtual void refineSubspaceCollection(GridStorage* storage,
-			SubspaceErrorStorage* errorStorage,
-			SubspaceVector* addedInLastStep,
+			ErrorStorage* errorStorage,
+			ErrorVector* addedInLastStep,
+			RefinementFunctor* functor);
+
+	virtual void updateAdmissibleSubspaces(GridStorage* storage,
 			RefinementFunctor* functor,
-			size_t refinements_num,
-			index_type* maxErrorSubspaces,
-			RefinementFunctor::value_type* maxErrorValues);
+			ErrorVector* addedInLastRefinement,
+			ErrorStorage* admissibleSubspaces);
 
-	void updateAdmissibleSubspaces(GridStorage* storage,
-			RefinementFunctor* functor,
-			SubspaceVector* addedInLastRefinement,
-			SubspaceErrorStorage* admissibleSubspaces);
-
-	void createAllGridPointsOfSubspace(index_type& subspace, GridPointVector* gridPoints);
-
-private:
-
-	void createAllGridPointsOfSubspaceHelper(GridPointVector* gridPoints,index_type& gridObject,size_t dim);
 };
-
 } /* namespace base */
 } /* namespace sg */
 #endif /* SUBSPACEGSGREFINEMENT_HPP_ */

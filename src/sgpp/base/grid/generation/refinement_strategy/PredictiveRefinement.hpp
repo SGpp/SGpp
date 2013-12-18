@@ -10,26 +10,22 @@
 #include "RefinementDecorator.hpp"
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 #include "base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
+#include <queue>
 
 namespace sg {
 namespace base {
 
-class PredictiveRefinement: public sg::base::RefinementDecorator {
+class PredictiveRefinement: public virtual RefinementDecorator {
 public:
 	PredictiveRefinement(AbstractRefinement* refinement): RefinementDecorator(refinement){};
-
-	void free_refineTest(GridStorage* storage, PredictiveRefinementIndicator* errorIndicator);
 
 protected:
 
 	virtual void collectRefinablePoints(GridStorage* storage,
-				PredictiveRefinementIndicator* errorIndicator, size_t refinements_num, size_t* max_indices,
+				RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
 				RefinementFunctor::value_type* max_values);
 
-	virtual void refineGridpointsCollection(GridStorage* storage,
-			PredictiveRefinementIndicator* errorIndicator, size_t refinements_num, size_t* max_indices,
-			RefinementFunctor::value_type* max_values);
-
+	void free_refine(GridStorage* storage, RefinementFunctor* functor);
 };
 
 } /* namespace base */
