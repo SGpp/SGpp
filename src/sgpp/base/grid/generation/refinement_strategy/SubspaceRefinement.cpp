@@ -123,7 +123,7 @@ void SubspaceRefinement::collectRefinableSubspaces(GridStorage* storage,
 
 void SubspaceRefinement::refineSubspaceCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, ErrorVector* maxErrorSubspaces) {
 
-	cout << "refining subspace collection\n";
+	//cout << "refining subspace collection\n";
 	RefinementFunctor::value_type maxErrorValue;
 	index_type maxErrorSubspaceIndex;
 	// now refine all grid points which satisfy the refinement criteria
@@ -140,7 +140,7 @@ void SubspaceRefinement::refineSubspaceCollection(GridStorage* storage, Refineme
 }
 
 void SubspaceRefinement::freeRefineSubspace(GridStorage* storage, RefinementFunctor* functor) {
-	cout << "in c++ subspace refinement";
+	//cout << "in c++ subspace refinement";
 
 	//nothing there => nothing to refine
 	if (storage->size() == 0) {
@@ -149,12 +149,12 @@ void SubspaceRefinement::freeRefineSubspace(GridStorage* storage, RefinementFunc
 
 	// the functor->getRefinementsNum() largest subspaces should be refined.
 	size_t refinements_num = functor->getRefinementsNum();
-	cout << "got refinements num\n";
+	//cout << "got refinements num\n";
 	//subspaces
 	ErrorVector maxSubspaces;
 
 	//accumulate error on refinable subspaces
-	cout << "collecting refinable subspaces\n";
+	//cout << "collecting refinable subspaces\n";
 	HashErrorStorage errorStorage(storage->dim());
 	collectRefinableSubspaces(storage,functor,&errorStorage);
 
@@ -162,7 +162,7 @@ void SubspaceRefinement::freeRefineSubspace(GridStorage* storage, RefinementFunc
 	selectHighestErrorSubspaces(&errorStorage,refinements_num,&maxSubspaces);
 
 	//refine all subspaces which satisfy the refinement criteria
-	cout << "refining subspaces\n";
+	//cout << "refining subspaces\n";
 	refineSubspaceCollection(storage,functor,refinements_num,&maxSubspaces);
 
 }

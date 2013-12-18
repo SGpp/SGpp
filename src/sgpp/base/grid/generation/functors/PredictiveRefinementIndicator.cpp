@@ -43,7 +43,6 @@ double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type
 	double valueInDim;
 
 	double errorIndicator = 0;
-	//DEBUG
 	size_t counter = 0;
 
 	//go through the whole dataset.
@@ -52,10 +51,11 @@ double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type
 		//if on the support of the grid point in all dim
 		if(isOnSupport(&floorMask,&ceilingMask,row))
 		{
+			++counter;
 			//calculate error Indicator
 			for(size_t dim = 0; dim < gridPoint->dim(); ++dim)
 			{
-				++counter;
+
 				level = gridPoint->getLevel(dim);
 				index = gridPoint->getIndex(dim);
 
@@ -145,16 +145,21 @@ size_t PredictiveRefinementIndicator::determineGridType(Grid* grid) {
 }
 
 bool PredictiveRefinementIndicator::isOnSupport(
-		DataVector* floorMask, DataVector* ceilingMask, size_t entry)
+		DataVector* floorMask, DataVector* ceilingMask, size_t row)
 {
 	for(size_t col = 0; col < dataSet->getNcols(); ++col)
 	{
-		double valueInDim = dataSet->get(entry,col);
+		double valueInDim = dataSet->get(row,col);
 		if(valueInDim < floorMask->get(col) || valueInDim >= ceilingMask->get(col) )
 		{
+			//std::cout << "floor: " << floorMask->get(col) << "<= " << valueInDim << "<"<< ceilingMask->get(col) <<std::endl;
 			return false;
 		}
 	}
+	DataVector vector(dataSet->getNcols());
+	dataSet->getRow(row,vector);
+//	std::cout << vector.toString() << " is on support of " << floorMask->toString() << " & " << ceilingMask->toString() << std::endl;
+
 	return true;
 }
 
@@ -170,8 +175,12 @@ void PredictiveRefinementIndicator::buildGPSupportMask(
 		level = gridPoint->getLevel(dim);
 		index = gridPoint->getIndex(dim);
 
-		floorMask->set(dim,(index-1.0)/(1<<level));
-		ceilingMask->set(dim,index*1.0/(1<<level));
+		floorMask->set(dim,(index-1.0)/(1<<(level)));
+		ceilingMask->set(dim,(index+1.0)/(1<<(level)));
+		//floorMask->set(dim,(index-1.0)/pow(2.0,((double)level)));
+		//ceilingMask->set(dim,(index+1.0)/pow(2.0,((double)level)));
+
+//		std::cout << "floor: " << floorMask->get(dim) << "ceiling " << ceilingMask->get(dim) <<std::endl;
 	}
 }
 
