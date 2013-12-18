@@ -186,20 +186,15 @@ public:
 		return getContribPerPoint() < container.getContribPerPoint();
 	}
 
-	RefinementFunctor::value_type getContribPerPoint()
-	{
-		if(contributionCounter==0){
-			return 0.0;
-		}
-		return error/static_cast<double>(contributionCounter);
-	}
 
 	RefinementFunctor::value_type getContribPerPoint() const
 	{
-		if(contributionCounter==0){
-			return 0.0;
-		}
-		return error/static_cast<double>(contributionCounter);
+//		if(contributionCounter==0){
+//			return 0.0;
+//		}
+//		return error/static_cast<double>(contributionCounter);
+
+		return error;
 	}
 
 

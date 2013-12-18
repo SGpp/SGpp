@@ -18,7 +18,7 @@ void PredictiveSubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* sto
 {
 
 	//perform dynamic down cast to see, if the functor is a valid predictive refinement indicator;
-	std::cout << "updating admissible subspaces \n";
+//	std::cout << "updating admissible subspaces \n";
 
 	PredictiveRefinementIndicator* errorIndicator = dynamic_cast<PredictiveRefinementIndicator*>(functor);
 
@@ -30,7 +30,7 @@ void PredictiveSubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* sto
 			addedInLastIter != addedInLastRefinement->end(); ++addedInLastIter)
 	{
 		//for each of them, find the neighbouring subspaces
-		std::cout << "searching for neighbouring subspaces\n";
+		//std::cout << "searching for neighbouring subspaces\n";
 		index_t index = 1;
 		level_t level = 1;
 
@@ -44,15 +44,15 @@ void PredictiveSubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* sto
 			//find out if the neighbour is already available.
 			HashErrorStorage::grid_map_iterator newSubspacesIter = newSubspaces.find(&neighbourSubspace);
 			HashErrorStorage::grid_map_iterator errorStorageIter = errorStorage->find(&neighbourSubspace);
-			std::cout << "looking for neighbouring subspace in dim  " << dim << "; " << neighbourSubspace.toString();
+//			std::cout << "looking for neighbouring subspace in dim  " << dim << "; " << neighbourSubspace.toString();
 			if(newSubspacesIter == newSubspaces.end() && errorStorageIter == errorStorage->end() && checkAdmissibility(storage,neighbourSubspace))
 			{
-				std::cout << "- not found. adding\n";
+//				std::cout << "- not found. adding\n";
 				//not found. insert that subspace.
 
 				GridPointVector gridPoints;
 				ErrorType helper = neighbourSubspace;
-				std::cout << "creating subspace points for" << helper.toString() << std::endl;
+//				std::cout << "creating subspace points for" << helper.toString() << std::endl;
 				createAllGridPointsOfSubspace(helper,&gridPoints);
 				//here the error contributions will be stored.
 				ErrorType errorContribution;
@@ -60,7 +60,7 @@ void PredictiveSubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* sto
 
 				for(GridPointVector::iterator pointIter = gridPoints.begin(); pointIter != gridPoints.end();++pointIter)
 				{
-					std::cout << "adding contrib for" << (*pointIter).toString() << std::endl;
+//					std::cout << "adding contrib for" << (*pointIter).toString() << std::endl;
 					// functor in each dimension is equal -> error Contribution of each subspace to each neighbouring subspace is equal.
 					RefinementFunctor::value_type error =  (*errorIndicator)(&(*pointIter));
 
