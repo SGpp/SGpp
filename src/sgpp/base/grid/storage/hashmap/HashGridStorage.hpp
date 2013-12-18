@@ -503,6 +503,7 @@ namespace sg {
             index_pointer del = list[pos];
             map.erase(del);
             delete del;
+
             // Insert update
             index_pointer insert = new GIT(&index);
             list[pos] = insert;
