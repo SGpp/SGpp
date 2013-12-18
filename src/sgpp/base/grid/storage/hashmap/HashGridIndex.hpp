@@ -649,6 +649,50 @@ namespace sg {
           return levelmin;
         }
 
+
+        //NEWLY ADDED by Michael Lettrich
+
+        void getParentLevelAndIndex(level_type* level, index_type* index, size_t dim)
+        {
+        	//get the parents index
+        	level_type parentLevel = this->level[dim];
+        	index_type parentIndex = this->index[dim];
+        	//cout << "analyzing GP " << (*child).toString() << "\n";
+        	if (parentLevel>1)
+        	{
+        		//cout << "parent index = " << parentIndex << ", " << (parentIndex-1)%2 << "\n";
+        		if(((parentIndex-1)/2)%2 == 0)
+        		{
+        			//child is on the left
+        			*level = parentLevel-1;
+        			*index = (parentIndex+1)/2;
+        			//cout << "(left) setting child to " << (*child).toString() << "\n";
+        		}else{
+        			//child is on the right
+        			*level = parentLevel-1;
+        			*index = (parentIndex-1)/2;
+        			//cout << "(right) setting child to " << (*child).toString() << "\n";
+        		}
+        	}else{
+        		//the parent is already on level 1 in dimension dim and has no parents.
+            	*level = 0;
+            	*index = 0;
+        	}
+        }
+
+
+        /**
+         * Sets all the elements of the index vector of a the stored item to 1.
+         * (Required if index is a subspace)
+         */
+        void resetIndexVector()
+        {
+        	for (size_t dim = 0; dim < DIM; ++dim) {
+        		index[dim] = 1;
+        	}
+        	rehash();
+        }
+
       private:
         /// the dimension of the gridpoint
         size_t DIM;
