@@ -51,6 +51,8 @@ protected:
 
 private:
 
+	void buildGPSupportMask(AbstractRefinement::index_type* gridPoint, DataVector* floorMask, DataVector* ceilingMask);
+	bool isOnSupport(DataVector* floorMask, DataVector* ceilingMask, size_t entry);
 	size_t determineGridType(Grid* grid);
 
 	size_t gridType;
