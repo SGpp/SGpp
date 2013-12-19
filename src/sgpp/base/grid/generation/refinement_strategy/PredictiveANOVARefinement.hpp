@@ -19,7 +19,7 @@ class PredictiveANOVARefinement: public PredictiveRefinement, public ANOVARefine
 
 public:
 
-	PredictiveANOVARefinement(AbstractRefinement* refinement):PredictiveRefinement{refinement},ANOVARefinement{refinement}, RefinementDecorator(refinement){};
+	PredictiveANOVARefinement(AbstractRefinement* refinement):PredictiveRefinement(refinement),ANOVARefinement(refinement), RefinementDecorator(refinement){};
 
 	void free_refine(GridStorage* storage, RefinementFunctor* functor)
 	{

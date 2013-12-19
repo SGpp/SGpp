@@ -8,7 +8,7 @@
 #include "base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
 
-using namespace std;
+//using namespace std;
 
 namespace sg {
   namespace base {
