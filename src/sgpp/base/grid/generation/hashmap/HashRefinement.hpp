@@ -50,10 +50,6 @@ public:
 	 */
 	void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
 
-	void refineGridpoint1D(GridStorage* storage, HashGridIndex< unsigned int, unsigned int >* index, size_t d) {
-		refineGridpoint1D(storage, *index, d);
-	}
-
 protected:
 	/**
 	 * This method refines a grid point by generating the children in every dimension
