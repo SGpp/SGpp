@@ -386,11 +386,12 @@ if not env.GetOption('clean'):
                 else:
                     sys.stderr.write("   Cannot find NumPy header files in:", numpy_path, "\n")
             except Exception, e:
-                print e
-                sys.stderr.write("   NumPy not available!\n")
+                sys.stderr.write("   NumPy not available!\nException: %s" % e)
+                sys.stderr.write(e)
                 numPyAvail = False
         if not numPyAvail:
             sys.stderr.write("   No NumPy support.\n   Corresponding unit tests and extended functionality are missing!\n")
+        else:
             config.env.Append(NUMPY_AVAIL=1)
         # reappend -Werror if removed
         if flagErrorRemoved:
@@ -424,7 +425,6 @@ if not env.GetOption('clean'):
         sys.stderr.write("No Java support...\n")
 
     env = config.Finish()
-    print env.get('CPPPATH')
 
     print "******************************************"
     print "* Finished configuring system            *"
