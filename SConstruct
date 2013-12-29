@@ -329,17 +329,13 @@ env.Append(CPPDEFINES=cppdefines)
 
 # Initialize environment + support for Python and Java
 #########################################################################
-# boolean variables for environment 
-pyAvail = True
-swigAvail = True
-javaAvail = True
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    print """
-******************************************
-* Configuring system                     *
-******************************************"""
+    print ""
+    print "******************************************"
+    print "* Configuring system                     *"
+    print "******************************************"
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
@@ -352,28 +348,59 @@ if not env.GetOption('clean'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
 
     # check if the math header is available
-    if not config.CheckHeader('cmath', language='c++'):
+    if not config.CheckCXXHeader('cmath'):
         sys.stderr.write("Error: c++ math header cmath.h is missing.\n")
         Exit(1)
 
     # check whether swig installed
+    swigAvail = True
     if not config.CheckExec('swig'):
         sys.stderr.write("Error: swig cannot be found. Check PATH environment variable!\n")
         swigAvail = False
 
     # check for Python headers
-    config.env.AppendUnique(CPPPATH = distutils.sysconfig.get_python_inc())
+    pyAvail = True
+    config.env.AppendUnique(CPPPATH = [distutils.sysconfig.get_python_inc()])
     if not config.CheckCXXHeader('Python.h'):
         sys.stderr.write("Error: Python.h not found. Check path to Python include files: "
                          + distutils.sysconfig.get_python_inc() + "\n")
         sys.stderr.write("Warning: You might have to install package python-dev\n")
         sys.stderr.write("... skipping Python support and unit tests")
         pyAvail = False
+    else:
+        numPyAvail = True
+        # remove -Werror, if set. Elsewise, test will fail
+        flagErrorRemoved = False
+        if '-Werror' in config.env.get('CPPFLAGS'):
+            config.env['CPPFLAGS'].remove('-Werror')
+            flagErrorRemoved = True
+        if not config.CheckCXXHeader(['pyconfig.h','Python.h','numpy/arrayobject.h']):
+            try:
+                # get path to numpy header files
+                import numpy
+                numpy_path = os.path.join(os.path.split(numpy.__file__)[0],"core","include")
+                if os.path.exists(numpy_path):
+                    config.env.AppendUnique(CPPPATH = [numpy_path])
+                    if not config.CheckCXXHeader(['pyconfig.h','Python.h','numpy/arrayobject.h']):
+                        numPyAvail = False
+                else:
+                    sys.stderr.write("   Cannot find NumPy header files in:", numpy_path, "\n")
+            except Exception, e:
+                print e
+                sys.stderr.write("   NumPy not available!\n")
+                numPyAvail = False
+        if not numPyAvail:
+            sys.stderr.write("   No NumPy support.\n   Corresponding unit tests and extended functionality are missing!\n")
+            config.env.Append(NUMPY_AVAIL=1)
+        # reappend -Werror if removed
+        if flagErrorRemoved:
+            config.env.Append(CPPFLAGS=['-Werror'])
+    
 
     # check for $JAVA_HOME; prepend to search path
+    javaAvail = True
     if os.environ.get('JAVA_HOME'):
         config.env.PrependENVPath('PATH', os.path.join(os.environ.get('JAVA_HOME'), 'bin'))
-
     # check whether javac installed
     if not config.CheckExec('javac'):
         sys.stderr.write("Error: javac cannot be found. Check PATH environment variable!\n")
@@ -397,10 +424,11 @@ if not env.GetOption('clean'):
         sys.stderr.write("No Java support...\n")
 
     env = config.Finish()
+    print env.get('CPPPATH')
 
-    print """******************************************
-* Finished configuring system            *
-******************************************"""
+    print "******************************************"
+    print "* Finished configuring system            *"
+    print "******************************************"
 
 # End of configuration
 #########################################################################
