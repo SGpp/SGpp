@@ -386,8 +386,7 @@ if not env.GetOption('clean'):
                 else:
                     sys.stderr.write("   Cannot find NumPy header files in:", numpy_path, "\n")
             except Exception, e:
-                sys.stderr.write("   NumPy not available!\nException: %s" % e)
-                sys.stderr.write(e)
+                sys.stderr.write("   NumPy not available!\nException: %s\n" % e)
                 numPyAvail = False
         if not numPyAvail:
             sys.stderr.write("   No NumPy support.\n   Corresponding unit tests and extended functionality are missing!\n")
