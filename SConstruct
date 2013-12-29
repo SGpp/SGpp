@@ -376,6 +376,7 @@ if not env.GetOption('clean'):
             flagErrorRemoved = True
         if not config.CheckCXXHeader(['pyconfig.h','Python.h','numpy/arrayobject.h']):
             try:
+                print "... trying to extend path:"
                 # get path to numpy header files
                 import numpy
                 numpy_path = os.path.join(os.path.split(numpy.__file__)[0],"core","include")
