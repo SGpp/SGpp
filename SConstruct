@@ -336,6 +336,8 @@ if not env.GetOption('clean'):
     print "******************************************"
     print "* Configuring system                     *"
     print "******************************************"
+    log_file_orig = env['CMD_LOGFILE']
+    env['CMD_LOGFILE'] = "config_commandline.log"
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
@@ -426,6 +428,7 @@ if not env.GetOption('clean'):
 
     env = config.Finish()
 
+    env['CMD_LOGFILE'] = log_file_orig
     print "******************************************"
     print "* Finished configuring system            *"
     print "******************************************"
