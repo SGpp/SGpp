@@ -429,6 +429,10 @@ if not env.GetOption('clean'):
     print "******************************************"
     print "* Finished configuring system            *"
     print "******************************************"
+else:
+    swigAvail = True
+    javaAvail = True
+    pyAvail = True
 
 # End of configuration
 #########################################################################
