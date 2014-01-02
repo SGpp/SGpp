@@ -214,7 +214,7 @@ namespace sg {
 #if defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
       std::size_t padded_size = this->level_->getNcols();
 #else
-	  std::size_t padded_size = this->level_->getNrows();
+      std::size_t padded_size = this->level_->getNrows();
 #endif
 
       if (this->alpha_padded_)
@@ -308,7 +308,7 @@ namespace sg {
 #if defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
       size_t result_matrix_cols = this->level_->getNcols();
 #else
-	  size_t result_matrix_cols = this->level_->getNrows();
+      size_t result_matrix_cols = this->level_->getNrows();
 #endif
       //check if matrix fits in memory
       char* matrix_max_size_gb_str = getenv("SGPP_PDE_MATRIX_SIZE_GB");
@@ -509,7 +509,8 @@ namespace sg {
             double* temp_level_int_ptr = level_int_ptr_;
             double* temp_index_ptr = index_ptr_;
 
-            #pragma prefetch(temp_level_ptr, temp_index_ptr, alpha_padded_temp_ptr_)
+#pragma prefetch(temp_level_ptr, temp_index_ptr, alpha_padded_temp_ptr_)
+
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
 #if defined (STORE_MATRIX)
               mm_result = mm_zero;
@@ -520,7 +521,8 @@ namespace sg {
 
               size_t i_idx = i_offset;
 
-              #pragma prefetch(temp_level_ptr, temp_index_ptr, alpha_padded_temp_ptr_)
+#pragma prefetch(temp_level_ptr, temp_index_ptr, alpha_padded_temp_ptr_)
+
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m512d mm_lcl_q = _mm512_extload_pd(lcl_q_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_lcl_q_inv = _mm512_extload_pd(lcl_q_inv_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
@@ -529,7 +531,7 @@ namespace sg {
                 __m512d mm_iid = _mm512_extload_pd(index_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_ljd = _mm512_load_pd(temp_level_ptr);
                 __m512d mm_ijd = _mm512_load_pd(temp_index_ptr);
-                
+
                 __mmask8 mm_doGrad = (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_EQ),
                                      _mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ)); //+3
                 __m512d mm_grad = _mm512_mask_mul_pd(mm_zero, mm_doGrad, mm_lid, mm_two);
@@ -567,7 +569,7 @@ namespace sg {
                 ////////////////////////////////////////////////////////
                 __m512d mm_ljd2 = _mm512_load_pd(temp_level_ptr + VECTOR_SIZE);
                 __m512d mm_ijd2 = _mm512_load_pd(temp_index_ptr + VECTOR_SIZE);
-                
+
                 __mmask8 mm_doGrad2 = (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_EQ),
                                       _mm512_cmp_pd_mask(mm_iid, mm_ijd2, _MM_CMPINT_EQ)); //1 // +2
                 __m512d mm_grad2 = _mm512_mask_mul_pd(mm_zero, mm_doGrad2, mm_lid, mm_two);
@@ -596,7 +598,7 @@ namespace sg {
                                                      _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d2, mm_p2), mm_i2d2)))); // 8 flops
 
                 __m512d mm_res_two2 = _mm512_mask_mul_pd(mm_zero, mm_overlap2, mm_temp_res2, _mm512_mul_pd(mm_half, mm_in_l1d2));
- 
+
                 mm_selector2 = _mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_NE);
                 __m512d mm_val2 = _mm512_mask_blend_pd(mm_selector2, mm_res_one2, mm_res_two2);
                 mm_val2 = _mm512_mul_pd(mm_val2, mm_lcl_q); //1 flop
@@ -614,13 +616,14 @@ namespace sg {
 
               gradient_temp_ptr1 = gradient_temp_ptr;
 
-              #pragma prefetch(alpha_padded_temp_ptr_)
+#pragma prefetch(alpha_padded_temp_ptr_)
+
               for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
                 __m512d mm_element = _mm512_load_pd(alpha_padded_temp_ptr_ + j);
                 __m512d mm_temp = _mm512_load_pd(gradient_temp_ptr1);
                 __m512d mm_element2 = _mm512_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
                 __m512d mm_temp2 = _mm512_load_pd(gradient_temp_ptr1 + temp_cols);
-                
+
                 mm_element = _mm512_mul_pd(mm_element, mm_temp);
                 mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
 
@@ -1141,45 +1144,46 @@ namespace sg {
         }
 
 #else
-#pragma omp parallel
-      {
-		double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
-        double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();          
-       
+        #pragma omp parallel
+        {
+          double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
+          double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
 
-	  size_t thr_start;
-	  size_t thr_end;
-	  sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
-      for (size_t i = thr_start; i < thr_end; i++) {
-        for (size_t j = 0; j < this->storage->size(); j++) {
-		double temp = 0.0;
-          for (size_t d = 0; d < this->storage->dim(); d++) {
-		  
-				l2dot_temp_ptr[d] = l2dot(i, j, d);
-				gradient_temp_ptr[d] = gradient(i, j, d);
-		  }
-          
-		  for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
-            double element = alpha[j];
+          size_t thr_start;
+          size_t thr_end;
+          sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
-            for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
-              element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) + (gradient_temp_ptr[d_inner] * (d_outer == d_inner)));
-            }
-			
-			temp += (this->lambda_->get(d_outer) * element);
-          }
-		  
-		  
-          result[i] += temp;
-		  
+          for (size_t i = thr_start; i < thr_end; i++) {
+            for (size_t j = 0; j < this->storage->size(); j++) {
+              double temp = 0.0;
+
+              for (size_t d = 0; d < this->storage->dim(); d++) {
+
+                l2dot_temp_ptr[d] = l2dot(i, j, d);
+                gradient_temp_ptr[d] = gradient(i, j, d);
+              }
+
+              for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
+                double element = alpha[j];
+
+                for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+                  element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) + (gradient_temp_ptr[d_inner] * (d_outer == d_inner)));
+                }
+
+                temp += (this->lambda_->get(d_outer) * element);
+              }
+
+
+              result[i] += temp;
+
 #if defined (STORE_MATRIX)
-		  double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
-		  operation_result_dest_ptr[j] = temp;
+              double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
+              operation_result_dest_ptr[j] = temp;
 #endif
+            }
+          }
         }
-      }
-      }
 #endif
 
 
@@ -1200,10 +1204,11 @@ namespace sg {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
 
           double element = 0.0;
-          
+
 #if defined(__MIC__)
-          #pragma prefetch
+#pragma prefetch
 #endif
+
           for (size_t j = 0 ; j < storage->size() ; ++j) {
             element += alpha[j] * *(operation_result_dest_ptr + j);
           }
@@ -1220,14 +1225,14 @@ namespace sg {
       MPI_Alltoallv(result_ptr, send_size.data(), send_start.data(), MPI_DOUBLE,
                result_ptr, recv_size.data(), recv_start.data(), MPI_DOUBLE,
                MPI_COMM_WORLD);
-*/
+      */
       MPI_Allgatherv(MPI_IN_PLACE, send_size[0], MPI_DOUBLE,
-               result_ptr, recv_size.data(), recv_start.data(),
-               MPI_DOUBLE, MPI_COMM_WORLD);
-         /*
+                     result_ptr, recv_size.data(), recv_start.data(),
+                     MPI_DOUBLE, MPI_COMM_WORLD);
+      /*
       MPI_Allreduce(MPI_IN_PLACE, result_ptr, (int)result.getSize(), MPI_DOUBLE,
-                    MPI_SUM, MPI_COMM_WORLD);
-*/
+                 MPI_SUM, MPI_COMM_WORLD);
+      */
 #endif
 
       all_time += stopWatch.stop();

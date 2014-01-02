@@ -237,7 +237,7 @@ namespace sg {
 #if defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
       std::size_t padded_size = this->level_->getNcols();
 #else
-	  std::size_t padded_size = this->level_->getNrows();
+      std::size_t padded_size = this->level_->getNrows();
 #endif
 
       if (alpha_padded_)
@@ -527,7 +527,7 @@ namespace sg {
                 __m512d mm_ijd = _mm512_load_pd(temp_index_ptr);
 
                 __m512d mm_in_lid = _mm512_extload_pd(level_int_boundary_filtered_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-				__m512d mm_in_ljd = _mm512_load_pd(temp_level_int_ptr);
+                __m512d mm_in_ljd = _mm512_load_pd(temp_level_int_ptr);
 
                 __m512d mm_res_one = _mm512_mask_mul_pd(mm_zero, (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ), _mm512_cmp_pd_mask(mm_ljd, mm_one, _MM_CMPINT_NE)), mm_two_thirds, mm_in_lid);
 
@@ -541,8 +541,8 @@ namespace sg {
                 __m512d mm_q = _mm512_mul_pd(_mm512_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
                 __m512d mm_p = _mm512_mul_pd(_mm512_add_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
                 __mmask8 mm_overlap = _mm512_cmp_pd_mask(_mm512_max_pd(mm_q, _mm512_mul_pd(_mm512_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                                   _mm512_min_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                                   _MM_CMPINT_LT); //6+1
+                                      _mm512_min_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                      _MM_CMPINT_LT); //6+1
 
                 __m512d mm_temp_res_inner = _mm512_sub_pd(_mm512_sub_pd(mm_two,
                                             _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_q), mm_i2d)))),
@@ -552,8 +552,8 @@ namespace sg {
                 __m512d mm_temp_res_leftbound = _mm512_sub_pd(mm_two, mm_temp_res_rightbound); //1
 
                 __m512d mm_temp_res = _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_l2d, mm_one, _MM_CMPINT_EQ),
-														mm_temp_res_inner,
-                                                       _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_i2d, mm_one, _MM_CMPINT_EQ), mm_temp_res_leftbound, mm_temp_res_rightbound));
+                                      mm_temp_res_inner,
+                                      _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_i2d, mm_one, _MM_CMPINT_EQ), mm_temp_res_leftbound, mm_temp_res_rightbound));
 
                 mm_temp_res = _mm512_mul_pd(mm_temp_res, _mm512_mul_pd(mm_half, mm_in_l1d)); // 2 flops
                 __m512d mm_res_two = _mm512_mask_blend_pd(mm_overlap, mm_zero, mm_temp_res);
@@ -570,7 +570,7 @@ namespace sg {
                 __m512d mm_in_ljd2 = _mm512_load_pd(temp_level_int_ptr + VECTOR_SIZE);
 
                 __m512d mm_res_one2 = _mm512_mask_mul_pd(mm_zero, (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_iid, mm_ijd2, _MM_CMPINT_EQ), _mm512_cmp_pd_mask(mm_ljd2, mm_one, _MM_CMPINT_NE)), mm_two_thirds, mm_in_lid);
-				
+
                 __mmask8 mm_selector2 = _mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_LE);
                 __m512d mm_i1d2 = _mm512_mask_blend_pd(mm_selector2, mm_iid, mm_ijd2);
                 __m512d mm_in_l1d2 = _mm512_mask_blend_pd(mm_selector2, mm_in_lid, mm_in_ljd2);
@@ -583,8 +583,8 @@ namespace sg {
                 __m512d mm_p2 = _mm512_mul_pd(_mm512_add_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
 
                 __mmask8 mm_overlap2 = _mm512_cmp_pd_mask(_mm512_max_pd(mm_q2, _mm512_mul_pd(_mm512_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                                    _mm512_min_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                                    _MM_CMPINT_LT); //6 flop // +1
+                                       _mm512_min_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                       _MM_CMPINT_LT); //6 flop // +1
 
                 __m512d mm_temp_res_inner2 = _mm512_sub_pd(_mm512_sub_pd(mm_two,
                                              _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
@@ -594,8 +594,8 @@ namespace sg {
                 __m512d mm_temp_res_leftbound2 = _mm512_sub_pd(mm_two, mm_temp_res_rightbound2);
 
                 __m512d mm_temp_res2 = _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_l2d2, mm_one, _MM_CMPINT_EQ),
-														mm_temp_res_inner2,
-                                                        _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_i2d2, mm_one, _MM_CMPINT_EQ), mm_temp_res_leftbound2, mm_temp_res_rightbound2));
+                                       mm_temp_res_inner2,
+                                       _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_i2d2, mm_one, _MM_CMPINT_EQ), mm_temp_res_leftbound2, mm_temp_res_rightbound2));
 
                 mm_temp_res2 = _mm512_mul_pd(mm_temp_res2, _mm512_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
                 __m512d mm_res_two2 = _mm512_mask_blend_pd(mm_overlap2, mm_zero, mm_temp_res2);
@@ -621,7 +621,7 @@ namespace sg {
 #else
 
               __m512d mm_result = _mm512_add_pd(mm_element, mm_element2);
-              
+
               result_ptr_[ii] += _mm512_reduce_add_pd(mm_result);
 #endif
             }
@@ -965,26 +965,26 @@ namespace sg {
 #else
 
 
-#pragma omp parallel
-      {
-	  size_t thr_start;
-	  size_t thr_end;
-	  sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+        #pragma omp parallel
+        {
+          size_t thr_start;
+          size_t thr_end;
+          sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
-	for (size_t ii = thr_start; ii < thr_end; ii++) {
-	    for (size_t jj = 0; jj < this->storage->size(); jj++) {
+          for (size_t ii = thr_start; ii < thr_end; ii++) {
+            for (size_t jj = 0; jj < this->storage->size(); jj++) {
 
-	      double element = alpha[jj];
+              double element = alpha[jj];
 
-	      for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
-			element *= l2dot_dirichlet(i_boundary_filtered[ii], jj, d_inner);
-		 }
+              for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+                element *= l2dot_dirichlet(i_boundary_filtered[ii], jj, d_inner);
+              }
 
-	      (result_boundary_filtered_->getPointer()[ii]) += element;
-	    }
-	}
+              (result_boundary_filtered_->getPointer()[ii]) += element;
+            }
+          }
 
-      }
+        }
 #endif
 
 
@@ -1007,12 +1007,13 @@ namespace sg {
 
         for (size_t ii = thr_start; ii < thr_end; ii++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
-        
+
           double element = 0.0;
-		
+
 #if defined(__MIC__)
-          #pragma prefetch
-#endif		  
+#pragma prefetch
+#endif
+
           for (size_t j = 0 ; j < storage->size() ; ++j) {
             element += alpha[j] * *(operation_result_dest_ptr + j);
           }
@@ -1028,16 +1029,16 @@ namespace sg {
        MPI_Alltoallv(result_boundary_filtered_ptr, send_size.data(), send_start.data(), MPI_DOUBLE,
                result_boundary_filtered_ptr, recv_size.data(), recv_start.data(), MPI_DOUBLE,
                MPI_COMM_WORLD);
-*/
+      */
       MPI_Allgatherv(MPI_IN_PLACE, send_size[0], MPI_DOUBLE,
-               result_boundary_filtered_ptr, recv_size.data(), recv_start.data(),
-               MPI_DOUBLE, MPI_COMM_WORLD);
-            
-/*
+                     result_boundary_filtered_ptr, recv_size.data(), recv_start.data(),
+                     MPI_DOUBLE, MPI_COMM_WORLD);
 
-      MPI_Allreduce(MPI_IN_PLACE, result_boundary_filtered_ptr, (int)result_boundary_filtered_->getSize(), MPI_DOUBLE,
-                    MPI_SUM, MPI_COMM_WORLD);
-*/
+      /*
+
+            MPI_Allreduce(MPI_IN_PLACE, result_boundary_filtered_ptr, (int)result_boundary_filtered_->getSize(), MPI_DOUBLE,
+                          MPI_SUM, MPI_COMM_WORLD);
+      */
 #endif
 
       //move to result vector
