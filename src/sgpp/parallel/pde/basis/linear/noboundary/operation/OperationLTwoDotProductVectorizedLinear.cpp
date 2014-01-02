@@ -173,9 +173,9 @@ namespace sg {
 #endif
 
 #if defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
-       std::size_t padded_size = this->level_->getNcols();
+      std::size_t padded_size = this->level_->getNcols();
 #else
-	  std::size_t padded_size = this->level_->getNrows();
+      std::size_t padded_size = this->level_->getNrows();
 #endif
 
       if (this->alpha_padded_)
@@ -267,8 +267,8 @@ namespace sg {
       size_t result_matrix_rows = all_i_size[process_index];
 
 #if defined(__MIC__) || defined(__SSE4_2__) || defined(__AVX__)
-	  size_t result_matrix_cols = this->level_->getNcols();
-#else	  
+      size_t result_matrix_cols = this->level_->getNcols();
+#else
       size_t result_matrix_cols = this->level_->getNrows();
 #endif
 
@@ -461,7 +461,7 @@ namespace sg {
                 __m512d mm_in_ljd = _mm512_load_pd(temp_level_int_ptr);
 
                 __m512d mm_res_one = _mm512_mask_mul_pd(mm_zero, _mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ ), mm_two_thirds, mm_in_lid); //1+2
-				
+
 
                 __mmask8 mm_selector = _mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_LE );//+6
                 __m512d mm_i1d = _mm512_mask_blend_pd(mm_selector, mm_iid, mm_ijd);
@@ -480,11 +480,11 @@ namespace sg {
                 __m512d mm_temp_res = _mm512_sub_pd(_mm512_sub_pd(mm_two,
                                                     _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_q), mm_i2d)))),
                                                     _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_p), mm_i2d)))); // 8 flops
-													
+
                 mm_temp_res = _mm512_mul_pd(mm_temp_res, _mm512_mul_pd(mm_half, mm_in_l1d)); // 2 flops
-                
+
                 __m512d mm_res_two = _mm512_mask_blend_pd(mm_overlap, mm_zero, mm_temp_res);
-                
+
                 mm_selector = _mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_NE); // +1
                 __m512d mm_val = _mm512_mask_blend_pd(mm_selector, mm_res_one, mm_res_two);
                 mm_val = _mm512_mul_pd(mm_val, mm_lcl_q); //1 flop
@@ -520,10 +520,10 @@ namespace sg {
 
                 mm_temp_res2 = _mm512_mul_pd(mm_temp_res2, _mm512_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
                 __m512d mm_res_two2 = _mm512_mask_blend_pd(mm_overlap2, mm_zero, mm_temp_res2);
- 
+
                 mm_selector2 = _mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_NE);
                 __m512d mm_val2 = _mm512_mask_blend_pd(mm_selector2, mm_res_one2, mm_res_two2);
-				mm_val2 = _mm512_mul_pd(mm_val2, mm_lcl_q); //1 flop
+                mm_val2 = _mm512_mul_pd(mm_val2, mm_lcl_q); //1 flop
 
                 mm_element2 = _mm512_mul_pd(mm_element2, mm_val2);
 
@@ -836,31 +836,32 @@ namespace sg {
         }
 
 #else
-#pragma omp parallel
-            {
+        #pragma omp parallel
+        {
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t ii = thr_start; ii < thr_end; ii++) {
-                    for (size_t jj = 0; jj < this->storage->size(); jj++) {
-                                                
-                        double element = alpha[jj];
-                        for (size_t d = 0; d < this->storage->dim(); d++) {
-                            element *= l2dot(ii, jj, d);
-                        }   
+            for (size_t jj = 0; jj < this->storage->size(); jj++) {
 
-                        result[ii] += element;
-						
-						
+              double element = alpha[jj];
+
+              for (size_t d = 0; d < this->storage->dim(); d++) {
+                element *= l2dot(ii, jj, d);
+              }
+
+              result[ii] += element;
+
+
 #if defined (STORE_MATRIX)
-			  double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
+              double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
               operation_result_dest_ptr[jj] = element;
 #endif
-                    }
-                }
-                
             }
+          }
+
+        }
 #endif
 
 #if defined (STORE_MATRIX)
@@ -879,10 +880,11 @@ namespace sg {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();
 
           double element = 0.0;
-          
+
 #if defined(__MIC__)
-          #pragma prefetch
-#endif		  
+#pragma prefetch
+#endif
+
           for (size_t j = 0 ; j < storage->size() ; ++j) {
             element += alpha[j] * *(operation_result_dest_ptr + j);
           }
@@ -897,14 +899,14 @@ namespace sg {
       MPI_Alltoallv(result_ptr, send_size.data(), send_start.data(), MPI_DOUBLE,
                result_ptr, recv_size.data(), recv_start.data(), MPI_DOUBLE,
                MPI_COMM_WORLD);
-*/
+      */
       MPI_Allgatherv(MPI_IN_PLACE, send_size[0], MPI_DOUBLE,
-               result_ptr, recv_size.data(), recv_start.data(),
-               MPI_DOUBLE, MPI_COMM_WORLD);
-           /*
+                     result_ptr, recv_size.data(), recv_start.data(),
+                     MPI_DOUBLE, MPI_COMM_WORLD);
+      /*
       MPI_Allreduce(MPI_IN_PLACE, result_ptr, (int)result.getSize(), MPI_DOUBLE,
-                    MPI_SUM, MPI_COMM_WORLD);
-*/
+               MPI_SUM, MPI_COMM_WORLD);
+      */
 #endif
 
       all_time += stopWatch.stop();
