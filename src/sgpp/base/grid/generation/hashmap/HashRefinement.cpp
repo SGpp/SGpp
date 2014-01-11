@@ -37,18 +37,18 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
 			level_t source_level;
 			index.get(d, source_level, source_index);
 
-			std::cout << "analyzing point " << index.toString() << "\n";
+			//std::cout << "analyzing point " << index.toString() << "\n";
 
 			// test existence of left child
 			index.set(d, source_level + 1, 2 * source_index - 1);
-			std::cout << "testing existence of left child " << index.toString() << "\n";
+			//std::cout << "testing existence of left child " << index.toString() << "\n";
 			child_iter = storage->find(&index);
 
 			// if there no more grid points --> test if we should refine the grid
 			if (child_iter == end_iter) {
 				RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
 
-				std::cout << "is refineable\n";
+				//std::cout << "is refineable\n";
 
 				if (current_value > max_value) {
 					// replace the minimal point in result array, find the new  minimal point
@@ -62,12 +62,12 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
 
 			// test existance of right child
 			index.set(d, source_level + 1, 2 * source_index + 1);
-			std::cout << "testing existence of right child " << index.toString() << "\n";
+			//std::cout << "testing existence of right child " << index.toString() << "\n";
 			child_iter = storage->find(&index);
 
 			if (child_iter == end_iter) {
 				RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
-				std::cout << "is refineable\n";
+				//std::cout << "is refineable\n";
 
 				if (current_value > max_value) {
 					// replace the minimal point in result array, find the new minimal point
@@ -182,6 +182,8 @@ size_t HashRefinement::getNumberOfRefinablePoints(GridStorage* storage) {
 }
 
 void HashRefinement::refineGridpoint1D(GridStorage* storage, index_type& index, size_t d) {
+
+	std::cout << "calling 1D refinement for index " << index.toString() << " on dim " << d << std::endl;
 	index_t source_index;
 	level_t source_level;
 	index.get(d, source_level, source_index);
@@ -222,7 +224,7 @@ void HashRefinement::createGridpoint(GridStorage* storage, index_type& index) {
 	for (size_t d = 0; d < storage->dim(); d++) {
 		createGridpoint1D(index, d, storage, source_index, source_level);
 	}
-	std::cout << "creating " << index.toString() << "\n";
+	//std::cout << "creating " << index.toString() << "\n";
 	storage->insert(index);
 }
 
