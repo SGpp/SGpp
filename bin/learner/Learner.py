@@ -130,7 +130,9 @@ class Learner(object):
     def learnDataWithTest(self, dataset = None):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
-                  self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+                  self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)), DataContainer.TRAIN_CATEGORY)
+        self.specification.setBOperator(createOperationMultipleEval(self.grid,
+                  self.dataContainer.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
         
         if dataset == None: dataset = self.dataContainer
         
