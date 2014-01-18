@@ -139,6 +139,7 @@ for module in moduleList:
 vars.Add(BoolVariable('SG_ALL', 'Build all modules', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build Python Support', False))
 vars.Add(BoolVariable('SG_JAVA', 'Build Java Support', False))
+vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
 
 
 # verbosity options
@@ -147,6 +148,11 @@ vars.Add('CMD_LOGFILE','Specifies a file to capture the build log','build_log.tx
 
 # initialize environment
 env = Environment(variables = vars, ENV = os.environ)
+
+# sanity check in case user didn't read the variable description
+if not env['OUTPUT_PATH'] == '':
+    if not env['OUTPUT_PATH'][-1] == '/':
+        env['OUTPUT_PATH'] = env['OUTPUT_PATH'] + '/'
 
 # Help Text
 Help("""---------------------------------------------------------------------
@@ -473,9 +479,9 @@ Export('src_objs')
 if env['SG_PYTHON'] and swigAvail and pyAvail:
 
     libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
-    pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    pyinst = env.Install(env['OUTPUT_PATH'] + 'lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
     Depends(pyinst, libpysgpp)
-    pybin = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    pybin = env.Install(env['OUTPUT_PATH'] + 'bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
     Depends(pybin, libpysgpp)
     
 # build java lib
@@ -485,9 +491,9 @@ if swigAvail and javaAvail and env['SG_JAVA']:
 #    libweka = env.SConscript('src/jsgpp_weka/SConscript',
 #                             variant_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
-    jinst = env.Install('lib/jsgpp', [libjsgpp])
+    jinst = env.Install(env['OUTPUT_PATH'] + 'lib/jsgpp', [libjsgpp])
     
-env.Install('#lib/sgpp', lib_sgpp_targets)
+env.Install(env['OUTPUT_PATH'] + 'lib/sgpp', lib_sgpp_targets)
 
 # Unit tests
 #########################################################################
