@@ -38,7 +38,7 @@ IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
 # Default Variables, overwirtten by CLI
 ###################################################################	
 # use OpenMP Version 3
-OMP=0
+OMP=1
 # use the TR1 Implementations for Hashmaps
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
