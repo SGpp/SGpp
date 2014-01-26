@@ -240,7 +240,7 @@ elif env['TARGETCPU'] == 'ICC':
                            '-fno-strict-aliasing', '-O3',
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
                            '-ansi-alias', '-fp-speculation=safe', '-fPIC',
-                           '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+                           '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
 
     env['CC'] = ('icc')
     env['LINK'] = ('icpc')
