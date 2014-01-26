@@ -42,6 +42,10 @@
 #error MIC_UNROLLING_WIDTH_SP has to be one of 48, 64, 96, 128, 144, 160, 192.
 #endif
 
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(push, target(mic))
+#endif
+
 namespace sg {
   namespace parallel {
 
@@ -66,6 +70,10 @@ namespace sg {
     };
   }
 }
+
+#ifdef __INTEL_OFFLOAD
+#pragma offload_attribute(pop)
+#endif
 
 #endif // USEMIC
 #endif // MICKERNELBASE_HPP
