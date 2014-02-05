@@ -33,7 +33,7 @@ namespace sg {
 #ifdef _OPENMP
         unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (omp_get_thread_num() + 1));
 #else
-	 unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (1 + 1));
+        unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (1 + 1));
 #endif
         #pragma omp for
 
@@ -62,7 +62,7 @@ namespace sg {
 #ifdef _OPENMP
         unsigned int seedp = (unsigned int)(time(NULL)) * (omp_get_thread_num() + 1);
 #else
-	unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
+        unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
 #endif
         base::DataVector p(num_dims);
         double fhat = 0.0;
