@@ -75,7 +75,7 @@ X86_MIC_SYMMETRIC=0
 # Enable/Disable Operation Matrix Results
 STORE_OP_MA=0
 # Enable/Disable -ip -ipo
-IP_IPO=0
+IPO=0
 
 
 ###################################################################
@@ -90,9 +90,9 @@ LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3
 CFLAGS_ICL:=/Wall /Qipo /Qip /Oa /Qansi_alias /Qfp-speculation=safe /c /O3 /Qunroll-aggressive /I$(SRCDIR) /DUSETRONE /Qcxx-features /D_WIN32 /DNOMINMAX
 LFLAGS_ICL:=/Wall /Qipo /Qip /Qansi_alias /O3
 
-ifeq ($(IP_IPO), 0)
-CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
-LFLAGS_ICC:=-Wall -ansi -O3
+ifeq ($(IPO), 0)
+CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+LFLAGS_ICC:=-Wall -ip -ansi -O3
 endif
 
 ifeq ($(EXT), MIC_NATIVE)
