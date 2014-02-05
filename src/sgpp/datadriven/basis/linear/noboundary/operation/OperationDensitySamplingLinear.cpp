@@ -72,7 +72,7 @@ namespace sg {
 #ifdef _OPENMP
             seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
 #else
-	    seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((1 + 1) * 1000 * b));
+            seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((1 + 1) * 1000 * b));
 #endif
           }
           #pragma omp for schedule(dynamic)
@@ -136,7 +136,7 @@ namespace sg {
 #ifdef _OPENMP
           seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
 #else
-	  seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((1 + 1) * 1000 * b));
+          seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a + static_cast<double>((1 + 1) * 1000 * b));
 #endif
         }
         #pragma omp for schedule(dynamic)
