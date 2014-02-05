@@ -16,14 +16,12 @@
 #include "base/grid/generation/GridGenerator.hpp"
 #include "base/exception/operation_exception.hpp"
 
-#include "parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.hpp"
-#include "parallel/tools/TypesParallel.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundary.hpp"
 
+#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include "parallel/tools/TypesParallel.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 #include "base/tools/SGppStopwatch.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/datatypes/DataMatrix.hpp"
 
 #include <cmath>
 #include <assert.h>
@@ -66,7 +64,7 @@
 namespace sg {
   namespace parallel {
 
-    OperationLaplaceVectorizedLinearBoundary::OperationLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage)
+    OperationLTwoDotLaplaceVectorizedLinearBoundary::OperationLTwoDotLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage)
       :
       storage(storage),
       level_(NULL),
@@ -74,8 +72,8 @@ namespace sg {
       index_(NULL),
       lcl_q_(NULL),
       lcl_q_inv_(NULL),
-      constants_(NULL),
       lambda_(NULL),
+      constants_(NULL),
       alpha_padded_(NULL),
       result_boundary_filtered_(NULL),
       level_boundary_filtered_(NULL),
@@ -88,7 +86,7 @@ namespace sg {
       operation_result_matrix_(NULL)
 #endif
     {
-      std::cout << "IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::endl;
+      std::cout << "IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << std::endl;
       init_constants();
       init_grid_storage();
 
@@ -96,7 +94,7 @@ namespace sg {
       this->lambda_->setAll(1.0);
     }
 
-    OperationLaplaceVectorizedLinearBoundary::OperationLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda)
+    OperationLTwoDotLaplaceVectorizedLinearBoundary::OperationLTwoDotLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda)
       :
       storage(storage),
       level_(NULL),
@@ -104,8 +102,8 @@ namespace sg {
       index_(NULL),
       lcl_q_(NULL),
       lcl_q_inv_(NULL),
-      constants_(NULL),
       lambda_(NULL),
+      constants_(NULL),
       alpha_padded_(NULL),
       result_boundary_filtered_(NULL),
       level_boundary_filtered_(NULL),
@@ -118,20 +116,20 @@ namespace sg {
       operation_result_matrix_(NULL)
 #endif
     {
-      std::cout << "IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::endl;
+      std::cout << "IN CONSTRUCTOR: OperationLTwoDotLaplaceVectorizedLinearBoundary" << std::endl;
       init_constants();
       init_grid_storage();
 
       this->lambda_ = new sg::base::DataVector(lambda);
     }
 
-    OperationLaplaceVectorizedLinearBoundary::~OperationLaplaceVectorizedLinearBoundary() {
+    OperationLTwoDotLaplaceVectorizedLinearBoundary::~OperationLTwoDotLaplaceVectorizedLinearBoundary() {
 
       double flop = (double) ((28) * storage->dim() + storage->dim() * storage->dim()) * (double) (storage->size() * all_i_size[process_index]);
 
       double gflops = (all_iterations * flop / all_time) / 1000000000;
       double bandwidth = all_iterations * (double) (sizeof(double) * storage->size() * storage->size()) / all_time ;
-      std::cout << "IN OPERATOR : LAPLACE BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations << " TIME :" << all_time << std::endl;
+      std::cout << "IN OPERATOR : COMBINED BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations << " TIME :" << all_time << std::endl;
 
       delete this->level_;
       delete this->level_int_;
@@ -156,16 +154,15 @@ namespace sg {
 #endif
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::reset() {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundary::reset() {
       init_grid_storage();
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::init_constants() {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundary::init_constants() {
 
 
       all_time = 0.0;
       all_iterations = 0.0;
-
 #if defined(__SSE4_2__) || defined(__MIC__)
       this->constants_ = new sg::base::DataVector(0);
 
@@ -187,7 +184,7 @@ namespace sg {
 #endif
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::init_grid_storage() {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundary::init_grid_storage() {
       if (this->level_)
         delete this->level_;
 
@@ -256,7 +253,6 @@ namespace sg {
       sg::base::DataVector level_int_copy_vector(this->level_int_->getNcols());
       sg::base::DataVector index_copy_vector(this->index_->getNcols());
 
-
       for (size_t i = 0; i < i_boundary_filtered.size(); ++i) {
         level_->getRow(i_boundary_filtered[i], level_copy_vector);
         level_boundary_filtered_->setRow(i, level_copy_vector);
@@ -268,9 +264,9 @@ namespace sg {
         index_boundary_filtered_->setRow(i, index_copy_vector);
       }
 
-#ifdef __MIC__
-      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::X86SIMD, BLOCK_LENGTH);
-      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::X86SIMD, BLOCK_LENGTH);
+#if defined(__MIC__)
+      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::MIC, BLOCK_LENGTH);
+      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::MIC, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
       storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::X86SIMD, BLOCK_LENGTH);
       storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::X86SIMD, BLOCK_LENGTH);
@@ -299,7 +295,6 @@ namespace sg {
       send_size.clear();
       recv_start.clear();
       recv_size.clear();
-
 
       for (int i = 0; i < process_count; ++i) {
         int process_start = (int) (i * single_process_portion);
@@ -412,6 +407,7 @@ namespace sg {
 
       operation_result_generated_ = false;
 
+
       #pragma omp parallel
       {
         size_t padded_size = this->operation_result_matrix_->getNcols();
@@ -431,7 +427,7 @@ namespace sg {
 
     }
 
-    double OperationLaplaceVectorizedLinearBoundary::gradient_dirichlet(size_t i, size_t j, size_t dim) {
+    double OperationLTwoDotLaplaceVectorizedLinearBoundary::gradient_dirichlet(size_t i, size_t j, size_t dim) {
       double grad;
 
       double i_level_grad = level_->get(i, dim);
@@ -449,7 +445,7 @@ namespace sg {
     }
 
 
-    double OperationLaplaceVectorizedLinearBoundary::l2dot_dirichlet(size_t i, size_t j, size_t dim) {
+    double OperationLTwoDotLaplaceVectorizedLinearBoundary::l2dot_dirichlet(size_t i, size_t j, size_t dim) {
       double lid = level_->get(i, dim);
       double ljd = level_->get(j, dim);
       double iid = index_->get(i, dim);
@@ -510,9 +506,10 @@ namespace sg {
       return (res_one * (lid == ljd) + res_two * (lid != ljd)) * *(lcl_q_->getPointer() + dim);
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
 
       stopWatch.start();
+
       size_t process_i_start = all_i_start[process_index];
       size_t process_i_end = process_i_start + all_i_size[process_index];
 
@@ -528,6 +525,7 @@ namespace sg {
       std::size_t original_size = alpha.getSize();
       memcpy(alpha_padded_->getPointer(), alpha.getPointer(), original_size * sizeof(double));
 #endif
+
 
 #if defined(__MIC__)
 
@@ -564,13 +562,15 @@ namespace sg {
           __m512d mm_two = _mm512_extload_pd(constants + 4, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
           __m512d mm_abs = _mm512_extload_pd(constants + 5, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 
+          __m512d mm_timestep_coeff = _mm512_extload_pd(&TimestepCoeff, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t ii = thr_start; ii < thr_end; ii++) {
-            __m512d mm_result = _mm512_setzero_pd();
-            __m512d mm_result2 = _mm512_setzero_pd();
+            __m512d mm_result = mm_zero;
+            __m512d mm_result2 = mm_zero;
 
             double* temp_level_ptr = level_ptr_;
             double* temp_level_int_ptr = level_int_ptr_;
@@ -578,8 +578,8 @@ namespace sg {
 
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
-              mm_result = _mm512_setzero_pd();
-              mm_result2 = _mm512_setzero_pd();
+              mm_result = mm_zero;
+              mm_result2 = mm_zero;
 #endif
               double* gradient_temp_ptr1 = gradient_temp_ptr;
               double* l2dot_temp_ptr1 = l2dot_temp_ptr;
@@ -718,18 +718,17 @@ namespace sg {
                 ++i_idx;
               }
 
+
               gradient_temp_ptr1 = gradient_temp_ptr;
 
+              __m512d mm_element = _mm512_setzero_pd();
+              __m512d mm_element2 = _mm512_setzero_pd();
+
+
               for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
-                __m512d mm_element = _mm512_load_pd(alpha_padded_temp_ptr_ + j);
-                __m512d mm_temp = _mm512_load_pd(gradient_temp_ptr1);
-                mm_element = _mm512_mul_pd(mm_element, mm_temp);
+                mm_element = _mm512_load_pd(alpha_padded_temp_ptr_ + j);
 
-                __m512d mm_element2 = _mm512_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
-
-                __m512d mm_temp2 = _mm512_load_pd(gradient_temp_ptr1 + temp_cols);
-
-                mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
+                mm_element2 = _mm512_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
 
                 l2dot_temp_ptr1 = l2dot_temp_ptr;
 
@@ -756,15 +755,35 @@ namespace sg {
                 }
 
                 __m512d mm_lambda = _mm512_extload_pd(lambda_ptr_ + d_outer, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-                mm_element = _mm512_mul_pd(mm_element, mm_lambda);
-                mm_element2 = _mm512_mul_pd(mm_element2, mm_lambda);
 
+                __m512d mm_temp = _mm512_load_pd(gradient_temp_ptr1);
+                __m512d mm_temp2 = _mm512_load_pd(gradient_temp_ptr1 + temp_cols);
 
-                mm_result = _mm512_add_pd(mm_result, mm_element);
-                mm_result2 = _mm512_add_pd(mm_result2, mm_element2);
+                mm_temp = _mm512_mul_pd(mm_temp, mm_lambda);
+                mm_temp2 = _mm512_mul_pd(mm_temp2, mm_lambda);
+
+                mm_temp = _mm512_mul_pd(mm_temp, mm_element);
+                mm_temp2 = _mm512_mul_pd(mm_temp2, mm_element2);
+
+                mm_temp = _mm512_mul_pd(mm_temp, mm_timestep_coeff);
+                mm_temp2 = _mm512_mul_pd(mm_temp2, mm_timestep_coeff);
+
+                mm_result = _mm512_add_pd(mm_result, mm_temp);
+                mm_result2 = _mm512_add_pd(mm_result2, mm_temp2);
 
                 gradient_temp_ptr1 += VECTOR_SIZE;
               }
+
+              __m512d mm_temp = _mm512_load_pd(l2dot_temp_ptr + VECTOR_SIZE * (max_dims - 1));
+              __m512d mm_temp2 = _mm512_load_pd(l2dot_temp_ptr + temp_cols + VECTOR_SIZE * (max_dims - 1));
+
+              mm_temp = _mm512_mul_pd(mm_element, mm_temp);
+              mm_temp2 = _mm512_mul_pd(mm_element2, mm_temp2);
+
+
+              mm_result = _mm512_add_pd(mm_result, mm_temp);
+              mm_result2 = _mm512_add_pd(mm_result2, mm_temp2);
+
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
               double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
@@ -777,13 +796,11 @@ namespace sg {
 
             mm_result = _mm512_add_pd(mm_result, mm_result2);
             double s_result = _mm512_reduce_add_pd(mm_result);
-
             result_ptr_[ii] += s_result;
 #endif
           }
 
         }
-
 
 #elif defined(__SSE4_2__) && defined(__AVX__)
 
@@ -818,6 +835,9 @@ namespace sg {
           __m256d mm_one = _mm256_broadcast_sd(constants + 3);
           __m256d mm_two = _mm256_broadcast_sd(constants + 4);
           __m256d mm_abs = _mm256_broadcast_sd(constants + 5);
+
+          __m256d mm_timestep_coeff = _mm256_broadcast_sd(&TimestepCoeff);
+
 
           size_t thr_start;
           size_t thr_end;
@@ -970,16 +990,14 @@ namespace sg {
 
               gradient_temp_ptr1 = gradient_temp_ptr;
 
+              __m256d mm_element = _mm256_setzero_pd();
+              __m256d mm_element2 = _mm256_setzero_pd();
+
+
               for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
-                __m256d mm_element = _mm256_load_pd(alpha_padded_temp_ptr_ + j);
-                __m256d mm_temp = _mm256_load_pd(gradient_temp_ptr1);
-                mm_element = _mm256_mul_pd(mm_element, mm_temp);
+                mm_element = _mm256_load_pd(alpha_padded_temp_ptr_ + j);
 
-                __m256d mm_element2 = _mm256_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
-
-                __m256d mm_temp2 = _mm256_load_pd(gradient_temp_ptr1 + temp_cols);
-
-                mm_element2 = _mm256_mul_pd(mm_element2, mm_temp2);
+                mm_element2 = _mm256_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
 
                 l2dot_temp_ptr1 = l2dot_temp_ptr;
 
@@ -1006,15 +1024,35 @@ namespace sg {
                 }
 
                 __m256d mm_lambda = _mm256_broadcast_sd(lambda_ptr_ + d_outer);
-                mm_element = _mm256_mul_pd(mm_element, mm_lambda);
-                mm_element2 = _mm256_mul_pd(mm_element2, mm_lambda);
 
+                __m256d mm_temp = _mm256_load_pd(gradient_temp_ptr1);
+                __m256d mm_temp2 = _mm256_load_pd(gradient_temp_ptr1 + temp_cols);
 
-                mm_result = _mm256_add_pd(mm_result, mm_element);
-                mm_result2 = _mm256_add_pd(mm_result2, mm_element2);
+                mm_temp = _mm256_mul_pd(mm_temp, mm_lambda);
+                mm_temp2 = _mm256_mul_pd(mm_temp2, mm_lambda);
+
+                mm_temp = _mm256_mul_pd(mm_temp, mm_element);
+                mm_temp2 = _mm256_mul_pd(mm_temp2, mm_element2);
+
+                mm_temp = _mm256_mul_pd(mm_temp, mm_timestep_coeff);
+                mm_temp2 = _mm256_mul_pd(mm_temp2, mm_timestep_coeff);
+
+                mm_result = _mm256_add_pd(mm_result, mm_temp);
+                mm_result2 = _mm256_add_pd(mm_result2, mm_temp2);
 
                 gradient_temp_ptr1 += VECTOR_SIZE;
               }
+
+              __m256d mm_temp = _mm256_load_pd(l2dot_temp_ptr + VECTOR_SIZE * (max_dims - 1));
+              __m256d mm_temp2 = _mm256_load_pd(l2dot_temp_ptr + temp_cols + VECTOR_SIZE * (max_dims - 1));
+
+              mm_temp = _mm256_mul_pd(mm_element, mm_temp);
+              mm_temp2 = _mm256_mul_pd(mm_element2, mm_temp2);
+
+
+              mm_result = _mm256_add_pd(mm_result, mm_temp);
+              mm_result2 = _mm256_add_pd(mm_result2, mm_temp2);
+
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
               double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
@@ -1072,6 +1110,9 @@ namespace sg {
           __m128d mm_two = _mm_loaddup_pd(constants + 4);
           __m128d mm_abs = _mm_loaddup_pd(constants + 5);
 
+          __m128d mm_timestep_coeff = _mm_loaddup_pd(&TimestepCoeff);
+
+
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
@@ -1094,11 +1135,11 @@ namespace sg {
 
               size_t i_idx = ii * max_dims;
 
-
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m128d mm_lcl_q = _mm_loaddup_pd(lcl_q_temp_ptr_ + dim);
                 __m128d mm_lcl_q_inv = _mm_loaddup_pd(lcl_q_inv_temp_ptr_ + dim);
 
+                //std::cout << ii << " " << level_boundary_filtered_->getNrows() << dim << " " << level_boundary_filtered_->getNcols() << std::endl;
                 __m128d mm_lid = _mm_loaddup_pd(level_boundary_filtered_ptr_ + i_idx);
                 __m128d mm_iid = _mm_loaddup_pd(index_boundary_filtered_ptr_ + i_idx);
                 __m128d mm_ljd = _mm_load_pd(temp_level_ptr);
@@ -1106,7 +1147,7 @@ namespace sg {
 
                 __m128d mm_doGrad = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd),
                                                _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd),
-                                                   _mm_cmpneq_pd(mm_lid, mm_one))); //+3
+                                                   _mm_cmpneq_pd(mm_lid, mm_one))); //+5
 
 
                 __m128d mm_grad = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad)); //1+1
@@ -1137,12 +1178,13 @@ namespace sg {
                                                        _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d, mm_q), mm_i2d)))),
                                                        _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d, mm_p), mm_i2d)))); // 8 flops
 
-                __m128d mm_temp_res_rightbound = _mm_add_pd(mm_p, mm_q);
-                __m128d mm_temp_res_leftbound = _mm_sub_pd(mm_two, mm_temp_res_rightbound);
+                __m128d mm_temp_res_rightbound = _mm_add_pd(mm_p, mm_q); //1
+                __m128d mm_temp_res_leftbound = _mm_sub_pd(mm_two, mm_temp_res_rightbound); //1
 
                 __m128d mm_temp_res = _mm_blendv_pd(mm_temp_res_inner,
                                                     _mm_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm_cmpeq_pd(mm_i2d, mm_one)),
                                                     _mm_cmpeq_pd(mm_l2d, mm_one));
+
 
 
                 mm_temp_res = _mm_mul_pd(mm_temp_res, _mm_mul_pd(mm_half, mm_in_l1d)); // 2 flops
@@ -1159,6 +1201,7 @@ namespace sg {
                 __m128d mm_doGrad2 = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd2),
                                                 _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd2),
                                                     _mm_cmpneq_pd(mm_lid, mm_one))); //1 // +2
+
 
                 __m128d mm_grad2 = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad2)); //2
 
@@ -1187,7 +1230,6 @@ namespace sg {
                                                         _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
                                                         _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d2, mm_p2), mm_i2d2)))); // 8 flops
 
-
                 __m128d mm_temp_res_rightbound2 = _mm_add_pd(mm_p2, mm_q2);
                 __m128d mm_temp_res_leftbound2 = _mm_sub_pd(mm_two, mm_temp_res_rightbound2);
 
@@ -1215,21 +1257,19 @@ namespace sg {
                 temp_level_int_ptr += BLOCK_LENGTH;
                 temp_index_ptr += BLOCK_LENGTH;
 
-                ++ i_idx;
+                ++i_idx;
               }
 
               gradient_temp_ptr1 = gradient_temp_ptr;
 
+              __m128d mm_element = _mm_setzero_pd();
+              __m128d mm_element2 = _mm_setzero_pd();
+
+
               for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
-                __m128d mm_element = _mm_load_pd(alpha_padded_temp_ptr_ + j);
-                __m128d mm_temp = _mm_load_pd(gradient_temp_ptr1);
-                mm_element = _mm_mul_pd(mm_element, mm_temp);
+                mm_element = _mm_load_pd(alpha_padded_temp_ptr_ + j);
 
-                __m128d mm_element2 = _mm_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
-
-                __m128d mm_temp2 = _mm_load_pd(gradient_temp_ptr1 + temp_cols);
-
-                mm_element2 = _mm_mul_pd(mm_element2, mm_temp2);
+                mm_element2 = _mm_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
 
                 l2dot_temp_ptr1 = l2dot_temp_ptr;
 
@@ -1256,16 +1296,34 @@ namespace sg {
                 }
 
                 __m128d mm_lambda = _mm_loaddup_pd(lambda_ptr_ + d_outer);
-                mm_element = _mm_mul_pd(mm_element, mm_lambda);
-                mm_element2 = _mm_mul_pd(mm_element2, mm_lambda);
 
+                __m128d mm_temp = _mm_load_pd(gradient_temp_ptr1);
+                __m128d mm_temp2 = _mm_load_pd(gradient_temp_ptr1 + temp_cols);
 
-                mm_result = _mm_add_pd(mm_result, mm_element);
-                mm_result2 = _mm_add_pd(mm_result2, mm_element2);
+                mm_temp = _mm_mul_pd(mm_temp, mm_lambda);
+                mm_temp2 = _mm_mul_pd(mm_temp2, mm_lambda);
+
+                mm_temp = _mm_mul_pd(mm_temp, mm_element);
+                mm_temp2 = _mm_mul_pd(mm_temp2, mm_element2);
+
+                mm_temp = _mm_mul_pd(mm_temp, mm_timestep_coeff);
+                mm_temp2 = _mm_mul_pd(mm_temp2, mm_timestep_coeff);
+
+                mm_result = _mm_add_pd(mm_result, mm_temp);
+                mm_result2 = _mm_add_pd(mm_result2, mm_temp2);
 
                 gradient_temp_ptr1 += VECTOR_SIZE;
               }
 
+              __m128d mm_temp = _mm_load_pd(l2dot_temp_ptr + VECTOR_SIZE * (max_dims - 1));
+              __m128d mm_temp2 = _mm_load_pd(l2dot_temp_ptr + temp_cols + VECTOR_SIZE * (max_dims - 1));
+
+              mm_temp = _mm_mul_pd(mm_element, mm_temp);
+              mm_temp2 = _mm_mul_pd(mm_element2, mm_temp2);
+
+
+              mm_result = _mm_add_pd(mm_result, mm_temp);
+              mm_result2 = _mm_add_pd(mm_result2, mm_temp2);
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
               double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
               _mm_store_pd(operation_result_dest_ptr + j, mm_result);
@@ -1273,9 +1331,7 @@ namespace sg {
 #endif
             }
 
-
 #if ! defined (STORE_PDE_MATRIX_BOUNDARY)
-
             mm_result = _mm_add_pd(mm_result, mm_result2);
             mm_result = _mm_hadd_pd(mm_result, _mm_setzero_pd());
 
@@ -1284,11 +1340,10 @@ namespace sg {
 
             result_ptr_[ii] += s_result;
 #endif
-
           }
-
         }
 #else
+
         #pragma omp parallel
         {
           double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
@@ -1298,31 +1353,66 @@ namespace sg {
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
-          for (size_t ii = thr_start; ii < thr_end; ii++) {
+          for (size_t i = thr_start; i < thr_end; i++) {
+            double LTwoDotLaplaceRes = 0.0;
 
-            size_t i = i_boundary_filtered[ii];
-            {
-              for (size_t jj = 0; jj < this->storage->size(); jj++) {
+            for (size_t j = 0; j < this->storage->size(); j++) {
+              double temp = 0.0;
 
-                for (size_t d = 0; d < this->storage->dim(); d++) {
-                  gradient_temp_ptr[d] = gradient_dirichlet(i, jj, d);
-                  l2dot_temp_ptr[d] = l2dot_dirichlet(i, jj, d);
-                }
+              for (size_t d = 0; d < this->storage->dim(); d++) {
 
-                for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
-                  double element = alpha[jj];
-
-                  for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
-                    element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) + (gradient_temp_ptr[d_inner] * (d_outer == d_inner)));
-                  }
-
-                  (result_boundary_filtered_->getPointer()[ii]) += (this->lambda_->get(d_outer) * element);
-                }
+                l2dot_temp_ptr[d] = l2dot_dirichlet(i_boundary_filtered[i], j, d);
+                gradient_temp_ptr[d] = gradient_dirichlet(i_boundary_filtered[i], j, d) ;
               }
+
+              double element = 0.0;
+
+              for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
+                element = alpha[j];
+
+                for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+
+                  element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) + (d_outer == d_inner));
+                }
+
+                temp += this->TimestepCoeff * (this->lambda_->get(d_outer)) * element * (gradient_temp_ptr[d_outer]);
+              }
+
+              temp += element * l2dot_temp_ptr[this->storage->dim() - 1];
+              LTwoDotLaplaceRes += temp;
             }
+
+            (result_boundary_filtered_->getPointer()[i]) += LTwoDotLaplaceRes;
           }
+
+          /*
+            for (size_t ii = thr_start; ii < thr_end; ii++) {
+                {
+                    for (size_t jj = 0; jj < this->storage->size(); jj++) {
+
+                      for (size_t d = 0; d < this->storage->dim(); d++) {
+                gradient_temp_ptr[d] = gradient_dirichlet(i_boundary_filtered[ii], jj, d);
+                        l2dot_temp_ptr[d] = l2dot_dirichlet(i_boundary_filtered[ii], jj, d);
+                      }
+
+                        for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
+                          double element = alpha[jj];
+
+                          for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+                            element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) + (gradient_temp_ptr[d_inner] * (d_outer == d_inner)));
+                          }
+
+                          (result_boundary_filtered_->getPointer()[ii]) += (this->lambda_->get(d_outer)) * element;
+                        }
+                      }
+                  }
+                }
+
+            */
+
         }
 #endif
+
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
       }
@@ -1370,9 +1460,8 @@ namespace sg {
                      result_boundary_filtered_ptr, recv_size.data(), recv_start.data(),
                      MPI_DOUBLE, MPI_COMM_WORLD);
       /*
-
       MPI_Allreduce(MPI_IN_PLACE, result_boundary_filtered_ptr, (int)result_boundary_filtered_->getSize(), MPI_DOUBLE,
-                    MPI_SUM, MPI_COMM_WORLD);
+               MPI_SUM, MPI_COMM_WORLD);
       */
 #endif
 
@@ -1389,7 +1478,7 @@ namespace sg {
       all_iterations += 1.0;
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotLaplaceVectorizedLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
       result_boundary_filtered_->setAll(0.0);
       bool dirichlet = true;
@@ -1406,7 +1495,7 @@ namespace sg {
       if (dirichlet) {
         mult_dirichlet(alpha, result);
       } else {
-        throw new sg::base::operation_exception("OperationLaplaceVectorizedLinearBoundary::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+        throw new sg::base::operation_exception("OperationLTwoDotLaplaceVectorizedLinearBoundary::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
       }
     }
 

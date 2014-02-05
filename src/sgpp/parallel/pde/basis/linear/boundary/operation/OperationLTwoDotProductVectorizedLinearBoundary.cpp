@@ -5,25 +5,23 @@
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-
 #ifdef USE_MPI
 #include <mpi.h>
 #endif
 
 #include <omp.h>
 
+
 #include "base/grid/type/LinearGrid.hpp"
 #include "base/grid/generation/GridGenerator.hpp"
 #include "base/exception/operation_exception.hpp"
 
-#include "parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.hpp"
-#include "parallel/tools/TypesParallel.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundary.hpp"
 
+#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include "parallel/tools/TypesParallel.hpp"
 #include "parallel/tools/PartitioningTool.hpp"
 #include "base/tools/SGppStopwatch.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/datatypes/DataMatrix.hpp"
 
 #include <cmath>
 #include <assert.h>
@@ -66,16 +64,14 @@
 namespace sg {
   namespace parallel {
 
-    OperationLaplaceVectorizedLinearBoundary::OperationLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage)
+    OperationLTwoDotProductVectorizedLinearBoundary::OperationLTwoDotProductVectorizedLinearBoundary(sg::base::GridStorage* storage)
       :
       storage(storage),
       level_(NULL),
       level_int_(NULL),
       index_(NULL),
       lcl_q_(NULL),
-      lcl_q_inv_(NULL),
       constants_(NULL),
-      lambda_(NULL),
       alpha_padded_(NULL),
       result_boundary_filtered_(NULL),
       level_boundary_filtered_(NULL),
@@ -88,62 +84,26 @@ namespace sg {
       operation_result_matrix_(NULL)
 #endif
     {
-      std::cout << "IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::endl;
+      std::cout << "IN CONSTRUCTOR: OperationLTwoDotProductVectorizedLinearBoundary" << std::endl;
       init_constants();
       init_grid_storage();
-
-      this->lambda_ = new sg::base::DataVector(storage->dim());
-      this->lambda_->setAll(1.0);
     }
 
-    OperationLaplaceVectorizedLinearBoundary::OperationLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda)
-      :
-      storage(storage),
-      level_(NULL),
-      level_int_(NULL),
-      index_(NULL),
-      lcl_q_(NULL),
-      lcl_q_inv_(NULL),
-      constants_(NULL),
-      lambda_(NULL),
-      alpha_padded_(NULL),
-      result_boundary_filtered_(NULL),
-      level_boundary_filtered_(NULL),
-      level_int_boundary_filtered_(NULL),
-      index_boundary_filtered_(NULL),
-      gradient_temp(NULL),
-      l2dot_temp(NULL)
-#if defined(STORE_PDE_MATRIX_BOUNDARY)
-      ,
-      operation_result_matrix_(NULL)
-#endif
-    {
-      std::cout << "IN CONSTRUCTOR: OperationLaplaceVectorizedLinearBoundary" << std::endl;
-      init_constants();
-      init_grid_storage();
+    OperationLTwoDotProductVectorizedLinearBoundary::~OperationLTwoDotProductVectorizedLinearBoundary() {
 
-      this->lambda_ = new sg::base::DataVector(lambda);
-    }
-
-    OperationLaplaceVectorizedLinearBoundary::~OperationLaplaceVectorizedLinearBoundary() {
-
-      double flop = (double) ((28) * storage->dim() + storage->dim() * storage->dim()) * (double) (storage->size() * all_i_size[process_index]);
+      double flop = (double) (23 * storage->dim() ) * (double) (storage->size() * all_i_size[process_index]);
 
       double gflops = (all_iterations * flop / all_time) / 1000000000;
       double bandwidth = all_iterations * (double) (sizeof(double) * storage->size() * storage->size()) / all_time ;
-      std::cout << "IN OPERATOR : LAPLACE BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations << " TIME :" << all_time << std::endl;
+      std::cout << "IN OPERATOR : LTDOT BOUNDARY, GFLOPS :" << gflops << " BANDWIDTH :" << bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations << " TIME :" << all_time << std::endl;
 
       delete this->level_;
       delete this->level_int_;
       delete this->index_;
       delete lcl_q_;
-      delete lcl_q_inv_;
       delete constants_;
 
       delete this->alpha_padded_;
-
-      if (this->lambda_ != NULL)
-        delete this->lambda_;
 
       delete result_boundary_filtered_;
       delete level_boundary_filtered_;
@@ -156,11 +116,12 @@ namespace sg {
 #endif
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::reset() {
+
+    void OperationLTwoDotProductVectorizedLinearBoundary::reset() {
       init_grid_storage();
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::init_constants() {
+    void OperationLTwoDotProductVectorizedLinearBoundary::init_constants() {
 
 
       all_time = 0.0;
@@ -187,7 +148,7 @@ namespace sg {
 #endif
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::init_grid_storage() {
+    void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
       if (this->level_)
         delete this->level_;
 
@@ -209,15 +170,8 @@ namespace sg {
       this->lcl_q_ = new sg::base::DataVector(this->storage->dim());
       double* lcl_q_ptr_ = lcl_q_->getPointer();
 
-      if (this->lcl_q_inv_)
-        delete this->lcl_q_inv_;
-
-      this->lcl_q_inv_ = new sg::base::DataVector(this->storage->dim());
-      double* lcl_q_inv_ptr_ = lcl_q_inv_->getPointer();
-
       storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
       storage->getLevelForIntegral(*(this->level_int_));
-
 
       for (size_t i = 0; i < this->storage->size(); i++) {
         bool i_boundary = false;
@@ -226,8 +180,9 @@ namespace sg {
           i_boundary = i_boundary || (level_->get(i, d) == 1);
         }
 
-        if (i_boundary == false)
+        if (i_boundary == false) {
           i_boundary_filtered.push_back(i);
+        }
       }
 
 
@@ -256,8 +211,8 @@ namespace sg {
       sg::base::DataVector level_int_copy_vector(this->level_int_->getNcols());
       sg::base::DataVector index_copy_vector(this->index_->getNcols());
 
-
       for (size_t i = 0; i < i_boundary_filtered.size(); ++i) {
+
         level_->getRow(i_boundary_filtered[i], level_copy_vector);
         level_boundary_filtered_->setRow(i, level_copy_vector);
 
@@ -268,9 +223,9 @@ namespace sg {
         index_boundary_filtered_->setRow(i, index_copy_vector);
       }
 
-#ifdef __MIC__
-      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::X86SIMD, BLOCK_LENGTH);
-      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::X86SIMD, BLOCK_LENGTH);
+#if defined(__MIC__)
+      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::MIC, BLOCK_LENGTH);
+      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::MIC, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
       storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::X86SIMD, BLOCK_LENGTH);
       storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::X86SIMD, BLOCK_LENGTH);
@@ -291,6 +246,13 @@ namespace sg {
       alpha_padded_ = new sg::base::DataVector(padded_size);
       alpha_padded_->setAll(0.0);
 
+      process_index = 0;
+      process_count = 1;
+#ifdef USE_MPI
+      MPI_Comm_rank(MPI_COMM_WORLD, &process_index);
+      MPI_Comm_size(MPI_COMM_WORLD, &process_count);
+#endif
+
       size_t single_process_portion = (this->i_boundary_filtered.size() / process_count) + 1;
 
       all_i_start.clear();
@@ -299,7 +261,6 @@ namespace sg {
       send_size.clear();
       recv_start.clear();
       recv_size.clear();
-
 
       for (int i = 0; i < process_count; ++i) {
         int process_start = (int) (i * single_process_portion);
@@ -368,7 +329,6 @@ namespace sg {
       for (size_t d = 0; d < this->storage->dim(); d++) {
         sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
         lcl_q_ptr_[d] = boundingBox->getIntervalWidth(d);
-        lcl_q_inv_ptr_[d] = 1.0 / boundingBox->getIntervalWidth(d);
       }
 
 
@@ -398,7 +358,6 @@ namespace sg {
         throw new sg::base::operation_exception(exception_string);
       }
 
-
       if (operation_result_matrix_)
         delete operation_result_matrix_;
 
@@ -411,6 +370,7 @@ namespace sg {
       operation_result_matrix_->transpose();
 
       operation_result_generated_ = false;
+
 
       #pragma omp parallel
       {
@@ -431,25 +391,8 @@ namespace sg {
 
     }
 
-    double OperationLaplaceVectorizedLinearBoundary::gradient_dirichlet(size_t i, size_t j, size_t dim) {
-      double grad;
 
-      double i_level_grad = level_->get(i, dim);
-      double i_index_grad = index_->get(i, dim);
-      double j_level_grad = level_->get(j, dim);
-      double j_index_grad = index_->get(j, dim);
-
-      // only affects the diagonal of the stiffness matrix, on level 0 we have zero
-      // due to Dirichlet boundary conditions
-      bool doGrad = ((i_level_grad == j_level_grad) && (i_index_grad == j_index_grad) && (i_level_grad != 1));
-      grad = i_level_grad * 2.0 * doGrad;
-
-      // scale by 1/q
-      return (grad * *(lcl_q_inv_->getPointer() + dim));
-    }
-
-
-    double OperationLaplaceVectorizedLinearBoundary::l2dot_dirichlet(size_t i, size_t j, size_t dim) {
+    double OperationLTwoDotProductVectorizedLinearBoundary::l2dot_dirichlet(size_t i, size_t j, size_t dim) {
       double lid = level_->get(i, dim);
       double ljd = level_->get(j, dim);
       double iid = index_->get(i, dim);
@@ -510,9 +453,10 @@ namespace sg {
       return (res_one * (lid == ljd) + res_two * (lid != ljd)) * *(lcl_q_->getPointer() + dim);
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
 
       stopWatch.start();
+
       size_t process_i_start = all_i_start[process_index];
       size_t process_i_end = process_i_start + all_i_size[process_index];
 
@@ -546,13 +490,7 @@ namespace sg {
           double* level_int_boundary_filtered_ptr_ = this->level_int_boundary_filtered_->getPointer();
           double* index_boundary_filtered_ptr_ = this->index_boundary_filtered_->getPointer();
 
-          double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
-          double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
-          double* lambda_ptr_ = this->lambda_->getPointer();
-          size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
-
           double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
-          double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
           double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
 
           size_t max_dims = this->storage->dim();
@@ -564,49 +502,29 @@ namespace sg {
           __m512d mm_two = _mm512_extload_pd(constants + 4, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
           __m512d mm_abs = _mm512_extload_pd(constants + 5, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 
+
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t ii = thr_start; ii < thr_end; ii++) {
-            __m512d mm_result = _mm512_setzero_pd();
-            __m512d mm_result2 = _mm512_setzero_pd();
-
             double* temp_level_ptr = level_ptr_;
             double* temp_level_int_ptr = level_int_ptr_;
             double* temp_index_ptr = index_ptr_;
 
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
-#if defined (STORE_PDE_MATRIX_BOUNDARY)
-              mm_result = _mm512_setzero_pd();
-              mm_result2 = _mm512_setzero_pd();
-#endif
-              double* gradient_temp_ptr1 = gradient_temp_ptr;
-              double* l2dot_temp_ptr1 = l2dot_temp_ptr;
+              size_t i_idx = ii * max_dims;;
 
-              size_t i_idx = ii * max_dims;
+              __m512d mm_element = _mm512_load_pd(alpha_padded_temp_ptr_ + j);
+              __m512d mm_element2 = _mm512_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
 
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m512d mm_lcl_q = _mm512_extload_pd(lcl_q_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-                __m512d mm_lcl_q_inv = _mm512_extload_pd(lcl_q_inv_temp_ptr_ + dim, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 
-                //std::cout << ii << " " << level_boundary_filtered_->getNrows() << dim << " " << level_boundary_filtered_->getNcols() << std::endl;
                 __m512d mm_lid = _mm512_extload_pd(level_boundary_filtered_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_iid = _mm512_extload_pd(index_boundary_filtered_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_ljd = _mm512_load_pd(temp_level_ptr);
                 __m512d mm_ijd = _mm512_load_pd(temp_index_ptr);
-
-                __mmask8 mm_doGrad = (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_EQ),
-                                     _mm512_kand(_mm512_cmp_pd_mask(mm_iid, mm_ijd, _MM_CMPINT_EQ),
-                                                 _mm512_cmp_pd_mask(mm_lid, mm_one, _MM_CMPINT_NE))); //+5
-
-
-                __m512d mm_grad = _mm512_mask_mul_pd(mm_zero, mm_doGrad, mm_lid, mm_two);
-
-                mm_grad = _mm512_mul_pd(mm_grad, mm_lcl_q_inv); //1
-
-                _mm512_store_pd(gradient_temp_ptr1, mm_grad);
-
 
                 __m512d mm_in_lid = _mm512_extload_pd(level_int_boundary_filtered_ptr_ + i_idx, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
                 __m512d mm_in_ljd = _mm512_load_pd(temp_level_int_ptr);
@@ -620,19 +538,15 @@ namespace sg {
                 __m512d mm_i2d = _mm512_mask_blend_pd(mm_selector, mm_ijd, mm_iid);
                 __m512d mm_l2d = _mm512_mask_blend_pd(mm_selector, mm_ljd, mm_lid);
 
-
                 __m512d mm_q = _mm512_mul_pd(_mm512_sub_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
                 __m512d mm_p = _mm512_mul_pd(_mm512_add_pd(mm_i1d, mm_one), mm_in_l1d); //2 flop
-                __mmask8 mm_overlap = _mm512_cmp_pd_mask(_mm512_gmax_pd(mm_q, _mm512_mul_pd(_mm512_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
-                                      _mm512_gmin_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
+                __mmask8 mm_overlap = _mm512_cmp_pd_mask(_mm512_max_pd(mm_q, _mm512_mul_pd(_mm512_sub_pd(mm_i2d, mm_one), mm_in_l2d)),
+                                      _mm512_min_pd(mm_p, _mm512_mul_pd(_mm512_add_pd(mm_i2d, mm_one), mm_in_l2d)),
                                       _MM_CMPINT_LT); //6+1
 
                 __m512d mm_temp_res_inner = _mm512_sub_pd(_mm512_sub_pd(mm_two,
                                             _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_q), mm_i2d)))),
                                             _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d, mm_p), mm_i2d)))); // 8 flops
-
-
-
 
                 __m512d mm_temp_res_rightbound = _mm512_add_pd(mm_p, mm_q); //1
                 __m512d mm_temp_res_leftbound = _mm512_sub_pd(mm_two, mm_temp_res_rightbound); //1
@@ -641,27 +555,17 @@ namespace sg {
                                       mm_temp_res_inner,
                                       _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_i2d, mm_one, _MM_CMPINT_EQ), mm_temp_res_leftbound, mm_temp_res_rightbound));
 
-
                 mm_temp_res = _mm512_mul_pd(mm_temp_res, _mm512_mul_pd(mm_half, mm_in_l1d)); // 2 flops
                 __m512d mm_res_two = _mm512_mask_blend_pd(mm_overlap, mm_zero, mm_temp_res);
                 mm_selector = _mm512_cmp_pd_mask(mm_lid, mm_ljd, _MM_CMPINT_NE); // +1
 
-                __m512d mm_val = _mm512_mask_blend_pd(mm_selector, mm_res_one, mm_res_two);
+                __m512d mm_val = _mm512_mask_blend_pd(mm_selector, mm_res_one, mm_res_two);  // +1
                 mm_val = _mm512_mul_pd(mm_val, mm_lcl_q); //1 flop
-                _mm512_store_pd(l2dot_temp_ptr1, mm_val);
+                mm_element = _mm512_mul_pd(mm_element, mm_val); //1 flop
 
                 ////////////////////////////////////////////////////////
                 __m512d mm_ljd2 = _mm512_load_pd(temp_level_ptr + VECTOR_SIZE);
                 __m512d mm_ijd2 = _mm512_load_pd(temp_index_ptr + VECTOR_SIZE);
-
-                __mmask8 mm_doGrad2 = (__mmask8) _mm512_kand(_mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_EQ),
-                                      _mm512_kand(_mm512_cmp_pd_mask(mm_iid, mm_ijd2, _MM_CMPINT_EQ),
-                                                  _mm512_cmp_pd_mask(mm_lid, mm_one, _MM_CMPINT_NE))); //+5
-
-                __m512d mm_grad2 = _mm512_mask_mul_pd(mm_zero, mm_doGrad2, mm_lid, mm_two);
-
-                mm_grad2 = _mm512_mul_pd(mm_grad2, mm_lcl_q_inv); //1
-                _mm512_store_pd(gradient_temp_ptr1 + temp_cols, mm_grad2);
 
                 __m512d mm_in_ljd2 = _mm512_load_pd(temp_level_int_ptr + VECTOR_SIZE);
 
@@ -678,38 +582,30 @@ namespace sg {
                 __m512d mm_q2 = _mm512_mul_pd(_mm512_sub_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
                 __m512d mm_p2 = _mm512_mul_pd(_mm512_add_pd(mm_i1d2, mm_one), mm_in_l1d2); //2 flop
 
-                __mmask8 mm_overlap2 = _mm512_cmp_pd_mask(_mm512_gmax_pd(mm_q2, _mm512_mul_pd(_mm512_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
-                                       _mm512_gmin_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                __mmask8 mm_overlap2 = _mm512_cmp_pd_mask(_mm512_max_pd(mm_q2, _mm512_mul_pd(_mm512_sub_pd(mm_i2d2, mm_one), mm_in_l2d2)),
+                                       _mm512_min_pd(mm_p2, _mm512_mul_pd(_mm512_add_pd(mm_i2d2, mm_one), mm_in_l2d2)),
                                        _MM_CMPINT_LT); //6 flop // +1
-
 
                 __m512d mm_temp_res_inner2 = _mm512_sub_pd(_mm512_sub_pd(mm_two,
                                              _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
                                              _mm512_and_pd(mm_abs, (_mm512_sub_pd(_mm512_mul_pd(mm_l2d2, mm_p2), mm_i2d2)))); // 8 flops
 
-
                 __m512d mm_temp_res_rightbound2 = _mm512_add_pd(mm_p2, mm_q2);
                 __m512d mm_temp_res_leftbound2 = _mm512_sub_pd(mm_two, mm_temp_res_rightbound2);
-
 
                 __m512d mm_temp_res2 = _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_l2d2, mm_one, _MM_CMPINT_EQ),
                                        mm_temp_res_inner2,
                                        _mm512_mask_blend_pd(_mm512_cmp_pd_mask(mm_i2d2, mm_one, _MM_CMPINT_EQ), mm_temp_res_leftbound2, mm_temp_res_rightbound2));
 
                 mm_temp_res2 = _mm512_mul_pd(mm_temp_res2, _mm512_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
-
                 __m512d mm_res_two2 = _mm512_mask_blend_pd(mm_overlap2, mm_zero, mm_temp_res2);
 
                 mm_selector2 = _mm512_cmp_pd_mask(mm_lid, mm_ljd2, _MM_CMPINT_NE);
 
                 __m512d mm_val2 = _mm512_mask_blend_pd(mm_selector2, mm_res_one2, mm_res_two2);
+
                 mm_val2 = _mm512_mul_pd(mm_val2, mm_lcl_q); //1 flop
-
-                _mm512_store_pd(l2dot_temp_ptr1 + temp_cols, mm_val2);
-
-
-                gradient_temp_ptr1 += VECTOR_SIZE;
-                l2dot_temp_ptr1 += VECTOR_SIZE;
+                mm_element2 = _mm512_mul_pd(mm_element2, mm_val2);
 
                 temp_level_ptr += BLOCK_LENGTH;
                 temp_level_int_ptr += BLOCK_LENGTH;
@@ -718,72 +614,20 @@ namespace sg {
                 ++i_idx;
               }
 
-              gradient_temp_ptr1 = gradient_temp_ptr;
-
-              for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
-                __m512d mm_element = _mm512_load_pd(alpha_padded_temp_ptr_ + j);
-                __m512d mm_temp = _mm512_load_pd(gradient_temp_ptr1);
-                mm_element = _mm512_mul_pd(mm_element, mm_temp);
-
-                __m512d mm_element2 = _mm512_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
-
-                __m512d mm_temp2 = _mm512_load_pd(gradient_temp_ptr1 + temp_cols);
-
-                mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
-
-                l2dot_temp_ptr1 = l2dot_temp_ptr;
-
-                for (size_t d_inner = 0; d_inner < d_outer; d_inner++) {
-                  //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
-                  __m512d mm_temp = _mm512_load_pd(l2dot_temp_ptr1);
-                  mm_element = _mm512_mul_pd(mm_element, mm_temp);
-                  __m512d mm_temp2 = _mm512_load_pd(l2dot_temp_ptr1 + temp_cols);
-                  mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
-
-                  l2dot_temp_ptr1 += VECTOR_SIZE;
-                }
-
-                l2dot_temp_ptr1 += VECTOR_SIZE;
-
-                for (size_t d_inner = d_outer + 1; d_inner < max_dims; d_inner++) {
-                  //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
-                  __m512d mm_temp = _mm512_load_pd(l2dot_temp_ptr1);
-                  mm_element = _mm512_mul_pd(mm_element, mm_temp);
-                  __m512d mm_temp2 = _mm512_load_pd(l2dot_temp_ptr1 + temp_cols);
-                  mm_element2 = _mm512_mul_pd(mm_element2, mm_temp2);
-
-                  l2dot_temp_ptr1 += VECTOR_SIZE;
-                }
-
-                __m512d mm_lambda = _mm512_extload_pd(lambda_ptr_ + d_outer, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-                mm_element = _mm512_mul_pd(mm_element, mm_lambda);
-                mm_element2 = _mm512_mul_pd(mm_element2, mm_lambda);
-
-
-                mm_result = _mm512_add_pd(mm_result, mm_element);
-                mm_result2 = _mm512_add_pd(mm_result2, mm_element2);
-
-                gradient_temp_ptr1 += VECTOR_SIZE;
-              }
-
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
               double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
-              _mm512_store_pd(operation_result_dest_ptr + j, mm_result);
-              _mm512_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
+              _mm512_store_pd(operation_result_dest_ptr + j, mm_element);
+              _mm512_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_element2);
+#else
+
+              __m512d mm_result = _mm512_add_pd(mm_element, mm_element2);
+
+              result_ptr_[ii] += _mm512_reduce_add_pd(mm_result);
 #endif
             }
-
-#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
-
-            mm_result = _mm512_add_pd(mm_result, mm_result2);
-            double s_result = _mm512_reduce_add_pd(mm_result);
-
-            result_ptr_[ii] += s_result;
-#endif
           }
 
         }
-
 
 #elif defined(__SSE4_2__) && defined(__AVX__)
 
@@ -802,13 +646,7 @@ namespace sg {
           double* level_int_boundary_filtered_ptr_ = this->level_int_boundary_filtered_->getPointer();
           double* index_boundary_filtered_ptr_ = this->index_boundary_filtered_->getPointer();
 
-          double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
-          double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
-          double* lambda_ptr_ = this->lambda_->getPointer();
-          size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
-
           double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
-          double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
           double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
 
           size_t max_dims = this->storage->dim();
@@ -819,49 +657,29 @@ namespace sg {
           __m256d mm_two = _mm256_broadcast_sd(constants + 4);
           __m256d mm_abs = _mm256_broadcast_sd(constants + 5);
 
+
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t ii = thr_start; ii < thr_end; ii++) {
-            __m256d mm_result = _mm256_setzero_pd();
-            __m256d mm_result2 = _mm256_setzero_pd();
-
             double* temp_level_ptr = level_ptr_;
             double* temp_level_int_ptr = level_int_ptr_;
             double* temp_index_ptr = index_ptr_;
 
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
-#if defined (STORE_PDE_MATRIX_BOUNDARY)
-              mm_result = _mm256_setzero_pd();
-              mm_result2 = _mm256_setzero_pd();
-#endif
-              double* gradient_temp_ptr1 = gradient_temp_ptr;
-              double* l2dot_temp_ptr1 = l2dot_temp_ptr;
+              size_t i_idx = ii * max_dims;;
 
-              size_t i_idx = ii * max_dims;
+              __m256d mm_element = _mm256_load_pd(alpha_padded_temp_ptr_ + j);
+              __m256d mm_element2 = _mm256_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
 
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m256d mm_lcl_q = _mm256_broadcast_sd(lcl_q_temp_ptr_ + dim);
-                __m256d mm_lcl_q_inv = _mm256_broadcast_sd(lcl_q_inv_temp_ptr_ + dim);
 
-                //std::cout << ii << " " << level_boundary_filtered_->getNrows() << dim << " " << level_boundary_filtered_->getNcols() << std::endl;
                 __m256d mm_lid = _mm256_broadcast_sd(level_boundary_filtered_ptr_ + i_idx);
                 __m256d mm_iid = _mm256_broadcast_sd(index_boundary_filtered_ptr_ + i_idx);
                 __m256d mm_ljd = _mm256_load_pd(temp_level_ptr);
                 __m256d mm_ijd = _mm256_load_pd(temp_index_ptr);
-
-                __m256d mm_doGrad = _mm256_and_pd(_mm256_cmp_pd(mm_lid, mm_ljd, _CMP_EQ_OQ),
-                                                  _mm256_and_pd(_mm256_cmp_pd(mm_iid, mm_ijd, _CMP_EQ_OQ),
-                                                      _mm256_cmp_pd(mm_lid, mm_one, _CMP_NEQ_OQ))); //+5
-
-
-                __m256d mm_grad = _mm256_mul_pd(mm_lid, _mm256_and_pd(mm_two, mm_doGrad)); //1+1
-
-                mm_grad = _mm256_mul_pd(mm_grad, mm_lcl_q_inv); //1
-
-                _mm256_store_pd(gradient_temp_ptr1, mm_grad);
-
 
                 __m256d mm_in_lid = _mm256_broadcast_sd(level_int_boundary_filtered_ptr_ + i_idx);
                 __m256d mm_in_ljd = _mm256_load_pd(temp_level_int_ptr);
@@ -889,8 +707,10 @@ namespace sg {
                 __m256d mm_temp_res_leftbound = _mm256_sub_pd(mm_two, mm_temp_res_rightbound); //1
 
                 __m256d mm_temp_res = _mm256_blendv_pd(mm_temp_res_inner,
-                                                       _mm256_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm256_cmp_pd(mm_i2d, mm_one, _CMP_EQ_OQ)),
-                                                       _mm256_cmp_pd(mm_l2d, mm_one, _CMP_EQ_OQ));
+                                                       _mm256_add_pd(_mm256_and_pd(mm_temp_res_leftbound, _mm256_cmp_pd(mm_i2d, _mm256_setzero_pd(), _CMP_EQ_OQ)),
+                                                           _mm256_and_pd(mm_temp_res_rightbound, _mm256_cmp_pd(mm_i2d, mm_one, _CMP_EQ_OQ))
+                                                                    ),
+                                                       _mm256_cmp_pd(mm_l2d, mm_one, _CMP_EQ_OQ)); //+7
 
 
 
@@ -900,20 +720,11 @@ namespace sg {
 
                 __m256d mm_val = _mm256_blendv_pd(mm_res_one, mm_res_two, mm_selector);  // +1
                 mm_val = _mm256_mul_pd(mm_val, mm_lcl_q); //1 flop
-                _mm256_store_pd(l2dot_temp_ptr1, mm_val);
+                mm_element = _mm256_mul_pd(mm_element, mm_val); //1 flop
 
                 ////////////////////////////////////////////////////////
                 __m256d mm_ljd2 = _mm256_load_pd(temp_level_ptr + VECTOR_SIZE);
                 __m256d mm_ijd2 = _mm256_load_pd(temp_index_ptr + VECTOR_SIZE);
-                __m256d mm_doGrad2 = _mm256_and_pd(_mm256_cmp_pd(mm_lid, mm_ljd2, _CMP_EQ_OQ),
-                                                   _mm256_and_pd(_mm256_cmp_pd(mm_iid, mm_ijd2, _CMP_EQ_OQ),
-                                                       _mm256_cmp_pd(mm_lid, mm_one, _CMP_NEQ_OQ))); //1 // +2
-
-
-                __m256d mm_grad2 = _mm256_mul_pd(mm_lid, _mm256_and_pd(mm_two, mm_doGrad2)); //2
-
-                mm_grad2 = _mm256_mul_pd(mm_grad2, mm_lcl_q_inv); //1
-                _mm256_store_pd(gradient_temp_ptr1 + temp_cols, mm_grad2);
 
                 __m256d mm_in_ljd2 = _mm256_load_pd(temp_level_int_ptr + VECTOR_SIZE);
 
@@ -942,7 +753,9 @@ namespace sg {
                 __m256d mm_temp_res_leftbound2 = _mm256_sub_pd(mm_two, mm_temp_res_rightbound2);
 
                 __m256d mm_temp_res2 = _mm256_blendv_pd(mm_temp_res_inner2,
-                                                        _mm256_blendv_pd(mm_temp_res_leftbound2, mm_temp_res_rightbound2, _mm256_cmp_pd(mm_i2d2, mm_one, _CMP_EQ_OQ)),
+                                                        _mm256_add_pd(_mm256_and_pd(mm_temp_res_leftbound2, _mm256_cmp_pd(mm_i2d2, _mm256_setzero_pd(), _CMP_EQ_OQ)),
+                                                            _mm256_and_pd(mm_temp_res_rightbound2, _mm256_cmp_pd(mm_i2d2, mm_one, _CMP_EQ_OQ))
+                                                                     ),
                                                         _mm256_cmp_pd(mm_l2d2, mm_one, _CMP_EQ_OQ));
 
                 mm_temp_res2 = _mm256_mul_pd(mm_temp_res2, _mm256_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
@@ -952,14 +765,8 @@ namespace sg {
 
                 __m256d mm_val2 = _mm256_blendv_pd(mm_res_one2, mm_res_two2, mm_selector2);
 
-
                 mm_val2 = _mm256_mul_pd(mm_val2, mm_lcl_q); //1 flop
-
-                _mm256_store_pd(l2dot_temp_ptr1 + temp_cols, mm_val2);
-
-
-                gradient_temp_ptr1 += VECTOR_SIZE;
-                l2dot_temp_ptr1 += VECTOR_SIZE;
+                mm_element2 = _mm256_mul_pd(mm_element2, mm_val2);
 
                 temp_level_ptr += BLOCK_LENGTH;
                 temp_level_int_ptr += BLOCK_LENGTH;
@@ -968,72 +775,23 @@ namespace sg {
                 ++i_idx;
               }
 
-              gradient_temp_ptr1 = gradient_temp_ptr;
-
-              for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
-                __m256d mm_element = _mm256_load_pd(alpha_padded_temp_ptr_ + j);
-                __m256d mm_temp = _mm256_load_pd(gradient_temp_ptr1);
-                mm_element = _mm256_mul_pd(mm_element, mm_temp);
-
-                __m256d mm_element2 = _mm256_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
-
-                __m256d mm_temp2 = _mm256_load_pd(gradient_temp_ptr1 + temp_cols);
-
-                mm_element2 = _mm256_mul_pd(mm_element2, mm_temp2);
-
-                l2dot_temp_ptr1 = l2dot_temp_ptr;
-
-                for (size_t d_inner = 0; d_inner < d_outer; d_inner++) {
-                  //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
-                  __m256d mm_temp = _mm256_load_pd(l2dot_temp_ptr1);
-                  mm_element = _mm256_mul_pd(mm_element, mm_temp);
-                  __m256d mm_temp2 = _mm256_load_pd(l2dot_temp_ptr1 + temp_cols);
-                  mm_element2 = _mm256_mul_pd(mm_element2, mm_temp2);
-
-                  l2dot_temp_ptr1 += VECTOR_SIZE;
-                }
-
-                l2dot_temp_ptr1 += VECTOR_SIZE;
-
-                for (size_t d_inner = d_outer + 1; d_inner < max_dims; d_inner++) {
-                  //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
-                  __m256d mm_temp = _mm256_load_pd(l2dot_temp_ptr1);
-                  mm_element = _mm256_mul_pd(mm_element, mm_temp);
-                  __m256d mm_temp2 = _mm256_load_pd(l2dot_temp_ptr1 + temp_cols);
-                  mm_element2 = _mm256_mul_pd(mm_element2, mm_temp2);
-
-                  l2dot_temp_ptr1 += VECTOR_SIZE;
-                }
-
-                __m256d mm_lambda = _mm256_broadcast_sd(lambda_ptr_ + d_outer);
-                mm_element = _mm256_mul_pd(mm_element, mm_lambda);
-                mm_element2 = _mm256_mul_pd(mm_element2, mm_lambda);
-
-
-                mm_result = _mm256_add_pd(mm_result, mm_element);
-                mm_result2 = _mm256_add_pd(mm_result2, mm_element2);
-
-                gradient_temp_ptr1 += VECTOR_SIZE;
-              }
-
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
               double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
-              _mm256_store_pd(operation_result_dest_ptr + j, mm_result);
-              _mm256_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
+              _mm256_store_pd(operation_result_dest_ptr + j, mm_element);
+              _mm256_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_element2);
+#else
+
+              __m256d mm_result = mm_element;
+              mm_result = _mm256_add_pd(mm_result, mm_element2);
+              mm_result = _mm256_hadd_pd(mm_result, _mm256_setzero_pd());
+
+              double s_result;
+              __m256d hsum = _mm256_add_pd(mm_result, _mm256_permute2f128_pd(mm_result, mm_result, 0x1));
+              _mm_store_sd(&s_result, _mm_hadd_pd( _mm256_castpd256_pd128(hsum), _mm256_castpd256_pd128(hsum) ) );
+
+              result_ptr_[ii] += s_result;
 #endif
             }
-
-#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
-
-            mm_result = _mm256_add_pd(mm_result, mm_result2);
-            mm_result = _mm256_hadd_pd(mm_result, _mm256_setzero_pd());
-
-            double s_result;
-            __m256d hsum = _mm256_add_pd(mm_result, _mm256_permute2f128_pd(mm_result, mm_result, 0x1));
-            _mm_store_sd(&s_result, _mm_hadd_pd( _mm256_castpd256_pd128(hsum), _mm256_castpd256_pd128(hsum) ) );
-
-            result_ptr_[ii] += s_result;
-#endif
           }
 
         }
@@ -1042,6 +800,7 @@ namespace sg {
 
         #pragma omp parallel
         {
+
           std::size_t padded_size = this->level_->getNcols();
           double* constants = this->constants_->getPointer();//{0, 0.5, 2.0 / 3.0, 1, 2};
 #if ! defined (STORE_PDE_MATRIX_BOUNDARY)
@@ -1055,13 +814,7 @@ namespace sg {
           double* level_int_boundary_filtered_ptr_ = this->level_int_boundary_filtered_->getPointer();
           double* index_boundary_filtered_ptr_ = this->index_boundary_filtered_->getPointer();
 
-          double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
-          double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
-          double* lambda_ptr_ = this->lambda_->getPointer();
-          size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
-
           double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
-          double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
           double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
 
           size_t max_dims = this->storage->dim();
@@ -1072,49 +825,30 @@ namespace sg {
           __m128d mm_two = _mm_loaddup_pd(constants + 4);
           __m128d mm_abs = _mm_loaddup_pd(constants + 5);
 
+
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t ii = thr_start; ii < thr_end; ii++) {
-            __m128d mm_result = _mm_setzero_pd();
-            __m128d mm_result2 = _mm_setzero_pd();
-
             double* temp_level_ptr = level_ptr_;
             double* temp_level_int_ptr = level_int_ptr_;
             double* temp_index_ptr = index_ptr_;
 
             for (size_t j = 0; j < padded_size; j += VECTOR_SIZE * REG_BCOUNT) {
-#if defined (STORE_PDE_MATRIX_BOUNDARY)
-              mm_result = _mm_setzero_pd();
-              mm_result2 = _mm_setzero_pd();
-#endif
-              double* gradient_temp_ptr1 = gradient_temp_ptr;
-              double* l2dot_temp_ptr1 = l2dot_temp_ptr;
+              size_t i_idx = ii * max_dims;;
 
-              size_t i_idx = ii * max_dims;
-
+              __m128d mm_element = _mm_load_pd(alpha_padded_temp_ptr_ + j);
+              __m128d mm_element2 = _mm_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
 
               for (size_t dim = 0; dim < max_dims; dim++) {
                 __m128d mm_lcl_q = _mm_loaddup_pd(lcl_q_temp_ptr_ + dim);
-                __m128d mm_lcl_q_inv = _mm_loaddup_pd(lcl_q_inv_temp_ptr_ + dim);
+
 
                 __m128d mm_lid = _mm_loaddup_pd(level_boundary_filtered_ptr_ + i_idx);
                 __m128d mm_iid = _mm_loaddup_pd(index_boundary_filtered_ptr_ + i_idx);
                 __m128d mm_ljd = _mm_load_pd(temp_level_ptr);
                 __m128d mm_ijd = _mm_load_pd(temp_index_ptr);
-
-                __m128d mm_doGrad = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd),
-                                               _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd),
-                                                   _mm_cmpneq_pd(mm_lid, mm_one))); //+3
-
-
-                __m128d mm_grad = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad)); //1+1
-
-                mm_grad = _mm_mul_pd(mm_grad, mm_lcl_q_inv); //1
-
-                _mm_store_pd(gradient_temp_ptr1, mm_grad);
-
 
                 __m128d mm_in_lid = _mm_loaddup_pd(level_int_boundary_filtered_ptr_ + i_idx);
                 __m128d mm_in_ljd = _mm_load_pd(temp_level_int_ptr);
@@ -1137,12 +871,15 @@ namespace sg {
                                                        _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d, mm_q), mm_i2d)))),
                                                        _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d, mm_p), mm_i2d)))); // 8 flops
 
-                __m128d mm_temp_res_rightbound = _mm_add_pd(mm_p, mm_q);
-                __m128d mm_temp_res_leftbound = _mm_sub_pd(mm_two, mm_temp_res_rightbound);
+                __m128d mm_temp_res_rightbound = _mm_add_pd(mm_p, mm_q); //1
+                __m128d mm_temp_res_leftbound = _mm_sub_pd(mm_two, mm_temp_res_rightbound); //1
 
                 __m128d mm_temp_res = _mm_blendv_pd(mm_temp_res_inner,
-                                                    _mm_blendv_pd(mm_temp_res_leftbound, mm_temp_res_rightbound, _mm_cmpeq_pd(mm_i2d, mm_one)),
-                                                    _mm_cmpeq_pd(mm_l2d, mm_one));
+                                                    _mm_add_pd(_mm_and_pd(mm_temp_res_leftbound, _mm_cmpeq_pd(mm_i2d, _mm_setzero_pd())),
+                                                        _mm_and_pd(mm_temp_res_rightbound, _mm_cmpeq_pd(mm_i2d, mm_one))
+                                                              ),
+                                                    _mm_cmpeq_pd(mm_l2d, mm_one)); //+7
+
 
 
                 mm_temp_res = _mm_mul_pd(mm_temp_res, _mm_mul_pd(mm_half, mm_in_l1d)); // 2 flops
@@ -1151,19 +888,11 @@ namespace sg {
 
                 __m128d mm_val = _mm_blendv_pd(mm_res_one, mm_res_two, mm_selector);  // +1
                 mm_val = _mm_mul_pd(mm_val, mm_lcl_q); //1 flop
-                _mm_store_pd(l2dot_temp_ptr1, mm_val);
+                mm_element = _mm_mul_pd(mm_element, mm_val); //1 flop
 
                 ////////////////////////////////////////////////////////
                 __m128d mm_ljd2 = _mm_load_pd(temp_level_ptr + VECTOR_SIZE);
                 __m128d mm_ijd2 = _mm_load_pd(temp_index_ptr + VECTOR_SIZE);
-                __m128d mm_doGrad2 = _mm_and_pd(_mm_cmpeq_pd(mm_lid, mm_ljd2),
-                                                _mm_and_pd(_mm_cmpeq_pd(mm_iid, mm_ijd2),
-                                                    _mm_cmpneq_pd(mm_lid, mm_one))); //1 // +2
-
-                __m128d mm_grad2 = _mm_mul_pd(mm_lid, _mm_and_pd(mm_two, mm_doGrad2)); //2
-
-                mm_grad2 = _mm_mul_pd(mm_grad2, mm_lcl_q_inv); //1
-                _mm_store_pd(gradient_temp_ptr1 + temp_cols, mm_grad2);
 
                 __m128d mm_in_ljd2 = _mm_load_pd(temp_level_int_ptr + VECTOR_SIZE);
 
@@ -1187,12 +916,13 @@ namespace sg {
                                                         _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d2, mm_q2), mm_i2d2)))),
                                                         _mm_and_pd(mm_abs, (_mm_sub_pd(_mm_mul_pd(mm_l2d2, mm_p2), mm_i2d2)))); // 8 flops
 
-
                 __m128d mm_temp_res_rightbound2 = _mm_add_pd(mm_p2, mm_q2);
                 __m128d mm_temp_res_leftbound2 = _mm_sub_pd(mm_two, mm_temp_res_rightbound2);
 
                 __m128d mm_temp_res2 = _mm_blendv_pd(mm_temp_res_inner2,
-                                                     _mm_blendv_pd(mm_temp_res_leftbound2, mm_temp_res_rightbound2, _mm_cmpeq_pd(mm_i2d2, mm_one)),
+                                                     _mm_add_pd(_mm_and_pd(mm_temp_res_leftbound2, _mm_cmpeq_pd(mm_i2d2, _mm_setzero_pd())),
+                                                         _mm_and_pd(mm_temp_res_rightbound2, _mm_cmpeq_pd(mm_i2d2, mm_one))
+                                                               ),
                                                      _mm_cmpeq_pd(mm_l2d2, mm_one));
 
                 mm_temp_res2 = _mm_mul_pd(mm_temp_res2, _mm_mul_pd(mm_half, mm_in_l1d2)); // 2 flops
@@ -1202,127 +932,61 @@ namespace sg {
 
                 __m128d mm_val2 = _mm_blendv_pd(mm_res_one2, mm_res_two2, mm_selector2);
 
-
                 mm_val2 = _mm_mul_pd(mm_val2, mm_lcl_q); //1 flop
-
-                _mm_store_pd(l2dot_temp_ptr1 + temp_cols, mm_val2);
-
-
-                gradient_temp_ptr1 += VECTOR_SIZE;
-                l2dot_temp_ptr1 += VECTOR_SIZE;
+                mm_element2 = _mm_mul_pd(mm_element2, mm_val2);
 
                 temp_level_ptr += BLOCK_LENGTH;
                 temp_level_int_ptr += BLOCK_LENGTH;
                 temp_index_ptr += BLOCK_LENGTH;
 
-                ++ i_idx;
-              }
-
-              gradient_temp_ptr1 = gradient_temp_ptr;
-
-              for (size_t d_outer = 0; d_outer < max_dims; d_outer++) { // D + 2
-                __m128d mm_element = _mm_load_pd(alpha_padded_temp_ptr_ + j);
-                __m128d mm_temp = _mm_load_pd(gradient_temp_ptr1);
-                mm_element = _mm_mul_pd(mm_element, mm_temp);
-
-                __m128d mm_element2 = _mm_load_pd(alpha_padded_temp_ptr_ + j + VECTOR_SIZE);
-
-                __m128d mm_temp2 = _mm_load_pd(gradient_temp_ptr1 + temp_cols);
-
-                mm_element2 = _mm_mul_pd(mm_element2, mm_temp2);
-
-                l2dot_temp_ptr1 = l2dot_temp_ptr;
-
-                for (size_t d_inner = 0; d_inner < d_outer; d_inner++) {
-                  //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
-                  __m128d mm_temp = _mm_load_pd(l2dot_temp_ptr1);
-                  mm_element = _mm_mul_pd(mm_element, mm_temp);
-                  __m128d mm_temp2 = _mm_load_pd(l2dot_temp_ptr1 + temp_cols);
-                  mm_element2 = _mm_mul_pd(mm_element2, mm_temp2);
-
-                  l2dot_temp_ptr1 += VECTOR_SIZE;
-                }
-
-                l2dot_temp_ptr1 += VECTOR_SIZE;
-
-                for (size_t d_inner = d_outer + 1; d_inner < max_dims; d_inner++) {
-                  //element *= ((l2dot(i, j, d_inner)*(d_outer != d_inner)) + (gradient(i, j, d_inner)*(d_outer == d_inner)));
-                  __m128d mm_temp = _mm_load_pd(l2dot_temp_ptr1);
-                  mm_element = _mm_mul_pd(mm_element, mm_temp);
-                  __m128d mm_temp2 = _mm_load_pd(l2dot_temp_ptr1 + temp_cols);
-                  mm_element2 = _mm_mul_pd(mm_element2, mm_temp2);
-
-                  l2dot_temp_ptr1 += VECTOR_SIZE;
-                }
-
-                __m128d mm_lambda = _mm_loaddup_pd(lambda_ptr_ + d_outer);
-                mm_element = _mm_mul_pd(mm_element, mm_lambda);
-                mm_element2 = _mm_mul_pd(mm_element2, mm_lambda);
-
-
-                mm_result = _mm_add_pd(mm_result, mm_element);
-                mm_result2 = _mm_add_pd(mm_result2, mm_element2);
-
-                gradient_temp_ptr1 += VECTOR_SIZE;
+                ++i_idx;
               }
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
               double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (ii - process_i_start) * operation_result_matrix_->getNcols();
-              _mm_store_pd(operation_result_dest_ptr + j, mm_result);
-              _mm_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_result2);
+              _mm_store_pd(operation_result_dest_ptr + j, mm_element);
+              _mm_store_pd(operation_result_dest_ptr + j + VECTOR_SIZE, mm_element2);
+#else
+
+              __m128d mm_result = mm_element;
+              mm_result = _mm_add_pd(mm_result, mm_element2);
+              mm_result = _mm_hadd_pd(mm_result, _mm_setzero_pd());
+
+              double s_result = 0.0;
+              _mm_store_sd(&s_result, mm_result);
+
+              result_ptr_[ii] += s_result;
 #endif
             }
-
-
-#if ! defined (STORE_PDE_MATRIX_BOUNDARY)
-
-            mm_result = _mm_add_pd(mm_result, mm_result2);
-            mm_result = _mm_hadd_pd(mm_result, _mm_setzero_pd());
-
-            double s_result = 0.0;
-            _mm_store_sd(&s_result, mm_result);
-
-            result_ptr_[ii] += s_result;
-#endif
 
           }
 
         }
 #else
+
+
         #pragma omp parallel
         {
-          double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
-          double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
-
           size_t thr_start;
           size_t thr_end;
           sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t ii = thr_start; ii < thr_end; ii++) {
+            for (size_t jj = 0; jj < this->storage->size(); jj++) {
 
-            size_t i = i_boundary_filtered[ii];
-            {
-              for (size_t jj = 0; jj < this->storage->size(); jj++) {
+              double element = alpha[jj];
 
-                for (size_t d = 0; d < this->storage->dim(); d++) {
-                  gradient_temp_ptr[d] = gradient_dirichlet(i, jj, d);
-                  l2dot_temp_ptr[d] = l2dot_dirichlet(i, jj, d);
-                }
-
-                for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
-                  double element = alpha[jj];
-
-                  for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
-                    element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) + (gradient_temp_ptr[d_inner] * (d_outer == d_inner)));
-                  }
-
-                  (result_boundary_filtered_->getPointer()[ii]) += (this->lambda_->get(d_outer) * element);
-                }
+              for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+                element *= l2dot_dirichlet(i_boundary_filtered[ii], jj, d_inner);
               }
+
+              (result_boundary_filtered_->getPointer()[ii]) += element;
             }
           }
+
         }
 #endif
+
 
 #if defined (STORE_PDE_MATRIX_BOUNDARY)
       }
@@ -1369,10 +1033,11 @@ namespace sg {
       MPI_Allgatherv(MPI_IN_PLACE, send_size[0], MPI_DOUBLE,
                      result_boundary_filtered_ptr, recv_size.data(), recv_start.data(),
                      MPI_DOUBLE, MPI_COMM_WORLD);
+
       /*
 
-      MPI_Allreduce(MPI_IN_PLACE, result_boundary_filtered_ptr, (int)result_boundary_filtered_->getSize(), MPI_DOUBLE,
-                    MPI_SUM, MPI_COMM_WORLD);
+            MPI_Allreduce(MPI_IN_PLACE, result_boundary_filtered_ptr, (int)result_boundary_filtered_->getSize(), MPI_DOUBLE,
+                          MPI_SUM, MPI_COMM_WORLD);
       */
 #endif
 
@@ -1389,7 +1054,7 @@ namespace sg {
       all_iterations += 1.0;
     }
 
-    void OperationLaplaceVectorizedLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotProductVectorizedLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
       result.setAll(0.0);
       result_boundary_filtered_->setAll(0.0);
       bool dirichlet = true;
@@ -1398,7 +1063,6 @@ namespace sg {
       for (size_t d = 0; d < this->storage->dim(); d++) {
         sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
         *(lcl_q_->getPointer() + d) = boundingBox->getIntervalWidth(d);
-        *(lcl_q_inv_->getPointer() + d) = 1.0 / boundingBox->getIntervalWidth(d);
         dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);
         dirichlet = dirichlet && boundingBox->hasDirichletBoundaryRight(d);
       }

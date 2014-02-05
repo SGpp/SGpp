@@ -10,13 +10,18 @@
 #include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
 #include "parallel/pde/application/PoissonEquationSolverMPI.hpp"
 #include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
+#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp"
+
 #include "solver/sle/ConjugateGradients.hpp"
+
 #include "base/grid/Grid.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/tools/SGppStopwatch.hpp"
 #include "base/operation/BaseOpFactory.hpp"
-#include "stdlib.h"
+
+#include <cstdlib>
 #include <sstream>
+#include <cstring>
 
 
 namespace sg {
@@ -53,42 +58,64 @@ namespace sg {
       double dTimeAlpha = 0.0;
       double dTimeRHS = 0.0;
       double dTimeSolver = 0.0;
+      sg::solver::SLESolver* myCG;
+      sg::pde::OperationEllipticPDESolverSystemDirichlet* mySystem;
 
       sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 
-      ConjugateGradientsMPI* myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-      PoissonEquationEllipticPDESolverSystemDirichletParallelMPI* mySystem = new PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(*(this->myGrid), rhs);
+      // read env variable, which solver type should be selected
+      char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
+
+      if (alg_selector != NULL) {
+        if (! strcmp(alg_selector, "X86SIMD")) {
+          myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+          mySystem = new PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(*(this->myGrid), rhs);
+        } else if (! strcmp(alg_selector, "OCL")) {
+          myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
+          mySystem = new PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(*(this->myGrid), rhs);
+        } else {
+          throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+        }
+      } else {
+        myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
+        mySystem = new PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(*(this->myGrid), rhs);
+      }
 
       if (myGlobalMPIComm->getMyRank() == 0) {
         std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
         std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;
       }
 
+      MPI_Barrier(MPI_COMM_WORLD);
       myStopwatch->start();
       sg::base::DataVector* alpha_solve = mySystem->getGridCoefficientsForCG();
+      MPI_Barrier(MPI_COMM_WORLD);
       dTimeAlpha = myStopwatch->stop();
 
       // generate RHS
       sg::base::DataVector* rhs_solve = NULL;
 
-      if (myGlobalMPIComm->getMyRank() == 0) {
+      if (myGlobalMPIComm->getMyRank() == 0)
         std::cout << "coefficients has been initialized for solving!" << std::endl;
-        myStopwatch->start();
-        rhs_solve = mySystem->generateRHS();
-        dTimeRHS = myStopwatch->stop();
+
+      MPI_Barrier(MPI_COMM_WORLD);
+      myStopwatch->start();
+      rhs_solve = mySystem->generateRHS();
+      MPI_Barrier(MPI_COMM_WORLD);
+      dTimeRHS = myStopwatch->stop();
+
+      if (myGlobalMPIComm->getMyRank() == 0)
         std::cout << "right hand side has been initialized for solving!" << std::endl << std::endl << std::endl;
-      } else {
-        // parallel calculation of RHS
-        rhs_solve = mySystem->generateRHS();
-      }
+
+      MPI_Barrier(MPI_COMM_WORLD);
+      myStopwatch->start();
+      myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, verbose, 0.0);
+      // Copy result into coefficient vector of the boundary grid
+      mySystem->getSolutionBoundGrid(alpha, *alpha_solve);
+      MPI_Barrier(MPI_COMM_WORLD);
+      dTimeSolver = myStopwatch->stop();
 
       if (myGlobalMPIComm->getMyRank() == 0) {
-        myStopwatch->start();
-        myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, verbose, 0.0);
-        // Copy result into coefficient vector of the boundary grid
-        mySystem->getSolutionBoundGrid(alpha, *alpha_solve);
-        dTimeSolver = myStopwatch->stop();
-
         std::cout << std::endl << std::endl;
         std::cout << "Gridpoints (complete grid): " << mySystem->getNumGridPointsComplete() << std::endl;
         std::cout << "Gridpoints (inner grid): " << mySystem->getNumGridPointsInner() << std::endl << std::endl << std::endl;
@@ -98,9 +125,11 @@ namespace sg {
         std::cout << "Time for creating CG coeffs: " << dTimeAlpha << std::endl;
         std::cout << "Time for creating RHS: " << dTimeRHS << std::endl;
         std::cout << "Time for solving: " << dTimeSolver << std::endl << std::endl;
-        std::cout << "Time: " << dTimeAlpha + dTimeRHS + dTimeSolver << std::endl << std::endl << std::endl;
-      } else {
-        myCG->solve(*mySystem, *alpha_solve, *rhs_solve, true, verbose, 0.0);
+        std::cout << "Time: " << dTimeAlpha + dTimeRHS + dTimeSolver << std::endl;
+        size_t entries = mySystem->getNumGridPointsInner() * mySystem->getNumGridPointsInner();
+        size_t flop = (26 * this->dim + this->dim * this->dim) * entries;
+        std::cout << "GFLOPS: " << 1.0 * (double) (myCG->getNumberIterations() * flop) / dTimeSolver / 1000000000.0 << std::endl;
+        std::cout << "GB/s: " << ((double) (myCG->getNumberIterations() * entries * sizeof(double))) / dTimeSolver / 1000000000.0 << std::endl << std::endl << std::endl;
       }
 
       delete myCG;

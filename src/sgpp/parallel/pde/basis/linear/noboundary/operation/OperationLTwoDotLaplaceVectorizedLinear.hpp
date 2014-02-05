@@ -5,13 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONLAPLACEVECTORIZEDLINEAR_HPP
-#define OPERATIONLAPLACEVECTORIZEDLINEAR_HPP
+#ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAR_HPP
+#define OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAR_HPP
 
-#include "base/operation/OperationMatrix.hpp"
+#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/Grid.hpp"
-#include "base/tools/SGppStopwatch.hpp"
 
 
 #include "parallel/tools/TypesParallel.hpp"
@@ -35,9 +34,8 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLaplaceVectorizedLinear: public sg::base::OperationMatrix {
+    class OperationLTwoDotLaplaceVectorizedLinear: public OperationParabolicPDEMatrixCombined {
       private:
-
 
         sg::base::GridStorage* storage;
         sg::base::DataMatrix* level_;
@@ -69,7 +67,6 @@ namespace sg {
         std::vector<int> recv_start;
         std::vector<int> recv_size;
 
-
         void init_constants();
         void init_grid_storage();
 
@@ -78,14 +75,13 @@ namespace sg {
         double all_time;
         double all_iterations;
         sg::base::SGppStopwatch stopWatch;
-
       public:
         /**
          * Construtor of OperationLaplaceLinear
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage);
+        OperationLTwoDotLaplaceVectorizedLinear(sg::base::GridStorage* storage);
 
         /**
          * Construtor of OperationLaplaceLinear
@@ -93,12 +89,12 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-        OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+        OperationLTwoDotLaplaceVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
         /**
          * Destructor
          */
-        virtual ~OperationLaplaceVectorizedLinear();
+        virtual ~OperationLTwoDotLaplaceVectorizedLinear();
 
         virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 
@@ -109,4 +105,4 @@ namespace sg {
 
 }
 
-#endif /* OPERATIONLAPLACEVECTORIZEDLINEAR_HPP */
+#endif /* OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAR_HPP */

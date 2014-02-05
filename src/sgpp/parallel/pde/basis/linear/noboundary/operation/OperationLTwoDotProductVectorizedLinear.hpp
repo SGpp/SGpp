@@ -1,12 +1,12 @@
 /******************************************************************************
-* Copyright (C) 2013 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
+ * Copyright (C) 2013 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef OPERATIONLAPLACEVECTORIZEDLINEAR_HPP
-#define OPERATIONLAPLACEVECTORIZEDLINEAR_HPP
+#ifndef OPERATIONLTWODOTPRODUCTVECTORIZEDLINEAR_HPP
+#define OPERATIONLTWODOTPRODUCTVECTORIZEDLINEAR_HPP
 
 #include "base/operation/OperationMatrix.hpp"
 #include "base/datatypes/DataMatrix.hpp"
@@ -31,21 +31,18 @@ namespace sg {
   namespace parallel {
 
     /**
-     * Implementation for linear functions of Laplace Operation, linear grids without boundaries
+    * Implementation for linear functions of LTwoDotProduct Operation, linear grids without boundaries
      *
      * @version $HEAD$
      */
-    class OperationLaplaceVectorizedLinear: public sg::base::OperationMatrix {
+    class OperationLTwoDotProductVectorizedLinear: public sg::base::OperationMatrix {
       private:
-
 
         sg::base::GridStorage* storage;
         sg::base::DataMatrix* level_;
         sg::base::DataMatrix* level_int_;
         sg::base::DataMatrix* index_;
         sg::base::DataVector* lcl_q_;
-        sg::base::DataVector* lcl_q_inv_;
-        sg::base::DataVector* lambda_;
         sg::base::DataVector* alpha_padded_;
         sg::base::DataVector* constants_;
 
@@ -73,7 +70,6 @@ namespace sg {
         void init_constants();
         void init_grid_storage();
 
-        double gradient(size_t i, size_t j, size_t dim);
         double l2dot(size_t i, size_t j, size_t dim);
         double all_time;
         double all_iterations;
@@ -81,24 +77,24 @@ namespace sg {
 
       public:
         /**
-         * Construtor of OperationLaplaceLinear
+         * Construtor of OperationLTwoDotProductVectorizedLinear
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage);
+        OperationLTwoDotProductVectorizedLinear(sg::base::GridStorage* storage);
 
         /**
-         * Construtor of OperationLaplaceLinear
+         * Construtor of OperationLTwoDotProductVectorizedLinear
          *
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-        OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+        OperationLTwoDotProductVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
         /**
          * Destructor
          */
-        virtual ~OperationLaplaceVectorizedLinear();
+        virtual ~OperationLTwoDotProductVectorizedLinear();
 
         virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
 

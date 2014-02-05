@@ -6,6 +6,7 @@
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
+// @author Jacob Jepsen (jepsen@diku.dk)
 
 #ifndef PARALLEL_OP_FACTORY_HPP
 #define PARALLEL_OP_FACTORY_HPP
@@ -16,6 +17,7 @@
 #include "base/datatypes/DataMatrix.hpp"
 
 #include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
+#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
 #include "parallel/tools/TypesParallel.hpp"
 
 /*
@@ -48,6 +50,44 @@ namespace sg {
         size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(),
         size_t datasetFrom = 0, size_t datasetTo = std::numeric_limits<size_t>::max());
 
+#ifdef USE_MPI
+    /**
+     * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * This LTwoDotProduct is implemented directly be creating each matrix element on the fly
+     *
+     * @param grid Grid which is to be used
+     * @param vecType selected vectorization
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    base::OperationMatrix* createOperationLTwoDotProductVectorized(base::Grid& grid, const parallel::VectorizationType& vecType);
+
+    /**
+     * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * This LTwoDotLaplace operation is implemented directly be creating each matrix element on the fly
+     *
+     * @param grid Grid which is to be used
+     * @param lambda Vector which contains pre-factors for every dimension of the operator
+     * @param vecType selected vectorization
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda, const parallel::VectorizationType& vecType);
+
+    /**
+     * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * This LTwoDotLaplace operation is implemented directly be creating each matrix element on the fly
+     *
+     * @param grid Grid which is to be used
+     * @param vecType selected vectorization
+     * @return Pointer to the new OperationMatrix object for the Grid grid
+     */
+    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, const parallel::VectorizationType& vecType);
+
     /**
      * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
      * Note: object has to be freed after use.
@@ -55,9 +95,10 @@ namespace sg {
      * This Laplacian is implemented directly be creating each matrix element on the fly
      *
      * @param grid Grid which is to be used
+     * @param vecType selected vectorization
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
-    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid);
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, base::DataVector& lambda, const parallel::VectorizationType& vecType);
 
     /**
      * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
@@ -67,9 +108,11 @@ namespace sg {
      *
      * @param grid Grid which is to be used
      * @param lambda Vector which contains pre-factors for every dimension of the operator
+     * @param vecType selected vectorization
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
-    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda);
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, const parallel::VectorizationType& vecType);
+#endif
   }
 
 }

@@ -324,7 +324,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
       myHESolver->initScreen();
 
       // Construct a grid
-      myHESolver->constructGrid(*myBoundingBox, l);
+      myHESolver->constructGrid(*myBoundingBox, (int)l);
 
       // init the basis functions' coefficient vector (start solution)
       alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
@@ -467,6 +467,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
       sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
       delete[] myBoundaries;
 
+#ifndef __MIC__
+
       // in first iteration -> calculate the evaluation points
       if (l == start_level) {
         sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
@@ -475,11 +477,12 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
         delete myEvalCuboidGen;
       }
 
+#endif
       // init Screen Object
       myPoisSolver->initScreen();
 
       // Construct a grid
-      myPoisSolver->constructGrid(*myBoundingBox, l);
+      myPoisSolver->constructGrid(*myBoundingBox, (int)l);
 
       // init the basis functions' coefficient vector (start solution)
       alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
@@ -527,6 +530,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
     // solve Poisson Equation
     myPoisSolver->solvePDE(*alpha, *alpha, cg_its, cg_eps, true);
+
+#ifndef __MIC__
 
     if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
       // Print the solved Heat Equation into a gnuplot file
@@ -583,6 +588,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
       std::cout << std::endl << std::endl;
     }
 
+#endif
+
     myPoisSolver->deleteGrid();
 
     delete alpha;
@@ -617,7 +624,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
     myPoisSolver->initScreen();
 
     // Construct a grid
-    myPoisSolver->constructGrid(*myBoundingBox, start_level);
+    myPoisSolver->constructGrid(*myBoundingBox, (int)start_level);
 
     // init the basis functions' coefficient vector (start solution)
     // init the basis functions' coefficient vector (start solution)
@@ -634,7 +641,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
         if (refine == "classic") {
           myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
         } else {
-          myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+          myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, (int)max_ref_level);
         }
 
         std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
@@ -655,7 +662,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
         if (refine == "classic") {
           myPoisSolver->refineInitialGridSurplus(*alpha, -1, refine_thres);
         } else {
-          myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, max_ref_level);
+          myPoisSolver->refineInitialGridSurplusToMaxLevel(*alpha, refine_thres, (int)max_ref_level);
         }
 
         std::cout << "Refined Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
@@ -766,6 +773,13 @@ int main(int argc, char* argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_ranks);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
   sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_ranks);
+
+  std::streambuf* stdoutBuf = std::cout.rdbuf();
+  std::ofstream dummy_out("/dev/null");
+
+  if (mpi_myid != 0) { // disable output for all processes but proc 0
+    std::cout.rdbuf(dummy_out.rdbuf());
+  }
 
   if (argc == 1) {
     if (mpi_myid == 0) {
@@ -886,6 +900,11 @@ int main(int argc, char* argv[]) {
   }
 
   delete sg::parallel::myGlobalMPIComm;
+
+  if (mpi_myid != 0) { // restore stdout buffer
+    std::cout.rdbuf(stdoutBuf);
+  }
+
   MPI_Finalize();
 
   return 0;
