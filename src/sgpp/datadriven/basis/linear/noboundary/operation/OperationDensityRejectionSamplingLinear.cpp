@@ -9,7 +9,10 @@
 #include "base/operation/BaseOpFactory.hpp"
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
+#ifdef _OPENMP
 #include <omp.h>
+#endif
+
 
 namespace sg {
   namespace datadriven {
@@ -27,7 +30,11 @@ namespace sg {
 
       #pragma omp parallel
       {
+#ifdef _OPENMP
         unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (omp_get_thread_num() + 1));
+#else
+        unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (1 + 1));
+#endif
         #pragma omp for
 
         for (size_t i = 0; i < SEARCH_MAX; i++) {
@@ -52,7 +59,11 @@ namespace sg {
 
       #pragma omp parallel
       {
+#ifdef _OPENMP
         unsigned int seedp = (unsigned int)(time(NULL)) * (omp_get_thread_num() + 1);
+#else
+        unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
+#endif
         base::DataVector p(num_dims);
         double fhat = 0.0;
         base::OperationEval* opEval = op_factory::createOperationEval(*grid);

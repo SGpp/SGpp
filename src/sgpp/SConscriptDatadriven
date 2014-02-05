@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-Import("env")
+dependencies = ["Base"]
 
 srcs = Split("""
 datadriven/algorithm/DMSystemMatrixBaseSP.cpp
@@ -44,17 +44,5 @@ datadriven/operation/DatadrivenOpFactory.cpp
 datadriven/tools/ARFFTools.cpp
 """)
 
-
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_datadriven = sg_env.SharedObject(srcs)
-Export('src_objs_datadriven')
-
-libsgppdatadriven = sg_env.SharedLibrary(target="sgppdatadriven", source = src_objs_datadriven, SHLIBPREFIX = 'lib')
-libsgppdatadrivenstatic = sg_env.StaticLibrary(target="sgppdatadriven", source = src_objs_datadriven, SHLIBPREFIX = 'lib')
-
-Export('libsgppdatadriven')
-Export('libsgppdatadrivenstatic')
+Export('srcs')
+Export('dependencies')
