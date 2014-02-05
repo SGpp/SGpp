@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-Import("env")
+dependencies = ["Base"]
 
 srcs = Split("""
 solver/ode/AdamsBashforth.cpp
@@ -22,17 +22,5 @@ solver/sle/ConjugateGradients.cpp
 solver/sle/ConjugateGradientsSP.cpp
 """)
 
-
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_solver = sg_env.SharedObject(srcs)
-Export('src_objs_solver')
-
-libsgppsolver = sg_env.SharedLibrary(target="sgppsolver", source = src_objs_solver, SHLIBPREFIX = 'lib')
-libsgppsolverstatic = sg_env.StaticLibrary(target="sgppsolver", source = src_objs_solver, SHLIBPREFIX = 'lib')
-
-Export('libsgppsolver')
-Export('libsgppsolverstatic')
+Export('srcs')
+Export('dependencies')

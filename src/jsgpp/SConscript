@@ -6,29 +6,15 @@
 
 
 Import('env')
+Import('src_objs')
+Import('moduleList')
 
-src_objs = []
-if env['SG_BASE']:
-	Import('src_objs_base')
-	src_objs += src_objs_base
-if env['SG_DATADRIVEN']:
-	Import('src_objs_datadriven')
-	src_objs += src_objs_datadriven
-if env['SG_SOLVER']:
-	Import('src_objs_solver')
-	src_objs += src_objs_solver
-if env['SG_FINANCE']:
-	Import('src_objs_finance')
-	src_objs += src_objs_finance
-if env['SG_PDE']:
-	Import('src_objs_pde')
-	src_objs += src_objs_pde
-if env['SG_PARALLEL']:
-	Import('src_objs_parallel')
-	src_objs += src_objs_parallel
-if env['SG_COMBIGRID']:
-	Import('src_objs_combigrid')
-	src_objs += src_objs_combigrid
+src_objs_combined = []
+
+for module in moduleList:
+    name = module.lower().split('sg_',1)[1]
+    if env[module]:
+        src_objs_combined += src_objs[name]
 
 j_env = env.Clone()
 
@@ -40,7 +26,7 @@ j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'])
 j_env.AppendUnique(CPPPATH=['#/src/sgpp'])
 j_env.AppendUnique(CPPFLAGS=['-fno-strict-aliasing'])
 
-jsgpp = j_env.SharedLibrary(target="jsgpp", source = ['jsgpp.i']+src_objs, SHLIBPREFIX = 'lib')
+jsgpp = j_env.SharedLibrary(target="jsgpp", source = ['jsgpp.i']+src_objs_combined, SHLIBPREFIX = 'lib')
 
 from glob import glob
 files = glob('*.java')
