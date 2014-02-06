@@ -915,6 +915,13 @@ namespace sg {
           //    }
         }
 
+        /**
+         * Converts this storage from AOS (array of structures) to SOA (structure of array)
+         * with modification to speed up iterative Laplace Calculations: the level
+         * won't contain the levels, it contains 2 to the neagative power of the level.
+         *
+         * @param level DataMatrix to store the grid's modified level
+         */
         void getLevelForIntegral(DataMatrix& level) {
           typename index_type::level_type curLevel;
           typename index_type::level_type curIndex;
@@ -933,6 +940,14 @@ namespace sg {
           //    }
         }
 
+        /**
+         * Converts this storage from AOS (array of structures) to SOA (structure of array)
+         * with modification to speed up iterative Laplace Calculations: the level
+         * won't contain the levels, it contains 2 to the neagative power of the level.
+         * Additional blocking for better TLB usage is provided.
+         *
+         * @param level DataMatrix to store the grid's modified level
+         */
         void getLevelForIntegralTLBOptimized(DataMatrix& level, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
           typename index_type::level_type curLevel;
           typename index_type::level_type curIndex;

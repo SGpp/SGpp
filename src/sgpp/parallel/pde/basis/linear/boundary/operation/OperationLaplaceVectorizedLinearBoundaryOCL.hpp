@@ -41,6 +41,7 @@ namespace sg {
          * Construtor of OperationLaplaceLinear
          *
          * @param storage Pointer to the grid's gridstorage obejct
+         * @param lambda the lambda parameter which is needed in some cases (Black-Scholes) to modify the dimensional local values
          */
         OperationLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
 
@@ -48,7 +49,6 @@ namespace sg {
          * Construtor of OperationLaplaceLinear
          *
          * @param storage Pointer to the grid's gridstorage obejct
-         * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
         OperationLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
 
