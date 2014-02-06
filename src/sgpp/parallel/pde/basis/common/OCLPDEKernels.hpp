@@ -35,7 +35,6 @@ namespace sg {
 
 #define REAL double
 
-
     /**
      * Implementation for
      *   - linear functions of Laplace Operation, linear grids without boundaries
@@ -62,6 +61,7 @@ namespace sg {
          * @param ptrLevel Array with the level of each ansatzfunction.
          * @param ptrIndex Array with the Index of each ansatzfunction.
          * @param ptrLevel_int Array with the level for the integral of each ansatzfunction.
+         * @param ptrLambda the lambda parameter which is needed in some cases (Black-Scholes) to modify the dimensional local values.
          * @param argStorageSize Size of the outer dimension of the ptrLevel, ptrIndex and ptrLevel_int arrays.
          * @param argStorageDim Size of the inner dimension of the ptrLevel, ptrIndex and ptrLevel_int arrays.
          * @param storage Grid which is to be used for evaluation.
