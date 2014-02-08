@@ -850,6 +850,7 @@ namespace sg {
          *
          * @param level DataMatrix to store the grid's level to the power of two
          * @param index DataMatrix to store the grid's indices
+         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
          */
         void getLevelIndexArraysForEvalTLBOptimized(DataMatrix& level, DataMatrix& index, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
           typename index_type::level_type curLevel;
@@ -947,6 +948,8 @@ namespace sg {
          * Additional blocking for better TLB usage is provided.
          *
          * @param level DataMatrix to store the grid's modified level
+         * @param vectorizationType Vectorization type
+         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
          */
         void getLevelForIntegralTLBOptimized(DataMatrix& level, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
           typename index_type::level_type curLevel;
