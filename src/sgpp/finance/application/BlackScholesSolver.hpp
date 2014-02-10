@@ -448,36 +448,6 @@ namespace sg {
         virtual size_t getAverageInnerGridSize();
 
         /**
-         * Routine to export the matrix of the inner system in matrix
-         * market format
-         *
-         * @param alpha the sparse grid's coefficients
-         * @param tFilename file into which the matrix is written
-         * @param timestepsize the size of the timesteps
-         */
-        void storeInnerMatrix(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
-
-        /**
-         * Routine to export the matrix of the inner system in matrix
-         * market format
-         *
-         * @param alpha the sparse grid's coefficients
-         * @param tFilename file into which the matrix is written
-         * @param timestepsize the size of the timesteps
-         */
-        void storeInnerMatrixDiagonal(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
-
-        /**
-         * Routine to export the matrix of the inner system in matrix
-         * market format
-         *
-         * @param alpha the sparse grid's coefficients
-         * @param tFilename file into which the matrix is written
-         * @param timestepsize the size of the timesteps
-         */
-        void storeInnerMatrixDiagonalRowSum(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
-
-        /**
          * Routine to export the RHS of the inner system which has to be
          * solved in order to solve the Poisson equation
          *
