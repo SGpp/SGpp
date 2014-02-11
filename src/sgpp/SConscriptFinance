@@ -16,7 +16,6 @@ finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.cpp
 finance/algorithm/HullWhiteParabolicPDESolverSystem.cpp
 finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
-finance/application/VariableDiscountFactor.cpp
 finance/application/BlackScholesHullWhiteSolver.cpp
 finance/application/BlackScholesSolver.cpp
 finance/application/HullWhiteSolver.cpp
@@ -96,6 +95,7 @@ finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
 finance/tools/Hedging.cpp
+finance/tools/VariableDiscountFactor.cpp
 finance/application/BlackScholesSolverWithStretching.cpp
 finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
 finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp

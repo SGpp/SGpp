@@ -10,7 +10,7 @@
 #include "base/exception/algorithm_exception.hpp"
 #include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "finance/application/VariableDiscountFactor.hpp"
+#include "finance/tools/VariableDiscountFactor.hpp"
 #include "finance/operation/FinanceOpFactory.hpp"
 
 #include <cmath>

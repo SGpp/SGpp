@@ -188,7 +188,8 @@ namespace std {
 
 %include "src/sgpp/finance/application/BlackScholesSolver.hpp"
 %include "src/sgpp/finance/application/BlackScholesSolverWithStretching.hpp"
-%include "src/sgpp/finance/application/VariableDiscountFactor.hpp"
+
+%include "src/sgpp/finance/tools/VariableDiscountFactor.hpp"
 
 %include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
 #endif
