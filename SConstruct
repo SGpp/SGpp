@@ -468,8 +468,8 @@ for name in modules:
            src_files[name][index] = 'src/sgpp/' + src_files[name][index]
 
         src_objs[name] = env.SharedObject(src_files[name])
-        lib = env.SharedLibrary(target="sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
-        libstatic = env.StaticLibrary(target="sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        lib = env.SharedLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        libstatic = env.StaticLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
         lib_sgpp_targets.append(lib)
         lib_sgpp_targets.append(libstatic)
 
