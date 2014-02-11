@@ -1448,8 +1448,8 @@ HeatEquationSolverWithStretching.o : $(SRCDIR)pde/application/HeatEquationSolver
 PoissonEquationSolver.o : $(SRCDIR)pde/application/PoissonEquationSolver.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)PoissonEquationSolver.o $(SRCDIR)pde/application/PoissonEquationSolver.cpp
 
-VariableDiscountFactor.o : $(SRCDIR)finance/application/VariableDiscountFactor.cpp
-	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)finance/application/VariableDiscountFactor.cpp
+VariableDiscountFactor.o : $(SRCDIR)finance/tools/VariableDiscountFactor.cpp
+	$(CC) $(CFLAGS) -o $(OUTDIR)VariableDiscountFactor.o $(SRCDIR)finance/tools/VariableDiscountFactor.cpp
 	
 BoundingBox.o : $(SRCDIR)base/grid/common/BoundingBox.cpp
 	$(CC) $(CFLAGS) -o $(OUTDIR)BoundingBox.o $(SRCDIR)base/grid/common/BoundingBox.cpp

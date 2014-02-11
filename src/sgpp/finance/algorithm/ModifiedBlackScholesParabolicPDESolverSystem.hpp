@@ -12,7 +12,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/application/VariableDiscountFactor.hpp"
+#include "finance/tools/VariableDiscountFactor.hpp"
 
 namespace sg {
   namespace finance {
