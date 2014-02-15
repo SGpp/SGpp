@@ -10,12 +10,15 @@
 #include "SubspaceRefinement.hpp"
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 #include "base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
+#include <list>
 
 namespace sg {
 namespace base {
 
 class SubspaceGSGRefinement: public SubspaceRefinement {
 public:
+
+	typedef std::list<size_t> IndicatorsList;
 
 
 	SubspaceGSGRefinement(AbstractRefinement* refinement, size_t dim);
