@@ -120,7 +120,6 @@ class Learner(object):
         self.testingOverall = []
         self.numberPoints = []
         self.iteration = 0
-        self.eventControllers = []
 
 
     ## Learn data from training data set and use validation data set to prevent overfitting
