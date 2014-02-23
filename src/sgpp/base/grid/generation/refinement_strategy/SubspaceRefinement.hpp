@@ -19,6 +19,11 @@ namespace sg {
 namespace base {
 
 
+/**
+ * Simple dimension adaptive refinement.
+ * Selects hierarchical subspaces with at least one parent subspace, calculates a refinement indicator
+ * for them and creates the subspaces with high error indicators.
+ */
 class SubspaceRefinement: public sg::base::RefinementDecorator {
 public:
 
@@ -27,6 +32,12 @@ public:
 	typedef std::vector<ErrorType> ErrorVector;
 
 
+    /**
+     * Constructor
+     *
+     * @param refinement object implementing the core functionality (e.g.
+     * refinement with or without boundaries).
+     */
 	SubspaceRefinement(AbstractRefinement* refinement):RefinementDecorator(refinement){};
 
 	/**
@@ -50,26 +61,44 @@ public:
 	 */
 	virtual void createSubspace(GridStorage* storage, index_type& index, bool isLeaf);
 
+
+	/*
+	 *	Method to create grid points of a hierarchical subspace and store them in a vector starting at a given point.
+	 *	If all grid points should be created, the index vector of the starting point has to be set to 1 in all dimensions.
+	 *	Calls the recursive createAllGridPointsOfSubspaceHelper method with the input argumensts on level 0.
+	 *
+	 *	@param gridPoints vector, where the newly created grid points will be stored in
+	 *	@param gridObject the grid point from which to start creating all grid points -
+	 *	the index vector has to be set to 1 in all dimensions for this method
+	 *	to create all grid points of a subspace.
+	 *
+	 */
 	void createAllGridPointsOfSubspace(index_type& subspace, GridPointVector* gridPoints);
 
 protected:
 
 	/**
-	 * Examines the grid points, finds which ones are refinable and adds
+	 * Examines the grid subspaces, finds which ones are refinable and adds
 	 * the error indicators of all points which belong to the same subspace.
 	 * It returns an unsroted array with the refinements_num subspaces with the highest error indicator. (not sorted)
 	 *
 	 * @param storage hashmap that stores the grid points
 	 * @param functor a RefinementFunctor specifying the refinement criteria
-	 * @param refinements_num number of points to refine
-	 * @param maxErrorSubspaces the array of hash grid indices, containing the level vector of the subspace
-	 * @param maxErrorValues the array with the indicator values corresponding to the level of the subspace.
+	 * @param errorStorage hash map that stores all subspaces that can be refined.
 	 */
 	virtual void collectRefinableSubspaces(GridStorage* storage,
 			RefinementFunctor* functor,
 			HashErrorStorage* errorStorage);
 
 
+	/*
+	 * Examines subspaces from a HashErrorStorage, selects the subspaces with the highest error indicator
+	 * and stores the selected subspaces into an ErrorVector.
+	 *
+	 * @param errorStorage hashmap that stores the refinable subspaces with their error indicators
+	 * @param refinements_num the amount of highest error subspaces to select for creation
+	 * @param maxSubspaces a vector where the subspaces with the highest error indicators will be stored in
+	 */
 	virtual void selectHighestErrorSubspaces(HashErrorStorage* errorStorage,
 											 size_t refinements_num,
 											 ErrorVector* maxSubspaces);
@@ -89,37 +118,38 @@ protected:
 			size_t refinements_num,
 			ErrorVector* maxErrorSubspaces);
 
-	/*
-	 * calculates the
-	 */
-	//bool getParentLevelAndIndex(index_type* child,size_t dim);
-
-
-	/**
-	 * Sets all the elements of the index vector of a grid point to 1.
-	 * @param gridPoint pointer to the grid point with the index array to be changed
-	 */
-	//void resetIndexVector(index_type* gridPoint);
-
 private:
 
-	void createAllGridPointsOfSubspaceHelper(GridPointVector* gridPoints,index_type& gridObject,size_t dim);
-
-	/**
-	 * recursive function to create all points on a subspace.
+	/*
+	 *	Recursive subroutine to create grid points of a hierarchical subspace and store them in a vector starting at a given point.
+	 *	If all grid points should be created, the index vector of the starting point has to be set to 1 in all dimensions.
 	 *
-	 * @param storage
-	 * @param index
-	 * @param dim
+	 *	@param gridPoints vector, where the newly created grid points will be stored in
+	 *	@param gridObject the grid point from which to start creating all grid points -
+	 *	the index vector has to be set to 1 in all dimensions for this method
+	 *	to create all grid points of a subspace.
+	 *	@param dim - starting dimension
 	 *
 	 */
-
-	//void createGridPointWithParents(GridStorage* storage, index_type& child);
+	void createAllGridPointsOfSubspaceHelper(GridPointVector* gridPoints,index_type& gridObject,size_t dim);
 
 };
 
+
+/*
+ * Helper struct for priority queue. Sorts error objects smallest error first.
+ */
 struct smallestErrorFirst
 {
+
+	/*
+	 * compare first argument with second,
+	 * returning true if the first argument is bigger then the second
+	 *
+	 * @param lhs first error object
+	 * @param rhs second error object
+	 * @return true if first error object is bigger then second error object
+	 */
 	bool operator() (const ErrorType& lhs, const ErrorType& rhs) const
 	{
 		return lhs>rhs;

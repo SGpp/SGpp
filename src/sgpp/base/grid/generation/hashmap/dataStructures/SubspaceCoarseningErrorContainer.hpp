@@ -13,45 +13,59 @@
 namespace sg {
 namespace base {
 
+
+/**
+ * compareLevels used to compare keys in SubspaceCoarseningErrorStorage.
+ * Two subspaces are equal if their level vectors are equal.
+ */
 struct compareLevels
 {
 
 	bool operator()(HashCoarsening::index_type gridPointA, HashCoarsening::index_type gridPointB)
 	{
 		size_t dim = gridPointA.dim();
-		//std::cout<< "comparing " << gridPointA.toString() << " & " << gridPointB.toString();
 		//iterate over all dimensions
 		for(size_t i = 0; i< dim; ++i)
 		{
 			//compare level in each dimension
-			//std::cout << gridPointA.getLevel(i) << "<" << gridPointB.getLevel(i) << "? , ";
 			if (gridPointA.getLevel(i) < gridPointB.getLevel(i)){
-				//std::cout << " - SMALLER\n";
 				return true;
 			}else if (gridPointA.getLevel(i) > gridPointB.getLevel(i)) {
-				//std::cout << " - LARGER\n";
 				return false;
 			}
 		}
-		//std::cout << " - LARGER\n";
 		return false;
 	}
 };
 
+
+/**
+ * SubspaceCoarseningErrorContainer stores information needed for coarsening subspaces.
+ */
 class SubspaceCoarseningErrorContainer {
 public:
+
+	/**
+	 * Constructor
+	 *
+	 * initicalizes error to 0 and does not allow the subspace to be coarsened.
+	 */
 	SubspaceCoarseningErrorContainer()
 	{
-		// TODO Auto-generated constructor stub
 		isCoarsenable = false;
 		error = 0;
 	}
 
+	//gridPoints vector of the seqence numbers of all grid points from the subspace.
 	std::vector<size_t> gridPoints;
+	//isCoarsenable tells if subspace is admissible for removement (i.e. if all it's grid points are leaves)
 	bool isCoarsenable;
+	//error error indiacator - accumulated surplusses of all grid points from the subspace.
 	CoarseningFunctor::value_type error;
 };
 
+// key value pair storage for coarsening subspaces. for each subspace in the grid backward's neigbourhood (key)
+//there is an SubspaceCoarseningErrorContainer containing all information on admissibility and error indicator.
 typedef std::map<GridStorage::index_type,SubspaceCoarseningErrorContainer,compareLevels> SubspaceCoarseningErrorStorage;
 
 } /* namespace base */

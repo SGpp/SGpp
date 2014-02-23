@@ -19,19 +19,14 @@ namespace sg {
 namespace base {
 
 /**
- *  A refinement Error Indicator for future grid points.
+ *  A refinement error indicator for regression problems based on the residuals of the datasets.
  *
- *  It calculates an error messure based on the information on the data set:
- *  For a new grid point g on level l and index i, it calculates the indicator as
- *
- *  for each point in the dataset which is on the support of the basis function of a
- *  new candidate point
- *
- *
- *
+ *  It calculates an error messure based on the information from the data set:
+ *  For a new grid point g on level l and index i, it calculates the indicator as a
+ *  sum of squared residuals ( (value of sample from dataset - grid evaluated at the sample's coordinates), squared),
+ *  weighted with the underlying basis function of the grid point.
  */
 
-//@TODO: (lettrich) LATEX! formula
 class PredictiveRefinementIndicator: public RefinementFunctor {
 public:
 
@@ -50,21 +45,55 @@ public:
 			size_t refinements_num = 1, double threshold = 0.0);
 
 
+	/**
+	 * This should be returning a refinement indicator for the specified grid point
+	 * The point with the highest value will be refined first.
+	 *
+	 * @param gridPoint for which to calculate an indicator value
+	 * @return refinement value
+	 */
 	double operator()(AbstractRefinement::index_type* gridPoint);
 
+
+	/**
+	 * Returns the squared residual for each point in the dataset
+	 *
+	 * @param storage pointer to the grids storage object
+	 * @param seq number of data point fot which the squared residual should be returned.
+	 */
 	virtual double operator()(GridStorage* storage, size_t seq);
 
+	/**
+	 * Returns the maximal number of points that should be refined.
+	 *
+	 * The maximal number of points to refine is set in the constructor of the implementing class.
+	 *
+	 * @return number of points that should refined. Default value: 1.
+	 */
 	virtual size_t getRefinementsNum();
 
+    /**
+     * Returns the threshold for refinement.
+     *
+     * Only the grid points with absolute value of refinement criterion (e.g., alpha or error) greater
+     * or equal to this threshold will be refined.
+     *
+     * @return threshold value for refinement. Default value: 0.
+     */
 	virtual double getRefinementThreshold();
 
+	/**
+	 * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
+	 * The refinement value of grid points to be refined have to be larger than this value
+	 *
+	 * @return lower bound
+	 */
 	virtual double start();
 
 protected:
 
 	// for each Point in the dataSet, this Contains the squared absolute offset between sparse grid and data point value;
 	DataVector* errorVector;
-
 	/// number of grid points to refine
 	size_t refinementsNum;
 	/// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
@@ -74,22 +103,20 @@ protected:
 	DataMatrix* dataSet;
 
 	/*
-	 * Evaluates a basisfunction at a point on level "level" and index "index". The type of basis function is determinded
+	 * Evaluates a basis function at a point on level "level" and index "index". The type of basis function is determinded
 	 * by the grid type, who's integer representation is saved in the member gridType.
 	 * @param level on which the basis function is located
 	 * @param index within the level "level"
-	 * @param value represente x value on which the grid should be evaluated
+	 * @param value represents the x value on which the grid should be evaluated
 	 * @return basis function of grid type evaluated at "value" on level "level" and index "index".
 	 */
 	double basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, double value);
 
 private:
 
-
 	/*
 	 * Each grid point has a support, that is constructed via a tensor product approach.
-	 * This function is a helper method for the operator()(index_type*), determining floor and ceiling of the grid point
-	 * in each dimension.
+	 * This function is a helper method for the operator()(index_type*), determining min(supp(basisFunction(level,index))) and max(supp(BasisFunction(level,index))) of the basis function associated with the grid type
 	 * @param gridPoint for which to calculate the support Vector
 	 * @param dataVector in the dimensions of the grid Point, where each row of the data vector represents the minimum of the
 	 * support in the dimension of the grid point
@@ -99,11 +126,11 @@ private:
 	void buildGPSupportMask(AbstractRefinement::index_type* gridPoint, DataVector* floorMask, DataVector* ceilingMask);
 
 	/*
-	 * Figures out if an data point from the data set is on the support of the grid point.
-	 * @param
-	 * @param
-	 * @param
-	 * @return
+	 * Figures out if an data point from the data set is on the support of the basis function associated with a grid point. Helper method for the operator()(index_type*)
+	 * @param floorMask DataVector which holds min(supp(basisFunction)) for one basis functions
+	 * @param ceilingMask DataVector which holds max(supp(BasisFunction)) for one basis function
+	 * @param entry size_t row in data set to be analyzed
+	 * @return true if the point from the dataset is located on the support of the basis function, else false.
 	 */
 	bool isOnSupport(DataVector* floorMask, DataVector* ceilingMask, size_t entry);
 
@@ -111,6 +138,7 @@ private:
 	 * Due to a earlier design decision the grid type is only saved as a string in the grid.
 	 * Therefore we need to find out what grid class to associate the grid with.
 	 * @param grid a pointer to the grid.
+	 * @return size_t integer representation of the grid type.
 	 */
 	size_t determineGridType(Grid* grid);
 
