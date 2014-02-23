@@ -308,7 +308,8 @@ namespace sg {
           clDevGrid[i] = NULL;
         }
       }
-      if(clPinnedGrid){
+
+      if (clPinnedGrid) {
         clReleaseMemObject(clPinnedGrid);
         clPinnedGrid = NULL;
       }
@@ -326,7 +327,8 @@ namespace sg {
           clDevTmp[i] = NULL;
         }
       }
-      if(clPinnedTmp){
+
+      if (clPinnedTmp) {
         clReleaseMemObject(clPinnedTmp);
         clPinnedTmp = NULL;
       }

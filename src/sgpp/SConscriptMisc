@@ -4,7 +4,7 @@
 
 # author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-Import("env")
+dependencies = ["Base", "Pde", "Datadriven", "Finance", "Parallel"]
 
 srcs = Split("""
 misc/pde/algorithm/UpDownOneOpDimEnhanced.cpp
@@ -20,16 +20,5 @@ misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.cpp
 misc/operation/MiscOpFactory.cpp
 """)
 
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_misc = sg_env.SharedObject(srcs)
-Export('src_objs_misc')
-
-libsgppmisc = sg_env.SharedLibrary(target="sgppmisc", source = src_objs_misc, SHLIBPREFIX = 'lib')
-libsgppmiscstatic = sg_env.StaticLibrary(target="sgppmisc", source = src_objs_misc, SHLIBPREFIX = 'lib')
-
-Export('libsgppmisc')
-Export('libsgppmiscstatic')
+Export('srcs')
+Export('dependencies')

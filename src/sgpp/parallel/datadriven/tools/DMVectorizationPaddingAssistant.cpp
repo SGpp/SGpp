@@ -25,22 +25,26 @@ namespace sg {
         return X86SimdKernelBase::getChunkDataPoints();
 #endif
       }
+
 #ifdef USEOCL
       else if (vecType == OpenCL) {
         return OCLKernelImplBase::getChunkDataPoints();
       } else if (vecType == Hybrid_X86SIMD_OpenCL) {
         return OCLKernelImplBase::getChunkDataPoints();
       }
+
 #endif
       else if (vecType == ArBB) {
         return 16;
       }
+
 #ifdef USEMIC
       else if (vecType == MIC) {
         return MICKernelBase::getChunkDataPoints();
       } else if (vecType == Hybrid_X86SIMD_MIC) {
         return MICKernelBase::getChunkDataPoints();
       }
+
 #endif
       else {
         throw sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
@@ -58,22 +62,26 @@ namespace sg {
         return SPX86SimdKernelBase::getChunkDataPoints();
 #endif
       }
+
 #ifdef USEOCL
       else if (vecType == OpenCL) {
         return OCLKernelImplBase::getChunkDataPoints();
       } else if (vecType == Hybrid_X86SIMD_OpenCL) {
         return OCLKernelImplBase::getChunkDataPoints();
       }
+
 #endif
       else if (vecType == ArBB) {
         return 16;
       }
+
 #ifdef USEMIC
       else if (vecType == MIC) {
         return SPMICKernelBase::getChunkDataPoints();
       } else if (vecType == Hybrid_X86SIMD_MIC) {
         return SPMICKernelBase::getChunkDataPoints();
       }
+
 #endif
       else {
         throw sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");

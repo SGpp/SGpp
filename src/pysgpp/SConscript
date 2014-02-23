@@ -10,33 +10,16 @@ pysgpp.i
 """)
 
 Import('env')
+Import('src_objs')
+Import('moduleList')
 
+src_objs_combined = []
 
-src_objs = []
-if env['SG_BASE']:
-	Import('src_objs_base')
-	src_objs += src_objs_base
-if env['SG_DATADRIVEN']:
-	Import('src_objs_datadriven')
-	src_objs += src_objs_datadriven
-if env['SG_SOLVER']:
-	Import('src_objs_solver')
-	src_objs += src_objs_solver
-if env['SG_FINANCE']:
-	Import('src_objs_finance')
-	src_objs += src_objs_finance
-if env['SG_PDE']:
-	Import('src_objs_pde')
-	src_objs += src_objs_pde
-if env['SG_PARALLEL']:
-	Import('src_objs_parallel')
-	src_objs += src_objs_parallel
-if env['SG_MISC']:
-	Import('src_objs_misc')
-	src_objs += src_objs_misc
-if env['SG_COMBIGRID']:
-	Import('src_objs_combigrid')
-	src_objs += src_objs_combigrid
+for module in moduleList:
+    name = module.lower().split('sg_',1)[1]
+    if env[module]:
+        src_objs_combined += src_objs[name]
+
 
 py_env = env.Clone()
 
@@ -46,7 +29,7 @@ py_env.AppendUnique(CPPFLAGS=['-w'])
 
 py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']], CPPPATH=['#/src/sgpp'])
 
-pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs+srcs, SHLIBPREFIX = '_')
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs_combined+srcs, SHLIBPREFIX = '_')
 
 Export('pysgpp')
 Return('pysgpp')

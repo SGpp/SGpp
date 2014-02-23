@@ -7,6 +7,7 @@
 
 import os, sys
 import distutils.sysconfig
+import glob
 
 # Check for versions of Scons and Python
 EnsureSConsVersion(1, 0)
@@ -73,6 +74,18 @@ def CheckJNI(context):
     context.Result('... nothing found!')
     return 0
 
+# get all files in a folder matching "SConscript*"
+def getModules(path):
+    modules = glob.glob(path + '/SConscript*')
+    for i in range(len(modules)):            
+        modules[i] = modules[i].split('SConscript', 1)[1]
+    
+    # filter out backup files        
+    for module in modules:
+        if '~' in module:
+            modules.remove(module)
+        
+    return modules
 
 # Definition of flags / command line parameters for SCons
 #########################################################################
@@ -90,37 +103,56 @@ vars.Add('LINKFLAGS','Set additional Linker-flags, they are linker-depended (mul
 # define the target
 vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
-vars.Add('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False)
-vars.Add('TRONE', "Sets if the tr1/unordered_map should be uesed", False)
+vars.Add(BoolVariable('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False))
+vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", False))
 
 # for compiling on LRZ without errors: omit unit tests
-vars.Add('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False)
+vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
+
+# modules and dependencies
+moduleList = {}
+src_files = {}
+supportList = ['SG_PYTHON', 'SG_JAVA']
+
+# find all modules
+modules = getModules('src/sgpp')
+
+# check dependencies and import src file locations
+for name in modules:
+    SConscript('src/sgpp/SConscript' + name, variant_dir='tmp/build_sg' + name.lower(), duplicate=0)
+    Import('srcs')
+    Import('dependencies')
+    moduleList['SG_' + name.upper()] = dependencies
+    print 'Module SG_' + name.upper() + ' depends on:'
+    for dep in dependencies:
+        print '\t' + dep
+        if not dep in modules:
+            print "Error!"
+            print name + " depends on non-existent module " + dep
+            Exit(1)
+    src_files[name.lower()] = srcs
 
 # for compiling different modules
-vars.Add('SG_ALL', 'Build all modules', False)
-vars.Add('SG_BASE', 'Build Basis Module', False)
-vars.Add('SG_DATADRIVEN', 'Build Datadriven Module', False)
-vars.Add('SG_SOLVER', 'Build Solver Module', False)
-vars.Add('SG_FINANCE', 'Build Finance Module', False)
-vars.Add('SG_PDE', 'Build PDE Module', False)
-vars.Add('SG_PARALLEL', 'Build Parallel Module', False)
-vars.Add('SG_MISC', 'Build Misc Module', False)
-vars.Add('SG_COMBIGRID', 'Build Combigrid Module', False)
-vars.Add('SG_PYTHON', 'Build Python Support', False)
-vars.Add('SG_JAVA', 'Build Java Support', False)
-# modules and dependencies
-moduleList = {'SG_BASE': (), 
-              'SG_DATADRIVEN': ('SG_BASE'), 
-              'SG_SOLVER': ('SG_BASE'), 
-              'SG_FINANCE': ('SG_BASE', 'SG_PDE'),
-              'SG_PDE': ('SG_BASE'), 
-              'SG_PARALLEL': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE'), 
-              'SG_MISC': ('SG_BASE', 'SG_PDE', 'SG_DATADRIVEN', 'SG_FINANCE', 'SG_PARALLEL'), 
-              'SG_COMBIGRID': ('SG_BASE')}
-supportList = ['SG_PYTHON', 'SG_JAVA']
+for module in moduleList:
+    vars.Add(BoolVariable(module, 'Build  Module: ' + module, False))
+
+vars.Add(BoolVariable('SG_ALL', 'Build all modules', False))
+vars.Add(BoolVariable('SG_PYTHON', 'Build Python Support', False))
+vars.Add(BoolVariable('SG_JAVA', 'Build Java Support', False))
+vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
+
+
+# verbosity options
+vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
+vars.Add('CMD_LOGFILE','Specifies a file to capture the build log','build_log.txt')
 
 # initialize environment
 env = Environment(variables = vars, ENV = os.environ)
+
+# sanity check in case user didn't read the variable description
+if not env['OUTPUT_PATH'] == '':
+    if not env['OUTPUT_PATH'][-1] == '/':
+        env['OUTPUT_PATH'] = env['OUTPUT_PATH'] + '/'
 
 # Help Text
 Help("""---------------------------------------------------------------------
@@ -153,6 +185,23 @@ Parameters are:
 """ +
 vars.GenerateHelpText(env))
 
+# clear build_log file
+logfile = open(env['CMD_LOGFILE'], 'a')
+logfile.seek(0)
+logfile.truncate()
+
+# detour compiler output
+def print_cmd_line(s, target, src, env):
+    if env['VERBOSE']:
+        sys.stdout.write(u'%s\n'%s)
+    else:
+        sys.stdout.write(u'.')
+        sys.stdout.flush()
+    if env['CMD_LOGFILE']:
+        open(env['CMD_LOGFILE'], 'a').write('%s\n'%s);
+
+
+env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 
 
 # Set compiler switches and check architectures
@@ -179,10 +228,10 @@ if env['TARGETCPU'] == 'default':
                          '-funroll-loops', '-mfpmath=sse', '-msse3', '-fPIC',
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
     if env['OMP']:
-	env.Append(CPPFLAGS=['-fopenmp'])
-    	env.Append(LINKFLAGS=['-fopenmp'])
+        env.Append(CPPFLAGS=['-fopenmp'])
+        env.Append(LINKFLAGS=['-fopenmp'])
     else:
-	# do not stop for unknown pragmas (due to #pragma omp ... )
+        # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
 
 elif env['TARGETCPU'] == 'ICC':
@@ -191,17 +240,17 @@ elif env['TARGETCPU'] == 'ICC':
                            '-fno-strict-aliasing', '-O3',
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
                            '-ansi-alias', '-fp-speculation=safe', '-fPIC',
-                           '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+                           '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
 
     env['CC'] = ('icc')
     env['LINK'] = ('icpc')
-    env['CXX'] = ('icpc')	    
+    env['CXX'] = ('icpc')        
 
     if env['OMP']:
-	env.Append(CPPFLAGS=['-openmp'])
+        env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp']) 
     else:
-	# do not stop for unknown pragmas (due to #pragma omp ... )
+        # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
 
 
@@ -265,7 +314,8 @@ if env['SG_ALL']:
 for modl in moduleList.keys():
     if env[modl]:
         for dep in moduleList[modl]:
-            env[dep] = True
+            env['SG_' + dep.upper()] = True
+
 for modl in moduleList.keys():
     if env[modl]:
         print "Compiling module", modl
@@ -285,17 +335,15 @@ env.Append(CPPDEFINES=cppdefines)
 
 # Initialize environment + support for Python and Java
 #########################################################################
-# boolean variables for environment 
-pyAvail = True
-swigAvail = True
-javaAvail = True
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    print """
-******************************************
-* Configuring system                     *
-******************************************"""
+    print ""
+    print "******************************************"
+    print "* Configuring system                     *"
+    print "******************************************"
+    log_file_orig = env['CMD_LOGFILE']
+    env['CMD_LOGFILE'] = "config_commandline.log"
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
@@ -308,28 +356,60 @@ if not env.GetOption('clean'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
 
     # check if the math header is available
-    if not config.CheckHeader('cmath', language='c++'):
+    if not config.CheckCXXHeader('cmath'):
         sys.stderr.write("Error: c++ math header cmath.h is missing.\n")
         Exit(1)
 
     # check whether swig installed
+    swigAvail = True
     if not config.CheckExec('swig'):
         sys.stderr.write("Error: swig cannot be found. Check PATH environment variable!\n")
         swigAvail = False
 
     # check for Python headers
-    config.env.AppendUnique(CPPPATH = distutils.sysconfig.get_python_inc())
+    pyAvail = True
+    config.env.AppendUnique(CPPPATH = [distutils.sysconfig.get_python_inc()])
     if not config.CheckCXXHeader('Python.h'):
         sys.stderr.write("Error: Python.h not found. Check path to Python include files: "
                          + distutils.sysconfig.get_python_inc() + "\n")
         sys.stderr.write("Warning: You might have to install package python-dev\n")
         sys.stderr.write("... skipping Python support and unit tests")
         pyAvail = False
+    else:
+        numPyAvail = True
+        # remove -Werror, if set. Elsewise, test will fail
+        flagErrorRemoved = False
+        if '-Werror' in config.env.get('CPPFLAGS'):
+            config.env['CPPFLAGS'].remove('-Werror')
+            flagErrorRemoved = True
+        if not config.CheckCXXHeader(['pyconfig.h','Python.h','numpy/arrayobject.h']):
+            try:
+                print "... trying to extend path:"
+                # get path to numpy header files
+                import numpy
+                numpy_path = os.path.join(os.path.split(numpy.__file__)[0],"core","include")
+                if os.path.exists(numpy_path):
+                    config.env.AppendUnique(CPPPATH = [numpy_path])
+                    if not config.CheckCXXHeader(['pyconfig.h','Python.h','numpy/arrayobject.h']):
+                        numPyAvail = False
+                else:
+                    sys.stderr.write("   Cannot find NumPy header files in:", numpy_path, "\n")
+            except Exception, e:
+                sys.stderr.write("   NumPy not available!\nException: %s\n" % e)
+                numPyAvail = False
+        if not numPyAvail:
+            sys.stderr.write("   No NumPy support.\n   Corresponding unit tests and extended functionality are missing!\n")
+        else:
+            config.env.Append(NUMPY_AVAIL=1)
+        # reappend -Werror if removed
+        if flagErrorRemoved:
+            config.env.Append(CPPFLAGS=['-Werror'])
+    
 
     # check for $JAVA_HOME; prepend to search path
+    javaAvail = True
     if os.environ.get('JAVA_HOME'):
         config.env.PrependENVPath('PATH', os.path.join(os.environ.get('JAVA_HOME'), 'bin'))
-
     # check whether javac installed
     if not config.CheckExec('javac'):
         sys.stderr.write("Error: javac cannot be found. Check PATH environment variable!\n")
@@ -354,82 +434,55 @@ if not env.GetOption('clean'):
 
     env = config.Finish()
 
-    print """******************************************
-* Finished configuring system            *
-******************************************"""
+    env['CMD_LOGFILE'] = log_file_orig
+    print "******************************************"
+    print "* Finished configuring system            *"
+    print "******************************************"
+else:
+    swigAvail = True
+    javaAvail = True
+    pyAvail = True
 
 # End of configuration
 #########################################################################
 Export('env')
+Export('moduleList')
 
 
 # Now compile
 #########################################################################
 lib_sgpp_targets = []
+src_objs = {}
 
-if env['SG_BASE']:
-	SConscript('src/sgpp/SConscriptBase', variant_dir='tmp/build_sgbase', duplicate=0)
-	Import('libsgppbase')
-	Import('libsgppbasestatic')
-	lib_sgpp_targets.append(libsgppbase)
-	lib_sgpp_targets.append(libsgppbasestatic)
-	
-if env['SG_PDE']:
-	SConscript('src/sgpp/SConscriptPde', variant_dir='tmp/build_sgpde', duplicate=0)
-	Import('libsgpppde')
-	Import('libsgpppdestatic')
-	lib_sgpp_targets.append(libsgpppde)
-	lib_sgpp_targets.append(libsgpppdestatic)
-	
-if env['SG_DATADRIVEN']:
-	SConscript('src/sgpp/SConscriptDatadriven', variant_dir='tmp/build_sgdatadriven', duplicate=0)
-	Import('libsgppdatadriven')
-	Import('libsgppdatadrivenstatic')
-	lib_sgpp_targets.append(libsgppdatadriven)
-	lib_sgpp_targets.append(libsgppdatadrivenstatic)
-	
-if env['SG_SOLVER']:
-	SConscript('src/sgpp/SConscriptSolver', variant_dir='tmp/build_sgsolver', duplicate=0)
-	Import('libsgppsolver')
-	Import('libsgppsolverstatic')
-	lib_sgpp_targets.append(libsgppsolver)
-	lib_sgpp_targets.append(libsgppsolverstatic)
-	
-if env['SG_FINANCE']:
-	SConscript('src/sgpp/SConscriptFinance', variant_dir='tmp/build_sgfinance', duplicate=0)
-	Import('libsgppfinance')
-	Import('libsgppfinancestatic')
-	lib_sgpp_targets.append(libsgppfinance)
-	lib_sgpp_targets.append(libsgppfinancestatic)
-	
-if env['SG_PARALLEL']:
-	SConscript('src/sgpp/SConscriptParallel', variant_dir='tmp/build_sgparallel', duplicate=0)
-	Import('libsgppparallel')
-	Import('libsgppparallelstatic')
-	lib_sgpp_targets.append(libsgppparallel)
-	lib_sgpp_targets.append(libsgppparallelstatic)
+    
+    
+# compile libraries
+for name in modules:
+    if env['SG_' + name.upper()]:
+        print 'Building: ' + name
+        name = name.lower()
+        env.Append(CPPPATH=['#/src/sgpp'])
+        
+        # there is probably a more elgant way to do this
+        for index in range(0, len(src_files[name])):
+           src_files[name][index] = 'src/sgpp/' + src_files[name][index]
 
-if env['SG_MISC']:
-	SConscript('src/sgpp/SConscriptMisc', variant_dir='tmp/build_sgmisc', duplicate=0)
-	Import('libsgppmisc')
-	Import('libsgppmiscstatic')
-	lib_sgpp_targets.append(libsgppmisc)
-	lib_sgpp_targets.append(libsgppmiscstatic)
+        src_objs[name] = env.SharedObject(src_files[name])
+        lib = env.SharedLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        libstatic = env.StaticLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        lib_sgpp_targets.append(lib)
+        lib_sgpp_targets.append(libstatic)
 
-if env['SG_COMBIGRID']:
-	SConscript('src/sgpp/SConscriptCombigrid', variant_dir='tmp/build_sgcombigrid', duplicate=0)
-	Import('libsgppcombigrid')
-	Import('libsgppcombigridstatic')
-	lib_sgpp_targets.append(libsgppcombigrid)
-	lib_sgpp_targets.append(libsgppcombigridstatic)
+Export('src_objs')
 
 # build python lib
 if env['SG_PYTHON'] and swigAvail and pyAvail:
-	libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
-	pyinst = env.Install('lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	Depends(pyinst, libpysgpp)
-	pybin = env.Install('bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-	Depends(pybin, libpysgpp)
+
+    libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
+    pyinst = env.Install(env['OUTPUT_PATH'] + 'lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pyinst, libpysgpp)
+    pybin = env.Install(env['OUTPUT_PATH'] + 'bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pybin, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['SG_JAVA']:
@@ -438,9 +491,9 @@ if swigAvail and javaAvail and env['SG_JAVA']:
 #    libweka = env.SConscript('src/jsgpp_weka/SConscript',
 #                             variant_dir='tmp/build_jsgpp_weka', duplicate=0)
     # install
-    jinst = env.Install('lib/jsgpp', [libjsgpp])
-	
-env.Install('#lib/sgpp', lib_sgpp_targets)
+    jinst = env.Install(env['OUTPUT_PATH'] + 'lib/jsgpp', [libjsgpp])
+    
+env.Install(env['OUTPUT_PATH'] + 'lib/sgpp', lib_sgpp_targets)
 
 # Unit tests
 #########################################################################

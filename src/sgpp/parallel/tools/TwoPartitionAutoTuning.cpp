@@ -62,7 +62,7 @@ namespace sg {
       std::cout << " Time2: " << std::setprecision(3) << _timePartition2
                 << " Size2: " << std::setw(8) << _problemSize - getPartition1Size()
                 << std::setprecision(1)
-                << " ("<< 100.0 * (double)(_problemSize - getPartition1Size()) / (double)_problemSize << "%)" << std::endl;
+                << " (" << 100.0 * (double)(_problemSize - getPartition1Size()) / (double)_problemSize << "%)" << std::endl;
       std::cout.flags(f);
       std::cout.precision(prec);
     }

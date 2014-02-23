@@ -550,7 +550,7 @@ int main(int argc, char* argv[]) {
       } else if (dataFile.find("friedman3") != std::string::npos) {
         g = new sg::datadriven::Friedman3Generator();
       } else {
-        std::cout << "cannot generate dataset for " << dataFile <<std::endl;
+        std::cout << "cannot generate dataset for " << dataFile << std::endl;
         throw sg::base::operation_exception("cannot generate dataset");
       }
 
@@ -558,6 +558,7 @@ int main(int argc, char* argv[]) {
       nInstancesNo = 100000; // number of instances per node
 
       const char* dataset_generation_count = getenv("SGPP_DATASET_GENERATION_COUNT");
+
       if (dataset_generation_count != NULL) {
         nInstancesNo = (size_t)(strtoul (dataset_generation_count, NULL, 0));
       }

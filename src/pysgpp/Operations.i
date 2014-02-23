@@ -88,6 +88,7 @@ public:
 }
 //- end namespace base ------------------------------------------------
 
+#ifdef SG_DATADRIVEN
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {
 %nodefaultdtor sg::datadriven::OperationTest;
@@ -112,7 +113,9 @@ public:
 
 }
 //- end namespace datadriven ------------------------------------------
+#endif
 
+#ifdef SG_PARALLEL
 //-     namespace parallel --------------------------------------------
 namespace parallel {
 
@@ -126,6 +129,6 @@ public:
 
 }
 //- end namespace parallel --------------------------------------------
-
+#endif
 }
 

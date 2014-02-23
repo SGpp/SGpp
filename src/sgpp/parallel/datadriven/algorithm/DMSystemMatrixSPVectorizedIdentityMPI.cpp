@@ -91,7 +91,7 @@ namespace sg {
 
     void DMSystemMatrixSPVectorizedIdentityMPI::mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
 #ifdef X86_MIC_SYMMETRIC
-          myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
+      myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
 #endif
       sg::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
 
