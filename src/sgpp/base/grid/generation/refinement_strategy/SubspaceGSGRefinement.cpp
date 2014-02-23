@@ -52,57 +52,56 @@ void SubspaceGSGRefinement::freeRefineSubspace(GridStorage* storage,RefinementFu
 
 	}else{
 
+		// check if refinement in last step made nonadmissible subspaces admissible
+		for(ErrorVector::iterator lastAddedIter = addedInLastRefinement.begin();
+			lastAddedIter !=  addedInLastRefinement.end();
+			++lastAddedIter)
+		{
+			ErrorType neighbour = *lastAddedIter;
+			index_t index = 1;
+			level_t level = 1;
 
-//		// check if refinement in last step made nonadmissible Subspaces admissible
-//		for(ErrorVector::iterator lastAddedIter = addedInLastRefinement.begin();
-//			lastAddedIter !=  addedInLastRefinement.end();
-//			++lastAddedIter)
-//		{
-//			ErrorType neighbour = *lastAddedIter;
-//			index_t index = 1;
-//			level_t level = 1;
-//
-//			std::cout << "checking neighbours of" << neighbour.toString() << std::endl;
-//
-//			for (size_t dim = 0; dim < storage->dim(); ++dim)
-//			{
-//				neighbour.get(dim,level,index);
-//				neighbour.set(dim,level+1,index);
-//				std::cout << "checking neighbour" << neighbour.toString();
-//				HashErrorStorage::grid_map_iterator errorIter = subspaceStorage->find(&neighbour);
-//				if(errorIter!= subspaceStorage->end())
-//				{
-//					std::cout << "- found!\n";
-//					errorIter->first->setAdmissible(checkAdmissibility(storage,neighbour));
-//				}
-//				neighbour = *lastAddedIter;
-//			}
-//
-//		}
+			for (size_t dim = 0; dim < storage->dim(); ++dim)
+			{
+				neighbour.get(dim,level,index);
+				neighbour.set(dim,level+1,index);
+				HashErrorStorage::grid_map_iterator errorIter = subspaceStorage->find(&neighbour);
+				if(errorIter!= subspaceStorage->end())
+				{
+					errorIter->first->setAdmissible(checkAdmissibility(storage,neighbour));
+				}
+				neighbour = *lastAddedIter;
+			}
+
+		}
 
 		updateAdmissibleSubspaces(storage,functor,&addedInLastRefinement,&availableSubspaces);
 	}
 
-	//DEBUG: print all elements
+//	//DEBUG: print all elements
+//
+//	std::cout << "\n\navailable subspaces" << "\n";
+//	std::cout << "=================================================" << "\n";
+//	for(HashErrorStorage::grid_map_iterator errorIter = subspaceStorage->begin(); errorIter != subspaceStorage->end(); ++errorIter)
+//	{
+//		std::cout << errorIter->first->toString() << std::endl;
+//	}
 
-	std::cout << "\n\navailable subspaces" << "\n";
-	std::cout << "=================================================" << "\n";
-	for(HashErrorStorage::grid_map_iterator errorIter = subspaceStorage->begin(); errorIter != subspaceStorage->end(); ++errorIter)
-	{
-		std::cout << errorIter->first->toString() << std::endl;
-	}
+
 
 	//-refine all subspaces which satisfy the refinement criteria
 	//-empty addedInLastRefinement and insert the subspaces that satisfy the refinement criteria into the storage
 	//- remove newly created subspaces from available subspaces.
 	refineSubspaceCollection(storage,&availableSubspaces,&addedInLastRefinement,functor);
 
-	std::cout << "\nremaining subspaces" << "\n";
-		std::cout << "=================================================" << "\n";
-		for(HashErrorStorage::grid_map_iterator errorIter = subspaceStorage->begin(); errorIter != subspaceStorage->end(); ++errorIter)
-		{
-			std::cout << errorIter->first->toString() << std::endl;
-		}
+
+
+//	std::cout << "\nremaining subspaces" << "\n";
+//		std::cout << "=================================================" << "\n";
+//		for(HashErrorStorage::grid_map_iterator errorIter = subspaceStorage->begin(); errorIter != subspaceStorage->end(); ++errorIter)
+//		{
+//			std::cout << errorIter->first->toString() << std::endl;
+//		}
 }
 
 void SubspaceGSGRefinement::refineSubspaceCollection(GridStorage* storage,
@@ -110,8 +109,6 @@ void SubspaceGSGRefinement::refineSubspaceCollection(GridStorage* storage,
 		ErrorVector* addedInLastStep,
 		RefinementFunctor* functor)
 {
-
-	//cout << "refining subspace collection\n";
 		addedInLastStep->clear();
 
 		ErrorMap* errorMap = errorStorage->getErrorMap();
@@ -126,7 +123,6 @@ void SubspaceGSGRefinement::refineSubspaceCollection(GridStorage* storage,
 		{
 			ErrorType* maxErrorSubspace = errorStorage->peek();
 			ErrorType tmp = *maxErrorSubspace;
-//			std::cout << maxErrorSubspace->toString();
 			if(maxErrorSubspace->isAdmissible() &&
 					maxErrorSubspace->getContribPerPoint() > functor->start()
 					&& fabs(maxErrorSubspace->getContribPerPoint()) >= threshold)
@@ -139,13 +135,13 @@ void SubspaceGSGRefinement::refineSubspaceCollection(GridStorage* storage,
 
 		}
 
-		//DEBUG: selected
-		std::cout << "\nselected subspaces" << "\n";
-		std::cout << "=================================================" << "\n";
-		for (ErrorVector::iterator iter = addedInLastStep->begin(); iter != addedInLastStep->end(); ++iter)
-		{
-			std::cout << (*iter).toString() << std::endl;
-		}
+//		//DEBUG: selected
+//		std::cout << "\nselected subspaces" << "\n";
+//		std::cout << "=================================================" << "\n";
+//		for (ErrorVector::iterator iter = addedInLastStep->begin(); iter != addedInLastStep->end(); ++iter)
+//		{
+//			std::cout << (*iter).toString() << std::endl;
+//		}
 }
 
 void SubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* storage,
@@ -154,7 +150,6 @@ void SubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* storage,
 												      ErrorStorage* availableSubspaces)
 {
 
-	std::cout << "updating admissible subspaces \n";
 	HashErrorStorage updateSubspaces(storage->dim());
 
 	//go through all subspaces refined in last refinement step.
@@ -166,7 +161,6 @@ void SubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* storage,
 
 		GridPointVector gridPoints;
 		ErrorType helper = subspace;
-		std::cout << "creating subspace points for" << helper.toString() << std::endl;
 		createAllGridPointsOfSubspace(helper,&gridPoints);
 		//here the error contributions will be stored.
 		ErrorType errorContribution;
@@ -174,7 +168,6 @@ void SubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* storage,
 
 		for(GridPointVector::iterator pointIter = gridPoints.begin(); pointIter != gridPoints.end();++pointIter)
 		{
-			std::cout << "adding contrib for" << (*pointIter).toString() << std::endl;
 			// functor in each dimension is equal -> error Contribution of each subspace to each neighbouring subspace is equal.
 			RefinementFunctor::value_type error =  (*functor)(storage, storage->find(&(*pointIter))->second);
 
@@ -185,7 +178,6 @@ void SubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* storage,
 		}
 
 		//find all neighbouring subspaces
-		std::cout << "searching for neighbouring subspaces\n";
 		index_t index = 1;
 		level_t level = 1;
 
@@ -196,28 +188,26 @@ void SubspaceGSGRefinement::updateAdmissibleSubspaces(GridStorage* storage,
 			neighbourSubspace.set(dim,level+1,index);
 
 			HashErrorStorage::grid_map_iterator updatedSubspacesIter = updateSubspaces.find(&neighbourSubspace);
-			std::cout << "looking for neighbouring subspace in dim  " << dim << "; " << neighbourSubspace.toString();
 			if(updatedSubspacesIter == updateSubspaces.end())
 			{
-				std::cout << "- not found. adding\n";
 				//not found. insert that subspace.
 				neighbourSubspace+=errorContribution;
 				updateSubspaces.insert(neighbourSubspace);
 
 			}else{
-				//found. update Error Contrib.
-				std::cout << "- found. adding to old\n";
+				//found. update error contrib.
 				*(updatedSubspacesIter->first)+=errorContribution;
 			}
 		}
 	}
 
 	//check updated subspaces for admissibility.
-	std::cout << "checking subspaces for admissibility \n";
 	IndicatorsList removableIndicators;
 	for (HashErrorStorage::grid_map_iterator updatedSubspaceIter = updateSubspaces.begin();
 				updatedSubspaceIter != updateSubspaces.end(); ++updatedSubspaceIter)
 	{
+		HashErrorStorage::grid_map_iterator errorIter = errorStorage->find(updatedSubspaceIter->first);
+		errorIter->first->setAdmissible(checkAdmissibility(storage, *(errorIter->first)));
 
 		ErrorType subspace = *(updatedSubspaceIter->first);
 		if(!checkAdmissibility(storage,subspace))
