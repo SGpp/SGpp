@@ -9,22 +9,42 @@ sys.path.append('../lib/pysgpp')
 from pysgpp import *
 import matplotlib.pyplot as plotter
 import numpy
+import csv
+
+
+
+def serializeToCSV(path,xvec,yvec):
+    
+    with open(path, 'w') as csvFile:
+            csvWriter = csv.writer(csvFile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            
+            csvWriter.writerow(['x0','x1'])
+            
+            for i in xrange(1,len(xvec)):
+                data = [xvec[i],yvec[i]]  
+                csvWriter.writerow(data)
+
+            del csvWriter
+            del csvFile
+
+
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
-grid = Grid.createLinearGrid(dim)
+grid = Grid.createModLinearGrid(dim)
 gridStorage = grid.getStorage()
 print "dimensionality:         %d" % (dim)
 
 
 # create regular grid, level 3
-level = 3
+level = 1
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
 print "Start: number of grid points:  %d" % (gridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
-f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
+#f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
+f = lambda x0, x1: x0**2+x1**2
 # create coefficient vector
 alpha = DataVector(gridStorage.size())
 
@@ -47,7 +67,7 @@ decorator = SubspaceGSGRefinement(decorated,dim)
 
 
 
-for refnum in range(10):
+for refnum in range(15):
     # set function values in alpha
     for i in xrange(gridStorage.size()):
         gp = gridStorage.get(i)
@@ -56,7 +76,7 @@ for refnum in range(10):
     # hierarchize
     createOperationHierarchisation(grid).doHierarchisation(alpha)
      
-    functor = SurplusRefinementFunctor(alpha,6)
+    functor = SurplusRefinementFunctor(alpha,1)
     #refinement  stuff
     decorator.freeRefineSubspace(gridStorage,functor)
     #decorator.createSubspace(gridStorage,)
@@ -104,3 +124,5 @@ for refnum in range(10):
  
     # extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage.size())
+
+serializeToCSV("GSGMean_Sum.csv",xCoordsOld,yCoordsOld)

@@ -11,7 +11,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
-grid = Grid.createLinearGrid(dim)
+grid = Grid.createModLinearGrid(dim)
 gridStorage = grid.getStorage()
 print "dimensionality:         %d" % (dim)
 
@@ -23,7 +23,7 @@ print "Start: number of grid points:  %d" % (gridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 #f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
-f = lambda x0, x1: math.sin(x0)+x1
+f = lambda x0, x1: math.sin(x0*math.pi)
 # create coefficient vectors
 alpha = DataVector(gridStorage.size())
 
@@ -130,7 +130,7 @@ for refnum in range(20):
     # refine a single grid point each time
     #print "Error vector ="
     print "ErrorVector = %s" % errorVector
-    indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,10)
+    indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
     decorator.free_refine(gridStorage,indicator)
     #decorator.createSubspace(gridStorage,)
     

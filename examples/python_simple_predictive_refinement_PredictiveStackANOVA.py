@@ -9,23 +9,6 @@ from pysgpp import *
 import matplotlib.pyplot as plotter
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import random
-import csv
-
-
-
-def serializeToCSV(path,xvec,yvec):
-    
-    with open(path, 'w') as csvFile:
-            csvWriter = csv.writer(csvFile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            
-            csvWriter.writerow(['x0','x1'])
-            
-            for i in xrange(1,len(xvec)):
-                data = [xvec[i],yvec[i]]  
-                csvWriter.writerow(data)
-
-            del csvWriter
-            del csvFile
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
@@ -40,9 +23,8 @@ gridGen.regular(level)
 print "Start: number of grid points:  %d" % (gridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
-#f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1- math.sin(x1*math.pi)1)*x1-x1
-#f = lambda x0, x1: math.sin(x1*math.pi) + math.sin(x0*math.pi)
-f = lambda x0, x1: x0**2 * x1**2
+#f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
+f = lambda x0, x1: math.sin(x1*math.pi)+x0/10
 # create coefficient vectors
 alpha = DataVector(gridStorage.size())
 
@@ -111,7 +93,7 @@ refinement = HashRefinement()
 decorator = PredictiveSubspaceGSGRefinement(refinement,dim)
  
 # now refine adaptively 5 times
-for refnum in range(15):
+for refnum in range(20):
     # set function values in alpha
     for i in xrange(gridStorage.size()):
         gp = gridStorage.get(i)
@@ -122,7 +104,7 @@ for refnum in range(15):
     
     #initialize plotter
     fig = plotter.figure()
-    #ax =  fig.add_subplot(111, projection='3d')
+    ax =  fig.add_subplot(111, projection='3d')
     #bx =  fig.gca(projection="3d")
     plotter.hold(True)
      
@@ -145,7 +127,7 @@ for refnum in range(15):
         #print "Evaluating grid @ %4f;%4f - %f" % (xCoordinates[-1],yCoordinates[-1], zCoordinates[-1])
     
     Z = []
-    
+    print 'there'
     for i in xrange(dataSet.getNrows()):
         
         vec = DataVector(dataSet.getNcols())
@@ -154,14 +136,14 @@ for refnum in range(15):
         
         
       
-    #ax.scatter(xCoordinates, yCoordinates, zCoordinates, c='b')
-    #ax.scatter(xCoordsOld, yCoordsOld, zCoordsOld, c='r')
-    #ax.plot_wireframe(X,Y,Z)
-    plotter.scatter(xCoordinates, yCoordinates, c='b')
-    plotter.scatter(xCoordsOld, yCoordsOld, c='r')
+    ax.scatter(xCoordinates, yCoordinates, zCoordinates, c='b')
+    ax.scatter(xCoordsOld, yCoordsOld, zCoordsOld, c='r')
+    ax.plot_wireframe(X,Y,Z)
+    #plotter.scatter(xCoordinates, yCoordinates, c='b')
+    #plotter.scatter(xCoordsOld, yCoordsOld, c='r')
     xCoordsOld = xCoordinates
     yCoordsOld = yCoordinates
-    #zCoordsOld = zCoordinates
+    zCoordsOld = zCoordinates
   
     #show plot
   
@@ -174,7 +156,7 @@ for refnum in range(15):
     
     # refine a single grid point each time
     #print(errorVector)
-    indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
+    indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,2)
     decorator.freeRefineSubspace(gridStorage,indicator)
     #decorator.createSubspace(gridStorage,)
     
@@ -187,5 +169,3 @@ for refnum in range(15):
   
     # extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage.size())
-
-serializeToCSV("PredGSGMean_Mult.csv",xCoordsOld,yCoordsOld)
