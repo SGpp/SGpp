@@ -6,8 +6,7 @@ from numpy.core.numeric import arange
 from Crypto.Util.number import size
 from numpy.core.function_base import linspace
 # append trunk/bin to search path for modules
-#sys.path.append('../lib/pysgpp')
-print(sys.path) 
+sys.path.append('../lib/pysgpp')
 from pysgpp import DataVector, Grid, createOperationHierarchisation, createOperationEval
 import matplotlib.pyplot as plotter
 import numpy
@@ -54,8 +53,6 @@ for i in xrange(gridStorage.size()):
     print('grid Point #'+ str(i))
     print ('dim = 1; level = ' + str(gridStorage.get(i).getLevel(1)) + '; index = ' + str(gridStorage.get(i).getIndex(1)))
     print ('dim = 2; level = ' + str(gridStorage.get(i).getLevel(0)) + '; index = ' + str(gridStorage.get(i).getIndex(0)) + ';\n' )
-
-
 
 #
 #plot grid
