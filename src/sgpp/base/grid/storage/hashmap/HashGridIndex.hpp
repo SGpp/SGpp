@@ -3,7 +3,8 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (dirk.pflueger@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Dirk Pflueger (dirk.pflueger@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de),
+//Michael Lettrich(m.lettrich@mytum.de)
 
 #ifndef HASHGRIDINDEX_HPP
 #define HASHGRIDINDEX_HPP
@@ -650,31 +651,33 @@ namespace sg {
         }
 
 
-        //NEWLY ADDED by Michael Lettrich
-
+        /**
+         * Returns the level and index of the grid point in dimension dim.
+         * CAREFULL: For children that are on level 1 in the specified dinension dim, 0 is returned.
+         *
+         * @param level pointer to the variable to return the parent level in
+         * @param index pointer to the variable to return the parent index in
+         * @param dim dimension in which to determine the parent level and index
+         */
         void getParentLevelAndIndex(level_type* level, index_type* index, size_t dim)
         {
         	//get the parents index
         	level_type parentLevel = this->level[dim];
         	index_type parentIndex = this->index[dim];
-        	//cout << "analyzing GP " << (*child).toString() << "\n";
         	if (parentLevel>1)
         	{
-        		//cout << "parent index = " << parentIndex << ", " << (parentIndex-1)%2 << "\n";
         		if(((parentIndex-1)/2)%2 == 0)
         		{
         			//child is on the left
         			*level = parentLevel-1;
         			*index = (parentIndex+1)/2;
-        			//cout << "(left) setting child to " << (*child).toString() << "\n";
         		}else{
         			//child is on the right
         			*level = parentLevel-1;
         			*index = (parentIndex-1)/2;
-        			//cout << "(right) setting child to " << (*child).toString() << "\n";
         		}
         	}else{
-        		//the parent is already on level 1 in dimension dim and has no parents.
+        		//the child is already on level 1 in dimension dim and has no parents.
             	*level = 0;
             	*index = 0;
         	}

@@ -20,7 +20,6 @@ PredictiveRefinementIndicator::PredictiveRefinementIndicator(Grid* grid, DataMat
 {
 	//find out what type of grid is used;
 	gridType = determineGridType(grid);
-	//std::cout << "gridType = " << grid->getType() << " corresponding to " << gridType << "\n";
 
 	//set global Variables accordingly
 	this->dataSet = dataSet;
@@ -36,22 +35,26 @@ double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type
 	DataVector ceilingMask(dataSet->getNcols());
 	buildGPSupportMask(gridPoint,&floorMask,&ceilingMask);
 
-	//level and index vectors for grid point needed below
+	//level, index and evaulation of a gridPoint in dimension d
 	AbstractRefinement::level_t level = 0;
 	AbstractRefinement::index_t index = 0;
-	//value of the data set in the dimension DIM (needed below)
 	double valueInDim;
 
+	//the actuall value of the errorIndicator
 	double errorIndicator = 0;
-	size_t counter = 0;
 
-	//go through the whole dataset.
+
+	//counter of contributions - for DEBUG purposes
+	//size_t counter = 0;
+
+	//go through the whole dataset. -> if data point on the support of the grid point in all dim then calculate error Indicator.
 	for(size_t row = 0; row < dataSet->getNrows(); ++row)
 	{
 		//if on the support of the grid point in all dim
 		if(isOnSupport(&floorMask,&ceilingMask,row))
 		{
-			++counter;
+			//counter for DEBUG
+			//++counter;
 			//calculate error Indicator
 			for(size_t dim = 0; dim < gridPoint->dim(); ++dim)
 			{
@@ -60,11 +63,14 @@ double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type
 				index = gridPoint->getIndex(dim);
 
 				valueInDim = dataSet->get(row,dim);
+
 				errorIndicator += ((RefinementFunctor::value_type) basisFunctionEvalHelper(level,index,valueInDim)*errorVector->get(row));
 			}
 		}
 	}
-	std::cout << gridPoint->toString() << " with error estimate " << errorIndicator << ",caused by " << counter << "contribs - in average: " << (errorIndicator/static_cast<double>(counter)) << "\n";
+
+	//DEBUG
+	//std::cout << gridPoint->toString() << " with error estimate " << errorIndicator << ",caused by " << counter << "contribs - in average: " << (errorIndicator/static_cast<double>(counter)) << "\n";
 	return errorIndicator;
 
 }
@@ -147,17 +153,21 @@ size_t PredictiveRefinementIndicator::determineGridType(Grid* grid) {
 bool PredictiveRefinementIndicator::isOnSupport(
 		DataVector* floorMask, DataVector* ceilingMask, size_t row)
 {
+
+	//go through all cols of the dataset
+	//=> go through all samples in dataset and check if in dim "col" "valueInDim" is on support
 	for(size_t col = 0; col < dataSet->getNcols(); ++col)
 	{
 		double valueInDim = dataSet->get(row,col);
 		if(valueInDim < floorMask->get(col) || valueInDim >= ceilingMask->get(col) )
 		{
-			//std::cout << "floor: " << floorMask->get(col) << "<= " << valueInDim << "<"<< ceilingMask->get(col) <<std::endl;
 			return false;
 		}
 	}
 	DataVector vector(dataSet->getNcols());
 	dataSet->getRow(row,vector);
+
+	//Debug
 //	std::cout << vector.toString() << " is on support of " << floorMask->toString() << " & " << ceilingMask->toString() << std::endl;
 
 	return true;
@@ -170,6 +180,7 @@ void PredictiveRefinementIndicator::buildGPSupportMask(
 	AbstractRefinement::level_t level;
 	AbstractRefinement::index_t index;
 
+	//in each dimension, get level and index, calculate min and max of supp(GridPointBasisFunction)
 	for(size_t dim=0; dim<gridPoint->dim();++dim)
 	{
 		level = gridPoint->getLevel(dim);
@@ -177,9 +188,8 @@ void PredictiveRefinementIndicator::buildGPSupportMask(
 
 		floorMask->set(dim,(index-1.0)/(1<<(level)));
 		ceilingMask->set(dim,(index+1.0)/(1<<(level)));
-		//floorMask->set(dim,(index-1.0)/pow(2.0,((double)level)));
-		//ceilingMask->set(dim,(index+1.0)/pow(2.0,((double)level)));
 
+		//DEBUG
 //		std::cout << "floor: " << floorMask->get(dim) << "ceiling " << ceilingMask->get(dim) <<std::endl;
 	}
 }

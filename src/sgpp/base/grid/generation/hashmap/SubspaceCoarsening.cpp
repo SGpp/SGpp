@@ -23,18 +23,17 @@ namespace base {
 
 
 		//DEBUG:
-		std::cout << "picked ";
-		for(size_t i=0; i<functor->getRemovementsNum(); ++i)
-		{
-			index_type* index = storage->get(minContribSubspaces[i].gridPoints[0]);
-			std::cout << index->toString() << ", is coarsenable " <<
-					minContribSubspaces[i].isCoarsenable << " has " << minContribSubspaces[i].gridPoints.size() << " points, " <<
-					"contributing " << minContribSubspaces[i].error << std::endl;
-		}
+//		std::cout << "picked ";
+//		for(size_t i=0; i<functor->getRemovementsNum(); ++i)
+//		{
+//			index_type* index = storage->get(minContribSubspaces[i].gridPoints[0]);
+//			std::cout << index->toString() << ", is coarsenable " <<
+//					minContribSubspaces[i].isCoarsenable << " has " << minContribSubspaces[i].gridPoints.size() << " points, " <<
+//					"contributing " << minContribSubspaces[i].error << std::endl;
+//		}
 
 
 		//delete gridPoints
-
 		std::list<size_t> pointsToDelete;
 
 		// iterate over minContribSubspaces. add all points to be deleted to a list.
@@ -52,7 +51,6 @@ namespace base {
 		std::vector<size_t> remainingIndex = storage->deletePoints(pointsToDelete);
 
 		//delete all surpluses belonging to points deleted by coarsening from alpha vector;
-
 		alpha->restructure(remainingIndex);
 
 		//clean up
@@ -92,7 +90,6 @@ namespace base {
 
 				// found - test if the grid point is a leaf (else it can not be coarsened)
 				// or the subspace itself is already impossible to coarsen.
-
 				if(errorIter->second.isCoarsenable && gridPoint->isLeaf()){
 
 					// add to existing error.
@@ -108,13 +105,13 @@ namespace base {
 		}
 
 		// DEBUG: print subspaces to coarsen
-		std::cout << "Subspaces:" << std::endl;
-		for (SubspaceCoarseningErrorStorage::iterator it = errorStorage->begin();
-				it != errorStorage->end(); ++it) {
-			std::cout << ((index_type) it->first).toString() << ", is coarsenable " <<
-					it->second.isCoarsenable << " has " << it->second.gridPoints.size() << " points, " <<
-					"contributing " << it->second.error << std::endl;
-		}
+//		std::cout << "Subspaces:" << std::endl;
+//		for (SubspaceCoarseningErrorStorage::iterator it = errorStorage->begin();
+//				it != errorStorage->end(); ++it) {
+//			std::cout << ((index_type) it->first).toString() << ", is coarsenable " <<
+//					it->second.isCoarsenable << " has " << it->second.gridPoints.size() << " points, " <<
+//					"contributing " << it->second.error << std::endl;
+//		}
 	}
 
 	void SubspaceCoarsening::cleanUpErrorStorage(SubspaceCoarseningErrorStorage* errorStorage)
@@ -123,7 +120,6 @@ namespace base {
 
 		for(storageIter = errorStorage->begin(); storageIter != errorStorage->end(); ++storageIter)
 		{
-
 			//@TODO:check if index is not moved by removing!
 			// subspace can not be coarsened. clean it up.
 			if(!storageIter->second.isCoarsenable)
@@ -145,8 +141,6 @@ namespace base {
 			minContribSubspaces[i] = SubspaceCoarseningErrorContainer();
 			minContribSubspaces[i].error = INFINITY;
 		}
-
-		std::cout << "";
 
 		//iterate over all subspaces
 		SubspaceCoarseningErrorStorage::iterator storageIter;

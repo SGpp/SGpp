@@ -136,7 +136,6 @@ void ErrorStorage::addToOldError(ErrorType& newErrorObject)
 	//now update the value in the has map and reinsert into the errorMap.
 	size_t seq = oldErrorObjIter->second;
 	std::cout << oldErrorObjIter->first->toString() << std::endl;
-	//ErrorType* oldErrorObj = hashErrorStorage[seq];
 	newErrorObject+=oldError;
 	std::cout << "updating tp" << newErrorObject.toString()<< std::endl;
 	hashErrorStorage.update(newErrorObject,seq);
@@ -175,10 +174,15 @@ void ErrorStorage::insertAllIntoErrorMap() {
 	for(HashErrorStorage::grid_map_iterator iter= hashErrorStorage.begin();
 			iter != hashErrorStorage.end();++iter)
 	{
-//		std::cout << "adding " << iter->first->toString() << "to map.\n";
 		errorMap.insert(std::make_pair(iter->first->getContribPerPoint(),iter->first));
-//		std::cout << "added " << helper->second->toString() << "to map.\n";
 	}
+}
+
+void ErrorStorage::rebuildErrorMap() {
+
+	//empty the error map and rebuild it from scratch
+	errorMap.clear();
+	insertAllIntoErrorMap();
 }
 
 ErrorType ErrorStorage::popSubroutine(ErrorMap::iterator iter) {
@@ -202,3 +206,5 @@ ErrorType ErrorStorage::popSubroutine(ErrorMap::iterator iter) {
 
 } /* namespace base */
 } /* namespace sg */
+
+
