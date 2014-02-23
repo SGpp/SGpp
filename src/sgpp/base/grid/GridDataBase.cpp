@@ -30,7 +30,7 @@ namespace sg {
       }
     }
 
-    GridDataBase::GridDataBase(std::string& filename) {
+    GridDataBase::GridDataBase(const std::string& filename) {
       _map = grid_map();
 
       // stream

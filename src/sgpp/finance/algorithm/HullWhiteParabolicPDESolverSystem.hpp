@@ -13,7 +13,7 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/common/DirichletUpdateVector.hpp"
 #include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
-#include "finance/application/VariableDiscountFactor.hpp"
+#include "finance/tools/VariableDiscountFactor.hpp"
 
 namespace sg {
   namespace finance {

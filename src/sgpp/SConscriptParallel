@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-Import("env")
+dependencies = ["Base", "Pde", "Datadriven", "Finance"]
 
 srcs = Split("""
 parallel/datadriven/algorithm/AlgorithmAdaBoostVectorizedIdentity.cpp
@@ -31,15 +31,5 @@ parallel/operation/ParallelOpFactory.cpp
 parallel/operation/SPParallelOpFactory.cpp
 """)
 
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_parallel = sg_env.SharedObject(srcs)
-Export('src_objs_parallel')
-
-libsgppparallel = sg_env.SharedLibrary(target="sgppparallel", source = src_objs_parallel, SHLIBPREFIX = 'lib')
-libsgppparallelstatic = sg_env.StaticLibrary(target="sgppparallel", source = src_objs_parallel, SHLIBPREFIX = 'lib')
-
-Export('libsgppparallel')
-Export('libsgppparallelstatic')
+Export('srcs')
+Export('dependencies')

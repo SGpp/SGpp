@@ -7,7 +7,7 @@
 #base/grid/combination/FullGridSet.cpp
 #base/grid/combination/LinearFullGrid.cpp
 
-Import("env")
+dependencies = ["Base"]
 
 srcs = Split("""
 combigrid/basisfunction/CombiLinearBasisFunction.cpp
@@ -36,15 +36,5 @@ combigrid/utils/CombigridLevelVector.cpp
 combigrid/operation/OperationMatrixLTwoExplicitFullGrid.cpp
 """)
 
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_combigrid = sg_env.SharedObject(srcs)
-Export('src_objs_combigrid')
-
-libsgppcombigrid = sg_env.SharedLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
-libsgppcombigridstatic = sg_env.StaticLibrary(target="sgppcombigrid", source = src_objs_combigrid, SHLIBPREFIX = 'lib')
-
-Export('libsgppcombigrid')
-Export('libsgppcombigridstatic')
+Export('srcs')
+Export('dependencies')

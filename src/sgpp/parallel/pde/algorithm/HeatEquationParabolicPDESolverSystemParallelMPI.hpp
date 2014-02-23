@@ -58,7 +58,9 @@ namespace sg {
          */
         virtual ~HeatEquationParabolicPDESolverSystemParallelMPI();
 
-        void finishTimestep(bool isLastTimestep = false);
+        void finishTimestep();
+
+        void coarsenAndRefine(bool isLastTimestep = false);
 
         void startTimestep();
 

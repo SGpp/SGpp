@@ -73,7 +73,7 @@ namespace sg {
             //double time = 0.0;
             //time = m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
             m_oclkernel.multTransposeImpl(level, index, mask, offset, dataset, source, result,
-                                                 start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
+                                          start_index_grid, end_index_grid_gpu, start_index_data, end_index_data);
           }
 
           size_t start_grid_cpu = end_index_grid_gpu;

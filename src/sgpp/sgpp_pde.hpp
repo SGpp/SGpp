@@ -13,7 +13,6 @@
 #include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 #include "pde/application/HeatEquationSolver.hpp"
 #include "pde/application/HeatEquationSolverWithStretching.hpp"
-#include "pde/application/LaserHeatEquationSolver2D.hpp"
 #include "pde/application/PoissonEquationSolver.hpp"
 #include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
 #include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"

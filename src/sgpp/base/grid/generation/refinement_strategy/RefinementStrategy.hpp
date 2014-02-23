@@ -16,7 +16,7 @@
 namespace sg {
   namespace base {
 
-    class HashRefinementAbstract;
+    class AbstractRefinement;
 
     class RefinementStrategy {
       public:
@@ -26,7 +26,7 @@ namespace sg {
         };
         virtual ~RefinementStrategy() {};
 
-        virtual void refine(GridStorage* storage, HashRefinementAbstract* hash_refinement) = 0;
+        virtual void refine(GridStorage* storage, AbstractRefinement* hash_refinement) = 0;
 
       protected:
 

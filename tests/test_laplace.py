@@ -62,32 +62,34 @@ def generateLaplaceEnhancedMatrix(factory, level, verbose=False):
 
     return m
 
-def generateLaplaceVectorizedMatrix(factory, level, verbose=False):
-    from pysgpp import DataVector, DataMatrix
-    storage = factory.getStorage()
-    
-    gen = factory.createGridGenerator()
-    gen.regular(level)
-    
-    laplace = createOperationLaplaceVectorized(factory)
-    
-    # create vector
-    alpha = DataVector(storage.size())
-    erg = DataVector(storage.size())
-
-    # create stiffness matrix
-    m = DataMatrix(storage.size(), storage.size())
-    m.setAll(0)
-    for i in xrange(storage.size()):
-        # apply unit vectors
-        alpha.setAll(0)
-        alpha[i] = 1.0
-        laplace.mult(alpha, erg)
-        if verbose:
-            print erg, erg.sum()
-        m.setColumn(i, erg)
-
-    return m
+# is currently only available for MPI
+#####################################
+#def generateLaplaceVectorizedMatrix(factory, level, verbose=False):
+#    from pysgpp import DataVector, DataMatrix
+#    storage = factory.getStorage()
+#    
+#    gen = factory.createGridGenerator()
+#    gen.regular(level)
+#    
+#    laplace = createOperationLaplaceVectorized(factory)
+#    
+#    # create vector
+#    alpha = DataVector(storage.size())
+#    erg = DataVector(storage.size())
+#
+#    # create stiffness matrix
+#    m = DataMatrix(storage.size(), storage.size())
+#    m.setAll(0)
+#    for i in xrange(storage.size()):
+#        # apply unit vectors
+#        alpha.setAll(0)
+#        alpha[i] = 1.0
+#        laplace.mult(alpha, erg)
+#        if verbose:
+#            print erg, erg.sum()
+#        m.setColumn(i, erg)
+#
+#    return m
 
 def readReferenceMatrix(self, storage, filename):
     from pysgpp import DataMatrix
@@ -260,48 +262,48 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
         # compare
         compareStiffnessMatrices(self, m, m_ref)
         
-class TestOperationLaplaceLinearVectorized(unittest.TestCase):
-    ##
-    # Test laplace for regular sparse grid in 1d using linear hat functions
-    def testHatRegular1D(self):
-        from pysgpp import Grid, DataVector, DataMatrix
-        
-        factory = Grid.createLinearGrid(1)
-        storage = factory.getStorage()
-        
-        gen = factory.createGridGenerator()
-        gen.regular(7)
-        
-        laplace = createOperationLaplaceVectorized(factory)
-      
-        
-        alpha = DataVector(storage.size())
-        result = DataVector(storage.size())
-        
-        alpha.setAll(1.0)
-        
-        laplace.mult(alpha, result)
-        
-        for seq in xrange(storage.size()):
-            index = storage.get(seq)
-            level, _ = index.get(0)
-            self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
-
-        
-    ##
-    # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD(self):
-        
-        from pysgpp import Grid
-        
-        factory = Grid.createLinearGrid(3)
-
-        m = generateLaplaceVectorizedMatrix(factory, 3)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
-
-        # compare
-        compareStiffnessMatrices(self, m, m_ref)
-
+#class TestOperationLaplaceLinearVectorized(unittest.TestCase):
+#    ##
+#    # Test laplace for regular sparse grid in 1d using linear hat functions
+#    def testHatRegular1D(self):
+#        from pysgpp import Grid, DataVector, DataMatrix
+#        
+#        factory = Grid.createLinearGrid(1)
+#        storage = factory.getStorage()
+#        
+#        gen = factory.createGridGenerator()
+#        gen.regular(7)
+#        
+#        laplace = createOperationLaplaceVectorized(factory)
+#      
+#        
+#        alpha = DataVector(storage.size())
+#        result = DataVector(storage.size())
+#        
+#        alpha.setAll(1.0)
+#        
+#        laplace.mult(alpha, result)
+#        
+#        for seq in xrange(storage.size()):
+#            index = storage.get(seq)
+#            level, _ = index.get(0)
+#            self.failUnlessAlmostEqual(result[seq], pow(2.0, level+1))
+#
+#        
+#    ##
+#    # Test regular sparse grid dD, normal hat basis functions.
+#    def testHatRegulardD(self):
+#        
+#        from pysgpp import Grid
+#        
+#        factory = Grid.createLinearGrid(3)
+#
+#        m = generateLaplaceVectorizedMatrix(factory, 3)
+#        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
+#
+#        # compare
+#        compareStiffnessMatrices(self, m, m_ref)
+#
    
 class TestOperationLaplaceModLinear(unittest.TestCase):
     def testHatRegular1D(self):

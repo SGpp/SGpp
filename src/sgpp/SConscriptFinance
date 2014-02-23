@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-Import("env")
+dependencies = ["Base", "Pde"]
 
 srcs = Split("""
 finance/algorithm/BlackScholesParabolicPDESolverSystem.cpp
@@ -16,7 +16,6 @@ finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
 finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.cpp
 finance/algorithm/HullWhiteParabolicPDESolverSystem.cpp
 finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
-finance/application/VariableDiscountFactor.cpp
 finance/application/BlackScholesHullWhiteSolver.cpp
 finance/application/BlackScholesSolver.cpp
 finance/application/HullWhiteSolver.cpp
@@ -96,6 +95,7 @@ finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
 finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
 finance/tools/Hedging.cpp
+finance/tools/VariableDiscountFactor.cpp
 finance/application/BlackScholesSolverWithStretching.cpp
 finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
 finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
@@ -129,17 +129,5 @@ finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretc
 finance/operation/FinanceOpFactory.cpp
 """)
 
-
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_finance = sg_env.SharedObject(srcs)
-Export('src_objs_finance')
-
-libsgppfinance = sg_env.SharedLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
-libsgppfinancestatic = sg_env.StaticLibrary(target="sgppfinance", source = src_objs_finance, SHLIBPREFIX = 'lib')
-
-Export('libsgppfinance')
-Export('libsgppfinancestatic')
+Export('srcs')
+Export('dependencies')

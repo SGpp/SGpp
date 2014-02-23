@@ -21,10 +21,12 @@ OCLLIB = /usr/lib64/
 #OCLINCLUDE = ${CUDATOOLKIT_HOME}/include
 #OCLLIB = /opt/cray/nvidia/default/lib64
 # Intel OpenCL
-# IOCLINCLUDE = /usr/include
-# IOCLLIB = /usr/lib64/OpenCL/vendors/intel
-IOCLINCLUDE = /etc/alternatives/opencl-headers
-IOCLLIB = /etc/alternatives/opencl-intel-runtime/lib64
+#IOCLINCLUDE = /usr/include
+#IOCLLIB = /usr/lib64/OpenCL/vendors/intel
+#IOCLINCLUDE = /etc/alternatives/opencl-headers
+#IOCLLIB = /etc/alternatives/opencl-intel-runtime/lib64
+IOCLINCLUDE = /opt/intel/opencl/include
+IOCLLIB = /opt/intel/opencl/lib64
 # AMD OpenCL
 # AMDOCLINCLUDE = /opt/AMDAPP/include
 # AMDOCLLIB = /opt/AMDAPP/lib/x86_64
@@ -38,7 +40,7 @@ IOCLLIBWIN = \"C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x64\OpenCL.lib\"
 # Default Variables, overwirtten by CLI
 ###################################################################	
 # use OpenMP Version 3
-OMP=0
+OMP=1
 # use the TR1 Implementations for Hashmaps
 TR1=0
 # default compiler: g++; possible values: g++, icpc (Intel Compiler)
@@ -70,6 +72,10 @@ SLE_RES_THRESH=-1.0
 UPDOWN_PARADIMS=4
 # Compile for x86, but change vector width to match the one of MIC_NATIVE. This is needed for symmetric MPI execution. This option only has an effect for compilation with mpiicpc.
 X86_MIC_SYMMETRIC=0
+# Enable/Disable Operation Matrix Results
+STORE_OP_MA=0
+# Enable/Disable -ip -ipo
+IPO=0
 
 
 ###################################################################
@@ -84,6 +90,11 @@ LFLAGS_ICC:=-Wall -ipo -ip -ansi -O3
 CFLAGS_ICL:=/Wall /Qipo /Qip /Oa /Qansi_alias /Qfp-speculation=safe /c /O3 /Qunroll-aggressive /I$(SRCDIR) /DUSETRONE /Qcxx-features /D_WIN32 /DNOMINMAX
 LFLAGS_ICL:=/Wall /Qipo /Qip /Qansi_alias /O3
 
+ifeq ($(IPO), 0)
+CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
+LFLAGS_ICC:=-Wall -ip -ansi -O3
+endif
+
 ifeq ($(EXT), MIC_NATIVE)
 VEC:=""
 endif
@@ -91,6 +102,14 @@ endif
 ifneq ($(EXT), MIC_OFFLOAD)
 CFLAGS_ICC:=$(CFLAGS_ICC) -no-offload
 LFLAGS_ICC:=$(LFLAGS_ICC) -no-offload
+endif
+
+ifeq ($(STORE_OP_MA), 1)
+CFLAGS_ICC:=$(CFLAGS_ICC) -DSTORE_MATRIX=1
+LFLAGS_ICC:=$(LFLAGS_ICC) -DSTORE_MATRIX=1
+
+CFLAGS_GCC:=$(CFLAGS_GCC) -DSTORE_MATRIX=1
+LFLAGS_GCC:=$(LFLAGS_GCC) -DSTORE_MATRIX=1
 endif
 
 ifeq ($(CC),g++)
@@ -541,9 +560,17 @@ ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/BSSolver_mpiicc
 	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=BSSolver_ICC_MPI" "EXT=$(EXT)"
 endif
+ifeq ($(CC),mpigxx)
+	mkdir -p tmp/build_native/BSSolver_mpigxx
+	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx.a" "BINNAME=BSSolver_GCC_MPI" "EXT=$(EXT)"
+endif
 ifeq ($(CC),CC)
 	mkdir -p tmp/build_native/BSSolver_cray
 	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_cray "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_cray.a" "BINNAME=BSSolver_CRAY_MPI" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiCC)
+	mkdir -p tmp/build_native/BSSolver_ibm
+	make -j $(JOBS) -f ./../../../src/makefileNativeBlackScholesSolverMPI --directory=./tmp/build_native/BSSolver_ibm "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_ibm.a" "BINNAME=BSSolver_IBM_MPI" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -618,6 +645,14 @@ endif
 ifeq ($(CC),mpiicpc)
 	mkdir -p tmp/build_native/HESolver_mpiicc
 	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=HESolver_ICC_MPI" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpigxx)
+	mkdir -p tmp/build_native/HESolver_mpigxx
+	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_mpigxx "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpigxx.a" "BINNAME=HESolver_GCC_MPI" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiCC)
+	mkdir -p tmp/build_native/HESolver_ibm
+	make -j $(JOBS) -f ./../../../src/makefileNativeHeatEquationSolverMPI --directory=./tmp/build_native/HESolver_ibm "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_ibm.a" "BINNAME=HESolver_IBM_MPI" "EXT=$(EXT)"
 endif
 
 ###################################################################
@@ -695,6 +730,46 @@ ifeq ($(CC),icpc)
 	mkdir -p tmp/build_native/LaplaceTest_icc
 	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceTest --directory=./tmp/build_native/LaplaceTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaplaceTest_ICC" "EXT=$(EXT)"
 endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/LaplaceTest_mpiicc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceTestMPI --directory=./tmp/build_native/LaplaceTest_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=LaplaceTest_MPIICC" "EXT=$(EXT)"
+endif
+
+
+###################################################################
+# Builds a simple LTwoDotProductTest App
+###################################################################
+LTwoDotProductTest: default
+ifeq ($(CC),g++)
+	mkdir -p tmp/build_native/LTwoDotProductTest_gcc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLTwoDotProductTest --directory=./tmp/build_native/LTwoDotProductTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LTwoDotProductTest_GCC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),icpc)
+	mkdir -p tmp/build_native/LTwoDotProductTest_icc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLTwoDotProductTest --directory=./tmp/build_native/LTwoDotProductTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LTwoDotProductTest_ICC" "EXT=$(EXT)"
+endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/LTwoDotProductTest_mpiicc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLTwoDotProductTestMPI --directory=./tmp/build_native/LTwoDotProductTest_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=LTwoDotProductTest_MPIICC" "EXT=$(EXT)"
+endif
+
+###################################################################
+# Builds a simple LaplaceLTwoDotProductTest App
+###################################################################
+LaplaceLTwoDotProductTest: default
+#ifeq ($(CC),g++)
+#	mkdir -p tmp/build_native/LaplaceLTwoDotProductTest_gcc
+#	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceLTwoDotProductTest --directory=./tmp/build_native/LaplaceLTwoDotProductTest_gcc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_gcc.a" "BINNAME=LaplaceLTwoDotProductTest_GCC" "EXT=$(EXT)"
+#endif
+#ifeq ($(CC),icpc)
+#	mkdir -p tmp/build_native/LaplaceLTwoDotProductTest_icc
+#	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceLTwoDotProductTest --directory=./tmp/build_native/LaplaceLTwoDotProductTest_icc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_icc.a" "BINNAME=LaplaceLTwoDotProductTest_ICC" "EXT=$(EXT)"
+#endif
+ifeq ($(CC),mpiicpc)
+	mkdir -p tmp/build_native/LaplaceLTwoDotProductTest_mpiicc
+	make -j $(JOBS) -f ./../../../src/makefileNativeLaplaceLTwoDotProductTestMPI --directory=./tmp/build_native/LaplaceLTwoDotProductTest_mpiicc "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LFLAGS=$(LFLAGS)" "LIBNAME=libsgpp_mpiicc.a" "BINNAME=LaplaceLTwoDotProductTest_MPIICC" "EXT=$(EXT)"
+endif
+
 
 ###################################################################
 # test Balck Scholes Solver

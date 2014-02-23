@@ -4,7 +4,7 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-Import("env")
+dependencies = ["Base"]
 
 srcs = Split("""
 pde/algorithm/HeatEquationParabolicPDESolverSystem.cpp
@@ -44,9 +44,7 @@ pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.cpp
 pde/operation/OperationParabolicPDESolverSystem.cpp
 pde/operation/OperationParabolicPDESolverSystemDirichlet.cpp
 pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.cpp
-pde/algorithm/LaserHeatEquationParabolicPDESolverSystemParallelOMP2D.cpp
 pde/application/HeatEquationSolverWithStretching.cpp
-pde/application/LaserHeatEquationSolver2D.cpp
 pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
 pde/basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
 pde/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
@@ -65,17 +63,5 @@ pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
 pde/operation/PdeOpFactory.cpp
 """)
 
-
-
-sg_env = env.Clone()
-
-sg_env.Append(CPPPATH=['#/src/sgpp'])
-
-src_objs_pde = sg_env.SharedObject(srcs)
-Export('src_objs_pde')
-
-libsgpppde = sg_env.SharedLibrary(target="sgpppde", source = src_objs_pde, SHLIBPREFIX = 'lib')
-libsgpppdestatic = sg_env.StaticLibrary(target="sgpppde", source = src_objs_pde, SHLIBPREFIX = 'lib')
-
-Export('libsgpppde')
-Export('libsgpppdestatic')
+Export('srcs')
+Export('dependencies')

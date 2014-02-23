@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2010-2014 Technische Universitaet Muenchen                    *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -176,18 +176,6 @@ namespace sg {
 
       return this->rhs;
     }
-
-    /*
-    void OperationParabolicPDESolverSystemNeumann::finishTimestep(bool isLastTimestep)
-    {
-      // Replace the inner coefficients on the boundary grid
-      this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
-    }
-
-    void OperationParabolicPDESolverSystemFreeBoundaries::startTimestep()
-    {
-    }
-    */
 
     sg::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::getGridCoefficientsForCG() {
       return this->alpha_complete;

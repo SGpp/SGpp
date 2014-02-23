@@ -125,7 +125,7 @@ namespace std {
 %include "src/sgpp/finance/application/BlackScholesSolverWithStretching.hpp"
 %include "src/sgpp/pde/application/HeatEquationSolver.hpp"
 %include "src/sgpp/pde/application/HeatEquationSolverWithStretching.hpp"
-%include "src/sgpp/finance/application/VariableDiscountFactor.hpp"
+%include "src/sgpp/finance/tools/VariableDiscountFactor.hpp"
 
 %include "src/sgpp/base/basis/linear/noboundary/LinearBasis.hpp"
 %include "src/sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp"

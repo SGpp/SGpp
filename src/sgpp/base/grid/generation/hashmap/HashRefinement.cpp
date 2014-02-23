@@ -37,6 +37,9 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
 			index.get(d, source_level, source_index);
 
 
+          if (child_iter == end_iter) {
+            RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+
 			// test existence of left child
 			index.set(d, source_level + 1, 2 * source_index - 1);
 			//std::cout << "testing existence of left child " << index.toString() << "\n";

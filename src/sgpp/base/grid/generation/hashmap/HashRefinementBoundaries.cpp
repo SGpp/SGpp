@@ -62,7 +62,7 @@ namespace sg {
 
             // if there no more grid points --> test if we should refine the grid
             if (child_iter == end_iter) {
-              RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
+              RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
               if (current_value > max_value) {
                 //Replace the minimal point in result array, find the new  minimal point
@@ -79,7 +79,7 @@ namespace sg {
             child_iter = storage->find(&index);
 
             if (child_iter == end_iter) {
-              RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
+              RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
               if (current_value > max_value) {
                 //Replace the minimal point in result array, find the new minimal point
