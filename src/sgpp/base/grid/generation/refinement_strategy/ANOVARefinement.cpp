@@ -1,8 +1,8 @@
 /******************************************************************************
- * Copyright (C) 2012 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- ******************************************************************************/
+* Copyright (C) 2012 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de)
 
 #include "base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
@@ -10,71 +10,69 @@
 
 //using namespace std;
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+  namespace base {
 
-void ANOVARefinement::free_refine(GridStorage* storage, RefinementFunctor* functor)
-{
-    if (storage->size() == 0)
-    {
+    void ANOVARefinement::free_refine(GridStorage* storage, RefinementFunctor* functor) {
+      if (storage->size() == 0) {
         throw generation_exception("storage empty");
-    }
+      }
 
-    // the functor->getRefinementsNum() largest grid points should be refined.
-    // gather them in an array max_values
-    size_t refinements_num = functor->getRefinementsNum();
-    // values
-    RefinementFunctor::value_type* max_values = new RefinementFunctor::value_type[refinements_num];
-    // indices
-    size_t* max_indices = new size_t [refinements_num];
+      // the functor->getRefinementsNum() largest grid points should be refined.
+      // gather them in an array max_values
+      size_t refinements_num = functor->getRefinementsNum();
+      // values
+      RefinementFunctor::value_type* max_values = new RefinementFunctor::value_type[refinements_num];
+      // indices
+      size_t* max_indices = new size_t [refinements_num];
 
-    // initialization
-    for (size_t i = 0; i < refinements_num; i++)
-    {
+      // initialization
+      for (size_t i = 0; i < refinements_num; i++) {
         max_values[i] = functor->start();
         max_indices[i] = 0;
+      }
+
+      std::cout << "collecting refinable points\n";
+      this->collectRefinablePoints(storage, functor, refinements_num, max_indices, max_values);
+      // now refine all grid points which satisfy the refinement criteria
+      std::cout << "refining GP collection\n";
+      refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
+      delete [] max_values;
+      delete [] max_indices;
+      std::cout << "done with ANOVA refinement\n";
     }
 
-    this->collectRefinablePoints(storage, functor, refinements_num, max_indices, max_values);
-    // now refine all grid points which satisfy the refinement criteria
-    refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
-    delete [] max_values;
-    delete [] max_indices;
-}
+    void ANOVARefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
+      //RefinementDecorator::refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
+      RefinementFunctor::value_type refinement_value;
+      size_t refine_index;
+      // now refine all grid points which satisfy the refinement criteria
+      double threshold = functor->getRefinementThreshold();
 
-void ANOVARefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values)
-{
-    //RefinementDecorator::refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
-    RefinementFunctor::value_type refinement_value;
-    size_t refine_index;
-    // now refine all grid points which satisfy the refinement criteria
-    double threshold = functor->getRefinementThreshold();
-
-    for (size_t i = 0; i < refinements_num; i++)
-    {
+      for (size_t i = 0; i < refinements_num; i++) {
         refinement_value = max_values[i];
         refine_index = max_indices[i];
 
-        if (refinement_value > functor->start() && fabs(refinement_value) >= threshold)
-        {
-            index_type index((*storage)[refine_index]);
-            index.setLeaf(false);
+        std::cout << "refinement number " << i ;
+        std::cout << ", refining " << storage->get(refine_index)->toString();
+        std::cout << ", with error " << refinement_value << std::endl;
 
-            for (size_t dim = 0; dim < storage->dim(); dim++)
-            {
-                if (index.getLevel(dim) > 1)
-                {
+        if (refinement_value > functor->start() && fabs(refinement_value) >= threshold) {
+          index_type index((*storage)[refine_index]);
+          index.setLeaf(false);
 
-                    this->get_decorated_refinement()->refineGridpoint1D(storage, index,
-                            dim);
-                }
+          for (size_t dim = 0; dim < storage->dim(); dim++) {
+            if (index.getLevel(dim) > 1) {
+
+            	std::cout << "beginning 1D refinement for index " << index.toString() << " on dim " << dim << std::endl;
+              this->get_decorated_refinement()->refineGridpoint1D(storage, index,
+                  dim);
             }
+          }
         }
+      }
     }
-}
 
 
-} /* namespace base */
+  } /* namespace base */
 } /* namespace sg */

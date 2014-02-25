@@ -11,10 +11,8 @@
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 #include "base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 
-namespace sg
-{
-namespace base
-{
+namespace sg {
+namespace base {
 
 
 /*
@@ -23,29 +21,26 @@ namespace base
  * to the contribution of the MSE, which is especially helpfull for regression.
  *
  */
-class PredictiveRefinement: public virtual RefinementDecorator
-{
+class PredictiveRefinement: public virtual RefinementDecorator {
 public:
-    PredictiveRefinement(AbstractRefinement* refinement): RefinementDecorator(refinement)
-    {}
-    ;
+	PredictiveRefinement(AbstractRefinement* refinement): RefinementDecorator(refinement){};
 
 protected:
 
-    /**
-     * Examines the grid points and stores the indices those that can be refined
-     * and have maximal indicator values.
-     *
-     * @param storage hashmap that stores the grid points
-     * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
-     * @param refinements_num number of points to refine
-     * @param max_indices the array where the point indices should be stored
-     * @param max_values the array where the corresponding indicator values
-     * should be stored
-     */
-    virtual void collectRefinablePoints(GridStorage* storage,
-                                        RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                        RefinementFunctor::value_type* max_values);
+	/**
+	 * Examines the grid points and stores the indices those that can be refined
+	 * and have maximal indicator values.
+	 *
+	 * @param storage hashmap that stores the grid points
+	 * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+	 * @param refinements_num number of points to refine
+	 * @param max_indices the array where the point indices should be stored
+	 * @param max_values the array where the corresponding indicator values
+	 * should be stored
+	 */
+	virtual void collectRefinablePoints(GridStorage* storage,
+				RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
+				RefinementFunctor::value_type* max_values);
 };
 
 } /* namespace base */
