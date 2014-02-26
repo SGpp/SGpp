@@ -2,7 +2,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
 
 
 import os, sys
@@ -268,8 +268,13 @@ if env.has_key('MARCH'):
 
 # special treatment for MAC OS-X
 if env['PLATFORM']=='darwin':
-    env.Append(LINKFLAGS=['-lpython'])
-    env['SHLIBSUFFIX'] = '.so'
+    # the "-undefined dynamic_lookup"-switch is required to actually build a shared library 
+    # in OSX. "-dynamiclib" alone results in static linking of all further dependent shared libraries
+    # beware: if symbols are missing that are actually required (because the symbols don't reside in a shared library), there will be no error during compilation
+    # the python binding (pysgpp) requires lpython and a flat namespace
+    # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
+    env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
+    env['SHLIBSUFFIX'] = '.dylib'
 
 
 # the optional CPPFLAGS at the end will override the previous flags
