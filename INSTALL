@@ -50,3 +50,39 @@ export PYTHONPATH=$PYTHONPATH:$HOME/utils/lib64/scons-VERSION
 
 Build SGClass
 
+Mac OS X:
+========
+
+SG++ can be compiled and used with Mac OS X (tested with 
+10.7 "Lion").
+
+A standard linux environment has to be set up (e.g. using
+macports) and the required tools (gcc, python, swig) have 
+to be installed.
+
+Some difficulties can arise as OS X (if the XCode Command 
+Line Tools are installed) can include some apple specific 
+versions of gcc and python.
+
+For this reason it can be necessary to change the symlinks 
+in "/usr/bin/" to the compiler provided by the package 
+management system (e.g. /opt/local/bin/ for macports).
+
+As there are basically two toolchains installed, it is 
+important to execute the binary with the libraries of the 
+toolchain the binary was build with. To this end ist can
+be necessary to set the "DYLD_LIBRARY_PATH" environment 
+variable to a path that contains the standard library of 
+the toolchain used (e.g. /opt/local/lib for macports).
+Also, the path to the libraries "libsgpp*" has to be 
+added to be added to "DYLD_LIBRARY_PATH" if the 
+libraries aren't added to a well known path (like 
+/usr/lib).
+
+If the last steps are ommitted or some path is set 
+incorrect, hard to debug memory problems might arise. 
+Stack traces may be corrupted and the program might 
+terminate with different "malloc" errors.
+
+
+

@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
 
 #ifndef ALIGNEDMEMORY_HPP
 #define ALIGNEDMEMORY_HPP
@@ -25,6 +25,13 @@
 #define aligned_malloc(size, alignment) _mm_malloc(size, alignment)
 #define aligned_free(addr) _mm_free(addr)
 #else
+#ifdef __APPLE__
+#include <stdlib.h>
+#undef aligned_malloc
+#undef aligned_free
+#define aligned_malloc(size, alignment) malloc(size)
+#define aligned_free(addr) free(addr)
+#else //assumed gcc linux
 #include <malloc.h>
 #undef aligned_malloc
 #undef aligned_free
@@ -32,8 +39,10 @@
 #define aligned_free(addr) free(addr)
 #endif
 #endif
+#endif
 
-/// define number of bytes that should used as alignment
+// define number of bytes that should used as alignment
+// doesn't apply to OSX right now (as it uses 16-byte-aligned malloc)
 #define SGPPMEMALIGNMENT 64
 
 /**
