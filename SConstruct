@@ -8,9 +8,9 @@
 import os, sys
 import distutils.sysconfig
 import glob
+import SCons
 
 # Check for versions of Scons and Python
-EnsureSConsVersion(1, 0)
 EnsurePythonVersion(2, 5)
 
 # Definitions and functions
@@ -352,6 +352,11 @@ if not env.GetOption('clean'):
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
+
+    # check scons
+    EnsureSConsVersion(1, 0)
+    print "Using SCons", SCons.__version__
+
     # check whether swig installed
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
