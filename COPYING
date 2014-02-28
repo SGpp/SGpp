@@ -20,7 +20,7 @@ also meet, for each linked independent module, the terms and
 conditions of this license of that module.
 
 
-Copyright (c) 2009, Technische Universitaet Muenchen 
+Copyright (c) 2009-2014, Technische Universitaet Muenchen 
 
 All rights reserved.
 
@@ -52,6 +52,3 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
---
-Dirk Pflueger (pflueged@in.tum.de)
