@@ -225,7 +225,7 @@ if env['TARGETCPU'] == 'default':
     #     ensure you also compile with -fno-strict-aliasing"
     env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
                          '-fno-strict-aliasing', '-O3', '-Wconversion',
-                         '-funroll-loops', '-mfpmath=sse', '-msse3', '-fPIC',
+                         '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
     if env['OMP']:
         env.Append(CPPFLAGS=['-fopenmp'])
@@ -239,7 +239,7 @@ elif env['TARGETCPU'] == 'ICC':
     env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', '-Wno-deprecated', '-wd1125',  
                            '-fno-strict-aliasing', '-O3',
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
-                           '-ansi-alias', '-fp-speculation=safe', '-fPIC',
+                           '-ansi-alias', '-fp-speculation=safe', 
                            '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
 
     env['CC'] = ('icc')
@@ -266,7 +266,7 @@ if env.has_key('MARCH'):
     else:
         print "Warning: Ignoring option MARCH"
 
-# special treatment for MAC OS-X
+# special treatment for different platforms
 if env['PLATFORM']=='darwin':
     # the "-undefined dynamic_lookup"-switch is required to actually build a shared library 
     # in OSX. "-dynamiclib" alone results in static linking of all further dependent shared libraries
@@ -275,12 +275,22 @@ if env['PLATFORM']=='darwin':
     # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
     env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
     env['SHLIBSUFFIX'] = '.dylib'
+elif env['PLATFORM']=='cygwin':
+    # required to find the static libraries compiled before the shared libraries
+    # the static libraries are required as the linker on windows cannot ignore undefined symbols
+    # (as is done on linux automatically and is done on OSX with the settings above)
+    env.Append(LIBPATH=['tmp/build'])
+    # required because of usage of obsolete "rand_r()"
+    # (should be changed to "-std=c++11" after refactoring)
+    env.Append(CPPFLAGS=['-std=gnu++03'])
 
+# will lead to a warning on cygwin (and we have -Werror enabled)
+# is enabled by default on cygwin
+if env['PLATFORM'] != 'cygwin':
+    env.Append(CPPFLAGS=['-fPIC'])
 
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
-
-
 
 # Decide what to compile
 #########################################################################
@@ -366,9 +376,9 @@ if not env.GetOption('clean'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
 
     # check if the math header is available
-    if not config.CheckCXXHeader('cmath'):
-        sys.stderr.write("Error: c++ math header cmath.h is missing.\n")
-        Exit(1)
+    #if not config.CheckCXXHeader('cmath'):
+    #    sys.stderr.write("Error: c++ math header cmath.h is missing.\n")
+    #    Exit(1)
 
     # check whether swig installed
     swigAvail = True
@@ -462,10 +472,8 @@ Export('moduleList')
 # Now compile
 #########################################################################
 lib_sgpp_targets = []
-src_objs = {}
+src_objs = {}                
 
-    
-    
 # compile libraries
 for name in modules:
     if env['SG_' + name.upper()]:
@@ -478,8 +486,36 @@ for name in modules:
            src_files[name][index] = 'src/sgpp/' + src_files[name][index]
 
         src_objs[name] = env.SharedObject(src_files[name])
-        lib = env.SharedLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
-        libstatic = env.StaticLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+
+        lib = None
+        
+        # symbols cannot be undefined on windows (cygwin). Therefore static libraries with the 
+        # symbols interdependent libraries have to be provided. Will not statically include the 
+        # content of the static libraries. The static libraries work as import libraries.
+        if env["PLATFORM"] == "cygwin":
+            libdependencies = []
+            # lib dependencies have to be ordered correctly!
+            if name == "combigrid":
+                libdependencies = ['sgppbasestatic']
+            if name == "datadriven":
+                libdependencies = ['sgppbasestatic', 'sgppsolverstatic', 'sgppmiscstatic', 'sgpppdestatic']
+            elif name == "parallel":
+                libdependencies = ['sgppdatadrivenstatic', 'sgppsolverstatic', 'sgppmiscstatic', 'sgppbasestatic']
+            elif name == "pde":
+                libdependencies = ['sgppbasestatic', 'sgppdatadrivenstatic', 'sgppsolverstatic']
+            elif name == "solver":
+                libdependencies = ['sgppbasestatic', 'sgppdatadrivenstatic', 'sgpppdestatic']
+            elif name == "finance":
+                libdependencies = ['sgppbasestatic', 'sgppdatadrivenstatic', 'sgpppdestatic', 'sgppsolverstatic']
+            elif name == "misc":
+                libdependencies = ['sgppbasestatic', 'sgppdatadrivenstatic']
+
+            lib = env.SharedLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib', LIBS = libdependencies)
+        else:
+            lib = env.SharedLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib')
+        # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
+        # of the shared libaries on the static libraries on windows
+        libstatic = env.StaticLibrary(target="tmp/build/sgpp" + name + "static", source = src_objs[name], SHLIBPREFIX = 'lib')
         lib_sgpp_targets.append(lib)
         lib_sgpp_targets.append(libstatic)
 

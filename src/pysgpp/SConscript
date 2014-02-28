@@ -26,11 +26,15 @@ py_env = env.Clone()
 # remove compiler warnings caused by swig (as we cannot do anything against them, 
 # and as they confuse jenkins):
 py_env.AppendUnique(CPPFLAGS=['-w'])
+if env['PLATFORM']=='cygwin':
+    py_env.Append(LIBS=['python2.7'])    
+elif env['PLATFORM']=='darwin':
+    py_env['SHLIBSUFFIX'] = '.so'
 
 py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']], CPPPATH=['#/src/sgpp'])
 
 # The explicit ".so" suffix is required for OSX as otherwise ".dylib" is used in OSX. Python however requires ".so" on OSX as well. On all other plattforms ".so" actually is the default.
-pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs_combined+srcs, SHLIBPREFIX = '_', SHLIBSUFFIX = '.so')
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs_combined+srcs, SHLIBPREFIX = '_')
 
 Export('pysgpp')
 Return('pysgpp')
