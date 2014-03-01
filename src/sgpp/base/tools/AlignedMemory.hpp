@@ -11,13 +11,6 @@
 #include <new>
 #include <exception>
 
-#ifdef KNF
-#include <lmmintrin.h>
-#undef aligned_malloc
-#undef aligned_free
-#define aligned_malloc(size, alignment) _mm_malloc(size, alignment)
-#define aligned_free(addr) _mm_free(addr)
-#else
 #ifdef _WIN32
 #include <pmmintrin.h>
 #undef aligned_malloc
@@ -31,13 +24,12 @@
 #undef aligned_free
 #define aligned_malloc(size, alignment) malloc(size)
 #define aligned_free(addr) free(addr)
-#else //assumed gcc linux
+#else // Linux
 #include <malloc.h>
 #undef aligned_malloc
 #undef aligned_free
 #define aligned_malloc(size, alignment) memalign(alignment, size)
 #define aligned_free(addr) free(addr)
-#endif
 #endif
 #endif
 
