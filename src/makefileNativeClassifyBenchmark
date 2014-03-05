@@ -17,7 +17,7 @@ ifeq ($(CC),icl)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmark.obj $(LIBDIR)$(LIBNAME) /Fe$(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark.exe
 else
-	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmark.o $(LIBDIR)$(LIBNAME) -o $(BINDIR)$(BINNAME)
+	$(CC) $(BUILDDIR)NativeCppClassifyBenchmark.o $(LIBDIR)$(LIBNAME) $(LFLAGS) -o $(BINDIR)$(BINNAME)
 	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark
 endif
 	
