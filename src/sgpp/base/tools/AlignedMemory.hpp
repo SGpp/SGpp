@@ -11,24 +11,25 @@
 #include <new>
 #include <exception>
 
+#ifdef KNF
+#include <lmmintrin.h>
+#undef aligned_malloc
+#undef aligned_free
+#define aligned_malloc(p, size, alignment) p = _mm_malloc(size, alignment)
+#define aligned_free(addr) _mm_free(addr)
+#else
 #ifdef _WIN32
 #include <pmmintrin.h>
 #undef aligned_malloc
 #undef aligned_free
-#define aligned_malloc(size, alignment) _mm_malloc(size, alignment)
+#define aligned_malloc(p, size, alignment) p = _mm_malloc(size, alignment)
 #define aligned_free(addr) _mm_free(addr)
-#else
-#ifdef __APPLE__
+#else //apple or linux or unknown
 #include <stdlib.h>
 #undef aligned_malloc
 #undef aligned_free
-#define aligned_malloc(size, alignment) malloc(size)
-#define aligned_free(addr) free(addr)
-#else // Linux
-#include <malloc.h>
-#undef aligned_malloc
-#undef aligned_free
-#define aligned_malloc(size, alignment) memalign(alignment, size)
+#define POSIX_MEMALIGN
+#define aligned_malloc(p, size, alignment) int success = posix_memalign(&p, SGPPMEMALIGNMENT, size);  
 #define aligned_free(addr) free(addr)
 #endif
 #endif

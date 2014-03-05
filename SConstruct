@@ -105,6 +105,7 @@ vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-th
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
 vars.Add(BoolVariable('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False))
 vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", False))
+vars.Add('OPT', "Sets optimization on and off", False)
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
@@ -216,6 +217,11 @@ env['CPPFLAGS'] = []
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
     env.Append(CPPFLAGS=['-std=c++0x'])
+
+if env['OPT']:
+   env.Append(CPPFLAGS=['-O3'])
+else:	
+   env.Append(CPPFLAGS=['-g'])	
 
 if env['TARGETCPU'] == 'default':
     print "Using default gcc"

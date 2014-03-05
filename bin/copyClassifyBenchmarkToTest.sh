@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cp -rdfv ClassifyBenchmark ./../tests/CPP_Apps/ClassifyBenchmark/
+cp -rfv ClassifyBenchmark ./../tests/CPP_Apps/ClassifyBenchmark/
