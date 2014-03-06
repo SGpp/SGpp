@@ -11,13 +11,9 @@
 #include <new>
 #include <exception>
 
-#ifdef KNF
-#include <lmmintrin.h>
-#undef aligned_malloc
-#undef aligned_free
-#define aligned_malloc(p, size, alignment) p = _mm_malloc(size, alignment)
-#define aligned_free(addr) _mm_free(addr)
-#else
+// define number of bytes that should used as alignment
+#define SGPPMEMALIGNMENT 64
+
 #ifdef _WIN32
 #include <pmmintrin.h>
 #undef aligned_malloc
@@ -32,11 +28,6 @@
 #define aligned_malloc(p, size, alignment) int success = posix_memalign(&p, SGPPMEMALIGNMENT, size);  
 #define aligned_free(addr) free(addr)
 #endif
-#endif
-
-// define number of bytes that should used as alignment
-// doesn't apply to OSX right now (as it uses 16-byte-aligned malloc)
-#define SGPPMEMALIGNMENT 64
 
 /**
  * Overrides normal new
