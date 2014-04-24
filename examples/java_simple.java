@@ -14,9 +14,6 @@ public class java_simple {
 	private static double f(double x0, double x1){
 			return 16.0*(x0-1)*x0 * (x1-1)*x1;
 	}
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		//Two working possiblities for loading the shared object file:
 		//java.lang.System.load("/Path/To/SGpp/trunk/lib/jsgpp/libjsgpp.so");
