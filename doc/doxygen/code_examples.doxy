@@ -28,6 +28,8 @@ coefficients. Finally, we evaluate the sparse grid function @f$u@f$ at
  - \ref code_examples__python_linebyline
 - \ref code_examples__cpp
  - \ref code_examples__cpp_linebyline
+- \ref code_examples__java
+ - \ref code_examples__java_linebyline
 
 
 
@@ -104,7 +106,7 @@ evaluated close to (but not exactly at) a grid point.
 
 @section code_examples__cpp C++
 
-Again, we first show the whole code of file c++_simple.py at once, as it can be
+Again, we first show the whole code of file c++_simple.cpp at once, as it can be
 found in the directory @c examples/, which we then discuss line by line.
 
 @include c++_simple.cpp
@@ -173,6 +175,88 @@ provides an evaluation operation, and the sparse grid interpolant is
 evaluated close to (but not exactly at) a grid point.
 
 
+
+@section code_examples__java Java
+
+Again, we first show the whole code of file java_simple.java at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include java_simple.java
+
+For the compilation, we first have to create a .jar file, which holds all java classes
+@code
+>cd /Path/to/SGpp/trunk/lib/jsgpp/sgpp
+>javac -d . *.java
+>jar cf "Name".jar ./sgpp/*.class
+@endcode
+First, we change to the sgpp directory holding all @c .java files. 
+Next all @c .java files are compiled to @c .class files in the automatically created directory @c ./sgpp.
+At last, we pack all @c .class files to a @c .jar file with the name @c "Name".jar.
+We can now change to the directory @c examples/ and compile and run the java_simple example
+@code
+> cd /Path/To/SGpp/trunk/examples
+> javac -d . -cp .:/Path/To/SGpp/trunk/lib/jsgpp/sgpp/ *.java
+> java -cp .:/Path/To/SGpp/trunk/lib/jsgpp/sgpp/ java_simple
+@endcode 
+Hereby @c -cp gives the path to the previously builded @c "Name".jar file.
+Note that you might have to set the library path 
+environment variable to be able to use the shared libraries:
+@code
+> export LD_LIBRARY_PATH=/Path/To/SGpp/trunk/lib/jsgpp
+@endcode 
+
+This results in the same output as before,
+@include all_simple.output.txt
+
+
+@subsection code_examples__java_linebyline Explanations line by line
+
+@dontinclude java_simple.java
+@until sgpp.OperationEval;
+We can import the whole @c .jar file as in the second line or ,better, just import the class files we use. 
+
+@until }
+defines the function @f$f@f$ we want to interpolate.
+
+@until loadLibrary
+Two possibilities of loading the libjsgpp.so shared object library file, which is needed to find the methods.
+
+@until dimensionality
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+sgpp.Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until number
+Here, we use a sgpp.GridGenerator to create a regular sparse grid of level 
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until length
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until alpha.toString
+The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+
+@until alpha.toString
+An object sgpp.jsgpp.OperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
 
 
 
