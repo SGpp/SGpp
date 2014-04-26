@@ -312,7 +312,7 @@ Note that you might have to set the library path environment variable to be able
 @endcode 
 
 Before we can use these methods in Matlab, we have to add the path to the @c libjsgpp.so file to the librarypath.txt file of Matlab.
-(Hint: Tiping @c matlabroot in Matlab returns the path to your matlab installation)
+(Hint: Typing @c matlabroot in Matlab returns the path to your matlab installation)
 @code
 >cd /Path/To/Matlab/toolbox/local
 >vim librarypath.txt
