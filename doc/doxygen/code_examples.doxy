@@ -30,6 +30,8 @@ coefficients. Finally, we evaluate the sparse grid function @f$u@f$ at
  - \ref code_examples__cpp_linebyline
 - \ref code_examples__java
  - \ref code_examples__java_linebyline
+- \ref code_examples__matlab
+ - \ref code_examples__matlab_linebyline
 
 
 
@@ -258,6 +260,143 @@ evaluate the sparse grid function. An object is obtained which
 provides an evaluation operation, and the sparse grid interpolant is
 evaluated close to (but not exactly at) a grid point.
 
+
+
+@section code_examples__matlab Matlab
+
+As in the previous sections, we first show the whole code of file matlab_simple.m at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include matlab_simple.m
+
+Matlab can use SGpp via Java, i.e. we use the Java library of SGpp and import it to Matlab. 
+In Java we have to use the call @c System.loadLibrary("jsgpp") to load the jsgpp.so library. In Matlab, this call cannot be executed
+directly, but a method has to be called, which then calls @c System.loadLibrary("jsgpp").
+For this to work, we have to first create a Java class in the directory which holds the .java files of SGpp, which we will later pack 
+to the .jar archive, just as in the java_simple example.
+First change to the directory
+@code
+>cd /Path/To/SGpp/trunk/lib/jsgpp/sgpp
+@endcode
+and create the file "Name".java with the editor you prefer, here vim. Here the class is named LoadJSGPPLib.java
+@code
+>vim LoadJSGPPLib.java
+@endcode
+and add the following lines to the file
+@code
+package sgpp;
+
+public class LoadJSGPPLib {
+    public static void loadJSGPPLib() {
+      try {
+	 System.loadLibrary("jsgpp");
+      } catch (UnsatisfiedLinkError error) {
+	 System.out.println("Error loading library");
+      }
+    }
+}
+@endcode
+Thus, we created a class, which just calls the @c System.loadLibrary() method, loading the libjsgpp.so file.
+
+Now, as in the java_simple example, we create the .jar file, which holds all java classes plus the newly created
+LoadJSGPPLib class
+@code
+>javac -d . *.java
+>jar cf "Name".jar ./sgpp/*.class
+@endcode
+All @c .java files are compiled to @c .class files in the automatically created directory @c ./sgpp.
+Then, we pack all @c .class files to a @c .jar file with the name @c "Name".jar.
+Note that you might have to set the library path environment variable to be able to use the shared libraries:
+@code
+> export LD_LIBRARY_PATH=/Path/To/SGpp/trunk/lib/jsgpp
+@endcode 
+
+Before we can use these methods in Matlab, we have to add the path to the @c libjsgpp.so file to the librarypath.txt file of Matlab.
+(Hint: Tiping @c matlabroot in Matlab returns the path to your matlab installation)
+@code
+>cd /Path/To/Matlab/toolbox/local
+>vim librarypath.txt
+@endcode
+Add the following line at the end
+@code
+/Path/To/SGpp/trunk/lib/jsgpp
+@endcode
+After adding this line, we can start Matlab.
+In Matlab, we have to add the newly created "Name".jar file, doing this with the command
+@code
+>>javaaddpath('/Path/To/SGpp/trunk/lib/jsgpp/sgpp/"Name".jar')
+@endcode
+We can now change to the directory @c examples/ and run the matlab_simple example
+@code
+>>matlab_simple
+@endcode 
+
+This results in a similar output as before, only in Matlab,
+@include matlab_simple.output.txt
+
+Hints:
+@code
+"javaaddpath('path/x.jar')" adds dynamic path. For static path, change the classpath.txt file in /Path/To/Matlab/toolbox/local, so you do not have to use javaaddpath any longer
+use ">>javaclasspath" to see the loaded jar files (upper part static, lower part dynamic; our SGPP.jar should be in there)
+">>import sgpp.*" in Matlab to not have to write sgpp. in front of every method
+call ">>methods('sgpp.Classname')" to see methods of class "Classname"
+
+The methods itself can now also be called like Java methods in the Matlab command window, e.g.
+>> dataVector = sgpp.DataVector(10)
+>> dataVector.setAll(0)
+>> dataVector
+@endcode
+
+@subsection code_examples__matlab_linebyline Explanations line by line
+
+@dontinclude matlab_simple.m
+@until sgpp.OperationEval;
+We can import the whole @c .jar file as in the second line or ,better, just import the class files we use. 
+
+@until x1
+defines the function @f$f@f$ we want to interpolate.
+
+@until loadJSGPPLib()
+Method to call the previously created method in class LoadJSGPPLib which loads the libjsgpp.so library. As you can see, the methods are called in Java syntax
+
+@until display
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+sgpp.Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until display
+Here, we use a sgpp.GridGenerator to create a regular sparse grid of level 
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until display
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until alpha.toString
+The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+Attention has to be laid on the different syntax in indexing the array between Matlab and Java.
+Java starts with 0, Matlab with 1!
+
+@until alpha.toString
+An object sgpp.jsgpp.OperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
 
 
 
