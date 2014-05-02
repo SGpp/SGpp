@@ -2,7 +2,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de), Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
 
 import os, sys
@@ -105,6 +105,9 @@ vars.Add('MARCH','Sets the architecture if compiling with gcc, this is a pass-th
 vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
 vars.Add(BoolVariable('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False))
 vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", False))
+vars.Add(BoolVariable("UMFPACK", "Sets if the UMFPACK should be used", False))
+vars.Add(BoolVariable("EIGEN", "Sets if Eigen should be used", False))
+vars.Add(BoolVariable("ARMADILLO", "Sets if Armadillo should be used", False))
 vars.Add('OPT', "Sets optimization on and off", False)
 
 # for compiling on LRZ without errors: omit unit tests
@@ -229,10 +232,14 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
+    env.Append(CPPFLAGS=['-Wall', '-std=c++0x', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
                          '-fno-strict-aliasing', '-O3', '-Wconversion',
                          '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+    
+    # link linear system solver libraries with the resulting .so
+    env.Append(LINKFLAGS=["-Wl,--no-as-needed"])
+    
     if env['OMP']:
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
@@ -297,6 +304,14 @@ if env['PLATFORM'] != 'cygwin':
 
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
+
+
+
+# TODO: remove this, this was only for me (Julian Valentin) to make reading g++'s error
+# messages comfortablier
+env["CXX"] = "color-g++"
+
+
 
 # Decide what to compile
 #########################################################################
@@ -457,7 +472,36 @@ if not env.GetOption('clean'):
             javaAvail = False
     if not javaAvail:
         sys.stderr.write("No Java support...\n")
-
+    
+    if env["UMFPACK"]:
+        if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
+            env.Append(LINKFLAGS=["-lumfpack"])
+            env.Append(CPPDEFINES=["USEUMFPACK"])
+        else:
+            sys.stderr.write("Error: UMFPACK (suitesparse/umfpack.h) not found!\n")
+            Exit(1)
+    else:
+        env.Append(CPPDEFINES=["DONTUSEUMFPACK"])
+    
+    if env["EIGEN"]:
+        if config.CheckHeader("eigen3/Eigen/Dense", language="c++"):
+            env.Append(CPPDEFINES=["USEEIGEN"])
+        else:
+            sys.stderr.write("Error: Eigen (eigen3/Eigen/Dense) not found!\n")
+            Exit(1)
+    else:
+        env.Append(CPPDEFINES=["DONTUSEEIGEN"])
+    
+    if env["ARMADILLO"]:
+        if config.CheckHeader("armadillo", language="c++"):
+            env.Append(LINKFLAGS=["-larmadillo"])
+            env.Append(CPPDEFINES=["USEARMADILLO"])
+        else:
+            sys.stderr.write("Error: Armadillo (armadillo) not found!\n")
+            Exit(1)
+    else:
+        env.Append(CPPDEFINES=["DONTUSEARMADILLO"])
+    
     env = config.Finish()
 
     env['CMD_LOGFILE'] = log_file_orig
@@ -515,6 +559,8 @@ for name in modules:
                 libdependencies = ['sgppbasestatic', 'sgppdatadrivenstatic', 'sgpppdestatic', 'sgppsolverstatic']
             elif name == "misc":
                 libdependencies = ['sgppbasestatic', 'sgppdatadrivenstatic']
+            elif name == "opt":
+                libdependencies = ['sgppbasestatic']
 
             lib = env.SharedLibrary(target="tmp/build/sgpp" + name, source = src_objs[name], SHLIBPREFIX = 'lib', LIBS = libdependencies)
         else:

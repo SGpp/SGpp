@@ -3,42 +3,48 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@mytum.de)
+// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@mytum.de), Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
 #ifndef OPERATIONEVALMODWAVELET_HPP
 #define OPERATIONEVALMODWAVELET_HPP
 
 #include "base/operation/OperationEval.hpp"
 #include "base/grid/GridStorage.hpp"
+#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
+#include "base/datatypes/DataVector.hpp"
 
-namespace sg {
-  namespace base {
+namespace sg
+{
+namespace base
+{
 
+/**
+ * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
+ */
+class OperationEvalModWavelet : public OperationEval
+{
+public:
     /**
-     * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
-     */
-    class OperationEvalModWavelet : public OperationEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         */
-        OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
+    * Constructor
+    *
+    * @param storage the grid's GridStorage object
+    */
+    OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
+    
+    /**
+    * Destructor
+    */
+    virtual ~OperationEvalModWavelet() {}
+    
+    virtual double eval(DataVector &alpha, std::vector<double> &point);
+    
+protected:
+    /// Pointer to GridStorage object
+    GridStorage *storage;
+    SModWaveletBase base;
+};
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationEvalModWavelet() {}
-
-        virtual double eval(DataVector& alpha, std::vector<double>& point);
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
-
-  }
+}
 }
 
-#endif /* OPERATIINEVALMODWAVELET_HPP */
+#endif /* OPERATIONEVALMODWAVELET_HPP */
