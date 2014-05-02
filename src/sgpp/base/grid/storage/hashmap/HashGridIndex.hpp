@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (dirk.pflueger@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Dirk Pflueger (dirk.pflueger@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
 #ifndef HASHGRIDINDEX_HPP
 #define HASHGRIDINDEX_HPP
@@ -37,22 +37,30 @@ namespace sg {
       public:
         typedef LT level_type;
         typedef IT index_type;
+        
+        enum PointDistribution
+        {
+            Normal,
+            ClenshawCurtis
+        };
 
         /**
          * Constructor of a n-Dim gridpoint
          *
          * @param dim the dimension of the gridpoint
          */
-        HashGridIndex(size_t dim) : DIM(dim), level(NULL), index(NULL), hash_value(0) {
+        HashGridIndex(size_t dim) : DIM(dim), level(NULL), index(NULL), coord(NULL), coord_cached(NULL), distr(Normal), hash_value(0) {
           level = new level_type[dim];
           index = new index_type[dim];
+          coord = new double[dim];
+          coord_cached = new bool[dim]();
           Leaf = false;
         }
 
         /**
          * Standard-Constructor
          */
-        HashGridIndex() : DIM(0), level(NULL), index(NULL), hash_value(0) {
+        HashGridIndex() : DIM(0), level(NULL), index(NULL), coord(NULL), coord_cached(NULL), distr(Normal), hash_value(0) {
           Leaf = false;
         }
 
@@ -61,16 +69,21 @@ namespace sg {
          *
          * @param o constant pointer to HashGridIndex object
          */
-        HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL), hash_value(0) {
+        HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL), coord(NULL), coord_cached(NULL), distr(Normal), hash_value(0) {
           level = new level_type[DIM];
           index = new index_type[DIM];
+          coord = new double[DIM];
+          coord_cached = new bool[DIM];
           Leaf = false;
 
           for (size_t d = 0; d < DIM; d++) {
             level[d] = o->level[d];
             index[d] = o->index[d];
+            coord[d] = o->coord[d];
+            coord_cached[d] = o->coord_cached[d];
           }
 
+          distr = o->distr;
           Leaf = o->Leaf;
           rehash();
         }
@@ -81,13 +94,15 @@ namespace sg {
          * @param istream instream object the contains the information about the gridpoint
          * @param version the serialization version of the file
          */
-        HashGridIndex(std::istream& istream, int version) : DIM(0), level(NULL), index(NULL), hash_value(0) {
+        HashGridIndex(std::istream& istream, int version) : DIM(0), level(NULL), index(NULL), coord(NULL), coord_cached(NULL), distr(Normal), hash_value(0) {
           size_t temp_leaf;
 
           istream >> DIM;
 
           level = new level_type[DIM];
           index = new index_type[DIM];
+          coord = new double[DIM];
+          coord_cached = new bool[DIM]();
           Leaf = false;
 
           for (size_t d = 0; d < DIM; d++) {
@@ -114,13 +129,21 @@ namespace sg {
         /**
          * Destructor
          */
-        ~HashGridIndex() {
+        virtual ~HashGridIndex() {
           if (level) {
             delete [] level;
           }
 
           if (index) {
             delete [] index;
+          }
+
+          if (coord) {
+            delete [] coord;
+          }
+
+          if (coord_cached) {
+            delete [] coord_cached;
           }
         }
 
@@ -161,6 +184,7 @@ namespace sg {
         void set(size_t d, LT l, IT i) {
           level[d] = l;
           index[d] = i;
+          coord_cached[d] = false;
           rehash();
         }
 
@@ -175,6 +199,7 @@ namespace sg {
         void set(size_t d, LT l, IT i, bool isLeaf) {
           level[d] = l;
           index[d] = i;
+          coord_cached[d] = false;
           Leaf = isLeaf;
           rehash();
         }
@@ -189,6 +214,7 @@ namespace sg {
         void push(size_t d, LT l, IT i) {
           level[d] = l;
           index[d] = i;
+          coord_cached[d] = false;
         }
 
         /**
@@ -202,6 +228,7 @@ namespace sg {
         void push(size_t d, LT l, IT i, bool isLeaf) {
           level[d] = l;
           index[d] = i;
+          coord_cached[d] = false;
           Leaf = isLeaf;
         }
 
@@ -237,6 +264,21 @@ namespace sg {
           return index[d];
         }
 
+        void setPointDistribution(PointDistribution distr)
+        {
+          if (this->distr != distr)
+          {
+            for (size_t d = 0; d < DIM; d++) {
+              coord_cached[d] = false;
+            }
+            this->distr = distr;
+          }
+        }
+
+        PointDistribution getPointDistribution() const
+        {
+          return distr;
+        }
 
         /**
          * Set the leaf property; a grid point is called a leaf, if it has <b>not a single</b> child.
@@ -265,7 +307,18 @@ namespace sg {
          * @todo (heinecke, should) rename to getCoord
          */
         double abs(size_t d) const {
-          return index[d] * pow(2.0, -static_cast<double>(level[d]));
+          if (!coord_cached[d])
+          {
+            if (distr == PointDistribution::Normal)
+            {
+              coord[d] = recalculateCoordNormal(d);
+            } else
+            {
+              coord[d] = recalculateCoordClenshawCurtis(d);
+            }
+            coord_cached[d] = true;
+          }
+          return coord[d];
         }
 
         /**
@@ -278,7 +331,7 @@ namespace sg {
          * @return the coordinate in the given dimension
          */
         double getCoordBB(size_t d, double q, double t) const {
-          return q * (index[d] * pow(2.0, -static_cast<double>(level[d]))) + t;
+          return q * abs(d) + t;
         }
         /**
          * determines the coordinate in a given dimension
@@ -405,17 +458,30 @@ namespace sg {
               delete [] index;
             }
 
+            if (coord) {
+              delete [] coord;
+            }
+
+            if (coord_cached) {
+              delete [] coord_cached;
+            }
+
             DIM = rhs.DIM;
 
             level = new level_type[DIM];
             index = new index_type[DIM];
+            coord = new double[DIM];
+            coord_cached = new bool[DIM];
           }
 
           for (size_t d = 0; d < DIM; d++) {
             level[d] = rhs.level[d];
             index[d] = rhs.index[d];
+            coord[d] = rhs.coord[d];
+            coord_cached[d] = rhs.coord_cached[d];
           }
 
+          distr = rhs.distr;
           Leaf = rhs.Leaf;
 
           rehash();
@@ -467,7 +533,7 @@ namespace sg {
             if (level[i] == 0) {
               p.set(i, index[i]);
             } else {
-              p.set(i, pow(0.5, static_cast<double>(level[i]))*index[i]);
+              p.set(i, abs(i));
             }
           }
         }
@@ -484,7 +550,7 @@ namespace sg {
             if (level[i] == 0) {
               p.set(i, (BB.getIntervalWidth(i)*index[i]) + BB.getIntervalOffset(i));
             } else {
-              p.set(i, (BB.getIntervalWidth(i) * (pow(0.5, static_cast<double>(level[i]))*index[i])) + BB.getIntervalOffset(i));
+              p.set(i, (BB.getIntervalWidth(i)*abs(i)) + BB.getIntervalOffset(i));
             }
           }
         }
@@ -520,7 +586,7 @@ namespace sg {
             if (level[i] == 0) {
               return_stream << index[i];
             } else {
-              return_stream << std::scientific << (pow(0.5, static_cast<double>(level[i]))*index[i]);
+              return_stream << std::scientific << abs(i);
             }
 
             if (i < DIM - 1) {
@@ -548,7 +614,7 @@ namespace sg {
             if (level[i] == 0) {
               return_stream << std::scientific << (BB.getIntervalWidth(i)*index[i]) + BB.getIntervalOffset(i);
             } else {
-              return_stream << std::scientific << (BB.getIntervalWidth(i) * (pow(0.5, static_cast<double>(level[i]))*index[i])) + BB.getIntervalOffset(i);
+              return_stream << std::scientific << (BB.getIntervalWidth(i)*abs(i)) + BB.getIntervalOffset(i);
             }
 
             if (i < DIM - 1) {
@@ -633,12 +699,28 @@ namespace sg {
         size_t DIM;
         /// pointer to array that stores the ansatzfunctions' level
         LT* level;
-        /// pointer to array that stores the ansatzfunctions' indecies
+        /// pointer to array that stores the ansatzfunctions' indices
         IT* index;
+        /// pointer to array that stores the ansatzfunctions' coordinates
+        double* coord;
+        bool* coord_cached;
+        PointDistribution distr;
         /// stores if this gridpoint is a leaf
         bool Leaf;
         /// stores the hashvalue of the gridpoint
         size_t hash_value;
+        
+        inline double recalculateCoordNormal(size_t d) const
+        {
+            //return index[d] * pow(2.0, -static_cast<double>(level[d]));
+            return index[d] / static_cast<double>(1 << level[d]);
+        }
+        
+        inline double recalculateCoordClenshawCurtis(size_t d) const
+        {
+            return (cos(M_PI * (1.0 - static_cast<double>(this->index[d]) /
+                                static_cast<double>(1 << this->level[d]))) + 1.0) / 2.0;
+        }
     };
 
     template<class LT, class IT>

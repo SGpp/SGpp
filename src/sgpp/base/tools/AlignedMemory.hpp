@@ -34,14 +34,26 @@
  *
  * @param size size of object
  */
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+// g++ with C++11 enabled (at least 4.7 and 4.8) seem to have a different exception
+// specifier for "new"
+void* operator new (size_t size) _GLIBCXX_THROW (std::bad_alloc);
+#else
 void* operator new (size_t size) throw (std::bad_alloc);
+#endif
 
 /**
  * Overrides normal new[]
  *
  * @param size size of object
  */
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+// g++ with C++11 enabled (at least 4.7 and 4.8) seem to have a different exception
+// specifier for "new"
+void* operator new[] (size_t size) _GLIBCXX_THROW (std::bad_alloc);
+#else
 void* operator new[] (size_t size) throw (std::bad_alloc);
+#endif
 
 /**
  * Overrides normal delete
