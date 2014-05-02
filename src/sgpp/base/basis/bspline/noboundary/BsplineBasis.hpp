@@ -370,7 +370,7 @@ public:
                 return result;
             }
             break;
-        case 8:
+        /*case 8:
             if ((x < 0.0) || (x >= 9.0))
             {
                 return 0.0;
@@ -619,7 +619,7 @@ public:
                 result = 1562500.0/567.0 + result * x;
                 return result;
             }
-            break;
+            break;*/
         default:
             double p_double = static_cast<double>(p);
             
@@ -916,7 +916,7 @@ public:
                 return result;
             }
             break;
-        case 8:
+        /*case 8:
             if ((x < 0.0) || (x >= 9.0))
             {
                 return 0.0;
@@ -1146,7 +1146,7 @@ public:
                 result = -156250.0/63.0 + result * x;
                 return result;
             }
-            break;
+            break;*/
         default:
             double p_double = static_cast<double>(p);
             
@@ -1386,7 +1386,7 @@ public:
                 return result;
             }
             break;
-        case 8:
+        /*case 8:
             if ((x < 0.0) || (x >= 9.0))
             {
                 return 0.0;
@@ -1597,7 +1597,7 @@ public:
                 result = 125000.0/63.0 + result * x;
                 return result;
             }
-            break;
+            break;*/
         default:
             double p_double = static_cast<double>(p);
             
