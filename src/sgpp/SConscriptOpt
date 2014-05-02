@@ -1,0 +1,22 @@
+dependencies = ["Base"]
+
+srcs = Split("""
+opt/function/TestFunction.cpp
+opt/gridgen/IterativeGridGeneratorFerenczi.cpp
+opt/gridgen/IterativeGridGeneratorLinearSurplus.cpp
+opt/optimization/OptimizerFRPR.cpp
+opt/optimization/OptimizerGradientMethod.cpp
+opt/optimization/OptimizerNelderMead.cpp
+opt/optimization/OptimizerNewton.cpp
+opt/sle/FullSystem.cpp
+opt/sle/HierarchisationSystem.cpp
+opt/sle/SolverArmadillo.cpp
+opt/sle/SolverAuto.cpp
+opt/sle/SolverBiCGStab.cpp
+opt/sle/SolverEigen.cpp
+opt/sle/SolverUMFPACK.cpp
+opt/tools/Printer.cpp
+""")
+
+Export('srcs')
+Export('dependencies')
