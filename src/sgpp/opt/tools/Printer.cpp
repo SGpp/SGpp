@@ -119,7 +119,7 @@ void Printer::printStatusEnd(const std::string &msg)
 void Printer::printGridToFile(const std::string &filename,
                               const gridgen::IterativeGridGenerator &grid_gen) const
 {
-    base::GridStorage *grid_storage = grid_gen.getGrid()->getStorage();
+    base::GridStorage *grid_storage = grid_gen.getGrid().getStorage();
     const std::vector<double> &function_values = grid_gen.getFunctionValues();
     size_t N = grid_storage->size();
     size_t d = grid_storage->dim();
