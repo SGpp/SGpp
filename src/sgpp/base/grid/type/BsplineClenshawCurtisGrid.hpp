@@ -9,6 +9,7 @@
 #define BSPLINECLENSHAWCURTISGRID_HPP
 
 #include "base/grid/Grid.hpp"
+#include "base/tools/CosineTable.hpp"
 
 #include <iostream>
 
@@ -23,7 +24,7 @@ protected:
     BsplineClenshawCurtisGrid(std::istream& istr);
     
 public:
-    BsplineClenshawCurtisGrid(size_t dim, size_t degree);
+    BsplineClenshawCurtisGrid(size_t dim, size_t degree, const CosineTable *cosine_table = NULL);
     virtual ~BsplineClenshawCurtisGrid();
     
     virtual const char *getType();
@@ -34,9 +35,13 @@ public:
     
     virtual void serialize(std::ostream& ostr);
     virtual size_t getDegree();
+    virtual const CosineTable *getCosineTable() const;
+    
+    virtual void setCosineTable(const CosineTable *cosine_table);
     
 protected:
     size_t degree;
+    const CosineTable *cosine_table;
 };
 
 }

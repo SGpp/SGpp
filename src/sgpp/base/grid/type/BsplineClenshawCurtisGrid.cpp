@@ -36,7 +36,10 @@ BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(std::istream& istr) :
 
 //template class HashGridStorage<GridIndexClenshawCurtis>;
 
-BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim, size_t degree) : degree(degree)
+BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(
+        size_t dim, size_t degree, const CosineTable *cosine_table) :
+    degree(degree),
+    cosine_table(cosine_table)
 {
     this->storage = new GridStorage(dim);
 }
@@ -53,6 +56,16 @@ const char *BsplineClenshawCurtisGrid::getType()
 size_t BsplineClenshawCurtisGrid::getDegree()
 {
     return this->degree;
+}
+
+const CosineTable *BsplineClenshawCurtisGrid::getCosineTable() const
+{
+    return this->cosine_table;
+}
+
+void BsplineClenshawCurtisGrid::setCosineTable(const CosineTable *cosine_table)
+{
+    this->cosine_table = cosine_table;
 }
 
 Grid *BsplineClenshawCurtisGrid::unserialize(std::istream& istr)
