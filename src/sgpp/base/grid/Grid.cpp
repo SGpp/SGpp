@@ -22,6 +22,7 @@
 #include "base/grid/type/ModPolyGrid.hpp"
 #include "base/grid/type/BsplineGrid.hpp"
 #include "base/grid/type/BsplineBoundaryGrid.hpp"
+#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
 #include "base/grid/type/ModBsplineGrid.hpp"
 #include "base/grid/type/WaveletGrid.hpp"
 #include "base/grid/type/WaveletBoundaryGrid.hpp"
@@ -95,7 +96,11 @@ namespace sg {
     }
 
     Grid* Grid::createBsplineBoundaryGrid(size_t dim, size_t degree) {
-      return new BsplineGrid(dim, degree);
+      return new BsplineBoundaryGrid(dim, degree);
+    }
+
+    Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+      return new BsplineClenshawCurtisGrid(dim, degree);
     }
 
     Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
