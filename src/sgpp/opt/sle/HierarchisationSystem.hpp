@@ -6,8 +6,24 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/algorithm/GetAffectedBasisFunctions.hpp"
 
+#include "base/basis/basis.hpp"
+/*#include "base/basis/bspline/noboundary/BsplineBasis.hpp"
+#include "base/basis/bspline/boundary/BsplineBoundaryBasis.hpp"
+#include "base/basis/bspline/clenshawcurtis/BsplineClenshawCurtisBasis.hpp"
+#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "base/basis/wavelet/noboundary/WaveletBasis.hpp"
+#include "base/basis/wavelet/boundary/WaveletBoundaryBasis.hpp"
+#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"*/
+
+#include "base/grid/type/BsplineGrid.hpp"
+#include "base/grid/type/BsplineBoundaryGrid.hpp"
+#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
+#include "base/grid/type/ModBsplineGrid.hpp"
+
 #include <vector>
 #include <cstddef>
+#include <cstring>
+#include <stdexcept>
 //#include <boost/functional/hash.hpp>
 //#include <unordered_map>
 
@@ -18,12 +34,58 @@ namespace opt
 namespace sle
 {
 
-template <class BASIS>
 class HierarchisationSystem : public System
 {
 public:
-    HierarchisationSystem(base::Grid *grid, BASIS &basis,
-                          const std::vector<double> &function_values);
+    HierarchisationSystem(base::Grid *grid, const std::vector<double> &function_values) :
+        System(grid->getStorage()->size(), function_values),
+        grid(grid),
+        grid_storage(grid->getStorage()),
+        basis(NULL)
+        /*cached_row_index(0),
+        cached_row({}),
+        row_cached(false)*/
+        //hash_map(std::unordered_map<size_t, double>())
+    {
+        if (strcmp(grid->getType(), "Bspline") == 0)
+        {
+            basis = new sg::base::SBsplineBase(
+                    ((base::BsplineGrid *)grid)->getDegree());
+        } else if (strcmp(grid->getType(), "BsplineBoundary") == 0)
+        {
+            basis = new sg::base::SBsplineBoundaryBase(
+                    ((base::BsplineBoundaryGrid *)grid)->getDegree());
+        } else if (strcmp(grid->getType(), "BsplineClenshawCurtis") == 0)
+        {
+            basis = new sg::base::SBsplineClenshawCurtisBase(
+                    ((base::BsplineClenshawCurtisGrid *)grid)->getDegree(),
+                    ((base::BsplineClenshawCurtisGrid *)grid)->getCosineTable());
+        } else if (strcmp(grid->getType(), "modBspline") == 0)
+        {
+            basis = new sg::base::SModBsplineBase(
+                    ((base::ModBsplineGrid *)grid)->getDegree());
+        } else if (strcmp(grid->getType(), "Wavelet") == 0)
+        {
+            basis = new sg::base::SWaveletBase();
+        } else if (strcmp(grid->getType(), "WaveletBoundary") == 0)
+        {
+            basis = new sg::base::SWaveletBoundaryBase();
+        } else if (strcmp(grid->getType(), "modWavelet") == 0)
+        {
+            basis = new sg::base::SModWaveletBase();
+        } else
+        {
+            throw std::invalid_argument("Grid type not supported.");
+        }
+    }
+    
+    ~HierarchisationSystem()
+    {
+        if (basis != NULL)
+        {
+            delete basis;
+        }
+    }
     
     inline bool isMatrixEntryNonZero(size_t i, size_t j)
     {
@@ -35,13 +97,21 @@ public:
         return evalBasisFunctionAtGridPoint(j, i);
     }
     
-    base::Grid *getGrid();
-    void setGrid(base::Grid *grid);
+    base::Grid *getGrid()
+    {
+        return grid;
+    }
+    
+    void setGrid(base::Grid *grid)
+    {
+        this->grid = grid;
+        //row_cached = false;
+    }
     
 protected:
     base::Grid *grid;
     base::GridStorage *grid_storage;
-    BASIS &basis;
+    base::SBase *basis;
     
     /*size_t cached_row_index;
     std::vector<double> cached_row;
@@ -104,7 +174,7 @@ protected:
             
             if (hash_map.find(hash) == hash_map.end())
             {
-                result1d = basis.eval(gp_basis->getLevel(t), gp_basis->getIndex(t),
+                result1d = basis->eval(gp_basis->getLevel(t), gp_basis->getIndex(t),
                                       gp_point->abs(t));
                 hash_map[hash] = result1d;
             } else
@@ -128,7 +198,7 @@ protected:
         
         for (size_t t = 0; t < grid_storage->dim(); t++)
         {
-            double result1d = basis.eval(gp_basis->getLevel(t), gp_basis->getIndex(t),
+            double result1d = basis->eval(gp_basis->getLevel(t), gp_basis->getIndex(t),
                                          gp_point->abs(t));
             
             if (result1d == 0.0)
@@ -142,6 +212,14 @@ protected:
         return result;
     }
 };
+
+/*template class HierarchisationSystem<base::SBsplineBase>;
+template class HierarchisationSystem<base::SBsplineBoundaryBase>;
+template class HierarchisationSystem<base::SBsplineClenshawCurtisBase>;
+template class HierarchisationSystem<base::SModBsplineBase>;
+template class HierarchisationSystem<base::SWaveletBase>;
+template class HierarchisationSystem<base::SWaveletBoundaryBase>;
+template class HierarchisationSystem<base::SModWaveletBase>;*/
 
 }
 }
