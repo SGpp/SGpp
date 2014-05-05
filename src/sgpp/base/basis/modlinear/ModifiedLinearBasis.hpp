@@ -8,6 +8,8 @@
 #ifndef MODIFIED_LINEAR_BASE_HPP
 #define MODIFIED_LINEAR_BASE_HPP
 
+#include "base/basis/basis.hpp"
+
 #include <cmath>
 
 namespace sg {
@@ -19,7 +21,7 @@ namespace sg {
      * @version $HEAD$
      */
     template<class LT, class IT>
-    class ModifiedLinearBasis {
+    class ModifiedLinearBasis : public Basis<LT, IT> {
       public:
         /**
          * Evaluate a basis function.

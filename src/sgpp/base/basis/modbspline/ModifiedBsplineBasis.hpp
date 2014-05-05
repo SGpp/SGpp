@@ -8,6 +8,7 @@
 #ifndef MODIFIED_BSPLINE_BASE_HPP
 #define MODIFIED_BSPLINE_BASE_HPP
 
+#include "base/basis/basis.hpp"
 #include "base/basis/bspline/noboundary/BsplineBasis.hpp"
 
 #include <cmath>
@@ -22,7 +23,7 @@ namespace base
 *
 */
 template<class LT, class IT>
-class ModifiedBsplineBasis
+class ModifiedBsplineBasis : public Basis<LT, IT>
 {
 protected:
     BsplineBasis<LT, IT> bspline_basis;
@@ -1205,7 +1206,7 @@ public:
         }
     }
 
-    inline double eval(LT level, IT index, double x) const
+    inline double eval(LT level, IT index, double x)
     {
         //std::cout << "Level " << level <<" Index "<<index<<" Point "<<p<<" BasisValue ";
         if (static_cast<int>(level) == 1)
@@ -1236,7 +1237,7 @@ public:
         }
     }
     
-    inline double evalDx(LT level, IT index, double x) const
+    inline double evalDx(LT level, IT index, double x)
     {
         if (static_cast<int>(level) == 1)
         {
@@ -1266,7 +1267,7 @@ public:
         }
     }
     
-    inline double evalDxDx(LT level, IT index, double x) const
+    inline double evalDxDx(LT level, IT index, double x)
     {
         if (static_cast<int>(level) == 1)
         {

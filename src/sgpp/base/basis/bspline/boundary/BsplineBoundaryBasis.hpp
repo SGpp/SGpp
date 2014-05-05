@@ -8,6 +8,7 @@
 #ifndef BSPLINE_BOUNDARY_BASE_HPP
 #define BSPLINE_BOUNDARY_BASE_HPP
 
+#include "base/basis/basis.hpp"
 #include "base/basis/bspline/noboundary/BsplineBasis.hpp"
 
 #include <cmath>
@@ -18,7 +19,7 @@ namespace base
 {
 
 template<class LT, class IT>
-class BsplineBoundaryBasis
+class BsplineBoundaryBasis : public Basis<LT, IT>
 {
 protected:
     BsplineBasis<LT, IT> bspline_basis;
@@ -27,7 +28,7 @@ public:
     BsplineBoundaryBasis() : bspline_basis(BsplineBasis<LT, IT>()) {}
     BsplineBoundaryBasis(size_t degree) : bspline_basis(BsplineBasis<LT, IT>(degree)) {}
     
-    inline double eval(LT level, IT index, double x) const
+    inline double eval(LT level, IT index, double x)
     {
         if (level == 0)
         {
@@ -44,7 +45,7 @@ public:
         }
     }
     
-    inline double evalDx(LT level, IT index, double x) const
+    inline double evalDx(LT level, IT index, double x)
     {
         if (level == 0)
         {
@@ -61,7 +62,7 @@ public:
         }
     }
     
-    inline double evalDxDx(LT level, IT index, double x) const
+    inline double evalDxDx(LT level, IT index, double x)
     {
         if (level == 0)
         {
