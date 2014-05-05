@@ -8,6 +8,7 @@
 #ifndef MODIFIED_WAVELET_BASE_HPP
 #define MODIFIED_WAVELET_BASE_HPP
 
+#include "base/basis/basis.hpp"
 #include <cmath>
 
 namespace sg
@@ -20,10 +21,10 @@ namespace base
  * @todo (pflueged) Concernc also most other basis functions: Why static cast in int and not in unsigned int?? If index is unsigned int (which is the case) then for level 32, indices get lost/corrupted.
  */
 template<class LT, class IT>
-class ModifiedWaveletBasis
+class ModifiedWaveletBasis : public Basis<LT, IT>
 {
 public:
-    inline double eval(LT level, IT index, double p) const
+    inline double eval(LT level, IT index, double p)
     {
         //std::cout << "Level " << level <<" Index "<<index<<" Point "<<p<<" BasisValue ";
         if (level == 1)
@@ -59,7 +60,7 @@ public:
         return (1.0 - t2) * exp(-t2);
     }
     
-    inline double evalDx(LT level, IT index, double p) const
+    inline double evalDx(LT level, IT index, double p)
     {
         if (level == 1)
         {
@@ -90,7 +91,7 @@ public:
         return 2.0 * t * (t2 - 2.0) * exp(-t2) / sup;
     }
     
-    inline double evalDxDx(LT level, IT index, double p) const
+    inline double evalDxDx(LT level, IT index, double p)
     {
         if (level == 1)
         {

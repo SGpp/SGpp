@@ -8,6 +8,8 @@
 #ifndef PREWAVELET_BASE_HPP
 #define PREWAVELET_BASE_HPP
 
+#include "base/basis/basis.hpp"
+
 #include <cmath>
 #include <iostream>
 
@@ -33,7 +35,7 @@ namespace sg {
      * this advantage is bought with a wider support of the ansatzfunctions.
      */
     template<class LT, class IT>
-    class PrewaveletBasis {
+    class PrewaveletBasis : public Basis<LT, IT> {
       private:
 
         static const double normal_stamp[];

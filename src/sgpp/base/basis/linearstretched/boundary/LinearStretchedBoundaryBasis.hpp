@@ -113,6 +113,8 @@ namespace sg {
           //    }
           //    ///Should not happen
           //    return 0.0;
+          (void)level;
+          (void)index;
           return (p - pos0) / (pos1 - pos0);
         }
 

@@ -8,6 +8,8 @@
 #ifndef WAVELET_BASE_HPP
 #define WAVELET_BASE_HPP
 
+#include "base/basis/basis.hpp"
+
 #include <cmath>
 
 namespace sg
@@ -16,10 +18,10 @@ namespace base
 {
 
 template<class LT, class IT>
-class WaveletBasis
+class WaveletBasis : public Basis<LT, IT>
 {
 public:
-    inline double eval(LT level, IT index, double x) const
+    inline double eval(LT level, IT index, double x)
     {
         double hinv = static_cast<double>(1 << level);
         double t = x * hinv - static_cast<double>(index);
@@ -34,7 +36,7 @@ public:
         return (1.0 - t2) * exp(-t2);
     }
     
-    inline double evalDx(LT level, IT index, double x) const
+    inline double evalDx(LT level, IT index, double x)
     {
         double hinv = static_cast<double>(1 << level);
         double t = x * hinv - static_cast<double>(index);
@@ -49,7 +51,7 @@ public:
         return 2.0 * t * (t2 - 2.0) * exp(-t2) * hinv;
     }
     
-    inline double evalDxDx(LT level, IT index, double x) const
+    inline double evalDxDx(LT level, IT index, double x)
     {
         double hinv = static_cast<double>(1 << level);
         double t = x * hinv - static_cast<double>(index);

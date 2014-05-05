@@ -8,6 +8,8 @@
 #ifndef BSPLINE_BASE_HPP
 #define BSPLINE_BASE_HPP
 
+#include "base/basis/basis.hpp"
+
 #include <cmath>
 
 namespace sg
@@ -16,7 +18,7 @@ namespace base
 {
 
 template<class LT, class IT>
-class BsplineBasis
+class BsplineBasis : public Basis<LT, IT>
 {
 protected:
     size_t degree;
@@ -1794,7 +1796,7 @@ public:
         }
     }*/
     
-    inline double eval(LT level, IT index, double x) const
+    inline double eval(LT level, IT index, double x)
     {
         double hinv = static_cast<double>(1 << level);
         
@@ -1803,7 +1805,7 @@ public:
                 this->degree);
     }
     
-    inline double evalDx(LT level, IT index, double x) const
+    inline double evalDx(LT level, IT index, double x)
     {
         double hinv = static_cast<double>(1 << level);
         
@@ -1812,7 +1814,7 @@ public:
                 this->degree);
     }
     
-    inline double evalDxDx(LT level, IT index, double x) const
+    inline double evalDxDx(LT level, IT index, double x)
     {
         double hinv = static_cast<double>(1 << level);
         

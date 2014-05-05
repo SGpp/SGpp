@@ -8,6 +8,7 @@
 #ifndef LINEARCLENSHAWCURTISBASE_HPP
 #define LINEARCLENSHAWCURTISBASE_HPP
 
+#include "base/basis/basis.hpp"
 #include "base/tools/CosineTable.hpp"
 
 #include <cmath>
@@ -18,7 +19,7 @@ namespace base
 {
 
 template<class LT, class IT>
-class LinearClenshawCurtisBasis
+class LinearClenshawCurtisBasis : public Basis<LT, IT>
 {
 protected:
     const CosineTable *cosine_table;
