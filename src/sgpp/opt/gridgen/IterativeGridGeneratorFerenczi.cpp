@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cstring>
 
 namespace sg
 {
@@ -30,8 +31,8 @@ inline double fastPow(double a, double b)
 }
 
 IterativeGridGeneratorFerenczi::IterativeGridGeneratorFerenczi(
-        function::ObjectiveFunction &f, GridType grid_type, size_t N, double alpha) :
-    IterativeGridGenerator(f, grid_type, N),
+        function::ObjectiveFunction &f, base::Grid &grid, size_t N, double alpha) :
+    IterativeGridGenerator(f, grid, N),
     alpha(alpha)
 {
 }
@@ -78,12 +79,19 @@ void IterativeGridGeneratorFerenczi::generate()
 {
     tools::printer.printStatusBegin("Adaptive grid generation (Ferenczi)...");
     
-    base::GridIndex::PointDistribution distr = ((grid_type == GridType::ClenshawCurtis) ?
-            base::GridIndex::PointDistribution::ClenshawCurtis :
-            base::GridIndex::PointDistribution::Normal);
+    base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
     
-    base::GridStorage *grid_storage = grid->getStorage();
-    base::GridGenerator *grid_gen = grid->createGridGenerator();
+    if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0)
+    {
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
+    }
+    
+    bool is_boundary_grid = ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
+                             (strcmp(grid.getType(), "WaveletBoundary") == 0) ||
+                             (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0));
+    
+    base::GridStorage *grid_storage = grid.getStorage();
+    base::GridGenerator *grid_gen = grid.createGridGenerator();
     grid_gen->regular(static_cast<int>(INITIAL_LEVEL));
     //std::cout << "number of grid points: " << grid_storage->size() << "\n";
     
@@ -162,7 +170,7 @@ void IterativeGridGeneratorFerenczi::generate()
         //base::HashRefinementSGOpt hash_refinement;
         //hash_refinement.free_refine(grid_storage, &refine_func);
         
-        if ((grid_type == GridType::Boundary) || (grid_type == GridType::ClenshawCurtis))
+        if (is_boundary_grid)
         {
             base::HashRefinementMultipleBoundaries hash_refinement;
             hash_refinement.free_refine(grid_storage, &refine_func);
