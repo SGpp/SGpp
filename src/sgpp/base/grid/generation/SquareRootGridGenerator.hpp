@@ -32,20 +32,35 @@ namespace sg {
         virtual ~SquareRootGridGenerator();
 
         virtual void regular(int level);
-        virtual void full(int level) {};
-        virtual void refine(RefinementFunctor* func) {};
+        virtual void full(int level) {
+          (void)level;
+        };
+        virtual void refine(RefinementFunctor* func) {
+          (void)func;
+        };
         virtual size_t getNumberOfRefinablePoints() {
           return 0;
         };
 
-        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) {};
-        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {};
+        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) {
+          (void)func;
+          (void)alpha;
+        };
+        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {
+          (void)func;
+          (void)alpha;
+          (void)numFirstOnly;
+        };
         virtual size_t getNumberOfRemovablePoints() {
           return 0;
         };
 
-        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel) {};
+        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel) {
+          (void)func;
+          (void)maxLevel;
+        };
         virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel) {
+          (void)maxLevel;
           return 0;
         };
 

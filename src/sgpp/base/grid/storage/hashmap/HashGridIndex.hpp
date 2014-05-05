@@ -129,7 +129,7 @@ namespace sg {
         /**
          * Destructor
          */
-        virtual ~HashGridIndex() {
+        ~HashGridIndex() {
           if (level) {
             delete [] level;
           }
