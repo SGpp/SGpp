@@ -9,7 +9,6 @@ opt/optimization/OptimizerGradientMethod.cpp
 opt/optimization/OptimizerNelderMead.cpp
 opt/optimization/OptimizerNewton.cpp
 opt/sle/FullSystem.cpp
-opt/sle/HierarchisationSystem.cpp
 opt/sle/SolverArmadillo.cpp
 opt/sle/SolverAuto.cpp
 opt/sle/SolverBiCGStab.cpp
