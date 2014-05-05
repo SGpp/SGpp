@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_SLE_SOLVERBICGSTAB_HPP
-#define SGPP_OPT_SLE_SOLVERBICGSTAB_HPP
+#ifndef SGPP_OPT_SLE_SOLVER_BICGSTAB_HPP
+#define SGPP_OPT_SLE_SOLVER_BICGSTAB_HPP
 
-#include "opt/sle/Solver.hpp"
+#include "opt/sle/solver/Solver.hpp"
 
 #include <cstddef>
 #include <vector>
@@ -13,17 +13,19 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
-class SolverBiCGStab : public Solver
+class BiCGStab : public Solver
 {
 public:
     static const size_t DEFAULT_MAX_IT_COUNT = 1000;
     static const double DEFAULT_TOLERANCE;
     
-    SolverBiCGStab();
-    SolverBiCGStab(size_t max_it_count, double tolerance, const std::vector<double> &x0);
+    BiCGStab();
+    BiCGStab(size_t max_it_count, double tolerance, const std::vector<double> &x0);
     
-    bool solve(System &system, std::vector<double> &x) const;
+    bool solve(system::System &system, std::vector<double> &x) const;
     /*bool solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
                const std::vector<double> &Tx, const std::vector<double> &b,
                std::vector<double> &x) const;*/
@@ -43,6 +45,7 @@ protected:
     std::vector<double> x0;
 };
 
+}
 }
 }
 }

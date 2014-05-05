@@ -8,12 +8,11 @@ opt/optimization/OptimizerFRPR.cpp
 opt/optimization/OptimizerGradientMethod.cpp
 opt/optimization/OptimizerNelderMead.cpp
 opt/optimization/OptimizerNewton.cpp
-opt/sle/FullSystem.cpp
-opt/sle/SolverArmadillo.cpp
-opt/sle/SolverAuto.cpp
-opt/sle/SolverBiCGStab.cpp
-opt/sle/SolverEigen.cpp
-opt/sle/SolverUMFPACK.cpp
+opt/sle/solver/Armadillo.cpp
+opt/sle/solver/Auto.cpp
+opt/sle/solver/BiCGStab.cpp
+opt/sle/solver/Eigen.cpp
+opt/sle/solver/UMFPACK.cpp
 opt/tools/Printer.cpp
 """)
 

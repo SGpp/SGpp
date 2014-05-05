@@ -3,8 +3,8 @@
 
 #include "opt/optimization/Optimizer.hpp"
 #include "opt/function/ObjectiveFunctionHessian.hpp"
-#include "opt/sle/Solver.hpp"
-#include "opt/sle/SolverBiCGStab.hpp"
+#include "opt/sle/solver/Solver.hpp"
+#include "opt/sle/solver/BiCGStab.hpp"
 
 #include <cstddef>
 
@@ -31,7 +31,7 @@ public:
     OptimizerNewton(function::ObjectiveFunction &f,
                     function::ObjectiveFunctionHessian &f_hessian,
                     size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
-                    double p, double tolerance, const sle::Solver &sle_solver);
+                    double p, double tolerance, const sle::solver::Solver &sle_solver);
     
     void optimize(std::vector<double> &xopt);
     
@@ -63,8 +63,8 @@ protected:
     double gamma;
     double p;
     double tol;
-    const sle::SolverBiCGStab default_sle_solver;
-    const sle::Solver &sle_solver;
+    const sle::solver::BiCGStab default_sle_solver;
+    const sle::solver::Solver &sle_solver;
 };
 
 }

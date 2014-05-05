@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_SLE_HIERARCHISATIONSYSTEM_HPP
-#define SGPP_OPT_SLE_HIERARCHISATIONSYSTEM_HPP
+#ifndef SGPP_OPT_SLE_SYSTEM_HIERARCHISATION_HPP
+#define SGPP_OPT_SLE_SYSTEM_HIERARCHISATION_HPP
 
-#include "opt/sle/System.hpp"
+#include "opt/sle/system/Parallelizable.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/algorithm/GetAffectedBasisFunctions.hpp"
@@ -33,12 +33,14 @@ namespace opt
 {
 namespace sle
 {
+namespace system
+{
 
-class HierarchisationSystem : public System
+class Hierarchisation : public Parallelizable
 {
 public:
-    HierarchisationSystem(base::Grid *grid, const std::vector<double> &function_values) :
-        System(grid->getStorage()->size(), function_values),
+    Hierarchisation(base::Grid *grid, const std::vector<double> &function_values) :
+        Parallelizable(function_values),
         grid(grid),
         grid_storage(grid->getStorage()),
         basis(NULL)
@@ -79,34 +81,17 @@ public:
         }
     }
     
-    ~HierarchisationSystem()
-    {
-        if (basis != NULL)
-        {
-            delete basis;
-        }
-    }
+    virtual ~Hierarchisation() { if (basis != NULL) delete basis; }
     
     inline bool isMatrixEntryNonZero(size_t i, size_t j)
-    {
-        return (evalBasisFunctionAtGridPoint(j, i) != 0.0);
-    }
-    
+            { return (evalBasisFunctionAtGridPoint(j, i) != 0.0); }
     inline double getMatrixEntry(size_t i, size_t j)
-    {
-        return evalBasisFunctionAtGridPoint(j, i);
-    }
+            { return evalBasisFunctionAtGridPoint(j, i); }
     
-    base::Grid *getGrid()
-    {
-        return grid;
-    }
+    base::Grid *getGrid() { return grid; }
+    void setGrid(base::Grid *grid) { this->grid = grid; /*row_cached = false;*/ }
     
-    void setGrid(base::Grid *grid)
-    {
-        this->grid = grid;
-        //row_cached = false;
-    }
+    virtual Parallelizable *clone() { return new Hierarchisation(grid, b); }
     
 protected:
     base::Grid *grid;
@@ -221,6 +206,7 @@ template class HierarchisationSystem<base::SWaveletBase>;
 template class HierarchisationSystem<base::SWaveletBoundaryBase>;
 template class HierarchisationSystem<base::SModWaveletBase>;*/
 
+}
 }
 }
 }

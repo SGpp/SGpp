@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_SLE_SOLVERAUTO_HPP
-#define SGPP_OPT_SLE_SOLVERAUTO_HPP
+#ifndef SGPP_OPT_SLE_SOLVER_AUTO_HPP
+#define SGPP_OPT_SLE_SOLVER_AUTO_HPP
 
-#include "opt/sle/Solver.hpp"
+#include "opt/sle/solver/Solver.hpp"
 
 #include <vector>
 #include <cstdint>
@@ -12,19 +12,22 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
-class SolverAuto : public Solver
+class Auto : public Solver
 {
 public:
     static const double MAX_NNZ_RATIO_FOR_SPARSE;
     static const double ESTIMATE_NNZ_ROWS_SAMPLE_SIZE;
     
-    bool solve(System &system, std::vector<double> &x) const;
+    bool solve(system::System &system, std::vector<double> &x) const;
     /*bool solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
                const std::vector<double> &Tx, const std::vector<double> &b,
                std::vector<double> &x) const;*/
 };
 
+}
 }
 }
 }
