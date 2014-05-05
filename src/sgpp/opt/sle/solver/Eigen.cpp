@@ -1,4 +1,5 @@
-#include "opt/sle/SolverEigen.hpp"
+#include "opt/sle/solver/Eigen.hpp"
+#include "opt/sle/system/Parallelizable.hpp"
 #include "opt/tools/Printer.hpp"
 
 #ifdef USEEIGEN
@@ -14,20 +15,23 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
 #ifdef USEEIGEN
-bool solveInternal(const Eigen::MatrixXd &A, const std::vector<double> &b, std::vector<double> &x)
+bool solveInternal(const ::Eigen::MatrixXd &A, const std::vector<double> &b,
+                   std::vector<double> &x)
 {
     tools::printer.printStatusUpdate("step 1: Householder QR factorization");
     
-    Eigen::HouseholderQR<Eigen::MatrixXd> A_QR = A.householderQr();
-    //Eigen::FullPivLU<Eigen::MatrixXd> A_LU = A.fullPivLu();
+    ::Eigen::HouseholderQR<::Eigen::MatrixXd> A_QR = A.householderQr();
+    //::Eigen::FullPivLU<::Eigen::MatrixXd> A_LU = A.fullPivLu();
     
     tools::printer.printStatusNewLine();
     tools::printer.printStatusUpdate("step 2: solving");
     
-    Eigen::VectorXd b_eigen = Eigen::VectorXd::Map(&b[0], b.size());
-    Eigen::VectorXd x_eigen = A_QR.solve(b_eigen);
+    ::Eigen::VectorXd b_eigen = ::Eigen::VectorXd::Map(&b[0], b.size());
+    ::Eigen::VectorXd x_eigen = A_QR.solve(b_eigen);
     //Eigen::VectorXd x_eigen = A_LU.solve(b_eigen);
     
     if ((A*x_eigen).isApprox(b_eigen))
@@ -41,39 +45,58 @@ bool solveInternal(const Eigen::MatrixXd &A, const std::vector<double> &b, std::
 }
 #endif
 
-bool SolverEigen::solve(System &system, std::vector<double> &x) const
+bool Eigen::solve(system::System &system, std::vector<double> &x) const
 {
 #ifdef USEEIGEN
     tools::printer.printStatusBegin("Solving linear system (Eigen)...");
     
     size_t n = system.getDimension();
     const std::vector<double> &b = system.getRHS();
-    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
+    ::Eigen::MatrixXd A = ::Eigen::MatrixXd::Zero(n, n);
     size_t nnz = 0;
     
-    //#pragma omp parallel for ordered schedule(dynamic)
-    for (size_t i = 0; i < n; i++)
+    #pragma omp parallel if (system.isParallelizable())
     {
-        for (size_t j = 0; j < n; j++)
+        system::System *real_system;
+        
+        if (system.isParallelizable())
         {
-            A(i,j) = system.getMatrixEntry(i, j);
-            
-            if (A(i,j) != 0)
+            real_system = dynamic_cast<system::Parallelizable &>(system).clone();
+        } else
+        {
+            real_system = &system;
+        }
+        
+        #pragma omp for ordered schedule(dynamic)
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < n; j++)
             {
-                //#pragma omp atomic
-                nnz++;
+                A(i,j) = real_system->getMatrixEntry(i, j);
+                
+                if (A(i,j) != 0)
+                {
+                    #pragma omp atomic
+                    nnz++;
+                }
+            }
+            
+            if (i % 100 == 0)
+            {
+                #pragma omp ordered
+                {
+                    char str[10];
+                    snprintf(str, 10, "%.1f%%",
+                             static_cast<double>(i) / static_cast<double>(n) * 100.0);
+                    tools::printer.printStatusUpdate("constructing matrix (" +
+                                                     std::string(str) + ")");
+                }
             }
         }
         
-        if (i % 100 == 0)
+        if (system.isParallelizable())
         {
-            //#pragma omp ordered
-            {
-                char str[10];
-                snprintf(str, 10, "%.1f%%",
-                         static_cast<double>(i) / static_cast<double>(n) * 100.0);
-                tools::printer.printStatusUpdate("constructing matrix (" + std::string(str) + ")");
-            }
+            delete real_system;
         }
     }
     
@@ -116,7 +139,7 @@ bool SolverEigen::solve(System &system, std::vector<double> &x) const
     
     size_t nnz = Tx.size();
     size_t n = b.size();
-    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
+    ::Eigen::MatrixXd A = ::Eigen::MatrixXd::Zero(n, n);
     
     for (size_t k = 0; k < nnz; k++)
     {
@@ -153,6 +176,7 @@ bool SolverEigen::solve(System &system, std::vector<double> &x) const
 #endif
 }*/
 
+}
 }
 }
 }

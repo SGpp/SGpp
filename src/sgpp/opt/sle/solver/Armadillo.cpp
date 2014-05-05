@@ -1,4 +1,5 @@
-#include "opt/sle/SolverArmadillo.hpp"
+#include "opt/sle/solver/Armadillo.hpp"
+#include "opt/sle/system/Parallelizable.hpp"
 #include "opt/tools/Printer.hpp"
 
 #ifdef USEARMADILLO
@@ -13,6 +14,8 @@ namespace sg
 namespace opt
 {
 namespace sle
+{
+namespace solver
 {
 
 #ifdef USEARMADILLO
@@ -33,9 +36,37 @@ bool solveInternal(const arma::mat &A, const std::vector<double> &b, std::vector
         return false;
     }
 }
+
+/*inline void fillMatrix(system::System &system, arma::uword i, size_t &nnz)
+{
+    for (arma::uword j = 0; j < n; j++)
+    {
+        double entry = system.getMatrixEntry(i, j);
+        
+        //#pragma omp critical
+        A(i,j) = entry;
+        
+        if (A(i,j) != 0)
+        {
+            //#pragma omp atomic
+            nnz++;
+        }
+    }
+    
+    if (i % 100 == 0)
+    {
+        //#pragma omp ordered
+        {
+            char str[10];
+            snprintf(str, 10, "%.1f%%",
+                     static_cast<double>(i) / static_cast<double>(n) * 100.0);
+            tools::printer.printStatusUpdate("constructing matrix (" + std::string(str) + ")");
+        }
+    }
+}*/
 #endif
 
-bool SolverArmadillo::solve(System &system, std::vector<double> &x) const
+bool Armadillo::solve(system::System &system, std::vector<double> &x) const
 {
 #ifdef USEARMADILLO
     tools::printer.printStatusBegin("Solving linear system (Armadillo)...");
@@ -47,32 +78,48 @@ bool SolverArmadillo::solve(System &system, std::vector<double> &x) const
     
     A.zeros();
     
-    //#pragma omp parallel for ordered schedule(dynamic)
-    for (arma::uword i = 0; i < n; i++)
+    #pragma omp parallel if (system.isParallelizable())
     {
-        for (arma::uword j = 0; j < n; j++)
+        system::System *real_system;
+        
+        if (system.isParallelizable())
         {
-            double entry = system.getMatrixEntry(i, j);
-            
-            //#pragma omp critical
-            A(i,j) = entry;
-            
-            if (A(i,j) != 0)
+            real_system = dynamic_cast<system::Parallelizable &>(system).clone();
+        } else
+        {
+            real_system = &system;
+        }
+        
+        #pragma omp for ordered schedule(dynamic)
+        for (arma::uword i = 0; i < n; i++)
+        {
+            for (arma::uword j = 0; j < n; j++)
             {
-                //#pragma omp atomic
-                nnz++;
+                A(i,j) = real_system->getMatrixEntry(i, j);
+                
+                if (A(i,j) != 0)
+                {
+                    #pragma omp atomic
+                    nnz++;
+                }
+            }
+            
+            if (i % 100 == 0)
+            {
+                #pragma omp ordered
+                {
+                    char str[10];
+                    snprintf(str, 10, "%.1f%%",
+                             static_cast<double>(i) / static_cast<double>(n) * 100.0);
+                    tools::printer.printStatusUpdate("constructing matrix (" +
+                                                     std::string(str) + ")");
+                }
             }
         }
         
-        if (i % 100 == 0)
+        if (system.isParallelizable())
         {
-            //#pragma omp ordered
-            {
-                char str[10];
-                snprintf(str, 10, "%.1f%%",
-                         static_cast<double>(i) / static_cast<double>(n) * 100.0);
-                tools::printer.printStatusUpdate("constructing matrix (" + std::string(str) + ")");
-            }
+            delete real_system;
         }
     }
     
@@ -154,6 +201,7 @@ bool SolverArmadillo::solve(System &system, std::vector<double> &x) const
 #endif
 }*/
 
+}
 }
 }
 }

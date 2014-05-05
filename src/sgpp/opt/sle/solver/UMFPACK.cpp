@@ -1,4 +1,5 @@
-#include "opt/sle/SolverUMFPACK.hpp"
+#include "opt/sle/solver/UMFPACK.hpp"
+#include "opt/sle/system/Parallelizable.hpp"
 #include "opt/tools/Printer.hpp"
 
 #ifdef USEUMFPACK
@@ -15,8 +16,10 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
-bool SolverUMFPACK::solve(System &system, std::vector<double> &x) const
+bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
 {
 #ifdef USEUMFPACK
     tools::printer.printStatusBegin("Solving linear system (UMFPACK)...");
@@ -29,35 +32,53 @@ bool SolverUMFPACK::solve(System &system, std::vector<double> &x) const
     std::vector<uint32_t> Tj;
     std::vector<double> Tx;
     
-    //#pragma omp parallel for ordered schedule(dynamic)
-    for (uint32_t i = 0; i < n; i++)
+    #pragma omp parallel if (system.isParallelizable())
     {
-        for (uint32_t j = 0; j < n; j++)
+        system::System *real_system;
+        
+        if (system.isParallelizable())
         {
-            double entry = system.getMatrixEntry(i, j);
-            
-            if (entry != 0)
+            real_system = dynamic_cast<system::Parallelizable &>(system).clone();
+        } else
+        {
+            real_system = &system;
+        }
+        
+        #pragma omp for ordered schedule(dynamic)
+        for (uint32_t i = 0; i < n; i++)
+        {
+            for (uint32_t j = 0; j < n; j++)
             {
-                //#pragma omp critical
+                double entry = real_system->getMatrixEntry(i, j);
+                
+                if (entry != 0)
                 {
-                    Ti.push_back(i);
-                    Tj.push_back(j);
-                    Tx.push_back(entry);
-                    nnz++;
+                    #pragma omp critical
+                    {
+                        Ti.push_back(i);
+                        Tj.push_back(j);
+                        Tx.push_back(entry);
+                        nnz++;
+                    }
+                }
+            }
+            
+            if (i % 100 == 0)
+            {
+                #pragma omp ordered
+                {
+                    char str[10];
+                    snprintf(str, 10, "%.1f%%",
+                             static_cast<double>(i) / static_cast<double>(n) * 100.0);
+                    tools::printer.printStatusUpdate("constructing sparse matrix (" +
+                                                     std::string(str) + ")");
                 }
             }
         }
         
-        if (i % 100 == 0)
+        if (system.isParallelizable())
         {
-            //#pragma omp ordered
-            {
-                char str[10];
-                snprintf(str, 10, "%.1f%%",
-                         static_cast<double>(i) / static_cast<double>(n) * 100.0);
-                tools::printer.printStatusUpdate("constructing sparse matrix (" +
-                                                 std::string(str) + ")");
-            }
+            delete real_system;
         }
     }
     
@@ -87,7 +108,7 @@ bool SolverUMFPACK::solve(System &system, std::vector<double> &x) const
 #endif
 }
 
-bool SolverUMFPACK::solve(
+bool UMFPACK::solve(
         const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
         const std::vector<double> &Tx, const std::vector<double> &b,
         std::vector<double> &x, bool initial_output) const
@@ -221,6 +242,7 @@ bool SolverUMFPACK::solve(
 #endif
 }
 
+}
 }
 }
 }

@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_SLE_SOLVERARMADILLO_HPP
-#define SGPP_OPT_SLE_SOLVERARMADILLO_HPP
+#ifndef SGPP_OPT_SLE_SOLVER_ARMADILLO_HPP
+#define SGPP_OPT_SLE_SOLVER_ARMADILLO_HPP
 
-#include "opt/sle/Solver.hpp"
+#include "opt/sle/solver/Solver.hpp"
 
 #include <vector>
 #include <cstdint>
@@ -12,16 +12,19 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
-class SolverArmadillo : public Solver
+class Armadillo : public Solver
 {
 public:
-    bool solve(System &system, std::vector<double> &x) const;
+    bool solve(system::System &system, std::vector<double> &x) const;
     /*bool solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
                const std::vector<double> &Tx, const std::vector<double> &b,
                std::vector<double> &x) const;*/
 };
 
+}
 }
 }
 }

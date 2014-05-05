@@ -1,5 +1,5 @@
-#ifndef SGPP_OPT_SLE_SYSTEM_HPP
-#define SGPP_OPT_SLE_SYSTEM_HPP
+#ifndef SGPP_OPT_SLE_SYSTEM_SYSTEM_HPP
+#define SGPP_OPT_SLE_SYSTEM_SYSTEM_HPP
 
 #include <vector>
 #include <cstddef>
@@ -10,12 +10,14 @@ namespace opt
 {
 namespace sle
 {
+namespace system
+{
 
 class System
 {
 public:
-    System(size_t n) : System(n, std::vector<double>(n, 0.0)) {}
-    System(size_t n, const std::vector<double> &b) : n(n), b(b) {}
+    System(size_t n) : System(std::vector<double>(n, 0.0)) {}
+    System(const std::vector<double> &b) : n(b.size()), b(b) {}
     virtual ~System() {}
     
     virtual bool isMatrixEntryNonZero(size_t i, size_t j) = 0;
@@ -53,25 +55,19 @@ public:
         return nnz;
     }
     
-    const std::vector<double> &getRHS() const { return b; }
-    void setRHS(const std::vector<double> &b) { this->b = b; }
-    /*void setRHS(const std::vector<double> &b) {
-        if (b.size() != n)
-        {
-            std::cerr << "sg::opt::sle::System::setRHS: Wrong size of b!\n";
-            return;
-        }
-        
-        this->b = b;
-    }*/
+    virtual const std::vector<double> &getRHS() const { return b; }
+    virtual void setRHS(const std::vector<double> &b) { this->b = b; }
     
-    size_t getDimension() const { return n; }
+    virtual size_t getDimension() const { return n; }
+    
+    virtual bool isParallelizable() const { return false; }
     
 protected:
     size_t n;
     std::vector<double> b;
 };
 
+}
 }
 }
 }

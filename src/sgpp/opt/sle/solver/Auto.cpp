@@ -1,8 +1,8 @@
-#include "opt/sle/SolverAuto.hpp"
-#include "opt/sle/SolverArmadillo.hpp"
-#include "opt/sle/SolverBiCGStab.hpp"
-#include "opt/sle/SolverEigen.hpp"
-#include "opt/sle/SolverUMFPACK.hpp"
+#include "opt/sle/solver/Auto.hpp"
+#include "opt/sle/solver/Armadillo.hpp"
+#include "opt/sle/solver/BiCGStab.hpp"
+#include "opt/sle/solver/Eigen.hpp"
+#include "opt/sle/solver/UMFPACK.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <cstddef>
@@ -14,11 +14,13 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
-const double SolverAuto::MAX_NNZ_RATIO_FOR_SPARSE = 0.2;
-const double SolverAuto::ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
+const double Auto::MAX_NNZ_RATIO_FOR_SPARSE = 0.2;
+const double Auto::ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
 
-bool SolverAuto::solve(System &system, std::vector<double> &x) const
+bool Auto::solve(system::System &system, std::vector<double> &x) const
 {
     tools::printer.printStatusBegin("Solving linear system (automatic method)...");
     
@@ -167,7 +169,7 @@ bool SolverAuto::solve(System &system, std::vector<double> &x) const
     
     if (solve_with_armadillo)
     {
-        SolverArmadillo solver;
+        Armadillo solver;
         
         /*if (sparse_already_constructed)
         {
@@ -178,7 +180,7 @@ bool SolverAuto::solve(System &system, std::vector<double> &x) const
         //}
     } else if (solve_with_eigen)
     {
-        SolverEigen solver;
+        Eigen solver;
         
         /*if (sparse_already_constructed)
         {
@@ -189,7 +191,7 @@ bool SolverAuto::solve(System &system, std::vector<double> &x) const
         //}
     } else if (solve_with_umfpack)
     {
-        SolverUMFPACK solver;
+        UMFPACK solver;
         
         /*if (sparse_already_constructed)
         {
@@ -200,7 +202,7 @@ bool SolverAuto::solve(System &system, std::vector<double> &x) const
         //}
     } else
     {
-        SolverBiCGStab solver;
+        BiCGStab solver;
         
         /*if (sparse_already_constructed)
         {
@@ -290,6 +292,7 @@ bool SolverAuto::solve(System &system, std::vector<double> &x) const
     return result;
 }*/
 
+}
 }
 }
 }

@@ -2,7 +2,7 @@
 #include "opt/optimization/ArmijoRule.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
-#include "opt/sle/FullSystem.hpp"
+#include "opt/sle/system/Full.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <algorithm>
@@ -35,7 +35,7 @@ OptimizerNewton::OptimizerNewton(
         function::ObjectiveFunction &f,
         function::ObjectiveFunctionHessian &f_hessian,
         size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
-        double p, double tolerance, const sle::Solver &sle_solver) :
+        double p, double tolerance, const sle::solver::Solver &sle_solver) :
     Optimizer(f, max_it_count),
     f_hessian(f_hessian),
     alpha1(alpha1),
@@ -44,7 +44,7 @@ OptimizerNewton::OptimizerNewton(
     gamma(gamma),
     p(p),
     tol(tolerance),
-    default_sle_solver(sle::SolverBiCGStab()),
+    default_sle_solver(sle::solver::BiCGStab()),
     sle_solver(sle_solver)
 {
 }
@@ -67,7 +67,7 @@ void OptimizerNewton::optimize(std::vector<double> &xopt)
     std::vector<double> y(d, 0.0);
     size_t verbosity = tools::printer.getVerbosity();
     
-    sle::FullSystem system(d);
+    sle::system::Full system(hessian_fx, s);
     size_t k;
     
     for (k = 0; k < N; k++)

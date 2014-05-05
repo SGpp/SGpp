@@ -1,5 +1,4 @@
-#include "opt/sle/SolverBiCGStab.hpp"
-#include "opt/sle/FullSystem.hpp"
+#include "opt/sle/solver/BiCGStab.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <cmath>
@@ -11,10 +10,12 @@ namespace opt
 {
 namespace sle
 {
+namespace solver
+{
 
-const double SolverBiCGStab::DEFAULT_TOLERANCE = 1e-10;
+const double BiCGStab::DEFAULT_TOLERANCE = 1e-10;
 
-bool solveInternal(System &system, size_t N, double tol,
+bool solveInternal(system::System &system, size_t N, double tol,
                    const std::vector<double> &x0, std::vector<double> &x)
 {
     size_t n = system.getDimension();
@@ -105,13 +106,11 @@ bool solveInternal(System &system, size_t N, double tol,
     return true;
 }
 
-SolverBiCGStab::SolverBiCGStab() :
-    SolverBiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, std::vector<double>())
+BiCGStab::BiCGStab() : BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, std::vector<double>())
 {
 }
 
-SolverBiCGStab::SolverBiCGStab(size_t max_it_count, double tolerance,
-                               const std::vector<double> &x0) :
+BiCGStab::BiCGStab(size_t max_it_count, double tolerance, const std::vector<double> &x0) :
     Solver(),
     N(max_it_count),
     tol(tolerance),
@@ -119,7 +118,7 @@ SolverBiCGStab::SolverBiCGStab(size_t max_it_count, double tolerance,
 {
 }
 
-bool SolverBiCGStab::solve(System &system, std::vector<double> &x) const
+bool BiCGStab::solve(system::System &system, std::vector<double> &x) const
 {
     tools::printer.printStatusBegin("Solving linear system (BiCGStab)...");
     
@@ -188,36 +187,37 @@ bool SolverBiCGStab::solve(System &system, std::vector<double> &x) const
     }
 }*/
 
-size_t SolverBiCGStab::getMaxItCount() const
+size_t BiCGStab::getMaxItCount() const
 {
     return N;
 }
 
-void SolverBiCGStab::setMaxItCount(size_t max_it_count)
+void BiCGStab::setMaxItCount(size_t max_it_count)
 {
     N = max_it_count;
 }
 
-double SolverBiCGStab::getTolerance() const
+double BiCGStab::getTolerance() const
 {
     return tol;
 }
 
-void SolverBiCGStab::setTolerance(double tolerance)
+void BiCGStab::setTolerance(double tolerance)
 {
     tol = tolerance;
 }
 
-const std::vector<double> &SolverBiCGStab::getX0() const
+const std::vector<double> &BiCGStab::getX0() const
 {
     return x0;
 }
 
-void SolverBiCGStab::setX0(const std::vector<double> &x0)
+void BiCGStab::setX0(const std::vector<double> &x0)
 {
     this->x0 = x0;
 }
 
+}
 }
 }
 }
