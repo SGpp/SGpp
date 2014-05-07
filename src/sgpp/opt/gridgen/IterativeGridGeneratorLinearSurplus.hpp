@@ -19,7 +19,7 @@ namespace gridgen
 class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator
 {
 public:
-    static const size_t INITIAL_LEVEL = 1;
+    static const size_t INITIAL_LEVEL = 3;
     
     IterativeGridGeneratorLinearSurplus(function::ObjectiveFunction &f, base::Grid &grid,
             size_t N, double alpha, const base::CosineTable *cosine_table = NULL);
