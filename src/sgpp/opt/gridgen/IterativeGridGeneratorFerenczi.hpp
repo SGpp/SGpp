@@ -16,7 +16,7 @@ namespace gridgen
 class IterativeGridGeneratorFerenczi : public IterativeGridGenerator
 {
 public:
-    static const size_t INITIAL_LEVEL = 1;
+    static const size_t INITIAL_LEVEL = 3;
     static const size_t MAX_LEVEL = 25;
     
     IterativeGridGeneratorFerenczi(function::ObjectiveFunction &f, base::Grid &grid,
@@ -30,7 +30,7 @@ public:
 protected:
     double alpha;
     
-    void rankVector(const std::vector<double> &vec, std::vector<size_t> &rank) const;
+    //void rankVector(const std::vector<double> &vec, std::vector<size_t> &rank) const;
 };
 
 }
