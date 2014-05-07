@@ -34,7 +34,7 @@ RandomSearch::RandomSearch(function::ObjectiveFunction &f, size_t max_it_count, 
     optimizer(optimizer),
     points_count(points_count),
     seed(seed),
-    default_optimizer(NelderMead(f, points_count * NelderMead::DEFAULT_MAX_IT_COUNT))
+    default_optimizer(NelderMead(f))
 {
 }
 
