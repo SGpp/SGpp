@@ -13,6 +13,8 @@ namespace optimizer
 
 const double DifferentialEvolution::DEFAULT_CROSSOVER_PROBABILITY = 0.5;
 const double DifferentialEvolution::DEFAULT_SCALING_FACTOR = 0.6;
+const double DifferentialEvolution::DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
+const double DifferentialEvolution::DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
 DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f) :
     DifferentialEvolution(f, DEFAULT_MAX_IT_COUNT)
@@ -27,18 +29,25 @@ DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, siz
 DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count,
                                              unsigned int seed) :
     DifferentialEvolution(f, max_it_count, seed, 10*f.getDimension(),
-                          DEFAULT_CROSSOVER_PROBABILITY, DEFAULT_SCALING_FACTOR)
+                          DEFAULT_CROSSOVER_PROBABILITY, DEFAULT_SCALING_FACTOR,
+                          DEFAULT_IDLE_GENERATIONS_COUNT, DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
+                          DEFAULT_MAX_DISTANCE_THRESHOLD)
 {
 }
 
 DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count,
         unsigned int seed, size_t points_count,
-        double crossover_probability, double scaling_factor) :
+        double crossover_probability, double scaling_factor,
+        size_t idle_generations_count, double avg_improvement_threshold,
+        double max_distance_threshold) :
     Optimizer(f, max_it_count),
     points_count(points_count),
     seed(seed),
     crossover_probability(crossover_probability),
-    scaling_factor(scaling_factor)
+    scaling_factor(scaling_factor),
+    idle_generations_count(idle_generations_count),
+    avg_improvement_threshold(avg_improvement_threshold),
+    max_distance_threshold(max_distance_threshold)
 {
 }
 
@@ -75,8 +84,11 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
     std::vector<double> y(d, 0.0);
     size_t k = 0;
     size_t number_of_fcn_evals = points_count;
+    size_t last_nonidle_k = 0;
+    double avg = 0.0;
+    double last_avg = 0.0;
     
-    while (true)
+    while (number_of_fcn_evals + points_count <= N)
     {
         for (size_t i = 0; i < points_count; i++)
         {
@@ -142,13 +154,51 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
         }
         
         std::swap(x_old, x_new);
-        
         number_of_fcn_evals += points_count;
+        avg = 0.0;
         
-        if (number_of_fcn_evals + points_count > N)
+        for (size_t i = 0; i < points_count; i++)
         {
-            break;
+            avg += fx[i];
         }
+        
+        avg /= static_cast<double>(points_count);
+        
+        if (last_avg - avg >= avg_improvement_threshold)
+        {
+            last_nonidle_k = k;
+        } else if (k - last_nonidle_k >= idle_generations_count)
+        {
+            double max_distance2 = 0.0;
+            
+            for (size_t i = 0; i < points_count; i++)
+            {
+                if (i == xopt_index)
+                {
+                    continue;
+                }
+                
+                double distance2 = 0.0;
+                
+                for (size_t t = 0; t < d; t++)
+                {
+                    distance2 += ((*x_old)[i][t] - (*x_old)[xopt_index][t]) *
+                                 ((*x_old)[i][t] - (*x_old)[xopt_index][t]);
+                }
+                
+                if (distance2 > max_distance2)
+                {
+                    max_distance2 = distance2;
+                }
+            }
+            
+            if (std::sqrt(max_distance2) < max_distance_threshold)
+            {
+                break;
+            }
+        }
+        
+        last_avg = avg;
         
         if (k % 10 == 0)
         {
