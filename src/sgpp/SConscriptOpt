@@ -4,10 +4,12 @@ srcs = Split("""
 opt/function/TestFunction.cpp
 opt/gridgen/IterativeGridGeneratorFerenczi.cpp
 opt/gridgen/IterativeGridGeneratorLinearSurplus.cpp
-opt/optimization/OptimizerFRPR.cpp
-opt/optimization/OptimizerGradientMethod.cpp
-opt/optimization/OptimizerNelderMead.cpp
-opt/optimization/OptimizerNewton.cpp
+opt/optimizer/DifferentialEvolution.cpp
+opt/optimizer/FRPR.cpp
+opt/optimizer/GradientMethod.cpp
+opt/optimizer/NelderMead.cpp
+opt/optimizer/Newton.cpp
+opt/optimizer/RandomSearch.cpp
 opt/sle/solver/Armadillo.cpp
 opt/sle/solver/Auto.cpp
 opt/sle/solver/BiCGStab.cpp

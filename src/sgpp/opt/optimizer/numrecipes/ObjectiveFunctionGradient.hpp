@@ -1,5 +1,5 @@
-#ifndef SGPP_OPT_OPTIMIZATION_NUMRECIPES_OBJECTIVEFUNCTIONGRADIENT_HPP
-#define SGPP_OPT_OPTIMIZATION_NUMRECIPES_OBJECTIVEFUNCTIONGRADIENT_HPP
+#ifndef SGPP_OPT_OPTIMIZER_NUMRECIPES_OBJECTIVEFUNCTIONGRADIENT_HPP
+#define SGPP_OPT_OPTIMIZER_NUMRECIPES_OBJECTIVEFUNCTIONGRADIENT_HPP
 
 #include "base/datatypes/DataVector.hpp"
 #include "opt/function/ObjectiveFunction.hpp"
@@ -13,18 +13,18 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 namespace numrecipes
 {
 
-struct ObjectiveFunction
+struct ObjectiveFunctionGradient
 {
     function::ObjectiveFunction &f;
     function::ObjectiveFunctionGradient &f_gradient;
     
-    ObjectiveFunction(function::ObjectiveFunction &f,
-                      function::ObjectiveFunctionGradient &f_gradient) :
+    ObjectiveFunctionGradient(function::ObjectiveFunction &f,
+                              function::ObjectiveFunctionGradient &f_gradient) :
         f(f),
         f_gradient(f_gradient)
     {

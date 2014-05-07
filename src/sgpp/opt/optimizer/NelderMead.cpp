@@ -1,4 +1,4 @@
-#include "opt/optimization/OptimizerNelderMead.hpp"
+#include "opt/optimizer/NelderMead.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <algorithm>
@@ -8,36 +8,38 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
-    
-const double OptimizerNelderMead::DEFAULT_ALPHA = 1.0;
-const double OptimizerNelderMead::DEFAULT_GAMMA = 2.0;
-const double OptimizerNelderMead::DEFAULT_RHO = -0.5;
-const double OptimizerNelderMead::DEFAULT_SIGMA = 0.5;
-const double OptimizerNelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
-OptimizerNelderMead::OptimizerNelderMead(function::ObjectiveFunction &f) :
-    OptimizerNelderMead(f, DEFAULT_MAX_IT_COUNT,
-                        DEFAULT_ALPHA, DEFAULT_GAMMA, DEFAULT_RHO, DEFAULT_SIGMA,
-                        DEFAULT_MAX_FCN_EVAL_COUNT)
+const double NelderMead::DEFAULT_ALPHA = 1.0;
+const double NelderMead::DEFAULT_GAMMA = 2.0;
+const double NelderMead::DEFAULT_RHO = -0.5;
+const double NelderMead::DEFAULT_SIGMA = 0.5;
+const double NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
+
+NelderMead::NelderMead(function::ObjectiveFunction &f) :
+    NelderMead(f, DEFAULT_MAX_IT_COUNT)
 {
 }
 
-OptimizerNelderMead::OptimizerNelderMead(
+NelderMead::NelderMead(function::ObjectiveFunction &f, size_t max_it_count) :
+    NelderMead(f, max_it_count, DEFAULT_ALPHA, DEFAULT_GAMMA, DEFAULT_RHO, DEFAULT_SIGMA)
+{
+}
+
+NelderMead::NelderMead(
         function::ObjectiveFunction &f,
-        size_t max_it_count, double alpha, double gamma, double rho, double sigma,
-        size_t max_fcn_eval_count) :
+        size_t max_it_count, double alpha, double gamma, double rho, double sigma) :
     Optimizer(f, max_it_count),
     alpha(alpha),
     gamma(gamma),
     rho(rho),
-    sigma(sigma),
-    max_fcn_eval_count(max_fcn_eval_count)
+    sigma(sigma)
+    //max_fcn_eval_count(max_fcn_eval_count)
 {
 }
 
-void OptimizerNelderMead::optimize(std::vector<double> &xopt)
+void NelderMead::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (Nelder-Mead)...");
     
@@ -66,7 +68,7 @@ void OptimizerNelderMead::optimize(std::vector<double> &xopt)
     size_t k = 0;
     size_t number_of_fcn_evals = d+1;
     
-    for (k = 0; k < N; k++)
+    while (true)
     {
         /*std::cout << "k = " << k << ", number_of_fcn_evals = " << number_of_fcn_evals << "\n";
         for (size_t i = 0; i < d+1; i++)
@@ -221,69 +223,74 @@ void OptimizerNelderMead::optimize(std::vector<double> &xopt)
             tools::printer.printStatusUpdate(msg.str());
         }
         
-        if (number_of_fcn_evals + (d+2) > max_fcn_eval_count)
+        if (number_of_fcn_evals + (d+2) > N)
         {
             break;
         }
+        
+        k++;
     }
     
     xopt = points[0];
     
-    std::stringstream msg;
-    msg << k << " steps, f(x) = " << f_points[0];
-    tools::printer.printStatusUpdate(msg.str());
+    {
+        std::stringstream msg;
+        msg << k << " steps, f(x) = " << f_points[0];
+        tools::printer.printStatusUpdate(msg.str());
+    }
+    
     tools::printer.printStatusEnd();
 }
 
-double OptimizerNelderMead::getAlpha() const
+double NelderMead::getAlpha() const
 {
     return alpha;
 }
 
-void OptimizerNelderMead::setAlpha(double alpha)
+void NelderMead::setAlpha(double alpha)
 {
     this->alpha = alpha;
 }
 
-double OptimizerNelderMead::getGamma() const
+double NelderMead::getGamma() const
 {
     return gamma;
 }
 
-void OptimizerNelderMead::setGamma(double gamma)
+void NelderMead::setGamma(double gamma)
 {
     this->gamma = gamma;
 }
 
-double OptimizerNelderMead::getRho() const
+double NelderMead::getRho() const
 {
     return rho;
 }
 
-void OptimizerNelderMead::setRho(double rho)
+void NelderMead::setRho(double rho)
 {
     this->rho = rho;
 }
 
-double OptimizerNelderMead::getSigma() const
+double NelderMead::getSigma() const
 {
     return rho;
 }
 
-void OptimizerNelderMead::setSigma(double sigma)
+void NelderMead::setSigma(double sigma)
 {
     this->sigma = sigma;
 }
 
-size_t OptimizerNelderMead::getMaxFcnEvalCount() const
+/*size_t NelderMead::getMaxFcnEvalCount() const
 {
     return max_fcn_eval_count;
 }
 
-void OptimizerNelderMead::setMaxFcnEvalCount(size_t max_fcn_eval_count)
+void NelderMead::setMaxFcnEvalCount(size_t max_fcn_eval_count)
 {
     this->max_fcn_eval_count = max_fcn_eval_count;
-}
+}*/
 
 }
 }

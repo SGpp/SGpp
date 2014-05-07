@@ -1,7 +1,17 @@
-#ifndef SGPP_OPT_OPTIMIZATION_NUMRECIPES_FRPRMN_HPP
-#define SGPP_OPT_OPTIMIZATION_NUMRECIPES_FRPRMN_HPP
+/**
+ * Note by Julian Valentin:
+ * 
+ * This code is (C) 2007 by Numerical Recipes Software.
+ * It is not allowed to be distributed publicly in source code form.
+ * Furthermore, it's not allowed to make shared libraries (e.g. DLLs) containing this code
+ * or to make commercial binaries containing this code.
+ * See http://www.nr.com/licenses/.
+ */
 
-#include "opt/optimization/numrecipes/Linemethod.hpp"
+#ifndef SGPP_OPT_OPTIMIZER_NUMRECIPES_FRPRMN_HPP
+#define SGPP_OPT_OPTIMIZER_NUMRECIPES_FRPRMN_HPP
+
+#include "opt/optimizer/numrecipes/Linemethod.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <vector>
@@ -12,7 +22,7 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 namespace numrecipes
 {
@@ -141,9 +151,11 @@ struct Frprmn : Linemethod<T>
             Output::printStatusEnd();
         }*/
         
-        std::stringstream msg;
-        msg << its << " steps, f(x) = " << fp;
-        tools::printer.printStatusUpdate(msg.str());
+        {
+            std::stringstream msg;
+            msg << its << " steps, f(x) = " << fp;
+            tools::printer.printStatusUpdate(msg.str());
+        }
         
         return p;
     }

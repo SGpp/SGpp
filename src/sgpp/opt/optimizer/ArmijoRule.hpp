@@ -1,5 +1,5 @@
-#ifndef SGPP_OPT_OPTIMIZATION_ARMIJORULE_HPP
-#define SGPP_OPT_OPTIMIZATION_ARMIJORULE_HPP
+#ifndef SGPP_OPT_OPTIMIZER_ARMIJORULE_HPP
+#define SGPP_OPT_OPTIMIZER_ARMIJORULE_HPP
 
 #include "base/datatypes/DataVector.hpp"
 #include "opt/function/ObjectiveFunction.hpp"
@@ -10,7 +10,7 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 
 inline bool armijoRule(function::ObjectiveFunction &f, double beta, double gamma,
