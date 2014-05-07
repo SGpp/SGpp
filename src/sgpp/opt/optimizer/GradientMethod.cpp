@@ -1,27 +1,27 @@
-#include "opt/optimization/OptimizerGradientMethod.hpp"
-#include "opt/optimization/ArmijoRule.hpp"
+#include "opt/optimizer/GradientMethod.hpp"
+#include "opt/optimizer/ArmijoRule.hpp"
 #include "opt/tools/Printer.hpp"
 
 namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 
-const double OptimizerGradientMethod::DEFAULT_BETA = 0.5;
-const double OptimizerGradientMethod::DEFAULT_GAMMA = 1e-2;
-const double OptimizerGradientMethod::DEFAULT_TOLERANCE = 1e-10;
+const double GradientMethod::DEFAULT_BETA = 0.5;
+const double GradientMethod::DEFAULT_GAMMA = 1e-2;
+const double GradientMethod::DEFAULT_TOLERANCE = 1e-10;
 
-OptimizerGradientMethod::OptimizerGradientMethod(
+GradientMethod::GradientMethod(
         function::ObjectiveFunction &f,
         function::ObjectiveFunctionGradient &f_gradient) :
-    OptimizerGradientMethod(f, f_gradient, DEFAULT_MAX_IT_COUNT,
+    GradientMethod(f, f_gradient, DEFAULT_MAX_IT_COUNT,
                             DEFAULT_BETA, DEFAULT_GAMMA, DEFAULT_TOLERANCE)
 {
 }
 
-OptimizerGradientMethod::OptimizerGradientMethod(
+GradientMethod::GradientMethod(
         function::ObjectiveFunction &f,
         function::ObjectiveFunctionGradient &f_gradient,
         size_t N, double beta, double gamma, double tolerance) :
@@ -33,7 +33,7 @@ OptimizerGradientMethod::OptimizerGradientMethod(
 {
 }
 
-void OptimizerGradientMethod::optimize(std::vector<double> &xopt)
+void GradientMethod::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (gradient method)...");
     
@@ -85,44 +85,47 @@ void OptimizerGradientMethod::optimize(std::vector<double> &xopt)
     
     xopt = x;
     
-    std::stringstream msg;
-    msg << k << " steps, f(x) = " << fx;
-    tools::printer.printStatusUpdate(msg.str());
+    {
+        std::stringstream msg;
+        msg << k << " steps, f(x) = " << fx;
+        tools::printer.printStatusUpdate(msg.str());
+    }
+    
     tools::printer.printStatusEnd();
 }
 
 function::ObjectiveFunctionGradient
-        &OptimizerGradientMethod::getObjectiveFunctionGradient() const
+        &GradientMethod::getObjectiveFunctionGradient() const
 {
     return f_gradient;
 }
 
-double OptimizerGradientMethod::getBeta() const
+double GradientMethod::getBeta() const
 {
     return beta;
 }
 
-void OptimizerGradientMethod::setBeta(double beta)
+void GradientMethod::setBeta(double beta)
 {
     this->beta = beta;
 }
 
-double OptimizerGradientMethod::getGamma() const
+double GradientMethod::getGamma() const
 {
     return gamma;
 }
 
-void OptimizerGradientMethod::setGamma(double gamma)
+void GradientMethod::setGamma(double gamma)
 {
     this->gamma = gamma;
 }
 
-double OptimizerGradientMethod::getTolerance() const
+double GradientMethod::getTolerance() const
 {
     return tol;
 }
 
-void OptimizerGradientMethod::setTolerance(double tolerance)
+void GradientMethod::setTolerance(double tolerance)
 {
     tol = tolerance;
 }

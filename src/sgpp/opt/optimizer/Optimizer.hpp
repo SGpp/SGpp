@@ -1,5 +1,5 @@
-#ifndef SGPP_OPT_OPTIMIZATION_OPTIMIZER_HPP
-#define SGPP_OPT_OPTIMIZATION_OPTIMIZER_HPP
+#ifndef SGPP_OPT_OPTIMIZER_OPTIMIZER_HPP
+#define SGPP_OPT_OPTIMIZER_OPTIMIZER_HPP
 
 #include "opt/function/ObjectiveFunction.hpp"
 
@@ -12,7 +12,7 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 
 class Optimizer

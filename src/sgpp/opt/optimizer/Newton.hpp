@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_OPTIMIZATION_OPTIMIZERNEWTON_HPP
-#define SGPP_OPT_OPTIMIZATION_OPTIMIZERNEWTON_HPP
+#ifndef SGPP_OPT_OPTIMIZER_NEWTON_HPP
+#define SGPP_OPT_OPTIMIZER_NEWTON_HPP
 
-#include "opt/optimization/Optimizer.hpp"
+#include "opt/optimizer/Optimizer.hpp"
 #include "opt/function/ObjectiveFunctionHessian.hpp"
 #include "opt/sle/solver/Solver.hpp"
 #include "opt/sle/solver/BiCGStab.hpp"
@@ -12,10 +12,10 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 
-class OptimizerNewton : public Optimizer
+class Newton : public Optimizer
 {
 public:
     static const double DEFAULT_ALPHA1;
@@ -25,13 +25,12 @@ public:
     static const double DEFAULT_P;
     static const double DEFAULT_TOLERANCE;
     
-    OptimizerNewton(function::ObjectiveFunction &f,
-                    function::ObjectiveFunctionHessian &f_hessian);
+    Newton(function::ObjectiveFunction &f, function::ObjectiveFunctionHessian &f_hessian);
     
-    OptimizerNewton(function::ObjectiveFunction &f,
-                    function::ObjectiveFunctionHessian &f_hessian,
-                    size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
-                    double p, double tolerance, const sle::solver::Solver &sle_solver);
+    Newton(function::ObjectiveFunction &f,
+           function::ObjectiveFunctionHessian &f_hessian,
+           size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
+           double p, double tolerance, const sle::solver::Solver &sle_solver);
     
     void optimize(std::vector<double> &xopt);
     

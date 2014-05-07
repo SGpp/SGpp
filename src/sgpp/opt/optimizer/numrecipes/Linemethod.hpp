@@ -1,8 +1,18 @@
-#ifndef SGPP_OPT_OPTIMIZATION_NUMRECIPES_LINEMETHOD_HPP
-#define SGPP_OPT_OPTIMIZATION_NUMRECIPES_LINEMETHOD_HPP
+/**
+ * Note by Julian Valentin:
+ * 
+ * This code is (C) 2007 by Numerical Recipes Software.
+ * It is not allowed to be distributed publicly in source code form.
+ * Furthermore, it's not allowed to make shared libraries (e.g. DLLs) containing this code
+ * or to make commercial binaries containing this code.
+ * See http://www.nr.com/licenses/.
+ */
 
-#include "opt/optimization/numrecipes/Brent.hpp"
-#include "opt/optimization/numrecipes/F1dim.hpp"
+#ifndef SGPP_OPT_OPTIMIZER_NUMRECIPES_LINEMETHOD_HPP
+#define SGPP_OPT_OPTIMIZER_NUMRECIPES_LINEMETHOD_HPP
+
+#include "opt/optimizer/numrecipes/Brent.hpp"
+#include "opt/optimizer/numrecipes/F1dim.hpp"
 
 #include <vector>
 #include <cstddef>
@@ -13,7 +23,7 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 namespace numrecipes
 {

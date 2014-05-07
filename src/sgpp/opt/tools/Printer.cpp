@@ -33,9 +33,9 @@ void Printer::printStatusBegin(const std::string &msg)
         printStatusNewLine();
     }
     
+    printIdentation();
     std::cout << msg;
     printStatusNewLine();
-    std::cout << "    ";
     current_level++;
     
     start_times.push(std::chrono::system_clock::now());
@@ -48,6 +48,11 @@ void Printer::printStatusUpdate(const std::string &msg)
     if (current_level > verbose)
     {
         return;
+    }
+    
+    if (cursor_in_clear_line)
+    {
+        printIdentation();
     }
     
     std::cout << std::string(last_msg_length, '\b') << msg;
@@ -71,14 +76,16 @@ void Printer::printStatusNewLine()
     }
     
     std::cout << std::endl;
-    
+    last_msg_length = 0;
+    cursor_in_clear_line = true;
+}
+
+void Printer::printIdentation()
+{
     for (size_t i = 0; i < current_level; i++)
     {
         std::cout << "    ";
     }
-    
-    last_msg_length = 0;
-    cursor_in_clear_line = true;
 }
 
 void Printer::printStatusEnd(const std::string &msg)
@@ -91,13 +98,12 @@ void Printer::printStatusEnd(const std::string &msg)
         return;
     }
     
-    if (cursor_in_clear_line)
-    {
-        std::cout << "\b\b\b\b";
-    } else
+    if (!cursor_in_clear_line)
     {
         printStatusNewLine();
     }
+    
+    printIdentation();
     
     std::string time_msg =
             "Done in " + std::to_string(static_cast<int>(1000.0 * last_duration.count())) + "ms";
@@ -114,6 +120,16 @@ void Printer::printStatusEnd(const std::string &msg)
     last_msg_length = 0;
     start_times.pop();
     cursor_in_clear_line = true;
+}
+
+void Printer::increaseCurrentLevel(size_t inc)
+{
+    current_level += inc;
+}
+
+void Printer::decreaseCurrentLevel(size_t dec)
+{
+    current_level -= dec;
 }
 
 void Printer::printGridToFile(const std::string &filename,

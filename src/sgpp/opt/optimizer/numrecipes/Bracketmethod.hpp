@@ -1,5 +1,15 @@
-#ifndef SGPP_OPT_OPTIMIZATION_NUMRECIPES_BRACKETMETHOD_HPP
-#define SGPP_OPT_OPTIMIZATION_NUMRECIPES_BRACKETMETHOD_HPP
+/**
+ * Note by Julian Valentin:
+ * 
+ * This code is (C) 2007 by Numerical Recipes Software.
+ * It is not allowed to be distributed publicly in source code form.
+ * Furthermore, it's not allowed to make shared libraries (e.g. DLLs) containing this code
+ * or to make commercial binaries containing this code.
+ * See http://www.nr.com/licenses/.
+ */
+
+#ifndef SGPP_OPT_OPTIMIZER_NUMRECIPES_BRACKETMETHOD_HPP
+#define SGPP_OPT_OPTIMIZER_NUMRECIPES_BRACKETMETHOD_HPP
 
 #include <cmath>
 
@@ -7,7 +17,7 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 namespace numrecipes
 {

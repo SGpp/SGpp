@@ -27,7 +27,11 @@ public:
     void printStatusBegin(const std::string &msg);
     void printStatusUpdate(const std::string &msg);
     void printStatusNewLine();
+    void printIdentation();
     void printStatusEnd(const std::string &msg = "");
+    
+    void increaseCurrentLevel(size_t inc = 1);
+    void decreaseCurrentLevel(size_t dec = 1);
     
     void printGridToFile(const std::string &filename,
                          const gridgen::IterativeGridGenerator &grid_gen) const;

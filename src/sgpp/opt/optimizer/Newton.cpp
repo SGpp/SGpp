@@ -1,5 +1,5 @@
-#include "opt/optimization/OptimizerNewton.hpp"
-#include "opt/optimization/ArmijoRule.hpp"
+#include "opt/optimizer/Newton.hpp"
+#include "opt/optimizer/ArmijoRule.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "opt/sle/system/Full.hpp"
@@ -12,26 +12,26 @@ namespace sg
 {
 namespace opt
 {
-namespace optimization
+namespace optimizer
 {
 
-const double OptimizerNewton::DEFAULT_ALPHA1 = 1e-6;
-const double OptimizerNewton::DEFAULT_ALPHA2 = 1e-6;
-const double OptimizerNewton::DEFAULT_BETA = 0.5;
-const double OptimizerNewton::DEFAULT_GAMMA = 1e-2;
-const double OptimizerNewton::DEFAULT_P = 0.1;
-const double OptimizerNewton::DEFAULT_TOLERANCE = 1e-10;
+const double Newton::DEFAULT_ALPHA1 = 1e-6;
+const double Newton::DEFAULT_ALPHA2 = 1e-6;
+const double Newton::DEFAULT_BETA = 0.5;
+const double Newton::DEFAULT_GAMMA = 1e-2;
+const double Newton::DEFAULT_P = 0.1;
+const double Newton::DEFAULT_TOLERANCE = 1e-10;
 
-OptimizerNewton::OptimizerNewton(
+Newton::Newton(
         function::ObjectiveFunction &f,
         function::ObjectiveFunctionHessian &f_hessian) :
-    OptimizerNewton(f, f_hessian, DEFAULT_MAX_IT_COUNT,
+    Newton(f, f_hessian, DEFAULT_MAX_IT_COUNT,
                     DEFAULT_ALPHA1, DEFAULT_ALPHA2, DEFAULT_BETA, DEFAULT_GAMMA,
                     DEFAULT_P, DEFAULT_TOLERANCE, default_sle_solver)
 {
 }
 
-OptimizerNewton::OptimizerNewton(
+Newton::Newton(
         function::ObjectiveFunction &f,
         function::ObjectiveFunctionHessian &f_hessian,
         size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
@@ -49,7 +49,7 @@ OptimizerNewton::OptimizerNewton(
 {
 }
 
-void OptimizerNewton::optimize(std::vector<double> &xopt)
+void Newton::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (Newton)...");
     
@@ -134,73 +134,76 @@ void OptimizerNewton::optimize(std::vector<double> &xopt)
     xopt = x;
     tools::printer.setVerbosity(verbosity);
     
-    std::stringstream msg;
-    msg << k << " steps, f(x) = " << fx;
-    tools::printer.printStatusUpdate(msg.str());
+    {
+        std::stringstream msg;
+        msg << k << " steps, f(x) = " << fx;
+        tools::printer.printStatusUpdate(msg.str());
+    }
+    
     tools::printer.printStatusEnd();
 }
 
-function::ObjectiveFunctionHessian &OptimizerNewton::getObjectiveFunctionHessian() const
+function::ObjectiveFunctionHessian &Newton::getObjectiveFunctionHessian() const
 {
     return f_hessian;
 }
 
-double OptimizerNewton::getAlpha1() const
+double Newton::getAlpha1() const
 {
     return alpha1;
 }
 
-void OptimizerNewton::setAlpha1(double alpha1)
+void Newton::setAlpha1(double alpha1)
 {
     this->alpha1 = alpha1;
 }
 
-double OptimizerNewton::getAlpha2() const
+double Newton::getAlpha2() const
 {
     return alpha2;
 }
 
-void OptimizerNewton::setAlpha2(double alpha2)
+void Newton::setAlpha2(double alpha2)
 {
     this->alpha2 = alpha2;
 }
 
-double OptimizerNewton::getBeta() const
+double Newton::getBeta() const
 {
     return beta;
 }
 
-void OptimizerNewton::setBeta(double beta)
+void Newton::setBeta(double beta)
 {
     this->beta = beta;
 }
 
-double OptimizerNewton::getGamma() const
+double Newton::getGamma() const
 {
     return gamma;
 }
 
-void OptimizerNewton::setGamma(double gamma)
+void Newton::setGamma(double gamma)
 {
     this->gamma = gamma;
 }
 
-double OptimizerNewton::getP() const
+double Newton::getP() const
 {
     return p;
 }
 
-void OptimizerNewton::setP(double p)
+void Newton::setP(double p)
 {
     this->p = p;
 }
 
-double OptimizerNewton::getTolerance() const
+double Newton::getTolerance() const
 {
     return tol;
 }
 
-void OptimizerNewton::setTolerance(double tolerance)
+void Newton::setTolerance(double tolerance)
 {
     tol = tolerance;
 }
