@@ -14,6 +14,46 @@ namespace sg
 {
 namespace opt
 {
+    
+template <class T>
+inline std::ostream &operator<<(std::ostream &stream, const std::vector<T> &x)
+{
+    stream << "[";
+    
+    for (size_t i = 0; i < x.size(); i++)
+    {
+        if (i > 0)
+        {
+            stream << ", ";
+        }
+        
+        stream << x[i];
+    }
+    
+    stream << "]";
+    
+    return stream;
+}
+
+inline std::ostream &operator<<(std::ostream &stream, sg::base::GridIndex *gp)
+{
+    stream << "[";
+    
+    for (size_t t = 0; t < gp->dim(); t++)
+    {
+        if (t > 0)
+        {
+            stream << ", ";
+        }
+        
+        stream << gp->abs(t);
+    }
+    
+    stream << "]";
+    
+    return stream;
+}
+
 namespace tools
 {
 
@@ -27,7 +67,7 @@ public:
     void printStatusBegin(const std::string &msg);
     void printStatusUpdate(const std::string &msg);
     void printStatusNewLine();
-    void printIdentation();
+    void printStatusIdentation();
     void printStatusEnd(const std::string &msg = "");
     
     void increaseCurrentLevel(size_t inc = 1);

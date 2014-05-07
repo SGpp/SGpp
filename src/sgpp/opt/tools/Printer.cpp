@@ -33,7 +33,7 @@ void Printer::printStatusBegin(const std::string &msg)
         printStatusNewLine();
     }
     
-    printIdentation();
+    printStatusIdentation();
     std::cout << msg;
     printStatusNewLine();
     current_level++;
@@ -52,7 +52,7 @@ void Printer::printStatusUpdate(const std::string &msg)
     
     if (cursor_in_clear_line)
     {
-        printIdentation();
+        printStatusIdentation();
     }
     
     std::cout << std::string(last_msg_length, '\b') << msg;
@@ -80,7 +80,7 @@ void Printer::printStatusNewLine()
     cursor_in_clear_line = true;
 }
 
-void Printer::printIdentation()
+void Printer::printStatusIdentation()
 {
     for (size_t i = 0; i < current_level; i++)
     {
@@ -103,7 +103,7 @@ void Printer::printStatusEnd(const std::string &msg)
         printStatusNewLine();
     }
     
-    printIdentation();
+    printStatusIdentation();
     
     std::string time_msg =
             "Done in " + std::to_string(static_cast<int>(1000.0 * last_duration.count())) + "ms";
