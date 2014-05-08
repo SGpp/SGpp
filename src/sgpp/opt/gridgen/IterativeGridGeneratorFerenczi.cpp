@@ -180,11 +180,11 @@ void IterativeGridGeneratorFerenczi::generate()
         degree[xhat]++;
         refinement_alpha[xhat] = 1.0;
         
-        std::cout << "\nk = " << k << ", current_N = " << current_N << "\n";
+        /*std::cout << "\nk = " << k << ", current_N = " << current_N << "\n";
         std::cout << "refining X[" << xhat << "] = " << grid_storage->get(xhat)
                   << ", level = [" << grid_storage->get(xhat)->getLevel(0)
                   << ", " << grid_storage->get(xhat)->getLevel(1)
-                  << "], degree = " << degree[xhat] << "\n";
+                  << "], degree = " << degree[xhat] << "\n";*/
         
         base::SurplusRefinementFunctor refine_func(&refinement_alpha, 1);
         //grid_gen->refine(&refine_func);
@@ -204,6 +204,7 @@ void IterativeGridGeneratorFerenczi::generate()
         if (grid_storage->size() == current_N)
         {
             // size unchanged ==> point not refined (should not happen)
+            std::cout << "IterativeGridGeneratorFerenczi: size unchanged\n";
             break;
         }
         
@@ -245,8 +246,8 @@ void IterativeGridGeneratorFerenczi::generate()
                 }
             }
             
-            std::cout << "new point X[" << i << "] = " << gp
-                      << ", level = [" << gp->getLevel(0) << ", " << gp->getLevel(1) << "]\n";
+            /*std::cout << "new point X[" << i << "] = " << gp
+                      << ", level = [" << gp->getLevel(0) << ", " << gp->getLevel(1) << "]\n";*/
             
             fX[i] = f.eval(x);
             
@@ -356,11 +357,10 @@ void IterativeGridGeneratorFerenczi::generate()
     }
     
     tools::printer.printStatusUpdate("100.0% (N = " + std::to_string(current_N) + ")");
+    tools::printer.printStatusEnd();
     
     function_values.erase(function_values.begin() + current_N, function_values.end());
     delete grid_gen;
-    
-    tools::printer.printStatusEnd();
 }
 
 }

@@ -33,6 +33,7 @@ public:
     
 protected:
     base::SBase *linear_base;
+    base::Grid *linear_grid;
     
     /*base::SLinearBase linear_base;
     base::SLinearBoundaryBase linear_boundary_base;
