@@ -22,23 +22,28 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
         const base::CosineTable *cosine_table) :
     IterativeGridGenerator(f, grid, N),
     linear_base(NULL),
+    linear_grid(NULL),
     alpha(alpha)
 {
     if ((strcmp(grid.getType(), "Bspline") == 0) ||
         (strcmp(grid.getType(), "Wavelet") == 0))
     {
         linear_base = new base::SLinearBase();
+        linear_grid = new base::LinearGrid(f.getDimension());
     } else if ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
         (strcmp(grid.getType(), "WaveletBoundary") == 0))
     {
         linear_base = new base::SLinearBoundaryBase();
+        linear_grid = new base::LinearBoundaryGrid(f.getDimension());
     } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0)
     {
         linear_base = new base::SLinearClenshawCurtisBase(cosine_table);
+        linear_grid = new base::LinearClenshawCurtisGrid(f.getDimension());
     } else if ((strcmp(grid.getType(), "modBspline") == 0) ||
         (strcmp(grid.getType(), "modWavelet") == 0))
     {
         linear_base = new base::SModLinearBase();
+        linear_grid = new base::ModLinearGrid(f.getDimension());
     } else
     {
         throw std::invalid_argument("Grid type not supported.");
@@ -50,6 +55,11 @@ IterativeGridGeneratorLinearSurplus::~IterativeGridGeneratorLinearSurplus()
     if (linear_base != NULL)
     {
         delete linear_base;
+    }
+    
+    if (linear_grid != NULL)
+    {
+        delete linear_grid;
     }
 }
 
@@ -92,32 +102,25 @@ void IterativeGridGeneratorLinearSurplus::generate()
     tools::printer.printStatusBegin("Adaptive grid generation (linear surplus)...");
     
     base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
-    base::Grid *linear_grid;
     
-    bool is_boundary_grid = ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
-                             (strcmp(grid.getType(), "WaveletBoundary") == 0) ||
-                             (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0));
-    
-    if ((strcmp(grid.getType(), "Bspline") == 0) ||
-        (strcmp(grid.getType(), "Wavelet") == 0))
+    if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0)
     {
-        linear_grid = new base::LinearGrid(f.getDimension());
-    } else if ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
-        (strcmp(grid.getType(), "WaveletBoundary") == 0))
-    {
-        linear_grid = new base::LinearBoundaryGrid(f.getDimension());
-    } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0)
-    {
-        linear_grid = new base::LinearClenshawCurtisGrid(f.getDimension());
         distr = base::GridIndex::PointDistribution::ClenshawCurtis;
-    } else if ((strcmp(grid.getType(), "modBspline") == 0) ||
-        (strcmp(grid.getType(), "modWavelet") == 0))
+    }
+    
+    base::HashRefinement hash_refinement;
+    base::HashRefinementBoundaries hash_refinement_boundaries;
+    
+    base::AbstractRefinement *abstract_refinement;
+    
+    if ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
+        (strcmp(grid.getType(), "WaveletBoundary") == 0) ||
+        (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0))
     {
-        linear_grid = new base::ModLinearGrid(f.getDimension());
+        abstract_refinement = &hash_refinement_boundaries;
     } else
     {
-        throw std::invalid_argument("Grid type not supported.");
-        return;
+        abstract_refinement = &hash_refinement;
     }
     
     base::GridStorage *grid_storage = grid.getStorage();
@@ -161,44 +164,32 @@ void IterativeGridGeneratorLinearSurplus::generate()
     base::OperationHierarchisation *linear_hier_op =
             op_factory::createOperationHierarchisation(*linear_grid);
     linear_hier_op->doHierarchisation(coeffs);
-    
     delete linear_hier_op;
-    delete linear_grid;
-    
-    //base::HashRefinement hash_refinement;
     
     size_t k = 0;
     
-    while (current_N < N)
+    size_t refinable_pts_count;
+    size_t pts_to_be_refined_count;
+    double refine_factor = 1.0;
+    
+    while (true)
     {
-        if (k % 10 == 0)
         {
             char str[10];
             snprintf(str, 10, "%.1f%%",
                      static_cast<double>(current_N) / static_cast<double>(N) * 100.0);
             tools::printer.printStatusUpdate(std::string(str) +
-                                             " (N = " + std::to_string(N) + ")");
+                                             " (N = " + std::to_string(current_N) + ")");
+            //tools::printer.printStatusNewLine();
+            //std::cout << "pts_to_be_refined_count = " << pts_to_be_refined_count << "\n";
         }
         
-        if (is_boundary_grid)
-        {
-            base::HashRefinementBoundaries hash_refinement;
-            size_t refinable_pts_count = hash_refinement.getNumberOfRefinablePoints(grid_storage);
-            size_t pts_to_be_refined_count =
-                    static_cast<int>(1.0 + alpha * static_cast<double>(refinable_pts_count));
-            
-            base::SurplusRefinementFunctor refine_func(&coeffs, pts_to_be_refined_count);
-            hash_refinement.free_refine(grid_storage, &refine_func);
-        } else
-        {
-            base::HashRefinement hash_refinement;
-            size_t refinable_pts_count = hash_refinement.getNumberOfRefinablePoints(grid_storage);
-            size_t pts_to_be_refined_count =
-                    static_cast<int>(1.0 + alpha * static_cast<double>(refinable_pts_count));
-            
-            base::SurplusRefinementFunctor refine_func(&coeffs, pts_to_be_refined_count);
-            hash_refinement.free_refine(grid_storage, &refine_func);
-        }
+        refinable_pts_count = abstract_refinement->getNumberOfRefinablePoints(grid_storage);
+        pts_to_be_refined_count = static_cast<int>(
+                1.0 + refine_factor * alpha * static_cast<double>(refinable_pts_count));
+        
+        base::SurplusRefinementFunctor refine_func(&coeffs, pts_to_be_refined_count);
+        abstract_refinement->free_refine(grid_storage, &refine_func);
         
         /*base::SurplusRefinementFunctor refine_func(&refinement_alpha, pts_to_be_refined_count);
         //grid_gen->refine(&refine_func);
@@ -214,17 +205,33 @@ void IterativeGridGeneratorLinearSurplus::generate()
         
         if (grid_storage->size() > N)
         {
-            function_values.resize(grid_storage->size(), 0.0);
+            //function_values.resize(grid_storage->size(), 0.0);
+            std::list<size_t> indices_to_remove;
+            
+            for (size_t i = current_N; i < grid_storage->size(); i++)
+            {
+                indices_to_remove.push_back(i);
+            }
+            
+            grid_storage->deletePoints(indices_to_remove);
+            
+            if (pts_to_be_refined_count == 1)
+            {
+                break;
+            } else
+            {
+                refine_factor /= 2.0;
+                k++;
+                continue;
+            }
         }
         
-        coeffs.resizeZero(grid_storage->size());
+        coeffs.resize(grid_storage->size());
         
         for (size_t i = current_N; i < grid_storage->size(); i++)
         {
             base::GridIndex *gp = grid_storage->get(i);
             gp->setPointDistribution(distr);
-            //grid_index_to_point(gp, X[i]);
-            //fX[i] = f(X[i].coords, data);
             
             for (size_t t = 0; t < d; t++)
             {
@@ -241,7 +248,6 @@ void IterativeGridGeneratorLinearSurplus::generate()
         }
         
         current_N = grid_storage->size();
-        
         k++;
     }
     
