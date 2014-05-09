@@ -8,7 +8,7 @@
 #ifndef BSPLINE_CLENSHAWCURTIS_BASE_HPP
 #define BSPLINE_CLENSHAWCURTIS_BASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 #include "base/basis/bspline/noboundary/BsplineBasis.hpp"
 #include "base/tools/CosineTable.hpp"
 

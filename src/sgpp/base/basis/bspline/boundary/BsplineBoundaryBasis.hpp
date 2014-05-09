@@ -8,7 +8,7 @@
 #ifndef BSPLINE_BOUNDARY_BASE_HPP
 #define BSPLINE_BOUNDARY_BASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 #include "base/basis/bspline/noboundary/BsplineBasis.hpp"
 
 #include <cmath>

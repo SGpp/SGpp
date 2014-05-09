@@ -12,7 +12,7 @@
 #include <vector>
 #include "base/exception/factory_exception.hpp"
 #include "base/datatypes/DataVector.hpp"
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 
 namespace sg {
 

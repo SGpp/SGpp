@@ -8,7 +8,7 @@
 #ifndef LINEARCLENSHAWCURTISBASE_HPP
 #define LINEARCLENSHAWCURTISBASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 #include "base/tools/CosineTable.hpp"
 
 #include <cmath>
