@@ -24,7 +24,7 @@ template<class LT, class IT>
 class ModifiedWaveletBasis : public Basis<LT, IT>
 {
 public:
-    inline double eval(LT level, IT index, double p)
+    inline double eval(LT level, IT index, double x)
     {
         //std::cout << "Level " << level <<" Index "<<index<<" Point "<<p<<" BasisValue ";
         if (level == 1)
@@ -33,21 +33,21 @@ public:
             return 1.0;
         }
         
-        double sup = static_cast<double>(1 << level);
-        sup = 1.0 / sup;
+        double hinv = static_cast<double>(1 << level);
+        double h = 1.0 / hinv;
         
         if ((static_cast<int>(index) == static_cast<int>((1 << level) - 1))
-            && (p > 1.0 - 1.5602 * sup))
+            && (x > 1.0 - 1.5602 * h))
         {
             //std::cout<<0.5014+1.3803*(0.5602+p/sup-index)<<std::endl;
-            return 0.5014 + 1.3803 * (0.5602 + p / sup - static_cast<double>(index));
-        } else if ((index == 1) && (p < 1.5602 * sup))
+            return 0.5014 + 1.3803 * (0.5602 + x * hinv - static_cast<double>(index));
+        } else if ((index == 1) && (x < 1.5602 * h))
         {
             //std::cout<<0.5014+1.3803*(0.5602-p/sup+1)<<std::endl;
-            return 0.5014 + 1.3803 * (0.5602 - p / sup + 1.0);
+            return 0.5014 + 1.3803 * (0.5602 - x * hinv + 1.0);
         }
         
-        double t = p / sup - static_cast<double>(index);
+        double t = x * hinv - static_cast<double>(index);
         
         if ((t > 2.0) || (t < -2.0))
         {
@@ -60,26 +60,26 @@ public:
         return (1.0 - t2) * exp(-t2);
     }
     
-    inline double evalDx(LT level, IT index, double p)
+    inline double evalDx(LT level, IT index, double x)
     {
         if (level == 1)
         {
             return 0.0;
         }
         
-        double sup = static_cast<double>(1 << level);
-        sup = 1.0 / sup;
+        double hinv = static_cast<double>(1 << level);
+        double h = 1.0 / hinv;
         
         if ((static_cast<int>(index) == static_cast<int>((1 << level) - 1))
-            && (p > 1.0 - 1.5602 * sup))
+            && (x > 1.0 - 1.5602 * h))
         {
-            return 1.3803 / sup;
-        } else if ((index == 1) && (p < 1.5602 * sup))
+            return 1.3803 * hinv;
+        } else if ((index == 1) && (x < 1.5602 * h))
         {
-            return -1.3803 / sup;
+            return -1.3803 * hinv;
         }
         
-        double t = p / sup - static_cast<double>(index);
+        double t = x * hinv - static_cast<double>(index);
         
         if ((t > 2.0) || (t < -2.0))
         {
@@ -88,29 +88,29 @@ public:
         
         double t2 = t*t;
         
-        return 2.0 * t * (t2 - 2.0) * exp(-t2) / sup;
+        return 2.0 * t * (t2 - 2.0) * exp(-t2) * hinv;
     }
     
-    inline double evalDxDx(LT level, IT index, double p)
+    inline double evalDxDx(LT level, IT index, double x)
     {
         if (level == 1)
         {
             return 0.0;
         }
         
-        double sup = static_cast<double>(1 << level);
-        sup = 1.0 / sup;
+        double hinv = static_cast<double>(1 << level);
+        double h = 1.0 / hinv;
         
         if ((static_cast<int>(index) == static_cast<int>((1 << level) - 1))
-            && (p > 1.0 - 1.5602 * sup))
+            && (x > 1.0 - 1.5602 * h))
         {
             return 0.0;
-        } else if ((index == 1) && (p < 1.5602 * sup))
+        } else if ((index == 1) && (x < 1.5602 * h))
         {
             return 0.0;
         }
         
-        double t = p / sup - static_cast<double>(index);
+        double t = x * hinv - static_cast<double>(index);
         
         if ((t > 2.0) || (t < -2.0))
         {
@@ -120,7 +120,7 @@ public:
         double t2 = t*t;
         double t4 = t2*t2;
         
-        return -2.0 * (2.0*t4 - 7.0*t2 + 2.0) * exp(-t2) / (sup*sup);
+        return -2.0 * (2.0*t4 - 7.0*t2 + 2.0) * exp(-t2) * hinv*hinv;
     }
 };
 
