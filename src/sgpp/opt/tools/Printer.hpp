@@ -4,6 +4,7 @@
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "opt/gridgen/IterativeGridGenerator.hpp"
+#include "opt/sle/system/System.hpp"
 
 #include <cstddef>
 #include <chrono>
@@ -78,22 +79,24 @@ public:
     
     void printVectorToFile(const std::string &filename, base::DataVector &x) const;
     template <class T>
-    void printVectorToFile(const std::string &filename, std::vector<T> &x) const
+    void printVectorToFile(const std::string &filename, const std::vector<T> &x) const
     {
         printMatrixToFile(filename, x, x.size(), 1);
     }
     
     void printMatrixToFile(const std::string &filename, base::DataMatrix &A) const;
     template <class T>
-    void printMatrixToFile(const std::string &filename, std::vector<T> &A,
+    void printMatrixToFile(const std::string &filename, const std::vector<T> &A,
                            size_t m, size_t n) const
     {
         std::ofstream f(filename, std::ios::out | std::ios::binary);
         
         std::vector<const char *> types =
                 {"uint8           ", "uint16          ", "uint32          ", "uint64          ",
-                 "double          ", "other           "};
+                 "double          ", "string          ", "other           "};
         size_t index;
+        
+        const char null_char[1] = {'\0'};
         
         if (std::is_same<T, uint8_t>::value)
         {
@@ -110,9 +113,12 @@ public:
         } else if (std::is_same<T, double>::value)
         {
             index = 4;
-        } else
+        } else if (std::is_same<T, std::string>::value)
         {
             index = 5;
+        } else
+        {
+            index = 6;
         }
         
         f.write(reinterpret_cast<const char *>(&m), sizeof(m));
@@ -121,11 +127,40 @@ public:
         
         for (size_t i = 0; i < m*n; i++)
         {
-            f.write(reinterpret_cast<const char *>(&A[i]), sizeof(T));
+            if (std::is_same<T, std::string>::value)
+            {
+                f << A[i];
+                f.write(null_char, 1);
+            } else
+            {
+                f.write(reinterpret_cast<const char *>(&A[i]), sizeof(T));
+            }
         }
 
         f.close();
     }
+    
+    template <class T>
+    void printMatrixToFile(const std::string &filename,
+                           const std::vector<std::vector<T> > &A) const
+    {
+        size_t m = A.size();
+        size_t n = (A.empty() ? 0 : A[0].size());
+        std::vector<T> B(m*n);
+        
+        for (size_t i = 0; i < m; i++)
+        {
+            for (size_t j = 0; j < n; j++)
+            {
+                B[i*n + j] = A[i][j];
+            }
+        }
+        
+        printMatrixToFile(filename, B, m, n);
+    }
+    
+    void printIterativeGridGenerator(const gridgen::IterativeGridGenerator &grid_gen) const;
+    void printSLE(sle::system::System &system) const;
     
     inline size_t getVerbosity() const { return verbose; }
     inline void setVerbosity(size_t level) { verbose = level; }

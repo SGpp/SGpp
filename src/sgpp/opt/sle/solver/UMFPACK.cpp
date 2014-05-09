@@ -82,9 +82,10 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
         }
     }
     
-    tools::printer.printVectorToFile("Ti.dat", Ti);
-    tools::printer.printVectorToFile("Tj.dat", Tj);
-    tools::printer.printVectorToFile("Tx.dat", Tx);
+    // TODO: remove this if not needed anymore
+    tools::printer.printVectorToFile("data/Ti.dat", Ti);
+    tools::printer.printVectorToFile("data/Tj.dat", Tj);
+    tools::printer.printVectorToFile("data/Tx.dat", Tx);
     
     tools::printer.printStatusUpdate("constructing sparse matrix (100.0%)");
     tools::printer.printStatusNewLine();

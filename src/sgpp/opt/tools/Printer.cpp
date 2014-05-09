@@ -178,6 +178,51 @@ void Printer::printMatrixToFile(const std::string &filename, base::DataMatrix &A
     printMatrixToFile(filename, A_vector, A.getNrows(), A.getNcols());
 }
 
+void Printer::printIterativeGridGenerator(const gridgen::IterativeGridGenerator &grid_gen) const
+{
+    base::GridStorage *grid_storage = grid_gen.getGrid().getStorage();
+    const std::vector<double> &function_values = grid_gen.getFunctionValues();
+    
+    for (size_t i = 0; i < grid_storage->size(); i++)
+    {
+        if (i > 0)
+        {
+            std::cout << "\n";
+        }
+        
+        base::GridIndex *gp = grid_storage->get(i);
+        std::cout << gp << ", " << function_values[i];
+    }
+}
+
+void Printer::printSLE(sle::system::System &system) const
+{
+    size_t n = system.getDimension();
+    const std::vector<double> &b = system.getRHS();
+    
+    std::cout << "A = [";
+    
+    for (size_t i = 0; i < n; i++)
+    {
+        if (i > 0)
+        {
+            std::cout << ";\n";
+        }
+        
+        for (size_t j = 0; j < n; j++)
+        {
+            if (j > 0)
+            {
+                std::cout << ", ";
+            }
+            
+            std::cout << system.getMatrixEntry(i, j);
+        }
+    }
+    
+    std::cout << "],\nb = " << b << "]";
+}
+
 double Printer::getLastDurationSecs() const
 {
     return last_duration.count();
