@@ -1,12 +1,12 @@
-#ifndef SGPP_OPT_FUNCTION_INTERPOLANTFUNCTION_HPP
-#define SGPP_OPT_FUNCTION_INTERPOLANTFUNCTION_HPP
+#ifndef SGPP_OPT_FUNCTION_INTERPOLANT_HPP
+#define SGPP_OPT_FUNCTION_INTERPOLANT_HPP
 
-#include "opt/function/ObjectiveFunction.hpp"
+#include "opt/function/Objective.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/operation/OperationEval.hpp"
 //#include "base/grid/Grid.hpp"
 
-#include "base/basis/basis.hpp"
+//#include "base/basis/Basis.hpp"
 
 /*#include "base/grid/type/BsplineGrid.hpp"
 #include "base/grid/type/BsplineBoundaryGrid.hpp"
@@ -23,11 +23,11 @@ namespace opt
 namespace function
 {
 
-class InterpolantFunction : public ObjectiveFunction
+class Interpolant : public Objective
 {
 public:
-    InterpolantFunction(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
-        ObjectiveFunction(d),
+    Interpolant(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
+        Objective(d),
         op_eval(op_eval),
         /*grid(NULL),
         grid_storage(NULL),

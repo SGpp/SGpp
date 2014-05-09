@@ -13,17 +13,13 @@ const double GradientMethod::DEFAULT_BETA = 0.5;
 const double GradientMethod::DEFAULT_GAMMA = 1e-2;
 const double GradientMethod::DEFAULT_TOLERANCE = 1e-10;
 
-GradientMethod::GradientMethod(
-        function::ObjectiveFunction &f,
-        function::ObjectiveFunctionGradient &f_gradient) :
+GradientMethod::GradientMethod(function::Objective &f, function::ObjectiveGradient &f_gradient) :
     GradientMethod(f, f_gradient, DEFAULT_MAX_IT_COUNT,
                             DEFAULT_BETA, DEFAULT_GAMMA, DEFAULT_TOLERANCE)
 {
 }
 
-GradientMethod::GradientMethod(
-        function::ObjectiveFunction &f,
-        function::ObjectiveFunctionGradient &f_gradient,
+GradientMethod::GradientMethod(function::Objective &f, function::ObjectiveGradient &f_gradient,
         size_t N, double beta, double gamma, double tolerance) :
     Optimizer(f, N),
     f_gradient(f_gradient),
@@ -94,8 +90,7 @@ void GradientMethod::optimize(std::vector<double> &xopt)
     tools::printer.printStatusEnd();
 }
 
-function::ObjectiveFunctionGradient
-        &GradientMethod::getObjectiveFunctionGradient() const
+function::ObjectiveGradient &GradientMethod::getObjectiveGradient() const
 {
     return f_gradient;
 }

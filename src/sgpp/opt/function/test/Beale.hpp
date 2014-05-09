@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_BEALE_HPP
 #define SGPP_OPT_FUNCTION_TEST_BEALE_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Beale : public TestFunction
+class Beale : public Test
 {
 public:
-    Beale() : TestFunction(2)
+    Beale() : Test(2)
     {
     }
     

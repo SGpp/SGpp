@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_BRANIN_HPP
 #define SGPP_OPT_FUNCTION_TEST_BRANIN_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Branin : public TestFunction
+class Branin : public Test
 {
 public:
-    Branin() : TestFunction(2)
+    Branin() : Test(2)
     {
     }
     

@@ -16,17 +16,17 @@ const double DifferentialEvolution::DEFAULT_SCALING_FACTOR = 0.6;
 const double DifferentialEvolution::DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
 const double DifferentialEvolution::DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
-DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f) :
+DifferentialEvolution::DifferentialEvolution(function::Objective &f) :
     DifferentialEvolution(f, DEFAULT_MAX_IT_COUNT)
 {
 }
 
-DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count) :
+DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_it_count) :
     DifferentialEvolution(f, max_it_count, std::random_device()())
 {
 }
 
-DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count,
+DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_it_count,
                                              unsigned int seed) :
     DifferentialEvolution(f, max_it_count, seed, 10*f.getDimension(),
                           DEFAULT_CROSSOVER_PROBABILITY, DEFAULT_SCALING_FACTOR,
@@ -35,7 +35,7 @@ DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, siz
 {
 }
 
-DifferentialEvolution::DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count,
+DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_it_count,
         unsigned int seed, size_t points_count,
         double crossover_probability, double scaling_factor,
         size_t idle_generations_count, double avg_improvement_threshold,

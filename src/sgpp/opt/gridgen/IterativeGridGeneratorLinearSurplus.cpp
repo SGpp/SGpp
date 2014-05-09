@@ -6,6 +6,11 @@
 #include "base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
+#include "base/basis/linear/noboundary/LinearBasis.hpp"
+#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
+#include "base/basis/linear/clenshawcurtis/LinearClenshawCurtisBasis.hpp"
+#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
+
 //#include <iostream>
 //#include <cmath>
 #include <cstring>
@@ -18,7 +23,7 @@ namespace gridgen
 {
 
 IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-        function::ObjectiveFunction &f, base::Grid &grid, size_t N, double alpha,
+        function::Objective &f, base::Grid &grid, size_t N, double alpha,
         const base::CosineTable *cosine_table) :
     IterativeGridGenerator(f, grid, N),
     linear_base(NULL),

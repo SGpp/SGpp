@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_MLADINEO_HPP
 #define SGPP_OPT_FUNCTION_TEST_MLADINEO_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,22 +14,22 @@ namespace function
 namespace test
 {
 
-class Mladineo : public TestFunction
+class Mladineo : public Test
 {
 public:
-    Mladineo() : TestFunction(2)
+    Mladineo() : Test(2)
     {
     }
     
     void generateDisplacement(unsigned int seed, double standard_deviation)
     {
-        TestFunction::generateDisplacement(seed, standard_deviation);
+        Test::generateDisplacement(seed, standard_deviation);
         
         while ((displacement[0] > 0) || (displacement[0] < -0.01) ||
                (displacement[1] > 0) || (displacement[1] < -0.01))
         {
             seed = std::random_device()();
-            TestFunction::generateDisplacement(seed, standard_deviation);
+            Test::generateDisplacement(seed, standard_deviation);
         }
     }
     

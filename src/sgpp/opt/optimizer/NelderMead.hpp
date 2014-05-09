@@ -21,12 +21,12 @@ public:
     static const size_t DEFAULT_MAX_IT_COUNT = 1000;
     static const double STARTING_SIMPLEX_EDGE_LENGTH;
     
-    NelderMead(function::ObjectiveFunction &f);
-    NelderMead(function::ObjectiveFunction &f, size_t max_it_count);
-    /*NelderMead(function::ObjectiveFunction &f,
+    NelderMead(function::Objective &f);
+    NelderMead(function::Objective &f, size_t max_it_count);
+    /*NelderMead(function::Objective &f,
                size_t max_it_count, double alpha, double gamma, double rho, double sigma,
                size_t max_fcn_eval_count);*/
-    NelderMead(function::ObjectiveFunction &f,
+    NelderMead(function::Objective &f,
                size_t max_it_count, double alpha, double gamma, double rho, double sigma);
     
     void optimize(std::vector<double> &xopt);

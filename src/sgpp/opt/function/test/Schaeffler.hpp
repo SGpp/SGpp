@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_SCHAEFFLER_HPP
 #define SGPP_OPT_FUNCTION_TEST_SCHAEFFLER_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Schaeffler : public TestFunction
+class Schaeffler : public Test
 {
 public:
-    Schaeffler() : TestFunction(50)
+    Schaeffler() : Test(50)
     {
     }
     

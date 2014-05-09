@@ -1,5 +1,5 @@
-#ifndef SGPP_OPT_FUNCTION_OBJECTIVEFUNCTION_HPP
-#define SGPP_OPT_FUNCTION_OBJECTIVEFUNCTION_HPP
+#ifndef SGPP_OPT_FUNCTION_OBJECTIVE_HPP
+#define SGPP_OPT_FUNCTION_OBJECTIVE_HPP
 
 #include <vector>
 #include <cstddef>
@@ -11,11 +11,11 @@ namespace opt
 namespace function
 {
 
-class ObjectiveFunction
+class Objective
 {
 public:
-    ObjectiveFunction(size_t d) : d(d) {}
-    virtual ~ObjectiveFunction() {}
+    Objective(size_t d) : d(d) {}
+    virtual ~Objective() {}
     
     virtual double eval(const std::vector<double> &x) = 0;
     

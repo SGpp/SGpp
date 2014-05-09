@@ -2,8 +2,8 @@
 #define SGPP_OPT_OPTIMIZER_NUMRECIPES_OBJECTIVEFUNCTIONGRADIENT_HPP
 
 #include "base/datatypes/DataVector.hpp"
-#include "opt/function/ObjectiveFunction.hpp"
-#include "opt/function/ObjectiveFunctionGradient.hpp"
+#include "opt/function/Objective.hpp"
+#include "opt/function/ObjectiveGradient.hpp"
 
 #include <vector>
 #include <cstddef>
@@ -20,11 +20,10 @@ namespace numrecipes
 
 struct ObjectiveFunctionGradient
 {
-    function::ObjectiveFunction &f;
-    function::ObjectiveFunctionGradient &f_gradient;
+    function::Objective &f;
+    function::ObjectiveGradient &f_gradient;
     
-    ObjectiveFunctionGradient(function::ObjectiveFunction &f,
-                              function::ObjectiveFunctionGradient &f_gradient) :
+    ObjectiveFunctionGradient(function::Objective &f, function::ObjectiveGradient &f_gradient) :
         f(f),
         f_gradient(f_gradient)
     {

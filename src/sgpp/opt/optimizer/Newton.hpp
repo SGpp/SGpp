@@ -2,7 +2,7 @@
 #define SGPP_OPT_OPTIMIZER_NEWTON_HPP
 
 #include "opt/optimizer/Optimizer.hpp"
-#include "opt/function/ObjectiveFunctionHessian.hpp"
+#include "opt/function/ObjectiveHessian.hpp"
 #include "opt/sle/solver/Solver.hpp"
 #include "opt/sle/solver/BiCGStab.hpp"
 
@@ -25,16 +25,15 @@ public:
     static const double DEFAULT_P;
     static const double DEFAULT_TOLERANCE;
     
-    Newton(function::ObjectiveFunction &f, function::ObjectiveFunctionHessian &f_hessian);
+    Newton(function::Objective &f, function::ObjectiveHessian &f_hessian);
     
-    Newton(function::ObjectiveFunction &f,
-           function::ObjectiveFunctionHessian &f_hessian,
+    Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
            size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
            double p, double tolerance, const sle::solver::Solver &sle_solver);
     
     void optimize(std::vector<double> &xopt);
     
-    function::ObjectiveFunctionHessian &getObjectiveFunctionHessian() const;
+    function::ObjectiveHessian &getObjectiveHessian() const;
     
     double getAlpha1() const;
     void setAlpha1(double alpha1);
@@ -55,7 +54,7 @@ public:
     void setTolerance(double tolerance);
     
 protected:
-    function::ObjectiveFunctionHessian &f_hessian;
+    function::ObjectiveHessian &f_hessian;
     double alpha1;
     double alpha2;
     double beta;

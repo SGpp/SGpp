@@ -19,7 +19,7 @@ public:
     static const size_t INITIAL_LEVEL = 3;
     static const size_t MAX_LEVEL = 25;
     
-    IterativeGridGeneratorFerenczi(function::ObjectiveFunction &f, base::Grid &grid,
+    IterativeGridGeneratorFerenczi(function::Objective &f, base::Grid &grid,
                                    size_t N, double alpha);
     
     void generate();

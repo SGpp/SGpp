@@ -11,24 +11,24 @@ namespace opt
 namespace optimizer
 {
 
-RandomSearch::RandomSearch(function::ObjectiveFunction &f) :
+RandomSearch::RandomSearch(function::Objective &f) :
     RandomSearch(f, DEFAULT_MAX_IT_COUNT)
 {
 }
 
-RandomSearch::RandomSearch(function::ObjectiveFunction &f, size_t max_it_count) :
+RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count) :
     RandomSearch(f, max_it_count, std::random_device()())
 {
 }
 
-RandomSearch::RandomSearch(function::ObjectiveFunction &f, size_t max_it_count,
+RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count,
                            unsigned int seed) :
     RandomSearch(f, max_it_count, seed, default_optimizer,
                  std::min(10*f.getDimension(), static_cast<size_t>(100)))
 {
 }
 
-RandomSearch::RandomSearch(function::ObjectiveFunction &f, size_t max_it_count, unsigned int seed,
+RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed,
                            Optimizer &optimizer, size_t points_count) :
     Optimizer(f, max_it_count),
     optimizer(optimizer),

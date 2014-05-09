@@ -1,7 +1,7 @@
 dependencies = ["Base"]
 
 srcs = Split("""
-opt/function/TestFunction.cpp
+opt/function/test/Test.cpp
 opt/gridgen/IterativeGridGeneratorFerenczi.cpp
 opt/gridgen/IterativeGridGeneratorLinearSurplus.cpp
 opt/optimizer/DifferentialEvolution.cpp

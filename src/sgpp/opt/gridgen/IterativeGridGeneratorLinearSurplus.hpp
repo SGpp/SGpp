@@ -2,10 +2,8 @@
 #define SGPP_OPT_GRIDGEN_ITERATIVEGRIDGENERATORLINEARSURPLUS_HPP
 
 #include "opt/gridgen/IterativeGridGenerator.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
-#include "base/basis/linear/clenshawcurtis/LinearClenshawCurtisBasis.hpp"
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
+#include "base/tools/CosineTable.hpp"
+#include "base/basis/Basis.hpp"
 
 #include <cstddef>
 
@@ -21,7 +19,7 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator
 public:
     static const size_t INITIAL_LEVEL = 3;
     
-    IterativeGridGeneratorLinearSurplus(function::ObjectiveFunction &f, base::Grid &grid,
+    IterativeGridGeneratorLinearSurplus(function::Objective &f, base::Grid &grid,
             size_t N, double alpha, const base::CosineTable *cosine_table = NULL);
     
     ~IterativeGridGeneratorLinearSurplus();

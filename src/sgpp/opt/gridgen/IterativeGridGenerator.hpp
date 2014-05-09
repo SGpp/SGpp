@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
 #define SGPP_OPT_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
 
-#include "opt/function/ObjectiveFunction.hpp"
+#include "opt/function/Objective.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/type/LinearGrid.hpp"
@@ -22,7 +22,7 @@ namespace gridgen
 class IterativeGridGenerator
 {
 public:
-    IterativeGridGenerator(function::ObjectiveFunction &f, base::Grid &grid, size_t N) :
+    IterativeGridGenerator(function::Objective &f, base::Grid &grid, size_t N) :
         f(f), grid(grid), N(N) {}
     virtual ~IterativeGridGenerator() {}
     
@@ -32,7 +32,7 @@ public:
     const std::vector<double> &getFunctionValues() const { return function_values; }
     
 protected:
-    function::ObjectiveFunction &f;
+    function::Objective &f;
     base::Grid &grid;
     size_t N;
     
