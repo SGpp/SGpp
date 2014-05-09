@@ -713,6 +713,15 @@ protected:
     }
 };
 
+template<>
+class GetAffectedBasisFunctionsHessian<SWaveletBoundaryBase> :
+        public GetAffectedBasisFunctionsHessianWaveletBsplineWithBorders<SWaveletBoundaryBase>
+{
+public:
+    GetAffectedBasisFunctionsHessian(GridStorage* storage) :
+        GetAffectedBasisFunctionsHessianWaveletBsplineWithBorders(storage) {}
+};
+
 }
 }
 
