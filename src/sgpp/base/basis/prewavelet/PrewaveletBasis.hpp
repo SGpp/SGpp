@@ -8,7 +8,7 @@
 #ifndef PREWAVELET_BASE_HPP
 #define PREWAVELET_BASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 
 #include <cmath>
 #include <iostream>

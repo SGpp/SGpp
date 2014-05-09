@@ -8,7 +8,7 @@
 #ifndef BSPLINE_BASE_HPP
 #define BSPLINE_BASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 
 #include <cmath>
 

@@ -8,7 +8,7 @@
 #ifndef LINEAR_BASE_HPP
 #define LINEAR_BASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 
 #include <cmath>
 #include <algorithm>

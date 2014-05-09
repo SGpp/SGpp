@@ -11,7 +11,7 @@
 #include <cmath>
 #include <vector>
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 #include "base/exception/factory_exception.hpp"
 #include "base/datatypes/DataVector.hpp"
 

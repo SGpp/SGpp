@@ -8,7 +8,7 @@
 #ifndef WAVELET_BOUNDARY_BASE_HPP
 #define WAVELET_BOUNDARY_BASE_HPP
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 
 #include <cmath>
 
