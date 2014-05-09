@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_FUNCTION_TESTFUNCTION_HPP
-#define SGPP_OPT_FUNCTION_TESTFUNCTION_HPP
+#ifndef SGPP_OPT_FUNCTION_TEST_TEST_HPP
+#define SGPP_OPT_FUNCTION_TEST_TEST_HPP
 
-#include "opt/function/ObjectiveFunction.hpp"
+#include "opt/function/Objective.hpp"
 
 #include <vector>
 #include <cstddef>
@@ -12,14 +12,16 @@ namespace opt
 {
 namespace function
 {
+namespace test
+{
 
-class TestFunction : public ObjectiveFunction
+class Test : public Objective
 {
 public:
     static const double DEFAULT_STANDARD_DEVIATION;
     
-    TestFunction(size_t d);
-    virtual ~TestFunction() {}
+    Test(size_t d);
+    virtual ~Test() {}
     
     double eval(const std::vector<double> &x);
     virtual double evalUndisplaced(const std::vector<double> &x) = 0;
@@ -44,6 +46,7 @@ protected:
     std::vector<double> displacement;
 };
 
+}
 }
 }
 }

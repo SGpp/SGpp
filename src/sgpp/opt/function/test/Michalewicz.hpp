@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_MICHALEWICZ_HPP
 #define SGPP_OPT_FUNCTION_TEST_MICHALEWICZ_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Michalewicz : public TestFunction
+class Michalewicz : public Test
 {
 public:
-    Michalewicz() : TestFunction(2)
+    Michalewicz() : Test(2)
     {
     }
     

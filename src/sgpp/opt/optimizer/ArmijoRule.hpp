@@ -2,7 +2,7 @@
 #define SGPP_OPT_OPTIMIZER_ARMIJORULE_HPP
 
 #include "base/datatypes/DataVector.hpp"
-#include "opt/function/ObjectiveFunction.hpp"
+#include "opt/function/Objective.hpp"
 
 #include <cstddef>
 
@@ -13,7 +13,7 @@ namespace opt
 namespace optimizer
 {
 
-inline bool armijoRule(function::ObjectiveFunction &f, double beta, double gamma,
+inline bool armijoRule(function::Objective &f, double beta, double gamma,
                        const std::vector<double> &x, double fx, base::DataVector &grad_fx,
                        const std::vector<double> &s, std::vector<double> &y)
 {

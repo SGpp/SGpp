@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_SPHERE_HPP
 #define SGPP_OPT_FUNCTION_TEST_SPHERE_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Sphere : public TestFunction
+class Sphere : public Test
 {
 public:
-    Sphere(size_t d) : TestFunction(d)
+    Sphere(size_t d) : Test(d)
     {
     }
     

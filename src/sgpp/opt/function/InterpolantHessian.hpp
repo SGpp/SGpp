@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_FUNCTION_INTERPOLANTFUNCTIONHESSIAN_HPP
-#define SGPP_OPT_FUNCTION_INTERPOLANTFUNCTIONHESSIAN_HPP
+#ifndef SGPP_OPT_FUNCTION_INTERPOLANTHESSIAN_HPP
+#define SGPP_OPT_FUNCTION_INTERPOLANTHESSIAN_HPP
 
-#include "opt/function/ObjectiveFunctionHessian.hpp"
+#include "opt/function/ObjectiveHessian.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/operation/OperationEvalHessian.hpp"
@@ -15,12 +15,12 @@ namespace opt
 namespace function
 {
 
-class InterpolantFunctionHessian : public ObjectiveFunctionHessian
+class InterpolantHessian : public ObjectiveHessian
 {
 public:
-    InterpolantFunctionHessian(size_t d, base::OperationEvalHessian *op_eval_hessian,
+    InterpolantHessian(size_t d, base::OperationEvalHessian *op_eval_hessian,
                                base::DataVector &alpha) :
-            ObjectiveFunctionHessian(d), op_eval_hessian(op_eval_hessian), alpha(alpha) {}
+            ObjectiveHessian(d), op_eval_hessian(op_eval_hessian), alpha(alpha) {}
     
     inline double evalHessian(const std::vector<double> &x,
                               base::DataVector &gradient, base::DataMatrix &hessian)

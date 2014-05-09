@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_RASTRIGIN_HPP
 #define SGPP_OPT_FUNCTION_TEST_RASTRIGIN_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Rastrigin : public TestFunction
+class Rastrigin : public Test
 {
 public:
-    Rastrigin(size_t d) : TestFunction(d)
+    Rastrigin(size_t d) : Test(d)
     {
     }
     

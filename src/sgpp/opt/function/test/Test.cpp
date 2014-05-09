@@ -1,4 +1,4 @@
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <random>
 #include <iostream>
@@ -9,40 +9,42 @@ namespace opt
 {
 namespace function
 {
+namespace test
+{
 
-const double TestFunction::DEFAULT_STANDARD_DEVIATION = 0.01;
+const double Test::DEFAULT_STANDARD_DEVIATION = 0.01;
 
-TestFunction::TestFunction(size_t d) :
-    ObjectiveFunction(d),
+Test::Test(size_t d) :
+    Objective(d),
     displacement(std::vector<double>(d, 0.0))
 {
 }
 
-double TestFunction::eval(const std::vector<double> &x)
+double Test::eval(const std::vector<double> &x)
 {
     std::vector<double> x_displaced = x;
     displaceVector(x_displaced);
     return evalUndisplaced(x_displaced);
 }
 
-double TestFunction::getOptimalPoint(std::vector<double> &x)
+double Test::getOptimalPoint(std::vector<double> &x)
 {
     double fx = getOptimalPointUndisplaced(x);
     reverseDisplaceVector(x);
     return fx;
 }
 
-void TestFunction::generateDisplacement()
+void Test::generateDisplacement()
 {
     generateDisplacement(std::random_device()());
 }
 
-void TestFunction::generateDisplacement(unsigned int seed)
+void Test::generateDisplacement(unsigned int seed)
 {
     generateDisplacement(seed, DEFAULT_STANDARD_DEVIATION);
 }
 
-void TestFunction::generateDisplacement(unsigned int seed, double standard_deviation)
+void Test::generateDisplacement(unsigned int seed, double standard_deviation)
 {
     this->seed = seed;
     this->standard_deviation = standard_deviation;
@@ -58,12 +60,13 @@ void TestFunction::generateDisplacement(unsigned int seed, double standard_devia
     }
 }
 
-void TestFunction::displaceVector(std::vector<double> &x) const
+void Test::displaceVector(std::vector<double> &x) const
 {
     if (x.size() != d)
     {
         x.clear();
-        std::cerr << "sg::opt::TestFunction::displaceVector: x doesn't match size\n";
+        std::cerr << "sg::opt::Test::displaceVector: x doesn't match size\n";
+        return;
     }
     
     for (size_t t = 0; t < d; t++)
@@ -72,12 +75,13 @@ void TestFunction::displaceVector(std::vector<double> &x) const
     }
 }
 
-void TestFunction::reverseDisplaceVector(std::vector<double> &x) const
+void Test::reverseDisplaceVector(std::vector<double> &x) const
 {
     if (x.size() != d)
     {
         x.clear();
-        std::cerr << "sg::opt::TestFunction::reverseDisplaceVector: x doesn't match size\n";
+        std::cerr << "sg::opt::Test::reverseDisplaceVector: x doesn't match size\n";
+        return;
     }
     
     for (size_t t = 0; t < d; t++)
@@ -86,21 +90,22 @@ void TestFunction::reverseDisplaceVector(std::vector<double> &x) const
     }
 }
 
-unsigned int TestFunction::getSeed() const
+unsigned int Test::getSeed() const
 {
     return seed;
 }
 
-double TestFunction::getStandardDeviation() const
+double Test::getStandardDeviation() const
 {
     return standard_deviation;
 }
 
-void TestFunction::getDisplacement(std::vector<double> &displacement) const
+void Test::getDisplacement(std::vector<double> &displacement) const
 {
     displacement = this->displacement;
 }
 
+}
 }
 }
 }

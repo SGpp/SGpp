@@ -14,10 +14,10 @@ namespace optimizer
 class RandomSearch : public Optimizer
 {
 public:
-    RandomSearch(function::ObjectiveFunction &f);
-    RandomSearch(function::ObjectiveFunction &f, size_t max_it_count);
-    RandomSearch(function::ObjectiveFunction &f, size_t max_it_count, unsigned int seed);
-    RandomSearch(function::ObjectiveFunction &f, size_t max_it_count, unsigned int seed,
+    RandomSearch(function::Objective &f);
+    RandomSearch(function::Objective &f, size_t max_it_count);
+    RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed);
+    RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed,
                  Optimizer &optimizer, size_t points_count);
     
     void optimize(std::vector<double> &xopt);

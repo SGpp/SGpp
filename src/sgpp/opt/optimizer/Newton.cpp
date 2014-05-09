@@ -22,18 +22,14 @@ const double Newton::DEFAULT_GAMMA = 1e-2;
 const double Newton::DEFAULT_P = 0.1;
 const double Newton::DEFAULT_TOLERANCE = 1e-10;
 
-Newton::Newton(
-        function::ObjectiveFunction &f,
-        function::ObjectiveFunctionHessian &f_hessian) :
+Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian) :
     Newton(f, f_hessian, DEFAULT_MAX_IT_COUNT,
                     DEFAULT_ALPHA1, DEFAULT_ALPHA2, DEFAULT_BETA, DEFAULT_GAMMA,
                     DEFAULT_P, DEFAULT_TOLERANCE, default_sle_solver)
 {
 }
 
-Newton::Newton(
-        function::ObjectiveFunction &f,
-        function::ObjectiveFunctionHessian &f_hessian,
+Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
         size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
         double p, double tolerance, const sle::solver::Solver &sle_solver) :
     Optimizer(f, max_it_count),
@@ -143,7 +139,7 @@ void Newton::optimize(std::vector<double> &xopt)
     tools::printer.printStatusEnd();
 }
 
-function::ObjectiveFunctionHessian &Newton::getObjectiveFunctionHessian() const
+function::ObjectiveHessian &Newton::getObjectiveHessian() const
 {
     return f_hessian;
 }

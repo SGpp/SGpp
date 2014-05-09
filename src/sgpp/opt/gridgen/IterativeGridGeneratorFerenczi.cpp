@@ -31,7 +31,7 @@ inline double fastPow(double a, double b)
 }
 
 IterativeGridGeneratorFerenczi::IterativeGridGeneratorFerenczi(
-        function::ObjectiveFunction &f, base::Grid &grid, size_t N, double alpha) :
+        function::Objective &f, base::Grid &grid, size_t N, double alpha) :
     IterativeGridGenerator(f, grid, N),
     alpha(alpha)
 {

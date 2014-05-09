@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_ROSENBROCK_HPP
 #define SGPP_OPT_FUNCTION_TEST_ROSENBROCK_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Rosenbrock : public TestFunction
+class Rosenbrock : public Test
 {
 public:
-    Rosenbrock(size_t d) : TestFunction(d)
+    Rosenbrock(size_t d) : Test(d)
     {
     }
     

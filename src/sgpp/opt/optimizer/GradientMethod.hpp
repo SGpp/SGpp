@@ -2,7 +2,7 @@
 #define SGPP_OPT_OPTIMIZER_GRADIENTMETHOD_HPP
 
 #include "opt/optimizer/Optimizer.hpp"
-#include "opt/function/ObjectiveFunctionGradient.hpp"
+#include "opt/function/ObjectiveGradient.hpp"
 
 namespace sg
 {
@@ -19,16 +19,16 @@ public:
     static const double DEFAULT_GAMMA;
     static const double DEFAULT_TOLERANCE;
     
-    GradientMethod(function::ObjectiveFunction &f,
-                   function::ObjectiveFunctionGradient &f_gradient);
+    GradientMethod(function::Objective &f,
+                   function::ObjectiveGradient &f_gradient);
     
-    GradientMethod(function::ObjectiveFunction &f,
-                   function::ObjectiveFunctionGradient &f_gradient,
+    GradientMethod(function::Objective &f,
+                   function::ObjectiveGradient &f_gradient,
                    size_t max_it_count, double beta, double gamma, double tolerance);
     
     void optimize(std::vector<double> &xopt);
     
-    function::ObjectiveFunctionGradient &getObjectiveFunctionGradient() const;
+    function::ObjectiveGradient &getObjectiveGradient() const;
     
     double getBeta() const;
     void setBeta(double beta);
@@ -40,7 +40,7 @@ public:
     void setTolerance(double tolerance);
     
 protected:
-    function::ObjectiveFunctionGradient &f_gradient;
+    function::ObjectiveGradient &f_gradient;
     double beta;
     double gamma;
     double tol;

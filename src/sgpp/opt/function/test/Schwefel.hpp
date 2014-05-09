@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_SCHWEFEL_HPP
 #define SGPP_OPT_FUNCTION_TEST_SCHWEFEL_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Schwefel : public TestFunction
+class Schwefel : public Test
 {
 public:
-    Schwefel(size_t d) : TestFunction(d)
+    Schwefel(size_t d) : Test(d)
     {
     }
     

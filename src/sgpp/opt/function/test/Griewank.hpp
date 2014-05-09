@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_GRIEWANK_HPP
 #define SGPP_OPT_FUNCTION_TEST_GRIEWANK_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Griewank : public TestFunction
+class Griewank : public Test
 {
 public:
-    Griewank(size_t d) : TestFunction(d)
+    Griewank(size_t d) : Test(d)
     {
     }
     

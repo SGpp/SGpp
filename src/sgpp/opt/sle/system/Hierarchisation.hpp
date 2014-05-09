@@ -6,7 +6,7 @@
 #include "base/grid/GridStorage.hpp"
 #include "base/algorithm/GetAffectedBasisFunctions.hpp"
 
-#include "base/basis/basis.hpp"
+#include "base/basis/Basis.hpp"
 /*#include "base/basis/bspline/noboundary/BsplineBasis.hpp"
 #include "base/basis/bspline/boundary/BsplineBoundaryBasis.hpp"
 #include "base/basis/bspline/clenshawcurtis/BsplineClenshawCurtisBasis.hpp"

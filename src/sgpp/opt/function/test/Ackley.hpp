@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_ACKLEY_HPP
 #define SGPP_OPT_FUNCTION_TEST_ACKLEY_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Ackley : public TestFunction
+class Ackley : public Test
 {
 public:
-    Ackley(size_t d) : TestFunction(d)
+    Ackley(size_t d) : Test(d)
     {
     }
     

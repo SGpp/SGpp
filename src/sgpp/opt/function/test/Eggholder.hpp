@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_EGGHOLDER_HPP
 #define SGPP_OPT_FUNCTION_TEST_EGGHOLDER_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Eggholder : public TestFunction
+class Eggholder : public Test
 {
 public:
-    Eggholder() : TestFunction(2)
+    Eggholder() : Test(2)
     {
     }
     

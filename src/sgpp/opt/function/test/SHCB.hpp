@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_SHCB_HPP
 #define SGPP_OPT_FUNCTION_TEST_SHCB_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class SHCB : public TestFunction
+class SHCB : public Test
 {
 public:
-    SHCB() : TestFunction(2)
+    SHCB() : Test(2)
     {
     }
     

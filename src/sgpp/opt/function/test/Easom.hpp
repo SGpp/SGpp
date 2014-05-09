@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_EASOM_HPP
 #define SGPP_OPT_FUNCTION_TEST_EASOM_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Easom : public TestFunction
+class Easom : public Test
 {
 public:
-    Easom() : TestFunction(2)
+    Easom() : Test(2)
     {
     }
     

@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_HIMMELBLAU_HPP
 #define SGPP_OPT_FUNCTION_TEST_HIMMELBLAU_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class Himmelblau : public TestFunction
+class Himmelblau : public Test
 {
 public:
-    Himmelblau() : TestFunction(2)
+    Himmelblau() : Test(2)
     {
     }
     

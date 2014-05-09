@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_HARTMAN6_HPP
 #define SGPP_OPT_FUNCTION_TEST_HARTMAN6_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class Hartman6 : public TestFunction
+class Hartman6 : public Test
 {
 public:
-    Hartman6() : TestFunction(6)
+    Hartman6() : Test(6)
     {
     }
     

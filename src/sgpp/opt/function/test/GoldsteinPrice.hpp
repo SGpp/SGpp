@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_GOLDSTEINPRICE_HPP
 #define SGPP_OPT_FUNCTION_TEST_GOLDSTEINPRICE_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 namespace sg
 {
@@ -12,10 +12,10 @@ namespace function
 namespace test
 {
 
-class GoldsteinPrice : public TestFunction
+class GoldsteinPrice : public Test
 {
 public:
-    GoldsteinPrice() : TestFunction(2)
+    GoldsteinPrice() : Test(2)
     {
     }
     

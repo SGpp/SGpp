@@ -1,13 +1,12 @@
 #ifndef SGPP_OPT_HPP
 #define SGPP_OPT_HPP
 
-#include "opt/function/InterpolantFunction.hpp"
-#include "opt/function/InterpolantFunctionGradient.hpp"
-#include "opt/function/InterpolantFunctionHessian.hpp"
-#include "opt/function/ObjectiveFunction.hpp"
-#include "opt/function/ObjectiveFunctionGradient.hpp"
-#include "opt/function/ObjectiveFunctionHessian.hpp"
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/Interpolant.hpp"
+#include "opt/function/InterpolantGradient.hpp"
+#include "opt/function/InterpolantHessian.hpp"
+#include "opt/function/Objective.hpp"
+#include "opt/function/ObjectiveGradient.hpp"
+#include "opt/function/ObjectiveHessian.hpp"
 #include "opt/function/test/Ackley.hpp"
 #include "opt/function/test/Beale.hpp"
 #include "opt/function/test/Branin.hpp"
@@ -27,6 +26,7 @@
 #include "opt/function/test/Schaeffler.hpp"
 #include "opt/function/test/Schwefel.hpp"
 #include "opt/function/test/Sphere.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include "opt/gridgen/IterativeGridGenerator.hpp"
 #include "opt/gridgen/IterativeGridGeneratorFerenczi.hpp"

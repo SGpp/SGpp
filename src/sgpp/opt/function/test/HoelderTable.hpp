@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_FUNCTION_TEST_HOELDERTABLE_HPP
 #define SGPP_OPT_FUNCTION_TEST_HOELDERTABLE_HPP
 
-#include "opt/function/TestFunction.hpp"
+#include "opt/function/test/Test.hpp"
 
 #include <cmath>
 
@@ -14,10 +14,10 @@ namespace function
 namespace test
 {
 
-class HoelderTable : public TestFunction
+class HoelderTable : public Test
 {
 public:
-    HoelderTable() : TestFunction(2)
+    HoelderTable() : Test(2)
     {
     }
     

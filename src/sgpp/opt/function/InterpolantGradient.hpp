@@ -1,7 +1,7 @@
-#ifndef SGPP_OPT_FUNCTION_INTERPOLANTFUNCTIONGRADIENT_HPP
-#define SGPP_OPT_FUNCTION_INTERPOLANTFUNCTIONGRADIENT_HPP
+#ifndef SGPP_OPT_FUNCTION_INTERPOLANTGRADIENT_HPP
+#define SGPP_OPT_FUNCTION_INTERPOLANTGRADIENT_HPP
 
-#include "opt/function/ObjectiveFunctionGradient.hpp"
+#include "opt/function/ObjectiveGradient.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/operation/OperationEvalGradient.hpp"
 
@@ -14,12 +14,12 @@ namespace opt
 namespace function
 {
 
-class InterpolantFunctionGradient : public ObjectiveFunctionGradient
+class InterpolantGradient : public ObjectiveGradient
 {
 public:
-    InterpolantFunctionGradient(size_t d, base::OperationEvalGradient *op_eval_gradient,
+    InterpolantGradient(size_t d, base::OperationEvalGradient *op_eval_gradient,
                                 base::DataVector &alpha) :
-            ObjectiveFunctionGradient(d), op_eval_gradient(op_eval_gradient), alpha(alpha) {}
+            ObjectiveGradient(d), op_eval_gradient(op_eval_gradient), alpha(alpha) {}
     
     inline double evalGradient(const std::vector<double> &x, base::DataVector &gradient)
     {

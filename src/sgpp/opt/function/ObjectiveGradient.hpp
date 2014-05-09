@@ -1,5 +1,5 @@
-#ifndef SGPP_OPT_FUNCTION_OBJECTIVEFUNCTIONGRADIENT_HPP
-#define SGPP_OPT_FUNCTION_OBJECTIVEFUNCTIONGRADIENT_HPP
+#ifndef SGPP_OPT_FUNCTION_OBJECTIVEGRADIENT_HPP
+#define SGPP_OPT_FUNCTION_OBJECTIVEGRADIENT_HPP
 
 #include "base/datatypes/DataVector.hpp"
 
@@ -13,11 +13,11 @@ namespace opt
 namespace function
 {
 
-class ObjectiveFunctionGradient
+class ObjectiveGradient
 {
 public:
-    ObjectiveFunctionGradient(size_t d) : d(d) {}
-    virtual ~ObjectiveFunctionGradient() {}
+    ObjectiveGradient(size_t d) : d(d) {}
+    virtual ~ObjectiveGradient() {}
     
     virtual double evalGradient(const std::vector<double> &x,
                                 base::DataVector &gradient) = 0;

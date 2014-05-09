@@ -19,10 +19,10 @@ public:
     static const double DEFAULT_AVG_IMPROVEMENT_THRESHOLD;
     static const double DEFAULT_MAX_DISTANCE_THRESHOLD;
     
-    DifferentialEvolution(function::ObjectiveFunction &f);
-    DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count);
-    DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count, unsigned int seed);
-    DifferentialEvolution(function::ObjectiveFunction &f, size_t max_it_count,
+    DifferentialEvolution(function::Objective &f);
+    DifferentialEvolution(function::Objective &f, size_t max_it_count);
+    DifferentialEvolution(function::Objective &f, size_t max_it_count, unsigned int seed);
+    DifferentialEvolution(function::Objective &f, size_t max_it_count,
                           unsigned int seed, size_t points_count,
                           double crossover_probability, double scaling_factor,
                           size_t idle_generations_count,
