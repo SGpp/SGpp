@@ -141,7 +141,7 @@ bool UMFPACK::solve(
             Tj_array[k] = static_cast<sslong>(Tj[k]);
         }
         
-        tools::printer.printStatusUpdate("step 1: converting to CCS");
+        tools::printer.printStatusUpdate("step 1: umfpack_dl_triplet_to_col");
         
         result = umfpack_dl_triplet_to_col(
                 static_cast<sslong>(n), static_cast<sslong>(n), static_cast<sslong>(nnz),
@@ -218,7 +218,7 @@ bool UMFPACK::solve(
     
     return true;
 #else
-    std::cerr << "Error in sg::opt::sle::SolverUMFPACK::solve: "
+    std::cerr << "Error in sg::opt::sle::solver::UMFPACK::solve: "
               << "SG++ was compiled without UMFPACK support!\n";
     return false;
 #endif

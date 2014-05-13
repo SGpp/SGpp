@@ -37,9 +37,11 @@ bool solveInternal(const ::Eigen::MatrixXd &A, const std::vector<double> &b,
     if ((A*x_eigen).isApprox(b_eigen))
     {
         x = std::vector<double>(x_eigen.data(), x_eigen.data() + x_eigen.size());
+        tools::printer.printStatusEnd();
         return true;
     } else
     {
+        tools::printer.printStatusEnd("error: could not solve linear system!");
         return false;
     }
 }
@@ -111,18 +113,9 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
     }
     
     bool result = solveInternal(A, b, x);
-    
-    if (result)
-    {
-        tools::printer.printStatusEnd();
-        return true;
-    } else
-    {
-        tools::printer.printStatusEnd("error: could not solve linear system!");
-        return false;
-    }
+    return result;
 #else
-    std::cerr << "Error in sg::opt::sle::SolverEigen::solve: "
+    std::cerr << "Error in sg::opt::sle::solver::Eigen::solve: "
               << "SG++ was compiled without Eigen support!\n";
     return false;
 #endif

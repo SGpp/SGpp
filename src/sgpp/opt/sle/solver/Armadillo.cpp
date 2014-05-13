@@ -30,9 +30,11 @@ bool solveInternal(const arma::mat &A, const std::vector<double> &b, std::vector
     if (arma::solve(x_armadillo, A, b_armadillo))
     {
         x = arma::conv_to<std::vector<double>>::from(x_armadillo);
+        tools::printer.printStatusEnd();
         return true;
     } else
     {
+        tools::printer.printStatusEnd("error: could not solve linear system!");
         return false;
     }
 }
@@ -134,18 +136,9 @@ bool Armadillo::solve(system::System &system, std::vector<double> &x) const
     }
     
     bool result = solveInternal(A, b, x);
-    
-    if (result)
-    {
-        tools::printer.printStatusEnd();
-        return true;
-    } else
-    {
-        tools::printer.printStatusEnd("error: could not solve linear system!");
-        return false;
-    }
+    return result;
 #else
-    std::cerr << "Error in sg::opt::sle::SolverArmadillo::solve: "
+    std::cerr << "Error in sg::opt::sle::solver::Armadillo::solve: "
               << "SG++ was compiled without Armadillo support!\n";
     return false;
 #endif
