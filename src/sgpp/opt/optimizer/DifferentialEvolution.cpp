@@ -81,12 +81,10 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
     
     double fopt = INFINITY;
     size_t xopt_index = 0;
-    //size_t k = 0;
-    //size_t number_of_fcn_evals = points_count;
     size_t last_nonidle_k = 0;
     double avg = 0.0;
     double last_avg = 0.0;
-    size_t max_k = N / points_count - 1;
+    size_t max_k = std::max(static_cast<size_t>(2), N / points_count) - 1;
     
     std::vector<std::vector<size_t> > a(max_k, std::vector<size_t>(points_count, 0)),
             b = a, c = a, j = a;
