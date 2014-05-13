@@ -13,7 +13,7 @@ namespace opt
 namespace optimizer
 {
 
-inline bool armijoRule(function::Objective &f, double beta, double gamma,
+inline bool armijoRule(function::Objective &f, double beta, double gamma, double tol,
                        const std::vector<double> &x, double fx, base::DataVector &grad_fx,
                        const std::vector<double> &s, std::vector<double> &y)
 {
@@ -46,12 +46,18 @@ inline bool armijoRule(function::Objective &f, double beta, double gamma,
         {
             fy = f.eval(y);
             
+            double improvement = fx - fy;
+            double rhs = gamma * sigma * (-ip);
+            
             //std::cout << "sigma: " << sigma << ", fy: " << fy << "\n";
-            if (fy - fx <= sigma * gamma * ip)
+            if ((improvement >= rhs) && (improvement >= tol))
             {
                 /*std::cout << "ip: " << ip << "\n";
                 std::cout << "sigma: " << sigma << "\n";
-                std::cout << "fy: " << fy << "\n";*/
+                std::cout << "fx: " << fx << "\n";
+                std::cout << "fy: " << fy << "\n";
+                std::cout << "improvement: " << improvement << "\n";
+                std::cout << "rhs: " << rhs << "\n";*/
                 return true;
             }
         }
