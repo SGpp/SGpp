@@ -48,6 +48,7 @@
 #include "opt/sle/solver/Auto.hpp"
 #include "opt/sle/solver/BiCGStab.hpp"
 #include "opt/sle/solver/Eigen.hpp"
+#include "opt/sle/solver/Gmmpp.hpp"
 #include "opt/sle/solver/Solver.hpp"
 #include "opt/sle/solver/UMFPACK.hpp"
 

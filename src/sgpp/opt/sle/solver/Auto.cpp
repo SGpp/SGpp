@@ -2,11 +2,13 @@
 #include "opt/sle/solver/Armadillo.hpp"
 #include "opt/sle/solver/BiCGStab.hpp"
 #include "opt/sle/solver/Eigen.hpp"
+#include "opt/sle/solver/Gmmpp.hpp"
 #include "opt/sle/solver/UMFPACK.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <cstddef>
 #include <algorithm>
+#include <map>
 
 namespace sg
 {
@@ -17,80 +19,64 @@ namespace sle
 namespace solver
 {
 
-const double Auto::MAX_NNZ_RATIO_FOR_SPARSE = 0.2;
+const double Auto::MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
 const double Auto::ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
+const double Auto::MAX_NNZ_RATIO_FOR_GMMPP = 0.05;
+
+void addSolver(Solver *solver, std::vector<Solver *> &solvers,
+               const std::map<Solver *, bool> &supports)
+{
+    if ((supports.at(solver)) &&
+        (std::find(solvers.begin(), solvers.end(), solver) == solvers.end()))
+    {
+        solvers.push_back(solver);
+    }
+}
 
 bool Auto::solve(system::System &system, std::vector<double> &x) const
 {
     tools::printer.printStatusBegin("Solving linear system (automatic method)...");
     
-    bool armadillo_support = false;
-    bool eigen_support = false;
-    bool umfpack_support = false;
+    Armadillo solver_armadillo;
+    Eigen solver_eigen;
+    UMFPACK solver_umfpack;
+    Gmmpp solver_gmmpp;
+    BiCGStab solver_bicgstab;
+    
+    std::map<Solver *, bool> supports =
+    {
+        {&solver_armadillo, false},
+        {&solver_eigen, false},
+        {&solver_umfpack, false},
+        {&solver_gmmpp, false},
+        {&solver_bicgstab, true}
+    };
     
 #ifdef USEARMADILLO
-    armadillo_support = true;
+    //armadillo_support = true;
+    supports[&solver_armadillo] = true;
 #endif
     
 #ifdef USEEIGEN
-    eigen_support = true;
+    //eigen_support = true;
+    supports[&solver_eigen] = true;
 #endif
     
 #ifdef USEUMFPACK
-    umfpack_support = true;
+    //umfpack_support = true;
+    supports[&solver_umfpack] = true;
 #endif
     
-    bool solve_with_armadillo = false;
-    bool solve_with_eigen = false;
-    bool solve_with_umfpack = false;
+#ifdef USEGMMPP
+    //gmmpp_support = true;
+    supports[&solver_gmmpp] = true;
+#endif
     
+    std::vector<Solver *> solvers;
     size_t n = system.getDimension();
     
-    /*const std::vector<double> &b = system.getRHS();
-    size_t nnz = 0;
-    std::vector<uint32_t> Ti;
-    std::vector<uint32_t> Tj;
-    std::vector<double> Tx;*/
-    //bool sparse_already_constructed = false;
-    
-    if (umfpack_support)
+    if (supports[&solver_umfpack] || supports[&solver_gmmpp])
     {
-        /*for (uint32_t i = 0; i < n; i++)
-        {
-            if (i % 100 == 0)
-            {
-                char str[10];
-                snprintf(str, 10, "%.1f%%",
-                         static_cast<double>(i) / static_cast<double>(n) * 100.0);
-                tools::printer.printStatusUpdate("constructing sparse matrix (" +
-                                                 std::string(str) + ")");
-            }
-            
-            for (uint32_t j = 0; j < n; j++)
-            {
-                double entry = system.getMatrixEntry(i, j);
-                
-                if (entry != 0.0)
-                {
-                    Ti.push_back(i);
-                    Tj.push_back(j);
-                    Tx.push_back(entry);
-                    nnz++;
-                }
-            }
-        }
-        
-        tools::printer.printStatusNewLine();
-        tools::printer.printStatusUpdate("nnz = " + std::to_string(nnz));
-        tools::printer.printStatusNewLine();
-        sparse_already_constructed = true;
-        
-        if (static_cast<double>(nnz) <= MAX_NNZ_RATIO_FOR_SPARSE *
-                                        static_cast<double>(n)*static_cast<double>(n))
-        {
-            solve_with_umfpack = true;
-        }*/
-        
         size_t nrows = 0;
         size_t nnz = 0;
         size_t inc = static_cast<int>(ESTIMATE_NNZ_ROWS_SAMPLE_SIZE * static_cast<double>(n)) + 1;
@@ -110,34 +96,6 @@ bool Auto::solve(system::System &system, std::vector<double> &x) const
             }
         }
         
-        /*tools::printer.printStatusUpdate("estimating sparsity pattern");
-        
-        size_t nnz = 0;
-        size_t nrows = 1 + static_cast<int>(ESTIMATE_NNZ_ROWS_SAMPLE_SIZE *
-                                            static_cast<double>(n));
-        std::vector<size_t> row_ind(n, 0.0);
-        
-        for (size_t k = 0; k < n; k++)
-        {
-            row_ind[k] = k;
-        }
-        
-        // caution: shuffle is not random, since srand is not called at this time
-        std::random_shuffle(row_ind.begin(), row_ind.end());
-        
-        for (size_t k = 0; k < nrows; k++)
-        {
-            size_t i = row_ind[k];
-            
-            for (size_t j = 0; j < n; j++)
-            {
-                if (system.isMatrixEntryNonZero(i, j))
-                {
-                    nnz++;
-                }
-            }
-        }*/
-        
         double nnz_ratio = static_cast<double>(nnz) /
                 (static_cast<double>(nrows) * static_cast<double>(n));
         
@@ -148,149 +106,43 @@ bool Auto::solve(system::System &system, std::vector<double> &x) const
             tools::printer.printStatusNewLine();
         }
         
-        if (nnz_ratio <= MAX_NNZ_RATIO_FOR_SPARSE)
+        if ((n > MAX_DIM_FOR_FULL) || (nnz_ratio <= MAX_NNZ_RATIO_FOR_GMMPP))
         {
-            solve_with_umfpack = true;
+            addSolver(&solver_gmmpp, solvers, supports);
+            addSolver(&solver_umfpack, solvers, supports);
+        } else if (nnz_ratio <= MAX_NNZ_RATIO_FOR_SPARSE)
+        {
+            addSolver(&solver_umfpack, solvers, supports);
+            addSolver(&solver_gmmpp, solvers, supports);
         }
     }
     
-    if (!solve_with_umfpack)
+    addSolver(&solver_armadillo, solvers, supports);
+    addSolver(&solver_eigen, solvers, supports);
+    addSolver(&solver_gmmpp, solvers, supports);
+    addSolver(&solver_umfpack, solvers, supports);
+    addSolver(&solver_bicgstab, solvers, supports);
+    
+    for (size_t i = 0; i < solvers.size(); i++)
     {
-        if (armadillo_support)
+        bool result = solvers[i]->solve(system, x);
+        
+        if (result)
         {
-            solve_with_armadillo = true;
-        } else if (eigen_support)
+            tools::printer.printStatusEnd();
+            return true;
+        } else if ((solvers[i] == &solver_gmmpp) && (n > MAX_DIM_FOR_FULL))
         {
-            solve_with_eigen = true;
+            tools::printer.printStatusEnd("warning: using non-converged solution of iterative "
+                                          "solver, residual can be large "
+                                          "(matrix too large to try other solvers)");
+            return true;
         }
     }
     
-    bool result;
-    
-    if (solve_with_armadillo)
-    {
-        Armadillo solver;
-        
-        /*if (sparse_already_constructed)
-        {
-            result = solver.solve(Ti, Tj, Tx, b, x);
-        } else
-        {*/
-            result = solver.solve(system, x);
-        //}
-    } else if (solve_with_eigen)
-    {
-        Eigen solver;
-        
-        /*if (sparse_already_constructed)
-        {
-            result = solver.solve(Ti, Tj, Tx, b, x);
-        } else
-        {*/
-            result = solver.solve(system, x);
-        //}
-    } else if (solve_with_umfpack)
-    {
-        UMFPACK solver;
-        
-        /*if (sparse_already_constructed)
-        {
-            result = solver.solve(Ti, Tj, Tx, b, x);
-        } else
-        {*/
-            result = solver.solve(system, x);
-        //}
-    } else
-    {
-        BiCGStab solver;
-        
-        /*if (sparse_already_constructed)
-        {
-            result = solver.solve(Ti, Tj, Tx, b, x);
-        } else
-        {*/
-            result = solver.solve(system, x);
-        //}
-    }
-    
-    tools::printer.printStatusEnd();
-    
-    return result;
+    tools::printer.printStatusEnd("error: could not solve linear system!");
+    return false;
 }
-
-/*bool SolverAuto::solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
-                       const std::vector<double> &Tx, const std::vector<double> &b,
-                       std::vector<double> &x) const
-{
-    tools::printer.printStatusBegin("Solving sparse linear system (automatic method)...");
-    
-    bool armadillo_support = false;
-    bool eigen_support = false;
-    bool umfpack_support = false;
-    
-#ifdef USEARMADILLO
-    armadillo_support = true;
-#endif
-    
-#ifdef USEEIGEN
-    eigen_support = true;
-#endif
-    
-#ifdef USEUMFPACK
-    umfpack_support = true;
-#endif
-    
-    bool solve_with_armadillo = false;
-    bool solve_with_eigen = false;
-    bool solve_with_umfpack = false;
-    
-    if (umfpack_support)
-    {
-        double nnz = static_cast<double>(Tx.size());
-        double n = static_cast<double>(b.size());
-        
-        if (static_cast<double>(nnz) <= MAX_NNZ_RATIO_FOR_SPARSE *
-                                        static_cast<double>(n)*static_cast<double>(n))
-        {
-            solve_with_umfpack = true;
-        }
-    }
-    
-    if (!solve_with_umfpack)
-    {
-        if (armadillo_support)
-        {
-            solve_with_armadillo = true;
-        } else if (eigen_support)
-        {
-            solve_with_eigen = true;
-        }
-    }
-    
-    bool result;
-    
-    if (solve_with_armadillo)
-    {
-        SolverArmadillo solver;
-        result = solver.solve(Ti, Tj, Tx, b, x);
-    } else if (solve_with_eigen)
-    {
-        SolverEigen solver;
-        result = solver.solve(Ti, Tj, Tx, b, x);
-    } else if (solve_with_umfpack)
-    {
-        SolverUMFPACK solver;
-        result = solver.solve(Ti, Tj, Tx, b, x);
-    } else
-    {
-        SolverBiCGStab solver;
-        result = solver.solve(Ti, Tj, Tx, b, x);
-    }
-    
-    tools::printer.printStatusEnd();
-    
-    return result;
-}*/
 
 }
 }
