@@ -1,5 +1,6 @@
 #include "opt/tools/Printer.hpp"
 #include "base/grid/GridStorage.hpp"
+#include "opt/tools/ScopedLock.hpp"
 
 #include <iostream>
 
@@ -14,6 +15,7 @@ Printer printer;
 
 Printer::Printer() :
     verbose(DEFAULT_VERBOSE),
+    status_printing_enabled(true),
     current_level(0),
     cursor_in_clear_line(true),
     last_msg_length(0)
@@ -22,9 +24,10 @@ Printer::Printer() :
 
 void Printer::printStatusBegin(const std::string &msg)
 {
-    if (current_level > verbose)
+    ScopedLock lock(mutex);
+    
+    if (!status_printing_enabled || (current_level > verbose))
     {
-        current_level++;
         return;
     }
     
@@ -34,9 +37,10 @@ void Printer::printStatusBegin(const std::string &msg)
     }
     
     printStatusIdentation();
+    current_level++;
+    
     std::cout << msg;
     printStatusNewLine();
-    current_level++;
     
     start_times.push(std::chrono::system_clock::now());
     last_msg_length = 0;
@@ -45,7 +49,9 @@ void Printer::printStatusBegin(const std::string &msg)
 
 void Printer::printStatusUpdate(const std::string &msg)
 {
-    if (current_level > verbose)
+    ScopedLock lock(mutex);
+    
+    if (!status_printing_enabled || (current_level > verbose))
     {
         return;
     }
@@ -70,7 +76,7 @@ void Printer::printStatusUpdate(const std::string &msg)
 
 void Printer::printStatusNewLine()
 {
-    if (current_level > verbose)
+    if (!status_printing_enabled || (current_level > verbose))
     {
         return;
     }
@@ -82,6 +88,11 @@ void Printer::printStatusNewLine()
 
 void Printer::printStatusIdentation()
 {
+    if (!status_printing_enabled || (current_level > verbose))
+    {
+        return;
+    }
+    
     for (size_t i = 0; i < current_level; i++)
     {
         std::cout << "    ";
@@ -90,10 +101,9 @@ void Printer::printStatusIdentation()
 
 void Printer::printStatusEnd(const std::string &msg)
 {
-    current_level--;
-    last_duration = std::chrono::system_clock::now() - start_times.top();
+    ScopedLock lock(mutex);
     
-    if (current_level > verbose)
+    if (!status_printing_enabled || (current_level > verbose))
     {
         return;
     }
@@ -103,8 +113,10 @@ void Printer::printStatusEnd(const std::string &msg)
         printStatusNewLine();
     }
     
+    current_level--;
     printStatusIdentation();
     
+    last_duration = std::chrono::system_clock::now() - start_times.top();
     std::string time_msg =
             "Done in " + std::to_string(static_cast<int>(1000.0 * last_duration.count())) + "ms";
     
@@ -122,7 +134,17 @@ void Printer::printStatusEnd(const std::string &msg)
     cursor_in_clear_line = true;
 }
 
-void Printer::increaseCurrentLevel(size_t inc)
+void Printer::enableStatusPrinting()
+{
+    status_printing_enabled = true;
+}
+
+void Printer::disableStatusPrinting()
+{
+    status_printing_enabled = false;
+}
+
+/*void Printer::increaseCurrentLevel(size_t inc)
 {
     current_level += inc;
 }
@@ -130,7 +152,7 @@ void Printer::increaseCurrentLevel(size_t inc)
 void Printer::decreaseCurrentLevel(size_t dec)
 {
     current_level -= dec;
-}
+}*/
 
 void Printer::printGridToFile(const std::string &filename,
                               const gridgen::IterativeGridGenerator &grid_gen) const
@@ -226,6 +248,11 @@ void Printer::printSLE(sle::system::System &system) const
 double Printer::getLastDurationSecs() const
 {
     return last_duration.count();
+}
+
+MutexType &Printer::getMutex()
+{
+    return mutex;
 }
 
 }

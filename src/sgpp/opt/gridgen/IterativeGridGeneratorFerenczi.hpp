@@ -16,7 +16,7 @@ namespace gridgen
 class IterativeGridGeneratorFerenczi : public IterativeGridGenerator
 {
 public:
-    static const size_t INITIAL_LEVEL = 3;
+    static const size_t INITIAL_LEVEL_WO_BOUNDARIES = 3;
     static const size_t MAX_LEVEL = 25;
     
     IterativeGridGeneratorFerenczi(function::Objective &f, base::Grid &grid,

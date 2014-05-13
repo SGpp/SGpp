@@ -78,7 +78,6 @@ struct Frprmn : Linemethod<T>
         
         for (its = 0; its < itmax; its++)
         {
-            if (its % 10 == 0)
             {
                 std::stringstream msg;
                 msg << its << " steps, f(x) = " << fp;

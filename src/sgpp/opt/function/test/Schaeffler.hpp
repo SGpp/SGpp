@@ -45,6 +45,11 @@ public:
         x = std::vector<double>(50, 0.2625);
         return 0.0;
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Schaeffler(*this));
+    }
 };
 
 }

@@ -35,6 +35,11 @@ public:
         x = {0.5, 0.25};
         return 3.0;
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new GoldsteinPrice(*this));
+    }
 };
 
 }

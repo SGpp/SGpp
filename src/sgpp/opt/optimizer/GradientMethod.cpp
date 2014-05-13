@@ -22,7 +22,7 @@ GradientMethod::GradientMethod(function::Objective &f, function::ObjectiveGradie
 GradientMethod::GradientMethod(function::Objective &f, function::ObjectiveGradient &f_gradient,
         size_t N, double beta, double gamma, double tolerance) :
     Optimizer(f, N),
-    f_gradient(f_gradient),
+    f_gradient(f_gradient.clone()),
     beta(beta),
     gamma(gamma),
     tol(tolerance)
@@ -33,7 +33,7 @@ void GradientMethod::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (gradient method)...");
     
-    size_t d = f.getDimension();
+    size_t d = f->getDimension();
     std::vector<double> x(x0);
     double fx;
     
@@ -44,7 +44,7 @@ void GradientMethod::optimize(std::vector<double> &xopt)
     
     for (k = 0; k < N; k++)
     {
-        fx = f_gradient.evalGradient(x, grad_fx);
+        fx = f_gradient->evalGradient(x, grad_fx);
         
         double grad_fx_norm = grad_fx.l2Norm();
         
@@ -63,7 +63,6 @@ void GradientMethod::optimize(std::vector<double> &xopt)
         std::cout << "fx: " << fx << "\n";
         std::cout << "grad_fx: [" << grad_fx[0] << ", " << grad_fx[1] << "]\n";
         std::cout << "s: [" << s[0] << ", " << s[1] << "]\n";*/
-        if (k % 10 == 0)
         {
             std::stringstream msg;
             msg << k << " steps, f(x) = " << fx;
@@ -71,7 +70,7 @@ void GradientMethod::optimize(std::vector<double> &xopt)
             tools::printer.printStatusUpdate(msg.str());
         }
         
-        if (!armijoRule(f, beta, gamma, x, fx, grad_fx, s, y))
+        if (!armijoRule(*f, beta, gamma, tol, x, fx, grad_fx, s, y))
         {
             break;
         }
@@ -90,7 +89,14 @@ void GradientMethod::optimize(std::vector<double> &xopt)
     tools::printer.printStatusEnd();
 }
 
-function::ObjectiveGradient &GradientMethod::getObjectiveGradient() const
+std::unique_ptr<Optimizer> GradientMethod::clone()
+{
+    std::unique_ptr<Optimizer> result(new GradientMethod(*f, *f_gradient, N, beta, gamma, tol));
+    result->setStartingPoint(x0);
+    return result;
+}
+
+const std::unique_ptr<function::ObjectiveGradient> &GradientMethod::getObjectiveGradient() const
 {
     return f_gradient;
 }

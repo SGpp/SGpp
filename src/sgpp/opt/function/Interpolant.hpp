@@ -3,12 +3,11 @@
 
 #include "opt/function/Objective.hpp"
 #include "base/datatypes/DataVector.hpp"
-#include "base/operation/OperationEval.hpp"
-//#include "base/grid/Grid.hpp"
+//include "base/operation/OperationEval.hpp"
+#include "base/grid/Grid.hpp"
 
-//#include "base/basis/Basis.hpp"
-
-/*#include "base/grid/type/BsplineGrid.hpp"
+/*#include "base/basis/Basis.hpp"
+#include "base/grid/type/BsplineGrid.hpp"
 #include "base/grid/type/BsplineBoundaryGrid.hpp"
 #include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
 #include "base/grid/type/ModBsplineGrid.hpp"*/
@@ -26,22 +25,37 @@ namespace function
 class Interpolant : public Objective
 {
 public:
-    Interpolant(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
+    /*Interpolant(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
         Objective(d),
         op_eval(op_eval),
-        /*grid(NULL),
-        grid_storage(NULL),
-        basis(NULL),*/
+        alpha(alpha)
+    {
+    }*/
+    
+    Interpolant(size_t d, base::Grid &grid, base::DataVector &alpha) :
+        Objective(d),
+        grid(grid),
+        op_eval(op_factory::createOperationEval(grid)),
         alpha(alpha)
     {
     }
     
-    /*InterpolantFunction(size_t d, base::Grid *grid, base::DataVector &alpha) :
+    /*Interpolant(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
+        Objective(d),
+        op_eval(op_eval),
+        grid(nullptr),
+        grid_storage(nullptr),
+        basis(nullptr),
+        alpha(alpha)
+    {
+    }
+    
+    Interpolant(size_t d, base::Grid *grid, base::DataVector &alpha) :
         ObjectiveFunction(d),
-        op_eval(NULL),
+        op_eval(nullptr),
         grid(grid),
         grid_storage(grid->getStorage()),
-        basis(NULL),
+        basis(nullptr),
         alpha(alpha)
     {
         if (strcmp(grid->getType(), "Bspline") == 0)
@@ -76,20 +90,12 @@ public:
         }
     }*/
     
-    /*~InterpolantFunction()
-    {
-        if (basis != NULL)
-        {
-            delete basis;
-        }
-    }*/
-    
     inline double eval(const std::vector<double> &x)
     {
-        /*if (grid == NULL)
+        /*if (grid == nullptr)
         {*/
-            std::vector<double> y = x;
-            return op_eval->eval(alpha, y);
+        std::vector<double> y = x;
+        return op_eval->eval(alpha, y);
         /*} else
         {
             double result = 0.0;
@@ -119,8 +125,14 @@ public:
         }*/
     }
     
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Interpolant(d, grid, alpha));
+    }
+    
 protected:
-    base::OperationEval *op_eval;
+    base::Grid &grid;
+    std::unique_ptr<base::OperationEval> op_eval;
     
     /*base::Grid *grid;
     base::GridStorage *grid_storage;

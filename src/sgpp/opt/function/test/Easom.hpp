@@ -35,6 +35,11 @@ public:
         x = {0.515708, 0.515708};
         return -1.0;
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Easom(*this));
+    }
 };
 
 }

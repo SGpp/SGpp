@@ -31,9 +31,11 @@ public:
     
     void optimize(std::vector<double> &xopt);
     
+    std::unique_ptr<Optimizer> clone();
+    
 protected:
     size_t points_count;
-    size_t seed;
+    unsigned int seed;
     double crossover_probability;
     double scaling_factor;
     size_t idle_generations_count;

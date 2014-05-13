@@ -33,7 +33,9 @@ public:
     
     void optimize(std::vector<double> &xopt);
     
-    function::ObjectiveHessian &getObjectiveHessian() const;
+    std::unique_ptr<Optimizer> clone();
+    
+    const std::unique_ptr<function::ObjectiveHessian> &getObjectiveHessian() const;
     
     double getAlpha1() const;
     void setAlpha1(double alpha1);
@@ -54,7 +56,7 @@ public:
     void setTolerance(double tolerance);
     
 protected:
-    function::ObjectiveHessian &f_hessian;
+    std::unique_ptr<function::ObjectiveHessian> f_hessian;
     double alpha1;
     double alpha2;
     double beta;

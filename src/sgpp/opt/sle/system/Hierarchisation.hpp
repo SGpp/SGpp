@@ -1,7 +1,7 @@
 #ifndef SGPP_OPT_SLE_SYSTEM_HIERARCHISATION_HPP
 #define SGPP_OPT_SLE_SYSTEM_HIERARCHISATION_HPP
 
-#include "opt/sle/system/Parallelizable.hpp"
+#include "opt/sle/system/Cloneable.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/algorithm/GetAffectedBasisFunctions.hpp"
@@ -36,67 +36,67 @@ namespace sle
 namespace system
 {
 
-class Hierarchisation : public Parallelizable
+class Hierarchisation : public Cloneable
 {
 public:
-    Hierarchisation(base::Grid *grid, const std::vector<double> &function_values) :
-        Parallelizable(function_values),
+    Hierarchisation(base::Grid &grid, const std::vector<double> &function_values) :
+        Cloneable(function_values),
         grid(grid),
-        grid_storage(grid->getStorage()),
-        basis(NULL)
+        grid_storage(grid.getStorage())
         /*cached_row_index(0),
         cached_row({}),
         row_cached(false)*/
         //hash_map(std::unordered_map<size_t, double>())
     {
-        if (strcmp(grid->getType(), "Bspline") == 0)
+        if (strcmp(grid.getType(), "Bspline") == 0)
         {
-            basis = new sg::base::SBsplineBase(
-                    ((base::BsplineGrid *)grid)->getDegree());
-        } else if (strcmp(grid->getType(), "BsplineBoundary") == 0)
+            basis = std::unique_ptr<base::SBase>(new sg::base::SBsplineBase(
+                    dynamic_cast<base::BsplineGrid &>(grid).getDegree()));
+        } else if (strcmp(grid.getType(), "BsplineBoundary") == 0)
         {
-            basis = new sg::base::SBsplineBoundaryBase(
-                    ((base::BsplineBoundaryGrid *)grid)->getDegree());
-        } else if (strcmp(grid->getType(), "BsplineClenshawCurtis") == 0)
+            basis = std::unique_ptr<base::SBase>(new sg::base::SBsplineBoundaryBase(
+                    dynamic_cast<base::BsplineBoundaryGrid &>(grid).getDegree()));
+        } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0)
         {
-            basis = new sg::base::SBsplineClenshawCurtisBase(
-                    ((base::BsplineClenshawCurtisGrid *)grid)->getDegree(),
-                    ((base::BsplineClenshawCurtisGrid *)grid)->getCosineTable());
-        } else if (strcmp(grid->getType(), "modBspline") == 0)
+            basis = std::unique_ptr<base::SBase>(new sg::base::SBsplineClenshawCurtisBase(
+                    dynamic_cast<base::BsplineClenshawCurtisGrid &>(grid).getDegree(),
+                    dynamic_cast<base::BsplineClenshawCurtisGrid &>(grid).getCosineTable()));
+        } else if (strcmp(grid.getType(), "modBspline") == 0)
         {
-            basis = new sg::base::SModBsplineBase(
-                    ((base::ModBsplineGrid *)grid)->getDegree());
-        } else if (strcmp(grid->getType(), "Wavelet") == 0)
+            basis = std::unique_ptr<base::SBase>(new sg::base::SModBsplineBase(
+                    dynamic_cast<base::ModBsplineGrid &>(grid).getDegree()));
+        } else if (strcmp(grid.getType(), "Wavelet") == 0)
         {
-            basis = new sg::base::SWaveletBase();
-        } else if (strcmp(grid->getType(), "WaveletBoundary") == 0)
+            basis = std::unique_ptr<base::SBase>(new sg::base::SWaveletBase());
+        } else if (strcmp(grid.getType(), "WaveletBoundary") == 0)
         {
-            basis = new sg::base::SWaveletBoundaryBase();
-        } else if (strcmp(grid->getType(), "modWavelet") == 0)
+            basis = std::unique_ptr<base::SBase>(new sg::base::SWaveletBoundaryBase());
+        } else if (strcmp(grid.getType(), "modWavelet") == 0)
         {
-            basis = new sg::base::SModWaveletBase();
+            basis = std::unique_ptr<base::SBase>(new sg::base::SModWaveletBase());
         } else
         {
             throw std::invalid_argument("Grid type not supported.");
         }
     }
     
-    virtual ~Hierarchisation() { if (basis != NULL) delete basis; }
-    
     inline bool isMatrixEntryNonZero(size_t i, size_t j)
             { return (evalBasisFunctionAtGridPoint(j, i) != 0.0); }
     inline double getMatrixEntry(size_t i, size_t j)
             { return evalBasisFunctionAtGridPoint(j, i); }
     
-    base::Grid *getGrid() { return grid; }
-    void setGrid(base::Grid *grid) { this->grid = grid; /*row_cached = false;*/ }
+    base::Grid &getGrid() { return grid; }
+    void setGrid(base::Grid &grid) { this->grid = grid; /*row_cached = false;*/ }
     
-    virtual Parallelizable *clone() { return new Hierarchisation(grid, b); }
+    virtual std::unique_ptr<Cloneable> clone()
+    {
+        return std::unique_ptr<Cloneable>(new Hierarchisation(grid, b));
+    }
     
 protected:
-    base::Grid *grid;
+    base::Grid &grid;
     base::GridStorage *grid_storage;
-    base::SBase *basis;
+    std::unique_ptr<base::SBase> basis;
     
     /*size_t cached_row_index;
     std::vector<double> cached_row;

@@ -38,6 +38,11 @@ public:
         //return -418.9829 * static_cast<double>(d);
         return evalUndisplaced(x);
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Schwefel(*this));
+    }
 };
 
 }

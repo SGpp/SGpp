@@ -33,6 +33,11 @@ public:
         //return -1.031628;
         return evalUndisplaced(x);
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new SHCB(*this));
+    }
 };
 
 }

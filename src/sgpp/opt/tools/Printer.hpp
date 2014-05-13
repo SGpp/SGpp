@@ -5,6 +5,7 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "opt/gridgen/IterativeGridGenerator.hpp"
 #include "opt/sle/system/System.hpp"
+#include "opt/tools/MutexType.hpp"
 
 #include <cstddef>
 #include <chrono>
@@ -15,7 +16,7 @@ namespace sg
 {
 namespace opt
 {
-    
+
 template <class T>
 inline std::ostream &operator<<(std::ostream &stream, const std::vector<T> &x)
 {
@@ -71,8 +72,10 @@ public:
     void printStatusIdentation();
     void printStatusEnd(const std::string &msg = "");
     
-    void increaseCurrentLevel(size_t inc = 1);
-    void decreaseCurrentLevel(size_t dec = 1);
+    void enableStatusPrinting();
+    void disableStatusPrinting();
+    //void increaseCurrentLevel(size_t inc = 1);
+    //void decreaseCurrentLevel(size_t dec = 1);
     
     void printGridToFile(const std::string &filename,
                          const gridgen::IterativeGridGenerator &grid_gen) const;
@@ -167,14 +170,19 @@ public:
     
     double getLastDurationSecs() const;
     
+    MutexType &getMutex();
+    
 protected:
     size_t verbose;
+    bool status_printing_enabled;
     
     size_t current_level;
     bool cursor_in_clear_line;
     size_t last_msg_length;
     std::stack<std::chrono::time_point<std::chrono::system_clock> > start_times;
     std::chrono::duration<double> last_duration;
+    
+    MutexType mutex;
 };
 
 extern Printer printer;

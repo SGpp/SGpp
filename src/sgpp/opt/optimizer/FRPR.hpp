@@ -23,13 +23,15 @@ public:
     
     void optimize(std::vector<double> &xopt);
     
-    function::ObjectiveGradient &getObjectiveGradient() const;
+    std::unique_ptr<Optimizer> clone();
+    
+    const std::unique_ptr<function::ObjectiveGradient> &getObjectiveGradient() const;
     
     double getTolerance() const;
     void setTolerance(double tolerance);
     
 protected:
-    function::ObjectiveGradient &f_gradient;
+    std::unique_ptr<function::ObjectiveGradient> f_gradient;
     double tol;
 };
 

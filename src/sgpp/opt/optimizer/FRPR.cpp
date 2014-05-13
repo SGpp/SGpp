@@ -20,7 +20,7 @@ FRPR::FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient) :
 FRPR::FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient,
            size_t max_it_count, double tolerance) :
     Optimizer(f, max_it_count),
-    f_gradient(f_gradient),
+    f_gradient(f_gradient.clone()),
     tol(tolerance)
 {
 }
@@ -29,14 +29,21 @@ void FRPR::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (FRPR)...");
     
-    numrecipes::ObjectiveFunctionGradient num_rec_obj_fcn(f, f_gradient);
+    numrecipes::ObjectiveFunctionGradient num_rec_obj_fcn(*f, *f_gradient);
     numrecipes::Frprmn<numrecipes::ObjectiveFunctionGradient> frprmn(num_rec_obj_fcn, tol, N);
     xopt = frprmn.minimize(x0);
     
     tools::printer.printStatusEnd();
 }
 
-function::ObjectiveGradient &FRPR::getObjectiveGradient() const
+std::unique_ptr<Optimizer> FRPR::clone()
+{
+    std::unique_ptr<Optimizer> result(new FRPR(*f, *f_gradient, N, tol));
+    result->setStartingPoint(x0);
+    return result;
+}
+
+const std::unique_ptr<function::ObjectiveGradient> &FRPR::getObjectiveGradient() const
 {
     return f_gradient;
 }

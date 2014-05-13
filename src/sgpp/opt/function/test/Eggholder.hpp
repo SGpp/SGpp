@@ -44,6 +44,11 @@ public:
         //return -959.6407;
         return evalUndisplaced(x);
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Eggholder(*this));
+    }
 };
 
 }
