@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <memory>
 
 namespace sg
 {
@@ -24,6 +25,8 @@ public:
                                base::DataVector &gradient, base::DataMatrix &hessian) = 0;
     
     size_t getDimensionCount() const { return d; }
+    
+    virtual std::unique_ptr<ObjectiveHessian> clone() = 0;
     
 protected:
     size_t d;

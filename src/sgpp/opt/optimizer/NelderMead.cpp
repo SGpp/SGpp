@@ -42,7 +42,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (Nelder-Mead)...");
     
-    size_t d = f.getDimension();
+    size_t d = f->getDimension();
     std::vector<std::vector<double> > points(d+1, x0);
     std::vector<std::vector<double> > points_new(d+1, x0);
     std::vector<double> f_points(d+1, 0.0);
@@ -53,11 +53,11 @@ void NelderMead::optimize(std::vector<double> &xopt)
         //points[0][t] = std::max(points[0][t] - 0.1, 0.0);
         //points[t+1][t] = std::min(points[t+1][t] + 0.1, 1.0);
         points[t+1][t] = std::min(points[t+1][t] + STARTING_SIMPLEX_EDGE_LENGTH, 1.0);
-        f_points[t+1] = f.eval(points[t+1]);
+        f_points[t+1] = f->eval(points[t+1]);
         //std::cout << "i = " << i+1 << ": " << points[i+1] << ", " << f_points[i+1] << ", " << f(points[i+1], data) << "\n";
     }
     
-    f_points[0] = f.eval(points[0]);
+    f_points[0] = f->eval(points[0]);
     
     std::vector<size_t> index(d+1, 0);
     std::vector<double> point_0(d, 0.0);
@@ -138,7 +138,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
             break;
         }*/
         
-        double f_point_r = (in_domain ? f.eval(point_r) : INFINITY);
+        double f_point_r = (in_domain ? f->eval(point_r) : INFINITY);
         number_of_fcn_evals++;
         
         if ((f_points[0] <= f_point_r) && (f_point_r < f_points[d-1]))
@@ -147,7 +147,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
             f_points[d] = f_point_r;
         } else if (f_point_r < f_points[0])
         {
-            in_domain = true;
+            bool in_domain = true;
             
             for (size_t t = 0; t < d; t++)
             {
@@ -159,7 +159,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
                 }
             }
             
-            double f_point_e = (in_domain ? f.eval(point_e) : INFINITY);
+            double f_point_e = (in_domain ? f->eval(point_e) : INFINITY);
             number_of_fcn_evals++;
             
             if (f_point_e < f_point_r)
@@ -173,7 +173,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
             }
         } else
         {
-            in_domain = true;
+            bool in_domain = true;
             
             for (size_t t = 0; t < d; t++)
             {
@@ -185,7 +185,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
                 }
             }
             
-            double f_point_c = (in_domain ? f.eval(point_c) : INFINITY);
+            double f_point_c = (in_domain ? f->eval(point_c) : INFINITY);
             number_of_fcn_evals++;
             
             if (f_point_c < f_points[d])
@@ -196,7 +196,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
             {
                 for (size_t i = 1; i < d+1; i++)
                 {
-                    in_domain = true;
+                    bool in_domain = true;
                     
                     for (size_t t = 0; t < d; t++)
                     {
@@ -208,7 +208,7 @@ void NelderMead::optimize(std::vector<double> &xopt)
                         }
                     }
                     
-                    f_points[i] = (in_domain ? f.eval(points[i]) : INFINITY);
+                    f_points[i] = (in_domain ? f->eval(points[i]) : INFINITY);
                 }
                 
                 number_of_fcn_evals += d;
@@ -239,6 +239,13 @@ void NelderMead::optimize(std::vector<double> &xopt)
     }
     
     tools::printer.printStatusEnd();
+}
+
+std::unique_ptr<Optimizer> NelderMead::clone()
+{
+    std::unique_ptr<Optimizer> result(new NelderMead(*f, N, alpha, gamma, rho, sigma));
+    result->setStartingPoint(x0);
+    return result;
 }
 
 double NelderMead::getAlpha() const

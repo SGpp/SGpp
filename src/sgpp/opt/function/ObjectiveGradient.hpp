@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <memory>
 
 namespace sg
 {
@@ -23,6 +24,8 @@ public:
                                 base::DataVector &gradient) = 0;
     
     size_t getDimensionCount() const { return d; }
+    
+    virtual std::unique_ptr<ObjectiveGradient> clone() = 0;
     
 protected:
     size_t d;

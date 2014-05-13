@@ -36,6 +36,11 @@ public:
         //return 0.397887;
         return evalUndisplaced(x);
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Branin(*this));
+    }
 };
 
 }

@@ -28,7 +28,9 @@ public:
     
     void optimize(std::vector<double> &xopt);
     
-    function::ObjectiveGradient &getObjectiveGradient() const;
+    std::unique_ptr<Optimizer> clone();
+    
+    const std::unique_ptr<function::ObjectiveGradient> &getObjectiveGradient() const;
     
     double getBeta() const;
     void setBeta(double beta);
@@ -40,7 +42,7 @@ public:
     void setTolerance(double tolerance);
     
 protected:
-    function::ObjectiveGradient &f_gradient;
+    std::unique_ptr<function::ObjectiveGradient> f_gradient;
     double beta;
     double gamma;
     double tol;

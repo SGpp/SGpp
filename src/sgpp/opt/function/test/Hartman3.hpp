@@ -39,6 +39,11 @@ public:
         //return -3.862785;
         return evalUndisplaced(x);
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Hartman3(*this));
+    }
 };
 
 }

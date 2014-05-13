@@ -1,5 +1,5 @@
 #include "opt/sle/solver/Eigen.hpp"
-#include "opt/sle/system/Parallelizable.hpp"
+#include "opt/sle/system/Cloneable.hpp"
 #include "opt/tools/Printer.hpp"
 
 #ifdef USEEIGEN
@@ -55,16 +55,19 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
     ::Eigen::MatrixXd A = ::Eigen::MatrixXd::Zero(n, n);
     size_t nnz = 0;
     
-    #pragma omp parallel if (system.isParallelizable())
+    #pragma omp parallel if (system.isCloneable()) \
+            shared(system, n, A, nnz, tools::printer) default(none)
     {
-        system::System *real_system;
+        system::System *system2;
+        std::unique_ptr<system::System> cloned_system;
         
-        if (system.isParallelizable())
+        if (system.isCloneable())
         {
-            real_system = dynamic_cast<system::Parallelizable &>(system).clone();
+            cloned_system = dynamic_cast<system::Cloneable &>(system).clone();
+            system2 = cloned_system.get();
         } else
         {
-            real_system = &system;
+            system2 = &system;
         }
         
         #pragma omp for ordered schedule(dynamic)
@@ -72,7 +75,7 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
         {
             for (size_t j = 0; j < n; j++)
             {
-                A(i,j) = real_system->getMatrixEntry(i, j);
+                A(i,j) = system2->getMatrixEntry(i, j);
                 
                 if (A(i,j) != 0)
                 {
@@ -92,11 +95,6 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
                                                      std::string(str) + ")");
                 }
             }
-        }
-        
-        if (system.isParallelizable())
-        {
-            delete real_system;
         }
     }
     

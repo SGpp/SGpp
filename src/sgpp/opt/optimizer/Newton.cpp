@@ -33,7 +33,7 @@ Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
         size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
         double p, double tolerance, const sle::solver::Solver &sle_solver) :
     Optimizer(f, max_it_count),
-    f_hessian(f_hessian),
+    f_hessian(f_hessian.clone()),
     alpha1(alpha1),
     alpha2(alpha2),
     beta(beta),
@@ -49,7 +49,7 @@ void Newton::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (Newton)...");
     
-    size_t d = f.getDimension();
+    size_t d = f->getDimension();
     std::vector<double> x = x0;
     double fx;
     
@@ -68,7 +68,7 @@ void Newton::optimize(std::vector<double> &xopt)
     
     for (k = 0; k < N; k++)
     {
-        fx = f_hessian.evalHessian(x, grad_fx, hessian_fx);
+        fx = f_hessian->evalHessian(x, grad_fx, hessian_fx);
         
         double grad_fx_norm = grad_fx.l2Norm();
         
@@ -109,7 +109,6 @@ void Newton::optimize(std::vector<double> &xopt)
             }
         }
         
-        if (k % 10 == 0)
         {
             std::stringstream msg;
             msg << k << " steps, f(x) = " << fx;
@@ -118,7 +117,7 @@ void Newton::optimize(std::vector<double> &xopt)
             //std::cout << "\n" << x << ", " << fx << "\n";
         }
         
-        if (!armijoRule(f, beta, gamma, x, fx, grad_fx, s, y))
+        if (!armijoRule(*f, beta, gamma, tol, x, fx, grad_fx, s, y))
         {
             //std::cout << "\nBOOM\n";
             break;
@@ -139,7 +138,15 @@ void Newton::optimize(std::vector<double> &xopt)
     tools::printer.printStatusEnd();
 }
 
-function::ObjectiveHessian &Newton::getObjectiveHessian() const
+std::unique_ptr<Optimizer> Newton::clone()
+{
+    std::unique_ptr<Optimizer> result(new Newton(
+            *f, *f_hessian, N, alpha1, alpha2, beta, gamma, p, tol, sle_solver));
+    result->setStartingPoint(x0);
+    return result;
+}
+
+const std::unique_ptr<function::ObjectiveHessian> &Newton::getObjectiveHessian() const
 {
     return f_hessian;
 }

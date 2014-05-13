@@ -17,15 +17,18 @@ public:
     RandomSearch(function::Objective &f);
     RandomSearch(function::Objective &f, size_t max_it_count);
     RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed);
-    RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed,
+    RandomSearch(size_t max_it_count, unsigned int seed,
                  Optimizer &optimizer, size_t points_count);
+    
+    std::unique_ptr<Optimizer> clone();
     
     void optimize(std::vector<double> &xopt);
     
 protected:
-    Optimizer &optimizer;
+    std::unique_ptr<Optimizer> optimizer;
+    Optimizer *optimizer_to_use;
     size_t points_count;
-    size_t seed;
+    unsigned int seed;
     
     NelderMead default_optimizer;
 };

@@ -1,5 +1,5 @@
 #include "opt/sle/solver/UMFPACK.hpp"
-#include "opt/sle/system/Parallelizable.hpp"
+#include "opt/sle/system/Cloneable.hpp"
 #include "opt/tools/Printer.hpp"
 
 #ifdef USEUMFPACK
@@ -32,16 +32,19 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
     std::vector<uint32_t> Tj;
     std::vector<double> Tx;
     
-    #pragma omp parallel if (system.isParallelizable())
+    #pragma omp parallel if (system.isCloneable()) \
+            shared(system, n, Ti, Tj, Tx, nnz, tools::printer) default(none)
     {
-        system::System *real_system;
+        system::System *system2;
+        std::unique_ptr<system::System> cloned_system;
         
-        if (system.isParallelizable())
+        if (system.isCloneable())
         {
-            real_system = dynamic_cast<system::Parallelizable &>(system).clone();
+            cloned_system = dynamic_cast<system::Cloneable &>(system).clone();
+            system2 = cloned_system.get();
         } else
         {
-            real_system = &system;
+            system2 = &system;
         }
         
         #pragma omp for ordered schedule(dynamic)
@@ -49,7 +52,7 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
         {
             for (uint32_t j = 0; j < n; j++)
             {
-                double entry = real_system->getMatrixEntry(i, j);
+                double entry = system2->getMatrixEntry(i, j);
                 
                 if (entry != 0)
                 {
@@ -74,11 +77,6 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
                                                      std::string(str) + ")");
                 }
             }
-        }
-        
-        if (system.isParallelizable())
-        {
-            delete real_system;
         }
     }
     
@@ -120,44 +118,45 @@ bool UMFPACK::solve(
         tools::printer.printStatusBegin("Solving sparse linear system (UMFPACK)...");
     }
     
+    typedef SuiteSparse_long sslong;
+    
     size_t n = b.size();
-    
     size_t nnz = Tx.size();
-    int *Ti_array = new int[nnz];
-    int *Tj_array = new int[nnz];
-    double *Tx_array = new double[nnz];
     
-    std::copy(Tx.begin(), Tx.end(), Tx_array);
+    x = std::vector<double>(n, 0.0);
     
-    for (size_t k = 0; k < nnz; k++)
+    std::unique_ptr<sslong[]> Ap(new sslong[n+1]);
+    std::unique_ptr<sslong[]> Ai(new sslong[nnz]);
+    std::unique_ptr<double[]> Ax(new double[nnz]);
+    
+    sslong result;
+    
     {
-        Ti_array[k] = static_cast<int>(Ti[k]);
-        Tj_array[k] = static_cast<int>(Tj[k]);
-    }
-    
-    int *Ap = new int[n+1];
-    int *Ai = new int[nnz];
-    double *Ax = new double[nnz];
-    
-    tools::printer.printStatusUpdate("step 1: converting to CCS");
-    
-    if (umfpack_di_triplet_to_col(static_cast<int>(n), static_cast<int>(n), static_cast<int>(nnz),
-                                  Ti_array, Tj_array, Tx_array, Ap, Ai, Ax, NULL) != UMFPACK_OK)
-    {
-        delete[] Ap;
-        delete[] Ai;
-        delete[] Ax;
-        delete[] Ti_array;
-        delete[] Tj_array;
-        delete[] Tx_array;
+        std::unique_ptr<sslong[]> Ti_array(new sslong[nnz]);
+        std::unique_ptr<sslong[]> Tj_array(new sslong[nnz]);
         
-        tools::printer.printStatusEnd("error: could not convert to CCS!");
-        return false;
+        for (size_t k = 0; k < nnz; k++)
+        {
+            Ti_array[k] = static_cast<sslong>(Ti[k]);
+            Tj_array[k] = static_cast<sslong>(Tj[k]);
+        }
+        
+        tools::printer.printStatusUpdate("step 1: converting to CCS");
+        
+        result = umfpack_dl_triplet_to_col(
+                static_cast<sslong>(n), static_cast<sslong>(n), static_cast<sslong>(nnz),
+                Ti_array.get(), Tj_array.get(), &Tx[0],
+                Ap.get(), Ai.get(), Ax.get(), NULL);
+        
+        if (result != UMFPACK_OK)
+        {
+            std::stringstream msg;
+            msg << "error: could not convert to CCS via umfpack_dl_triplet_to_col, error code "
+                    << result;
+            tools::printer.printStatusEnd(msg.str());
+            return false;
+        }
     }
-    
-    delete[] Ti_array;
-    delete[] Tj_array;
-    delete[] Tx_array;
     
     /*if (status_output && (verbosity_level >= 2))
     {
@@ -167,72 +166,54 @@ bool UMFPACK::solve(
     }*/
     
     void *symbolic, *numeric;
-    double *x_array = new double[n];
-    double *b_array = new double[n];
-    
-    std::copy(b.begin(), b.end(), b_array);
     
     tools::printer.printStatusNewLine();
-    tools::printer.printStatusUpdate("step 2: umfpack_di_symbolic");
+    tools::printer.printStatusUpdate("step 2: umfpack_dl_symbolic");
     
-    if (umfpack_di_symbolic(static_cast<int>(n), static_cast<int>(n), Ap, Ai, Ax,
-                            &symbolic, NULL, NULL) != UMFPACK_OK)
+    result = umfpack_dl_symbolic(static_cast<sslong>(n), static_cast<sslong>(n),
+                                 Ap.get(), Ai.get(), Ax.get(), &symbolic, NULL, NULL);
+    
+    if (result != UMFPACK_OK)
     {
-        delete[] x_array;
-        delete[] b_array;
-        delete[] Ap;
-        delete[] Ai;
-        delete[] Ax;
-        
-        tools::printer.printStatusEnd("error: could solve via umfpack_di_symbolic!");
+        std::stringstream msg;
+        msg << "error: could solve via umfpack_dl_symbolic, error code " << result;
+        tools::printer.printStatusEnd(msg.str());
         return false;
     }
     
     tools::printer.printStatusNewLine();
-    tools::printer.printStatusUpdate("step 3: umfpack_di_numeric");
+    tools::printer.printStatusUpdate("step 3: umfpack_dl_numeric");
     
-    if (umfpack_di_numeric(Ap, Ai, Ax, symbolic, &numeric, NULL, NULL) != UMFPACK_OK)
+    result = umfpack_dl_numeric(Ap.get(), Ai.get(), Ax.get(), symbolic,
+                                &numeric, NULL, NULL);
+    
+    if (result != UMFPACK_OK)
     {
-        umfpack_di_free_symbolic(&symbolic);
-        delete[] x_array;
-        delete[] b_array;
-        delete[] Ap;
-        delete[] Ai;
-        delete[] Ax;
-        
-        tools::printer.printStatusEnd("error: could solve via umfpack_di_numeric!");
+        std::stringstream msg;
+        msg << "error: could solve via umfpack_dl_numeric, error code " << result;
+        tools::printer.printStatusEnd(msg.str());
+        umfpack_dl_free_symbolic(&symbolic);
         return false;
     }
     
-    umfpack_di_free_symbolic(&symbolic);
+    umfpack_dl_free_symbolic(&symbolic);
     
     tools::printer.printStatusNewLine();
-    tools::printer.printStatusUpdate("step 4: umfpack_di_solve");
+    tools::printer.printStatusUpdate("step 4: umfpack_dl_solve");
     
-    if (umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax, x_array, b_array, numeric, NULL, NULL) !=
-        UMFPACK_OK)
+    result = umfpack_dl_solve(UMFPACK_A, Ap.get(), Ai.get(), Ax.get(), &x[0], &b[0],
+                              numeric, NULL, NULL);
+    
+    if (result != UMFPACK_OK)
     {
-        umfpack_di_free_numeric(&numeric);
-        delete[] x_array;
-        delete[] b_array;
-        delete[] Ap;
-        delete[] Ai;
-        delete[] Ax;
-        
-        tools::printer.printStatusEnd("error: could solve via umfpack_di_solve!");
+        std::stringstream msg;
+        msg << "error: could solve via umfpack_dl_solve, error code " << result;
+        tools::printer.printStatusEnd(msg.str());
+        umfpack_dl_free_numeric(&numeric);
         return false;
     }
     
-    umfpack_di_free_numeric(&numeric);
-    
-    x.assign(x_array, x_array + n);
-    
-    delete[] x_array;
-    delete[] b_array;
-    delete[] Ap;
-    delete[] Ai;
-    delete[] Ax;
-    
+    umfpack_dl_free_numeric(&numeric);
     tools::printer.printStatusEnd();
     
     return true;

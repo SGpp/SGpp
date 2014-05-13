@@ -5,6 +5,7 @@
 #include "base/grid/generation/hashmap/HashRefinement.hpp"
 #include "base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
 
 #include "base/basis/linear/noboundary/LinearBasis.hpp"
 #include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
@@ -23,48 +24,34 @@ namespace gridgen
 {
 
 IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-        function::Objective &f, base::Grid &grid, size_t N, double alpha,
-        const base::CosineTable *cosine_table) :
+        function::Objective &f, base::Grid &grid, size_t N, double alpha) :
     IterativeGridGenerator(f, grid, N),
-    linear_base(NULL),
-    linear_grid(NULL),
     alpha(alpha)
 {
     if ((strcmp(grid.getType(), "Bspline") == 0) ||
         (strcmp(grid.getType(), "Wavelet") == 0))
     {
-        linear_base = new base::SLinearBase();
-        linear_grid = new base::LinearGrid(f.getDimension());
+        linear_base = std::unique_ptr<base::SBase>(new base::SLinearBase());
+        linear_grid = std::unique_ptr<base::Grid>(new base::LinearGrid(f.getDimension()));
     } else if ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
         (strcmp(grid.getType(), "WaveletBoundary") == 0))
     {
-        linear_base = new base::SLinearBoundaryBase();
-        linear_grid = new base::LinearBoundaryGrid(f.getDimension());
+        linear_base = std::unique_ptr<base::SBase>(new base::SLinearBoundaryBase());
+        linear_grid = std::unique_ptr<base::Grid>(new base::LinearBoundaryGrid(f.getDimension()));
     } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0)
     {
-        linear_base = new base::SLinearClenshawCurtisBase(cosine_table);
-        linear_grid = new base::LinearClenshawCurtisGrid(f.getDimension());
+        linear_base = std::unique_ptr<base::SBase>(new base::SLinearClenshawCurtisBase(
+                dynamic_cast<sg::base::BsplineClenshawCurtisGrid &>(grid).getCosineTable()));
+        linear_grid = std::unique_ptr<base::Grid>(
+                new base::LinearClenshawCurtisGrid(f.getDimension()));
     } else if ((strcmp(grid.getType(), "modBspline") == 0) ||
         (strcmp(grid.getType(), "modWavelet") == 0))
     {
-        linear_base = new base::SModLinearBase();
-        linear_grid = new base::ModLinearGrid(f.getDimension());
+        linear_base = std::unique_ptr<base::SBase>(new base::SModLinearBase());
+        linear_grid = std::unique_ptr<base::Grid>(new base::ModLinearGrid(f.getDimension()));
     } else
     {
         throw std::invalid_argument("Grid type not supported.");
-    }
-}
-
-IterativeGridGeneratorLinearSurplus::~IterativeGridGeneratorLinearSurplus()
-{
-    if (linear_base != NULL)
-    {
-        delete linear_base;
-    }
-    
-    if (linear_grid != NULL)
-    {
-        delete linear_grid;
     }
 }
 
@@ -117,26 +104,29 @@ void IterativeGridGeneratorLinearSurplus::generate()
     base::HashRefinementBoundaries hash_refinement_boundaries;
     
     base::AbstractRefinement *abstract_refinement;
+    int initial_level;
     
     if ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
         (strcmp(grid.getType(), "WaveletBoundary") == 0) ||
         (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0))
     {
         abstract_refinement = &hash_refinement_boundaries;
+        initial_level = 1;
     } else
     {
         abstract_refinement = &hash_refinement;
+        initial_level = static_cast<int>(INITIAL_LEVEL_WO_BOUNDARIES);
     }
     
     base::GridStorage *grid_storage = grid.getStorage();
     
-    base::GridGenerator *grid_gen = grid.createGridGenerator();
-    grid_gen->regular(static_cast<int>(INITIAL_LEVEL));
-    delete grid_gen;
-    
-    base::GridGenerator *linear_grid_gen = linear_grid->createGridGenerator();
-    linear_grid_gen->regular(static_cast<int>(INITIAL_LEVEL));
-    delete linear_grid_gen;
+    {
+        std::unique_ptr<base::GridGenerator> grid_gen(grid.createGridGenerator());
+        grid_gen->regular(initial_level);
+        
+        std::unique_ptr<base::GridGenerator> linear_grid_gen(linear_grid->createGridGenerator());
+        linear_grid_gen->regular(initial_level);
+    }
     
     size_t d = grid_storage->dim();
     size_t current_N = grid_storage->size();
@@ -166,10 +156,11 @@ void IterativeGridGeneratorLinearSurplus::generate()
         coeffs[i] = function_values[i];
     }
     
-    base::OperationHierarchisation *linear_hier_op =
-            op_factory::createOperationHierarchisation(*linear_grid);
-    linear_hier_op->doHierarchisation(coeffs);
-    delete linear_hier_op;
+    {
+        std::unique_ptr<base::OperationHierarchisation> linear_hier_op(
+                op_factory::createOperationHierarchisation(*linear_grid));
+        linear_hier_op->doHierarchisation(coeffs);
+    }
     
     size_t k = 0;
     

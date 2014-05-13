@@ -31,6 +31,8 @@ public:
     
     void optimize(std::vector<double> &xopt);
     
+    std::unique_ptr<Optimizer> clone();
+    
     double getAlpha() const;
     void setAlpha(double alpha);
     

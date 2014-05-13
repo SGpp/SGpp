@@ -34,6 +34,11 @@ public:
         //return -1.8013;
         return evalUndisplaced(x);
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Michalewicz(*this));
+    }
 };
 
 }

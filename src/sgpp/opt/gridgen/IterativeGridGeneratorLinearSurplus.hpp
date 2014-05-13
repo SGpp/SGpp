@@ -2,7 +2,6 @@
 #define SGPP_OPT_GRIDGEN_ITERATIVEGRIDGENERATORLINEARSURPLUS_HPP
 
 #include "opt/gridgen/IterativeGridGenerator.hpp"
-#include "base/tools/CosineTable.hpp"
 #include "base/basis/Basis.hpp"
 
 #include <cstddef>
@@ -17,12 +16,10 @@ namespace gridgen
 class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator
 {
 public:
-    static const size_t INITIAL_LEVEL = 3;
+    static const size_t INITIAL_LEVEL_WO_BOUNDARIES = 3;
     
     IterativeGridGeneratorLinearSurplus(function::Objective &f, base::Grid &grid,
-            size_t N, double alpha, const base::CosineTable *cosine_table = NULL);
-    
-    ~IterativeGridGeneratorLinearSurplus();
+                                        size_t N, double alpha);
     
     void generate();
     
@@ -30,8 +27,8 @@ public:
     void setAlpha(double alpha);
     
 protected:
-    base::SBase *linear_base;
-    base::Grid *linear_grid;
+    std::unique_ptr<base::SBase> linear_base;
+    std::unique_ptr<base::Grid> linear_grid;
     
     /*base::SLinearBase linear_base;
     base::SLinearBoundaryBase linear_boundary_base;

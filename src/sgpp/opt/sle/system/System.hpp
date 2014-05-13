@@ -60,7 +60,7 @@ public:
     
     virtual size_t getDimension() const { return n; }
     
-    virtual bool isParallelizable() const { return false; }
+    virtual bool isCloneable() const { return false; }
     
 protected:
     size_t n;

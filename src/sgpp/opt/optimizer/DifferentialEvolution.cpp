@@ -55,7 +55,7 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (differential evolution)...");
     
-    size_t d = f.getDimension();
+    size_t d = f->getDimension();
     std::vector<std::vector<double> > x1(points_count, std::vector<double>(d, 0.0));
     std::vector<double> fx(points_count, 0.0);
     
@@ -76,85 +76,123 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
             (*x_old)[i][t] = real_dist(rng);
         }
         
-        fx[i] = f.eval((*x_old)[i]);
+        fx[i] = f->eval((*x_old)[i]);
     }
     
     double fopt = INFINITY;
     size_t xopt_index = 0;
-    std::vector<double> y(d, 0.0);
-    size_t k = 0;
-    size_t number_of_fcn_evals = points_count;
+    //size_t k = 0;
+    //size_t number_of_fcn_evals = points_count;
     size_t last_nonidle_k = 0;
     double avg = 0.0;
     double last_avg = 0.0;
+    size_t max_k = N / points_count - 1;
     
-    while (number_of_fcn_evals + points_count <= N)
+    std::vector<std::vector<size_t> > a(max_k, std::vector<size_t>(points_count, 0)),
+            b = a, c = a, j = a;
+    std::vector<std::vector<std::vector<double> > > prob(max_k,
+            std::vector<std::vector<double> >(points_count, std::vector<double>(d, 0)));
+    
+    for (size_t k = 0; k < max_k; k++)
     {
         for (size_t i = 0; i < points_count; i++)
         {
-            size_t a, b, c;
-            bool in_domain = true;
+            do
+            {
+                a[k][i] = discr_dist_points(rng);
+            } while (a[k][i] == i);
             
             do
             {
-                a = discr_dist_points(rng);
-            } while (a == i);
+                b[k][i] = discr_dist_points(rng);
+            } while ((b[k][i] == i) || (b[k][i] == a[k][i]));
             
             do
             {
-                b = discr_dist_points(rng);
-            } while ((b == i) || (b == a));
+                c[k][i] = discr_dist_points(rng);
+            } while ((c[k][i] == i) || (c[k][i] == a[k][i]) || (c[k][i] == b[k][i]));
             
-            do
-            {
-                c = discr_dist_points(rng);
-            } while ((c == i) || (c == a) || (c == b));
-            
-            size_t j = discr_dist_dim(rng);
+            j[k][i] = discr_dist_dim(rng);
             
             for (size_t t = 0; t < d; t++)
             {
-                if ((t == j) || (real_dist(rng) < crossover_probability))
+                if (t != j[k][i])
                 {
-                    y[t] = (*x_old)[a][t] + scaling_factor * ((*x_old)[b][t] - (*x_old)[c][t]);
-                } else
-                {
-                    y[t] = (*x_old)[i][t];
-                }
-                
-                if ((y[t] < 0.0) || (y[t] > 1.0))
-                {
-                    in_domain = false;
+                    prob[k][i][t] = real_dist(rng);
                 }
             }
+        }
+    }
+    
+    for (size_t k = 0; k < max_k; k++)
+    {
+        const std::vector<size_t> &a_k = a[k], &b_k = b[k], &c_k = c[k];
+        const std::vector<size_t> &j_k = j[k];
+        const std::vector<std::vector<double> > &prob_k = prob[k];
+        
+        #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
+                                    x_old, d, fx, fopt, xopt_index, x_new) default(none)
+        {
+            std::vector<double> y(d, 0.0);
+            std::unique_ptr<function::Objective> cur_f(f->clone());
             
-            double fy = (in_domain ? f.eval(y) : INFINITY);
-            
-            if (fy < fx[i])
+            #pragma omp for schedule(dynamic)
+            for (size_t i = 0; i < points_count; i++)
             {
-                fx[i] = fy;
-                
-                if (fy < fopt)
-                {
-                    xopt_index = i;
-                    fopt = fy;
-                }
+                const size_t &cur_a = a_k[i], &cur_b = b_k[i], &cur_c = c_k[i];
+                const size_t &cur_j = j_k[i];
+                const std::vector<double> &prob_ki = prob_k[i];
+                bool in_domain = true;
                 
                 for (size_t t = 0; t < d; t++)
                 {
-                    (*x_new)[i][t] = y[t];
+                    const double &cur_prob = prob_ki[t];
+                    
+                    if ((t == cur_j) || (cur_prob < crossover_probability))
+                    {
+                        y[t] = (*x_old)[cur_a][t] +
+                                scaling_factor * ((*x_old)[cur_b][t] - (*x_old)[cur_c][t]);
+                    } else
+                    {
+                        y[t] = (*x_old)[i][t];
+                    }
+                    
+                    if ((y[t] < 0.0) || (y[t] > 1.0))
+                    {
+                        in_domain = false;
+                    }
                 }
-            } else
-            {
-                for (size_t t = 0; t < d; t++)
+                
+                double fy = (in_domain ? cur_f->eval(y) : INFINITY);
+                
+                if (fy < fx[i])
                 {
-                    (*x_new)[i][t] = (*x_old)[i][t];
+                    #pragma omp critical
+                    {
+                        fx[i] = fy;
+                        
+                        if (fy < fopt)
+                        {
+                            xopt_index = i;
+                            fopt = fy;
+                        }
+                    }
+                    
+                    for (size_t t = 0; t < d; t++)
+                    {
+                        (*x_new)[i][t] = y[t];
+                    }
+                } else
+                {
+                    for (size_t t = 0; t < d; t++)
+                    {
+                        (*x_new)[i][t] = (*x_old)[i][t];
+                    }
                 }
             }
         }
         
         std::swap(x_old, x_new);
-        number_of_fcn_evals += points_count;
         avg = 0.0;
         
         for (size_t i = 0; i < points_count; i++)
@@ -206,19 +244,26 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
             msg << k << " steps, f(x) = " << fopt;
             tools::printer.printStatusUpdate(msg.str());
         }
-        
-        k++;
     }
     
     xopt = (*x_old)[xopt_index];
     
     {
         std::stringstream msg;
-        msg << k << " steps, f(x) = " << fopt;
+        msg << max_k << " steps, f(x) = " << fopt;
         tools::printer.printStatusUpdate(msg.str());
     }
     
     tools::printer.printStatusEnd();
+}
+
+std::unique_ptr<Optimizer> DifferentialEvolution::clone()
+{
+    std::unique_ptr<Optimizer> result(new DifferentialEvolution(
+            *f, N, seed, points_count, crossover_probability, scaling_factor,
+            idle_generations_count, avg_improvement_threshold, max_distance_threshold));
+    result->setStartingPoint(x0);
+    return result;
 }
 
 }

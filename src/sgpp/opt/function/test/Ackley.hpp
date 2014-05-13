@@ -44,6 +44,11 @@ public:
         x = std::vector<double>(d, 0.1);
         return 0.0;
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Ackley(*this));
+    }
 };
 
 }

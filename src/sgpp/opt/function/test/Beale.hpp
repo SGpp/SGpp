@@ -35,6 +35,11 @@ public:
         x = {0.8, 0.55};
         return 0.0;
     }
+    
+    virtual std::unique_ptr<Objective> clone()
+    {
+        return std::unique_ptr<Objective>(new Beale(*this));
+    }
 };
 
 }

@@ -17,9 +17,10 @@ namespace function
 class InterpolantGradient : public ObjectiveGradient
 {
 public:
-    InterpolantGradient(size_t d, base::OperationEvalGradient *op_eval_gradient,
-                                base::DataVector &alpha) :
-            ObjectiveGradient(d), op_eval_gradient(op_eval_gradient), alpha(alpha) {}
+    InterpolantGradient(size_t d, base::Grid &grid, base::DataVector &alpha) :
+            ObjectiveGradient(d), grid(grid),
+            op_eval_gradient(op_factory::createOperationEvalGradient(grid)),
+            alpha(alpha) {}
     
     inline double evalGradient(const std::vector<double> &x, base::DataVector &gradient)
     {
@@ -27,8 +28,14 @@ public:
         return op_eval_gradient->evalGradient(alpha, y, gradient);
     }
     
+    virtual std::unique_ptr<ObjectiveGradient> clone()
+    {
+        return std::unique_ptr<ObjectiveGradient>(new InterpolantGradient(d, grid, alpha));
+    }
+    
 protected:
-    base::OperationEvalGradient *op_eval_gradient;
+    base::Grid &grid;
+    std::unique_ptr<base::OperationEvalGradient> op_eval_gradient;
     base::DataVector &alpha;
 };
 

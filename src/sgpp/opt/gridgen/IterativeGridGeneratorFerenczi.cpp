@@ -89,10 +89,14 @@ void IterativeGridGeneratorFerenczi::generate()
     bool is_boundary_grid = ((strcmp(grid.getType(), "BsplineBoundary") == 0) ||
                              (strcmp(grid.getType(), "WaveletBoundary") == 0) ||
                              (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0));
+    int initial_level = (is_boundary_grid ? 1 : static_cast<int>(INITIAL_LEVEL_WO_BOUNDARIES));
     
     base::GridStorage *grid_storage = grid.getStorage();
-    base::GridGenerator *grid_gen = grid.createGridGenerator();
-    grid_gen->regular(static_cast<int>(INITIAL_LEVEL));
+    
+    {
+        std::unique_ptr<base::GridGenerator> grid_gen(grid.createGridGenerator());
+        grid_gen->regular(initial_level);
+    }
     //std::cout << "number of grid points: " << grid_storage->size() << "\n";
     
     size_t d = grid_storage->dim();
@@ -360,7 +364,6 @@ void IterativeGridGeneratorFerenczi::generate()
     tools::printer.printStatusEnd();
     
     function_values.erase(function_values.begin() + current_N, function_values.end());
-    delete grid_gen;
 }
 
 }

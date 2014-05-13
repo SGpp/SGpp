@@ -40,6 +40,7 @@
 #include "opt/optimizer/Optimizer.hpp"
 #include "opt/optimizer/RandomSearch.hpp"
 
+#include "opt/sle/system/Cloneable.hpp"
 #include "opt/sle/system/Full.hpp"
 #include "opt/sle/system/Hierarchisation.hpp"
 #include "opt/sle/system/System.hpp"
@@ -50,6 +51,8 @@
 #include "opt/sle/solver/Solver.hpp"
 #include "opt/sle/solver/UMFPACK.hpp"
 
+#include "opt/tools/MutexType.hpp"
 #include "opt/tools/Printer.hpp"
+#include "opt/tools/ScopedLock.hpp"
 
 #endif
