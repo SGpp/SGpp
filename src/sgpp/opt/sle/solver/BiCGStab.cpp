@@ -91,7 +91,7 @@ bool solveInternal(system::System &system, size_t N, double tol,
             msg << "residual norm = " << sqrt(r_norm_squared);
             Output::printStatusUpdate(msg.str());
         }*/
-        tools::printer.printStatusUpdate("residual norm = " +
+        tools::printer.printStatusUpdate("k = " + std::to_string(k) + ", residual norm = " +
                                          std::to_string(sqrt(r_norm_squared)));
         
         //if (r_norm_squared / b_norm_squared < tol*tol)
