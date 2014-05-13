@@ -51,7 +51,7 @@ public:
         //double s = 1.0/(t2-4.0);
         
         return 2.0 * t * (t2 - 2.0) * exp(-t2) * hinv;
-        /*return 2.0 * t * ((t2-1.0) * (s*s + 1.0) - 1.0) * exp(-t2 + s + 0.25) * hinv;*/
+        //return 2.0 * t * ((t2-1.0) * (s*s + 1.0) - 1.0) * exp(-t2 + s + 0.25) * hinv;
     }
     
     inline double evalDxDx(LT level, IT index, double x)

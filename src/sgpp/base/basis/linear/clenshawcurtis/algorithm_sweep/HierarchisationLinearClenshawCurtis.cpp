@@ -13,7 +13,7 @@ namespace base
 {
 
 HierarchisationLinearClenshawCurtis::HierarchisationLinearClenshawCurtis(GridStorage *storage) :
-    HierarchisationLinearClenshawCurtis(storage, NULL)
+    HierarchisationLinearClenshawCurtis(storage, nullptr)
 {
 }
 

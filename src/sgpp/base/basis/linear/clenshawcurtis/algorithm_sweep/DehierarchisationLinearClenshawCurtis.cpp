@@ -14,7 +14,7 @@ namespace base
 
 DehierarchisationLinearClenshawCurtis::DehierarchisationLinearClenshawCurtis(
         GridStorage *storage) :
-    DehierarchisationLinearClenshawCurtis(storage, NULL)
+    DehierarchisationLinearClenshawCurtis(storage, nullptr)
 {
 }
 

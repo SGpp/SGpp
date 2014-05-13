@@ -23,7 +23,7 @@ class OperationEvalHessianBsplineClenshawCurtis : public OperationEvalHessian
 {
 public:
     OperationEvalHessianBsplineClenshawCurtis(GridStorage *storage, size_t degree) :
-            OperationEvalHessianBsplineClenshawCurtis(storage, degree, NULL) {}
+            OperationEvalHessianBsplineClenshawCurtis(storage, degree, nullptr) {}
     OperationEvalHessianBsplineClenshawCurtis(GridStorage *storage, size_t degree,
                                               const CosineTable *cosine_table) :
             storage(storage),
