@@ -27,6 +27,11 @@ namespace base
 }*/
 // TODO (can be removed)
 
+BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim, size_t degree) :
+    BsplineClenshawCurtisGrid(dim, degree, nullptr)
+{
+}
+
 BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(std::istream& istr) :
     Grid(istr),
     degree(1 << 16)

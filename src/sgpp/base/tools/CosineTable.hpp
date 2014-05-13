@@ -49,6 +49,9 @@ public:
         {
             x = M_PI - x;
             factor = -1.0;
+        } else if (x == M_PI_2)
+        {
+            return 0.0;
         }
         
         double xl = x * hinv;
