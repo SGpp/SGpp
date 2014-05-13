@@ -18,8 +18,10 @@ namespace solver
 class Auto : public Solver
 {
 public:
+    static const size_t MAX_DIM_FOR_FULL = 15000;
     static const double MAX_NNZ_RATIO_FOR_SPARSE;
     static const double ESTIMATE_NNZ_ROWS_SAMPLE_SIZE;
+    static const double MAX_NNZ_RATIO_FOR_GMMPP;
     
     bool solve(system::System &system, std::vector<double> &x) const;
     /*bool solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,

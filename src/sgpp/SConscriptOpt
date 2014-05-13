@@ -14,6 +14,7 @@ opt/sle/solver/Armadillo.cpp
 opt/sle/solver/Auto.cpp
 opt/sle/solver/BiCGStab.cpp
 opt/sle/solver/Eigen.cpp
+opt/sle/solver/Gmmpp.cpp
 opt/sle/solver/UMFPACK.cpp
 opt/tools/Printer.cpp
 """)

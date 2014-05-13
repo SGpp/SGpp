@@ -108,6 +108,7 @@ vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", 
 vars.Add(BoolVariable("UMFPACK", "Sets if the UMFPACK should be used", False))
 vars.Add(BoolVariable("EIGEN", "Sets if Eigen should be used", False))
 vars.Add(BoolVariable("ARMADILLO", "Sets if Armadillo should be used", False))
+vars.Add(BoolVariable("GMMPP", "Sets if Gmm++ should be used", False))
 vars.Add('OPT', "Sets optimization on and off", False)
 
 # for compiling on LRZ without errors: omit unit tests
@@ -501,6 +502,15 @@ if not env.GetOption('clean'):
             Exit(1)
     else:
         env.Append(CPPDEFINES=["DONTUSEARMADILLO"])
+    
+    if env["GMMPP"]:
+        if config.CheckHeader("gmm/gmm.h", language="c++"):
+            env.Append(CPPDEFINES=["USEGMMPP"])
+        else:
+            sys.stderr.write("Error: Gmm++ (gmm/gmm.h) not found!\n")
+            Exit(1)
+    else:
+        env.Append(CPPDEFINES=["DONTUSEGMMPP"])
     
     env = config.Finish()
 
