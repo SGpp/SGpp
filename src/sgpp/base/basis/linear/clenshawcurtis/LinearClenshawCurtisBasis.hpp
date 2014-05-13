@@ -25,7 +25,7 @@ protected:
     const CosineTable *cosine_table;
     
 public:
-    LinearClenshawCurtisBasis() : LinearClenshawCurtisBasis(NULL) {}
+    LinearClenshawCurtisBasis() : LinearClenshawCurtisBasis(nullptr) {}
     LinearClenshawCurtisBasis(const CosineTable *cosine_table) : cosine_table(cosine_table) {}
     
     inline double clenshawCurtisPoint(double h, IT index) const

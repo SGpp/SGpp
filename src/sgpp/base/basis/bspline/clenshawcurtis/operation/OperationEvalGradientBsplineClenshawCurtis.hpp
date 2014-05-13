@@ -22,7 +22,7 @@ class OperationEvalGradientBsplineClenshawCurtis : public OperationEvalGradient
 {
 public:
     OperationEvalGradientBsplineClenshawCurtis(GridStorage *storage, size_t degree) :
-            OperationEvalGradientBsplineClenshawCurtis(storage, degree, NULL) {}
+            OperationEvalGradientBsplineClenshawCurtis(storage, degree, nullptr) {}
     OperationEvalGradientBsplineClenshawCurtis(GridStorage *storage, size_t degree,
                                                const CosineTable *cosine_table) :
             storage(storage),
