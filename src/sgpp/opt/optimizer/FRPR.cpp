@@ -12,11 +12,6 @@ namespace optimizer
 
 const double FRPR::DEFAULT_TOLERANCE = 1e-20;
 
-FRPR::FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient) :
-    FRPR(f, f_gradient, DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE)
-{
-}
-
 FRPR::FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient,
            size_t max_it_count, double tolerance) :
     Optimizer(f, max_it_count),

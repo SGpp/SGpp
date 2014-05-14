@@ -15,6 +15,7 @@
 //#include <iostream>
 //#include <cmath>
 #include <cstring>
+#include <stdexcept>
 
 namespace sg
 {

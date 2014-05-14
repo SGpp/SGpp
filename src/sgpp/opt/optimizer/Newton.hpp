@@ -65,6 +65,9 @@ protected:
     double tol;
     const sle::solver::BiCGStab default_sle_solver;
     const sle::solver::Solver &sle_solver;
+    
+    void initialize(double alpha1, double alpha2, double beta, double gamma,
+                    double p, double tolerance);
 };
 
 }

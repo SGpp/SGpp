@@ -16,7 +16,7 @@ namespace system
 class System
 {
 public:
-    System(size_t n) : System(std::vector<double>(n, 0.0)) {}
+    System(size_t n) : n(n), b(std::vector<double>(n, 0.0)) {}
     System(const std::vector<double> &b) : n(b.size()), b(b) {}
     virtual ~System() {}
     

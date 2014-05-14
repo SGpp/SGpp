@@ -16,10 +16,8 @@ class FRPR : public Optimizer
 public:
     static const double DEFAULT_TOLERANCE;
     
-    FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient);
-    
     FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient,
-         size_t max_it_count, double tolerance);
+         size_t max_it_count = DEFAULT_MAX_IT_COUNT, double tolerance = DEFAULT_TOLERANCE);
     
     void optimize(std::vector<double> &xopt);
     

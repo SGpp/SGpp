@@ -106,7 +106,11 @@ bool solveInternal(system::System &system, size_t N, double tol,
     return true;
 }
 
-BiCGStab::BiCGStab() : BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, std::vector<double>())
+BiCGStab::BiCGStab() :
+    Solver(),
+    N(DEFAULT_MAX_IT_COUNT),
+    tol(DEFAULT_TOLERANCE),
+    x0(std::vector<double>())
 {
 }
 

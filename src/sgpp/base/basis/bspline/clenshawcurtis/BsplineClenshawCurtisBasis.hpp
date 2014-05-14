@@ -29,8 +29,7 @@ protected:
     
 public:
     BsplineClenshawCurtisBasis() : bspline_basis(BsplineBasis<LT, IT>()) {}
-    BsplineClenshawCurtisBasis(size_t degree) : BsplineClenshawCurtisBasis(degree, nullptr) {}
-    BsplineClenshawCurtisBasis(size_t degree, const CosineTable *cosine_table) :
+    BsplineClenshawCurtisBasis(size_t degree, const CosineTable *cosine_table = nullptr) :
             bspline_basis(BsplineBasis<LT, IT>(degree)),
             cosine_table(cosine_table),
             knots(std::vector<double>(degree+2, 0.0)) {}

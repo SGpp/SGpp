@@ -23,8 +23,8 @@ protected:
     typedef GridStorage::grid_iterator grid_iterator;
     
 public:
-    HierarchisationLinearClenshawCurtis(GridStorage *storage);
-    HierarchisationLinearClenshawCurtis(GridStorage *storage, const CosineTable *cosine_table);
+    HierarchisationLinearClenshawCurtis(
+            GridStorage *storage, const CosineTable *cosine_table = nullptr);
     ~HierarchisationLinearClenshawCurtis();
     
     void operator()(DataVector &source, DataVector &result, grid_iterator &index, size_t dim);

@@ -19,12 +19,12 @@ public:
     static const double DEFAULT_AVG_IMPROVEMENT_THRESHOLD;
     static const double DEFAULT_MAX_DISTANCE_THRESHOLD;
     
-    DifferentialEvolution(function::Objective &f);
-    DifferentialEvolution(function::Objective &f, size_t max_it_count);
+    DifferentialEvolution(function::Objective &f, size_t max_it_count = DEFAULT_MAX_IT_COUNT);
     DifferentialEvolution(function::Objective &f, size_t max_it_count, unsigned int seed);
     DifferentialEvolution(function::Objective &f, size_t max_it_count,
                           unsigned int seed, size_t points_count,
-                          double crossover_probability, double scaling_factor,
+                          double crossover_probability,
+                          double scaling_factor,
                           size_t idle_generations_count,
                           double avg_improvement_threshold,
                           double max_distance_threshold);
@@ -41,6 +41,15 @@ protected:
     size_t idle_generations_count;
     double avg_improvement_threshold;
     double max_distance_threshold;
+    
+    void initialize(
+        unsigned int seed,
+        size_t points_count,
+        double crossover_probability,
+        double scaling_factor,
+        size_t idle_generations_count,
+        double avg_improvement_threshold,
+        double max_distance_threshold);
 };
 
 }

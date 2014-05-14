@@ -20,11 +20,11 @@ public:
     static const double DEFAULT_TOLERANCE;
     
     GradientMethod(function::Objective &f,
-                   function::ObjectiveGradient &f_gradient);
-    
-    GradientMethod(function::Objective &f,
                    function::ObjectiveGradient &f_gradient,
-                   size_t max_it_count, double beta, double gamma, double tolerance);
+                   size_t max_it_count = DEFAULT_MAX_IT_COUNT,
+                   double beta = DEFAULT_BETA,
+                   double gamma = DEFAULT_GAMMA,
+                   double tolerance = DEFAULT_TOLERANCE);
     
     void optimize(std::vector<double> &xopt);
     

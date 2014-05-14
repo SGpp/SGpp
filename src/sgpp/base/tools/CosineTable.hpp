@@ -20,8 +20,7 @@ class CosineTable
 public:
     static const size_t DEFAULT_SIZE = 1 << 20;
     
-    CosineTable() : CosineTable(DEFAULT_SIZE) {}
-    CosineTable(size_t size) : table(std::vector<double>(size+1, 0.0))
+    CosineTable(size_t size = DEFAULT_SIZE) : table(std::vector<double>(size+1, 0.0))
     {
         h = M_PI_2 / static_cast<double>(size);
         hinv = 1.0 / h;
