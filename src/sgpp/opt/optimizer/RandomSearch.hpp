@@ -14,8 +14,7 @@ namespace optimizer
 class RandomSearch : public Optimizer
 {
 public:
-    RandomSearch(function::Objective &f);
-    RandomSearch(function::Objective &f, size_t max_it_count);
+    RandomSearch(function::Objective &f, size_t max_it_count = DEFAULT_MAX_IT_COUNT);
     RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed);
     RandomSearch(size_t max_it_count, unsigned int seed,
                  Optimizer &optimizer, size_t points_count);
@@ -31,6 +30,8 @@ protected:
     unsigned int seed;
     
     NelderMead default_optimizer;
+    
+    void initialize(unsigned int seed, size_t points_count);
 };
 
 }

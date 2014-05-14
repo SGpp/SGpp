@@ -67,7 +67,7 @@ struct Frprmn : Linemethod<T>
         
         func.df(p, xi);
         
-        for (int j = 0; j < n; j++)
+        for (size_t j = 0; j < n; j++)
         {
             g[j] = -xi[j];
             xi[j] = g[j];

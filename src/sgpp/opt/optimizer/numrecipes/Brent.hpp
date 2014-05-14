@@ -32,7 +32,7 @@ struct Brent : Bracketmethod
     double xmin, fmin;
     const double tol;
     
-    Brent(const double toll = 3.0e-8) : tol(toll)
+    Brent(const double toll = 3.0e-8) : fmin(INFINITY), tol(toll)
     {
     }
     

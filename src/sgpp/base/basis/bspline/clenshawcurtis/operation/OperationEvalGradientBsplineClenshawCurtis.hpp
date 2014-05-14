@@ -21,10 +21,8 @@ namespace base
 class OperationEvalGradientBsplineClenshawCurtis : public OperationEvalGradient
 {
 public:
-    OperationEvalGradientBsplineClenshawCurtis(GridStorage *storage, size_t degree) :
-            OperationEvalGradientBsplineClenshawCurtis(storage, degree, nullptr) {}
     OperationEvalGradientBsplineClenshawCurtis(GridStorage *storage, size_t degree,
-                                               const CosineTable *cosine_table) :
+                                               const CosineTable *cosine_table = nullptr) :
             storage(storage),
             base(degree, cosine_table) {}
     

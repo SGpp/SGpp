@@ -12,11 +12,6 @@ namespace sg
 namespace base
 {
 
-HierarchisationLinearClenshawCurtis::HierarchisationLinearClenshawCurtis(GridStorage *storage) :
-    HierarchisationLinearClenshawCurtis(storage, nullptr)
-{
-}
-
 HierarchisationLinearClenshawCurtis::HierarchisationLinearClenshawCurtis(
         GridStorage *storage, const CosineTable *cosine_table) :
     storage(storage),

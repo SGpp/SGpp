@@ -305,7 +305,7 @@ void IterativeGridGeneratorFerenczi::generate()
             {
                 base::GridIndex *gp = grid_storage->get(i);
                 base::GridIndex::index_type source_index, child_index;
-                base::GridIndex::level_type source_level, child_level, max_level;
+                base::GridIndex::level_type source_level, child_level;
                 bool skip_point = false;
                 
                 for (size_t t = 0; t < d; t++)

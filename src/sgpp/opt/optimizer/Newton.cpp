@@ -23,10 +23,13 @@ const double Newton::DEFAULT_P = 0.1;
 const double Newton::DEFAULT_TOLERANCE = 1e-10;
 
 Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian) :
-    Newton(f, f_hessian, DEFAULT_MAX_IT_COUNT,
-                    DEFAULT_ALPHA1, DEFAULT_ALPHA2, DEFAULT_BETA, DEFAULT_GAMMA,
-                    DEFAULT_P, DEFAULT_TOLERANCE, default_sle_solver)
+    Optimizer(f, DEFAULT_MAX_IT_COUNT),
+    f_hessian(f_hessian.clone()),
+    default_sle_solver(sle::solver::BiCGStab()),
+    sle_solver(default_sle_solver)
 {
+    initialize(DEFAULT_ALPHA1, DEFAULT_ALPHA2, DEFAULT_BETA,
+               DEFAULT_GAMMA, DEFAULT_P, DEFAULT_TOLERANCE);
 }
 
 Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
@@ -34,15 +37,21 @@ Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
         double p, double tolerance, const sle::solver::Solver &sle_solver) :
     Optimizer(f, max_it_count),
     f_hessian(f_hessian.clone()),
-    alpha1(alpha1),
-    alpha2(alpha2),
-    beta(beta),
-    gamma(gamma),
-    p(p),
-    tol(tolerance),
     default_sle_solver(sle::solver::BiCGStab()),
     sle_solver(sle_solver)
 {
+    initialize(alpha1, alpha2, beta, gamma, p, tolerance);
+}
+
+void Newton::initialize(double alpha1, double alpha2, double beta, double gamma,
+                        double p, double tolerance)
+{
+    this->alpha1 = alpha1;
+    this->alpha2 = alpha2;
+    this->beta = beta;
+    this->gamma = gamma;
+    this->p = p;
+    this->tol = tolerance;
 }
 
 void Newton::optimize(std::vector<double> &xopt)

@@ -17,17 +17,15 @@ public:
     static const double DEFAULT_GAMMA;
     static const double DEFAULT_RHO;
     static const double DEFAULT_SIGMA;
-    //static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 200;
     static const size_t DEFAULT_MAX_IT_COUNT = 1000;
     static const double STARTING_SIMPLEX_EDGE_LENGTH;
     
-    NelderMead(function::Objective &f);
-    NelderMead(function::Objective &f, size_t max_it_count);
-    /*NelderMead(function::Objective &f,
-               size_t max_it_count, double alpha, double gamma, double rho, double sigma,
-               size_t max_fcn_eval_count);*/
     NelderMead(function::Objective &f,
-               size_t max_it_count, double alpha, double gamma, double rho, double sigma);
+               size_t max_it_count = DEFAULT_MAX_IT_COUNT,
+               double alpha = DEFAULT_ALPHA,
+               double gamma = DEFAULT_GAMMA,
+               double rho = DEFAULT_RHO,
+               double sigma = DEFAULT_SIGMA);
     
     void optimize(std::vector<double> &xopt);
     

@@ -24,8 +24,8 @@ bool solveInternal(const ::Eigen::MatrixXd &A, const std::vector<double> &b,
 {
     tools::printer.printStatusUpdate("step 1: Householder QR factorization");
     
-    ::Eigen::HouseholderQR<::Eigen::MatrixXd> A_QR = A.householderQr();
-    //::Eigen::FullPivLU<::Eigen::MatrixXd> A_LU = A.fullPivLu();
+    ::Eigen::HouseholderQR< ::Eigen::MatrixXd> A_QR = A.householderQr();
+    //::Eigen::FullPivLU< ::Eigen::MatrixXd> A_LU = A.fullPivLu();
     
     tools::printer.printStatusNewLine();
     tools::printer.printStatusUpdate("step 2: solving");

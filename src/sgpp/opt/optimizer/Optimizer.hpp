@@ -20,9 +20,7 @@ class Optimizer
 public:
     static const size_t DEFAULT_MAX_IT_COUNT = 200;
     
-    Optimizer(function::Objective &f) :
-            Optimizer(f, DEFAULT_MAX_IT_COUNT) {}
-    Optimizer(function::Objective &f, size_t max_it_count) :
+    Optimizer(function::Objective &f, size_t max_it_count = DEFAULT_MAX_IT_COUNT) :
             f(f.clone()), N(max_it_count), x0(std::vector<double>(f.getDimension(), 0.5)) {}
     
     Optimizer(Optimizer &&other) : f(std::move(other.f)), N(other.N), x0(other.x0) {}

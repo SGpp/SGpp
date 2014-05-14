@@ -22,7 +22,7 @@ namespace solver
 bool solveInternal(const arma::mat &A, const std::vector<double> &b, std::vector<double> &x)
 {
     arma::uword n = static_cast<arma::uword>(b.size());
-    arma::vec b_armadillo(b);
+    arma::vec b_armadillo = arma::conv_to<arma::vec>::from(b);
     arma::vec x_armadillo(n);
     
     tools::printer.printStatusUpdate("solving with Armadillo");

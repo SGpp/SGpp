@@ -24,8 +24,8 @@ protected:
     BsplineClenshawCurtisGrid(std::istream& istr);
     
 public:
-    BsplineClenshawCurtisGrid(size_t dim, size_t degree);
-    BsplineClenshawCurtisGrid(size_t dim, size_t degree, const CosineTable *cosine_table);
+    BsplineClenshawCurtisGrid(size_t dim, size_t degree,
+		const CosineTable *cosine_table = nullptr);
     virtual ~BsplineClenshawCurtisGrid();
     
     virtual const char *getType();

@@ -16,23 +16,22 @@ const double DifferentialEvolution::DEFAULT_SCALING_FACTOR = 0.6;
 const double DifferentialEvolution::DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
 const double DifferentialEvolution::DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
-DifferentialEvolution::DifferentialEvolution(function::Objective &f) :
-    DifferentialEvolution(f, DEFAULT_MAX_IT_COUNT)
-{
-}
-
 DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_it_count) :
-    DifferentialEvolution(f, max_it_count, std::random_device()())
+    Optimizer(f, max_it_count)
 {
+    initialize(std::random_device()(), 10*f.getDimension(),
+        DEFAULT_CROSSOVER_PROBABILITY, DEFAULT_SCALING_FACTOR,
+        DEFAULT_IDLE_GENERATIONS_COUNT, DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
+        DEFAULT_MAX_DISTANCE_THRESHOLD);
 }
 
 DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_it_count,
-                                             unsigned int seed) :
-    DifferentialEvolution(f, max_it_count, seed, 10*f.getDimension(),
-                          DEFAULT_CROSSOVER_PROBABILITY, DEFAULT_SCALING_FACTOR,
-                          DEFAULT_IDLE_GENERATIONS_COUNT, DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
-                          DEFAULT_MAX_DISTANCE_THRESHOLD)
+                                             unsigned int seed) : Optimizer(f, max_it_count)
 {
+    initialize(seed, 10*f.getDimension(),
+        DEFAULT_CROSSOVER_PROBABILITY, DEFAULT_SCALING_FACTOR,
+        DEFAULT_IDLE_GENERATIONS_COUNT, DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
+        DEFAULT_MAX_DISTANCE_THRESHOLD);
 }
 
 DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_it_count,
@@ -40,15 +39,28 @@ DifferentialEvolution::DifferentialEvolution(function::Objective &f, size_t max_
         double crossover_probability, double scaling_factor,
         size_t idle_generations_count, double avg_improvement_threshold,
         double max_distance_threshold) :
-    Optimizer(f, max_it_count),
-    points_count(points_count),
-    seed(seed),
-    crossover_probability(crossover_probability),
-    scaling_factor(scaling_factor),
-    idle_generations_count(idle_generations_count),
-    avg_improvement_threshold(avg_improvement_threshold),
-    max_distance_threshold(max_distance_threshold)
+    Optimizer(f, max_it_count)
 {
+    initialize(seed, points_count, crossover_probability, scaling_factor,
+        idle_generations_count, avg_improvement_threshold, max_distance_threshold);
+}
+
+void DifferentialEvolution::initialize(
+    unsigned int seed,
+    size_t points_count,
+    double crossover_probability,
+    double scaling_factor,
+    size_t idle_generations_count,
+    double avg_improvement_threshold,
+    double max_distance_threshold)
+{
+    this->seed = seed;
+    this->points_count = points_count;
+    this->crossover_probability = crossover_probability;
+    this->scaling_factor = scaling_factor;
+    this->idle_generations_count = idle_generations_count;
+    this->avg_improvement_threshold = avg_improvement_threshold;
+    this->max_distance_threshold = max_distance_threshold;
 }
 
 void DifferentialEvolution::optimize(std::vector<double> &xopt)

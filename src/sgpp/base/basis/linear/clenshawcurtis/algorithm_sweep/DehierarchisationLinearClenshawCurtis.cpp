@@ -13,12 +13,6 @@ namespace base
 {
 
 DehierarchisationLinearClenshawCurtis::DehierarchisationLinearClenshawCurtis(
-        GridStorage *storage) :
-    DehierarchisationLinearClenshawCurtis(storage, nullptr)
-{
-}
-
-DehierarchisationLinearClenshawCurtis::DehierarchisationLinearClenshawCurtis(
         GridStorage *storage, const CosineTable *cosine_table) :
     storage(storage),
     linear_cc_base(cosine_table)

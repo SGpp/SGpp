@@ -11,14 +11,14 @@ namespace opt
 namespace optimizer
 {
 
-RandomSearch::RandomSearch(function::Objective &f) :
-    RandomSearch(f, DEFAULT_MAX_IT_COUNT)
-{
-}
-
 RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count) :
-    RandomSearch(f, max_it_count, std::random_device()())
+    Optimizer(f, max_it_count),
+    optimizer(nullptr),
+    optimizer_to_use(&default_optimizer),
+    default_optimizer(NelderMead(f))
 {
+    initialize(std::random_device()(),
+               std::min(10*f.getDimension(), static_cast<size_t>(100)));
 }
 
 RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count,
@@ -26,10 +26,10 @@ RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count,
     Optimizer(f, max_it_count),
     optimizer(nullptr),
     optimizer_to_use(&default_optimizer),
-    points_count(std::min(10*f.getDimension(), static_cast<size_t>(100))),
-    seed(seed),
     default_optimizer(NelderMead(f))
 {
+    initialize(seed,
+               std::min(10*f.getDimension(), static_cast<size_t>(100)));
 }
 
 RandomSearch::RandomSearch(size_t max_it_count, unsigned int seed,
@@ -37,10 +37,15 @@ RandomSearch::RandomSearch(size_t max_it_count, unsigned int seed,
     Optimizer(*optimizer.getObjectiveFunction(), max_it_count),
     optimizer(optimizer.clone()),
     optimizer_to_use(this->optimizer.get()),
-    points_count(points_count),
-    seed(seed),
     default_optimizer(NelderMead(*f))
 {
+    initialize(seed, points_count);
+}
+
+void RandomSearch::initialize(unsigned int seed, size_t points_count)
+{
+    this->seed = seed;
+    this->points_count = points_count;
 }
 
 void RandomSearch::optimize(std::vector<double> &xopt)

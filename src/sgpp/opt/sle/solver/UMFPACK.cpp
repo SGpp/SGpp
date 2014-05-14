@@ -118,7 +118,7 @@ bool UMFPACK::solve(
         tools::printer.printStatusBegin("Solving sparse linear system (UMFPACK)...");
     }
     
-    typedef SuiteSparse_long sslong;
+    typedef UF_long sslong;
     
     size_t n = b.size();
     size_t nnz = Tx.size();

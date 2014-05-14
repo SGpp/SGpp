@@ -17,16 +17,6 @@ const double NelderMead::DEFAULT_RHO = -0.5;
 const double NelderMead::DEFAULT_SIGMA = 0.5;
 const double NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
-NelderMead::NelderMead(function::Objective &f) :
-    NelderMead(f, DEFAULT_MAX_IT_COUNT)
-{
-}
-
-NelderMead::NelderMead(function::Objective &f, size_t max_it_count) :
-    NelderMead(f, max_it_count, DEFAULT_ALPHA, DEFAULT_GAMMA, DEFAULT_RHO, DEFAULT_SIGMA)
-{
-}
-
 NelderMead::NelderMead(function::Objective &f,
         size_t max_it_count, double alpha, double gamma, double rho, double sigma) :
     Optimizer(f, max_it_count),
