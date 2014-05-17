@@ -21,7 +21,7 @@ public:
     
     double evalUndisplaced(const std::vector<double> &x)
     {
-        double result = 20.0 + M_E;
+        double result = 0.0;
         
         double arg1 = 0.0;
         double arg2 = 0.0;
@@ -33,8 +33,8 @@ public:
             arg2 += cos(2.0 * M_PI * xt);
         }
         
-        result += -20.0 * std::exp(-0.2 * std::sqrt(arg1 / static_cast<double>(d)));
-        result += -std::exp(arg2 / static_cast<double>(d));
+        result += 20.0 * (1.0 - std::exp(-0.2 * std::sqrt(arg1 / static_cast<double>(d))));
+        result += M_E - std::exp(arg2 / static_cast<double>(d));
         
         return result;
     }
