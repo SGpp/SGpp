@@ -26,7 +26,7 @@ public:
                    double gamma = DEFAULT_GAMMA,
                    double tolerance = DEFAULT_TOLERANCE);
     
-    void optimize(std::vector<double> &xopt);
+    double optimize(std::vector<double> &xopt);
     
     std::unique_ptr<Optimizer> clone();
     

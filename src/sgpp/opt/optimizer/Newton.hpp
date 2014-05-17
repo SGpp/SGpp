@@ -31,7 +31,7 @@ public:
            size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
            double p, double tolerance, const sle::solver::Solver &sle_solver);
     
-    void optimize(std::vector<double> &xopt);
+    double optimize(std::vector<double> &xopt);
     
     std::unique_ptr<Optimizer> clone();
     

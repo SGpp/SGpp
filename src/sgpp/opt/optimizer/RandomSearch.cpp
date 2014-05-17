@@ -48,7 +48,7 @@ void RandomSearch::initialize(unsigned int seed, size_t points_count)
     this->points_count = points_count;
 }
 
-void RandomSearch::optimize(std::vector<double> &xopt)
+double RandomSearch::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (random search)...");
     
@@ -123,9 +123,10 @@ void RandomSearch::optimize(std::vector<double> &xopt)
         std::stringstream msg;
         msg << "100.0%, f(x) = " << fopt;
         tools::printer.printStatusUpdate(msg.str());
+        tools::printer.printStatusEnd();
     }
     
-    tools::printer.printStatusEnd();
+    return fopt;
 }
 
 std::unique_ptr<Optimizer> RandomSearch::clone()

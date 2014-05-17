@@ -22,7 +22,7 @@ public:
     IterativeGridGeneratorFerenczi(function::Objective &f, base::Grid &grid,
                                    size_t N, double alpha);
     
-    void generate();
+    bool generate();
     
     double getAlpha() const;
     void setAlpha(double alpha);

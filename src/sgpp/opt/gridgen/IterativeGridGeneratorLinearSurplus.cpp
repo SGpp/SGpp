@@ -90,7 +90,7 @@ inline double IterativeGridGeneratorLinearSurplus::evalBasisFunctionAtGridPoint(
     return result;
 }
 
-void IterativeGridGeneratorLinearSurplus::generate()
+bool IterativeGridGeneratorLinearSurplus::generate()
 {
     tools::printer.printStatusBegin("Adaptive grid generation (linear surplus)...");
     
@@ -168,6 +168,7 @@ void IterativeGridGeneratorLinearSurplus::generate()
     size_t refinable_pts_count;
     size_t pts_to_be_refined_count;
     double refine_factor = 1.0;
+    bool result = true;
     
     while (true)
     {
@@ -195,8 +196,10 @@ void IterativeGridGeneratorLinearSurplus::generate()
         
         if (grid_storage->size() == current_N)
         {
-            // size unchanged ==> nothing refined
-            std::cout << "IterativeGridGeneratorLinearSurplus: size unchanged\n";
+            // size unchanged ==> nothing refined (should not happen)
+            tools::printer.printStatusEnd(
+                    "error: size unchanged in IterativeGridGeneratorLinearSurplus");
+            result = false;
             break;
         }
         
@@ -248,11 +251,17 @@ void IterativeGridGeneratorLinearSurplus::generate()
         k++;
     }
     
-    tools::printer.printStatusUpdate("100.0% (N = " + std::to_string(current_N) + ")");
-    
     function_values.erase(function_values.begin() + current_N, function_values.end());
     
-    tools::printer.printStatusEnd();
+    if (result)
+    {
+        tools::printer.printStatusUpdate("100.0% (N = " + std::to_string(current_N) + ")");
+        tools::printer.printStatusEnd();
+        return true;
+    } else
+    {
+        return false;
+    }
 }
 
 /*void IterativeGridGeneratorLinearSurplus::generate()

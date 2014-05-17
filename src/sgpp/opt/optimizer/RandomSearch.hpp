@@ -21,7 +21,7 @@ public:
     
     std::unique_ptr<Optimizer> clone();
     
-    void optimize(std::vector<double> &xopt);
+    double optimize(std::vector<double> &xopt);
     
 protected:
     std::unique_ptr<Optimizer> optimizer;

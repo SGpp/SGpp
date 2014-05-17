@@ -19,7 +19,7 @@ public:
     FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient,
          size_t max_it_count = DEFAULT_MAX_IT_COUNT, double tolerance = DEFAULT_TOLERANCE);
     
-    void optimize(std::vector<double> &xopt);
+    double optimize(std::vector<double> &xopt);
     
     std::unique_ptr<Optimizer> clone();
     

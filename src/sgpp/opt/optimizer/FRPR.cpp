@@ -20,7 +20,7 @@ FRPR::FRPR(function::Objective &f, function::ObjectiveGradient &f_gradient,
 {
 }
 
-void FRPR::optimize(std::vector<double> &xopt)
+double FRPR::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (FRPR)...");
     
@@ -29,6 +29,8 @@ void FRPR::optimize(std::vector<double> &xopt)
     xopt = frprmn.minimize(x0);
     
     tools::printer.printStatusEnd();
+    
+    return frprmn.fret;
 }
 
 std::unique_ptr<Optimizer> FRPR::clone()

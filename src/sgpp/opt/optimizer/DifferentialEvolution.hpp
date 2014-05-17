@@ -29,7 +29,7 @@ public:
                           double avg_improvement_threshold,
                           double max_distance_threshold);
     
-    void optimize(std::vector<double> &xopt);
+    double optimize(std::vector<double> &xopt);
     
     std::unique_ptr<Optimizer> clone();
     
