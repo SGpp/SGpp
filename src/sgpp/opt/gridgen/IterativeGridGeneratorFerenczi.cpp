@@ -75,7 +75,7 @@ void IterativeGridGeneratorFerenczi::setAlpha(double alpha)
     );
 }*/
 
-void IterativeGridGeneratorFerenczi::generate()
+bool IterativeGridGeneratorFerenczi::generate()
 {
     tools::printer.printStatusBegin("Adaptive grid generation (Ferenczi)...");
     
@@ -169,6 +169,7 @@ void IterativeGridGeneratorFerenczi::generate()
     
     size_t k = 0;
     size_t xhat = 0;
+    bool result = true;
     
     while (current_N < N)
     {
@@ -208,7 +209,9 @@ void IterativeGridGeneratorFerenczi::generate()
         if (grid_storage->size() == current_N)
         {
             // size unchanged ==> point not refined (should not happen)
-            std::cout << "IterativeGridGeneratorFerenczi: size unchanged\n";
+            tools::printer.printStatusEnd(
+                    "error: size unchanged in IterativeGridGeneratorFerenczi");
+            result = false;
             break;
         }
         
@@ -360,10 +363,17 @@ void IterativeGridGeneratorFerenczi::generate()
         k++;
     }
     
-    tools::printer.printStatusUpdate("100.0% (N = " + std::to_string(current_N) + ")");
-    tools::printer.printStatusEnd();
-    
     function_values.erase(function_values.begin() + current_N, function_values.end());
+    
+    if (result)
+    {
+        tools::printer.printStatusUpdate("100.0% (N = " + std::to_string(current_N) + ")");
+        tools::printer.printStatusEnd();
+        return true;
+    } else
+    {
+        return false;
+    }
 }
 
 }

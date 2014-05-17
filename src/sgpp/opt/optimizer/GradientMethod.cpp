@@ -23,7 +23,7 @@ GradientMethod::GradientMethod(function::Objective &f, function::ObjectiveGradie
 {
 }
 
-void GradientMethod::optimize(std::vector<double> &xopt)
+double GradientMethod::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (gradient method)...");
     
@@ -78,9 +78,10 @@ void GradientMethod::optimize(std::vector<double> &xopt)
         std::stringstream msg;
         msg << k << " steps, f(x) = " << fx;
         tools::printer.printStatusUpdate(msg.str());
+        tools::printer.printStatusEnd();
     }
     
-    tools::printer.printStatusEnd();
+    return fx;
 }
 
 std::unique_ptr<Optimizer> GradientMethod::clone()

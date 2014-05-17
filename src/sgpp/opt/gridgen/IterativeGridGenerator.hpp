@@ -26,7 +26,7 @@ public:
         f(f), grid(grid), N(N) {}
     virtual ~IterativeGridGenerator() {}
     
-    virtual void generate() = 0;
+    virtual bool generate() = 0;
     
     base::Grid &getGrid() const { return grid; }
     const std::vector<double> &getFunctionValues() const { return function_values; }

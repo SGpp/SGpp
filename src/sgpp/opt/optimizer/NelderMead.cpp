@@ -28,7 +28,7 @@ NelderMead::NelderMead(function::Objective &f,
 {
 }
 
-void NelderMead::optimize(std::vector<double> &xopt)
+double NelderMead::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (Nelder-Mead)...");
     
@@ -226,9 +226,10 @@ void NelderMead::optimize(std::vector<double> &xopt)
         std::stringstream msg;
         msg << k << " steps, f(x) = " << f_points[0];
         tools::printer.printStatusUpdate(msg.str());
+        tools::printer.printStatusEnd();
     }
     
-    tools::printer.printStatusEnd();
+    return f_points[0];
 }
 
 std::unique_ptr<Optimizer> NelderMead::clone()

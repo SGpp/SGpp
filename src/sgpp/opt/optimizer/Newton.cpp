@@ -54,13 +54,13 @@ void Newton::initialize(double alpha1, double alpha2, double beta, double gamma,
     this->tol = tolerance;
 }
 
-void Newton::optimize(std::vector<double> &xopt)
+double Newton::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (Newton)...");
     
     size_t d = f->getDimension();
     std::vector<double> x = x0;
-    double fx;
+    double fx = INFINITY;
     
     std::vector<double> ls_solver_x0(d, 0.0);
     bool ls_solved;
@@ -70,7 +70,6 @@ void Newton::optimize(std::vector<double> &xopt)
     base::DataMatrix hessian_fx(d, d);
     std::vector<double> s(d, 0.0);
     std::vector<double> y(d, 0.0);
-    size_t verbosity = tools::printer.getVerbosity();
     
     sle::system::Full system(hessian_fx, s);
     size_t k;
@@ -97,9 +96,9 @@ void Newton::optimize(std::vector<double> &xopt)
         
         system.setA(hessian_fx);
         system.setRHS(s);
-        tools::printer.setVerbosity(0);
+        tools::printer.disableStatusPrinting();
         ls_solved = sle_solver.solve(system, dk);
-        tools::printer.setVerbosity(verbosity);
+        tools::printer.enableStatusPrinting();
         
         double dk_norm = sqrt(std::inner_product(dk.begin(), dk.end(), dk.begin(), 0.0));
         
@@ -136,15 +135,15 @@ void Newton::optimize(std::vector<double> &xopt)
     }
     
     xopt = x;
-    tools::printer.setVerbosity(verbosity);
     
     {
         std::stringstream msg;
         msg << k << " steps, f(x) = " << fx;
         tools::printer.printStatusUpdate(msg.str());
+        tools::printer.printStatusEnd();
     }
     
-    tools::printer.printStatusEnd();
+    return fx;
 }
 
 std::unique_ptr<Optimizer> Newton::clone()

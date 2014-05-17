@@ -27,7 +27,7 @@ public:
                double rho = DEFAULT_RHO,
                double sigma = DEFAULT_SIGMA);
     
-    void optimize(std::vector<double> &xopt);
+    double optimize(std::vector<double> &xopt);
     
     std::unique_ptr<Optimizer> clone();
     

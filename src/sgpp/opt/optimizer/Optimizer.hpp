@@ -27,7 +27,7 @@ public:
     
     virtual ~Optimizer() {}
     
-    virtual void optimize(std::vector<double> &xopt) = 0;
+    virtual double optimize(std::vector<double> &xopt) = 0;
     virtual std::unique_ptr<Optimizer> clone() = 0;
     
     const std::unique_ptr<function::Objective> &getObjectiveFunction() const { return f; }

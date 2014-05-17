@@ -63,7 +63,7 @@ void DifferentialEvolution::initialize(
     this->max_distance_threshold = max_distance_threshold;
 }
 
-void DifferentialEvolution::optimize(std::vector<double> &xopt)
+double DifferentialEvolution::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (differential evolution)...");
     
@@ -262,9 +262,10 @@ void DifferentialEvolution::optimize(std::vector<double> &xopt)
         std::stringstream msg;
         msg << max_k << " steps, f(x) = " << fopt;
         tools::printer.printStatusUpdate(msg.str());
+        tools::printer.printStatusEnd();
     }
     
-    tools::printer.printStatusEnd();
+    return fopt;
 }
 
 std::unique_ptr<Optimizer> DifferentialEvolution::clone()
