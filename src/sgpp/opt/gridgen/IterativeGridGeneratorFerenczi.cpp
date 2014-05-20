@@ -173,7 +173,7 @@ bool IterativeGridGeneratorFerenczi::generate()
     
     while (current_N < N)
     {
-        if (k % 10 == 0)
+        //if (k % 10 == 0)
         {
             char str[10];
             snprintf(str, 10, "%.1f%%",
@@ -299,7 +299,8 @@ bool IterativeGridGeneratorFerenczi::generate()
             // refinement criterion
             /*double beta = std::pow((double)level_sum[i] + (double)degree[i], alpha) *
                           std::pow((double)rank[i] + 1.0, 1.0 - alpha);*/
-            double beta = fastPow((double)level_sum[i] + (double)degree[i], alpha) *
+            // TODO: do static_cast instead of C-style cast
+            double beta = fastPow((double)level_max[i] + (double)degree[i], alpha) *
                           fastPow((double)rank[i] + 1.0, 1.0 - alpha);
             
             // determine the smallest beta, but make sure MAX_LEVEL isn't exceeded
