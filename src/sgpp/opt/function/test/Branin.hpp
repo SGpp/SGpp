@@ -32,7 +32,7 @@ public:
     
     double getOptimalPointUndisplaced(std::vector<double> &x)
     {
-        x = {0.961652, 0.165};
+        x = {0.5427728435726528825641, 0.151666666666666666666666667};
         //return 0.397887;
         return evalUndisplaced(x);
     }

@@ -23,10 +23,8 @@ public:
     
     void generateDisplacement(unsigned int seed, double standard_deviation)
     {
-        (void)seed;
-        (void)standard_deviation;
-        
-        displacement = std::vector<double>(d, 0.0);
+        Test::generateDisplacement(seed, standard_deviation);
+        displacement[0] = 0.0;
     }
     
     double evalUndisplaced(const std::vector<double> &x)
