@@ -34,7 +34,7 @@ public:
     
     double getOptimalPointUndisplaced(std::vector<double> &x)
     {
-        x = std::vector<double>(d, 0.9209687);
+        x = std::vector<double>(d, 0.920968746359982027311844365);
         //return -418.9829 * static_cast<double>(d);
         return evalUndisplaced(x);
     }

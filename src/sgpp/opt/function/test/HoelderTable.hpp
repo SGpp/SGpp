@@ -21,13 +21,25 @@ public:
     {
     }
     
+    void generateDisplacement(unsigned int seed, double standard_deviation)
+    {
+        Test::generateDisplacement(seed, standard_deviation);
+        
+        while ((displacement[0] > 0.005) || (displacement[0] < -0.005) ||
+               (displacement[1] > 0.01) || (displacement[1] < -0.01))
+        {
+            seed = std::random_device()();
+            Test::generateDisplacement(seed, standard_deviation);
+        }
+    }
+    
     double evalUndisplaced(const std::vector<double> &x)
     {
         double x1 = 20.0 * x[0] - 10.0;
         double x2 = 20.0 * x[1] - 10.0;
         
         return -std::abs(std::sin(x1) * std::cos(x2) *
-                         std::exp(std::abs(1 - std::sqrt(x1*x1 + x2*x2) / M_PI)));
+                         std::exp(std::abs(1.0 - std::sqrt(x1*x1 + x2*x2) / M_PI)));
     }
     
     double getOptimalPointUndisplaced(std::vector<double> &x)
