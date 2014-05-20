@@ -42,7 +42,7 @@ bool solveInternal(const gmm::csr_matrix<double> &A,
     tools::printer.printStatusNewLine();
     tools::printer.printStatusUpdate("solving with Gmm++");
     
-    gmm::iteration iter(1e-8, 0, 1000);
+    gmm::iteration iter(1e-6, 0, 100000);
     iter.set_callback(&callback);
     
     try
@@ -51,18 +51,40 @@ bool solveInternal(const gmm::csr_matrix<double> &A,
         gmm::gmres(A, x, b, P, 50, iter);
         //gmm::qmr(A, x, b, P, iter);
         
-        if (iter.converged())
+        double res = iter.get_res();
+        
+        if (iter.converged() && (res < 1e3))
         {
             tools::printer.printStatusUpdate("solving with Gmm++ "
                     "(k = " + std::to_string(iter.get_iteration()) +
-                    ", residual norm = " + std::to_string(iter.get_res()) + ")");
+                    ", residual norm = " + std::to_string(res) + ")");
             tools::printer.printStatusEnd();
             return true;
         } else
         {
-            tools::printer.printStatusEnd(
-                    "error: could not solve linear system, method didn't converge");
-            return false;
+            gmm::identity_matrix P;
+            
+            tools::printer.printStatusNewLine();
+            tools::printer.printStatusUpdate(
+                    "solving with preconditioner failed, trying again without one");
+            tools::printer.printStatusNewLine();
+            
+            gmm::gmres(A, x, b, P, 50, iter);
+            res = iter.get_res();
+            
+            if (iter.converged() && (res < 1e3))
+            {
+                tools::printer.printStatusUpdate("solving with Gmm++ "
+                        "(k = " + std::to_string(iter.get_iteration()) +
+                        ", residual norm = " + std::to_string(res) + ")");
+                tools::printer.printStatusEnd();
+                return true;
+            } else
+            {
+                tools::printer.printStatusEnd(
+                        "error: could not solve linear system, method didn't converge");
+                return false;
+            }
         }
     } catch (std::exception &e)
     {
@@ -86,12 +108,12 @@ bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
     {
         gmm::row_matrix<gmm::rsvector<double> > A(n, n);
         
-        /*std::vector<size_t> Ti;
+        std::vector<size_t> Ti;
         std::vector<size_t> Tj;
-        std::vector<double> Tx;*/
+        std::vector<double> Tx;
         
         #pragma omp parallel if (system.isCloneable()) \
-                shared(system, n, A, nnz, tools::printer) default(none)
+                shared(system, n, Ti, Tj, Tx, A, nnz, tools::printer) default(none)
         {
             system::System *system2;
             std::unique_ptr<system::System> cloned_system;
@@ -116,9 +138,9 @@ bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
                     {
                         #pragma omp critical
                         {
-                            /*Ti.push_back(i);
+                            Ti.push_back(i);
                             Tj.push_back(j);
-                            Tx.push_back(entry);*/
+                            Tx.push_back(entry);
                             A(i, j) = entry;
                             nnz++;
                         }
@@ -141,6 +163,12 @@ bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
         
         gmm::clean(A, 1e-12);
         gmm::copy(A, A2);
+        
+        // TODO: remove this if not needed anymore
+        tools::printer.printVectorToFile("data/Ti.dat", Ti);
+        tools::printer.printVectorToFile("data/Tj.dat", Tj);
+        tools::printer.printVectorToFile("data/Tx.dat", Tx);
+        tools::printer.printVectorToFile("data/b.dat", b);
     }
     
     tools::printer.printStatusUpdate("constructing sparse matrix (100.0%)");

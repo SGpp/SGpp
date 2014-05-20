@@ -18,7 +18,7 @@ namespace solver
 class Auto : public Solver
 {
 public:
-    static const size_t MAX_DIM_FOR_FULL = 15000;
+    static const size_t MAX_DIM_FOR_FULL = 30000;
     static const double MAX_NNZ_RATIO_FOR_SPARSE;
     static const double ESTIMATE_NNZ_ROWS_SAMPLE_SIZE;
     static const double MAX_NNZ_RATIO_FOR_GMMPP;

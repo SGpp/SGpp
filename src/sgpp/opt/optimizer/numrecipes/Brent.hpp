@@ -145,9 +145,10 @@ struct Brent : Bracketmethod
             }
         }
         
-        std::cerr << "Too many iterations in brent\n";
+        //std::cerr << "Too many iterations in brent\n";
+        //return 0.0;
         
-        return 0.0;
+        return x;
     }
 };
 
