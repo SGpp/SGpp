@@ -132,13 +132,13 @@ bool IterativeGridGeneratorLinearSurplus::generate()
     size_t d = grid_storage->dim();
     size_t current_N = grid_storage->size();
     base::DataVector coeffs(current_N);
+    std::vector<double> &fX = function_values;
     
-    std::vector<double> x(d, 0.0);
-    function_values.assign(N, 0.0);
+    fX.assign(N, 0.0);
     
     if (current_N > N)
     {
-        function_values.resize(grid_storage->size(), 0.0);
+        fX.resize(grid_storage->size(), 0.0);
     }
     
     for (size_t i = 0; i < current_N; i++)
@@ -147,14 +147,34 @@ bool IterativeGridGeneratorLinearSurplus::generate()
         gp->setPointDistribution(distr);
         
         linear_grid->getStorage()->get(i)->setPointDistribution(distr);
+    }
+    
+    #pragma omp parallel shared(fX, coeffs, current_N, grid_storage, d) default(none)
+    {
+        std::vector<double> x(d, 0.0);
+        std::unique_ptr<function::Objective> cur_f(f.clone());
         
-        for (size_t t = 0; t < d; t++)
+        #pragma omp for
+        for (size_t i = 0; i < current_N; i++)
         {
-            x[t] = gp->abs(t);
+            #pragma omp critical
+            {
+                base::GridIndex *gp = grid_storage->get(i);
+                
+                for (size_t t = 0; t < d; t++)
+                {
+                    x[t] = gp->abs(t);
+                }
+            }
+            
+            double fx = cur_f->eval(x);
+            
+            #pragma omp critical
+            {
+                fX[i] = fx;
+                coeffs[i] = fx;
+            }
         }
-        
-        function_values[i] = f.eval(x);
-        coeffs[i] = function_values[i];
     }
     
     {
@@ -194,7 +214,9 @@ bool IterativeGridGeneratorLinearSurplus::generate()
         base::HashRefinementSGOpt hash_refinement;
         hash_refinement.free_refine(grid_storage, &refine_func);*/
         
-        if (grid_storage->size() == current_N)
+        size_t new_N = grid_storage->size();
+        
+        if (new_N == current_N)
         {
             // size unchanged ==> nothing refined (should not happen)
             tools::printer.printStatusEnd(
@@ -203,12 +225,12 @@ bool IterativeGridGeneratorLinearSurplus::generate()
             break;
         }
         
-        if (grid_storage->size() > N)
+        if (new_N > N)
         {
-            //function_values.resize(grid_storage->size(), 0.0);
+            //fX.resize(new_N, 0.0);
             std::list<size_t> indices_to_remove;
             
-            for (size_t i = current_N; i < grid_storage->size(); i++)
+            for (size_t i = current_N; i < new_N; i++)
             {
                 indices_to_remove.push_back(i);
             }
@@ -226,20 +248,37 @@ bool IterativeGridGeneratorLinearSurplus::generate()
             }
         }
         
-        coeffs.resize(grid_storage->size());
+        coeffs.resize(new_N);
         
-        for (size_t i = current_N; i < grid_storage->size(); i++)
+        #pragma omp parallel shared(fX, current_N, new_N, grid_storage, distr, d) default(none)
         {
-            base::GridIndex *gp = grid_storage->get(i);
-            gp->setPointDistribution(distr);
+            std::vector<double> x(d, 0.0);
+            std::unique_ptr<function::Objective> cur_f(f.clone());
             
-            for (size_t t = 0; t < d; t++)
+            #pragma omp for
+            for (size_t i = current_N; i < new_N; i++)
             {
-                x[t] = gp->abs(t);
+                #pragma omp critical
+                {
+                    base::GridIndex *gp = grid_storage->get(i);
+                    gp->setPointDistribution(distr);
+                    
+                    for (size_t t = 0; t < d; t++)
+                    {
+                        x[t] = gp->abs(t);
+                    }
+                }
+                
+                double fx = cur_f->eval(x);
+                
+                #pragma omp critical
+                fX[i] = fx;
             }
-            
-            function_values[i] = f.eval(x);
-            coeffs[i] = function_values[i];
+        }
+        
+        for (size_t i = current_N; i < new_N; i++)
+        {
+            coeffs[i] = fX[i];
             
             for (uint j = 0; j < i; j++)
             {
@@ -247,11 +286,11 @@ bool IterativeGridGeneratorLinearSurplus::generate()
             }
         }
         
-        current_N = grid_storage->size();
+        current_N = new_N;
         k++;
     }
     
-    function_values.erase(function_values.begin() + current_N, function_values.end());
+    fX.erase(fX.begin() + current_N, fX.end());
     
     if (result)
     {

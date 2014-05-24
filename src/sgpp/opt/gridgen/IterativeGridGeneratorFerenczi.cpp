@@ -111,8 +111,6 @@ bool IterativeGridGeneratorFerenczi::generate()
     std::vector<size_t> fX_order(current_N, 0);
     // fX_sorted[i] = fX[fX_order[i]] (fX sorted in ascending order)
     
-    std::vector<double> x(d, 0.0);
-    
     std::vector<size_t> degree(N, 0);
     std::vector<size_t> level_sum(N, 0);
     std::vector<size_t> level_max(N, 0);
@@ -140,8 +138,6 @@ bool IterativeGridGeneratorFerenczi::generate()
         
         for (size_t t = 0; t < d; t++)
         {
-            x[t] = gp->abs(t);
-            
             size_t level = gp->getLevel(t);
             level_sum[i] += level;
             
@@ -151,8 +147,32 @@ bool IterativeGridGeneratorFerenczi::generate()
             }
         }
         
-        fX[i] = f.eval(x);
         fX_order[i] = i;
+    }
+    
+    #pragma omp parallel shared(fX, current_N, grid_storage, d) default(none)
+    {
+        std::vector<double> x(d, 0.0);
+        std::unique_ptr<function::Objective> cur_f(f.clone());
+        
+        #pragma omp for
+        for (size_t i = 0; i < current_N; i++)
+        {
+            #pragma omp critical
+            {
+                base::GridIndex *gp = grid_storage->get(i);
+                
+                for (size_t t = 0; t < d; t++)
+                {
+                    x[t] = gp->abs(t);
+                }
+            }
+            
+            double fx = cur_f->eval(x);
+            
+            #pragma omp critical
+            fX[i] = fx;
+        }
     }
     
     std::sort(fX_order.begin(), fX_order.end(),
@@ -206,7 +226,9 @@ bool IterativeGridGeneratorFerenczi::generate()
             hash_refinement.free_refine(grid_storage, &refine_func);
         }
         
-        if (grid_storage->size() == current_N)
+        size_t new_N = grid_storage->size();
+        
+        if (new_N == current_N)
         {
             // size unchanged ==> point not refined (should not happen)
             tools::printer.printStatusEnd(
@@ -215,11 +237,11 @@ bool IterativeGridGeneratorFerenczi::generate()
             break;
         }
         
-        if (grid_storage->size() > N)
+        if (new_N > N)
         {
             std::list<size_t> indices_to_remove;
             
-            for (size_t i = current_N; i < grid_storage->size(); i++)
+            for (size_t i = current_N; i < new_N; i++)
             {
                 indices_to_remove.push_back(i);
             }
@@ -228,10 +250,10 @@ bool IterativeGridGeneratorFerenczi::generate()
             break;
         }
         
-        refinement_alpha.resize(grid_storage->size());
+        refinement_alpha.resize(new_N);
         refinement_alpha[xhat] = 0.0;
         
-        for (size_t i = current_N; i < grid_storage->size(); i++)
+        for (size_t i = current_N; i < new_N; i++)
         {
             refinement_alpha[i] = 0.0;
             
@@ -242,8 +264,6 @@ bool IterativeGridGeneratorFerenczi::generate()
             
             for (size_t t = 0; t < d; t++)
             {
-                x[t] = gp->abs(t);
-                
                 size_t level = gp->getLevel(t);
                 level_sum[i] += level;
                 
@@ -255,9 +275,35 @@ bool IterativeGridGeneratorFerenczi::generate()
             
             /*std::cout << "new point X[" << i << "] = " << gp
                       << ", level = [" << gp->getLevel(0) << ", " << gp->getLevel(1) << "]\n";*/
+        }
+        
+        #pragma omp parallel shared(fX, current_N, new_N, grid_storage, d) default(none)
+        {
+            std::vector<double> x(d, 0.0);
+            std::unique_ptr<function::Objective> cur_f(f.clone());
             
-            fX[i] = f.eval(x);
-            
+            #pragma omp for
+            for (size_t i = current_N; i < new_N; i++)
+            {
+                #pragma omp critical
+                {
+                    base::GridIndex *gp = grid_storage->get(i);
+                    
+                    for (size_t t = 0; t < d; t++)
+                    {
+                        x[t] = gp->abs(t);
+                    }
+                }
+                
+                double fx = cur_f->eval(x);
+                
+                #pragma omp critical
+                fX[i] = fx;
+            }
+        }
+        
+        for (size_t i = current_N; i < new_N; i++)
+        {
             // update rank and fX_order by insertion sort
             // ==> go through fX from biggest entry to lowest
             for (size_t j = i - 1; j-- > 0; )
@@ -286,7 +332,7 @@ bool IterativeGridGeneratorFerenczi::generate()
             }
         }
         
-        current_N = grid_storage->size();
+        current_N = new_N;
         
         /*std::vector<double> fX_part(fX.begin(), fX.begin() + current_N);
         rankVector(fX_part, rank);*/
