@@ -92,7 +92,7 @@ public:
     void printMatrixToFile(const std::string &filename, const std::vector<T> &A,
                            size_t m, size_t n) const
     {
-        std::ofstream f(filename, std::ios::out | std::ios::binary);
+        std::ofstream f(filename, std::ios::binary);
         
         std::vector<const char *> types =
                 {"uint8           ", "uint16          ", "uint32          ", "uint64          ",
