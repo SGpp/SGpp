@@ -151,6 +151,10 @@ namespace std {
 %include "src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
 %include "src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
+%include "src/sgpp/base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp"
+%include "src/sgpp/base/basis/periodic/operation/OperationEvalPeriodic.hpp"
+%include "src/sgpp/base/basis/periodic/LinearPeriodicBasis.hpp"
+
 // static factory methods
 %include "src/sgpp/base/operation/BaseOpFactory.hpp"
 
@@ -162,6 +166,8 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 
 %include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+
+%include "src/sgpp/datadriven/basis/periodiclinear/OperationL2ScalarProduct.hpp"
 #endif
 
 #ifdef SG_PDE

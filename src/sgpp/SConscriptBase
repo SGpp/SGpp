@@ -44,6 +44,8 @@ base/basis/modpoly/operation/OperationMultipleEvalModPoly.cpp
 base/basis/modwavelet/operation/OperationEvalModWavelet.cpp
 base/basis/modwavelet/operation/OperationHierarchisationModWavelet.cpp
 base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.cpp
+base/basis/periodic/operation/OperationEvalPeriodic.cpp
+base/basis/periodic/operation/OperationMultipleEvalPeriodic.cpp
 base/basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 base/basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
 base/basis/poly/operation/OperationEvalPoly.cpp
