@@ -8,7 +8,7 @@
 #include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
 #include "base/exception/algorithm_exception.hpp"
 #include "pde/operation/PdeOpFactory.hpp"
-#ifdef USE_ENHANCED_UPDOWN
+#if  defined(USE_ENHANCED_UPDOWN) && defined(SG_MISC)
 #include "misc/operation/MiscOpFactory.hpp"
 #endif
 
@@ -18,7 +18,7 @@ namespace sg {
   namespace pde {
 
     PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
-#ifdef USE_ENHANCED_UPDOWN
+#if defined(USE_ENHANCED_UPDOWN) && defined(SG_MISC)
       this->Laplace_Complete = createOperationLaplaceEnhanced(*this->BoundGrid);
       this->Laplace_Inner = createOperationLaplaceEnhanced(*this->InnerGrid);
 #else

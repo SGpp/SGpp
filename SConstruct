@@ -345,11 +345,22 @@ for sup in supportList:
     if env[sup]:
         print "Compiling support for", sup
 
+# include Parallel and dependent modules only if OpenMP support is activated
+# FIXME: it is actually a work around, the proper solution would involve change of source files. Afterwards this fix should be removed.
+if env['SG_PARALLEL'] and not env['OMP']:
+            print 'Warning: Building module Parallel requires OpenMP support. Please compile with OMP=1.'
+            print 'Skipping modules Parallel, Misc, and Java support'
+            env['SG_PARALLEL'] = False
+            env['SG_MISC'] = False
+            env['SG_JAVA'] = False
+
 # add C++ defines for all modules
 cppdefines = []
+print moduleList
 for modl in moduleList.keys():
     if env[modl]:
         cppdefines.append(modl)
+print cppdefines
 env.Append(CPPDEFINES=cppdefines)
 
 

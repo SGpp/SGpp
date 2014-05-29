@@ -10,11 +10,11 @@ import unittest, sys, toolsKbhitCountdown
 import test_GridIndex
 import test_GridStorage
 import test_algorithms
-import test_laplace
+
 import test_hierarchisation
 import test_OperationQuadrature
 import test_BBT
-import test_newCombi
+
 #import test_BBT_SSE
 #import test_BBT_AVX
 import test_BT
@@ -35,7 +35,6 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
                 unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
                 unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
-                unittest.defaultTestLoader.loadTestsFromModule(test_laplace),
                 unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
                 unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
                 unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
@@ -43,13 +42,27 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
 #                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_SSE),
 #                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX),
-                unittest.defaultTestLoader.loadTestsFromModule(test_newCombi),
+                
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT),
                 unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
                 unittest.defaultTestLoader.suiteClass(learnertests.alltests),
                 unittest.defaultTestLoader.suiteClass(datatests.alltests),
                 unittest.defaultTestLoader.suiteClass(controllertests.alltests)
                 ])
+        try:
+            from pysgpp import AbstractCombiGrid
+            import test_newCombi
+            alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_newCombi))
+        except ImportError:
+            pass
+        
+        try:
+            from pysgpp import createOperationLaplaceEnhanced
+            import test_laplace
+            alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_laplace),)
+        except ImportError:
+            pass
+    
     
         unittest.TextTestRunner().run(alltests)
 
