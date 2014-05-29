@@ -22,8 +22,10 @@
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/datatypes/DataMatrixSP.hpp"
 
+#ifdef SG_PARALLEL
 #include "parallel/tools/TypesParallel.hpp"
 #include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#endif
 
 #include <memory>
 #include <vector>
@@ -841,6 +843,7 @@ namespace sg {
           //    }
         }
 
+#ifdef SG_PARALLEL
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative function evaluation. The Level
@@ -888,7 +891,7 @@ namespace sg {
             }
           }
         }
-
+#endif
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -942,6 +945,7 @@ namespace sg {
           //    }
         }
 
+#ifdef SG_PARALLEL
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative Laplace Calculations: the level
@@ -981,7 +985,7 @@ namespace sg {
             }
           }
         }
-
+#endif
 
         /**
          * returns the max. depth in all dimension of the grid
