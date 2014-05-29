@@ -46,6 +46,7 @@
 #include "base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp"
 #include "base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp"
+#include "base/basis/periodic/operation/OperationEvalPeriodic.hpp"
 
 #include "base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
@@ -57,6 +58,7 @@
 #include "base/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp"
 #include "base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
+#include "base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp"
 
 #include <cstring>
 
@@ -189,6 +191,8 @@ namespace sg {
         return new base::OperationEvalLinearStretched(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
         return new base::OperationEvalLinearStretchedBoundary(grid.getStorage());
+      } else if (strcmp(grid.getType(),"periodic") == 0) {
+    	return new base::OperationEvalPeriodic(grid.getStorage());
       } else
         throw base::factory_exception("OperationEval is not implemented for this grid type.");
     }
@@ -219,6 +223,8 @@ namespace sg {
         return new base::OperationMultipleEvalLinearStretched(grid.getStorage(), dataset);
       } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
         return new base::OperationMultipleEvalLinearStretchedBoundary(grid.getStorage(), dataset);
+      }else if (strcmp(grid.getType(),"periodic") == 0) {
+      	return new base::OperationMultipleEvalPeriodic(grid.getStorage(), dataset);
       }
 
       else
