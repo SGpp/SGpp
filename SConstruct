@@ -212,7 +212,6 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 # white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
-env['CPPFLAGS'] = ['-O0']
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])

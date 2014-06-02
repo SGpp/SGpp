@@ -80,6 +80,7 @@ base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 base/grid/generation/functors/SurplusRefinementFunctor.cpp
 base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
+base/grid/generation/PeriodicGridGenerator.cpp
 base/grid/Grid.cpp
 base/grid/type/GridStencil.cpp
 base/grid/type/LinearBoundaryGrid.cpp
@@ -95,6 +96,7 @@ base/grid/type/PolyGrid.cpp
 base/grid/type/PrewaveletGrid.cpp
 base/grid/type/SquareRootGrid.cpp
 base/grid/type/TruncatedTrapezoidGrid.cpp
+base/grid/type/PeriodicGrid.cpp
 base/tools/EvalCuboidGenerator.cpp
 base/tools/GridPrinter.cpp
 base/tools/SGppStopwatch.cpp
