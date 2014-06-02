@@ -59,6 +59,8 @@
 #include "base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 #include "base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 #include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include "base/grid/generation/PeriodicGridGenerator.hpp"
+#include "base/grid/type/PeriodicGrid.hpp"
 #include "base/tools/GridPrinter.hpp"
 #include "base/tools/GridPrinterForStretching.hpp"
 #include "base/tools/SGppStopwatch.hpp"

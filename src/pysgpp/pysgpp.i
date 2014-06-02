@@ -129,7 +129,10 @@ namespace std {
 %include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+%include "src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "src/sgpp/base/grid/GridDataBase.hpp"
+
+%include "src/sgpp/base/grid/type/PeriodicGrid.hpp"
 
 %include "src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
