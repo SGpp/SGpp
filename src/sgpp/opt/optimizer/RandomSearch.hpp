@@ -14,6 +14,8 @@ namespace optimizer
 class RandomSearch : public Optimizer
 {
 public:
+    static const size_t DEFAULT_MAX_IT_COUNT = 1000;
+    
     RandomSearch(function::Objective &f, size_t max_it_count = DEFAULT_MAX_IT_COUNT);
     RandomSearch(function::Objective &f, size_t max_it_count, unsigned int seed);
     RandomSearch(size_t max_it_count, unsigned int seed,
