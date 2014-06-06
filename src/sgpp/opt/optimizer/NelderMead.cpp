@@ -12,18 +12,18 @@ namespace optimizer
 {
 
 const double NelderMead::DEFAULT_ALPHA = 1.0;
-const double NelderMead::DEFAULT_GAMMA = 2.0;
-const double NelderMead::DEFAULT_RHO = -0.5;
-const double NelderMead::DEFAULT_SIGMA = 0.5;
+const double NelderMead::DEFAULT_BETA = 2.0;
+const double NelderMead::DEFAULT_GAMMA = 0.5;
+const double NelderMead::DEFAULT_DELTA = 0.5;
 const double NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
 NelderMead::NelderMead(function::Objective &f,
-        size_t max_it_count, double alpha, double gamma, double rho, double sigma) :
+        size_t max_it_count, double alpha, double beta, double gamma, double delta) :
     Optimizer(f, max_it_count),
     alpha(alpha),
+    beta(beta),
     gamma(gamma),
-    rho(rho),
-    sigma(sigma)
+    delta(delta)
     //max_fcn_eval_count(max_fcn_eval_count)
 {
 }
@@ -50,10 +50,11 @@ double NelderMead::optimize(std::vector<double> &xopt)
     f_points[0] = f->eval(points[0]);
     
     std::vector<size_t> index(d+1, 0);
-    std::vector<double> point_0(d, 0.0);
+    std::vector<double> point_o(d, 0.0);
     std::vector<double> point_r(d, 0.0);
     std::vector<double> point_e(d, 0.0);
-    std::vector<double> point_c(d, 0.0);
+    std::vector<double> point_ic(d, 0.0);
+    std::vector<double> point_oc(d, 0.0);
     size_t k = 0;
     size_t number_of_fcn_evals = d+1;
     
@@ -87,16 +88,17 @@ double NelderMead::optimize(std::vector<double> &xopt)
         
         //bool converged = true;
         bool in_domain = true;
+        bool shrink = false;
         
         for (size_t t = 0; t < d; t++)
         {
-            point_0[t] = 0.0;
+            point_o[t] = 0.0;
             //double point_min = 1.0;
             //double point_max = 0.0;
             
             for (size_t i = 0; i < d; i++)
             {
-                point_0[t] += points[i][t];
+                point_o[t] += points[i][t];
                 
                 /*if (points[j][i] < point_min)
                 {
@@ -114,8 +116,8 @@ double NelderMead::optimize(std::vector<double> &xopt)
                 converged = false;
             }*/
             
-            point_0[t] /= (double)d;
-            point_r[t] = point_0[t] + alpha * (point_0[t] - points[d][t]);
+            point_o[t] /= (double)d;
+            point_r[t] = point_o[t] + alpha * (point_o[t] - points[d][t]);
             
             if ((point_r[t] < 0.0) || (point_r[t] > 1.0))
             {
@@ -141,7 +143,7 @@ double NelderMead::optimize(std::vector<double> &xopt)
             
             for (size_t t = 0; t < d; t++)
             {
-                point_e[t] = point_0[t] + gamma * (point_0[t] - points[d][t]);
+                point_e[t] = point_o[t] + beta * (point_r[t] - point_o[t]);
                 
                 if ((point_e[t] < 0.0) || (point_e[t] > 1.0))
                 {
@@ -161,48 +163,79 @@ double NelderMead::optimize(std::vector<double> &xopt)
                 points[d] = point_r;
                 f_points[d] = f_point_r;
             }
+        } else if (f_point_r < f_points[d])
+        {
+            bool in_domain = true;
+            
+            for (size_t t = 0; t < d; t++)
+            {
+                point_oc[t] = point_o[t] + gamma * (point_r[t] - point_o[t]);
+                
+                if ((point_oc[t] < 0.0) || (point_oc[t] > 1.0))
+                {
+                    in_domain = false;
+                }
+            }
+            
+            double f_point_oc = (in_domain ? f->eval(point_oc) : INFINITY);
+            number_of_fcn_evals++;
+            
+            if (f_point_oc <= f_point_r)
+            {
+                points[d] = point_oc;
+                f_points[d] = f_point_oc;
+            } else
+            {
+                shrink = true;
+            }
         } else
         {
             bool in_domain = true;
             
             for (size_t t = 0; t < d; t++)
             {
-                point_c[t] = point_0[t] + rho * (point_0[t] - points[d][t]);
+                //point_ic[t] = point_o[t] - gamma * (point_r[t] - point_o[t]);
+                point_ic[t] = point_o[t] - gamma * (point_o[t] - points[d][t]);
                 
-                if ((point_c[t] < 0.0) || (point_c[t] > 1.0))
+                if ((point_ic[t] < 0.0) || (point_ic[t] > 1.0))
                 {
                     in_domain = false;
                 }
             }
             
-            double f_point_c = (in_domain ? f->eval(point_c) : INFINITY);
+            double f_point_ic = (in_domain ? f->eval(point_ic) : INFINITY);
             number_of_fcn_evals++;
             
-            if (f_point_c < f_points[d])
+            if (f_point_ic < f_points[d])
             {
-                points[d] = point_c;
-                f_points[d] = f_point_c;
+                points[d] = point_ic;
+                f_points[d] = f_point_ic;
             } else
             {
-                for (size_t i = 1; i < d+1; i++)
+                shrink = true;
+            }
+        }
+        
+        if (shrink)
+        {
+            for (size_t i = 1; i < d+1; i++)
+            {
+                bool in_domain = true;
+                
+                for (size_t t = 0; t < d; t++)
                 {
-                    bool in_domain = true;
+                    points[i][t] = points[0][t] + delta * (points[i][t] - points[0][t]);
                     
-                    for (size_t t = 0; t < d; t++)
+                    if ((points[i][t] < 0.0) || (points[i][t] > 1.0))
                     {
-                        points[i][t] = points[0][t] + sigma * (points[i][t] - points[0][t]);
-                        
-                        if ((points[i][t] < 0.0) || (points[i][t] > 1.0))
-                        {
-                            in_domain = false;
-                        }
+                        in_domain = false;
                     }
-                    
-                    f_points[i] = (in_domain ? f->eval(points[i]) : INFINITY);
                 }
                 
-                number_of_fcn_evals += d;
+                f_points[i] = (in_domain ? f->eval(points[i]) : INFINITY);
             }
+            
+            number_of_fcn_evals += d;
         }
         
         if (k % 10 == 0)
@@ -234,7 +267,7 @@ double NelderMead::optimize(std::vector<double> &xopt)
 
 std::unique_ptr<Optimizer> NelderMead::clone()
 {
-    std::unique_ptr<Optimizer> result(new NelderMead(*f, N, alpha, gamma, rho, sigma));
+    std::unique_ptr<Optimizer> result(new NelderMead(*f, N, alpha, beta, gamma, delta));
     result->setStartingPoint(x0);
     return result;
 }
@@ -249,6 +282,16 @@ void NelderMead::setAlpha(double alpha)
     this->alpha = alpha;
 }
 
+double NelderMead::getBeta() const
+{
+    return beta;
+}
+
+void NelderMead::setBeta(double beta)
+{
+    this->beta = beta;
+}
+
 double NelderMead::getGamma() const
 {
     return gamma;
@@ -259,24 +302,14 @@ void NelderMead::setGamma(double gamma)
     this->gamma = gamma;
 }
 
-double NelderMead::getRho() const
+double NelderMead::getDelta() const
 {
-    return rho;
+    return delta;
 }
 
-void NelderMead::setRho(double rho)
+void NelderMead::setDelta(double delta)
 {
-    this->rho = rho;
-}
-
-double NelderMead::getSigma() const
-{
-    return rho;
-}
-
-void NelderMead::setSigma(double sigma)
-{
-    this->sigma = sigma;
+    this->delta = delta;
 }
 
 /*size_t NelderMead::getMaxFcnEvalCount() const
