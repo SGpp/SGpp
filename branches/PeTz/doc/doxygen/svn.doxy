@@ -1,0 +1,61 @@
+/**
+@page svn SVN
+
+How to access the repository.
+
+@section svnlocal How to check out a svn repository (locally)
+
+The repositories reside in /home_local/repositories/svn/.
+To check out on one of the computers in the labs into the current directory use
+@verbatim
+  svn co file:///home_local/repositories/svn/$repositoryname
+@endverbatim
+To check out the trunk folder of SGpp into a local folder use
+@verbatim
+  svn co file:///home_local/repositories/svn/SGpp/trunk $pathname
+@endverbatim
+If <tt>$pathname</tt> is not defined, a directors <tt>trunk</tt> is
+created in the current directory. If <tt>$pathname</tt> is set to
+<tt>SGpp</tt>, e.g., the directory is named SGpp rather than trunk. 
+
+@section svnremote How to check out a svn repository (remotely)
+
+Run the following short and easy-remembered command from your local dir:
+
+@verbatim
+  svn co svn+ssh://$username@atsccs??.informatik.tu-muenchen.de/home_local/repositories/svn/$repositoryname
+@endverbatim
+
+You should now have a working copy which works exactly like the local working copy. 
+
+@section infoGeneral A few helpful hints
+This can't cover everything, but provides some useful
+information. Normally the commands work for the current directory the
+command is executed in, and recursively for all subdirectories, but
+not for parent directories. Usually they can be also executed only for
+a set of files - by just specifying the filename(s) at the end of the command.
+@verbatim
+  svn help
+@endverbatim
+gives you Information on the commands which are available.
+@verbatim
+  svn status -q
+@endverbatim
+shows the current status (modified/added/deleted/new files) compared
+to the current svn-version.
+@verbatim
+  svn up
+@endverbatim
+lets you obtain the updates out of the repository. Always execute it
+before you commit new changes.
+@verbatim
+  svn ci [-m "Change information"]
+@endverbatim
+lets you check in your changes into a new version in the repository
+(<b>always</b> update first!). Either some editor is opened or you
+can specify a message about what changed via <tt>-m</tt>. Please
+provide a meaningful message!
+
+@see http://svnbook.red-bean.com/en/1.2/svn-book.html More information about svn
+
+*/

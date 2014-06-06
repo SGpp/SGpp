@@ -1,0 +1,79 @@
+/**
+@page grid Computation in the chair's grid
+
+You can submit and compute batch jobs in the chair's grid (Sun Grid
+Engine). It is especially useful for array jobs (i.e. computations
+where only one parameter varies).
+
+
+@section settings Settings
+You can submit jobs on the atsccs12, atsccs13, atsccs16 and atsccs18.
+
+As a first step you have to read in the settings:
+@verbatim
+  source /home_local/condor/SGE/sccs/common/settings.sh
+@endverbatim
+
+
+@section sge Sun Grid Engine
+There are several ways to submit/check/list/stop/delete/... jobs.
+Documentation can be found in the gridengine's documentation
+@li http://gridengine.sunsource.net/
+
+or, in an easier to read information with examples, on the website of
+the Linux Cluster of the LZR (not everything that is listed there is
+necessary at our chair's gridengine):
+@li http://www.lrz-muenchen.de/services/compute/linux-cluster/batch/
+
+@subsection qmon Qmon
+The easiest way to access all available tools is probably the
+graphical front-end, Qmon.
+@verbatim
+  qmon &
+@endverbatim
+There you can see which jobs are in the queue, you can submit jobs,
+delete and cancel jobs and much more.
+
+@subsection qXX Command line usage
+The typical way (at least to submit jobs) is probably by using the
+command line tools. A short description of the available commands can
+be found at
+@li http://www.lrz-muenchen.de/services/compute/linux-cluster/batch/batch-3.html
+
+@subsection submission Job Submission with qsub
+A comprehensive list of the parameters for the submission of jobs with
+<tt>qsub</tt> can be found at
+@li
+http://www.lrz-muenchen.de/services/compute/linux-cluster/batch/batch-4.html
+
+An example: To test whether it works, try
+@verbatim
+  qsub -N testjob -q test.q -l h_rt=00:00:10 -cwd -b y hostname
+@endverbatim
+The parameters are
+<table>
+<tr>
+  <td>-N</td><td>Jobname, some name so that the job can be identified
+in the list of jobs</td>
+</tr>
+<tr>
+  <td>-q</td><td>The queue to run the job in. The default queue is
+<tt>studi.q</tt>. To avoid blocking the computers in the lab, jobs are
+suspended Mo-Fr at 08:00 and resumed at 21:00. A queue to test the
+execution which is not restricted in the daytime is <tt>test.q</tt>.</td>
+</tr>
+<tr>
+  <td>-cwd</td><td>To run the jobs in the current work directory they
+are executed in.</td>
+</tr>
+<tr>
+  <td>-b y</td><td>Execute a binary (program) rather than use a job script.</td>
+</tr>
+<tr>
+  <td>-l h_rt=hh:mm:ss</td><td>Wall clock time, the maximum run time
+the job will take. If not given, one week maximum time is assumed. For
+the <tt>test.q</tt> queue it has to be equal or lower than 5 minutes.</td>
+</tr>
+</table>
+
+*/

@@ -1,0 +1,85 @@
+/**
+@page development Developer How-Tos
+
+<div style="color:#FF0000;">All code has to be documented so that the functions,
+classes and all other entities appearing in the Documentation are
+commented so that some @e other person can understand what they are
+doing.</div>
+
+
+
+<!-- ############################################################# -->
+@section development__overview Overview
+- @ref development__unittests (this page)
+- @ref development__doxygen (this page)
+- @subpage svn 
+- @subpage styleguide
+- @subpage grid
+
+
+
+<!-- ############################################################# -->
+@section development__unittests Unittests/Testing
+
+In the subfolder @c tests/ there are @link tests the following@endlink 
+unittests written in Python. To simplify unit testing, we enforce all
+unit-tests to be written in Python; thus, the python library has to be
+built. 
+
+They can be tested separately or all together via the file
+@c test_pyclass.py. If you modify existing code, do not forget 
+to make sure that no new errors are introduced. If you write new
+functionalities, do @em always add unittests for each functionality!
+
+
+<!-- ############################################################# -->
+@section development__doxygen Doxygen
+
+The documentation has to be done in a Doxygen compatible way. Doygen
+tags are to be used in the Java-style way, i.e. starting with \@.
+
+During development, especially tags like \@todo should be used. They
+are then listed on the @link todo ToDo@endlink-page.
+
+Different scripts can be grouped together in so-called modules. The
+link to the page showing all modules can be found in the navigation
+bar of the documentation.
+
+Please correct any warnings or errors that appear when creating the
+documentation with doxygen!
+
+@sa Doxygen Manual http://www.stack.nl/~dimitri/doxygen/manual.html
+@sa - Documenting the code http://www.stack.nl/~dimitri/doxygen/docblocks.html
+@sa - Special Commands http://www.stack.nl/~dimitri/doxygen/commands.html
+
+
+<!-- ============================================================= -->
+@subsection development__doxygen__howto How to run, use and customize
+
+Executing <tt>doxygen</tt> in the main folder creates the
+Doxygen-documentation in the subfolder <tt>doc</tt>. The settings
+for Doxygen are automatically taken from the file
+<tt>Doxyfile</tt>. As those settings do some preprocessing to
+include the revision numbers from the svn-Repository this requires the
+use of <tt>svn</tt> and takes longer than normal execution.
+
+Therefore a second file with Doxygen-settings exists, just without
+the preprocessing steps, <tt>Doxyfile.fast</tt>, which is much
+faster. It can be used running <tt>doxygen Doxyfile.fast</tt>
+in the main folder.
+
+The preprocessing steps include the substitution of the tags
+<pre>
+\@version&nbsp;$HEAD$
+</pre> to show the current revision of the svn, and 
+<pre>
+\@version&nbsp;$CURR$
+</pre> to additionally show the last revision, the current file 
+changed and the last author working on the file. Additionally the tag
+<pre>
+$<tt>SVN_LOG</tt>$
+</pre>
+is substituted by a list of the last few check-ins, as shown above.
+
+
+*/
