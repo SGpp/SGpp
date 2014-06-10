@@ -1,5 +1,7 @@
 #include "opt/optimizer/Newton.hpp"
-#include "opt/optimizer/ArmijoRule.hpp"
+#include "opt/optimizer/LineSearchArmijo.hpp"
+//#include "opt/optimizer/LineSearchPowellWolfe.hpp"
+//#include "opt/optimizer/LineSearchNewton.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "opt/sle/system/Full.hpp"
@@ -20,31 +22,36 @@ const double Newton::DEFAULT_ALPHA2 = 1e-6;
 const double Newton::DEFAULT_BETA = 0.5;
 const double Newton::DEFAULT_GAMMA = 1e-2;
 const double Newton::DEFAULT_P = 0.1;
-const double Newton::DEFAULT_TOLERANCE = 1e-10;
+const double Newton::DEFAULT_TOLERANCE = 1e-8;
+const double Newton::DEFAULT_EPSILON = 1e-18;
 
-Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian) :
+Newton::Newton(
+        function::Objective &f,
+        function::ObjectiveHessian &f_hessian) :
     Optimizer(f, DEFAULT_MAX_IT_COUNT),
     f_hessian(f_hessian.clone()),
     default_sle_solver(sle::solver::BiCGStab()),
     sle_solver(default_sle_solver)
 {
     initialize(DEFAULT_ALPHA1, DEFAULT_ALPHA2, DEFAULT_BETA,
-               DEFAULT_GAMMA, DEFAULT_P, DEFAULT_TOLERANCE);
+               DEFAULT_GAMMA, DEFAULT_P, DEFAULT_TOLERANCE, DEFAULT_EPSILON);
 }
 
-Newton::Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
+Newton::Newton(
+        function::Objective &f,
+        function::ObjectiveHessian &f_hessian,
         size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
-        double p, double tolerance, const sle::solver::Solver &sle_solver) :
+        double p, double tolerance, double epsilon, const sle::solver::Solver &sle_solver) :
     Optimizer(f, max_it_count),
     f_hessian(f_hessian.clone()),
     default_sle_solver(sle::solver::BiCGStab()),
     sle_solver(sle_solver)
 {
-    initialize(alpha1, alpha2, beta, gamma, p, tolerance);
+    initialize(alpha1, alpha2, beta, gamma, p, tolerance, epsilon);
 }
 
 void Newton::initialize(double alpha1, double alpha2, double beta, double gamma,
-                        double p, double tolerance)
+                        double p, double tolerance, double epsilon)
 {
     this->alpha1 = alpha1;
     this->alpha2 = alpha2;
@@ -52,6 +59,7 @@ void Newton::initialize(double alpha1, double alpha2, double beta, double gamma,
     this->gamma = gamma;
     this->p = p;
     this->tol = tolerance;
+    this->eps = epsilon;
 }
 
 double Newton::optimize(std::vector<double> &xopt)
@@ -125,7 +133,9 @@ double Newton::optimize(std::vector<double> &xopt)
             //std::cout << "\n" << x << ", " << fx << "\n";
         }
         
-        if (!armijoRule(*f, beta, gamma, tol, x, fx, grad_fx, s, y))
+        if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, grad_fx, s, y))
+        //if (!lineSearchPowellWolfe(*f, *f_gradient, 1e-4, 0.9, x, fx, grad_fx, s, y))
+        //if (!lineSearchNewton(*f_hessian, tol, x, s, y))
         {
             //std::cout << "\nBOOM\n";
             break;
@@ -149,7 +159,7 @@ double Newton::optimize(std::vector<double> &xopt)
 std::unique_ptr<Optimizer> Newton::clone()
 {
     std::unique_ptr<Optimizer> result(new Newton(
-            *f, *f_hessian, N, alpha1, alpha2, beta, gamma, p, tol, sle_solver));
+            *f, *f_hessian, N, alpha1, alpha2, beta, gamma, p, tol, eps, sle_solver));
     result->setStartingPoint(x0);
     return result;
 }
@@ -217,6 +227,16 @@ double Newton::getTolerance() const
 void Newton::setTolerance(double tolerance)
 {
     tol = tolerance;
+}
+
+double Newton::getEpsilon() const
+{
+    return eps;
+}
+
+void Newton::setEpsilon(double epsilon)
+{
+    eps = epsilon;
 }
 
 }

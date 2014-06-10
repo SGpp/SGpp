@@ -1,10 +1,11 @@
-#ifndef SGPP_OPT_OPTIMIZER_ARMIJORULE_HPP
-#define SGPP_OPT_OPTIMIZER_ARMIJORULE_HPP
+#ifndef SGPP_OPT_OPTIMIZER_LINESEARCHARMIJO_HPP
+#define SGPP_OPT_OPTIMIZER_LINESEARCHARMIJO_HPP
 
 #include "base/datatypes/DataVector.hpp"
 #include "opt/function/Objective.hpp"
 
 #include <cstddef>
+#include <cmath>
 
 namespace sg
 {
@@ -13,9 +14,10 @@ namespace opt
 namespace optimizer
 {
 
-inline bool armijoRule(function::Objective &f, double beta, double gamma, double tol,
-                       const std::vector<double> &x, double fx, base::DataVector &grad_fx,
-                       const std::vector<double> &s, std::vector<double> &y)
+inline bool lineSearchArmijo(function::Objective &f, double beta, double gamma,
+                             double tol, double eps,
+                             const std::vector<double> &x, double fx, base::DataVector &grad_fx,
+                             const std::vector<double> &s, std::vector<double> &y)
 {
     size_t d = x.size();
     double sigma = 1.0;
@@ -50,7 +52,7 @@ inline bool armijoRule(function::Objective &f, double beta, double gamma, double
             double rhs = gamma * sigma * (-ip);
             
             //std::cout << "sigma: " << sigma << ", fy: " << fy << "\n";
-            if ((improvement >= rhs) && (improvement >= tol))
+            if (improvement >= rhs)
             {
                 /*std::cout << "ip: " << ip << "\n";
                 std::cout << "sigma: " << sigma << "\n";
@@ -58,7 +60,7 @@ inline bool armijoRule(function::Objective &f, double beta, double gamma, double
                 std::cout << "fy: " << fy << "\n";
                 std::cout << "improvement: " << improvement << "\n";
                 std::cout << "rhs: " << rhs << "\n";*/
-                return true;
+                return (std::abs(fx - fy) >= tol * (std::abs(fx) + std::abs(fy) + eps));
             }
         }
         
