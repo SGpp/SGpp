@@ -24,12 +24,15 @@ public:
     static const double DEFAULT_GAMMA;
     static const double DEFAULT_P;
     static const double DEFAULT_TOLERANCE;
+    static const double DEFAULT_EPSILON;
     
-    Newton(function::Objective &f, function::ObjectiveHessian &f_hessian);
+    Newton(function::Objective &f,
+           function::ObjectiveHessian &f_hessian);
     
-    Newton(function::Objective &f, function::ObjectiveHessian &f_hessian,
+    Newton(function::Objective &f,
+           function::ObjectiveHessian &f_hessian,
            size_t max_it_count, double alpha1, double alpha2, double beta, double gamma,
-           double p, double tolerance, const sle::solver::Solver &sle_solver);
+           double p, double tolerance, double epsilon, const sle::solver::Solver &sle_solver);
     
     double optimize(std::vector<double> &xopt);
     
@@ -55,6 +58,9 @@ public:
     double getTolerance() const;
     void setTolerance(double tolerance);
     
+    double getEpsilon() const;
+    void setEpsilon(double epsilon);
+    
 protected:
     std::unique_ptr<function::ObjectiveHessian> f_hessian;
     double alpha1;
@@ -63,11 +69,12 @@ protected:
     double gamma;
     double p;
     double tol;
+    double eps;
     const sle::solver::BiCGStab default_sle_solver;
     const sle::solver::Solver &sle_solver;
     
     void initialize(double alpha1, double alpha2, double beta, double gamma,
-                    double p, double tolerance);
+                    double p, double tolerance, double epsilon);
 };
 
 }
