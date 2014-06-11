@@ -21,6 +21,7 @@
 %newobject sg::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
 %newobject sg::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sg::base::Grid::createPrewaveletGrid(size_t dim);
+%newobject sg::base::Grid::createPeriodicGrid(size_t dim);
 
 %newobject sg::base::Grid::unserialize(std::string& istr);
 
@@ -57,6 +58,7 @@ public:
 	static Grid* createPrewaveletGrid(size_t dim);
 	static Grid* createLinearGridStencil(size_t dim);
 	static Grid* createModLinearGridStencil(size_t dim);
+	static Grid* createPeriodicGrid(size_t dim);
 	
 	static Grid* unserialize(std::string& istr);
 	
