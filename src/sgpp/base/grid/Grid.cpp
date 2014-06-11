@@ -24,6 +24,7 @@
 #include "base/grid/type/SquareRootGrid.hpp"
 #include "base/grid/type/TruncatedTrapezoidGrid.hpp"
 #include "base/grid/type/PrewaveletGrid.hpp"
+#include "base/grid/type/PeriodicGrid.hpp"
 
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
@@ -98,6 +99,10 @@ namespace sg {
       return new ModPolyGrid(dim, degree);
     }
 
+    Grid* Grid::createPeriodicGrid(size_t dim) {
+	  return new PeriodicGrid(dim);
+	}
+
     Grid* Grid::unserialize(const std::string& istr) {
       std::istringstream istream;
       istream.str(istr);
@@ -152,6 +157,7 @@ namespace sg {
         tMap->insert(std::pair<std::string, Grid::Factory>("modWavelet", ModWaveletGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
 #else
         tMap->insert(std::make_pair("NULL", Grid::nullFactory));
         tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -167,6 +173,7 @@ namespace sg {
         tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
         tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
         tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
+        tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
 #endif
       }
 
