@@ -185,10 +185,10 @@ class TestHashGenerator(unittest.TestCase):
         s = GridStorage(2)
         g.regularWithPeriodicBoundaries(s, 3)
         self.failUnlessEqual(s.size(), 32)
-         
+        
         i = GridIndex(2)
-        i.set(0,0,1)
-        i.set(1,0,1)
+        i.set(0,0,0)
+        i.set(1,0,0)
         self.failUnless(s.has_key(i))
          
         i.set(1,1,1)

@@ -413,7 +413,7 @@ namespace sg {
           for (level_t l = 1; l <= n; l++) {
             // generate boundary basis functions
             if (l == 1) {
-              idx_1d.push(0, 0, 1, false);
+              idx_1d.push(0, 0, 0, false);
               storage->insert(idx_1d);
             }
             for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
@@ -451,7 +451,7 @@ namespace sg {
               // add remaining level-index pairs in current dimension d
               for (level_t l = 1; l + level_sum <= n + storage->dim() - 1; l++) {
                 if (l == 1) {
-                  idx.push(d, 0, 1, false);
+                  idx.push(d, 0, 0, false);
                   storage->insert(idx);
                 }
                 for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
