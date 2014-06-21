@@ -27,6 +27,5 @@
 
 #include "datadriven/operation/DatadrivenOpFactory.hpp"
 
-#include "datadriven/basis/periodiclinear/OperationL2ScalarProduct.hpp"
 
 #endif /* DATADRIVEN_HPP */

@@ -35,7 +35,6 @@ datadriven/basis/poly/operation/OperationTestPoly.cpp
 datadriven/basis/prewavelet/operation/OperationTestPrewavelet.cpp
 datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.cpp
 datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.cpp
-datadriven/basis/periodiclinear/OperationL2ScalarProduct.cpp
 
 
 datadriven/operation/OperationRegularizationDiagonal.cpp
