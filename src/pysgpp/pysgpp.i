@@ -188,6 +188,8 @@ namespace std {
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 %include "src/sgpp/pde/operation/PdeOpFactory.hpp"
+%include "src/sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
+%include "src/sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
 #endif
 
 #ifdef SG_FINANCE

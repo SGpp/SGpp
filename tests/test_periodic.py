@@ -154,6 +154,173 @@ class TestOperationEval(unittest.TestCase):
         self.failUnlessEqual(1, res[1])
         self.failUnlessEqual(3.6875, res[2])  
 
+class TestLTwoDotProduct(unittest.TestCase):
+    def testLTwoExplicitD1L1(self):
+        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(1)
+        grid.createGridGenerator().regular(1)
+        
+        ltwo = OperationMatrixLTwoDotExplicitPeriodic(grid)
+        res = DataVector(2)
+        
+        alpha = DataVector([0,1])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.166666667, 0.333333333]), res)
+        
+        alpha = DataVector([1,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.333333333, 0.166666667]), res)
+        
+    def testLTwoExplicitD1L3(self):
+        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(1)
+        grid.createGridGenerator().regular(3)
+        
+        ltwo = OperationMatrixLTwoDotExplicitPeriodic(grid)
+        res = DataVector(8)
+        
+        alpha = DataVector([1,0,0,0,0,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.333333333333 , 0.166666666667 , 0.125 , 0.125 , 0.09375 , 0.03125 , 0.03125 , 0.09375]), res)
+        
+        alpha = DataVector([0,1,0,0,0,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.166666666667 , 0.333333333333 , 0.125 , 0.125 , 0.03125 , 0.09375 , 0.09375 , 0.03125]), res)
+      
+        alpha = DataVector([0,0,0,0,1,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.09375 , 0.03125 , 0.0625 , 0.0 , 0.0833333333333 , 0.0 , 0.0 , 0.0 ]), res)
+        
+        alpha = DataVector([0,0,0,0,0,0,0,1])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.09375 , 0.03125 , 0.0 , 0.0625 , 0.0 , 0.0 , 0.0 , 0.0833333333333]), res)
+        
+    def testLTwoExplicitD2L1(self):
+        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(2)
+        grid.createGridGenerator().regular(1)
+        
+        ltwo = OperationMatrixLTwoDotExplicitPeriodic(grid)
+        res = DataVector(4)
+        
+        alpha = DataVector([1,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.111111111111 , 0.0555555555556 , 0.0555555555556 , 0.0277777777778]), res)
+        
+        alpha = DataVector([0,1,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.111111111111 , 0.0277777777778 , 0.0555555555556]), res)
+      
+        alpha = DataVector([0,0,1,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.0277777777778 , 0.111111111111 , 0.0555555555556]), res)
+        
+        alpha = DataVector([0,0,0,1])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.0277777777778 , 0.0555555555556 , 0.0555555555556 , 0.111111111111]), res)
+        
+    def testLTwoExplicitD2L2(self):
+        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(2)
+        grid.createGridGenerator().regular(2)
+        
+        ltwo = OperationMatrixLTwoDotExplicitPeriodic(grid)
+        res = DataVector(12)
+        
+        alpha = DataVector([0,1,0,0,0,0,0,0,0,0,0,0])
+        ltwo.mult(alpha, res)
+        #print res
+        #np.testing.assert_array_almost_equal(DataVector([0.111111111111 , 0.0555555555556 , 0.0555555555556 , 0.0416666666667 , 0.0416666666667 , 0.0277777777778 , 0.0416666666667 , 0.0416666666667 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333]), res)
+        #np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.111111111111 , 0.0277777777778 , 0.0416666666667 , 0.0416666666667 , 0.0555555555556 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333 , 0.0416666666667 , 0.0416666666667]), res)
+        
+        
+    def testLTwoD1L1(self):
+        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(1)
+        grid.createGridGenerator().regular(1)
+        
+        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        res = DataVector(2)
+        
+        alpha = DataVector([0,1])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.166666667, 0.333333333]), res)
+        
+        alpha = DataVector([1,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.333333333, 0.166666667]), res)
+        
+    def testLTwoD1L3(self):
+        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(1)
+        grid.createGridGenerator().regular(3)
+        
+        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        res = DataVector(8)
+        
+        alpha = DataVector([1,0,0,0,0,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.333333333333 , 0.166666666667 , 0.125 , 0.125 , 0.09375 , 0.03125 , 0.03125 , 0.09375]), res)
+        
+        alpha = DataVector([0,1,0,0,0,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.166666666667 , 0.333333333333 , 0.125 , 0.125 , 0.03125 , 0.09375 , 0.09375 , 0.03125]), res)
+      
+        alpha = DataVector([0,0,0,0,1,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.09375 , 0.03125 , 0.0625 , 0.0 , 0.0833333333333 , 0.0 , 0.0 , 0.0 ]), res)
+        
+        alpha = DataVector([0,0,0,0,0,0,0,1])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.09375 , 0.03125 , 0.0 , 0.0625 , 0.0 , 0.0 , 0.0 , 0.0833333333333]), res)
+        
+    def testLTwoD2L1(self):
+        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(2)
+        grid.createGridGenerator().regular(1)
+        
+        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        res = DataVector(4)
+        
+        alpha = DataVector([1,0,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.111111111111 , 0.0555555555556 , 0.0555555555556 , 0.0277777777778]), res)
+        
+        alpha = DataVector([0,1,0,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.111111111111 , 0.0277777777778 , 0.0555555555556]), res)
+      
+        alpha = DataVector([0,0,1,0])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.0277777777778 , 0.111111111111 , 0.0555555555556]), res)
+        
+        alpha = DataVector([0,0,0,1])
+        ltwo.mult(alpha, res)
+        np.testing.assert_array_almost_equal(DataVector([0.0277777777778 , 0.0555555555556 , 0.0555555555556 , 0.111111111111]), res)
+        
+    def testLTwoD2L2(self):
+        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        
+        grid = Grid.createPeriodicGrid(2)
+        grid.createGridGenerator().regular(2)
+        
+        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        res = DataVector(12)
+        
+        alpha = DataVector([0,1,0,0,0,0,0,0,0,0,0,0])
+        ltwo.mult(alpha, res)
+        #print res
+        #np.testing.assert_array_almost_equal(DataVector([0.111111111111 , 0.0555555555556 , 0.0555555555556 , 0.0416666666667 , 0.0416666666667 , 0.0277777777778 , 0.0416666666667 , 0.0416666666667 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333]), res)
+        #np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.111111111111 , 0.0277777777778 , 0.0416666666667 , 0.0416666666667 , 0.0555555555556 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333 , 0.0208333333333 , 0.0416666666667 , 0.0416666666667]), res)
+        
+        
                 
 if __name__ == "__main__":
     unittest.main()   
