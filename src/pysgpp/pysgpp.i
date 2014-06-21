@@ -169,8 +169,6 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 
 %include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
-
-%include "src/sgpp/datadriven/basis/periodiclinear/OperationL2ScalarProduct.hpp"
 #endif
 
 #ifdef SG_PDE
