@@ -11,29 +11,29 @@
 namespace sg {
   namespace pde {
 
-    OperationMatrixLTwoDotPeriodic::OperationMatrixLTwoDotPeriodic(sg::base::Grid* grid) {
-      this->grid = grid;
+    OperationMatrixLTwoDotPeriodic::OperationMatrixLTwoDotPeriodic(sg::base::GridStorage* gridStorage) {
+      this->gridStorage = gridStorage;
     }
 
     OperationMatrixLTwoDotPeriodic::~OperationMatrixLTwoDotPeriodic() {
-      this->grid = NULL;
+      //TODO: FZ: delete gridStorage?
     }
 
     void OperationMatrixLTwoDotPeriodic::mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
-	  size_t nrows = grid->getStorage()->size();
-	  size_t ncols = grid->getStorage()->size();
+	  size_t nrows = gridStorage->size();
+	  size_t ncols = gridStorage->size();
 
 	  if (alpha.getSize() != ncols || result.getSize() != nrows) {
 	    throw sg::base::data_exception("Dimensions do not match!");
 	  }
 
-	  size_t gridSize = grid->getStorage()->size();
-	  size_t gridDim = grid->getStorage()->dim();
+	  size_t gridSize = gridStorage->size();
+	  size_t gridDim = gridStorage->dim();
 
 	  sg::base::DataMatrix level(gridSize, gridDim);
 	  sg::base::DataMatrix index(gridSize, gridDim);
 
-	  grid->getStorage()->getLevelIndexArraysForEval(level, index);
+	  gridStorage->getLevelIndexArraysForEval(level, index);
 
 	  sg::base::DataVector row(nrows);
 

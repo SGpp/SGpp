@@ -169,6 +169,8 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 
 %include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/datadriven/tools/TypesDatadriven.hpp"
+%include "src/sgpp/datadriven/application/LearnerDensityCluster.hpp"
 #endif
 
 #ifdef SG_PDE

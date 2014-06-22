@@ -244,7 +244,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(1)
         
-        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        ltwo = OperationMatrixLTwoDotPeriodic(grid.getStorage())
         res = DataVector(2)
         
         alpha = DataVector([0,1])
@@ -261,7 +261,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(3)
         
-        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        ltwo = OperationMatrixLTwoDotPeriodic(grid.getStorage())
         res = DataVector(8)
         
         alpha = DataVector([1,0,0,0,0,0,0,0])
@@ -286,7 +286,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(1)
         
-        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        ltwo = OperationMatrixLTwoDotPeriodic(grid.getStorage())
         res = DataVector(4)
         
         alpha = DataVector([1,0,0,0])
@@ -311,7 +311,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(2)
         
-        ltwo = OperationMatrixLTwoDotPeriodic(grid)
+        ltwo = OperationMatrixLTwoDotPeriodic(grid.getStorage())
         res = DataVector(12)
         
         alpha = DataVector([0,1,0,0,0,0,0,0,0,0,0,0])

@@ -74,8 +74,8 @@ namespace sg {
         return new pde::OperationLTwoDotProductLinearStretched(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
         return new pde::OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
-      //} else if (strcmp(grid.getType(), "periodic") == 0) {
-      //  return new pde::OperationLTwoDotProductPeriodic(grid.getStorage());
+      } else if (strcmp(grid.getType(), "periodic") == 0) {
+        return new pde::OperationMatrixLTwoDotPeriodic(grid.getStorage());
       } else
         throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type.");
     }

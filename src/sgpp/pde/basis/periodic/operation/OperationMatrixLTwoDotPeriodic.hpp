@@ -26,7 +26,7 @@ namespace sg {
          *
          * @param gird a referenz to the grid
          */
-    	OperationMatrixLTwoDotPeriodic(sg::base::Grid* grid);
+    	OperationMatrixLTwoDotPeriodic(sg::base::GridStorage* gridStorage);
 
         /**
          * Destructor
@@ -43,7 +43,7 @@ namespace sg {
 						  sg::base::DataVector& result);
       protected:
 
-		sg::base::Grid* grid;
+		sg::base::GridStorage* gridStorage;
     };
 
   }
