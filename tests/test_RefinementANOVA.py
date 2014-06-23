@@ -31,19 +31,21 @@ class Test_RefinementANOVA(unittest.TestCase):
         """ Refine a point in a 2D grid in one direction"""
 
         # get point ((2,1), (2,3)) (top right) that will be refined
-        point_to_refine = None
+        point_to_refine_idx = None
+        point = None
         for i in xrange(17):
             point = self.grid_storage.get(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
+                point_to_refine_idx = i
                 point_to_refine = point
                 break
-        self.assertNotEqual(point_to_refine, None,
+        self.assertNotEqual(point_to_refine_idx, None,
                             'Point ((2,1), (2,3)) was not found')
         # refine the point in x1-direction
         dim = 0
         hash_refinement = HashRefinement()
-        hash_refinement.refineGridpoint1D(self.grid_storage, point_to_refine,
+        hash_refinement.refineGridpoint1D(self.grid_storage, point_to_refine_idx,
                 dim)
         # check number of grid points
         self.assertEqual(self.grid.getSize(), 19,
@@ -67,7 +69,7 @@ class Test_RefinementANOVA(unittest.TestCase):
                          'Left x2 right child is present, though should not be')
         # refine the point in x2-direction
         dim = 1
-        hash_refinement.refineGridpoint1D(self.grid_storage, point_to_refine,
+        hash_refinement.refineGridpoint1D(self.grid_storage, point_to_refine_idx,
                 dim)
         # check number of grid points
         self.assertEqual(self.grid.getSize(), 21,

@@ -49,6 +49,8 @@ public:
 	 * @param d direction
 	 */
 	void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
+  void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
+
 
 protected:
 	/**

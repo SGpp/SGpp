@@ -32,14 +32,11 @@ namespace sg {
         max_indices[i] = 0;
       }
 
-      std::cout << "collecting refinable points\n";
       this->collectRefinablePoints(storage, functor, refinements_num, max_indices, max_values);
       // now refine all grid points which satisfy the refinement criteria
-      std::cout << "refining GP collection\n";
       refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
       delete [] max_values;
       delete [] max_indices;
-      std::cout << "done with ANOVA refinement\n";
     }
 
     void ANOVARefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
@@ -53,10 +50,6 @@ namespace sg {
         refinement_value = max_values[i];
         refine_index = max_indices[i];
 
-        std::cout << "refinement number " << i ;
-        std::cout << ", refining " << storage->get(refine_index)->toString();
-        std::cout << ", with error " << refinement_value << std::endl;
-
         if (refinement_value > functor->start() && fabs(refinement_value) >= threshold) {
           index_type index((*storage)[refine_index]);
           index.setLeaf(false);
@@ -64,7 +57,6 @@ namespace sg {
           for (size_t dim = 0; dim < storage->dim(); dim++) {
             if (index.getLevel(dim) > 1) {
 
-            	std::cout << "beginning 1D refinement for index " << index.toString() << " on dim " << dim << std::endl;
               this->get_decorated_refinement()->refineGridpoint1D(storage, index,
                   dim);
             }
