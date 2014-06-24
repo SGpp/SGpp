@@ -3387,6 +3387,14 @@ void kdtreequeryresultsdistances(kdtree* kdt,
             r->ptr.p_double[i] = ae_sqrt(ae_fabs(kdt->r.ptr.p_double[i], _state), _state);
         }
     }
+    //TODO: änderung !!
+    if( kdt->normtype==3 )
+	{
+		for(i=0; i<=k-1; i++)
+		{
+			r->ptr.p_double[i] = ae_sqrt(ae_fabs(kdt->r.ptr.p_double[i], _state), _state);
+		}
+	}
 }
 
 
@@ -4120,7 +4128,7 @@ static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
                     // TODO: änderung !!
                     if( kdt->normtype==3 )
                     {
-                        kdt->curdist = kdt->curdist-ae_sqr(ae_maxreal(v-t1, 0, _state), _state)+ae_sqr(s-t1, _state);
+                        //kdt->curdist = kdt->curdist-ae_sqr(ae_maxreal(v-t1, 0, _state), _state)+ae_sqr(s-t1, _state);
                     }
                 }
                 kdt->curboxmin.ptr.p_double[d] = s;
@@ -4147,7 +4155,7 @@ static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
                     // TODO: änderung !!
                     if( kdt->normtype==3 )
                     {
-                        kdt->curdist = kdt->curdist-ae_sqr(ae_maxreal(t1-v, 0, _state), _state)+ae_sqr(t1-s, _state);
+                        //kdt->curdist = kdt->curdist-ae_sqr(ae_maxreal(t1-v, 0, _state), _state)+ae_sqr(t1-s, _state);
                     }
                 }
                 kdt->curboxmax.ptr.p_double[d] = s;
@@ -4302,8 +4310,8 @@ static void nearestneighbor_kdtreeinitbox(kdtree* kdt,
         for(i=0; i<=kdt->nx-1; i++)
         {
             vx = x->ptr.p_double[i];
-            vmin = kdt->boxmin.ptr.p_double[i];
-            vmax = kdt->boxmax.ptr.p_double[i];
+            vmin = 0;//kdt->boxmin.ptr.p_double[i];
+            vmax = 1;//kdt->boxmax.ptr.p_double[i];
             kdt->x.ptr.p_double[i] = vx;
             kdt->curboxmin.ptr.p_double[i] = vmin;
             kdt->curboxmax.ptr.p_double[i] = vmax;
