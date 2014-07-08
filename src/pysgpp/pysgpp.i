@@ -88,6 +88,9 @@ namespace std {
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
 #endif
+#ifdef SG_TEST
+#include "sgpp_test.hpp"
+#endif
 %}
 
 // the Bad
@@ -211,6 +214,11 @@ namespace std {
 
 #ifdef SG_MISC
 %include "src/sgpp/misc/operation/MiscOpFactory.hpp"
+#endif
+
+#ifdef SG_TEST
+%include "src/sgpp/test/TestData.hpp"
+%include "src/sgpp/test/FriedmanTestData.hpp"
 #endif
 
 // the new combigrid!

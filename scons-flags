@@ -1,0 +1,4 @@
+#!/bin/bash
+
+scons CPPFLAGS=-g,-O0
+# scons CPPFLAGS=-g,-O0,-std=c++0x
