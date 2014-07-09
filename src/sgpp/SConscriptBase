@@ -76,6 +76,8 @@ base/grid/generation/StandardGridGenerator.cpp
 base/grid/generation/functors/ANOVACoarseningFunctor.cpp
 base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 base/grid/generation/functors/SurplusRefinementFunctor.cpp
+base/grid/generation/functors/WeightedErrorRefinementFunctor.cpp
+base/grid/generation/functors/PersistentErrorRefinementFunctor.cpp
 base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
 base/grid/Grid.cpp
