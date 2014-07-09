@@ -4,18 +4,22 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include "sgpp_base.hpp"
+#include "sgpp_datadriven.hpp"
+#include "base/exception/application_exception.hpp"
+/*
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/exception/application_exception.hpp"
+
 #include "datadriven/application/Learner.hpp"
 #include "solver/sle/ConjugateGradients.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
-
+*/
 
 namespace sg {
 
@@ -75,6 +79,8 @@ namespace sg {
 		size_t batchSize;
 		size_t batchIndex;
 		void pushSGDIndex(size_t index);
+		sg::base::DataMatrix getBatchTrainDataset(sg::base::DataMatrix& trainDataset);
+		sg::base::DataVector getBatchClasses(sg::base::DataVector& classes);
 
 		std::ostream **outputStreams;
 		void output(int fd, std::string str);

@@ -56,7 +56,7 @@ int main(int argc, char **args) {
 
 	sg::datadriven::LearnerRegularizationType r = sg::datadriven::Identity;
 	sg::datadriven::LearnerOnlineSGD *learner =
-			new sg::datadriven::LearnerOnlineSGD(r, true, false);
+			new sg::datadriven::LearnerOnlineSGD(r, false, false);
 
 	/*
 	 * TODO

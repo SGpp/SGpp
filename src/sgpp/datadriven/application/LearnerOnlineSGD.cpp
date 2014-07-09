@@ -26,8 +26,8 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 	/*
 	 * Constants
 	 */
-	const int CG_IMAX;
-	const double CG_EPS;
+	const int CG_IMAX = 10000;
+	const double CG_EPS = 0.001;
 	const double SMOOTHED_ERROR_DECLINE = 0.1;
 	/*
 	 * Initialization
@@ -48,14 +48,32 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 
 	batchSize = batchSize_;
 	batch = new size_t[batchSize];
+	for (size_t i = 0; i < batchSize; i++) {
+		batch[i] = 0;
+	}
 
 	outputStreams = outputStreams_;
 
-	sg::base::RefinementFunctor *functor;
+	RefinementFunctor *functor;
 
 	switch (refinementType) {
 	case 0:
-		functor = new sg::base::SurplusRefinementFunctor(alpha_,
+		functor = new SurplusRefinementFunctor(alpha_, refinementNumPoints,
+				0.0);
+		break;
+	case 1:
+		functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
+				refinementNumPoints, 0.0);
+		break;
+	case 2:
+		functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
+				refinementNumPoints, 0.0);
+		((WeightedErrorRefinementFunctor*) functor)->setTrainDataset(
+				&trainDataset);
+		((WeightedErrorRefinementFunctor*) functor)->setClasses(&classes);
+		break;
+	case 3:
+		functor = new PersistentErrorRefinementFunctor(alpha_, grid_,
 				refinementNumPoints, 0.0);
 		break;
 	default:
@@ -142,9 +160,36 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 			 * Step 1.2: Perform one refinement operation
 			 */
 
+			// Update the data sets that are associated with the
+			// relevant refinement operators
+			if (refinementType == 1) {
+				DataMatrix batchTrainDataset = getBatchTrainDataset(
+						trainDataset);
+				DataVector batchClasses = getBatchClasses(classes);
+				((WeightedErrorRefinementFunctor*) functor)->setTrainDataset(
+						&batchTrainDataset);
+				((WeightedErrorRefinementFunctor*) functor)->setClasses(
+						&batchClasses);
+			}
+
+			if (refinementType == 3) {
+				DataMatrix batchTrainDataset = getBatchTrainDataset(
+						trainDataset);
+				DataVector batchClasses = getBatchClasses(classes);
+				((PersistentErrorRefinementFunctor*) functor)->setTrainDataset(
+						&batchTrainDataset);
+				((PersistentErrorRefinementFunctor*) functor)->setClasses(
+						&batchClasses);
+			}
+
 			refinement.free_refine(grid_->getStorage(), functor);
 
 			alpha_->resizeZero(grid_->getSize());
+
+			/*
+			 * Step 1.3: Setting default values for the new alphas
+			 * TODO
+			 */
 
 			/*
 			 * Output 1.2.1 (fgrid): Serialized grid structure
@@ -160,6 +205,8 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 	 * Step 2: Perform CG
 	 */
 
+	std::cout << "MSE before CG: " << getMSE(trainDataset, classes) << std::endl;
+
 	sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
 			CG_IMAX, CG_EPS);
 
@@ -170,9 +217,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 	sg::base::DataVector b(alpha_->getSize());
 	matrix.generateb(classes, b);
 
-	cg->solve(matrix, *alpha_, b, true, true);
+	cg->solve(matrix, *alpha_, b, true, false);
 
-	std::cout << getMSE(trainDataset, classes) << std::endl;
+	std::cout << "MSE after CG: " << getMSE(trainDataset, classes) << std::endl;
 	isTrained_ = true;
 }
 
@@ -230,6 +277,7 @@ double LearnerOnlineSGD::getMSE(sg::base::DataMatrix& trainDataset,
 	error->setAll(0.0);
 
 	DataVector result(numData);
+
 	sg::op_factory::createOperationMultipleEval(*grid_, &trainDataset)->mult(
 			*alpha_, result);
 
@@ -269,20 +317,34 @@ sg::base::DataVector* LearnerOnlineSGD::getAlpha() {
 
 double LearnerOnlineSGD::errorOnMinibatch(sg::base::DataMatrix& trainDataset,
 		sg::base::DataVector& classes) {
+	sg::base::DataMatrix batchTrainDataset = getBatchTrainDataset(trainDataset);
+	sg::base::DataVector batchClasses = getBatchClasses(classes);
+	return getMSE(batchTrainDataset, batchClasses);
+}
 
+sg::base::DataMatrix LearnerOnlineSGD::getBatchTrainDataset(
+		sg::base::DataMatrix& trainDataset) {
 	size_t dim = trainDataset.getNcols();
-
 	sg::base::DataMatrix batchMatrix(batchSize, dim);
-	sg::base::DataVector batchClasses(batchSize);
 
 	for (size_t i = 0; i < batchSize; i++) {
 		sg::base::DataVector row(dim);
 		trainDataset.getRow(batch[i], row);
 		batchMatrix.appendRow(row);
+	}
+
+	return batchMatrix;
+}
+
+sg::base::DataVector LearnerOnlineSGD::getBatchClasses(
+		sg::base::DataVector& classes) {
+	sg::base::DataVector batchClasses(batchSize);
+
+	for (size_t i = 0; i < batchSize; i++) {
 		batchClasses.append(classes[batch[i]]);
 	}
 
-	return getMSE(batchMatrix, batchClasses);
+	return batchClasses;
 }
 
 void LearnerOnlineSGD::output(int fd, std::string str) {
