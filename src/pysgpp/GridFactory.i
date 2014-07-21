@@ -39,6 +39,31 @@ namespace sg
 {
 namespace base
 {
+struct RegularGridConfiguration {
+      /// Grid Type, see enum
+      sg::base::GridType type_;
+      /// number of dimensions
+      size_t dim_;
+      /// number of levels
+      int level_;
+    };
+    
+typedef enum mail_ {
+    Linear = 0,
+    LinearStretched = 1,
+    LinearBoundary = 2,
+    LinearTrapezoidBoundary = 3,
+    LinearStretchedTrapezoidBoundary = 4,
+    ModLinear = 5,
+    Poly = 6,
+    ModPoly = 7,
+    ModWavelet = 8,
+    ModBspline = 9,
+    Prewavelet = 10,
+    SquareRoot = 11,
+    TruncatedTrapezoid = 12,
+    Periodic = 13
+} GridType;
 
 class Grid
 {

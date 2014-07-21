@@ -20,6 +20,6 @@
 #include "solver/ode/StepsizeControlH.hpp"
 #include "solver/ode/StepsizeControlMC.hpp"
 #include "solver/ode/StepsizeControlBDF.hpp"
-
+#include "solver/TypesSolver.hpp"
 
 #endif /* SOLVER_HPP */

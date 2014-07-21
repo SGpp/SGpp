@@ -228,7 +228,7 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
+    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long',  '-Wno-deprecated',  #'-Werror',
                          '-fno-strict-aliasing', '-O3', '-Wconversion',
                          '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
