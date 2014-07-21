@@ -7,6 +7,18 @@
 /*
  * Usage:
  * main condition numPoints type
+ *
+ * condition: the condition for refinement
+ * 0 = every 10 SGD steps
+ * 1 = if smoothed error decline < 10%
+ *
+ * numPoints: maximal number of points to be refined
+ *
+ * type: type of refinement operator
+ * 0 = Surplus refinement
+ * 1 = Weighted error on last minibatch
+ * 2 = Weighted error on complete training dataset
+ * 3 = Discouting error indicator
  */
 
 int main(int argc, char **args) {
@@ -20,15 +32,8 @@ int main(int argc, char **args) {
 	}
 
 	/* Parameters */
-	// 0 = every 10 SGD steps
-	// 1 = if smoothed error decline < 10%
 	int refinementCondition = atoi(args[1]);
-
-	// Number of points to refine
 	int refinementNumPoints = atoi(args[2]);
-
-	// Type of refinement indicator
-	// 0-3
 	int refinementType = atoi(args[3]);
 
 	/* Constants */
@@ -46,25 +51,52 @@ int main(int argc, char **args) {
 
 	/* Output files */
 	fstream ferr0, ferr1, ferr2, fgrid, fcoor;
-	ferr0.open ("ferr0", ios::out | ios::trunc);
-	ferr1.open ("ferr1", ios::out | ios::trunc);
-	ferr2.open ("ferr2", ios::out | ios::trunc);
-	fgrid.open ("fgrid", ios::out | ios::trunc);
-	fcoor.open ("fcoor", ios::out | ios::trunc);
+	ferr0.open("ferr0", ios::out | ios::trunc);
+	ferr1.open("ferr1", ios::out | ios::trunc);
+	ferr2.open("ferr2", ios::out | ios::trunc);
+	fgrid.open("fgrid", ios::out | ios::trunc);
+	fcoor.open("fcoor", ios::out | ios::trunc);
 
-	ostream *outputStreams[5] = {&ferr0, &ferr1, &ferr2, &fgrid, &fcoor};
+	ostream *outputStreams[5] = { &ferr0, &ferr1, &ferr2, &fgrid, &fcoor };
 
+	/* Learner instances (set verbosity here) */
 	sg::datadriven::LearnerRegularizationType r = sg::datadriven::Identity;
 	sg::datadriven::LearnerOnlineSGD *learner =
 			new sg::datadriven::LearnerOnlineSGD(r, false, false);
 
 	/*
-	 * TODO
+	 * Friedman
 	 */
-	sg::test::FriedmanTestData testData(dim, level, trainSize);
-	testData.generate(seed);
-	sg::base::DataMatrix trainData = testData.getTrainData();
-	sg::base::DataVector classes = testData.getClasses();
+	/*
+	 sg::test::FriedmanTestData testData(dim, level, trainSize);
+	 testData.generate(seed);
+
+	 sg::base::DataMatrix trainData = testData.getTrainData();
+	 sg::base::DataVector classes = testData.getClasses();
+	 */
+
+	sg::datadriven::ARFFTools arff = sg::datadriven::ARFFTools();
+
+	std::string mainARFFFilename = "data/DR5_MGS_ugrizeC_train.60000.arff";
+	std::string testARFFFilename = "data/DR5_MGS_ugrizeC_test.60000.arff";
+
+	size_t mainNumRows = arff.getNumberInstances(mainARFFFilename);
+	size_t mainNumCols = arff.getDimension(mainARFFFilename);
+
+	size_t testNumRows = arff.getNumberInstances(testARFFFilename);
+	size_t testNumCols = arff.getDimension(testARFFFilename);
+
+	sg::base::DataMatrix mainTrainData = sg::base::DataMatrix(mainNumRows, mainNumCols);
+	sg::base::DataVector mainClasses = sg::base::DataVector(mainNumRows);
+
+	sg::base::DataMatrix testTrainData = sg::base::DataMatrix(testNumRows, testNumCols);
+	sg::base::DataVector testClasses = sg::base::DataVector(testNumRows);
+
+	arff.readTrainingData(mainARFFFilename, mainTrainData);
+	arff.readClasses(mainARFFFilename, mainClasses);
+
+	arff.readTrainingData(testARFFFilename, testTrainData);
+	arff.readClasses(testARFFFilename, testClasses);
 
 	sg::base::RegularGridConfiguration gridConfig;
 	gridConfig.dim_ = dim;
@@ -74,8 +106,10 @@ int main(int argc, char **args) {
 	// Initialize HashRefinement
 	HashRefinement *hashRefinement = new HashRefinement();
 
-	learner->train(trainData, classes, gridConfig, numIterations, batchSize, lambda, gamma, *hashRefinement,
-			refinementCondition, refinementType, refinementNumPoints, numRuns, outputStreams);
+	learner->train(mainTrainData, mainClasses, testTrainData, testClasses,
+			gridConfig, numIterations, batchSize, lambda, gamma,
+			*hashRefinement, refinementCondition, refinementType,
+			refinementNumPoints, numRuns, outputStreams);
 
 	ferr0.close();
 	ferr1.close();

@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Maxim Schmidt (maxim.schmidt@tum.de)
 
 #ifndef SMOOTHEDERRORREFINEMENTFUNCTOR_HPP
 #define SMOOTHEDERRORREFINEMENTFUNCTOR_HPP
