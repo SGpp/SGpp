@@ -21,12 +21,13 @@ namespace sg {
 
     class LearnerDensityCluster: public sg::datadriven::LearnerBase {
       protected:
-      //DensitySystemMatrix* DMatrix_ = NULL;
-        std::vector<int>* component_;
+        //DensitySystemMatrix* DMatrix_ = NULL;
+    	sg::base::DataVector* component_ = NULL;
+
       public:
 
     	LearnerDensityCluster();
-    	//~LearnerDensityCluster();
+    	~LearnerDensityCluster();
 
     	//void construct();
     	//void deserialize(const char* filename);
@@ -39,7 +40,7 @@ namespace sg {
     						  const double lamda);
 
     	sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
-
+    	sg::base::DataVector getComponent();
     };
 
   }

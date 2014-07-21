@@ -214,6 +214,7 @@ namespace std {
 %include "src/sgpp/solver/sle/BiCGStab.hpp"
 %include "src/sgpp/solver/ode/Euler.hpp"
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
+%include "src/sgpp/solver/TypesSolver.hpp"
 #endif
 
 #ifdef SG_PARALLEL

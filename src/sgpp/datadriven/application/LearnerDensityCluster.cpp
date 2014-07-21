@@ -12,6 +12,7 @@
 #include "base/operation/OperationMatrix.hpp"
 #include "base/operation/OperationIdentity.hpp"
 #include "base/exception/data_exception.hpp"
+#include "base/datatypes/DataVector.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -32,12 +33,33 @@ using namespace alglib;
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 
+#include <iostream>
+#include <string>
+#include <stdio.h>
+#include <time.h>
+
 namespace sg {
 
   namespace datadriven {
 
   	LearnerDensityCluster::LearnerDensityCluster() : LearnerBase(false, false){
 
+  	}
+
+  	LearnerDensityCluster::~LearnerDensityCluster() {
+  		delete component_;
+  	}
+
+  	const std::string currentDateTime() {
+  	    time_t     now = time(0);
+  	    struct tm  tstruct;
+  	    char       buf[80];
+  	    tstruct = *localtime(&now);
+  	    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+  	    // for more information about date/time format
+  	    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+  	    return buf;
   	}
 
     /**
@@ -79,24 +101,31 @@ namespace sg {
 		//f_i = 1/M * sum_j=1^M (phi_i(x_j))
 		//M = number of data points (testDataset)
 
+		std::cout << "Start " << currentDateTime() << std::endl;
+
     	sg::solver::SLESolver* myCG;
     	myCG = new sg::solver::ConjugateGradients(SolverConfig.maxIterations_, SolverConfig.eps_);
 
 
-    	sg::base::OperationIdentity* C_ = new sg::base::OperationIdentity();
-		sg::datadriven::DensitySystemMatrix DMatrix(*grid_, trainDataset, *C_, lambda);
+    	sg::base::OperationIdentity C_;
+		sg::datadriven::DensitySystemMatrix DMatrix(*grid_, trainDataset, C_, lambda);
 
 		sg::base::DataVector rhs(grid_->getStorage()->size());
 		DMatrix.generateb(rhs);
-		std::cout << rhs.toString() << std::endl;
+		//std::cout << rhs.toString() << std::endl;
 
 		sg::base::DataVector alpha(grid_->getStorage()->size());
 		alpha.setAll(0);
-		myCG->solve(DMatrix, alpha, rhs, false, false, -1.0);
-		//alpha_ = alpha;
 
-		std::cout << alpha.toString() << std::endl;
+		std::cout << "Matrizen erstell t" << currentDateTime() << std::endl;
 
+		myCG->solve(DMatrix, alpha, rhs, false, true, -1.0);
+		alpha_ = new sg::base::DataVector(alpha);
+
+		std::cout << "geloest " << currentDateTime() << std::endl;
+		//std::cout << alpha.toString() << std::endl;
+
+		//alpha_ = new sg::base::DataVector(alpha);
 		// calculate for each point the estimated density
 		// insert the points to the kdtree from alglib
 		// calculate the 5 nearest points
@@ -115,6 +144,7 @@ namespace sg {
 			std::copy(point.getPointer(), point.getPointer() + GridConfig.dim_, points+(i)*(GridConfig.dim_+2));
 		}
 
+
 		ae_int_t nx = GridConfig.dim_;
 		ae_int_t ny = 2;
 		ae_int_t normtype = 3;
@@ -125,7 +155,11 @@ namespace sg {
 
 		real_2d_array a = real_2d_array();
 		a.setcontent(trainDataset.getNrows(), GridConfig.dim_ + 2, points);
-		printf("%s\n", a.tostring(1).c_str());
+		delete points;
+
+		std::cout << "alglib array erstellt" << currentDateTime() << std::endl;
+
+		//printf("%s\n", a.tostring(1).c_str());
 		kdtreebuild(a, nx, ny, normtype, kdt);
 
 		// query all neighbors
@@ -144,38 +178,44 @@ namespace sg {
 
 			kdtreequeryresultsdistances(kdt, dist);
 			// check the threshold
-			printf("----------------------------\n%d\n%d\n", int(i) , int(i));
+			//printf("----------------------------\n%d\n%d\n", int(i) , int(i));
 			for(size_t j = 1; j < k; j++){
 				double neighborY = r[j][GridConfig.dim_+1];
 				if(neighborY >= eps || r[0][GridConfig.dim_+1] >= eps){
 					//add to boost graph
-					printf("(%d) <-> (%d)\n",int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]));
+					//printf("(%d) <-> (%d)\n",int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]));
 					boost::add_edge(int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]), G);
 				}
-				printf("%d %.5f\n",int(r[j][GridConfig.dim_]), dist[j]);
+				//printf("%d %.5f\n",int(r[j][GridConfig.dim_]), dist[j]);
 			}
 			boost::add_edge(i, i, G);
 			//printf("\n");
 		}
-		component_ = new std::vector<int>(boost::num_vertices(G));
-		int num = boost::connected_components(G, &((*component_)[0]));
+		std::vector<int> component(boost::num_vertices(G));
+		int num = boost::connected_components(G, &component[0]);
 
-		std::vector<int>::size_type i;
+		std::cout << "component erstellt " << currentDateTime() << std::endl;
+		/*std::vector<int>::size_type i;
 		std::cout << "Total number of components: " << num << std::endl;
-		for (i = 0; i != component_->size(); ++i)
-			std::cout << "Vertex " << i <<" is in component " << (*component_)[i] << std::endl;
-		std::cout << std::endl;
+		for (i = 0; i != component.size(); ++i){
+			std::cout << "Vertex " << i <<" is in component " << component[i] << std::endl;
+		}
+		std::cout << std::endl;*/
 
-
-		printf("done");
-		delete C_;
-		delete points;
-    	delete myCG;
+		if(component_ != NULL)
+			delete component_;
+		component_ = new sg::base::DataVector(component);
+		//printf("done");
+		delete myCG;
     	return result;
     }
 
     sg::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda){
     	return NULL;//DMatrix_;
+    }
+
+    sg::base::DataVector LearnerDensityCluster::getComponent(){
+    	return *component_;
     }
   }
 }
