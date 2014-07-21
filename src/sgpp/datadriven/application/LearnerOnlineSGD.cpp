@@ -11,8 +11,12 @@ LearnerOnlineSGD::LearnerOnlineSGD(
 				0), batchIndex(0) {
 }
 
-void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
-		sg::base::DataVector& classes,
+void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset,
+		sg::base::DataVector& mainClasses,
+
+		sg::base::DataMatrix& testTrainDataset,
+		sg::base::DataVector& testClasses,
+
 		sg::base::RegularGridConfiguration& GridConfig,
 
 		size_t numIterations, size_t batchSize_, double lambda, double gamma,
@@ -69,8 +73,8 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 		functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
 				refinementNumPoints, 0.0);
 		((WeightedErrorRefinementFunctor*) functor)->setTrainDataset(
-				&trainDataset);
-		((WeightedErrorRefinementFunctor*) functor)->setClasses(&classes);
+				&mainTrainDataset);
+		((WeightedErrorRefinementFunctor*) functor)->setClasses(&mainClasses);
 		break;
 	case 3:
 		functor = new PersistentErrorRefinementFunctor(alpha_, grid_,
@@ -85,12 +89,12 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 	 * Step 1: Perform complete run(s) through the entire training dataset (on average)
 	 */
 
-	size_t numData = trainDataset.getNrows();
+	size_t numData = mainTrainDataset.getNrows();
 
 	for (int countRun = 0; countRun < numRuns; countRun++) {
 
-		size_t countTotalIterations = 0;
-		while (countTotalIterations < numData) {
+		size_t countIterations = 0;
+		while (countIterations < numData) {
 
 			/*
 			 * Step 1.1: Perform SGD depending on the refinement condition
@@ -104,11 +108,12 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 
 				for (size_t countIteration = 0; countIteration < numIterations;
 						countIteration++) {
-					performSGDStep(trainDataset, classes, lambda, gamma);
+					performSGDStep(mainTrainDataset, mainClasses, lambda,
+							gamma);
 
 				}
 
-				countTotalIterations += numIterations;
+				countIterations += numIterations;
 			}
 
 			/*
@@ -122,40 +127,56 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 				double currentError;
 				double ratio;
 				do {
-					performSGDStep(trainDataset, classes, lambda, gamma);
-					countTotalIterations++;
+					performSGDStep(mainTrainDataset, mainClasses, lambda,
+							gamma);
+					countIterations++;
 
-					currentError = errorOnMinibatch(trainDataset, classes);
+					currentError = errorOnMinibatch(mainTrainDataset,
+							mainClasses);
 					ratio = (lastError - currentError) / lastError;
 					lastError = currentError;
 				} while (ratio < SMOOTHED_ERROR_DECLINE);
 			}
 
+			int countTotalIterations = (int) (countIterations
+					+ countRun * numData);
+
 			/*
 			 * Output 1.1.3 (ferr0): On the current minibatch
-			 */
 
-			char ferr0[20];
-			int n1 = (int) (countTotalIterations + countRun * numRuns);
-			double n2 = errorOnMinibatch(trainDataset, classes);
-			std::sprintf(ferr0, "%d,%f", n1, n2);
+
+			std::string ferr0 = std::to_string(countTotalIterations);
+			ferr0 += ",";
+			ferr0 += std::to_string(errorOnMinibatch(mainTrainDataset, mainClasses));
 			output(0, ferr0);
-
+*/
 			/*
 			 * Output 1.1.4 (ferr1): On the complete training dataset
-			 */
 
-			char ferr1[20];
-			int n3 = (int) (countTotalIterations + countRun * numRuns);
-			double n4 = getMSE(trainDataset, classes);
-			std::sprintf(ferr1, "%d,%f", n3, n4);
+
+			std::string ferr1 = std::to_string(countTotalIterations);
+			ferr1 += ",";
+			ferr1 += std::to_string(getMSE(mainTrainDataset, mainClasses));
 			output(1, ferr1);
-
+*/
 			/*
 			 * Output 1.1.5 (ferr2): On the test dataset
-			 * TODO
-			 */
 
+
+			std::string ferr2 = std::to_string(countTotalIterations);
+			ferr2 += ",";
+			ferr2 += std::to_string(getMSE(testTrainDataset, testClasses));
+			output(2, ferr2);
+*/
+			/*
+			 * Output 1.1.6 (fcoor): Current coordinates of minibatch
+
+
+			std::string fcoor = std::to_string(countTotalIterations);
+			fcoor += ",";
+			fcoor += getBatchTrainDataset(mainTrainDataset).toString();
+			output(4, fcoor);
+*/
 			/*
 			 * Step 1.2: Perform one refinement operation
 			 */
@@ -163,32 +184,31 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 			// Update the data sets that are associated with the
 			// relevant refinement operators
 			if (refinementType == 1) {
-				DataMatrix batchTrainDataset = getBatchTrainDataset(
-						trainDataset);
-				DataVector batchClasses = getBatchClasses(classes);
+				DataMatrix batchmainTrainDataset = getBatchTrainDataset(
+						mainTrainDataset);
+				DataVector batchClasses = getBatchClasses(mainClasses);
 				((WeightedErrorRefinementFunctor*) functor)->setTrainDataset(
-						&batchTrainDataset);
+						&batchmainTrainDataset);
 				((WeightedErrorRefinementFunctor*) functor)->setClasses(
 						&batchClasses);
 			}
 
 			if (refinementType == 3) {
-				DataMatrix batchTrainDataset = getBatchTrainDataset(
-						trainDataset);
-				DataVector batchClasses = getBatchClasses(classes);
+				DataMatrix batchmainTrainDataset = getBatchTrainDataset(
+						mainTrainDataset);
+				DataVector batchClasses = getBatchClasses(mainClasses);
 				((PersistentErrorRefinementFunctor*) functor)->setTrainDataset(
-						&batchTrainDataset);
+						&batchmainTrainDataset);
 				((PersistentErrorRefinementFunctor*) functor)->setClasses(
 						&batchClasses);
 			}
 
+			// Perform the refinement
 			refinement.free_refine(grid_->getStorage(), functor);
-
 			alpha_->resizeZero(grid_->getSize());
 
 			/*
 			 * Step 1.3: Setting default values for the new alphas
-			 * TODO
 			 */
 
 			/*
@@ -205,21 +225,24 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& trainDataset,
 	 * Step 2: Perform CG
 	 */
 
-	std::cout << "MSE before CG: " << getMSE(trainDataset, classes) << std::endl;
+	std::cout << "MSE before CG: " << getMSE(mainTrainDataset, mainClasses)
+			<< std::endl;
 
 	sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
 			CG_IMAX, CG_EPS);
 
 	sg::base::OperationMatrix *C_ = sg::op_factory::createOperationIdentity(
 			*this->grid_);
-	sg::datadriven::DMSystemMatrix matrix(*grid_, trainDataset, *C_, lambda);
+	sg::datadriven::DMSystemMatrix matrix(*grid_, mainTrainDataset, *C_,
+			lambda);
 
 	sg::base::DataVector b(alpha_->getSize());
-	matrix.generateb(classes, b);
+	matrix.generateb(mainClasses, b);
 
 	cg->solve(matrix, *alpha_, b, true, false);
 
-	std::cout << "MSE after CG: " << getMSE(trainDataset, classes) << std::endl;
+	std::cout << "MSE after CG: " << getMSE(mainTrainDataset, mainClasses)
+			<< std::endl;
 	isTrained_ = true;
 }
 

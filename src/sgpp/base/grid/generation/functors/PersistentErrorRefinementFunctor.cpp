@@ -16,18 +16,25 @@ PersistentErrorRefinementFunctor::~PersistentErrorRefinementFunctor() {
 double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
+	const double BETA=0.9;
+
 	if (trainDataset == NULL || classes == NULL) {
 		throw base::application_exception(
 				"Training dataset or classes not set");
 	}
 
+	// Make sure that the error vector is as large as
+	// the coefficient vector
 	size_t numCoeff = alpha->getSize();
 
 	if (error == NULL) {
 		error = new sg::base::DataVector(numCoeff);
 		error->setAll(0.0);
+	} else if (error->getSize() != numCoeff) {
+		error->resizeZero(numCoeff);
 	}
 
+	// Calculate the weighted error for each basis function
 	sg::base::DataVector* current = new sg::base::DataVector(numCoeff);
 	current->setAll(0.0);
 
@@ -35,13 +42,18 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		current->set(i, calcWeightedError(i));
 	}
 
+	// Combine the current error vector with the existing error
+	// vector
 	for (size_t i = 0; i < numCoeff; i++ ) {
-		error->set(i, error->get(i) * 0.9 + current->get(i) * 0.1);
+		error->set(i, error->get(i) * BETA + current->get(i) * (1-BETA));
 	}
 
 	return error->get(seq);
 }
 
+/*
+ * See WeightedErrorRefinementFunctor for a description
+ */
 double PersistentErrorRefinementFunctor::calcWeightedError(size_t seq) {
 
 	if (trainDataset == NULL || classes == NULL) {

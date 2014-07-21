@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Maxim Schmidt (maxim.schmidt@tum.de)
+
 #ifndef LEARNERONLINESGD_HPP
 #define LEARNERONLINESGD_HPP
 
@@ -35,8 +42,12 @@ namespace sg {
 		 *
 		 * Note: I cannot pass RefinementFunctor directly because it needs a reference to the alpha DataVector.
 		 *
-		 * @param trainDataset training dataset: x values
-		 * @param classes training dataset: y values
+		 * @param mainTrainDataset training dataset: x values
+		 * @param mainClasses training dataset: y values
+		 *
+		 * @param testTrainDataset test dataset: x values
+		 * @param testClasses test dataset: y values
+		 *
 		 * @param GridConfig configuration of initial grid
 		 *
 		 * @param numIterations number of times SGD is executed before refinement
@@ -51,8 +62,12 @@ namespace sg {
 		 * @param numRuns number of total runs through the dataset (i.e. total number of SGD iterations is numRuns * size of training dataset)
 		 * */
 		virtual void train(
-				sg::base::DataMatrix& trainDataset,
-				sg::base::DataVector& classes,
+				sg::base::DataMatrix& mainTrainDataset,
+				sg::base::DataVector& mainClasses,
+
+				sg::base::DataMatrix& testTrainDataset,
+				sg::base::DataVector& testClasses,
+
 				sg::base::RegularGridConfiguration& GridConfig,
 
 				size_t numIterations,

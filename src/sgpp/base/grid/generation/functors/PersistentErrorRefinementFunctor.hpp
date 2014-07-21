@@ -1,9 +1,9 @@
 /* ****************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Maxim Schmidt (maxim.schmidt@tum.de)
 
 #ifndef PERSISTENTERRORREFINEMENTFUNCTOR_HPP
 #define PERSISTENTERRORREFINEMENTFUNCTOR_HPP
@@ -33,6 +33,14 @@ namespace sg {
          */
         virtual ~PersistentErrorRefinementFunctor();
 
+
+        /*
+         * Uses a discounting error indicator vector to retrieve the value.
+         *
+         * The error indicator is updated using the rule
+         * disc_err_{n+1} = disc_err_{n} * BETA + weight_error_per_basis * (1-BETA)
+         * where 0 < BETA < 1
+         */
         virtual double operator()(GridStorage* storage, size_t seq);
 
         virtual double start();

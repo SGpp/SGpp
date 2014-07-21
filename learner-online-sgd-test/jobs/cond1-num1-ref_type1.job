@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DIR=../results/cond1-num1-ref_type1
+
+if [ -d "$DIR" ]; then 
+  echo "Directory $DIR already exists"
+else 
+  mkdir -p "$DIR"
+fi
+
+cd $DIR
+
+MAIN=../../main
+
+$MAIN 1 1 1 | tee log 2>&1 
