@@ -5,6 +5,7 @@
 **************************************************************************** */
 // @author Janos Benk (benk@in.tum.de)
 
+
 #ifndef COMBIFULLGRID_HPP_
 #define COMBIFULLGRID_HPP_
 
