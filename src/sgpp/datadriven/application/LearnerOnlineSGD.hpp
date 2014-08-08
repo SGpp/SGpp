@@ -1,111 +1,98 @@
 /* ****************************************************************************
-* Copyright (C) 2014 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
+ * Copyright (C) 2014 Technische Universitaet Muenchen                         *
+ * This file is part of the SG++ project. For conditions of distribution and   *
+ * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+ **************************************************************************** */
 // @author Maxim Schmidt (maxim.schmidt@tum.de)
-
 #ifndef LEARNERONLINESGD_HPP
 #define LEARNERONLINESGD_HPP
 
 #include <iostream>
 #include <cmath>
 #include <string>
+#include <algorithm>
+#include <list>
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
 /*
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
+ #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+ #include "base/operation/BaseOpFactory.hpp"
+ #include "base/grid/Grid.hpp"
+ #include "base/datatypes/DataVector.hpp"
+ #include "base/datatypes/DataMatrix.hpp"
+ #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 
-#include "datadriven/application/Learner.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "base/operation/OperationMatrix.hpp"
-#include "datadriven/algorithm/DMSystemMatrix.hpp"
-*/
+ #include "datadriven/application/Learner.hpp"
+ #include "solver/sle/ConjugateGradients.hpp"
+ #include "base/operation/OperationMatrix.hpp"
+ #include "datadriven/algorithm/DMSystemMatrix.hpp"
+ */
 
 namespace sg {
 
-  namespace datadriven {
+namespace datadriven {
 
-    class LearnerOnlineSGD: public sg::datadriven::Learner {
+struct LearnerOnlineSGDRefinementConfiguration {
+	std::string refinementCondition;
+	size_t numIterations;
+	size_t numMinibatchError;
 
-      public:
-        LearnerOnlineSGD(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+	std::string refinementType;
+	int refinementNumPoints;
+};
 
-		/*
-		 * Implements stochastic gradient descent.
-		 *
-		 * Note: I cannot pass RefinementFunctor directly because it needs a reference to the alpha DataVector.
-		 *
-		 * @param mainTrainDataset training dataset: x values
-		 * @param mainClasses training dataset: y values
-		 *
-		 * @param testTrainDataset test dataset: x values
-		 * @param testClasses test dataset: y values
-		 *
-		 * @param GridConfig configuration of initial grid
-		 *
-		 * @param numIterations number of times SGD is executed before refinement
-		 * @param batchSize
-		 * @param lambda regularization factor
-		 * @param gamma step width
-		 *
-		 * @param refinement AbstractRefinement
-		 * @param refinementType
-		 * @param refinementNumPoints
-		 *
-		 * @param numRuns number of total runs through the dataset (i.e. total number of SGD iterations is numRuns * size of training dataset)
-		 * */
-		virtual void train(
-				sg::base::DataMatrix& mainTrainDataset,
-				sg::base::DataVector& mainClasses,
+class LearnerOnlineSGD: public sg::datadriven::Learner {
 
-				sg::base::DataMatrix& testTrainDataset,
-				sg::base::DataVector& testClasses,
+public:
+	LearnerOnlineSGD(sg::datadriven::LearnerRegularizationType& regularization,
+			const bool isRegression, const bool isVerbose = true);
 
-				sg::base::RegularGridConfiguration& GridConfig,
+	virtual void train(sg::base::DataMatrix& mainTrainDataset_,
+			sg::base::DataVector& mainClasses_,
 
-				size_t numIterations,
-				size_t batchSize,
-				double lambda,
-				double gamma,
+			sg::base::DataMatrix& testTrainDataset_,
+			sg::base::DataVector& testClasses_,
 
-				sg::base::AbstractRefinement& refinement,
-				int refinementCondition,
-				int refinementType,
-				int refinementNumPoints,
+			sg::base::RegularGridConfiguration& GridConfig,
+			sg::datadriven::LearnerOnlineSGDRefinementConfiguration& RefineConfig,
+			sg::base::AbstractRefinement& refinement,
 
-				int numRuns,
-				std::ostream **outputStreams_
-				);
+			size_t batchSize_, double lambda_, double gamma_,
 
+			int numRuns, std::string errorType_, std::ostream **outputStreams_);
 
-		virtual ~LearnerOnlineSGD();
+	virtual ~LearnerOnlineSGD();
 
-		sg::base::DataVector* getAlpha();
+	sg::base::DataVector* getAlpha();
 
-      private:
-		size_t *batch;
-		size_t batchSize;
-		size_t batchIndex;
-		void pushSGDIndex(size_t index);
-		sg::base::DataMatrix getBatchTrainDataset(sg::base::DataMatrix& trainDataset);
-		sg::base::DataVector getBatchClasses(sg::base::DataVector& classes);
+private:
+	sg::base::DataMatrix* mainTrainDataset;
+	sg::base::DataVector* mainClasses;
 
-		std::ostream **outputStreams;
-		void output(int fd, std::string str);
+	sg::base::DataMatrix* testTrainDataset;
+	sg::base::DataVector* testClasses;
 
-		double getMSE(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes);
-		double errorOnMinibatch(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes);
-		void performSGDStep(sg::base::DataMatrix& trainDataset, sg::base::DataVector& classes, double lambda, double gamma);
-		int getRandom(int limit);
-	};
-  }
+	sg::base::DataMatrix* minibatchTrainDataset;
+	sg::base::DataVector* minibatchClasses;
+	std::list<double>* errorOnMinibatch;
+	void pushMinibatch(sg::base::DataVector& x, double y);
+
+	std::string errorType;
+
+	size_t SGDCurrentIndex;
+	std::vector<size_t> SGDIndexOrder;
+	double lambda;
+	double gamma;
+	void performSGDStep();
+
+	double getError(sg::base::DataMatrix* trainDataset,
+			sg::base::DataVector* classes);
+	double getMainError();
+	double getTestError();
+	double getMinibatchError();
+};
+}
 }
 
 #endif /* LEARNERSGD_HPP */

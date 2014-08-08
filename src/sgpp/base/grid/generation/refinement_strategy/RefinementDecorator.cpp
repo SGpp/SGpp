@@ -42,8 +42,10 @@ namespace sg {
 
     bool RefinementDecorator::checkAdmissibility(GridStorage* storage, index_type& index)
     {
-    	index_type gridPoint = index;
     	bool isAdmissible = true;
+    	/* TODO
+    	index_type gridPoint = index;
+
     	size_t dim = 0;
     	level_t parentLevel = 0;
     	index_t parentIndex = 0;
@@ -64,6 +66,7 @@ namespace sg {
     		gridPoint = index;
     		++dim;
     	}
+    	*/
 
     	return isAdmissible;
 

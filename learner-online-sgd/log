@@ -1,0 +1,26 @@
+./driver.rb:52:in `gets': Interrupt
+	from ./driver.rb:52:in `block (2 levels) in <main>'
+	from ./driver.rb:51:in `popen'
+	from ./driver.rb:51:in `block in <main>'
+	from ./driver.rb:10:in `each'
+	from ./driver.rb:10:in `<main>'
+Lambda: 1e-07
+11907
+47628
+HERE
+0
+11907
+47628
+HERE
+1
+11907
+47628
+HERE
+2
+11907
+47628
+HERE
+3
+11907
+47628
+HERE

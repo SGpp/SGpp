@@ -1,0 +1,12 @@
+# README
+
+Example:
+
+./driver.sh results/exp01/config
+./process.sh results/exp01
+
+## Overview
+
+* driver.sh CONFIG: runs the experiment with specific paramaters
+* main: executes LearnerOnlineSGD with arguments from the command line
+* process.sh DIR: processes the output of an experiment and generates graphs and plots

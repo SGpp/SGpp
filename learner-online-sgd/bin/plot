@@ -1,0 +1,6 @@
+set datafile separator ','
+set terminal png
+set title 'Mean-squared error'
+set output output_file_path
+set xlabel 'Number of SGD Iterations'
+plot file_path using 1:2 title 'minibatch' with lines

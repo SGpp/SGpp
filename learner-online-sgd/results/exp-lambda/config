@@ -1,0 +1,12 @@
+mode:FIND_LAMBDA_WITH_LEARNER_BASE
+experimentDir:./results/exp-lambda
+mainARFFFilename:data/cod_rna.train.bcnorm.arff
+testARFFFilename:data/cod_rna.test.bcnorm.arff
+dim:3
+level:3
+numRuns:1
+batchSize:10
+regularizationLambda:0.0000001
+CGStepSizeGamma:0.1
+errorType:ACCURACY
+crossValidation:FALSE
