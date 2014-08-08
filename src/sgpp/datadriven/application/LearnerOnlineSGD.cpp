@@ -34,7 +34,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
 	const int CG_IMAX = 10000;
 	const double CG_EPS = 0.001;
-	const double SMOOTHED_ERROR_DECLINE = 0.1;
+	const double SMOOTHED_ERROR_DECLINE = 0.0001;
 
 	if (alpha_ != NULL)
 		delete alpha_;
@@ -130,7 +130,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
 	for (int countRun = 0; countRun < numRuns; countRun++) {
 
-		std::cout << "Run: " << countRun << std::endl;
+		std::cout << "Run: " << countRun+1 << std::endl;
 
 		/*
 		 * Step: Reset Minibatch
@@ -149,7 +149,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			 */
 
 			/*
-			 * Condition: Fixed number of iterations
+			 * Refinement condition: Fixed number of iterations
 			 */
 
 			if (RefineConfig.refinementCondition == "FIXED_NUMBER") {
@@ -162,20 +162,26 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			}
 
 			/*
-			 * Condition: Smooth error decline
+			 * Refinement condition: Smooth error decline
 			 */
 
 			else if (RefineConfig.refinementCondition
 					== "SMOOTHED_ERROR_DECLINE") {
 
+				if( RefineConfig.numMinibatchError == 0 ) {
+					throw base::application_exception("numMinibatchError must be > 0");
+				}
+
 				double oldErrorSum = 0;
 				double oldErrorLast = 0;
 
 				double currentError = 0;
-				double ratio;
+				double ratio = 1;
 				do {
 					performSGDStep();
 					countIterations++;
+
+					currentError = getMinibatchError();
 
 					if (errorOnMinibatch->size()
 							>= RefineConfig.numMinibatchError) {
@@ -190,7 +196,6 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 						oldErrorLast = errorOnMinibatch->back();
 
 						// Update errorOnMinibatch
-						currentError = getMinibatchError();
 						errorOnMinibatch->pop_back();
 						errorOnMinibatch->push_front(currentError);
 
@@ -198,11 +203,14 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 						ratio = (oldErrorLast - currentError) / oldErrorSum;
 						ratio *= 1.0 / (double) RefineConfig.numMinibatchError;
 
+						std::cout << "Ratio: " << ratio << std::endl;
+
 					} else {
 						errorOnMinibatch->push_front(currentError);
-						ratio = 1;
 					}
-				} while (ratio < SMOOTHED_ERROR_DECLINE);
+				} while (ratio > SMOOTHED_ERROR_DECLINE);
+			} else {
+				throw base::application_exception("Invalid refinement condition");
 			}
 
 			int countTotalIterations = (int) (countIterations
@@ -225,6 +233,15 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			*fcoor << countTotalIterations << ","
 					<< (*minibatchTrainDataset).toString() << std::endl;
 
+			double percent = ((double) countIterations / (double) numMainData
+					* numRuns) * 100;
+			if (percent > 100) {
+				percent = 100;
+			}
+			printf("Accuracy: %2.2f%% (at %2.2f%%)\n", getMainError() * 100,
+					percent);
+			fflush(stdout);
+
 			/*
 			 * Step: Perform one refinement operation
 			 */
@@ -232,11 +249,6 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			// Perform the refinement
 			refinement.free_refine(grid_->getStorage(), functor);
 			alpha_->resizeZero(grid_->getSize());
-
-			double percent = ((double) countIterations / (double) numMainData
-					/ (double) numRuns) * 100;
-			printf("Progress: %2.2f%%\n", percent);
-			fflush(stdout);
 
 			/*
 			 * Output (fgrid): Serialized grid structure
@@ -268,6 +280,8 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 	cg->solve(matrix, *alpha_, b, true, false);
 
 	std::cout << "Error after CG: " << getMainError() << std::endl;
+
+	std::cout << "Error on Test Data: " << getTestError() << std::endl;
 
 	isTrained_ = true;
 }

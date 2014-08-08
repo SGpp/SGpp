@@ -126,7 +126,7 @@ int main(int argc, char **args) {
 	} else if (argsMap["mode"] == "FIND_LAMBDA_WITH_LEARNER_BASE") {
 
 		const int CG_IMAX = 10000;
-		const double CG_EPS = 0.00000001;
+		const double CG_EPS = 0.0001;
 
 		/*
 		 * Get data
@@ -170,7 +170,7 @@ int main(int argc, char **args) {
 
 		sg::datadriven::LearnerRegularizationType r = sg::datadriven::Identity;
 		sg::datadriven::Learner* learner = new sg::datadriven::Learner(r, false,
-				true);
+				false);
 
 		double accuracy = 0;
 
@@ -179,12 +179,14 @@ int main(int argc, char **args) {
 					0, GridConfig, SolverConfig, lambda_);
 		} else {
 			double sum = 0;
+			double current_accuracy = 0;
 			int numParts = floor(1 / VALIDATION_FACTOR);
 
 			for (int i = 0; i < numParts; i++) {
-				sum += execLearnerPartial(learner, mainTrainData, mainClasses,
+				current_accuracy = execLearnerPartial(learner, mainTrainData, mainClasses,
 						i, GridConfig, SolverConfig, lambda_);
-				std::cout << i << std::endl;
+				sum += current_accuracy;
+				std::cout << "Accuracy (part " << (i+1) << "): " << current_accuracy << std::endl;
 			}
 			accuracy = sum / numParts;
 		}
@@ -193,57 +195,59 @@ int main(int argc, char **args) {
 	}
 }
 
+/*
+ * Cross Validation
+ */
+
 double execLearnerPartial(sg::datadriven::Learner* learner,
-		sg::base::DataMatrix& mainTrainData, sg::base::DataVector& mainClasses,
+		sg::base::DataMatrix& trainData, sg::base::DataVector& classes,
 		size_t part, const sg::base::RegularGridConfiguration& GridConfig,
 		const sg::solver::SLESolverConfiguration& SolverConfig,
 		const double lambda) {
 
-	int mainNumRows = mainTrainData.getNrows();
-	int mainNumCols = mainTrainData.getNcols();
+	int numRows = trainData.getNrows();
+	int numCols = trainData.getNcols();
 
 	/*
 	 * Split data
 	 */
 
-	size_t sizeTrain = floor(mainNumRows * VALIDATION_FACTOR);
-	size_t sizeValidation = mainNumRows - sizeTrain;
+	size_t sizePartial = floor(numRows * (1-VALIDATION_FACTOR));
+	size_t sizeValidation = numRows - sizePartial;
 
-	sg::base::DataMatrix mainTrainTrainData = sg::base::DataMatrix(sizeTrain,
-			mainNumCols);
-	sg::base::DataVector mainTrainClasses = sg::base::DataVector(sizeTrain);
+	sg::base::DataMatrix partialTrainData = sg::base::DataMatrix(sizePartial,
+			numCols);
+	sg::base::DataVector partialClasses = sg::base::DataVector(sizePartial);
 
-	sg::base::DataMatrix mainValidationTrainData = sg::base::DataMatrix(
-			sizeValidation, mainNumCols);
-	sg::base::DataVector mainValidationClasses = sg::base::DataVector(
+	sg::base::DataMatrix validationTrainData = sg::base::DataMatrix(
+			sizeValidation, numCols);
+
+	sg::base::DataVector validationClasses = sg::base::DataVector(
 			sizeValidation);
 
-	sg::base::DataVector tmpRow = sg::base::DataVector(mainNumCols);
+	sg::base::DataVector tmpRow = sg::base::DataVector(numCols);
 	double tmpVal = 0;
 
-	std::cout << sizeTrain << std::endl;
-	std::cout << sizeValidation << std::endl;
-
-	for (size_t i = 0; i < mainNumRows; i++) {
-		mainTrainData.getRow(i, tmpRow);
-		tmpVal = mainClasses.get(i);
+	for (size_t i = 0; i < numRows; i++) {
+		trainData.getRow(i, tmpRow);
+		tmpVal = classes.get(i);
 
 		if (i < part * sizeValidation) {
-				mainTrainTrainData.setRow(i, tmpRow);
-				mainTrainClasses.set(i, tmpVal);
+			partialTrainData.setRow(i, tmpRow);
+			partialClasses.set(i, tmpVal);
 
 		} else if (i < (part + 1) * sizeValidation) {
-			mainValidationTrainData.setRow(i - part * sizeValidation, tmpRow);
-			mainValidationClasses.set(i - part * sizeValidation, tmpVal);
+			validationTrainData.setRow(i - part * sizeValidation, tmpRow);
+			validationClasses.set(i - part * sizeValidation, tmpVal);
 		} else {
-			mainTrainTrainData.setRow(i - sizeValidation, tmpRow);
-			mainTrainClasses.set(i - sizeValidation, tmpVal);
+			partialTrainData.setRow(i - sizeValidation, tmpRow);
+			partialClasses.set(i - sizeValidation, tmpVal);
 		}
 	}
 
-	learner->train(mainTrainTrainData, mainTrainClasses, GridConfig,
+	learner->train(partialTrainData, partialClasses, GridConfig,
 			SolverConfig, lambda);
 
-	return learner->getAccuracy(mainValidationTrainData, mainValidationClasses,
+	return learner->getAccuracy(validationTrainData, validationClasses,
 			0.0);
 }
