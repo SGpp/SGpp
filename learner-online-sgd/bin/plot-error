@@ -1,0 +1,8 @@
+set datafile separator ','
+set terminal png
+set title 'Accuracy'
+set output output_file_path
+set xlabel 'Number of SGD Iterations'
+plot file_path0 using 1:2 title 'minibatch (ferr0)' with lines, \
+     file_path1 using 1:2 title 'training dataset (ferr1)' with lines, \
+     file_path2 using 1:2 title 'test dataset (ferr2)' with lines

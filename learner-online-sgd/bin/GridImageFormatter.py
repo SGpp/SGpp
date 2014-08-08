@@ -66,6 +66,7 @@ class GridImageFormatter(GridFormatter):
         
         try:
             figure = plt.figure()
+
             grid = memento
             storage = grid.getStorage()
             coord_vector = DataVector(storage.dim())
@@ -93,6 +94,7 @@ class GridImageFormatter(GridFormatter):
                      figure.add_subplot(rows, cols, i)
                      plt.xlabel('x%d'%x1, figure=figure)
                      plt.ylabel('x%d'%x2, figure=figure)
+                     plt.axis([0, 1, 0, 1])
                      plt.scatter(points[:,x1-1], points[:,x2-1], figure=figure)
 
                      i +=1

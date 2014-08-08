@@ -46,16 +46,16 @@ ARGV.each { |file|
     args << "#{k} #{v}" 
   }
 
-  log = ''
+  log_path = config["experimentDir"] + "/log.stdout"
+  File.delete(log_path) if File.exists? log_path
+
   cmd = "#{MAIN_EXEC} #{args.join(" ")}"
   IO.popen(cmd) {|io|
     while (line = io.gets)
       puts line
-      log += line
+      open(log_path, 'a') {|f|
+        f.puts line
+      }
     end
   }
-
-  # Post-process
-
-  # gnuplot etc.
 }
