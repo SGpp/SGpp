@@ -45,7 +45,7 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 	// Combine the current error vector with the existing error
 	// vector
 	for (size_t i = 0; i < numCoeff; i++ ) {
-		error->set(i, error->get(i) * BETA + current->get(i) * (1-BETA));
+		error->set(i, error->get(i) * BETA + current->get(i));
 	}
 
 	return error->get(seq);
@@ -79,7 +79,7 @@ double PersistentErrorRefinementFunctor::calcWeightedError(size_t seq) {
 				singleAlpha, row);
 		double err = classes->get(seq) - val;
 
-		error += val * err * err;
+		error += val * err;
 	}
 
 	return error;
