@@ -130,7 +130,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
 	for (int countRun = 0; countRun < numRuns; countRun++) {
 
-		std::cout << "Run: " << countRun+1 << std::endl;
+		std::cout << "Run: " << countRun + 1 << std::endl;
 
 		/*
 		 * Step: Reset Minibatch
@@ -140,6 +140,20 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 				numMainDim);
 		minibatchClasses = new sg::base::DataVector(batchSize_);
 		errorOnMinibatch = new std::list<double>;
+
+		if (RefineConfig.refinementType == "WEIGHTED_ERROR_MINIBATCH") {
+			WeightedErrorRefinementFunctor* wfunctor =
+					(WeightedErrorRefinementFunctor*) functor;
+			wfunctor->setTrainDataset(minibatchTrainDataset);
+			wfunctor->setClasses(minibatchClasses);
+
+		} else if (RefineConfig.refinementType == "PERSISTENT_ERROR") {
+			PersistentErrorRefinementFunctor* pfunctor =
+					(PersistentErrorRefinementFunctor*) functor;
+			pfunctor->setTrainDataset(minibatchTrainDataset);
+			pfunctor->setClasses(minibatchClasses);
+
+		}
 
 		size_t countIterations = 0;
 		while (countIterations < numMainData) {
@@ -168,8 +182,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			else if (RefineConfig.refinementCondition
 					== "SMOOTHED_ERROR_DECLINE") {
 
-				if( RefineConfig.numMinibatchError == 0 ) {
-					throw base::application_exception("numMinibatchError must be > 0");
+				if (RefineConfig.numMinibatchError == 0) {
+					throw base::application_exception(
+							"numMinibatchError must be > 0");
 				}
 
 				double oldErrorSum = 0;
@@ -203,14 +218,15 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 						ratio = (oldErrorLast - currentError) / oldErrorSum;
 						ratio *= 1.0 / (double) RefineConfig.numMinibatchError;
 
-						std::cout << "Ratio: " << ratio << std::endl;
+						//std::cout << "Ratio: " << ratio << std::endl;
 
 					} else {
 						errorOnMinibatch->push_front(currentError);
 					}
 				} while (ratio > SMOOTHED_ERROR_DECLINE);
 			} else {
-				throw base::application_exception("Invalid refinement condition");
+				throw base::application_exception(
+						"Invalid refinement condition");
 			}
 
 			int countTotalIterations = (int) (countIterations
