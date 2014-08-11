@@ -1,0 +1,16 @@
+mode:LEARNER_ONLINE_SGD
+experimentDir:./results/exp-magic04-05
+mainARFFFilename:data/magic04.bcnorm.arff.mod
+testARFFFilename:data/magic04.bcnorm.arff.mod
+dim:3
+level:3
+numIterations:10
+refinementNumPoints:2
+numRuns:1
+batchSize:10
+regularizationLambda:0.0001
+CGStepSizeGamma:0.0001
+errorType:ACCURACY
+refinementCondition:SMOOTHED_ERROR_DECLINE
+refinementType:SURPLUS
+numMinibatchError:10
