@@ -13,6 +13,8 @@ ARGV.each { |file|
   
   error "Invalid file #{file}." if not File.exists? file
 
+  puts "Process: #{file}"
+
   config = {
     "mode" => "LEARNER_ONLINE_SGD",
     "experimentDir" => "./results/exp01",
@@ -50,12 +52,20 @@ ARGV.each { |file|
   File.delete(log_path) if File.exists? log_path
 
   cmd = "#{MAIN_EXEC} #{args.join(" ")}"
-  IO.popen(cmd) {|io|
-    while (line = io.gets)
-      puts line
-      open(log_path, 'a') {|f|
-        f.puts line
-      }
-    end
-  }
+  begin
+    IO.popen(cmd) {|io|
+      while (line = io.gets)
+        puts line
+        open(log_path, 'a') {|f|
+          f.puts line
+        }
+      end
+    }
+  rescue Exception
+    puts "An exception occurred."
+  end
+
+  # Run process.sh
+  puts "Process data."
+  `./bin/process.sh "#{config["experimentDir"]}"`
 }

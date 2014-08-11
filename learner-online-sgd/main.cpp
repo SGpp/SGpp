@@ -183,10 +183,13 @@ int main(int argc, char **args) {
 			int numParts = floor(1 / VALIDATION_FACTOR);
 
 			for (int i = 0; i < numParts; i++) {
-				current_accuracy = execLearnerPartial(learner, mainTrainData, mainClasses,
-						i, GridConfig, SolverConfig, lambda_);
+				std::cout << "Process part: " << (i + 1) << std::endl;
+				current_accuracy = execLearnerPartial(learner, mainTrainData,
+						mainClasses, i, GridConfig, SolverConfig, lambda_);
+
 				sum += current_accuracy;
-				std::cout << "Accuracy (part " << (i+1) << "): " << current_accuracy << std::endl;
+				std::cout << "Accuracy (part " << (i + 1) << "): "
+						<< current_accuracy << std::endl;
 			}
 			accuracy = sum / numParts;
 		}
@@ -212,7 +215,7 @@ double execLearnerPartial(sg::datadriven::Learner* learner,
 	 * Split data
 	 */
 
-	size_t sizePartial = floor(numRows * (1-VALIDATION_FACTOR));
+	size_t sizePartial = floor(numRows * (1 - VALIDATION_FACTOR));
 	size_t sizeValidation = numRows - sizePartial;
 
 	sg::base::DataMatrix partialTrainData = sg::base::DataMatrix(sizePartial,
@@ -233,21 +236,36 @@ double execLearnerPartial(sg::datadriven::Learner* learner,
 		tmpVal = classes.get(i);
 
 		if (i < part * sizeValidation) {
-			partialTrainData.setRow(i, tmpRow);
-			partialClasses.set(i, tmpVal);
+			if (i < sizePartial) {
+				partialTrainData.setRow(i, tmpRow);
+				partialClasses.set(i, tmpVal);
+			} else {
+				std::cout << "(1) Out of bounds: " << i << "th index of "
+						<< sizePartial << std::endl;
+			}
 
 		} else if (i < (part + 1) * sizeValidation) {
-			validationTrainData.setRow(i - part * sizeValidation, tmpRow);
-			validationClasses.set(i - part * sizeValidation, tmpVal);
+			if (i - part * sizeValidation < sizeValidation) {
+				validationTrainData.setRow(i - part * sizeValidation, tmpRow);
+				validationClasses.set(i - part * sizeValidation, tmpVal);
+			} else {
+				std::cout << "(2) Out of bounds: " << i - part * sizeValidation
+						<< "th index of " << sizeValidation << std::endl;
+			}
+
 		} else {
-			partialTrainData.setRow(i - sizeValidation, tmpRow);
-			partialClasses.set(i - sizeValidation, tmpVal);
+			if (i - sizeValidation < sizePartial) {
+				partialTrainData.setRow(i - sizeValidation, tmpRow);
+				partialClasses.set(i - sizeValidation, tmpVal);
+			} else {
+				std::cout << "(3) Out of bounds: " << i - sizeValidation
+						<< "th index of " << sizePartial << std::endl;
+			}
 		}
 	}
 
-	learner->train(partialTrainData, partialClasses, GridConfig,
-			SolverConfig, lambda);
+	learner->train(partialTrainData, partialClasses, GridConfig, SolverConfig,
+			lambda);
 
-	return learner->getAccuracy(validationTrainData, validationClasses,
-			0.0);
+	return learner->getAccuracy(validationTrainData, validationClasses, 0.0);
 }

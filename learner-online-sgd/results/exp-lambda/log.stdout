@@ -1,7 +1,12 @@
-Lambda: 0.1
-Accuracy (part 1): 0.819182
-Accuracy (part 2): 0.887713
-Accuracy (part 3): 0.480978
-Accuracy (part 4): 0.909549
-Accuracy (part 5): 0.199463
-Accuracy: 0.659377
+Lambda: 1e-05
+Process part: 1
+Accuracy (part 1): 0.95347
+Process part: 2
+Accuracy (part 2): 0.948475
+Process part: 3
+Accuracy (part 3): 0.952419
+Process part: 4
+Accuracy (part 4): 0.478707
+Process part: 5
+Accuracy (part 5): 0.259201
+Accuracy: 0.718454
