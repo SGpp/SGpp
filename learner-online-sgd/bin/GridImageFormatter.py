@@ -63,7 +63,7 @@ class GridImageFormatter(GridFormatter):
     #@todo (khakhutv) make the same variable names across similar functions
     def serializeToFile(self, memento, filename):
         fstream = self.gzOpen(filename, "w")
-        
+
         try:
             figure = plt.figure()
 
@@ -76,9 +76,12 @@ class GridImageFormatter(GridFormatter):
                 point.getCoords(coord_vector)
                 points[i] = [j for j in coord_vector.array()]
             num_of_sublots = storage.dim()*(storage.dim()-1)/2
-            rows = int(ceil(sqrt(num_of_sublots)))
+            # rows = int(ceil(sqrt(num_of_sublots)))
             # NOTE OLD: cols = int(floor(sqrt(num_of_sublots)))
-            cols = int(ceil(sqrt(num_of_sublots)))
+            # cols = int(ceil(sqrt(num_of_sublots)))
+
+            rows = storage.dim()
+            cols = storage.dim()
             i = 1
             
             # NOTE OLD:
@@ -86,18 +89,21 @@ class GridImageFormatter(GridFormatter):
             #    for x2 in xrange(2,storage.dim()+1):
             # Problem: the graph x2-x2 is also generated!
 
+            plt.axis([0, 1, 0, 1])
+
             for x1 in xrange(1,storage.dim()+1):
-                 for x2 in xrange(x1+1,storage.dim()+1):
+                 for x2 in xrange(1,storage.dim()+1):
+                 # for x2 in xrange(x1+1,storage.dim()+1):
 
                      # NOTE OLD: figure.add_subplot(rows*100 + cols*10 + i)
                      # what if rows>10?
                      figure.add_subplot(rows, cols, i)
                      plt.xlabel('x%d'%x1, figure=figure)
                      plt.ylabel('x%d'%x2, figure=figure)
-                     plt.axis([0, 1, 0, 1])
                      plt.scatter(points[:,x1-1], points[:,x2-1], figure=figure)
 
                      i +=1
+            plt.tight_layout()
             plt.savefig(fstream, figure=figure)
             plt.close(figure)
         finally:

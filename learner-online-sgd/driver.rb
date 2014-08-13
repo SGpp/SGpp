@@ -7,6 +7,14 @@ def error str
   exit 1
 end
 
+valgrind = false
+
+if ARGV[0] == "-v"
+  valgrind = true
+  ARGV.shift
+end
+
+
 ARGV.each { |file|
 
   # Parse configuration file
@@ -52,6 +60,9 @@ ARGV.each { |file|
   File.delete(log_path) if File.exists? log_path
 
   cmd = "#{MAIN_EXEC} #{args.join(" ")}"
+  if valgrind
+    cmd = "valgrind --leak-check=yes " + cmd + " 2>&1"
+  end
   begin
     IO.popen(cmd) {|io|
       while (line = io.gets)
@@ -65,7 +76,9 @@ ARGV.each { |file|
     puts "An exception occurred."
   end
 
-  # Run process.sh
-  puts "Process data."
-  `./bin/process.sh "#{config["experimentDir"]}"`
+  if valgrind == false
+    # Run process.sh
+    puts "Process data."
+    `./bin/process.sh "#{config["experimentDir"]}"`
+  end
 }

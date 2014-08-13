@@ -65,9 +65,7 @@ namespace sg {
         Grid* grid;
         DataMatrix* trainDataset;
         DataVector* classes;
-        DataVector* error;
-
-        double calcWeightedError(size_t k);
+        DataVector* accum;
     };
 
   }

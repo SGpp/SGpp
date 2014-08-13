@@ -58,6 +58,7 @@
 #include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 #include "base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp"
 #include "base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp"
+#include "base/grid/generation/functors/ClassificationRefinementFunctor.hpp"
 #include "base/tools/GridPrinter.hpp"
 #include "base/tools/GridPrinterForStretching.hpp"
 #include "base/tools/SGppStopwatch.hpp"

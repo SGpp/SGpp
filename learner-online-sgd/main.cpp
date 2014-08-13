@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 
@@ -23,22 +22,6 @@ int main(int argc, char **args) {
 	}
 
 	if (argsMap["mode"] == "LEARNER_ONLINE_SGD") {
-		/*
-		 * Output files
-		 */
-		fstream ferr0, ferr1, ferr2, fgrid, fcoor;
-		ferr0.open((argsMap["experimentDir"] + std::string("/ferr0")).c_str(),
-				ios::out | ios::trunc);
-		ferr1.open((argsMap["experimentDir"] + std::string("/ferr1")).c_str(),
-				ios::out | ios::trunc);
-		ferr2.open((argsMap["experimentDir"] + std::string("/ferr2")).c_str(),
-				ios::out | ios::trunc);
-		fgrid.open((argsMap["experimentDir"] + std::string("/fgrid")).c_str(),
-				ios::out | ios::trunc);
-		fcoor.open((argsMap["experimentDir"] + std::string("/fcoor")).c_str(),
-				ios::out | ios::trunc);
-
-		ostream *outputStreams[5] = { &ferr0, &ferr1, &ferr2, &fgrid, &fcoor };
 
 		/*
 		 * Get data
@@ -113,15 +96,8 @@ int main(int argc, char **args) {
 		HashRefinement* hashRef = new HashRefinement();
 		learner->train(mainTrainData, mainClasses, testTrainData, testClasses,
 				gridConfig, refineConfig, *hashRef, batchSize, lambda_, gamma_,
-				numRuns, errorType, outputStreams);
-		/*
-		 * Close output files
-		 */
-		ferr0.close();
-		ferr1.close();
-		ferr2.close();
-		fgrid.close();
-		fcoor.close();
+				numRuns, errorType, argsMap["experimentDir"]);
+
 
 	} else if (argsMap["mode"] == "FIND_LAMBDA_WITH_LEARNER_BASE") {
 

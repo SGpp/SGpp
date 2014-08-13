@@ -2,12 +2,12 @@ mode:LEARNER_ONLINE_SGD
 experimentDir:./results/exp-breast-cancer-03
 mainARFFFilename:data/breast_cancer.clean.norm.arff.mod
 testARFFFilename:data/breast_cancer.clean.norm.arff.mod
-dim:3
+dim:9
 level:3
 numIterations:10
 refinementNumPoints:2
-numRuns:1
-batchSize:10
+numRuns:2
+batchSize:100
 regularizationLambda:0.1
 CGStepSizeGamma:0.0001
 errorType:ACCURACY
