@@ -12,6 +12,8 @@
 #include <string>
 #include <algorithm>
 #include <list>
+#include <fstream>
+#include <iostream>
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
@@ -60,7 +62,7 @@ public:
 
 			size_t batchSize_, double lambda_, double gamma_,
 
-			int numRuns, std::string errorType_, std::ostream **outputStreams_);
+			int numRuns, std::string errorType_, std::string experimentDir);
 
 	virtual ~LearnerOnlineSGD();
 

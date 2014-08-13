@@ -12,4 +12,8 @@ refinementType:PERSISTENT_ERROR
 
 refinementCondition:SMOOTHED_ERROR_DECLINE
 refinementType:SURPLUS
-numMinibatchError:10
+numMinibatchError:50
+
+
+refinementCondition:FIXED_NUMBER
+refinementType:CLASSIFICATION

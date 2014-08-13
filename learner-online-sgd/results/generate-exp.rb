@@ -22,15 +22,15 @@ ARGV.each {|name|
 
   common_content = File.read(common_path).strip
 
-  File.read(var_path).split("\n\n").each_with_index {|x, i|
+  File.read(var_path).split("\n\n").compact.each_with_index {|x, i|
     dir = "exp-#{name}-#{sprintf "%02d", (i+1)}"
     file = dir + "/config"
     var = x.gsub("{DIRNAME}", dir).strip
     all = common_content.gsub("{DIRNAME}", dir) + "\n" + var
 
-    puts "Create dir: #{dir}"
+    # puts "Create dir: #{dir}"
     `mkdir -p #{dir.shellescape}`
-    puts "Write to file: #{file}"
+    puts "Write: #{file}"
     File.write(file, all)
   }
 }
