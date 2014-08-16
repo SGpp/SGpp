@@ -151,6 +151,10 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 		 * Reset Minibatch
 		 */
 
+		delete minibatchTrainDataset;
+		delete minibatchClasses;
+		delete errorOnMinibatch;
+
 		minibatchTrainDataset = new sg::base::DataMatrix(batchSize_,
 				numMainDim);
 		minibatchClasses = new sg::base::DataVector(batchSize_);
@@ -276,7 +280,10 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			 */
 
 			// Perform the refinement
+			//std::cout << "Indicator values: ";
 			refinement.free_refine(grid_->getStorage(), functor);
+			//std::cout << std::endl;
+
 			alpha_->resizeZero(grid_->getSize());
 
 			/*
@@ -308,6 +315,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
 	cg->solve(matrix, *alpha_, b, true, false);
 
+
 	std::cout << "Error after CG: " << getMainError() << std::endl;
 
 	std::cout << "Error on Test Data: " << getTestError() << std::endl;
@@ -322,6 +330,10 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 	ferr2.close();
 	fgrid.close();
 	fcoor.close();
+
+	delete C_;
+	delete cg;
+	delete functor;
 }
 
 void LearnerOnlineSGD::performSGDStep() {
@@ -394,8 +406,9 @@ void LearnerOnlineSGD::pushMinibatch(sg::base::DataVector& x, double y) {
 		newMinibatchClasses->set(i, minibatchClasses->get(i - 1));
 	}
 
-	//delete minibatchTrainDataset;
-	//delete minibatchClasses;
+	delete tmp;
+	delete minibatchTrainDataset;
+	delete minibatchClasses;
 
 	minibatchTrainDataset = newMinibatchTrainDataset;
 	minibatchClasses = newMinibatchClasses;
@@ -413,8 +426,9 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 
 	// Values of the interpolant
 	DataVector result(numData);
-	sg::op_factory::createOperationMultipleEval(*grid_, trainDataset)->mult(
-			*alpha_, result);
+	OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, trainDataset);
+	eval->mult(*alpha_, result);
+	delete eval;
 
 	if (errorType == "MSE") {
 
@@ -425,6 +439,8 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 		double sum = 0;
 		for (unsigned int i = 0; i < numData; i++)
 			sum += pow(fabs(error->get(i)), 2);
+
+		delete error;
 
 		return (sum / (double) numData);
 
@@ -437,9 +453,13 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 			}
 		}
 
+		delete error;
+
 		return correct / (double) numData;
 
 	} else {
+		delete error;
+
 		throw base::application_exception("Invalid error type");
 	}
 

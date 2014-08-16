@@ -1,4 +1,6 @@
-#!/usr/bin/env ruby
+#!/usr/bin/ruby
+
+require 'shellwords'
 
 MAIN_EXEC = './main'
 
@@ -38,6 +40,7 @@ ARGV.each { |file|
     "batchSize" => "10",
     "regularizationLambda" => "0.001",
     "CGStepSizeGamma" => "0.0001",
+    "runCG" => "TRUE",
     "errorType" => "ACCURACY"
   }
 
@@ -79,6 +82,6 @@ ARGV.each { |file|
   if valgrind == false
     # Run process.sh
     puts "Process data."
-    `./bin/process.sh "#{config["experimentDir"]}"`
+    system("./bin/process.sh #{config["experimentDir"].shellescape}")
   end
 }
