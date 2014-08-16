@@ -98,6 +98,8 @@ int main(int argc, char **args) {
 				gridConfig, refineConfig, *hashRef, batchSize, lambda_, gamma_,
 				numRuns, errorType, argsMap["experimentDir"]);
 
+		delete hashRef;
+		delete learner;
 
 	} else if (argsMap["mode"] == "FIND_LAMBDA_WITH_LEARNER_BASE") {
 
@@ -150,10 +152,7 @@ int main(int argc, char **args) {
 
 		double accuracy = 0;
 
-		if (argsMap["crossValidation"] == "FALSE") {
-			accuracy = execLearnerPartial(learner, mainTrainData, mainClasses,
-					0, GridConfig, SolverConfig, lambda_);
-		} else {
+		if (argsMap["crossValidation"] == "TRUE") {
 			double sum = 0;
 			double current_accuracy = 0;
 			int numParts = floor(1 / VALIDATION_FACTOR);
@@ -168,6 +167,12 @@ int main(int argc, char **args) {
 						<< current_accuracy << std::endl;
 			}
 			accuracy = sum / numParts;
+
+		} else if (argsMap["crossValidation"] == "FALSE") {
+			accuracy = execLearnerPartial(learner, mainTrainData, mainClasses,
+					0, GridConfig, SolverConfig, lambda_);
+		} else {
+			throw "Invalid value for crossValidation";
 		}
 
 		std::cout << "Accuracy: " << accuracy << std::endl;

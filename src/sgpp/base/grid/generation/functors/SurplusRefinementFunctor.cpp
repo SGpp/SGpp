@@ -19,7 +19,7 @@ namespace sg {
 
     double SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
       double val = fabs(alpha->get(seq));
-      //std::cout << "Functor value (of " << seq << "): " << val << std::endl;
+      // std::cout << seq << ", ";
       return val;
     }
 
