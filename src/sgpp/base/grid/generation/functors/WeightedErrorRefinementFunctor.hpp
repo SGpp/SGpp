@@ -62,7 +62,7 @@ namespace sg {
 
         void setTrainDataset(DataMatrix* trainDataset);
 
-        void setClasses(DataVector* classes);
+        void setClasses( DataVector* classes);
 
       protected:
         /// pointer to the vector that stores the alpha values
