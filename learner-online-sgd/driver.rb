@@ -63,6 +63,7 @@ ARGV.each { |file|
   File.delete(log_path) if File.exists? log_path
 
   cmd = "#{MAIN_EXEC} #{args.join(" ")}"
+  puts cmd
   if valgrind
     cmd = "valgrind --leak-check=yes " + cmd + " 2>&1"
   end

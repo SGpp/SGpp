@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "LearnerOnlineSGD.hpp"
 
 namespace sg {
@@ -10,7 +12,7 @@ LearnerOnlineSGD::LearnerOnlineSGD(
 		Learner(regularization, isRegression, isVerbose), mainTrainDataset(
 		NULL), mainClasses(NULL), testTrainDataset(NULL), testClasses(
 		NULL), minibatchTrainDataset(NULL), minibatchClasses(NULL), errorOnMinibatch(
-		NULL), SGDCurrentIndex(0), lambda(0), gamma(0) {
+		NULL), errorMB(NULL), errorTrainData(NULL), SGDCurrentIndex(0), lambda(0), gamma(0) {
 }
 
 void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
@@ -59,6 +61,14 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 	testTrainDataset = &testTrainDataset_;
 	testClasses = &testClasses_;
 
+	minibatchSize = batchSize_;
+
+	if (errorMB != NULL){ delete errorMB;}
+	errorMB = new DataVector(minibatchSize);
+
+	if (errorTrainData != NULL) { delete errorTrainData;}
+	errorTrainData = new DataVector(mainClasses->getSize());
+
 	size_t numMainData = mainTrainDataset->getNrows();
 	size_t numMainDim = mainTrainDataset->getNcols();
 
@@ -87,6 +97,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 		SGDIndexOrder.push_back(i);
 	}
 
+	// TODO: remove seed after experiments are done
 	std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
 	SGDCurrentIndex = 0;
 
@@ -103,25 +114,26 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 	} else if (RefineConfig.refinementType == "WEIGHTED_ERROR_MINIBATCH") {
 
 		functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
-				RefineConfig.refinementNumPoints, 0.0);
+				RefineConfig.refinementNumPoints, -std::numeric_limits<double>::infinity());
 		WeightedErrorRefinementFunctor* wfunctor =
 				(WeightedErrorRefinementFunctor*) functor;
 		wfunctor->setTrainDataset(minibatchTrainDataset);
 		wfunctor->setClasses(minibatchClasses);
 
 	} else if (RefineConfig.refinementType == "WEIGHTED_ERROR_ALL") {
-
-		functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
+	  // FIXME: this case is not accounted for
+		/*functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
 				RefineConfig.refinementNumPoints, 0.0);
 		WeightedErrorRefinementFunctor* wfunctor =
 				(WeightedErrorRefinementFunctor*) functor;
+
 		wfunctor->setTrainDataset(mainTrainDataset);
-		wfunctor->setClasses(mainClasses);
+		wfunctor->setClasses(mainClasses);*/
 
 	} else if (RefineConfig.refinementType == "PERSISTENT_ERROR") {
 
 		functor = new PersistentErrorRefinementFunctor(alpha_, grid_,
-				RefineConfig.refinementNumPoints, 0.0);
+				RefineConfig.refinementNumPoints,  -std::numeric_limits<double>::infinity());
 		PersistentErrorRefinementFunctor* pfunctor =
 				(PersistentErrorRefinementFunctor*) functor;
 		pfunctor->setTrainDataset(minibatchTrainDataset);
@@ -155,9 +167,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 		delete minibatchClasses;
 		delete errorOnMinibatch;
 
-		minibatchTrainDataset = new sg::base::DataMatrix(batchSize_,
-				numMainDim);
-		minibatchClasses = new sg::base::DataVector(batchSize_);
+		minibatchTrainDataset = new sg::base::DataMatrix(0, numMainDim);
+		minibatchTrainDataset->addSize(minibatchSize);
+		minibatchClasses = new DataVector(minibatchSize);
 		errorOnMinibatch = new std::list<double>;
 
 		if (RefineConfig.refinementType == "WEIGHTED_ERROR_MINIBATCH") {
@@ -263,8 +275,8 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 					<< std::endl;
 			ferr1 << countTotalIterations << "," << getMainError() << std::endl;
 			ferr2 << countTotalIterations << "," << getTestError() << std::endl;
-			fcoor << countTotalIterations << ","
-					<< (*minibatchTrainDataset).toString() << std::endl;
+			//fcoor << countTotalIterations << ","
+			//		<< (*minibatchTrainDataset).toString() << std::endl;
 
 			double percent = ((double) countTotalIterations / ((double) numMainData
 					* numRuns)) * 100;
@@ -281,6 +293,14 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
 			// Perform the refinement
 			//std::cout << "Indicator values: ";
+			if (RefineConfig.refinementType == "PERSISTENT_ERROR") {
+
+			  double accuracy = getError(minibatchTrainDataset, minibatchClasses, errorMB);
+			  if (accuracy == 1.0){
+          continue;
+        }
+			  (static_cast<PersistentErrorRefinementFunctor*>(functor))->setErrors(errorMB);
+			}
 			refinement.free_refine(grid_->getStorage(), functor);
 			//std::cout << std::endl;
 
@@ -386,8 +406,17 @@ void LearnerOnlineSGD::performSGDStep() {
 }
 
 void LearnerOnlineSGD::pushMinibatch(sg::base::DataVector& x, double y) {
-
-	size_t numMinibatchRows = minibatchTrainDataset->getNrows();
+  static size_t next_idx = 0;
+  if (minibatchTrainDataset->getUnused() >0){
+    minibatchTrainDataset->appendRow(x);
+    (*minibatchClasses)[next_idx] = y;
+  }
+  else {
+    minibatchTrainDataset->setRow(next_idx, x);
+    (*minibatchClasses)[next_idx] = y;
+  }
+  next_idx = (next_idx+1)%minibatchSize;
+/*	size_t numMinibatchRows = minibatchTrainDataset->getNrows();
 	size_t numMinibatchCols = minibatchTrainDataset->getNcols();
 
 	sg::base::DataMatrix* newMinibatchTrainDataset = new sg::base::DataMatrix(
@@ -411,17 +440,22 @@ void LearnerOnlineSGD::pushMinibatch(sg::base::DataVector& x, double y) {
 	delete minibatchClasses;
 
 	minibatchTrainDataset = newMinibatchTrainDataset;
-	minibatchClasses = newMinibatchClasses;
+	minibatchClasses = newMinibatchClasses;*/
 }
 
 double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
-		sg::base::DataVector* classes) {
+		sg::base::DataVector* classes, sg::base::DataVector *error) {
 	using namespace sg::base;
 
 	size_t numData = trainDataset->getNrows();
+	bool cleanup = false;
+	double res = -1.0;
 
 	// Error vector
-	DataVector *error = new DataVector(numData);
+	if (error == NULL){
+	  error = new DataVector(numData);
+	  cleanup = true;
+	}
 	error->setAll(0.0);
 
 	// Values of the interpolant
@@ -433,48 +467,115 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 	if (errorType == "MSE") {
 
 		for (unsigned int i = 0; i < numData; i++)
-			error->set(i, result.get(i) - classes->get(i));
+			error->set(i, classes->get(i) - result.get(i));
 
 		// Error
 		double sum = 0;
-		for (unsigned int i = 0; i < numData; i++)
-			sum += pow(fabs(error->get(i)), 2);
-
-		delete error;
-
-		return (sum / (double) numData);
-
-	} else if (errorType == "ACCURACY") {
-
-		int correct = 0;
-		for (unsigned int i = 0; i < numData; i++) {
-			if ((result.get(i) < 0) == (classes->get(i) < 0)) {
-				correct++;
-			}
+		for (unsigned int i = 0; i < numData; i++){
+			sum += error->get(i)*error->get(i);
 		}
 
-		delete error;
+		res =  (sum / (double) numData);
 
-		return correct / (double) numData;
+		if (cleanup){
+		    delete error;
+		    }
+
+	} else if (errorType == "ACCURACY") {
+	  unsigned int correct = 0;
+		for (unsigned int i = 0; i < numData; i++) {
+		  correct += (result.get(i) < 0) == (classes->get(i) < 0) ? 1 : 0;
+		  error->set(i, classes->get(i) - result.get(i));
+
+		}
+		res =  static_cast<double>(correct) / static_cast<double>(numData);
+		if (cleanup){
+		    delete error;
+		    }
 
 	} else {
+    if (cleanup){
 		delete error;
+    }
 
 		throw base::application_exception("Invalid error type");
 	}
+	return res;
 
 }
 
+
+/*
+double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
+    std::vector<double>* classes, sg::base::DataVector *error) {
+  using namespace sg::base;
+
+  size_t numData = trainDataset->size();
+
+  // Error vector
+  if (error == NULL){
+    error = new DataVector(numData);
+  }
+  error->setAll(0.0);
+
+  // Values of the interpolant
+  DataVector result(numData);
+  DataMatrix tmp(numData, (*trainDataset)[0].getSize());
+  size_t i = 0;
+  for(std::vector<sg::base::DataVector>::iterator dv = trainDataset->begin(); dv < trainDataset->end(); dv++, i++){
+    tmp.setRow(i, *dv);
+  }
+  OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, &tmp);
+  eval->mult(*alpha_, result);
+  delete eval;
+
+  if (errorType == "MSE") {
+
+    for (unsigned int i = 0; i < numData; i++)
+      error->set(i,  classes->at(i) - result.get(i));
+
+    // Error
+    double sum = 0;
+    for (unsigned int i = 0; i < numData; i++)
+      sum += error->get(i)*error->get(i);
+
+    delete error;
+
+    return (sum / (double) numData);
+
+  } else if (errorType == "ACCURACY") {
+
+    int correct = 0;
+    for (unsigned int i = 0; i < numData; i++) {
+      if ((result.get(i) < 0) == (classes->at(i) < 0)) {
+        correct++;
+      }
+    }
+
+    delete error;
+
+    return correct / (double) numData;
+
+  } else {
+    delete error;
+
+    throw base::application_exception("Invalid error type");
+  }
+
+}
+*/
+
+
 double LearnerOnlineSGD::getMainError() {
-	return getError(mainTrainDataset, mainClasses);
+	return getError(mainTrainDataset, mainClasses, NULL);
 }
 
 double LearnerOnlineSGD::getTestError() {
-	return getError(testTrainDataset, testClasses);
+	return getError(testTrainDataset, testClasses, NULL);
 }
 
 double LearnerOnlineSGD::getMinibatchError() {
-	return getError(minibatchTrainDataset, minibatchClasses);
+	return getError(minibatchTrainDataset, minibatchClasses, NULL);
 }
 
 sg::base::DataVector* LearnerOnlineSGD::getAlpha() {

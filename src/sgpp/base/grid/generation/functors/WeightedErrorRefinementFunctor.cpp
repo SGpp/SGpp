@@ -79,11 +79,11 @@ double WeightedErrorRefinementFunctor::getRefinementThreshold() {
 }
 
 void WeightedErrorRefinementFunctor::setTrainDataset(
-		DataMatrix* trainDataset_) {
+    DataMatrix* trainDataset_) {
 	trainDataset = trainDataset_;
 }
 
-void WeightedErrorRefinementFunctor::setClasses(DataVector* classes_) {
+void WeightedErrorRefinementFunctor::setClasses( DataVector* classes_) {
 	classes = classes_;
 }
 

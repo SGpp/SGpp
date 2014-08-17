@@ -8,6 +8,7 @@
 #ifndef PERSISTENTERRORREFINEMENTFUNCTOR_HPP
 #define PERSISTENTERRORREFINEMENTFUNCTOR_HPP
 
+#include <vector>
 #include "sgpp_base.hpp"
 
 namespace sg {
@@ -51,6 +52,7 @@ namespace sg {
 
         void setTrainDataset(DataMatrix* trainDataset_);
         void setClasses(DataVector* classes_);
+        void setErrors(DataVector* errors);
 
       protected:
         /// pointer to the vector that stores the alpha values
@@ -65,6 +67,7 @@ namespace sg {
         Grid* grid;
         DataMatrix* trainDataset;
         DataVector* classes;
+        DataVector* errors;
         DataVector* accum;
     };
 

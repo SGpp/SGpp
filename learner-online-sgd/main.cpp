@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
@@ -16,6 +17,9 @@ int main(int argc, char **args) {
 	using namespace std;
 
 	map<string, string> argsMap;
+
+	// fix seed to better control the experiments
+	srand(42);
 
 	for (int i = 1; i < argc; i += 2) {
 		argsMap[args[i]] = args[i + 1];

@@ -14,6 +14,7 @@
 #include <list>
 #include <fstream>
 #include <iostream>
+#include <vector>
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
@@ -78,18 +79,25 @@ private:
 	sg::base::DataMatrix* minibatchTrainDataset;
 	sg::base::DataVector* minibatchClasses;
 	std::list<double>* errorOnMinibatch;
+
+	sg::base::DataVector* errorMB;
+	sg::base::DataVector* errorTrainData;
+
 	void pushMinibatch(sg::base::DataVector& x, double y);
 
 	std::string errorType;
 
 	size_t SGDCurrentIndex;
+	size_t minibatchSize;
 	std::vector<size_t> SGDIndexOrder;
 	double lambda;
 	double gamma;
 	void performSGDStep();
 
 	double getError(sg::base::DataMatrix* trainDataset,
-			sg::base::DataVector* classes);
+			sg::base::DataVector* classes, sg::base::DataVector *error);
+	double getError(std::vector<sg::base::DataVector>* trainDataset,
+	    std::vector<double>* classes, sg::base::DataVector *error);
 	double getMainError();
 	double getTestError();
 	double getMinibatchError();

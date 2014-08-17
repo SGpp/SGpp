@@ -5,6 +5,8 @@
  ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
+#include <limits>
+
 #include "base/grid/generation/hashmap/HashRefinement.hpp"
 #include "base/exception/generation_exception.hpp"
 
@@ -18,7 +20,7 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
   size_t min_idx = 0;
 
   // max value equals min value
-  RefinementFunctor::value_type max_value = max_values[min_idx];
+  RefinementFunctor::value_type max_value = -std::numeric_limits<double>::infinity();
 
   index_type index;
   GridStorage::grid_map_iterator end_iter = storage->end();
@@ -44,7 +46,7 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
 
       // if there no more grid points --> test if we should refine the grid
       if (child_iter == end_iter) {
-        RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
+        RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
         if (current_value > max_value) {
           // replace the minimal point in result array, find the new  minimal point
@@ -52,8 +54,8 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
           max_indices[min_idx] = iter->second;
           min_idx = getIndexOfMin(max_values, refinements_num);
           max_value = max_values[min_idx];
-          break;
         }
+        break;
       }
 
       // test existance of right child
@@ -61,7 +63,7 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
       child_iter = storage->find(&index);
 
       if (child_iter == end_iter) {
-        RefinementFunctor::value_type current_value = fabs((*functor)(storage, iter->second));
+        RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
         if (current_value > max_value) {
           // replace the minimal point in result array, find the new minimal point
@@ -69,8 +71,8 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
           max_indices[min_idx] = iter->second;
           min_idx = getIndexOfMin(max_values, refinements_num);
           max_value = max_values[min_idx];
-          break;
         }
+        break;
       }
 
       // reset current grid point in dimension d
@@ -91,7 +93,8 @@ void HashRefinement::refineGridpointsCollection(GridStorage* storage, Refinement
     max_value = max_values[i];
     max_index = max_indices[i];
 
-    if (max_value > functor->start() && fabs(max_value) >= threshold) {
+    if (max_value > functor->start() && max_value >= threshold) {
+      std::cout << "Refining grid point " << max_index << " value " << max_value << std::endl;
       refineGridpoint(storage, max_index);
     }
   }
@@ -113,7 +116,7 @@ void HashRefinement::free_refine(GridStorage* storage, RefinementFunctor* functo
 
   // initialization
   for (size_t i = 0; i < refinements_num; i++) {
-    max_values[i] = functor->start();
+    max_values[i] = -std::numeric_limits<double>::infinity();
     max_indices[i] = 0;
   }
 
