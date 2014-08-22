@@ -120,7 +120,6 @@ class Learner(object):
         self.testingOverall = []
         self.numberPoints = []
         self.iteration = 0
-        self.eventControllers = []
 
 
     ## Learn data from training data set and use validation data set to prevent overfitting
@@ -129,10 +128,11 @@ class Learner(object):
     # @return: DataVector of alpha
     def learnDataWithTest(self, dataset = None):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
-        self.specification.setBOperator(createOperationMultipleEval(self.grid,
-                  self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
-        
         if dataset == None: dataset = self.dataContainer
+        self.specification.setBOperator(createOperationMultipleEval(self.grid,
+                  dataset.getPoints(DataContainer.TRAIN_CATEGORY)), DataContainer.TRAIN_CATEGORY)
+        self.specification.setBOperator(createOperationMultipleEval(self.grid,
+                  dataset.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
         
         #learning step
         trainSubset = dataset.getTrainDataset()

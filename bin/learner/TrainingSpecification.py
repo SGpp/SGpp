@@ -34,6 +34,7 @@ class TrainingSpecification(object):
     __adaptThreshold = 0.0   #threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
     __cOperator = None      #C operator
     __bOperator = None      #B operator
+    __bOperatorTest = None
     __cOperatorType = None  #Type of the c operator as a string
     
     ## Returns the type of the C operator
@@ -94,8 +95,11 @@ class TrainingSpecification(object):
     ## Setter for B operator
     #
     # @param value: OperationB
-    def setBOperator(self, value):
-        self.__bOperator = value
+    def setBOperator(self, value, name = 'train'):
+        if name == 'train':
+            self.__bOperator = value
+        elif name == 'test':
+            self.__bOperatorTest = value
 
 
     ## Getter for Number of points to refine
@@ -129,8 +133,11 @@ class TrainingSpecification(object):
     ## Getter for B operator
     #
     # @return: OperationB
-    def getBOperator(self):
-        return self.__bOperator
+    def getBOperator(self, name = 'train'):
+        if name == 'train':
+            return self.__bOperator
+        elif name == 'test':
+            return self.__bOperatorTest
     
     
     ## Calculates the number of points which should be refined

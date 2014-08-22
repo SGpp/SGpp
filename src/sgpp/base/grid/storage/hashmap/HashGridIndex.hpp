@@ -3,7 +3,8 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (dirk.pflueger@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Dirk Pflueger (dirk.pflueger@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de),
+//Michael Lettrich(m.lettrich@mytum.de)
 
 #ifndef HASHGRIDINDEX_HPP
 #define HASHGRIDINDEX_HPP
@@ -61,7 +62,28 @@ namespace sg {
          *
          * @param o constant pointer to HashGridIndex object
          */
+        HashGridIndex(const HashGridIndex<LT, IT>& o) : DIM(o.DIM), level(NULL), index(NULL), hash_value(0) {
+
+        	level = new level_type[DIM];
+        	index = new index_type[DIM];
+        	Leaf = false;
+
+        	for (size_t d = 0; d < DIM; d++) {
+        		level[d] = o.level[d];
+        		index[d] = o.index[d];
+        	}
+
+        	Leaf = o.Leaf;
+        	rehash();
+        }
+
+        /**
+         * Copy-Constructor
+         *
+         * @param o constant pointer to HashGridIndex object
+         */
         HashGridIndex(const HashGridIndex<LT, IT>* o) : DIM(o->DIM), level(NULL), index(NULL), hash_value(0) {
+
           level = new level_type[DIM];
           index = new index_type[DIM];
           Leaf = false;
@@ -626,6 +648,52 @@ namespace sg {
           }
 
           return levelmin;
+        }
+
+
+        /**
+         * Returns the level and index of the grid point in dimension dim.
+         * CAREFULL: For children that are on level 1 in the specified dinension dim, 0 is returned.
+         *
+         * @param level pointer to the variable to return the parent level in
+         * @param index pointer to the variable to return the parent index in
+         * @param dim dimension in which to determine the parent level and index
+         */
+        void getParentLevelAndIndex(level_type* level, index_type* index, size_t dim)
+        {
+        	//get the parents index
+        	level_type parentLevel = this->level[dim];
+        	index_type parentIndex = this->index[dim];
+        	if (parentLevel>1)
+        	{
+        		if(((parentIndex-1)/2)%2 == 0)
+        		{
+        			//child is on the left
+        			*level = parentLevel-1;
+        			*index = (parentIndex+1)/2;
+        		}else{
+        			//child is on the right
+        			*level = parentLevel-1;
+        			*index = (parentIndex-1)/2;
+        		}
+        	}else{
+        		//the child is already on level 1 in dimension dim and has no parents.
+            	*level = 0;
+            	*index = 0;
+        	}
+        }
+
+
+        /**
+         * Sets all the elements of the index vector of a the stored item to 1.
+         * (Required if index is a subspace)
+         */
+        void resetIndexVector()
+        {
+        	for (size_t dim = 0; dim < DIM; ++dim) {
+        		index[dim] = 1;
+        	}
+        	rehash();
         }
 
       private:
