@@ -5,9 +5,12 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
 #include "base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp"
-#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
+
 #include "base/algorithm/AlgorithmDGEMV.hpp"
+
+
 
 namespace sg {
   namespace base {

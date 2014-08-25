@@ -1,8 +1,12 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/optimizer/GradientMethod.hpp"
-//#include "opt/optimizer/LineSearchGolden.hpp"
 #include "opt/optimizer/LineSearchArmijo.hpp"
-//#include "opt/optimizer/LineSearchPowellWolfe.hpp"
-//#include "opt/optimizer/LineSearchNewton.hpp"
 #include "opt/tools/Printer.hpp"
 
 namespace sg
@@ -45,37 +49,30 @@ double GradientMethod::optimize(std::vector<double> &xopt)
     
     for (k = 0; k < N; k++)
     {
+        // calculate gradient and norm
         fx = f_gradient->evalGradient(x, grad_fx);
-        
         double grad_fx_norm = grad_fx.l2Norm();
         
+        // exit if norm small enough
         if (grad_fx_norm < tol)
         {
             break;
         }
         
+        // search direction is the normalized negated gradient
         for (size_t t = 0; t < d; t++)
         {
             s[t] = -grad_fx[t] / grad_fx_norm;
         }
         
-        /*std::cout << "\nk: " << k << "\n";
-        std::cout << "x: [" << x[0] << ", " << x[1] << "]\n";
-        std::cout << "fx: " << fx << "\n";
-        std::cout << "grad_fx: [" << grad_fx[0] << ", " << grad_fx[1] << "]\n";
-        std::cout << "s: [" << s[0] << ", " << s[1] << "]\n";*/
-        {
-            std::stringstream msg;
-            msg << k << " steps, f(x) = " << fx;
-            //msg << k << " steps, f(x) = " << fx << ", |grad f(x)| = " << grad_fx_norm;
-            tools::printer.printStatusUpdate(msg.str());
-        }
+        // status printing
+        tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fx));
         
-        //if (!lineSearchGolden(*f, tol, x, fx, s, y))
+        // line search
         if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, grad_fx, s, y))
-        //if (!lineSearchPowellWolfe(*f, *f_gradient, 1e-4, 0.1, x, fx, grad_fx, s, y))
-        //if (!lineSearchNewton(*f_hessian, tol, x, s, y))
         {
+            // line search failed ==> exit
+            // (either a "real" error occured or the improvement achieved is too small)
             break;
         }
         
@@ -84,25 +81,22 @@ double GradientMethod::optimize(std::vector<double> &xopt)
     
     xopt = x;
     
-    {
-        std::stringstream msg;
-        msg << k << " steps, f(x) = " << fx;
-        tools::printer.printStatusUpdate(msg.str());
-        tools::printer.printStatusEnd();
-    }
+    tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fx));
+    tools::printer.printStatusEnd();
     
     return fx;
 }
 
-std::unique_ptr<Optimizer> GradientMethod::clone()
+tools::SmartPointer<Optimizer> GradientMethod::clone()
 {
-    std::unique_ptr<Optimizer> result(
+    tools::SmartPointer<Optimizer> result(
             new GradientMethod(*f, *f_gradient, N, beta, gamma, tol, eps));
     result->setStartingPoint(x0);
     return result;
 }
 
-const std::unique_ptr<function::ObjectiveGradient> &GradientMethod::getObjectiveGradient() const
+const tools::SmartPointer<function::ObjectiveGradient>
+        &GradientMethod::getObjectiveGradient() const
 {
     return f_gradient;
 }

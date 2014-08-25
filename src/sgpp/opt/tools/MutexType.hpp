@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #ifndef SGPP_OPT_TOOLS_MUTEXTYPE_HPP
 #define SGPP_OPT_TOOLS_MUTEXTYPE_HPP
 
@@ -14,28 +21,90 @@ namespace tools
 
 #ifdef _OPENMP
 
+/**
+ * Wrapper for OpenMP nested locks.
+ * Once locked, other threads block when trying to lock the same MutexType.
+ * However, the MutexType can be locked multiple times by the same thread without blocking.
+ * In this case, it has to be unlocked the same number of times to let the other threads
+ * continuing execution.
+ * 
+ * Adopted from http://bisqwit.iki.fi/story/howto/openmp/#Locks.
+ */
 class MutexType
 {
 public:
-    MutexType() { omp_init_nest_lock(&_lock); }
-    ~MutexType() { omp_destroy_nest_lock(&_lock); }
-    void lock() { omp_set_nest_lock(&_lock); }
-    void unlock() { omp_unset_nest_lock(&_lock); }
+    /**
+     * Constructor.
+     */
+    MutexType()
+    {
+        omp_init_nest_lock(&_lock);
+    }
     
-    MutexType(const MutexType &other) { (void)other; omp_init_nest_lock(&_lock); }
-    MutexType &operator=(const MutexType &other) { (void)other; return *this; }
+    /**
+     * Custom copy constructor to prevent copying the lock.
+     * 
+     * @param other     object to be copied
+     */
+    MutexType(const MutexType &other)
+    {
+        (void)other;
+        omp_init_nest_lock(&_lock);
+    }
+    
+    /**
+     * Custom assignment operator to prevent copying the lock
+     * 
+     * @param other     object to be assigned to
+     */
+    MutexType &operator=(const MutexType &other)
+    {
+        (void)other;
+        return *this;
+    }
+    
+    /**
+     * Destructor.
+     */
+    ~MutexType()
+    {
+        omp_destroy_nest_lock(&_lock);
+    }
+    
+    /**
+     * Lock the MutexType.
+     */
+    void lock()
+    {
+        omp_set_nest_lock(&_lock);
+    }
+    
+    /**
+     * Unlock the MutexType.
+     */
+    void unlock()
+    {
+        omp_unset_nest_lock(&_lock);
+    }
     
 protected:
+    /// OpenMP lock
     omp_nest_lock_t _lock;
 };
 
 #else
 
+// dummy definition in case SG++ is compiled without OpenMP
 class MutexType
 {
 public:
-    void lock() {}
-    void unlock() {}
+    void lock()
+    {
+    }
+    
+    void unlock()
+    {
+    }
 };
 
 #endif

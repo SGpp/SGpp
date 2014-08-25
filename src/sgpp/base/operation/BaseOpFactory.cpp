@@ -12,9 +12,6 @@
 #include "base/grid/type/PolyGrid.hpp"
 #include "base/grid/type/ModPolyGrid.hpp"
 #include "base/grid/type/PrewaveletGrid.hpp"
-#include "base/grid/type/BsplineGrid.hpp"
-#include "base/grid/type/BsplineBoundaryGrid.hpp"
-#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
 #include "base/grid/type/ModBsplineGrid.hpp"
 
 #include "base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp"
@@ -22,7 +19,6 @@
 #include "base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp"
 #include "base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "base/basis/linear/clenshawcurtis/operation/OperationHierarchisationLinearClenshawCurtis.hpp"
 #include "base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp"
 #include "base/basis/poly/operation/OperationHierarchisationPoly.hpp"
@@ -42,36 +38,14 @@
 
 #include "base/basis/linear/noboundary/operation/OperationEvalLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp"
-#include "base/basis/linear/clenshawcurtis/operation/OperationEvalLinearClenshawCurtis.hpp"
 #include "base/basis/modlinear/operation/OperationEvalModLinear.hpp"
 #include "base/basis/poly/operation/OperationEvalPoly.hpp"
 #include "base/basis/modpoly/operation/OperationEvalModPoly.hpp"
-#include "base/basis/bspline/noboundary/operation/OperationEvalBspline.hpp"
-#include "base/basis/bspline/boundary/operation/OperationEvalBsplineBoundary.hpp"
-#include "base/basis/bspline/clenshawcurtis/operation/OperationEvalBsplineClenshawCurtis.hpp"
 #include "base/basis/modbspline/operation/OperationEvalModBspline.hpp"
-#include "base/basis/wavelet/noboundary/operation/OperationEvalWavelet.hpp"
-#include "base/basis/wavelet/boundary/operation/OperationEvalWaveletBoundary.hpp"
 #include "base/basis/modwavelet/operation/OperationEvalModWavelet.hpp"
 #include "base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp"
 #include "base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp"
 #include "base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp"
-
-#include "base/basis/bspline/noboundary/operation/OperationEvalGradientBspline.hpp"
-#include "base/basis/bspline/boundary/operation/OperationEvalGradientBsplineBoundary.hpp"
-#include "base/basis/bspline/clenshawcurtis/operation/OperationEvalGradientBsplineClenshawCurtis.hpp"
-#include "base/basis/modbspline/operation/OperationEvalGradientModBspline.hpp"
-#include "base/basis/wavelet/noboundary/operation/OperationEvalGradientWavelet.hpp"
-#include "base/basis/wavelet/boundary/operation/OperationEvalGradientWaveletBoundary.hpp"
-#include "base/basis/modwavelet/operation/OperationEvalGradientModWavelet.hpp"
-
-#include "base/basis/bspline/noboundary/operation/OperationEvalHessianBspline.hpp"
-#include "base/basis/bspline/boundary/operation/OperationEvalHessianBsplineBoundary.hpp"
-#include "base/basis/bspline/clenshawcurtis/operation/OperationEvalHessianBsplineClenshawCurtis.hpp"
-#include "base/basis/modbspline/operation/OperationEvalHessianModBspline.hpp"
-#include "base/basis/wavelet/noboundary/operation/OperationEvalHessianWavelet.hpp"
-#include "base/basis/wavelet/boundary/operation/OperationEvalHessianWaveletBoundary.hpp"
-#include "base/basis/modwavelet/operation/OperationEvalHessianModWavelet.hpp"
 
 #include "base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
 #include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
@@ -105,8 +79,6 @@ namespace sg {
                  || strcmp(grid.getType(), "TruncatedTrapezoid") == 0
                  || strcmp(grid.getType(), "squareRoot") == 0) {
         return new base::OperationHierarchisationLinearBoundary(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
-        return new base::OperationHierarchisationLinearClenshawCurtis(grid.getStorage());
       }
 
       else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
@@ -184,6 +156,7 @@ namespace sg {
     }
 
     base::OperationMatrix* createOperationIdentity(base::Grid& grid) {
+      (void)grid;
       return new base::OperationIdentity();
     }
 
@@ -196,8 +169,6 @@ namespace sg {
                  || strcmp(grid.getType(), "TruncatedTrapezoid") == 0
                  || strcmp(grid.getType(), "squareRoot") == 0) {
         return new base::OperationEvalLinearBoundary(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
-        return new base::OperationEvalLinearClenshawCurtis(grid.getStorage());
       } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
         return new base::OperationEvalModLinear(grid.getStorage());
       } else if (strcmp(grid.getType(), "poly") == 0 ) {
@@ -206,23 +177,9 @@ namespace sg {
       } else if (strcmp(grid.getType(), "modpoly") == 0 ) {
         return new base::OperationEvalModPoly(grid.getStorage(),
                                               ((base::ModPolyGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "Bspline") == 0 ) {
-        return new base::OperationEvalBspline(grid.getStorage(),
-               ((base::BsplineGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "BsplineBoundary") == 0 ) {
-        return new base::OperationEvalBsplineBoundary(grid.getStorage(),
-               ((base::BsplineBoundaryGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0 ) {
-        return new base::OperationEvalBsplineClenshawCurtis(grid.getStorage(),
-               ((base::BsplineClenshawCurtisGrid*) &grid)->getDegree(),
-               ((base::BsplineClenshawCurtisGrid*) &grid)->getCosineTable());
       } else if (strcmp(grid.getType(), "modBspline") == 0 ) {
         return new base::OperationEvalModBspline(grid.getStorage(),
                ((base::ModBsplineGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "Wavelet") == 0 ) {
-        return new base::OperationEvalWavelet(grid.getStorage());
-      } else if (strcmp(grid.getType(), "WaveletBoundary") == 0 ) {
-        return new base::OperationEvalWaveletBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "modWavelet") == 0 ) {
         return new base::OperationEvalModWavelet(grid.getStorage());
       }
@@ -237,56 +194,6 @@ namespace sg {
         throw base::factory_exception("OperationEval is not implemented for this grid type.");
     }
 
-    base::OperationEvalGradient* createOperationEvalGradient(base::Grid& grid) {
-
-      if (strcmp(grid.getType(), "Bspline") == 0 ) {
-        return new base::OperationEvalGradientBspline(grid.getStorage(),
-               ((base::BsplineGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "BsplineBoundary") == 0 ) {
-        return new base::OperationEvalGradientBsplineBoundary(grid.getStorage(),
-               ((base::BsplineBoundaryGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0 ) {
-        return new base::OperationEvalGradientBsplineClenshawCurtis(grid.getStorage(),
-               ((base::BsplineClenshawCurtisGrid*) &grid)->getDegree(),
-               ((base::BsplineClenshawCurtisGrid*) &grid)->getCosineTable());
-      } else if (strcmp(grid.getType(), "modBspline") == 0 ) {
-        return new base::OperationEvalGradientModBspline(grid.getStorage(),
-               ((base::ModBsplineGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "Wavelet") == 0 ) {
-        return new base::OperationEvalGradientWavelet(grid.getStorage());
-      } else if (strcmp(grid.getType(), "WaveletBoundary") == 0 ) {
-        return new base::OperationEvalGradientWaveletBoundary(grid.getStorage());
-      } else if (strcmp(grid.getType(), "modWavelet") == 0 ) {
-        return new base::OperationEvalGradientModWavelet(grid.getStorage());
-      } else
-        throw base::factory_exception("OperationEvalGradient is not implemented for this grid type.");
-    }
-
-    base::OperationEvalHessian* createOperationEvalHessian(base::Grid& grid) {
-
-      if (strcmp(grid.getType(), "Bspline") == 0 ) {
-        return new base::OperationEvalHessianBspline(grid.getStorage(),
-               ((base::BsplineGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "BsplineBoundary") == 0 ) {
-        return new base::OperationEvalHessianBsplineBoundary(grid.getStorage(),
-               ((base::BsplineBoundaryGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "BsplineClenshawCurtis") == 0 ) {
-        return new base::OperationEvalHessianBsplineClenshawCurtis(grid.getStorage(),
-               ((base::BsplineClenshawCurtisGrid*) &grid)->getDegree(),
-               ((base::BsplineClenshawCurtisGrid*) &grid)->getCosineTable());
-      } else if (strcmp(grid.getType(), "modBspline") == 0 ) {
-        return new base::OperationEvalHessianModBspline(grid.getStorage(),
-               ((base::ModBsplineGrid*) &grid)->getDegree());
-      } else if (strcmp(grid.getType(), "Wavelet") == 0 ) {
-        return new base::OperationEvalHessianWavelet(grid.getStorage());
-      } else if (strcmp(grid.getType(), "WaveletBoundary") == 0 ) {
-        return new base::OperationEvalHessianWaveletBoundary(grid.getStorage());
-      } else if (strcmp(grid.getType(), "modWavelet") == 0 ) {
-        return new base::OperationEvalHessianModWavelet(grid.getStorage());
-      } else
-        throw base::factory_exception("OperationEvalHessian is not implemented for this grid type.");
-    }
-    
     base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix* dataset) {
 
       if (strcmp(grid.getType(), "linear") == 0) {

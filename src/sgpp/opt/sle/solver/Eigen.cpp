@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/sle/solver/Eigen.hpp"
 #include "opt/sle/system/Cloneable.hpp"
 #include "opt/tools/Printer.hpp"
@@ -19,49 +26,67 @@ namespace solver
 {
 
 #ifdef USEEIGEN
-bool solveInternal(const ::Eigen::MatrixXd &A, const std::vector<double> &b,
+/**
+ * @param       A       coefficient matrix
+ * @param       A_QR    Householder QR decomposition of coefficient matrix
+ * @param       b       right-hand side
+ * @param[out]  x       solution of the linear system
+ * @return              whether all went well (false if errors occurred)
+ */
+bool solveInternal(const ::Eigen::MatrixXd &A,
+                   const ::Eigen::HouseholderQR< ::Eigen::MatrixXd> &A_QR,
+                   const std::vector<double> &b,
                    std::vector<double> &x)
 {
-    tools::printer.printStatusUpdate("step 1: Householder QR factorization");
-    
-    ::Eigen::HouseholderQR< ::Eigen::MatrixXd> A_QR = A.householderQr();
-    //::Eigen::FullPivLU< ::Eigen::MatrixXd> A_LU = A.fullPivLu();
-    
-    tools::printer.printStatusNewLine();
-    tools::printer.printStatusUpdate("step 2: solving");
-    
+    // solve system
     ::Eigen::VectorXd b_eigen = ::Eigen::VectorXd::Map(&b[0], b.size());
     ::Eigen::VectorXd x_eigen = A_QR.solve(b_eigen);
-    //Eigen::VectorXd x_eigen = A_LU.solve(b_eigen);
     
+    // check solution
     if ((A*x_eigen).isApprox(b_eigen))
     {
         x = std::vector<double>(x_eigen.data(), x_eigen.data() + x_eigen.size());
-        tools::printer.printStatusEnd();
         return true;
     } else
     {
-        tools::printer.printStatusEnd("error: could not solve linear system!");
         return false;
     }
 }
 #endif
 
-bool Eigen::solve(system::System &system, std::vector<double> &x) const
+bool Eigen::solve(system::System &system, const std::vector<double> &b,
+                  std::vector<double> &x) const
+{
+    std::vector<std::vector<double> > B;
+    std::vector<std::vector<double> > X;
+    B.push_back(b);
+    
+    if (solve(system, B, X))
+    {
+        x = X[0];
+        return true;
+    } else
+    {
+        return false;
+    }
+}
+
+bool Eigen::solve(system::System &system, const std::vector<std::vector<double> > &B,
+                  std::vector<std::vector<double> > &X) const
 {
 #ifdef USEEIGEN
     tools::printer.printStatusBegin("Solving linear system (Eigen)...");
     
-    size_t n = system.getDimension();
-    const std::vector<double> &b = system.getRHS();
+    const size_t n = system.getDimension();
     ::Eigen::MatrixXd A = ::Eigen::MatrixXd::Zero(n, n);
     size_t nnz = 0;
     
+    // parallelize only if the system is cloneable
     #pragma omp parallel if (system.isCloneable()) \
-            shared(system, n, A, nnz, tools::printer) default(none)
+            shared(system, A, nnz, tools::printer) default(none)
     {
         system::System *system2;
-        std::unique_ptr<system::System> cloned_system;
+        tools::SmartPointer<system::System> cloned_system;
         
         if (system.isCloneable())
         {
@@ -72,6 +97,7 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
             system2 = &system;
         }
         
+        // copy system matrix to Eigen matrix object
         #pragma omp for ordered schedule(dynamic)
         for (size_t i = 0; i < n; i++)
         {
@@ -79,6 +105,7 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
             {
                 A(i,j) = system2->getMatrixEntry(i, j);
                 
+                // count nonzero entries (not necessary, you can also remove that if you like)
                 if (A(i,j) != 0)
                 {
                     #pragma omp atomic
@@ -86,6 +113,7 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
                 }
             }
             
+            // status message
             if (i % 100 == 0)
             {
                 #pragma omp ordered
@@ -103,6 +131,7 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
     tools::printer.printStatusUpdate("constructing matrix (100.0%)");
     tools::printer.printStatusNewLine();
     
+    // print ratio of nonzero entries
     {
         char str[10];
         double nnz_ratio = static_cast<double>(nnz) /
@@ -112,60 +141,46 @@ bool Eigen::solve(system::System &system, std::vector<double> &x) const
         tools::printer.printStatusNewLine();
     }
     
-    bool result = solveInternal(A, b, x);
-    return result;
+    // calculate QR factorization of system matrix
+    tools::printer.printStatusUpdate("step 1: Householder QR factorization");
+    ::Eigen::HouseholderQR< ::Eigen::MatrixXd> A_QR = A.householderQr();
+    
+    std::vector<double> x;
+    X.clear();
+    
+    // solve system for each RHS
+    for (size_t i = 0; i < B.size(); i++)
+    {
+        const std::vector<double> &b = B[i];
+        tools::printer.printStatusNewLine();
+        
+        if (B.size() == 1)
+        {
+            tools::printer.printStatusUpdate("step 2: solving");
+        } else
+        {
+            tools::printer.printStatusUpdate("step 2: solving (RHS " + toString(i+1) +
+                                             " of " + toString(B.size()) + ")");
+        }
+        
+        if (solveInternal(A, A_QR, b, x))
+        {
+            X.push_back(x);
+        } else
+        {
+            tools::printer.printStatusEnd("error: could not solve linear system!");
+            return false;
+        }
+    }
+    
+    tools::printer.printStatusEnd();
+    return true;
 #else
     std::cerr << "Error in sg::opt::sle::solver::Eigen::solve: "
               << "SG++ was compiled without Eigen support!\n";
     return false;
 #endif
 }
-
-/*bool SolverEigen::solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
-                        const std::vector<double> &Tx, const std::vector<double> &b,
-                        std::vector<double> &x) const
-{
-#ifdef USEEIGEN
-    tools::printer.printStatusBegin("Solving linear system (Eigen)...");
-    
-    size_t nnz = Tx.size();
-    size_t n = b.size();
-    ::Eigen::MatrixXd A = ::Eigen::MatrixXd::Zero(n, n);
-    
-    for (size_t k = 0; k < nnz; k++)
-    {
-        if (k % 100 == 0)
-        {
-            char str[10];
-            snprintf(str, 10, "%.1f%%",
-                     static_cast<double>(k) / static_cast<double>(nnz) * 100.0);
-            tools::printer.printStatusUpdate("constructing full matrix (" +
-                                             std::string(str) + ")");
-        }
-        
-        A(Ti[k], Tj[k]) = Tx[k];
-    }
-    
-    tools::printer.printStatusUpdate("constructing full matrix (100.0%)");
-    tools::printer.printStatusNewLine();
-    
-    bool result = solveInternal(A, b, x);
-    
-    if (result)
-    {
-        tools::printer.printStatusEnd();
-        return true;
-    } else
-    {
-        tools::printer.printStatusEnd("error: could not solve linear system!");
-        return false;
-    }
-#else
-    std::cerr << "Error in sg::opt::sle::SolverEigen::solve: "
-              << "SG++ was compiled without Eigen support!\n";
-    return false;
-#endif
-}*/
 
 }
 }

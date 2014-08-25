@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #ifndef SGPP_OPT_SLE_SYSTEM_SYSTEM_HPP
 #define SGPP_OPT_SLE_SYSTEM_SYSTEM_HPP
 
@@ -13,19 +20,56 @@ namespace sle
 namespace system
 {
 
+/**
+ * Abstract class representing a system of linear equations.
+ * All row and column indices are zero based.
+ */
 class System
 {
 public:
-    System(size_t n) : n(n), b(std::vector<double>(n, 0.0)) {}
-    System(const std::vector<double> &b) : n(b.size()), b(b) {}
-    virtual ~System() {}
+    /**
+     * Constructor.
+     */
+    System()
+    {
+    }
     
+    /**
+     * Virtual destructor.
+     */
+    virtual ~System()
+    {
+    }
+    
+    /**
+     * Pure virtual method for checking if a matrix entry vanishes or not.
+     * 
+     * @param i     row index
+     * @param j     column index
+     * @return      whether the (i,j)-th entry of the matrix is non-zero
+     */
     virtual bool isMatrixEntryNonZero(size_t i, size_t j) = 0;
+    
+    /**
+     * Pure virtual method for retrieving a matrix entry.
+     * 
+     * @param i     row index
+     * @param j     column index
+     * @return      (i,j)-th entry of the matrix
+     */
     virtual double getMatrixEntry(size_t i, size_t j) = 0;
     
+    /**
+     * Multiply the matrix with a vector.
+     * Standard implementation with \f$\mathcal{O}(n^2)\f$ scalar multiplications.
+     * 
+     * @param       x   vector to be multiplied
+     * @param[out]  y   \f$y = Ax\f$
+     */
     virtual void matrixVectorMultiplication(const std::vector<double> &x,
                                             std::vector<double> &y)
     {
+        const size_t n = getDimension();
         y = std::vector<double>(n, 0.0);
         
         for (size_t i = 0; i < n; i++)
@@ -37,8 +81,13 @@ public:
         }
     }
     
+    /**
+     * Count all non-zero entries.
+     * Standard implementation with \f$\mathcal{O}(n^2)\f$ checks.
+     */
     virtual size_t countNNZ()
     {
+        const size_t n = getDimension();
         size_t nnz = 0;
         
         for (size_t i = 0; i < n; i++)
@@ -55,16 +104,20 @@ public:
         return nnz;
     }
     
-    virtual const std::vector<double> &getRHS() const { return b; }
-    virtual void setRHS(const std::vector<double> &b) { this->b = b; }
+    /**
+     * Pure virtual method returning the dimension (number of rows/columns) of the system.
+     * 
+     * @return  system dimension
+     */
+    virtual size_t getDimension() const = 0;
     
-    virtual size_t getDimension() const { return n; }
-    
-    virtual bool isCloneable() const { return false; }
-    
-protected:
-    size_t n;
-    std::vector<double> b;
+    /**
+     * @return whether this system derives from Cloneable or not (standard: false)
+     */
+    virtual bool isCloneable() const
+    {
+        return false;
+    }
 };
 
 }

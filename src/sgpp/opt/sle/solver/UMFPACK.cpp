@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/sle/solver/UMFPACK.hpp"
 #include "opt/sle/system/Cloneable.hpp"
 #include "opt/tools/Printer.hpp"
@@ -19,24 +26,69 @@ namespace sle
 namespace solver
 {
 
-bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
+#ifdef USEUMFPACK
+typedef UF_long sslong;
+
+/**
+ * @param       numeric result of umfpack_dl_numeric()
+ * @param       Ap      CCS column pointers
+ * @param       Ai      CCS row indices
+ * @param       Ax      CCS matrix entries
+ * @param       b       right-hand side
+ * @param[out]  x       solution to the system
+ * @return              whether all went well (false if errors occurred)
+ */
+bool solveInternal(void *numeric, const std::vector<sslong> &Ap, const std::vector<sslong> &Ai,
+                   const std::vector<double> &Ax, const std::vector<double> &b,
+                   std::vector<double> &x)
+{
+    const size_t n = b.size();
+    x = std::vector<double>(n, 0.0);
+    
+    sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0], &Ax[0], &x[0], &b[0],
+                                     numeric, NULL, NULL);
+    return (result == UMFPACK_OK);
+}
+#endif
+
+bool UMFPACK::solve(system::System &system, const std::vector<double> &b,
+                    std::vector<double> &x) const
+{
+    // place RHS in its own vector
+    std::vector<std::vector<double> > B;
+    std::vector<std::vector<double> > X;
+    B.push_back(b);
+    
+    // call version for multiple RHSs
+    if (solve(system, B, X))
+    {
+        x = X[0];
+        return true;
+    } else
+    {
+        return false;
+    }
+}
+
+bool UMFPACK::solve(system::System &system, const std::vector<std::vector<double> > &B,
+                    std::vector<std::vector<double> > &X) const
 {
 #ifdef USEUMFPACK
     tools::printer.printStatusBegin("Solving linear system (UMFPACK)...");
     
-    size_t n = system.getDimension();
-    const std::vector<double> &b = system.getRHS();
+    const size_t n = system.getDimension();
     
     size_t nnz = 0;
     std::vector<uint32_t> Ti;
     std::vector<uint32_t> Tj;
     std::vector<double> Tx;
     
+    // parallelize only if the system is cloneable
     #pragma omp parallel if (system.isCloneable()) \
-            shared(system, n, Ti, Tj, Tx, nnz, tools::printer) default(none)
+            shared(system, Ti, Tj, Tx, nnz, tools::printer) default(none)
     {
         system::System *system2;
-        std::unique_ptr<system::System> cloned_system;
+        tools::SmartPointer<system::System> cloned_system;
         
         if (system.isCloneable())
         {
@@ -47,6 +99,7 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
             system2 = &system;
         }
         
+        // get indices and values of nonzero entries
         #pragma omp for ordered schedule(dynamic)
         for (uint32_t i = 0; i < n; i++)
         {
@@ -66,6 +119,7 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
                 }
             }
             
+            // status message
             if (i % 100 == 0)
             {
                 #pragma omp ordered
@@ -80,15 +134,10 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
         }
     }
     
-    // TODO: remove this if not needed anymore
-    tools::printer.printVectorToFile("data/Ti.dat", Ti);
-    tools::printer.printVectorToFile("data/Tj.dat", Tj);
-    tools::printer.printVectorToFile("data/Tx.dat", Tx);
-    tools::printer.printVectorToFile("data/b.dat", b);
-    
     tools::printer.printStatusUpdate("constructing sparse matrix (100.0%)");
     tools::printer.printStatusNewLine();
     
+    // print ratio of nonzero entries
     {
         char str[10];
         double nnz_ratio = static_cast<double>(nnz) /
@@ -98,43 +147,16 @@ bool UMFPACK::solve(system::System &system, std::vector<double> &x) const
         tools::printer.printStatusNewLine();
     }
     
-    bool result = solve(Ti, Tj, Tx, b, x, false);
-    
-    return result;
-#else
-    std::cerr << "Error in sg::opt::sle::SolverUMFPACK::solve: "
-              << "SG++ was compiled without UMFPACK support!\n";
-    return false;
-#endif
-}
-
-bool UMFPACK::solve(
-        const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
-        const std::vector<double> &Tx, const std::vector<double> &b,
-        std::vector<double> &x, bool initial_output) const
-{
-#ifdef USEUMFPACK
-    if (initial_output)
-    {
-        tools::printer.printStatusBegin("Solving sparse linear system (UMFPACK)...");
-    }
-    
-    typedef UF_long sslong;
-    
-    size_t n = b.size();
-    size_t nnz = Tx.size();
-    
-    x = std::vector<double>(n, 0.0);
-    
-    std::unique_ptr<sslong[]> Ap(new sslong[n+1]);
-    std::unique_ptr<sslong[]> Ai(new sslong[nnz]);
-    std::unique_ptr<double[]> Ax(new double[nnz]);
+    std::vector<sslong> Ap(n+1);
+    std::vector<sslong> Ai(nnz);
+    std::vector<double> Ax(nnz);
     
     sslong result;
     
+    // convert matrix to CCS
     {
-        std::unique_ptr<sslong[]> Ti_array(new sslong[nnz]);
-        std::unique_ptr<sslong[]> Tj_array(new sslong[nnz]);
+        std::vector<sslong> Ti_array(nnz);
+        std::vector<sslong> Tj_array(nnz);
         
         for (size_t k = 0; k < nnz; k++)
         {
@@ -146,72 +168,78 @@ bool UMFPACK::solve(
         
         result = umfpack_dl_triplet_to_col(
                 static_cast<sslong>(n), static_cast<sslong>(n), static_cast<sslong>(nnz),
-                Ti_array.get(), Tj_array.get(), &Tx[0],
-                Ap.get(), Ai.get(), Ax.get(), NULL);
+                &Ti_array[0], &Tj_array[0], &Tx[0],
+                &Ap[0], &Ai[0], &Ax[0], NULL);
         
         if (result != UMFPACK_OK)
         {
-            std::stringstream msg;
-            msg << "error: could not convert to CCS via umfpack_dl_triplet_to_col, error code "
-                    << result;
-            tools::printer.printStatusEnd(msg.str());
+            tools::printer.printStatusEnd(
+                    "error: could not convert to CCS via umfpack_dl_triplet_to_col, error code " +
+                    toString(result));
             return false;
         }
     }
-    
-    /*if (status_output && (verbosity_level >= 2))
-    {
-        Output::printStatusUpdate("solving linear system (step 2, " +
-                            std::to_string(m) + "x" + std::to_string(n) +
-                            ", nnz = " + std::to_string(nnz) + ")");
-    }*/
     
     void *symbolic, *numeric;
     
     tools::printer.printStatusNewLine();
     tools::printer.printStatusUpdate("step 2: umfpack_dl_symbolic");
     
+    // call umfpack_dl_symbolic
     result = umfpack_dl_symbolic(static_cast<sslong>(n), static_cast<sslong>(n),
-                                 Ap.get(), Ai.get(), Ax.get(), &symbolic, NULL, NULL);
+                                 &Ap[0], &Ai[0], &Ax[0], &symbolic, NULL, NULL);
     
     if (result != UMFPACK_OK)
     {
-        std::stringstream msg;
-        msg << "error: could solve via umfpack_dl_symbolic, error code " << result;
-        tools::printer.printStatusEnd(msg.str());
+        tools::printer.printStatusEnd("error: could solve via umfpack_dl_symbolic, error code " +
+                                      toString(result));
         return false;
     }
     
     tools::printer.printStatusNewLine();
     tools::printer.printStatusUpdate("step 3: umfpack_dl_numeric");
     
-    result = umfpack_dl_numeric(Ap.get(), Ai.get(), Ax.get(), symbolic,
-                                &numeric, NULL, NULL);
+    // call umfpack_dl_numeric
+    result = umfpack_dl_numeric(&Ap[0], &Ai[0], &Ax[0], symbolic, &numeric, NULL, NULL);
     
     if (result != UMFPACK_OK)
     {
-        std::stringstream msg;
-        msg << "error: could solve via umfpack_dl_numeric, error code " << result;
-        tools::printer.printStatusEnd(msg.str());
+        tools::printer.printStatusEnd("error: could solve via umfpack_dl_numeric, error code " +
+                                      toString(result));
         umfpack_dl_free_symbolic(&symbolic);
         return false;
     }
     
     umfpack_dl_free_symbolic(&symbolic);
     
-    tools::printer.printStatusNewLine();
-    tools::printer.printStatusUpdate("step 4: umfpack_dl_solve");
+    std::vector<double> x;
+    X.clear();
     
-    result = umfpack_dl_solve(UMFPACK_A, Ap.get(), Ai.get(), Ax.get(), &x[0], &b[0],
-                              numeric, NULL, NULL);
-    
-    if (result != UMFPACK_OK)
+    // call umfpack_dl_solve for each RHS
+    for (size_t i = 0; i < B.size(); i++)
     {
-        std::stringstream msg;
-        msg << "error: could solve via umfpack_dl_solve, error code " << result;
-        tools::printer.printStatusEnd(msg.str());
-        umfpack_dl_free_numeric(&numeric);
-        return false;
+        const std::vector<double> &b = B[i];
+        tools::printer.printStatusNewLine();
+        
+        if (B.size() == 1)
+        {
+            tools::printer.printStatusUpdate("step 4: umfpack_dl_solve");
+        } else
+        {
+            tools::printer.printStatusUpdate("step 4: umfpack_dl_solve (RHS " + toString(i+1) +
+                                             " of " + toString(B.size()) + ")");
+        }
+        
+        if (solveInternal(numeric, Ap, Ai, Ax, b, x))
+        {
+            X.push_back(x);
+        } else
+        {
+            tools::printer.printStatusEnd("error: could solve via umfpack_dl_solve, error code " +
+                                          toString(result));
+            umfpack_dl_free_numeric(&numeric);
+            return false;
+        }
     }
     
     umfpack_dl_free_numeric(&numeric);

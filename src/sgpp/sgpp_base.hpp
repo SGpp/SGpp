@@ -9,7 +9,6 @@
 #define BASE_HPP
 
 
-#include "base/basis/Basis.hpp"
 #include "base/basis/linear/noboundary/LinearBasis.hpp"
 #include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
@@ -17,11 +16,7 @@
 #include "base/basis/modlinear/ModifiedLinearBasis.hpp"
 #include "base/basis/poly/PolyBasis.hpp"
 #include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/wavelet/noboundary/WaveletBasis.hpp"
-#include "base/basis/wavelet/boundary/WaveletBoundaryBasis.hpp"
 #include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-#include "base/basis/bspline/noboundary/BsplineBasis.hpp"
-#include "base/basis/bspline/boundary/BsplineBoundaryBasis.hpp"
 #include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
 #include "base/basis/prewavelet/PrewaveletBasis.hpp"
 #include "base/grid/GridStorage.hpp"

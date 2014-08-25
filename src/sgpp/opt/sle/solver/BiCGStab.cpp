@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/sle/solver/BiCGStab.hpp"
 #include "opt/tools/Printer.hpp"
 
@@ -15,13 +22,29 @@ namespace solver
 
 const double BiCGStab::DEFAULT_TOLERANCE = 1e-10;
 
-bool solveInternal(system::System &system, size_t N, double tol,
-                   const std::vector<double> &x0, std::vector<double> &x)
+BiCGStab::BiCGStab() :
+    Solver(),
+    N(DEFAULT_MAX_IT_COUNT),
+    tol(DEFAULT_TOLERANCE),
+    x0(std::vector<double>())
 {
-    size_t n = system.getDimension();
-    const std::vector<double> &b = system.getRHS();
+}
+
+BiCGStab::BiCGStab(size_t max_it_count, double tolerance, const std::vector<double> &x0) :
+    Solver(),
+    N(max_it_count),
+    tol(tolerance),
+    x0(x0)
+{
+}
+
+bool BiCGStab::solve(system::System &system, const std::vector<double> &b,
+                     std::vector<double> &x) const
+{
+    tools::printer.printStatusBegin("Solving linear system (BiCGStab)...");
+    
+    const size_t n = b.size();
     std::vector<double> r(n, 0.0);
-    //double b_norm_squared = std::inner_product(b.begin(), b.end(), b.begin(), 0.0);
     
     std::vector<double> my_x0 = x0;
     
@@ -70,10 +93,10 @@ bool solveInternal(system::System &system, size_t N, double tol,
         system.matrixVectorMultiplication(s, t);
         omega = std::inner_product(t.begin(), t.end(), s.begin(), 0.0) /
                 std::inner_product(t.begin(), t.end(), t.begin(), 0.0);
-        //if (k <= 10) std::cout << "\n" << k << " " << std::inner_product(t.begin(), t.end(), t.begin(), 0.0) << "\n";
         
         if (std::isnan(omega))
         {
+            tools::printer.printStatusEnd("error: could not solve linear system!");
             return false;
         }
         
@@ -85,111 +108,19 @@ bool solveInternal(system::System &system, size_t N, double tol,
         
         r_norm_squared = std::inner_product(r.begin(), r.end(), r.begin(), 0.0);
         
-        /*if (status_output && (verbosity_level >= 2) && (k % 10 == 0))
-        {
-            std::stringstream msg;
-            msg << "residual norm = " << sqrt(r_norm_squared);
-            Output::printStatusUpdate(msg.str());
-        }*/
-        tools::printer.printStatusUpdate("k = " + std::to_string(k) + ", residual norm = " +
-                                         std::to_string(sqrt(r_norm_squared)));
+        tools::printer.printStatusUpdate("k = " + toString(k) + ", residual norm = " +
+                                         toString(sqrt(r_norm_squared)));
         
-        //if (r_norm_squared / b_norm_squared < tol*tol)
         if (r_norm_squared < tol*tol)
         {
             break;
         }
     }
     
-    tools::printer.printStatusUpdate("residual norm = " + std::to_string(sqrt(r_norm_squared)));
-    
+    tools::printer.printStatusUpdate("residual norm = " + toString(sqrt(r_norm_squared)));
+    tools::printer.printStatusEnd();
     return true;
 }
-
-BiCGStab::BiCGStab() :
-    Solver(),
-    N(DEFAULT_MAX_IT_COUNT),
-    tol(DEFAULT_TOLERANCE),
-    x0(std::vector<double>())
-{
-}
-
-BiCGStab::BiCGStab(size_t max_it_count, double tolerance, const std::vector<double> &x0) :
-    Solver(),
-    N(max_it_count),
-    tol(tolerance),
-    x0(x0)
-{
-}
-
-bool BiCGStab::solve(system::System &system, std::vector<double> &x) const
-{
-    tools::printer.printStatusBegin("Solving linear system (BiCGStab)...");
-    
-    bool result = solveInternal(system, N, tol, x0, x);
-    
-    if (result)
-    {
-        tools::printer.printStatusEnd();
-        return true;
-    } else
-    {
-        tools::printer.printStatusEnd("error: could not solve linear system!");
-        return false;
-    }
-}
-
-/*bool SolverBiCGStab::solve(const std::vector<uint32_t> &Ti, const std::vector<uint32_t> &Tj,
-                           const std::vector<double> &Tx, const std::vector<double> &b,
-                           std::vector<double> &x) const
-{
-    tools::printer.printStatusBegin("Solving sparse linear system (BiCGStab)...");
-    
-    size_t nnz = Tx.size();
-    size_t n = b.size();
-    base::DataMatrix A(n, n);
-    
-    A.setAll(0.0);
-    
-    for (size_t k = 0; k < nnz; k++)
-    {
-        if (k % 100 == 0)
-        {
-            char str[10];
-            snprintf(str, 10, "%.1f%%",
-                     static_cast<double>(k) / static_cast<double>(nnz) * 100.0);
-            tools::printer.printStatusUpdate("constructing full matrix (" +
-                                             std::string(str) + ")");
-        }
-        
-        A.set(Ti[k], Tj[k], Tx[k]);
-    }
-    
-    tools::printer.printStatusUpdate("constructing full matrix (100.0%)");
-    tools::printer.printStatusNewLine();
-    
-    std::stringstream msg;
-    double nnz_ratio = static_cast<double>(nnz) /
-                       (static_cast<double>(n) * static_cast<double>(n));
-    msg << "nnz ratio: " << static_cast<double>(static_cast<int>(nnz_ratio * 1000.0)) / 10.0
-        << "%";
-    tools::printer.printStatusUpdate(msg.str());
-    tools::printer.printStatusNewLine();
-    
-    FullSystem system(n, A, b);
-    
-    bool result = solveInternal(system, N, tol, x0, x);
-    
-    if (result)
-    {
-        tools::printer.printStatusEnd();
-        return true;
-    } else
-    {
-        tools::printer.printStatusEnd("error: could not solve linear system!");
-        return false;
-    }
-}*/
 
 size_t BiCGStab::getMaxItCount() const
 {
@@ -211,14 +142,14 @@ void BiCGStab::setTolerance(double tolerance)
     tol = tolerance;
 }
 
-const std::vector<double> &BiCGStab::getX0() const
+const std::vector<double> &BiCGStab::getStartingPoint() const
 {
     return x0;
 }
 
-void BiCGStab::setX0(const std::vector<double> &x0)
+void BiCGStab::setStartingPoint(const std::vector<double> &starting_point)
 {
-    this->x0 = x0;
+    x0 = starting_point;
 }
 
 }

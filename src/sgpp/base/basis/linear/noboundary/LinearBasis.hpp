@@ -8,8 +8,6 @@
 #ifndef LINEAR_BASE_HPP
 #define LINEAR_BASE_HPP
 
-#include "base/basis/Basis.hpp"
-
 #include <cmath>
 #include <algorithm>
 
@@ -20,7 +18,7 @@ namespace sg {
      * Piecewise linear basis functions.
      */
     template<class LT, class IT>
-    class LinearBasis : public Basis<LT, IT> {
+    class LinearBasis {
       public:
         /**
          * Evaluate a basis function.

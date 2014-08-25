@@ -1,16 +1,18 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #ifndef SGPP_OPT_FUNCTION_INTERPOLANT_HPP
 #define SGPP_OPT_FUNCTION_INTERPOLANT_HPP
 
 #include "opt/function/Objective.hpp"
 #include "base/datatypes/DataVector.hpp"
-//include "base/operation/OperationEval.hpp"
+#include "base/operation/OperationEval.hpp"
 #include "base/grid/Grid.hpp"
-
-/*#include "base/basis/Basis.hpp"
-#include "base/grid/type/BsplineGrid.hpp"
-#include "base/grid/type/BsplineBoundaryGrid.hpp"
-#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
-#include "base/grid/type/ModBsplineGrid.hpp"*/
+#include "opt/operation/OpFactory.hpp"
 
 #include <vector>
 #include <cstring>
@@ -22,123 +24,64 @@ namespace opt
 namespace function
 {
 
+/**
+ * Sparse grid interpolant as an objective function.
+ * 
+ * More generally, the function can be any linear combination
+ * \f$f\colon [0, 1]^d \to \mathbb{R}\f$,
+ * \f$f(\vec{x}) = \sum_{k=1}^N \alpha_k \varphi_k(\vec{x})\f$ of the basis functions
+ * \f$\varphi_k = \varphi_{\vec{\ell}_k,\vec{i}_k}\f$ of a sparse grid with grid points
+ * \f$\vec{x}_k = \vec{x}_{\vec{\ell}_k,\vec{i}_k}\f$.
+ * But most often, the function (e.g. its coefficients) is constructed as an interpolant
+ * at the grid points for some function values.
+ */
 class Interpolant : public Objective
 {
 public:
-    /*Interpolant(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
-        Objective(d),
-        op_eval(op_eval),
-        alpha(alpha)
-    {
-    }*/
-    
+    /**
+     * Constructor.
+     * Do not destruct the grid before the Interpolant object!
+     * 
+     * @param d     dimension of the domain
+     * @param grid  sparse grid
+     * @param alpha coefficient vector
+     */
     Interpolant(size_t d, base::Grid &grid, base::DataVector &alpha) :
         Objective(d),
         grid(grid),
-        op_eval(op_factory::createOperationEval(grid)),
+        op_eval(createOperationEval(grid)),
         alpha(alpha)
     {
     }
     
-    /*Interpolant(size_t d, base::OperationEval *op_eval, base::DataVector &alpha) :
-        Objective(d),
-        op_eval(op_eval),
-        grid(nullptr),
-        grid_storage(nullptr),
-        basis(nullptr),
-        alpha(alpha)
-    {
-    }
-    
-    Interpolant(size_t d, base::Grid *grid, base::DataVector &alpha) :
-        ObjectiveFunction(d),
-        op_eval(nullptr),
-        grid(grid),
-        grid_storage(grid->getStorage()),
-        basis(nullptr),
-        alpha(alpha)
-    {
-        if (strcmp(grid->getType(), "Bspline") == 0)
-        {
-            basis = new sg::base::SBsplineBase(
-                    ((base::BsplineGrid *)grid)->getDegree());
-        } else if (strcmp(grid->getType(), "BsplineBoundary") == 0)
-        {
-            basis = new sg::base::SBsplineBoundaryBase(
-                    ((base::BsplineBoundaryGrid *)grid)->getDegree());
-        } else if (strcmp(grid->getType(), "BsplineClenshawCurtis") == 0)
-        {
-            basis = new sg::base::SBsplineClenshawCurtisBase(
-                    ((base::BsplineClenshawCurtisGrid *)grid)->getDegree(),
-                    ((base::BsplineClenshawCurtisGrid *)grid)->getCosineTable());
-        } else if (strcmp(grid->getType(), "modBspline") == 0)
-        {
-            basis = new sg::base::SModBsplineBase(
-                    ((base::ModBsplineGrid *)grid)->getDegree());
-        } else if (strcmp(grid->getType(), "Wavelet") == 0)
-        {
-            basis = new sg::base::SWaveletBase();
-        } else if (strcmp(grid->getType(), "WaveletBoundary") == 0)
-        {
-            basis = new sg::base::SWaveletBoundaryBase();
-        } else if (strcmp(grid->getType(), "modWavelet") == 0)
-        {
-            basis = new sg::base::SModWaveletBase();
-        } else
-        {
-            throw std::invalid_argument("Grid type not supported.");
-        }
-    }*/
-    
+    /**
+     * Evaluation of the function.
+     * 
+     * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
+     * @return      \f$f(\vec{x})\f$
+     */
     inline double eval(const std::vector<double> &x)
     {
-        /*if (grid == nullptr)
-        {*/
+        // copy x, necessary due to non-existing const correctness in sg::base
         std::vector<double> y = x;
         return op_eval->eval(alpha, y);
-        /*} else
-        {
-            double result = 0.0;
-            
-            for (size_t i = 0; i < grid_storage->size(); i++)
-            {
-                const base::GridIndex *gp = grid_storage->get(i);
-                double cur_result = alpha[i];
-                
-                for (size_t t = 0; t < x.size(); t++)
-                {
-                    double cur_result1d = basis->eval(gp->getLevel(t), gp->getIndex(t), x[t]);
-                    
-                    if (cur_result1d == 0.0)
-                    {
-                        cur_result = 0.0;
-                        break;
-                    }
-                    
-                    cur_result *= cur_result1d;
-                }
-                
-                result += cur_result;
-            }
-            
-            return result;
-        }*/
     }
     
-    virtual std::unique_ptr<Objective> clone()
+    /**
+     * @return clone of the object
+     */
+    virtual tools::SmartPointer<Objective> clone()
     {
-        return std::unique_ptr<Objective>(new Interpolant(d, grid, alpha));
+        return tools::SmartPointer<Objective>(new Interpolant(d, grid, alpha));
     }
     
 protected:
+    /// sparse grid
     base::Grid &grid;
-    std::unique_ptr<base::OperationEval> op_eval;
-    
-    /*base::Grid *grid;
-    base::GridStorage *grid_storage;
-    base::SBase *basis;*/
-    
-    base::DataVector &alpha;
+    /// pointer to evaluation operation
+    tools::SmartPointer<base::OperationEval> op_eval;
+    /// coefficient vector
+    base::DataVector alpha;
 };
 
 }

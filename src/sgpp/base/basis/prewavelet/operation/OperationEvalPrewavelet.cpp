@@ -53,6 +53,9 @@ namespace sg {
 
     double OperationEvalPrewavelet::test(DataVector& alpha, DataVector& data,
                                          DataVector& classes) {
+      (void)alpha;
+      (void)data;
+      (void)classes;
       return 0;
     }
 

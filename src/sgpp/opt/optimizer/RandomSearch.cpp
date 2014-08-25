@@ -1,7 +1,16 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/optimizer/RandomSearch.hpp"
 #include "opt/tools/Printer.hpp"
+#include "opt/tools/RNG.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 
 namespace sg
@@ -11,64 +20,57 @@ namespace opt
 namespace optimizer
 {
 
-RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count) :
-    Optimizer(f, max_it_count),
-    optimizer(nullptr),
-    optimizer_to_use(&default_optimizer),
-    default_optimizer(NelderMead(f))
+RandomSearch::RandomSearch(function::Objective &f,
+                           size_t max_fcn_eval_count,
+                           size_t population_size) :
+    Optimizer(f, max_fcn_eval_count),
+    default_optimizer(NelderMead(f)),
+    optimizer(default_optimizer)
 {
-    initialize(std::random_device()(),
-               std::min(10*f.getDimension(), static_cast<size_t>(100)));
+    initialize(population_size);
 }
 
-RandomSearch::RandomSearch(function::Objective &f, size_t max_it_count,
-                           unsigned int seed) :
-    Optimizer(f, max_it_count),
-    optimizer(nullptr),
-    optimizer_to_use(&default_optimizer),
-    default_optimizer(NelderMead(f))
+RandomSearch::RandomSearch(Optimizer &optimizer,
+                           size_t max_fcn_eval_count,
+                           size_t population_size) :
+    Optimizer(*optimizer.getObjectiveFunction(), max_fcn_eval_count),
+    default_optimizer(NelderMead(*f)),
+    optimizer(optimizer)
 {
-    initialize(seed,
-               std::min(10*f.getDimension(), static_cast<size_t>(100)));
+    initialize(population_size);
 }
 
-RandomSearch::RandomSearch(size_t max_it_count, unsigned int seed,
-                           Optimizer &optimizer, size_t points_count) :
-    Optimizer(*optimizer.getObjectiveFunction(), max_it_count),
-    optimizer(optimizer.clone()),
-    optimizer_to_use(this->optimizer.get()),
-    default_optimizer(NelderMead(*f))
+void RandomSearch::initialize(size_t population_size)
 {
-    initialize(seed, points_count);
-}
-
-void RandomSearch::initialize(unsigned int seed, size_t points_count)
-{
-    this->seed = seed;
-    this->points_count = points_count;
+    if (population_size == 0)
+    {
+        this->population_size = std::min(10*f->getDimension(), static_cast<size_t>(100));
+    } else
+    {
+        this->population_size = population_size;
+    }
 }
 
 double RandomSearch::optimize(std::vector<double> &xopt)
 {
     tools::printer.printStatusBegin("Optimizing (random search)...");
     
-    std::mt19937 rng(seed);
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    
     size_t d = f->getDimension();
-    std::vector<std::vector<double> > x0(points_count, std::vector<double>(d, 0.0));
-    std::vector<size_t> round_N(points_count, 0);
+    std::vector<std::vector<double> > x0(population_size, std::vector<double>(d, 0.0));
+    std::vector<size_t> round_N(population_size, 0);
     size_t remaining_N = N;
     
-    for (size_t k = 0; k < points_count; k++)
+    // split the number of function evaluations evenly up for all points,
+    // generate pseudorandom starting points
+    for (size_t k = 0; k < population_size; k++)
     {
         round_N[k] = static_cast<size_t>(std::ceil(static_cast<double>(remaining_N) /
-                                         static_cast<double>(points_count - k)));
+                                         static_cast<double>(population_size - k)));
         remaining_N -= round_N[k];
         
         for (size_t t = 0; t < d; t++)
         {
-            x0[k][t] = dist(rng);
+            x0[k][t] = sg::opt::tools::rng.getUniformRN();
         }
     }
     
@@ -78,17 +80,17 @@ double RandomSearch::optimize(std::vector<double> &xopt)
     
     #pragma omp parallel shared(d, x0, round_N, xopt, fopt, tools::printer) default(none)
     {
-        std::unique_ptr<Optimizer> cur_optimizer(optimizer_to_use->clone());
+        tools::SmartPointer<Optimizer> cur_optimizer(optimizer.clone());
         
         std::vector<double> cur_xopt(d, 0.0);
         double cur_fopt;
         
         #pragma omp for ordered schedule(dynamic)
-        for (size_t k = 0; k < points_count; k++)
+        for (size_t k = 0; k < population_size; k++)
         {
-            //optimizer.setObjectiveFunction(f);
+            // optimize with k-th starting point
             cur_optimizer->setStartingPoint(x0[k]);
-            cur_optimizer->setMaxItCount(round_N[k]);
+            cur_optimizer->setN(round_N[k]);
             cur_optimizer->optimize(cur_xopt);
             
             cur_fopt = cur_optimizer->getObjectiveFunction()->eval(cur_xopt);
@@ -97,20 +99,22 @@ double RandomSearch::optimize(std::vector<double> &xopt)
             {
                 if (cur_fopt < fopt)
                 {
+                    // this point is the best so far
                     fopt = cur_fopt;
                     xopt = cur_xopt;
                 }
             }
             
+            // status printing
             #pragma omp ordered
             {
                 char str[10];
                 snprintf(str, 10, "%.1f%%",
-                         static_cast<double>(k) / static_cast<double>(points_count) * 100.0);
+                         static_cast<double>(k) / static_cast<double>(population_size) * 100.0);
                 tools::printer.getMutex().lock();
                 tools::printer.enableStatusPrinting();
                 tools::printer.printStatusUpdate(std::string(str) +
-                                                 ", f(x) = " + std::to_string(fopt));
+                                                 ", f(x) = " + toString(fopt));
                 tools::printer.disableStatusPrinting();
                 tools::printer.getMutex().unlock();
             }
@@ -118,22 +122,27 @@ double RandomSearch::optimize(std::vector<double> &xopt)
     }
     
     tools::printer.enableStatusPrinting();
-    
-    {
-        std::stringstream msg;
-        msg << "100.0%, f(x) = " << fopt;
-        tools::printer.printStatusUpdate(msg.str());
-        tools::printer.printStatusEnd();
-    }
+    tools::printer.printStatusUpdate("100.0%, f(x) = " + toString(fopt));
+    tools::printer.printStatusEnd();
     
     return fopt;
 }
 
-std::unique_ptr<Optimizer> RandomSearch::clone()
+tools::SmartPointer<Optimizer> RandomSearch::clone()
 {
-    std::unique_ptr<Optimizer> result(new RandomSearch(N, seed, *optimizer_to_use, points_count));
+    tools::SmartPointer<Optimizer> result(new RandomSearch(optimizer, N, population_size));
     result->setStartingPoint(x0);
     return result;
+}
+
+size_t RandomSearch::getPopulationSize() const
+{
+    return population_size;
+}
+
+void RandomSearch::setPopulationSize(size_t population_size)
+{
+    this->population_size = population_size;
 }
 
 }

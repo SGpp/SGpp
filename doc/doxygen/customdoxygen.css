@@ -1,6 +1,6 @@
 /* The standard CSS for doxygen */
 
-body, table, div, p, dl {
+body, table, p, dl {
 	font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
 	font-size: 12px;
 }

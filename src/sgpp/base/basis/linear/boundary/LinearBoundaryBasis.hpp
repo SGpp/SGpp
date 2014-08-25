@@ -8,8 +8,6 @@
 #ifndef LINEARBOUNDARYBASE_HPP
 #define LINEARBOUNDARYBASE_HPP
 
-#include "base/basis/Basis.hpp"
-
 #include <cmath>
 
 namespace sg {
@@ -22,7 +20,7 @@ namespace sg {
      * @version $HEAD$
      */
     template<class LT, class IT>
-    class LinearBoundaryBasis : public Basis<LT, IT> {
+    class LinearBoundaryBasis {
       public:
         /**
          * Evaluate a basis function.
