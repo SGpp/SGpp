@@ -1,3 +1,10 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/sle/solver/Gmmpp.hpp"
 #include "opt/sle/system/Cloneable.hpp"
 #include "opt/tools/Printer.hpp"
@@ -19,25 +26,34 @@ namespace solver
 {
 
 #ifdef USEGMMPP
+/**
+ * Gmm++ status printing callback.
+ * 
+ * @param iter  iteration information
+ */
 void callback(const gmm::iteration &iter)
 {
     tools::printer.printStatusUpdate("solving with Gmm++ "
-            "(k = " + std::to_string(iter.get_iteration()) +
-            ", residual norm = " + std::to_string(iter.get_res()) + ")");
+            "(k = " + toString(iter.get_iteration()) +
+            ", residual norm = " + toString(iter.get_res()) + ")");
 }
 
+/**
+ * @param       A   coefficient matrix
+ * @param       b   right-hand side
+ * @param[out]  x   solution of the linear system
+ * @return          whether all went well (false if errors occurred)
+ */
 bool solveInternal(const gmm::csr_matrix<double> &A,
                    const std::vector<double> &b, std::vector<double> &x)
 {
-    x.assign(b.size(), 0.0);
+    // allow warnings
     gmm::warning_level::level(1);
+    x.assign(b.size(), 0.0);
     
+    // ILU preconditioning
     tools::printer.printStatusUpdate("constructing preconditioner");
-    //gmm::identity_matrix P;
-    //gmm::diagonal_precond<gmm::csr_matrix<double> > P(A);
     gmm::ilu_precond<gmm::csr_matrix<double> > P(A);
-    //gmm::ilut_precond<gmm::csr_matrix<double> > P(A, 10, 1e-4);
-    //gmm::ilutp_precond<gmm::csr_matrix<double> > P(A, 10, 1e-4);
     
     tools::printer.printStatusNewLine();
     tools::printer.printStatusUpdate("solving with Gmm++");
@@ -47,21 +63,22 @@ bool solveInternal(const gmm::csr_matrix<double> &A,
     
     try
     {
-        //gmm::bicgstab(A, x, b, P, iter);
+        // call GMRES
         gmm::gmres(A, x, b, P, 50, iter);
-        //gmm::qmr(A, x, b, P, iter);
         
         double res = iter.get_res();
         
         if (iter.converged() && (res < 1e3))
         {
+            // GMRES converged
             tools::printer.printStatusUpdate("solving with Gmm++ "
-                    "(k = " + std::to_string(iter.get_iteration()) +
-                    ", residual norm = " + std::to_string(res) + ")");
+                    "(k = " + toString(iter.get_iteration()) +
+                    ", residual norm = " + toString(res) + ")");
             tools::printer.printStatusEnd();
             return true;
         } else
         {
+            // GMRES didn't converge ==> try again without preconditioner
             gmm::identity_matrix P;
             
             tools::printer.printStatusNewLine();
@@ -69,14 +86,15 @@ bool solveInternal(const gmm::csr_matrix<double> &A,
                     "solving with preconditioner failed, trying again without one");
             tools::printer.printStatusNewLine();
             
+            // call GMRES again
             gmm::gmres(A, x, b, P, 50, iter);
             res = iter.get_res();
             
             if (iter.converged() && (res < 1e3))
             {
                 tools::printer.printStatusUpdate("solving with Gmm++ "
-                        "(k = " + std::to_string(iter.get_iteration()) +
-                        ", residual norm = " + std::to_string(res) + ")");
+                        "(k = " + toString(iter.get_iteration()) +
+                        ", residual norm = " + toString(res) + ")");
                 tools::printer.printStatusEnd();
                 return true;
             } else
@@ -95,28 +113,25 @@ bool solveInternal(const gmm::csr_matrix<double> &A,
 }
 #endif
 
-bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
+bool Gmmpp::solve(system::System &system, const std::vector<double> &b,
+                  std::vector<double> &x) const
 {
 #ifdef USEGMMPP
     tools::printer.printStatusBegin("Solving linear system (Gmm++)...");
     
-    size_t n = system.getDimension();
-    const std::vector<double> &b = system.getRHS();
+    const size_t n = system.getDimension();
     size_t nnz = 0;
     gmm::csr_matrix<double> A2;
     
     {
         gmm::row_matrix<gmm::rsvector<double> > A(n, n);
         
-        std::vector<size_t> Ti;
-        std::vector<size_t> Tj;
-        std::vector<double> Tx;
-        
+        // parallelize only if the system is cloneable
         #pragma omp parallel if (system.isCloneable()) \
-                shared(system, n, Ti, Tj, Tx, A, nnz, tools::printer) default(none)
+                shared(system, A, nnz, tools::printer) default(none)
         {
             system::System *system2;
-            std::unique_ptr<system::System> cloned_system;
+            tools::SmartPointer<system::System> cloned_system;
             
             if (system.isCloneable())
             {
@@ -127,6 +142,7 @@ bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
                 system2 = &system;
             }
             
+            // copy system matrix to Gmm++ matrix object
             #pragma omp for ordered schedule(dynamic)
             for (size_t i = 0; i < n; i++)
             {
@@ -138,15 +154,13 @@ bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
                     {
                         #pragma omp critical
                         {
-                            Ti.push_back(i);
-                            Tj.push_back(j);
-                            Tx.push_back(entry);
                             A(i, j) = entry;
                             nnz++;
                         }
                     }
                 }
                 
+                // status message
                 if (i % 100 == 0)
                 {
                     #pragma omp ordered
@@ -161,19 +175,16 @@ bool Gmmpp::solve(system::System &system, std::vector<double> &x) const
             }
         }
         
+        // the Gmm++ manual said to do so... no idea if that's necessary
+        // (but I'm a big fan of RTFM ;) )
         gmm::clean(A, 1e-12);
         gmm::copy(A, A2);
-        
-        // TODO: remove this if not needed anymore
-        tools::printer.printVectorToFile("data/Ti.dat", Ti);
-        tools::printer.printVectorToFile("data/Tj.dat", Tj);
-        tools::printer.printVectorToFile("data/Tx.dat", Tx);
-        tools::printer.printVectorToFile("data/b.dat", b);
     }
     
     tools::printer.printStatusUpdate("constructing sparse matrix (100.0%)");
     tools::printer.printStatusNewLine();
     
+    // print ratio of nonzero entries
     {
         char str[10];
         double nnz_ratio = static_cast<double>(nnz) /

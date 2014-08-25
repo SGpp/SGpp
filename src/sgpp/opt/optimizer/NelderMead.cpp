@@ -1,4 +1,12 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/optimizer/NelderMead.hpp"
+#include "opt/tools/Permuter.hpp"
 #include "opt/tools/Printer.hpp"
 
 #include <algorithm>
@@ -18,13 +26,12 @@ const double NelderMead::DEFAULT_DELTA = 0.5;
 const double NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
 NelderMead::NelderMead(function::Objective &f,
-        size_t max_it_count, double alpha, double beta, double gamma, double delta) :
-    Optimizer(f, max_it_count),
+        size_t max_fcn_eval_count, double alpha, double beta, double gamma, double delta) :
+    Optimizer(f, max_fcn_eval_count),
     alpha(alpha),
     beta(beta),
     gamma(gamma),
     delta(delta)
-    //max_fcn_eval_count(max_fcn_eval_count)
 {
 }
 
@@ -38,13 +45,11 @@ double NelderMead::optimize(std::vector<double> &xopt)
     std::vector<double> f_points(d+1, 0.0);
     std::vector<double> f_points_new(d+1, 0.0);
     
+    // construct starting simplex
     for (size_t t = 0; t < d; t++)
     {
-        //points[0][t] = std::max(points[0][t] - 0.1, 0.0);
-        //points[t+1][t] = std::min(points[t+1][t] + 0.1, 1.0);
         points[t+1][t] = std::min(points[t+1][t] + STARTING_SIMPLEX_EDGE_LENGTH, 1.0);
         f_points[t+1] = f->eval(points[t+1]);
-        //std::cout << "i = " << i+1 << ": " << points[i+1] << ", " << f_points[i+1] << ", " << f(points[i+1], data) << "\n";
     }
     
     f_points[0] = f->eval(points[0]);
@@ -60,63 +65,40 @@ double NelderMead::optimize(std::vector<double> &xopt)
     
     while (true)
     {
-        /*std::cout << "k = " << k << ", number_of_fcn_evals = " << number_of_fcn_evals << "\n";
-        for (size_t i = 0; i < d+1; i++)
-        {
-            std::cout << "points[" << i << "] = [" << points[i][0] << ", " << points[i][1] << "]\n";
-            std::cout << "f_points[" << i << "] = [" << f_points[i] << "]\n";
-        }*/
-        
+        // sort points by function value
         for (size_t i = 0; i < d+1; i++) {
             index[i] = i;
         }
         
-        std::sort(index.begin(), index.end(),
-                [&](const size_t &a, const size_t &b) {
-                    return (f_points[a] < f_points[b]);
-                }
-        );
+        {
+            tools::Permuter<double> permuter(f_points);
+            std::sort(index.begin(), index.end(), permuter);
+        }
         
+        // that could be solved more efficiently, but it suffices for now
         for (size_t i = 0; i < d+1; i++) {
             points_new[i] = points[index[i]];
             f_points_new[i] = f_points[index[i]];
-            //std::cout << "i = " << i << ": " << points_new[i] << ", " << f_points_new[i] << ", " << f(points_new[i], data) << "\n";
         }
         
         points = points_new;
         f_points = f_points_new;
         
-        //bool converged = true;
         bool in_domain = true;
         bool shrink = false;
         
+        // calculate point_o (barycenter of all points but the last) and
+        // point_r (reflected point) simultaneously
         for (size_t t = 0; t < d; t++)
         {
             point_o[t] = 0.0;
-            //double point_min = 1.0;
-            //double point_max = 0.0;
             
             for (size_t i = 0; i < d; i++)
             {
                 point_o[t] += points[i][t];
-                
-                /*if (points[j][i] < point_min)
-                {
-                    point_min = points[j][i];
-                }
-                
-                if (points[j][i] > point_max)
-                {
-                    point_max = points[j][i];
-                }*/
             }
             
-            /*if (point_max - point_min >= tol)
-            {
-                converged = false;
-            }*/
-            
-            point_o[t] /= (double)d;
+            point_o[t] /= static_cast<double>(d);
             point_r[t] = point_o[t] + alpha * (point_o[t] - points[d][t]);
             
             if ((point_r[t] < 0.0) || (point_r[t] > 1.0))
@@ -124,11 +106,6 @@ double NelderMead::optimize(std::vector<double> &xopt)
                 in_domain = false;
             }
         }
-        
-        /*if (converged)
-        {
-            break;
-        }*/
         
         double f_point_r = (in_domain ? f->eval(point_r) : INFINITY);
         number_of_fcn_evals++;
@@ -141,6 +118,7 @@ double NelderMead::optimize(std::vector<double> &xopt)
         {
             bool in_domain = true;
             
+            // calculate expanded point
             for (size_t t = 0; t < d; t++)
             {
                 point_e[t] = point_o[t] + beta * (point_r[t] - point_o[t]);
@@ -167,6 +145,7 @@ double NelderMead::optimize(std::vector<double> &xopt)
         {
             bool in_domain = true;
             
+            // calculate outer contracted point
             for (size_t t = 0; t < d; t++)
             {
                 point_oc[t] = point_o[t] + gamma * (point_r[t] - point_o[t]);
@@ -192,9 +171,9 @@ double NelderMead::optimize(std::vector<double> &xopt)
         {
             bool in_domain = true;
             
+            // calculate inner contracted point
             for (size_t t = 0; t < d; t++)
             {
-                //point_ic[t] = point_o[t] - gamma * (point_r[t] - point_o[t]);
                 point_ic[t] = point_o[t] - gamma * (point_o[t] - points[d][t]);
                 
                 if ((point_ic[t] < 0.0) || (point_ic[t] > 1.0))
@@ -218,6 +197,7 @@ double NelderMead::optimize(std::vector<double> &xopt)
         
         if (shrink)
         {
+            // shrink all points but the first
             for (size_t i = 1; i < d+1; i++)
             {
                 bool in_domain = true;
@@ -238,11 +218,11 @@ double NelderMead::optimize(std::vector<double> &xopt)
             number_of_fcn_evals += d;
         }
         
+        // status printing
         if (k % 10 == 0)
         {
-            std::stringstream msg;
-            msg << k << " steps, f(x) = " << f_points[0];
-            tools::printer.printStatusUpdate(msg.str());
+            tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " +
+                                             toString(f_points[0]));
         }
         
         if (number_of_fcn_evals + (d+2) > N)
@@ -255,19 +235,15 @@ double NelderMead::optimize(std::vector<double> &xopt)
     
     xopt = points[0];
     
-    {
-        std::stringstream msg;
-        msg << k << " steps, f(x) = " << f_points[0];
-        tools::printer.printStatusUpdate(msg.str());
-        tools::printer.printStatusEnd();
-    }
+    tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(f_points[0]));
+    tools::printer.printStatusEnd();
     
     return f_points[0];
 }
 
-std::unique_ptr<Optimizer> NelderMead::clone()
+tools::SmartPointer<Optimizer> NelderMead::clone()
 {
-    std::unique_ptr<Optimizer> result(new NelderMead(*f, N, alpha, beta, gamma, delta));
+    tools::SmartPointer<Optimizer> result(new NelderMead(*f, N, alpha, beta, gamma, delta));
     result->setStartingPoint(x0);
     return result;
 }
@@ -311,16 +287,6 @@ void NelderMead::setDelta(double delta)
 {
     this->delta = delta;
 }
-
-/*size_t NelderMead::getMaxFcnEvalCount() const
-{
-    return max_fcn_eval_count;
-}
-
-void NelderMead::setMaxFcnEvalCount(size_t max_fcn_eval_count)
-{
-    this->max_fcn_eval_count = max_fcn_eval_count;
-}*/
 
 }
 }

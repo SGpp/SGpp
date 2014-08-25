@@ -309,7 +309,7 @@ namespace sg {
         double abs(size_t d) const {
           if (!coord_cached[d])
           {
-            if (distr == PointDistribution::Normal)
+            if (distr == Normal)
             {
               coord[d] = recalculateCoordNormal(d);
             } else
@@ -703,7 +703,9 @@ namespace sg {
         IT* index;
         /// pointer to array that stores the ansatzfunctions' coordinates
         double* coord;
+        /// pointer to array that stores whether the coordinates have been cached
         bool* coord_cached;
+        /// distribution of the grid point (Normal or ClenshawCurtis)
         PointDistribution distr;
         /// stores if this gridpoint is a leaf
         bool Leaf;
@@ -712,14 +714,13 @@ namespace sg {
         
         inline double recalculateCoordNormal(size_t d) const
         {
-            //return index[d] * pow(2.0, -static_cast<double>(level[d]));
-            return index[d] / static_cast<double>(1 << level[d]);
+            return static_cast<double>(index[d]) / static_cast<double>(1 << level[d]);
         }
         
         inline double recalculateCoordClenshawCurtis(size_t d) const
         {
-            return (cos(M_PI * (1.0 - static_cast<double>(this->index[d]) /
-                                static_cast<double>(1 << this->level[d]))) + 1.0) / 2.0;
+            return (cos(M_PI * (1.0 - static_cast<double>(index[d]) /
+                                static_cast<double>(1 << level[d]))) + 1.0) / 2.0;
         }
     };
 

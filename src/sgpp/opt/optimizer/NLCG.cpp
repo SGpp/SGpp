@@ -1,9 +1,15 @@
+/* ****************************************************************************
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+
 #include "opt/optimizer/NLCG.hpp"
-//#include "opt/optimizer/LineSearchGolden.hpp"
 #include "opt/optimizer/LineSearchArmijo.hpp"
-//#include "opt/optimizer/LineSearchNewton.hpp"
-//#include "opt/optimizer/LineSearchPowellWolfe.hpp"
 #include "opt/tools/Printer.hpp"
+
+#include <numeric>
 
 namespace sg
 {
@@ -51,6 +57,7 @@ double NLCG::optimize(std::vector<double> &xopt)
     double grad_fx_norm = grad_fx.l2Norm();
     double grad_fy_norm = 0.0;
     
+    // negated gradient as starting search direction
     for (size_t t = 0; t < d; t++)
     {
         s[t] = -grad_fx[t];
@@ -58,11 +65,13 @@ double NLCG::optimize(std::vector<double> &xopt)
     
     for (k = 0; k < N; k++)
     {
+        // exit if norm small enough
         if (grad_fx_norm < tol)
         {
             break;
         }
         
+        // normalize search direction
         double s_norm = std::sqrt(std::inner_product(s.begin(), s.end(), s.begin(), 0.0));
         
         for (size_t t = 0; t < d; t++)
@@ -70,26 +79,24 @@ double NLCG::optimize(std::vector<double> &xopt)
             s_normalized[t] = s[t] / s_norm;
         }
         
-        //if (!lineSearchGolden(*f, tol, x, fx, s, y))
+        // line search
         if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, grad_fx, s_normalized, y))
-        //if (!lineSearchPowellWolfe(*f, *f_gradient, 1e-4, 0.1, x, fx, grad_fx, s_normalized, y))
-        //if (!lineSearchNewton(*f_hessian, tol, x, s_normalized, y))
         {
+            // line search failed ==> exit
+            // (either a "real" error occured or the improvement achieved is too small)
             break;
         }
         
+        // calculate gradient and norm
         fy = f_gradient->evalGradient(y, grad_fy);
         grad_fy_norm = grad_fy.l2Norm();
         
-        /*if (std::abs(fx - fy) <= 1e-8 * (std::abs(fx) + std::abs(fy) + 1e-18))
-        {
-            break;
-        }*/
-        
         double beta = 0.0;
         
+        // the method is restarted (beta = 0), if the following criterion is *not* met
         if (std::abs(grad_fy.dotProduct(grad_fx)) / (grad_fy_norm*grad_fy_norm) < alpha)
         {
+            // Polak-Ribiere coefficient
             for (size_t t = 0; t < d; t++)
             {
                 beta += grad_fy[t] * (grad_fy[t] - grad_fx[t]);
@@ -98,17 +105,14 @@ double NLCG::optimize(std::vector<double> &xopt)
             beta /= grad_fx_norm*grad_fx_norm;
         }
         
+        // new search direction
         for (size_t t = 0; t < d; t++)
         {
             s[t] = beta * s[t] - grad_fy[t];
         }
         
-        {
-            std::stringstream msg;
-            msg << k << " steps, f(x) = " << fx;
-            //msg << k << " steps, f(x) = " << fx << ", |grad f(x)| = " << grad_fx_norm;
-            tools::printer.printStatusUpdate(msg.str());
-        }
+        // status printing
+        tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fx));
         
         x = y;
         fx = fy;
@@ -118,24 +122,21 @@ double NLCG::optimize(std::vector<double> &xopt)
     
     xopt = x;
     
-    {
-        std::stringstream msg;
-        msg << k << " steps, f(x) = " << fx;
-        tools::printer.printStatusUpdate(msg.str());
-        tools::printer.printStatusEnd();
-    }
+    tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fx));
+    tools::printer.printStatusEnd();
     
     return fx;
 }
 
-std::unique_ptr<Optimizer> NLCG::clone()
+tools::SmartPointer<Optimizer> NLCG::clone()
 {
-    std::unique_ptr<Optimizer> result(new NLCG(*f, *f_gradient, N, tol, eps));
+    tools::SmartPointer<Optimizer> result(
+            new NLCG(*f, *f_gradient, N, beta, gamma, tol, eps, alpha));
     result->setStartingPoint(x0);
     return result;
 }
 
-const std::unique_ptr<function::ObjectiveGradient> &NLCG::getObjectiveGradient() const
+const tools::SmartPointer<function::ObjectiveGradient> &NLCG::getObjectiveGradient() const
 {
     return f_gradient;
 }

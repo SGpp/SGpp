@@ -18,8 +18,6 @@
 #include "base/operation/OperationIdentity.hpp"
 #include "base/operation/OperationMatrix.hpp"
 #include "base/operation/OperationEval.hpp"
-#include "base/operation/OperationEvalGradient.hpp"
-#include "base/operation/OperationEvalHessian.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
 #include "base/operation/OperationStencilHierarchisation.hpp"
 
@@ -88,22 +86,6 @@ namespace sg {
      * @return Pointer to the new OperationEval object for the Grid grid
      */
     base::OperationEval* createOperationEval(base::Grid& grid);
-    /**
-     * Factory method, returning an OperationEvalGradient for the grid at hand.
-     * Note: object has to be freed after use.
-     *
-     * @param grid Grid which is to be used
-     * @return Pointer to the new OperationEvalGradient object for the Grid grid
-     */
-    base::OperationEvalGradient* createOperationEvalGradient(base::Grid& grid);
-    /**
-     * Factory method, returning an OperationEvalHessian for the grid at hand.
-     * Note: object has to be freed after use.
-     *
-     * @param grid Grid which is to be used
-     * @return Pointer to the new OperationEvalHessian object for the Grid grid
-     */
-    base::OperationEvalHessian* createOperationEvalHessian(base::Grid& grid);
     /**
      * Factory method, returning an OperationMultipleEval for the grid at hand.
      * Note: object has to be freed after use.

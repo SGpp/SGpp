@@ -17,11 +17,13 @@ namespace sg {
 
     GridStencil::GridStencil(size_t dim)
       : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+      (void)dim;
     }
 
 
     GridStencil::GridStencil(BoundingBox& BB)
       : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+      (void)BB;
     }
 
 
