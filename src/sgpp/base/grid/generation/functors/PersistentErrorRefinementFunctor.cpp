@@ -1,4 +1,4 @@
-#include <limits>
+
 
 #include "base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp"
 
@@ -16,42 +16,22 @@ PersistentErrorRefinementFunctor::~PersistentErrorRefinementFunctor() {
 }
 
 /*
- * current[j] = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
+ * current = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
  * accum[j] = BETA * accum[j] + current[j]
  * functor value = -alpha_j * accum[j]
  */
 double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
+	const double BETA = 0.9;
+	const size_t MIN_SUPPORT = 10;
+
 	if (trainDataset == NULL || classes == NULL) {
 		throw base::application_exception(
 				"Training dataset or classes not set");
 	}
 
-	const double BETA = 0.9;
-	const size_t MIN_SUPPORT = 10;
-
-	size_t numData = trainDataset->getNrows();
-	//size_t dim = trainDataset->getNcols();
-
-	// Check support
-	//size_t numSupport = 0;
-
-	DataVector phi_x(numData);
-
-
-	sg::base::DataVector singleAlpha(alpha->getSize());
-  singleAlpha.setAll(0.0);
-  singleAlpha.set(seq, 1.0);
-  sg::op_factory::createOperationMultipleEval(*grid, trainDataset)->mult(
-            singleAlpha, phi_x);
-
-	if (phi_x.getNumberNonZero() < MIN_SUPPORT) {
-		return -std::numeric_limits<double>::infinity(); // threshold is 0.0
-	}
-
-	// Make sure that the error vector is as large as
-	// the coefficient vector
+	// Create and resize accum vector
 	size_t numCoeff = alpha->getSize();
 
 	if (accum == NULL) {
@@ -61,31 +41,33 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		accum->resizeZero(numCoeff);
 	}
 
-	// Calculate current
+	size_t numData = trainDataset->getNrows();
 
-  // Calculate
-  // current[j] = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
+	DataVector phi_x(numData);
 
-  double current_j = 0;
+	sg::base::DataVector singleAlpha(alpha->getSize());
+	singleAlpha.setAll(0.0);
+	singleAlpha.set(seq, 1.0);
 
-  for (size_t i = 0; i < numData; i++) {
-    /* (r_i + y_i) * \phi_j(x_i) */
-    current_j += (errors->get(i) + classes->get(i)) * phi_x[i];
+	sg::op_factory::createOperationMultipleEval(*grid, trainDataset)->mult(
+			singleAlpha, phi_x);
 
+	if (phi_x.getNumberNonZero() < MIN_SUPPORT) {
+		return -std::numeric_limits<double>::infinity(); // threshold is 0.0
 	}
 
-	// Accumulation
-	/*for (size_t i = 0; i < numCoeff; i++) {
-		accum->set(i, accum->get(i) * BETA + current->get(i));
-	}*/
-  accum->set(seq, accum->get(seq) * BETA + current_j);
+	// current = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
 
-	//delete current;
+	double current = 0;
 
-	double func_val = -alpha->get(seq) * accum->get(seq);
+	for (size_t i = 0; i < numData; i++) {
+		/* (r_i + y_i) * \phi_j(x_i) */
+		current += (errors->get(i) + classes->get(i)) * phi_x[i];
+	}
 
-	std::cout << "Functor value (of " << seq << "): " << func_val << std::endl;
-	return func_val;
+	accum->set(seq, accum->get(seq) * BETA + current);
+
+	return -alpha->get(seq) * accum->get(seq);
 }
 
 double PersistentErrorRefinementFunctor::start() {

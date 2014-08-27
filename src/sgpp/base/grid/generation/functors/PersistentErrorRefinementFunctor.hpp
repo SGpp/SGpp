@@ -9,6 +9,7 @@
 #define PERSISTENTERRORREFINEMENTFUNCTOR_HPP
 
 #include <vector>
+#include <limits>
 #include "sgpp_base.hpp"
 
 namespace sg {

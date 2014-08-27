@@ -26,43 +26,32 @@ double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
 	if (trainDataset == NULL || classes == NULL) {
-		throw base::application_exception(
-				"Training dataset or classes not set");
+		throw base::application_exception("Training dataset or classes not set");
 	}
 
-	double error = 0;
 	const size_t MIN_SUPPORT = 10;
 
 	size_t numData = trainDataset->getNrows();
-	size_t dim = trainDataset->getNcols();
 
-	size_t numSupport = 0;
+	sg::base::DataVector singleAlpha(alpha->getSize());
+	singleAlpha.setAll(0.0);
+	singleAlpha.set(seq, alpha->get(seq));
+
+	/* phi_j(x_i) * alpha_j */
+	sg::base::DataVector val1(numData);
+	sg::op_factory::createOperationMultipleEval(*grid, trainDataset)->mult(singleAlpha, val1);
+
+	if (val1.getNumberNonZero() < MIN_SUPPORT) {
+		return -std::numeric_limits<double>::infinity(); // threshold is 0.0
+	}
+
+	double error = 0;
 	for (size_t i = 0; i < numData; i++) {
-		DataVector row(dim);
-		trainDataset->getRow(i, row);
-
-		/* phi_j(x_i) * alpha_j */
-		sg::base::DataVector singleAlpha(alpha->getSize());
-		singleAlpha.setAll(0.0);
-		singleAlpha.set(seq, alpha->get(seq));
-		double val1 = sg::op_factory::createOperationEval(*grid)->eval(singleAlpha, row);
-
-		/* r_i */
-		double val2 = classes->get(seq) - sg::op_factory::createOperationEval(*grid)->eval(*alpha, row);
-
 		/* abs(phi_j(x_i) * alpha_j * r_i^2) */
-		error += fabs(val1 * val2 * val2);
-
-		if (val1 != 0) {
-			numSupport++;
-		}
+		double tmp1 = val1.get(i);
+		error += fabs(tmp1 * errors->get(i) * errors->get(i));
 	}
 
-	if (numSupport < MIN_SUPPORT) {
-		return -1; // under the threshold of 0.0
-	}
-
-    //std::cout << "Functor value (of " << seq << "): " << error << std::endl;
 	return error;
 }
 
@@ -79,12 +68,16 @@ double WeightedErrorRefinementFunctor::getRefinementThreshold() {
 }
 
 void WeightedErrorRefinementFunctor::setTrainDataset(
-    DataMatrix* trainDataset_) {
+		DataMatrix* trainDataset_) {
 	trainDataset = trainDataset_;
 }
 
-void WeightedErrorRefinementFunctor::setClasses( DataVector* classes_) {
+void WeightedErrorRefinementFunctor::setClasses(DataVector* classes_) {
 	classes = classes_;
+}
+
+void WeightedErrorRefinementFunctor::setErrors(DataVector* errors_) {
+	errors = errors_;
 }
 
 }

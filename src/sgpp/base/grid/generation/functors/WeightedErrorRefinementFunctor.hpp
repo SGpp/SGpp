@@ -9,6 +9,7 @@
 #define WEIGHTEDERRORREFINEMENTFUNCTOR_HPP
 
 #include "sgpp_base.hpp"
+#include <limits>
 #include "base/exception/application_exception.hpp"
 
 namespace sg {
@@ -62,7 +63,9 @@ namespace sg {
 
         void setTrainDataset(DataMatrix* trainDataset);
 
-        void setClasses( DataVector* classes);
+        void setClasses(DataVector* classes);
+
+        void setErrors(DataVector* classes);
 
       protected:
         /// pointer to the vector that stores the alpha values
@@ -77,6 +80,7 @@ namespace sg {
         Grid* grid;
         DataMatrix* trainDataset;
         DataVector* classes;
+        DataVector* errors;
     };
 
   }
