@@ -10,87 +10,77 @@
 
 #include "opt/tools/MutexType.hpp"
 
-namespace sg
-{
-namespace opt
-{
-namespace tools
-{
+namespace sg {
+  namespace opt {
+    namespace tools {
 
-/**
- * Wrapper around MutexType which locks and unlocks upon construction/destruction.
- * 
- * Adopted from http://bisqwit.iki.fi/story/howto/openmp/#Locks.
- */
-class ScopedLock
-{
-public:
-    /**
-     * Constructor, locks the MutexType object.
-     * 
-     * @param m     MutexType object to be wrapped
-     */
-    ScopedLock(MutexType &m) : mut(m), locked(true)
-    {
-        mut.lock();
-    }
-    
-    /**
-     * Destructor, unlocks the MutexType object.
-     */
-    ~ScopedLock()
-    {
-        unlock();
-    }
-    
-    /**
-     * Unlocks the MutexType object, if locked.
-     */
-    void unlock()
-    {
-        if (locked)
-        {
-            locked = false;
-            mut.unlock();
-        }
-    }
-    
-    /**
-     * Re-locks the MutexType object, if unlocked.
-     */
-    void lockAgain()
-    {
-        if (!locked)
-        {
+      /**
+       * Wrapper around MutexType which locks and unlocks upon construction/destruction.
+       *
+       * Adopted from http://bisqwit.iki.fi/story/howto/openmp/#Locks.
+       */
+      class ScopedLock {
+        public:
+          /**
+           * Constructor, locks the MutexType object.
+           *
+           * @param m     MutexType object to be wrapped
+           */
+          ScopedLock(MutexType& m) : mut(m), locked(true) {
             mut.lock();
-            locked = true;
-        }
-    }
-    
-protected:
-    /// underlying MutexType object
-    MutexType &mut;
-    /// whether the MutexType object is locked or not
-    bool locked;
-    
-private:
-    /**
-     * Custom copy constructor to prevent copying the lock.
-     * 
-     * @param other     object to be copied
-     */
-    ScopedLock(const ScopedLock &other);
-    
-    /**
-     * Custom assignment operator to prevent copying the lock.
-     * 
-     * @param other     object to be assigned to
-     */
-    void operator=(const ScopedLock &other);
-};
+          }
 
-}
-}
+          /**
+           * Destructor, unlocks the MutexType object.
+           */
+          ~ScopedLock() {
+            unlock();
+          }
+
+          /**
+           * Unlocks the MutexType object, if locked.
+           */
+          void unlock() {
+            if (locked) {
+              locked = false;
+              mut.unlock();
+            }
+          }
+
+          /**
+           * Re-locks the MutexType object, if unlocked.
+           */
+          void lockAgain() {
+            if (!locked) {
+              mut.lock();
+              locked = true;
+            }
+          }
+
+        protected:
+          /// underlying MutexType object
+          MutexType& mut;
+          /// whether the MutexType object is locked or not
+          bool locked;
+
+        private:
+          /**
+           * Custom copy constructor to prevent copying the lock.
+           *
+           * @param other     object to be copied
+           */
+          ScopedLock(const ScopedLock& other);
+
+          /**
+           * Custom assignment operator to prevent copying the lock.
+           *
+           * @param other     object to be assigned to
+           */
+          void operator=(const ScopedLock& other);
+      };
+
+    }
+  }
 }
 
 #endif

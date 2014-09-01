@@ -9,55 +9,50 @@
 #define SGPP_OPT_BASIS_MODIFIED_OPERATION_OPERATIONMULTIPLEHIERARCHISATIONMODLINEAR_HPP
 
 #include "opt/operation/OperationMultipleHierarchisation.hpp"
-#include "opt/grid/ModLinearGrid.hpp"
+#include "base/grid/type/ModLinearGrid.hpp"
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace opt
-{
+namespace sg {
+  namespace opt {
 
-/**
- * Hierarchisation operation for modified linear basis functions on Noboundary grids.
- */
-class OperationMultipleHierarchisationModLinear :
-        public OperationMultipleHierarchisation
-{
-public:
     /**
-     * Constructor.
-     * 
-     * @param storage   sparse grid
+     * Hierarchisation operation for modified linear basis functions on Noboundary grids.
      */
-    OperationMultipleHierarchisationModLinear(ModLinearGrid &grid) : grid(grid)
-    {
-    }
-    
-    /**
-     * Virtual destructor.
-     */
-    virtual ~OperationMultipleHierarchisationModLinear()
-    {
-    }
-    
-    /**
-     * @param[in,out] node_values   before: vector of function values at the grid points,
-     *                              after: vector of hierarchical coefficients
-     */
-    virtual void doHierarchisation(std::vector<base::DataVector *> node_values);
-    
-    /**
-     * @param[in,out] alpha         before: vector of hierarchical coefficients,
-     *                              after: vector of function values at the grid points
-     */
-    virtual void doDehierarchisation(std::vector<base::DataVector *> alpha);
-    
-protected:
-    /// storage of the sparse grid
-    ModLinearGrid &grid;
-};
+    class OperationMultipleHierarchisationModLinear :
+      public OperationMultipleHierarchisation {
+      public:
+        /**
+         * Constructor.
+         *
+         * @param storage   sparse grid
+         */
+        OperationMultipleHierarchisationModLinear(base::ModLinearGrid& grid) : grid(grid) {
+        }
 
-}
+        /**
+         * Virtual destructor.
+         */
+        virtual ~OperationMultipleHierarchisationModLinear() {
+        }
+
+        /**
+         * @param[in,out] node_values   before: vector of function values at the grid points,
+         *                              after: vector of hierarchical coefficients
+         */
+        virtual void doHierarchisation(std::vector<base::DataVector*> node_values);
+
+        /**
+         * @param[in,out] alpha         before: vector of hierarchical coefficients,
+         *                              after: vector of function values at the grid points
+         */
+        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha);
+
+      protected:
+        /// storage of the sparse grid
+        base::ModLinearGrid& grid;
+    };
+
+  }
 }
 
 #endif

@@ -1,12 +1,12 @@
 /* ****************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
-#ifndef LINEAR_BASE_HPP
-#define LINEAR_BASE_HPP
+#ifndef SGPP_BASE_BASIS_LINEAR_NOBOUNDARY_LINEARBASIS_HPP
+#define SGPP_BASE_BASIS_LINEAR_NOBOUNDARY_LINEARBASIS_HPP
 
 #include <cmath>
 #include <algorithm>
@@ -15,35 +15,27 @@ namespace sg {
   namespace base {
 
     /**
-     * Piecewise linear basis functions.
+     * Linear basis on Noboundary grids.
      */
-    template<class LT, class IT>
+    template <class LT, class IT>
     class LinearBasis {
       public:
         /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of linear basis function
          */
-        double eval(LT level, IT index, double p) {
-          return 1.0 - fabs((1 << level) * p - index);
-        }
-
-        /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
-         *
-         * This version catches errors, that occur if a basis function
-         * is evaluated outside its domain
-         */
-        double evalSave(LT level, IT index, double p) {
-          return std::max(1.0 - fabs((1 << level) * p - index), 0.0);
+        inline double eval(LT l, IT i, double x) {
+          return std::max(1.0 - std::abs(static_cast<double>(1 << l) * x -
+                                         static_cast<double>(i)), 0.0);
         }
     };
 
-    // default type-def (unsigned int for level and index)
+/// typedef for standard level/index types
     typedef LinearBasis<unsigned int, unsigned int> SLinearBase;
 
   }
 }
 
-#endif /* LINEAR_BASE_HPP */
+#endif

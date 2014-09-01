@@ -1,58 +1,77 @@
 /* ****************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (pflueged@in.tum.de)
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
-#ifndef MODBSPLINEGRID_HPP
-#define MODBSPLINEGRID_HPP
-
-#include "base/grid/Grid.hpp"
+#ifndef SGPP_BASE_GRID_TYPE_MODIFIEDBSPLINEGRID_HPP
+#define SGPP_BASE_GRID_TYPE_MODIFIEDBSPLINEGRID_HPP
 
 #include <iostream>
+
+#include "base/grid/Grid.hpp"
 
 namespace sg {
   namespace base {
 
     /**
-     * Grid with modified Bspline basis functions
-     * @todo (pflueged) include for factory exception is missing in several classes which use it. It only works, as it is include by a header loaded previously.
+     * Noboundary grid with modified B-spline basis functions.
      */
     class ModBsplineGrid : public Grid {
-      protected:
-        ModBsplineGrid(std::istream& istr);
-
       public:
         /**
-         * Constructor of grid with modified bspline basis functions
+         * Constructor.
          *
-         * @param dim the dimension of the grid
-           * @param degree the bspline's degree
+         * @param dim       number of dimensions
+         * @param degree    B-spline degree
          */
         ModBsplineGrid(size_t dim, size_t degree);
 
         /**
-         * Destructor
+         * Destructor.
          */
         virtual ~ModBsplineGrid();
 
+        /**
+         * @return  identifying grid type string
+         */
         virtual const char* getType();
 
+        /**
+         * @return grid generator for this grid type
+         */
         virtual GridGenerator* createGridGenerator();
 
+        /**
+         * @param[out] ostr     output stream as target of serialization
+         */
+        virtual void serialize(std::ostream& ostr);
+
+        /**
+         * @param istr  input stream containing the serialization
+         * @return      pointer to newly generated deserialized grid
+         */
         static Grid* unserialize(std::istream& istr);
 
-        virtual void serialize(std::ostream& ostr);
+        /**
+         * @return  B-spline degree
+         */
         virtual size_t getDegree();
 
       protected:
-        // degree of Bspline
+        /// B-spline degree
         size_t degree;
 
+        /**
+         * Deserialization constructor.
+         *
+         * @param istr  serialized grid
+         */
+        ModBsplineGrid(std::istream& istr);
     };
 
   }
 }
 
-#endif /* MODBSPLINEGRID_HPP */
+#endif

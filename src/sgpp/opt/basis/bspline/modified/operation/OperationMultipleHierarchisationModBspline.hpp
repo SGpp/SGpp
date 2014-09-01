@@ -9,55 +9,50 @@
 #define SGPP_OPT_BASIS_MODIFIED_OPERATION_OPERATIONMULTIPLEHIERARCHISATIONMODBSPLINE_HPP
 
 #include "opt/operation/OperationMultipleHierarchisation.hpp"
-#include "opt/grid/ModBsplineGrid.hpp"
+#include "base/grid/type/ModBsplineGrid.hpp"
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace opt
-{
+namespace sg {
+  namespace opt {
 
-/**
- * Hierarchisation operation for modified B-spline basis functions on Noboundary grids.
- */
-class OperationMultipleHierarchisationModBspline :
-        public OperationMultipleHierarchisation
-{
-public:
     /**
-     * Constructor.
-     * 
-     * @param storage   sparse grid
+     * Hierarchisation operation for modified B-spline basis functions on Noboundary grids.
      */
-    OperationMultipleHierarchisationModBspline(ModBsplineGrid &grid) : grid(grid)
-    {
-    }
-    
-    /**
-     * Virtual destructor.
-     */
-    virtual ~OperationMultipleHierarchisationModBspline()
-    {
-    }
-    
-    /**
-     * @param[in,out] node_values   before: vector of vector of function values at the grid points,
-     *                              after: vector of hierarchical coefficients
-     */
-    virtual void doHierarchisation(std::vector<base::DataVector *> node_values);
-    
-    /**
-     * @param[in,out] alpha         before: vector of hierarchical coefficients,
-     *                              after: vector of function values at the grid points
-     */
-    virtual void doDehierarchisation(std::vector<base::DataVector *> alpha);
-    
-protected:
-    /// storage of the sparse grid
-    ModBsplineGrid &grid;
-};
+    class OperationMultipleHierarchisationModBspline :
+      public OperationMultipleHierarchisation {
+      public:
+        /**
+         * Constructor.
+         *
+         * @param storage   sparse grid
+         */
+        OperationMultipleHierarchisationModBspline(base::ModBsplineGrid& grid) : grid(grid) {
+        }
 
-}
+        /**
+         * Virtual destructor.
+         */
+        virtual ~OperationMultipleHierarchisationModBspline() {
+        }
+
+        /**
+         * @param[in,out] node_values   before: vector of vector of function values at the grid points,
+         *                              after: vector of hierarchical coefficients
+         */
+        virtual void doHierarchisation(std::vector<base::DataVector*> node_values);
+
+        /**
+         * @param[in,out] alpha         before: vector of hierarchical coefficients,
+         *                              after: vector of function values at the grid points
+         */
+        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha);
+
+      protected:
+        /// storage of the sparse grid
+        base::ModBsplineGrid& grid;
+    };
+
+  }
 }
 
 #endif

@@ -1,49 +1,63 @@
 /* ****************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
-#ifndef MODWAVELETGRID_HPP
-#define MODWAVELETGRID_HPP
-
-#include "base/grid/Grid.hpp"
+#ifndef SGPP_BASE_GRID_TYPE_MODIFIEDWAVELETGRID_HPP
+#define SGPP_BASE_GRID_TYPE_MODIFIEDWAVELETGRID_HPP
 
 #include <iostream>
+
+#include "base/grid/Grid.hpp"
 
 namespace sg {
   namespace base {
 
     /**
-     * grid with modified polynomial base functions
+     * Noboundary grid with modified wavelet basis functions.
      */
     class ModWaveletGrid : public Grid {
-      protected:
-        ModWaveletGrid(std::istream& istr);
-
       public:
         /**
-         * Constructor of grid with modified polynomial base functions
+         * Constructor.
          *
-         * @param dim the dimension of the grid
+         * @param dim       number of dimensions
          */
         ModWaveletGrid(size_t dim);
 
         /**
-         * Destructor
+         * Destructor.
          */
         virtual ~ModWaveletGrid();
 
+        /**
+         * @return  identifying grid type string
+         */
         virtual const char* getType();
 
+        /**
+         * @return grid generator for this grid type
+         */
         virtual GridGenerator* createGridGenerator();
 
+        /**
+         * @param istr  input stream containing the serialization
+         * @return      pointer to newly generated deserialized grid
+         */
         static Grid* unserialize(std::istream& istr);
 
+      protected:
+        /**
+         * Deserialization constructor.
+         *
+         * @param istr  serialized grid
+         */
+        ModWaveletGrid(std::istream& istr);
     };
 
   }
 }
 
-#endif /* MODWAVELETGRID_HPP */
+#endif

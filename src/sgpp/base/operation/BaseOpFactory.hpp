@@ -19,6 +19,10 @@
 #include "base/operation/OperationMatrix.hpp"
 #include "base/operation/OperationEval.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
+#include "base/operation/OperationNaiveEval.hpp"
+#include "base/operation/OperationNaiveEvalGradient.hpp"
+#include "base/operation/OperationNaiveEvalHessian.hpp"
+#include "base/operation/OperationNaiveEvalPartialDerivative.hpp"
 #include "base/operation/OperationStencilHierarchisation.hpp"
 
 /*
@@ -96,6 +100,38 @@ namespace sg {
      * @return Pointer to the new OperationMultipleEval object for the Grid grid
      */
     base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix* dataset);
+    /**
+     * Factory method, returning an OperationNaiveEval for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEval object for the Grid grid
+     */
+    base::OperationNaiveEval* createOperationNaiveEval(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationNaiveEvalGradient for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEvalGradient object for the Grid grid
+     */
+    base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationNaiveEvalHessian for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEvalHessian object for the Grid grid
+     */
+    base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationNaiveEvalPartialDerivative for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEvalPartialDerivative object for the Grid grid
+     */
+    base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartialDerivative(base::Grid& grid);
   }
 
 }
