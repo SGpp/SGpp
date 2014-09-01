@@ -9,56 +9,51 @@
 #define SGPP_OPT_BASIS_NOBOUNDARY_OPERATION_OPERATIONMULTIPLEHIERARCHISATIONBSPLINECLENSHAWCURTIS_HPP
 
 #include "opt/operation/OperationMultipleHierarchisation.hpp"
-#include "opt/grid/BsplineClenshawCurtisGrid.hpp"
+#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace opt
-{
+namespace sg {
+  namespace opt {
 
-/**
- * Hierarchisation operation for B-spline basis functions on Clenshaw-Curtis grids.
- */
-class OperationMultipleHierarchisationBsplineClenshawCurtis :
-        public OperationMultipleHierarchisation
-{
-public:
     /**
-     * Constructor.
-     * 
-     * @param storage   sparse grid
+     * Hierarchisation operation for B-spline basis functions on Clenshaw-Curtis grids.
      */
-    OperationMultipleHierarchisationBsplineClenshawCurtis(BsplineClenshawCurtisGrid &grid) :
-        grid(grid)
-    {
-    }
-    
-    /**
-     * Virtual destructor.
-     */
-    virtual ~OperationMultipleHierarchisationBsplineClenshawCurtis()
-    {
-    }
-    
-    /**
-     * @param[in,out] node_values   before: vector of function values at the grid points,
-     *                              after: vector of hierarchical coefficients
-     */
-    virtual void doHierarchisation(std::vector<base::DataVector *> node_values);
-    
-    /**
-     * @param[in,out] alpha         before: vector of hierarchical coefficients,
-     *                              after: vector of function values at the grid points
-     */
-    virtual void doDehierarchisation(std::vector<base::DataVector *> alpha);
-    
-protected:
-    /// storage of the sparse grid
-    BsplineClenshawCurtisGrid &grid;
-};
+    class OperationMultipleHierarchisationBsplineClenshawCurtis :
+      public OperationMultipleHierarchisation {
+      public:
+        /**
+         * Constructor.
+         *
+         * @param storage   sparse grid
+         */
+        OperationMultipleHierarchisationBsplineClenshawCurtis(base::BsplineClenshawCurtisGrid& grid) :
+          grid(grid) {
+        }
 
-}
+        /**
+         * Virtual destructor.
+         */
+        virtual ~OperationMultipleHierarchisationBsplineClenshawCurtis() {
+        }
+
+        /**
+         * @param[in,out] node_values   before: vector of function values at the grid points,
+         *                              after: vector of hierarchical coefficients
+         */
+        virtual void doHierarchisation(std::vector<base::DataVector*> node_values);
+
+        /**
+         * @param[in,out] alpha         before: vector of hierarchical coefficients,
+         *                              after: vector of function values at the grid points
+         */
+        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha);
+
+      protected:
+        /// storage of the sparse grid
+        base::BsplineClenshawCurtisGrid& grid;
+    };
+
+  }
 }
 
 #endif

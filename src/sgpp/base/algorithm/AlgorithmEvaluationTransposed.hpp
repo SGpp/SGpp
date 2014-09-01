@@ -10,8 +10,8 @@
 
 #include "base/grid/GridStorage.hpp"
 #include "base/datatypes/DataVector.hpp"
-#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "base/basis/wavelet/modified/ModWaveletBasis.hpp"
+#include "base/basis/bspline/modified/ModBsplineBasis.hpp"
 #include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 
 #include <vector>

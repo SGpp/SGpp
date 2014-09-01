@@ -9,56 +9,51 @@
 #define SGPP_OPT_BASIS_NOBOUNDARY_OPERATION_OPERATIONMULTIPLEHIERARCHISATIONWAVELETBOUNDARY_HPP
 
 #include "opt/operation/OperationMultipleHierarchisation.hpp"
-#include "opt/grid/WaveletTrapezoidBoundaryGrid.hpp"
+#include "base/grid/type/WaveletTrapezoidBoundaryGrid.hpp"
 #include "base/datatypes/DataVector.hpp"
 
-namespace sg
-{
-namespace opt
-{
+namespace sg {
+  namespace opt {
 
-/**
- * Hierarchisation operation for wavelet basis functions on Boundary grids.
- */
-class OperationMultipleHierarchisationWaveletBoundary :
-        public OperationMultipleHierarchisation
-{
-public:
     /**
-     * Constructor.
-     * 
-     * @param storage   sparse grid
+     * Hierarchisation operation for wavelet basis functions on Boundary grids.
      */
-    OperationMultipleHierarchisationWaveletBoundary(WaveletTrapezoidBoundaryGrid &grid) :
-        grid(grid)
-    {
-    }
-    
-    /**
-     * Virtual destructor.
-     */
-    virtual ~OperationMultipleHierarchisationWaveletBoundary()
-    {
-    }
-    
-    /**
-     * @param[in,out] node_values   before: vector of function values at the grid points,
-     *                              after: vector of hierarchical coefficients
-     */
-    virtual void doHierarchisation(std::vector<base::DataVector *> node_values);
-    
-    /**
-     * @param[in,out] alpha         before: vector of hierarchical coefficients,
-     *                              after: vector of function values at the grid points
-     */
-    virtual void doDehierarchisation(std::vector<base::DataVector *> alpha);
-    
-protected:
-    /// storage of the sparse grid
-    WaveletTrapezoidBoundaryGrid &grid;
-};
+    class OperationMultipleHierarchisationWaveletBoundary :
+      public OperationMultipleHierarchisation {
+      public:
+        /**
+         * Constructor.
+         *
+         * @param storage   sparse grid
+         */
+        OperationMultipleHierarchisationWaveletBoundary(base::WaveletTrapezoidBoundaryGrid& grid) :
+          grid(grid) {
+        }
 
-}
+        /**
+         * Virtual destructor.
+         */
+        virtual ~OperationMultipleHierarchisationWaveletBoundary() {
+        }
+
+        /**
+         * @param[in,out] node_values   before: vector of function values at the grid points,
+         *                              after: vector of hierarchical coefficients
+         */
+        virtual void doHierarchisation(std::vector<base::DataVector*> node_values);
+
+        /**
+         * @param[in,out] alpha         before: vector of hierarchical coefficients,
+         *                              after: vector of function values at the grid points
+         */
+        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha);
+
+      protected:
+        /// storage of the sparse grid
+        base::WaveletTrapezoidBoundaryGrid& grid;
+    };
+
+  }
 }
 
 #endif

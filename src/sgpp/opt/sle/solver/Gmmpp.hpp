@@ -12,33 +12,28 @@
 
 #include <vector>
 
-namespace sg
-{
-namespace opt
-{
-namespace sle
-{
-namespace solver
-{
+namespace sg {
+  namespace opt {
+    namespace sle {
+      namespace solver {
 
-/**
- * Linear system solver using Gmm++ (iterative sparse solver).
- */
-class Gmmpp : public Solver
-{
-public:
-    /**
-     * @param       system  system to be solved
-     * @param       b       right-hand side
-     * @param[out]  x       solution to the system
-     * @return              whether all went well (false if errors occurred)
-     */
-    bool solve(system::System &system, const std::vector<double> &b, std::vector<double> &x) const;
-};
+        /**
+         * Linear system solver using Gmm++ (iterative sparse solver).
+         */
+        class Gmmpp : public Solver {
+          public:
+            /**
+             * @param       system  system to be solved
+             * @param       b       right-hand side
+             * @param[out]  x       solution to the system
+             * @return              whether all went well (false if errors occurred)
+             */
+            bool solve(system::System& system, const std::vector<double>& b, std::vector<double>& x) const;
+        };
 
-}
-}
-}
+      }
+    }
+  }
 }
 
 #endif

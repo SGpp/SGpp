@@ -9,8 +9,8 @@
 #define GETAFFECTEDBASISFUNCTIONS_HPP
 
 #include "base/grid/GridStorage.hpp"
-#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "base/basis/wavelet/modified/ModWaveletBasis.hpp"
+#include "base/basis/bspline/modified/ModBsplineBasis.hpp"
 #include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
 #include "base/basis/prewavelet/PrewaveletBasis.hpp"
@@ -182,8 +182,8 @@ namespace sg {
      * Template Specialization for mod_Wavelet basis.
      */
     template<>
-    class GetAffectedBasisFunctions<ModifiedWaveletBasis<unsigned int, unsigned int> > {
-        typedef ModifiedWaveletBasis<unsigned int, unsigned int> SModWaveletBase;
+    class GetAffectedBasisFunctions<ModWaveletBasis<unsigned int, unsigned int> > {
+        typedef ModWaveletBasis<unsigned int, unsigned int> SModWaveletBase;
       public:
         GetAffectedBasisFunctions(GridStorage* storage) :
           storage(storage) {
@@ -364,8 +364,8 @@ namespace sg {
      * Template Specialization for B-Spline basis.
      **/
     template<>
-    class GetAffectedBasisFunctions<ModifiedBsplineBasis<unsigned int, unsigned int> > {
-        typedef ModifiedBsplineBasis<unsigned int, unsigned int> SModBsplineBase;
+    class GetAffectedBasisFunctions<ModBsplineBasis<unsigned int, unsigned int> > {
+        typedef ModBsplineBasis<unsigned int, unsigned int> SModBsplineBase;
       public:
         GetAffectedBasisFunctions(GridStorage* storage) : storage(storage) {
         }
