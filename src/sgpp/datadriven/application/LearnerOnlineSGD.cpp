@@ -258,8 +258,6 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 						ratio = (oldErrorLast - currentError) / oldErrorSum;
 						ratio *= 1.0 / (double) RefineConfig.numMinibatchError;
 
-						//std::cout << "Ratio: " << ratio << std::endl;
-
 					} else {
 						errorOnMinibatch->push_front(currentError);
 					}
@@ -301,7 +299,6 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 			 */
 
 			// Perform the refinement
-			//std::cout << "Indicator values: ";
 			if (RefineConfig.refinementType == "PERSISTENT_ERROR" || RefineConfig.refinementType == "WEIGHTED_ERROR_MINIBATCH") {
 
 				double accuracy = getError(minibatchTrainDataset,
@@ -312,7 +309,6 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
 			}
 			refinement.free_refine(grid_->getStorage(), functor);
-			//std::cout << std::endl;
 
 			alpha_->resizeZero(grid_->getSize());
 
@@ -455,16 +451,21 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 	// Values of the interpolant
 	// FIXME result is not evaluated correctly! (only -nan)
 	DataVector result(numData);
+
+	DataVector row(trainDataset->getNcols());
+	for( size_t i = 0; i < numData; i++ ) {
+		trainDataset->getRow(i, row);
+		result.set(i, sg::op_factory::createOperationEval(*grid_)->eval(*alpha_, row));
+	}
+	/*
 	OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(
 			*grid_, trainDataset);
 	eval->mult(*alpha_, result);
 	delete eval;
-
-	/*
-	DataVector tmp_vec(trainDataset->getNcols());
-	trainDataset->getRow(0, tmp_vec);
-	std::cout << tmp_vec.toString() << std::endl;
 	*/
+
+	std::cout << "alpha: " << alpha_->toString() << std::endl;
+	std::cout << "result: " << result.toString() << std::endl;
 
 	if (errorType == "MSE") {
 
