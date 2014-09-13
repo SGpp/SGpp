@@ -83,6 +83,8 @@ private:
 	sg::base::DataVector* errorMB;
 	sg::base::DataVector* errorTrainData;
 
+	sg::base::DataVector* alphaAvg_;
+
 	void pushMinibatch(sg::base::DataVector& x, double y);
 
 	std::string errorType;
@@ -92,6 +94,9 @@ private:
 	std::vector<size_t> SGDIndexOrder;
 	double lambda;
 	double gamma;
+	unsigned int countIterations_;
+	size_t numMainDim_;
+	size_t numMainData_;
 	void performSGDStep();
 
 	double getError(sg::base::DataMatrix* trainDataset,
