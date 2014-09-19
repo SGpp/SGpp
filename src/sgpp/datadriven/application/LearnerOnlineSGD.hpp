@@ -18,95 +18,101 @@
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
-/*
- #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
- #include "base/operation/BaseOpFactory.hpp"
- #include "base/grid/Grid.hpp"
- #include "base/datatypes/DataVector.hpp"
- #include "base/datatypes/DataMatrix.hpp"
- #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
 
- #include "datadriven/application/Learner.hpp"
- #include "solver/sle/ConjugateGradients.hpp"
- #include "base/operation/OperationMatrix.hpp"
- #include "datadriven/algorithm/DMSystemMatrix.hpp"
- */
+namespace sg
+{
 
-namespace sg {
+namespace datadriven
+{
 
-namespace datadriven {
 
-struct LearnerOnlineSGDRefinementConfiguration {
-	std::string refinementCondition;
-	size_t numIterations;
-	size_t numMinibatchError;
+struct LearnerOnlineSGDConfiguration
+{
+    std::string refinementCondition;
+    size_t numIterations;
+    size_t smoothedErrorDeclineBufferSize;
 
-	std::string refinementType;
-	int refinementNumPoints;
+    std::string refinementType;
+    int refinementNumPoints;
+
+    double lambda;
+    double gamma;
+
+    std::string errorType;
+
+    int numRuns;
+
+    std::string experimentDir;
+
+    size_t minibatchSize;
+
+    int CG_max;
+    double CG_eps;
+    double smoothedErrorDecline;
 };
 
-class LearnerOnlineSGD: public sg::datadriven::Learner {
+class LearnerOnlineSGD: public sg::datadriven::Learner
+{
 
 public:
-	LearnerOnlineSGD(sg::datadriven::LearnerRegularizationType& regularization,
-			const bool isRegression, const bool isVerbose = true);
+    LearnerOnlineSGD(sg::datadriven::LearnerRegularizationType& regularization,
+                     const bool isRegression, const bool isVerbose = true);
 
-	virtual void train(sg::base::DataMatrix& mainTrainDataset_,
-			sg::base::DataVector& mainClasses_,
 
-			sg::base::DataMatrix& testTrainDataset_,
-			sg::base::DataVector& testClasses_,
 
-			sg::base::RegularGridConfiguration& GridConfig,
-			sg::datadriven::LearnerOnlineSGDRefinementConfiguration& RefineConfig,
-			sg::base::AbstractRefinement& refinement,
+    virtual void train(sg::base::DataMatrix& mainTrainDataset_,
+                       sg::base::DataVector& mainClasses_,
 
-			size_t batchSize_, double lambda_, double gamma_,
+                       sg::base::DataMatrix& testTrainDataset_,
+                       sg::base::DataVector& testClasses_,
 
-			int numRuns, std::string errorType_, std::string experimentDir);
+                       sg::base::RegularGridConfiguration& gridConfig,
+                       sg::datadriven::LearnerOnlineSGDConfiguration& config,
+                       sg::base::AbstractRefinement& refinement);
 
-	virtual ~LearnerOnlineSGD();
-
-	sg::base::DataVector* getAlpha();
+    virtual ~LearnerOnlineSGD();
 
 private:
-	sg::base::DataMatrix* mainTrainDataset;
-	sg::base::DataVector* mainClasses;
+    sg::base::DataMatrix* mainTrainDataset;
+    sg::base::DataVector* mainClasses;
 
-	sg::base::DataMatrix* testTrainDataset;
-	sg::base::DataVector* testClasses;
+    sg::base::DataMatrix* testTrainDataset;
+    sg::base::DataVector* testClasses;
 
-	sg::base::DataMatrix* minibatchTrainDataset;
-	sg::base::DataVector* minibatchClasses;
-	std::list<double>* errorOnMinibatch;
+    sg::datadriven::LearnerOnlineSGDConfiguration config;
 
-	sg::base::DataVector* errorMB;
-	sg::base::DataVector* errorTrainData;
+    size_t SGDCurrentIndex;
+    std::vector<size_t> SGDIndexOrder;
 
-	sg::base::DataVector* alphaAvg_;
+    size_t numMainData;
+    size_t numMainDim;
 
-	void pushMinibatch(sg::base::DataVector& x, double y);
+    double getError(sg::base::DataMatrix* trainDataset,
+                    sg::base::DataVector* classes,
+                    std::string errorType,
+                    sg::base::DataVector* error);
 
-	std::string errorType;
+    void pushMinibatch(sg::base::DataVector& x, double y);
+    void performSGDStep();
 
-	size_t SGDCurrentIndex;
-	size_t minibatchSize;
-	std::vector<size_t> SGDIndexOrder;
-	double lambda;
-	double gamma;
-	unsigned int countIterations_;
-	size_t numMainDim_;
-	size_t numMainData_;
-	void performSGDStep();
+    /*
+     * Other
+     */
 
-	double getError(sg::base::DataMatrix* trainDataset,
-			sg::base::DataVector* classes, sg::base::DataVector *error);
-	double getError(std::vector<sg::base::DataVector>* trainDataset,
-	    std::vector<double>* classes, sg::base::DataVector *error);
-	double getMainError();
-	double getTestError();
-	double getMinibatchError();
+    sg::base::DataVector* __mainError;
+
+    sg::base::DataMatrix* __minibatchTrainDataset;
+    sg::base::DataVector* __minibatchClasses;
+    sg::base::DataVector* __minibatchError;
+
+    sg::base::DataVector* __errorPerBasisFunction;
+    sg::base::DataVector* __alphaAvg;
+
+    std::list<double> __smoothedErrorDeclineBuffer;
+    double __currentGamma;
+    size_t __currentRunIterations;
 };
+
 }
 }
 

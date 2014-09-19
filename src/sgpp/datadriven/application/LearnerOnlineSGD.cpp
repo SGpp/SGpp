@@ -2,575 +2,564 @@
 
 #include "LearnerOnlineSGD.hpp"
 
-namespace sg {
+namespace sg
+{
 
-namespace datadriven {
+namespace datadriven
+{
 
 LearnerOnlineSGD::LearnerOnlineSGD(
-		sg::datadriven::LearnerRegularizationType& regularization,
-		const bool isRegression, const bool isVerbose) :
-		Learner(regularization, isRegression, isVerbose), mainTrainDataset(
-		NULL), mainClasses(NULL), testTrainDataset(NULL), testClasses(
-		NULL), minibatchTrainDataset(NULL), minibatchClasses(NULL), errorOnMinibatch(
-		NULL),  errorMB(NULL), errorTrainData(NULL), alphaAvg_(NULL), SGDCurrentIndex(0), lambda(0), gamma(0), countIterations_(0) {
-}
+    sg::datadriven::LearnerRegularizationType& regularization,
+    const bool isRegression, const bool isVerbose) :
+        Learner(regularization, isRegression, isVerbose),
+        mainTrainDataset(NULL), mainClasses(NULL),
+        testTrainDataset(NULL), testClasses(NULL),
+        SGDCurrentIndex(0),
+        numMainData(0), numMainDim(0),
+        __mainError(NULL),
+        __minibatchTrainDataset(NULL),
+        __minibatchClasses(NULL),
+        __minibatchError(NULL),
+        __errorPerBasisFunction(NULL),
+        __alphaAvg(NULL),
+        __currentGamma(0),
+        __currentRunIterations(0)
+
+{}
 
 void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
-		sg::base::DataVector& mainClasses_,
+                             sg::base::DataVector& mainClasses_,
+                             sg::base::DataMatrix& testTrainDataset_,
+                             sg::base::DataVector& testClasses_,
+                             sg::base::RegularGridConfiguration& gridConfig,
+                             sg::datadriven::LearnerOnlineSGDConfiguration& config_,
+                             sg::base::AbstractRefinement& refinement
+                            )
+{
+    /*
+     * Initialization
+     */
 
-		sg::base::DataMatrix& testTrainDataset_,
-		sg::base::DataVector& testClasses_,
+    using namespace sg::base;
+
+    if (alpha_ != NULL)
+        delete alpha_;
 
-		sg::base::RegularGridConfiguration& GridConfig,
-		sg::datadriven::LearnerOnlineSGDRefinementConfiguration& RefineConfig,
-		sg::base::AbstractRefinement& refinement,
-
-		size_t batchSize_, double lambda_, double gamma0,
-
-		int numRuns, std::string errorType_, std::string experimentDir) {
-	using namespace sg::base;
-
-	/*
-	 * Initialization
-	 */
-
-	const int CG_IMAX = 200;
-	const double CG_EPS = 0.0001;
-	const double SMOOTHED_ERROR_DECLINE = 0.0001;
-
-	if (alpha_ != NULL)
-		delete alpha_;
-
-	if (grid_ != NULL)
-		delete grid_;
-
-	if (isTrained_ == true)
-		isTrained_ = false;
-
-	InitializeGrid(GridConfig);
-	if (grid_ == NULL)
-		return;
-
-	lambda = lambda_;
-	errorType = errorType_;
-
-	mainTrainDataset = &mainTrainDataset_;
-	mainClasses = &mainClasses_;
-
-	testTrainDataset = &testTrainDataset_;
-	testClasses = &testClasses_;
-
-	minibatchSize = batchSize_;
-
-	if (errorMB != NULL) {
-		delete errorMB;
-	}
-	errorMB = new DataVector(minibatchSize);
-	errorMB->setAll(0.0);
-
-	if (errorTrainData != NULL) {
-		delete errorTrainData;
-	}
-	errorTrainData = new DataVector(mainClasses->getSize());
-
-	numMainData_ = mainTrainDataset->getNrows();
-	numMainDim_ = mainTrainDataset->getNcols();
-
-	minibatchTrainDataset = new sg::base::DataMatrix(0, numMainDim_);
-	minibatchTrainDataset->addSize(minibatchSize);
-	minibatchClasses = new DataVector(minibatchSize);
-
-	DataVector * errorPerBasisFunction = new DataVector(grid_->getSize());
-
-	alphaAvg_ = new DataVector(grid_->getSize());
-
-
-	/*
-	 * Initialize File descriptors
-	 */
-
-	std::fstream ferr0, ferr1, ferr2, fgrid, fcoor;
-
-	ferr0.open((experimentDir + std::string("/ferr0")).c_str(),
-			std::ios::out | std::ios::trunc);
-	ferr1.open((experimentDir + std::string("/ferr1")).c_str(),
-			std::ios::out | std::ios::trunc);
-	ferr2.open((experimentDir + std::string("/ferr2")).c_str(),
-			std::ios::out | std::ios::trunc);
-	fgrid.open((experimentDir + std::string("/fgrid")).c_str(),
-			std::ios::out | std::ios::trunc);
-	fcoor.open((experimentDir + std::string("/fcoor")).c_str(),
-			std::ios::out | std::ios::trunc);
-
-	/*
-	 * Initialize SGD Index order
-	 */
-
-	for (size_t i = 0; i < numMainData_; i++) {
-		SGDIndexOrder.push_back(i);
-	}
-
-	// TODO: remove seed after experiments are done
-	std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
-	SGDCurrentIndex = 0;
-
-	/*
-	 * Initialize RefinementFunctor
-	 */
-
-	RefinementFunctor *functor = NULL;
-
-	if (RefineConfig.refinementType == "SURPLUS") {
-		functor = new SurplusRefinementFunctor(alpha_,
-				RefineConfig.refinementNumPoints, 0.0);
-
-	} else if (RefineConfig.refinementType == "MSE") {
-	    /*functor = new SurplusRefinementFunctor(alpha_,
-	        RefineConfig.refinementNumPoints, 0.0);*/
-	    /*functor = new SurplusRefinementFunctor(alpha_,
-	            RefineConfig.refinementNumPoints, 0.0);*/
-	    functor = new SurplusRefinementFunctor(errorPerBasisFunction,
-	                RefineConfig.refinementNumPoints, 0.0);
-	  } else if (RefineConfig.refinementType == "WEIGHTED_ERROR_MINIBATCH") {
-
-		functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
-				RefineConfig.refinementNumPoints,
-				-std::numeric_limits<double>::infinity());
-		WeightedErrorRefinementFunctor* wfunctor =
-				(WeightedErrorRefinementFunctor*) functor;
-		wfunctor->setTrainDataset(minibatchTrainDataset);
-		wfunctor->setClasses(minibatchClasses);
-		wfunctor->setErrors(errorMB);
-
-	} else if (RefineConfig.refinementType == "WEIGHTED_ERROR_ALL") {
-		// FIXME: this case is not accounted for
-		/*functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
-		 RefineConfig.refinementNumPoints, 0.0);
-		 WeightedErrorRefinementFunctor* wfunctor =
-		 (WeightedErrorRefinementFunctor*) functor;
-
-		 wfunctor->setTrainDataset(mainTrainDataset);
-		 wfunctor->setClasses(mainClasses);*/
-
-	} else if (RefineConfig.refinementType == "PERSISTENT_ERROR") {
-
-		functor = new PersistentErrorRefinementFunctor(alphaAvg_, grid_,
-				RefineConfig.refinementNumPoints,
-				-std::numeric_limits<double>::infinity());
-		PersistentErrorRefinementFunctor* pfunctor =
-				(PersistentErrorRefinementFunctor*) functor;
-		pfunctor->setTrainDataset(minibatchTrainDataset);
-		pfunctor->setClasses(minibatchClasses);
-		pfunctor->setErrors(errorMB);
-
-	} else if (RefineConfig.refinementType == "CLASSIFICATION") {
-		functor = new ClassificationRefinementFunctor(alpha_, grid_,
-				RefineConfig.refinementNumPoints, 0.0);
-		ClassificationRefinementFunctor* cfunctor =
-				(ClassificationRefinementFunctor*) functor;
-		cfunctor->setTrainDataset(mainTrainDataset);
-		cfunctor->setClasses(mainClasses);
-
-	} else {
-		throw base::application_exception("Invalid refinement type");
-	}
-
-	/*
-	 * Perform complete run(s) through the entire training dataset
-	 */
-
-	countIterations_ = 0;
-	for (int countRun = 0; countRun < numRuns; countRun++) {
-
-		std::cout << "Run: " << countRun + 1 << std::endl;
-
-		/*
-		 * Reset Minibatch
-		 */
-
-
-		
-		//while (countIterations_ < numMainData_) {
-
-			/*
-			 * Perform SGD (until the refinement condition is true)
-			 */
-
-			/*
-			 * Refinement condition: Fixed number of iterations
-			 */
-
-			if (RefineConfig.refinementCondition == "FIXED_NUMBER") {
-				for (size_t countIteration = 0;
-						countIteration < RefineConfig.numIterations;
-						countIteration++) {
-					gamma = gamma0*pow(1+gamma0*lambda_*countIterations_, -2.0/3);
-					performSGDStep();
-					countIterations_++;
-				}
-				
-			}
-
-			/*
-			 * Refinement condition: Smooth error decline
-			 */
-
-			else if (RefineConfig.refinementCondition
-					== "SMOOTHED_ERROR_DECLINE") {
-
-				if (RefineConfig.numMinibatchError == 0) {
-					throw base::application_exception(
-							"numMinibatchError must be > 0");
-				}
-
-				double oldErrorSum = 0;
-				double oldErrorLast = 0;
-
-				double currentError = 0;
-				double ratio = 1;
-				do {
-					performSGDStep();
-					countIterations_++;
-
-					currentError = getMinibatchError();
-
-					if (errorOnMinibatch->size()
-							>= RefineConfig.numMinibatchError) {
-
-						// Calculate average of old minibatch errors
-						for (std::list<double>::iterator it =
-								errorOnMinibatch->begin();
-								it != errorOnMinibatch->end(); ++it) {
-							oldErrorSum += *it;
-						}
-
-						oldErrorLast = errorOnMinibatch->back();
-
-						// Update errorOnMinibatch
-						errorOnMinibatch->pop_back();
-						errorOnMinibatch->push_front(currentError);
-
-						// Update ratio
-						ratio = (oldErrorLast - currentError) / oldErrorSum;
-						ratio *= 1.0 / (double) RefineConfig.numMinibatchError;
-
-						//std::cout << "Ratio: " << ratio << std::endl;
-
-					} else {
-						errorOnMinibatch->push_front(currentError);
-					}
-				} while (ratio > SMOOTHED_ERROR_DECLINE);
-			} else {
-				throw base::application_exception(
-						"Invalid refinement condition");
-			}
-
-			int countTotalIterations = (int) (countIterations_
-					+ countRun * numMainData_);
-
-			/*
-			 * Output:
-			 * ferr0: Error on the current minibatch
-			 * ferr1: Error on the complete training dataset
-			 * ferr2: Error on the test dataset
-			 * fcoor: Current coordinates of the minibatch
-			 */
-
-			ferr0 << countIterations_ << "," << getMinibatchError()
-					<< std::endl;
-			ferr1 << countIterations_ << "," << getMainError() << std::endl;
-			ferr2 << countIterations_ << "," << getTestError() << std::endl;
-			//fcoor << countTotalIterations << ","
-			//		<< (*minibatchTrainDataset).toString() << std::endl;
-
-			double percent = ((double) countTotalIterations
-					/ ((double) numMainData_ * numRuns)) * 100;
-			if (percent > 100) {
-				percent = 100;
-			}
-			printf("Accuracy: %2.2f%% (at %2.2f%%)\n", getMainError() * 100,
-					percent);
-			fflush(stdout);
-
-			/*
-			 * Perform one refinement operation
-			 */
-
-			// Perform the refinement
-			//std::cout << "Indicator values: ";
-			if (RefineConfig.refinementType == "PERSISTENT_ERROR" || RefineConfig.refinementType == "WEIGHTED_ERROR_MINIBATCH") {
-
-				double accuracy = getError(minibatchTrainDataset,
-						minibatchClasses, errorMB);
-				if (accuracy == 1.0) {
-					continue;
-				}
-
-			}
-
-			if (RefineConfig.refinementType == "MSE") {
-
-					  errorTrainData->sqr();
-		  OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_,
-				  mainTrainDataset);
-		  eval->multTranspose(*errorTrainData, *errorPerBasisFunction);
-		  delete eval;
-			  refinement.free_refine(grid_->getStorage(), functor);
-			}
-			else {
-			  refinement.free_refine(grid_->getStorage(), functor);
-			}
-			//std::cout << std::endl;
-
-			alpha_->resizeZero(grid_->getSize());
-			alphaAvg_->resizeZero(grid_->getSize());
-
-			/*
-			 * Output (fgrid): Serialized grid structure
-			 */
-
-			std::string grid_str;
-			grid_->serialize(grid_str);
-			fgrid << grid_str << std::endl;
-		//}
-	}
-
-	/*
-	 * Perform CG
-	 */
-
-	errorType = "ACCURACY";
-	std::cout << "Error before CG (" << errorType << "): " << getMainError() << std::endl;
-
-	errorType = "MSE";
-	std::cout << "Error before CG (" << errorType << "): " << getMainError() << std::endl;
-
-	sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
-			CG_IMAX, CG_EPS);
-
-	sg::base::OperationMatrix *C_ = sg::op_factory::createOperationIdentity(
-			*this->grid_);
-	sg::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
-			lambda);
-
-	sg::base::DataVector b(alpha_->getSize());
-	matrix.generateb(*mainClasses, b);
-
-	cg->solve(matrix, *alpha_, b, true, false);
-
-	errorType = "ACCURACY";
-	std::cout << "Error after CG (" << errorType << "): " << getMainError() << std::endl;
-
-	errorType = "MSE";
-	std::cout << "Error after CG (" << errorType << "): " << getMainError() << std::endl;
-
-	errorType = "ACCURACY";
-	std::cout << "Error on test Data (" << errorType << "): " << getMainError() << std::endl;
-
-	errorType = "MSE";
-	std::cout << "Error on test Data (" << errorType << "): " << getMainError() << std::endl;
-
-	isTrained_ = true;
-
-	/*
-	 * Close output files
-	 */
-	ferr0.close();
-	ferr1.close();
-	ferr2.close();
-	fgrid.close();
-	fcoor.close();
-
-	delete C_;
-	delete cg;
-	delete functor;
-}
-
-void LearnerOnlineSGD::performSGDStep() {
-	using namespace sg::base;
-
-	size_t numCoeff = grid_->getStorage()->size();
-	size_t dim = mainTrainDataset->getNcols();
-
-	// Get x and y pair
-	DataVector x(dim);
-	mainTrainDataset->getRow(SGDIndexOrder[SGDCurrentIndex], x);
-	double y = mainClasses->get(SGDIndexOrder[SGDCurrentIndex]);
-
-	// Save in minibatch
-	pushMinibatch(x, y);
-
-	// Update SGDCurrentIndex
-	if (SGDCurrentIndex == SGDIndexOrder.size() - 1) {
-		std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
-		SGDCurrentIndex = 0;
-	} else {
-		SGDCurrentIndex++;
-	}
-
-	// Calculate delta^n according to [Maier BA, 5.10]:
-
-	// calculate error (tmp1)
-	// tmp1 = (b_k^T * a^n - y_k) where
-	// b_k = (phi_1(x_k) ... phi_N(x_k))
-	double tmp1 = grid_->eval(*alpha_, x) - y;
-
-	// delta^n = 2 * gamma * (b_k * tmp1 + lambda * a^n)
-	DataVector delta(*alpha_);
-	DataVector unit_alpha(numCoeff);
-	unit_alpha.setAll(0.0);
-
-	DataVector singleAlpha(1);
-	singleAlpha[0] = 1.0;
-
-
-	DataMatrix dm(x.getPointer(), 1, x.getSize());
-	sg::op_factory::createOperationMultipleEval(*grid_, &dm)->multTranspose(
-				singleAlpha, delta);
-	alpha_->mult(1-gamma*lambda);
-	alpha_->axpy(-gamma*tmp1, delta);
-
-	//double mu = 0.1; // boring exponential smoothing
-
-	// L. Bottou exciting smoothing
-	size_t t1 = (countIterations_ > numMainDim_+1) ? countIterations_ - numMainDim_ : 1;
-	size_t t2 = (countIterations_ > numMainData_+1) ? countIterations_ - numMainDim_: 1;
-	double mu = (t1>t2) ? static_cast<double>(t1) : static_cast<double>(t2);
-	mu = 1.0/mu;
-
-
-	alphaAvg_->mult(1-mu);
-	alphaAvg_->axpy(mu, *alpha_);
-
-	/*for (size_t i = 0; i < numCoeff; i++) {
-
-
-		unit_alpha[i] = 1;
-
-		delta[i] = grid_->eval(unit_alpha, x) * tmp1;
-		delta[i] += lambda * (*alpha_)[i];
-		delta[i] *= 2 * gamma;
-		unit_alpha[i] = 0;
-	}
-
-	// update alpha
-	// a^{n+1} = a^n - delta^n
-	for (size_t i = 0; i < numCoeff; i++) {
-		(*alpha_)[i] = (*alpha_)[i] - delta[i];
-	}*/
-}
-
-void LearnerOnlineSGD::pushMinibatch(sg::base::DataVector& x, double y) {
-	static size_t next_idx = 0;
-	if (minibatchTrainDataset->getUnused() > 0) {
-		minibatchTrainDataset->appendRow(x);
-		(*minibatchClasses)[next_idx] = y;
-	} else {
-		minibatchTrainDataset->setRow(next_idx, x);
-		(*minibatchClasses)[next_idx] = y;
-	}
-	next_idx = (next_idx + 1) % minibatchSize;
+    if (grid_ != NULL)
+        delete grid_;
+
+    if (__mainError != NULL)
+        delete __mainError;
+
+    if (__minibatchTrainDataset != NULL)
+        delete __minibatchTrainDataset;
+
+    if (__minibatchClasses != NULL)
+        delete __minibatchClasses;
+
+    if (__minibatchError != NULL)
+        delete __minibatchError;
+
+    if (__errorPerBasisFunction != NULL)
+        delete __errorPerBasisFunction;
+
+    if (__alphaAvg != NULL)
+        delete __alphaAvg;
+
+    if (isTrained_ == true)
+        isTrained_ = false;
+
+    InitializeGrid(gridConfig);
+    if (grid_ == NULL)
+    {
+        return;
+    }
+
+    /*
+     * Members
+     */
+
+    mainTrainDataset = &mainTrainDataset_;
+    mainClasses = &mainClasses_;
+
+    testTrainDataset = &testTrainDataset_;
+    testClasses = &testClasses_;
+
+    config = config_;
+
+    numMainData = mainTrainDataset->getNrows();
+    numMainDim = mainTrainDataset->getNcols();
+
+    __mainError = new DataVector(numMainData);
+
+    __minibatchTrainDataset = new sg::base::DataMatrix(0, numMainDim);
+    __minibatchTrainDataset->addSize(config.minibatchSize);
+    __minibatchClasses = new DataVector(config.minibatchSize);
+    __minibatchError = new DataVector(config.minibatchSize);
+
+    __errorPerBasisFunction = new DataVector(grid_->getSize());
+    __alphaAvg = new DataVector(grid_->getSize());
+
+    __currentGamma = config.gamma;
+
+    /*
+     * File descriptors
+     */
+
+    std::fstream ferr0, ferr1, ferr2, fgrid, fcoor;
+    std::string dir = config.experimentDir;
+    ferr0.open((dir + std::string("/ferr0")).c_str(),
+               std::ios::out | std::ios::trunc);
+    ferr1.open((dir + std::string("/ferr1")).c_str(),
+               std::ios::out | std::ios::trunc);
+    ferr2.open((dir + std::string("/ferr2")).c_str(),
+               std::ios::out | std::ios::trunc);
+    fgrid.open((dir + std::string("/fgrid")).c_str(),
+               std::ios::out | std::ios::trunc);
+    fcoor.open((dir + std::string("/fcoor")).c_str(),
+               std::ios::out | std::ios::trunc);
+
+    /*
+     * SGD Order
+     */
+
+    for (size_t i = 0; i < numMainData; i++)
+    {
+        SGDIndexOrder.push_back(i);
+    }
+
+    std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
+    SGDCurrentIndex = 0;
+
+    /*
+     * Refinement Functor
+     */
+
+    RefinementFunctor *functor = NULL;
+
+    if(config.refinementType == "SURPLUS")
+    {
+        functor = new SurplusRefinementFunctor(alpha_,
+                                               config.refinementNumPoints, 0.0);
+    }
+
+    if(config.refinementType == "MSE")
+    {
+        /*functor = new SurplusRefinementFunctor(alpha_,
+        		        RefineConfig.refinementNumPoints, 0.0);*/
+        /*functor = new SurplusRefinementFunctor(alpha_,
+                RefineConfig.refinementNumPoints, 0.0);*/
+        functor = new SurplusRefinementFunctor(__errorPerBasisFunction,
+                                               config.refinementNumPoints, 0.0);
+    }
+
+    if(config.refinementType == "WEIGHTED_ERROR_MINIBATCH")
+    {
+        functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
+                  config.refinementNumPoints,
+                  -std::numeric_limits<double>::infinity());
+        WeightedErrorRefinementFunctor* wfunctor =
+            (WeightedErrorRefinementFunctor*) functor;
+        wfunctor->setTrainDataset(__minibatchTrainDataset);
+        wfunctor->setClasses(__minibatchClasses);
+        wfunctor->setErrors(__minibatchError);
+    }
+
+    if(config.refinementType == "WEIGHTED_ERROR_ALL")
+    {
+        // FIXME: this case is not accounted for
+        /*functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
+         RefineConfig.refinementNumPoints, 0.0);
+         WeightedErrorRefinementFunctor* wfunctor =
+         (WeightedErrorRefinementFunctor*) functor;
+
+         wfunctor->setTrainDataset(mainTrainDataset);
+         wfunctor->setClasses(mainClasses);*/
+    }
+
+    if(config.refinementType == "PERSISTENT_ERROR")
+    {
+        functor = new PersistentErrorRefinementFunctor(__alphaAvg, grid_,
+                  config.refinementNumPoints,
+                  -std::numeric_limits<double>::infinity());
+        PersistentErrorRefinementFunctor* pfunctor =
+            (PersistentErrorRefinementFunctor*) functor;
+        pfunctor->setTrainDataset(__minibatchTrainDataset);
+        pfunctor->setClasses(__minibatchClasses);
+        pfunctor->setErrors(__minibatchError);
+    }
+
+    if(config.refinementType == "CLASSIFICATION")
+    {
+
+        functor = new ClassificationRefinementFunctor(alpha_, grid_,
+                  config.refinementNumPoints, 0.0);
+        ClassificationRefinementFunctor* cfunctor =
+            (ClassificationRefinementFunctor*) functor;
+        cfunctor->setTrainDataset(mainTrainDataset);
+        cfunctor->setClasses(mainClasses);
+    }
+
+    if (functor == NULL)
+    {
+        throw base::application_exception("Invalid refinement type");
+    }
+
+
+    /*
+     * Perform runs
+     */
+
+    for (int countRun = 0; countRun < config.numRuns; countRun++)
+    {
+
+        __currentRunIterations = 0;
+
+        std::cout << "Run: " << countRun + 1 << std::endl;
+
+        while (__currentRunIterations < numMainData)
+        {
+            /*
+             * Perform SGD
+             */
+
+            if(config.refinementCondition == "FIXED_NUMBER")
+            {
+                for (size_t i = 0;
+                        i < config.numIterations;
+                        i++)
+                {
+                    __currentGamma = config.gamma*pow(1+config.gamma*config.lambda*(double)__currentRunIterations, -2.0/3);
+                    performSGDStep();
+                    __currentRunIterations++;
+                }
+
+            }
+
+            if(config.refinementCondition == "SMOOTHED_ERROR_DECLINE")
+            {
+
+                double oldErrorSum = 0;
+                double oldErrorLast = 0;
+
+                double currentMinibatchError = 0;
+                double ratio = 1;
+
+                do
+                {
+                    // Run SGD
+                    performSGDStep();
+                    __currentRunIterations++;
+
+                    // Calculate smoothed error
+                    currentMinibatchError = getError(__minibatchTrainDataset, __minibatchClasses, config.errorType, NULL);
+                    if (__smoothedErrorDeclineBuffer.size() >= config.smoothedErrorDeclineBufferSize)
+                    {
+
+                        // Calculate average of old minibatch errors
+                        for (
+                            std::list<double>::iterator it = __smoothedErrorDeclineBuffer.begin();
+                            it != __smoothedErrorDeclineBuffer.end();
+                            ++it
+                        )
+                        {
+                            oldErrorSum += *it;
+                        }
+
+                        oldErrorLast = __smoothedErrorDeclineBuffer.back();
+
+                        // Update errorOnMinibatch
+                        __smoothedErrorDeclineBuffer.pop_back();
+                        __smoothedErrorDeclineBuffer.push_front(currentMinibatchError);
+
+                        // Update ratio
+                        ratio = (oldErrorLast - currentMinibatchError) / oldErrorSum;
+                        ratio *= 1.0 / (double) config.smoothedErrorDeclineBufferSize;
+
+                    }
+                    else
+                    {
+                        __smoothedErrorDeclineBuffer.push_front(currentMinibatchError);
+                    }
+                }
+                while (ratio > config.smoothedErrorDecline);
+            }
+
+            /*
+             * Error vectors
+             */
+
+            if (config.refinementType == "PERSISTENT_ERROR" ||
+                    config.refinementType == "WEIGHTED_ERROR_MINIBATCH")
+            {
+                if (config.errorType == "ACCURACY")
+                {
+                    double accuracy = getError(__minibatchTrainDataset,
+                                               __minibatchClasses,
+                                               config.errorType,
+                                               __minibatchError);
+                    if (accuracy == 1.0)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            if (config.refinementType == "MSE")
+            {
+                getError(mainTrainDataset, mainClasses, config.errorType, __mainError);
+                __mainError->sqr();
+                OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_,
+                                              mainTrainDataset);
+                eval->multTranspose(*__mainError, *__errorPerBasisFunction);
+                delete eval;
+            }
+
+            /*
+             * Output
+             */
+
+            double err0 = getError(__minibatchTrainDataset, __minibatchClasses, config.errorType, NULL);
+            double err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL);
+            double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL);
+
+            ferr0 << __currentRunIterations << "," << err0 << std::endl;
+            ferr1 << __currentRunIterations << "," << err1 << std::endl;
+            ferr2 << __currentRunIterations << "," << err2 << std::endl;
+
+            std::string grid_str;
+            grid_->serialize(grid_str);
+            fgrid << grid_str << std::endl;
+
+            double percent = (double) __currentRunIterations + countRun * (double) numMainData;
+            percent /= (double) numMainData * config.numRuns;
+            percent *= 100;
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            printf("Accuracy: %2.2f%% (at %2.2f%%)\n", err1 * 100, percent);
+            fflush(stdout);
+
+            /*
+             * Refinement
+             */
+
+            refinement.free_refine(grid_->getStorage(), functor);
+            alpha_->resizeZero(grid_->getSize());
+            __alphaAvg->resizeZero(grid_->getSize());
+        }
+    }
+
+    /*
+     * Perform CG
+     */
+
+    std::cout << "Error before CG (" << config.errorType << "): " <<
+    getError(mainTrainDataset, mainClasses, "ACCURACY", NULL) << std::endl;
+    std::cout << "Error before CG (" << config.errorType << "): " <<
+    getError(mainTrainDataset, mainClasses, "MSE", NULL) << std::endl;
+
+    sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
+                                             config.CG_max, config.CG_eps);
+
+    sg::base::OperationMatrix *C_ = sg::op_factory::createOperationIdentity(
+                                        *this->grid_);
+    sg::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
+                                          config.lambda);
+
+    sg::base::DataVector b(alpha_->getSize());
+    matrix.generateb(*mainClasses, b);
+
+    cg->solve(matrix, *alpha_, b, true, false);
+
+    std::cout << "Error after CG (" << config.errorType << "): " <<
+    getError(mainTrainDataset, mainClasses, "ACCURACY", NULL) << std::endl;
+    std::cout << "Error after CG (" << config.errorType << "): " <<
+    getError(mainTrainDataset, mainClasses, "MSE", NULL) << std::endl;
+
+    std::cout << "Error on test (" << config.errorType << "): " <<
+    getError(testTrainDataset, mainClasses, "ACCURACY", NULL) << std::endl;
+    std::cout << "Error on test (" << config.errorType << "): " <<
+    getError(testTrainDataset, mainClasses, "MSE", NULL) << std::endl;
+
+    /*
+     * Clean up
+     */
+
+    isTrained_ = true;
+
+    ferr0.close();
+    ferr1.close();
+    ferr2.close();
+    fgrid.close();
+    fcoor.close();
+
+    delete C_;
+    delete cg;
+    delete functor;
 }
 
 double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
-		sg::base::DataVector* classes, sg::base::DataVector *error) {
-	using namespace sg::base;
+                                  sg::base::DataVector* classes, std::string errorType, sg::base::DataVector* error = NULL)
+{
+    using namespace sg::base;
 
-	size_t numData = trainDataset->getNrows();
-	bool cleanup = false;
-	double res = -1.0;
+    size_t numData = trainDataset->getNrows();
 
-	// Error vector
-	if (error == NULL) {
-		error = new DataVector(numData);
-		cleanup = true;
-	}
-	error->setAll(0.0);
+    bool cleanup = false;
+    if( error == NULL )
+    {
+        error = new DataVector(numData);
+        cleanup = true;
+    }
 
-	// Values of the interpolant
-	// FIXME result is not evaluated correctly! (only -nan)
-	DataVector result(numData);
-	OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, trainDataset);
-	eval->mult(*alphaAvg_, result);
-	//eval->mult(*alpha_, result);
-	delete eval;
+    DataVector result(numData);
+    OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, trainDataset);
 
-	/*
-	DataVector tmp_vec(trainDataset->getNcols());
-	trainDataset->getRow(0, tmp_vec);
-	std::cout << tmp_vec.toString() << std::endl;
-	*/
+    eval->mult(*__alphaAvg, result);
+    //eval->mult(*alpha_, result);
 
-	if (errorType == "MSE") {
+    double res = -1.0;
 
-		for (unsigned int i = 0; i < numData; i++) {
-			error->set(i, classes->get(i) - result.get(i));
-		}
+    if(errorType == "MSE")
+    {
+        for (unsigned int i = 0; i < numData; i++)
+        {
+            error->set(i, classes->get(i) - result.get(i));
+        }
 
-		// Error
-		double sum = 0;
-		for (unsigned int i = 0; i < numData; i++) {
-			sum += error->get(i) * error->get(i);
-		}
+        // Error
+        double sum = 0;
+        for (unsigned int i = 0; i < numData; i++)
+        {
+            sum += error->get(i) * error->get(i);
+        }
 
-		res = (sum / (double) numData);
+        res = (sum / (double) numData);
 
-		if (cleanup) {
-			delete error;
-		}
+    }
+    if(errorType == "ACCURACY")
+    {
+        unsigned int correct = 0;
+        for (unsigned int i = 0; i < numData; i++)
+        {
+            correct += (result.get(i) < 0) == (classes->get(i) < 0) ? 1 : 0;
+            error->set(i, classes->get(i) - result.get(i));
 
-	} else if (errorType == "ACCURACY") {
-		unsigned int correct = 0;
-		for (unsigned int i = 0; i < numData; i++) {
-			correct += (result.get(i) < 0) == (classes->get(i) < 0) ? 1 : 0;
-			error->set(i, classes->get(i) - result.get(i));
+        }
+        res = static_cast<double>(correct) / static_cast<double>(numData);
 
-		}
-		res = static_cast<double>(correct) / static_cast<double>(numData);
-		if (cleanup) {
-			delete error;
-		}
+    }
 
-	} else {
-		if (cleanup) {
-			delete error;
-		}
+    delete eval;
+    if (cleanup)
+    {
+        delete error;
+    }
 
-		throw base::application_exception("Invalid error type");
-	}
-	return res;
+    return res;
+}
 
+void LearnerOnlineSGD::performSGDStep()
+{
+    using namespace sg::base;
+
+    size_t numCoeff = grid_->getStorage()->size();
+
+    // Get x and y pair
+    DataVector x(numMainDim);
+    mainTrainDataset->getRow(SGDIndexOrder[SGDCurrentIndex], x);
+    double y = mainClasses->get(SGDIndexOrder[SGDCurrentIndex]);
+
+    // Store in minibatch
+    pushMinibatch(x, y);
+
+    // Calculate delta^n according to [Maier BA, 5.10]:
+    // b_k^T * alpha^n - y_k
+    double tmp1 = grid_->eval(*alpha_, x) - y;
+
+    // delta^n = 2 * gamma * (b_k * tmp1 + lambda * a^n)
+    DataVector delta(*alpha_);
+    DataVector unit_alpha(numCoeff);
+    unit_alpha.setAll(0.0);
+
+    DataVector singleAlpha(1);
+    singleAlpha[0] = 1.0;
+
+    DataMatrix dm(x.getPointer(), 1, x.getSize());
+    sg::op_factory::createOperationMultipleEval(*grid_, &dm)->multTranspose(
+        singleAlpha, delta);
+    alpha_->mult(1-__currentGamma * config.lambda);
+    alpha_->axpy(-__currentGamma * tmp1, delta);
+
+    //double mu = 0.1; // boring exponential smoothing
+
+    // L. Bottou exciting smoothing
+    size_t t1 = (__currentRunIterations > numMainDim+1) ? __currentRunIterations - numMainDim : 1;
+
+    // TODO: numMainData instead of numMainDim?
+    size_t t2 = (__currentRunIterations > numMainData+1) ? __currentRunIterations - numMainDim: 1;
+    double mu = (t1>t2) ? static_cast<double>(t1) : static_cast<double>(t2);
+    mu = 1.0/mu;
+
+    __alphaAvg->mult(1-mu);
+    __alphaAvg->axpy(mu, *alpha_);
+
+    /*for (size_t i = 0; i < numCoeff; i++) {
+    	unit_alpha[i] = 1;
+    	delta[i] = grid_->eval(unit_alpha, x) * tmp1;
+    	delta[i] += lambda * (*alpha_)[i];
+    	delta[i] *= 2 * gamma;
+    	unit_alpha[i] = 0;
+}
+
+    // update alpha
+    // a^{n+1} = a^n - delta^n
+    for (size_t i = 0; i < numCoeff; i++) {
+    	(*alpha_)[i] = (*alpha_)[i] - delta[i];
+}*/
+}
+
+void LearnerOnlineSGD::pushMinibatch(sg::base::DataVector& x, double y)
+{
+    static size_t next_idx = 0;
+    if (__minibatchTrainDataset->getUnused() > 0)
+    {
+        __minibatchTrainDataset->appendRow(x);
+        (*__minibatchClasses)[next_idx] = y;
+    }
+    else
+    {
+        __minibatchTrainDataset->setRow(next_idx, x);
+        (*__minibatchClasses)[next_idx] = y;
+    }
+    next_idx = (next_idx + 1) % config.minibatchSize;
 }
 
 
-double LearnerOnlineSGD::getMainError() {
-	return getError(mainTrainDataset, mainClasses, NULL);
+LearnerOnlineSGD::~LearnerOnlineSGD()
+{
+    if (__mainError != NULL)
+        delete __mainError;
+
+    if (__minibatchTrainDataset != NULL)
+        delete __minibatchTrainDataset;
+
+    if (__minibatchClasses != NULL)
+        delete __minibatchClasses;
+
+    if (__minibatchError != NULL)
+        delete __minibatchError;
+
+    if (__errorPerBasisFunction != NULL)
+        delete __errorPerBasisFunction;
+
+    if (__alphaAvg != NULL)
+        delete __alphaAvg;
 }
 
-double LearnerOnlineSGD::getTestError() {
-	return getError(testTrainDataset, testClasses, NULL);
 }
 
-double LearnerOnlineSGD::getMinibatchError() {
-	return getError(minibatchTrainDataset, minibatchClasses, NULL);
-}
-
-sg::base::DataVector* LearnerOnlineSGD::getAlpha() {
-	if (alpha_ == NULL)
-		throw base::application_exception("Not initialized");
-	return alpha_;
-}
-
-LearnerOnlineSGD::~LearnerOnlineSGD() {
-	if (alphaAvg_ != NULL){
-		delete alphaAvg_;
-	}
-	if (minibatchTrainDataset != NULL){
-		delete minibatchTrainDataset;
-	}
-	if (minibatchClasses != NULL){
-		delete minibatchClasses;
-	}
-}
-}
 }
