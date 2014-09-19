@@ -1,9 +1,17 @@
 import unittest
+import math
+import random
 from bin.pysgpp import Grid, DataVector, DataMatrix, WeightedErrorRefinementFunctor
 
 class TestWeightedRefinementOperator(unittest.TestCase):
 
+
     def setUp(self):
+
+        #
+        # Grid
+        #
+
         DIM = 2
         LEVEL = 2
 
@@ -11,10 +19,41 @@ class TestWeightedRefinementOperator(unittest.TestCase):
         self.grid_gen = self.grid.createGridGenerator()
         self.grid_gen.regular(LEVEL)
 
-        self.trainData = DataMatrix([[0.1, 0.1], [0.3, 0.5], [0.8, 0.2]])
-        self.classes = DataVector([1, 6, 3])
+        #
+        # trainData, classes, errors
+        #
+
+        xs = []
+        DELTA = 0.05
+        DELTA_RECI = int(1/DELTA)
+
+        for i in xrange(DELTA_RECI):
+            for j in xrange(DELTA_RECI):
+                xs.append([DELTA*i, DELTA*j])
+
+        random.seed(1208813)
+        ys = [ random.randint(-10, 10) for i in xrange(DELTA_RECI**2)]
+
+        # print xs
+        # print ys
+
+        self.trainData = DataMatrix(xs)
+        self.classes = DataVector(ys)
         self.alpha = DataVector([3, 6, 7, 9, -1])
-        self.errors = [ self.alpha[i] - self.grid.eval(self.alpha, self.trainData[i]) for i in xrange(self.trainData.size()) ]
+
+        self.errors = DataVector(DELTA_RECI**2)
+        coord = DataVector(DIM)
+
+        for i in xrange(self.trainData.getNrows()):
+            self.trainData.getRow(i, coord)
+            self.errors.__setitem__ (i, self.classes[i] - self.grid.eval(self.alpha, coord))
+
+        #print "Errors:"
+        #print self.errors
+
+        #
+        # Functor
+        #
 
         self.functor = WeightedErrorRefinementFunctor(self.alpha, self.grid)
         self.functor.setTrainDataset(self.trainData)
@@ -24,15 +63,26 @@ class TestWeightedRefinementOperator(unittest.TestCase):
     def test_1(self):
         storage = self.grid.getStorage()
         coord = DataVector(storage.dim())
+        num_coeff = self.alpha.__len__()
 
-        values = [self.functor.operator(storage,i) for i in xrange(storage.size())]
-        for i in xrange(self.alpha.size()):
+        values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
+        expect = []
+        for i in xrange(num_coeff):
+            # print i
             val = 0
-            single = DataVector()
-            single.set(i, self.alpha[i])
-            for j in xrange(self.trainData.size()):
-                val += abs( self.grid.eval(single, self.trainData[j]) * (self.errors[j]**2) )
-            self.assertEqual(values[i], val)
+            single = DataVector(num_coeff)
+            single.__setitem__(i, self.alpha.__getitem__(i))
+            for j in xrange(self.trainData.getNrows()):
+                self.trainData.getRow(j, coord)
+                val += abs( self.grid.eval(single, coord) * (self.errors.__getitem__(j)**2) )
+            expect.append(val)
+
+        # print values
+        # print expect
+
+        # print [ values[i]/expect[i] for i in xrange(values.__len__())]
+        
+        self.assertEqual(values, expect)
         
 if __name__=='__main__':
     unittest.main()

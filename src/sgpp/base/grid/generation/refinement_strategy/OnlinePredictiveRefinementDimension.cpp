@@ -16,193 +16,395 @@
 
 
 
-namespace sg {
-namespace base {
-
-bool doubleReverseCompare(const double firstEl, const double secondEl){
-	return firstEl > secondEl;
-}
+namespace sg
+{
+namespace base
+{
 
 void OnlinePredictiveRefinementDimension::collectRefinablePoints(
-		GridStorage* storage, RefinementFunctor* functor,
-		size_t refinements_num, size_t* max_indices,
-		PredictiveRefinementDimensionIndicator::value_type* max_values) {
-	//this refinement algorithm uses the predictive refinement indicator.
-	//dynamic casting is used to maintain the signature of the algorithm, but still be able to use the
-	//predictive refinement indicator with it.
-	PredictiveRefinementDimensionIndicator* errorIndicator =
-			dynamic_cast<PredictiveRefinementDimensionIndicator*>(functor);
+    GridStorage* storage, size_t refinements_num, refinement_map* result)
+{
 
-	//size_t min_idx = 0;
-	std::vector<value_type> errors;
+    // TODO
+    // don't save all, only top five
 
-	// max value equals min value
-	//PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
-	//PredictiveRefinementDimensionIndicator::value_type max_value = max_values[min_idx];
+    using namespace sg::base;
 
-	index_type index;
-	GridStorage::grid_map_iterator end_iter = storage->end();
+    if (trainDataset == NULL || classes == NULL || errors == NULL)
+    {
+        throw base::application_exception(
+            "Training dataset, classes or errors not set");
+    }
+
+    size_t dim = storage->dim();
+    size_t numData = trainDataset->getNrows();
+
+    Grid* predictiveGrid = Grid::createLinearGrid(dim);
+    GridGenerator* predictiveGridGenerator = predictiveGrid->createGridGenerator();
+    predictiveGridGenerator->regular(2);
+
+    GridStorage* predictiveGridStorage = predictiveGrid->getStorage();
+    size_t predictiveGridSize = predictiveGrid->getSize();
+
+    OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid, trainDataset);
+
+    GridIndex* gridIndex;
+
+    GridStorage::grid_map_iterator end_iter = storage->end();
+    for (GridStorage::grid_map_iterator iter = storage->begin();
+            iter != end_iter; iter++)
+    {
+
+        gridIndex = iter->first;
+
+        std::cout << "Point: " << storage->seq(gridIndex) << " (" << gridIndex->toString() << ")" << std::endl;
+
+        // Refinability
+
+        bool refinable = false;
+        for( size_t k=0; k <dim; k++)
+        {
+            if( !hasLeftChild(storage, gridIndex, k))
+            {
+                refinable = true;
+            }
+        }
+        if (!refinable)
+        {
+            continue;
+        }
+
+        std::cout << "Refinable point." << std::endl;
+
+        // Bounding box
+        // == support of refinable point
+
+        DimensionBoundary* boundaries = new DimensionBoundary[dim];
+
+        for (size_t k = 0; k < dim; k++ )
+        {
+            unsigned int index = gridIndex->getIndex(k);
+            unsigned int level = gridIndex->getLevel(k);
+            double intval = pow(2.0, -static_cast<double>(level));
+
+            DimensionBoundary boundary;
+            boundary.leftBoundary = (index-1) * intval;
+            boundary.rightBoundary = (index+1) * intval;
+            boundaries[k] = boundary;
+
+            std::cout << "Boundaries dim " << k << ": " <<
+            boundary.leftBoundary << ", " <<
+            boundary.rightBoundary << std::endl;
+        }
+
+        BoundingBox* bb = new BoundingBox(dim, boundaries);
+        predictiveGrid->setBoundingBox(*bb);
+
+        // All numerators
+        DataVector numerators(predictiveGridSize);
+        eval->mult(*errors, numerators);
+        numerators.sqr();
+
+        /*
+        DataVector t1 = DataVector(5);
+        t1.set(0, 1);
+        t1.set(1, 2);
+        t1.set(2, 3);
+        t1.set(3, 4);
+        t1.set(4, 5);
+
+        DataVector t2 = DataVector(2);
+        t2.set(0, 0.2);
+        t2.set(1, 0.5);
+        std::cout << "hello " << t2.toString() << predictiveGrid->eval(t1, t2) << std::endl;
+        */
 
 
-	// start iterating over whole grid
-	for (GridStorage::grid_map_iterator iter = storage->begin();
-			iter != end_iter; iter++) {
-		index = *(iter->first);
+        // All denominators
+        DataVector denominators(predictiveGridSize);
 
-		GridStorage::grid_map_iterator child_iter;
+        for (size_t j = 0; j < predictiveGridSize; j++)
+        {
+            DataVector single(predictiveGridSize);
+            single.setAll(0.0);
+            single.set(j, 1.0);
 
-		// @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
-		// check for each grid point whether it can be refined (i.e., whether not all kids exist yet)
-		// if yes, check whether it belongs to the refinements_num largest ones
-		for (size_t d = 0; d < storage->dim(); d++) {
-			index_t source_index;
-			level_t source_level;
-			index.get(d, source_level, source_index);
-			double error = functor->start();
-			//errorIndicator->setActiveDim(d);
+            DataVector col(numData);
+            eval->multTranspose(single, col);
 
-			// test existence of left child
-			index.set(d, source_level + 1, 2 * source_index - 1);
-			child_iter = storage->find(&index);
+            col.sqr();
+            denominators.set(j, col.sum());
+        }
 
-			if (child_iter == end_iter) {
-				//use the predictive error indicator, which takes a pointer to the grid point object
-				//instead of the storage index
-				error += (*errorIndicator)(&index);
-			}
+        std::cout << denominators.toString() << std::endl;
 
-			// test existance of right child
-			index.set(d, source_level + 1, 2 * source_index + 1);
-			child_iter = storage->find(&index);
+        // Calculate the indicator value for all refinable dimensions
 
-			if (child_iter == end_iter) {//use predictive refinement indicator
-				//use the predictive error indicator, which takes a pointer to the grid point object
-				//instead of the storage index
-				error += (*errorIndicator)(&index);
-			}
-			// reset current grid point in dimension d
-			index.set(d, source_level, source_index);
+        for (size_t k = 0; k < dim; k++ )
+        {
+            // Is the current point refinable in the dimension k?
+            if( hasLeftChild(storage, gridIndex, k) )
+            {
+                continue;
+            }
 
-			if (error > functor->start()){
-				errors.push_back(error);
-			}
+            // Identify the index of the two grid points
+            // and calculate their indicator value
 
-			if (error > iThreshold_) {
-				key_type key(storage->seq(iter->first), d);
-//				if (refinementCollection_.find(key)
-//						!= refinementCollection_.end()) {
-//					refinementCollection_[key] = refinementCollection_[key] + error;
-//				} else {
-					refinementCollection_[key] = error;
-//				}
-			}
-		}
-	}
+            GridIndex childIndex(dim);
+            size_t childSeq;
+            double value = 0;
 
-	// get new thershold for the next iteration
-	std::nth_element(errors.begin(), errors.begin()+refinements_num, errors.end(), doubleReverseCompare);
-	//iThreshold_ = errors[refinements_num];
+            childIndex.set(k, 2, 1);
+            childSeq = predictiveGridStorage->seq(&childIndex);
+
+            value = numerators.get(childSeq) / denominators.get(childSeq);
+
+            childIndex.set(k, 2, 2);
+            childSeq = predictiveGridStorage->seq(&childIndex);
+
+            value += numerators.get(childSeq) / denominators.get(childSeq);
+
+            result->insert(std::pair<refinement_key, double>(
+                               refinement_key(storage->seq(gridIndex),
+                                              (unsigned int) k), value)
+                          );
+
+            std::cout << "Value (dim " << k << "): " << value << std::endl;
+        }
+
+        delete bb;
+
+    }
+
+    // get N best
+
+    delete predictiveGrid;
+    delete predictiveGridGenerator;
+
+
+    /* ======================================== */
+
+    /*
+
+    //this refinement algorithm uses the predictive refinement indicator.
+    //dynamic casting is used to maintain the signature of the algorithm, but still be able to use the
+    //predictive refinement indicator with it.
+    PredictiveRefinementDimensionIndicator* errorIndicator =
+    		dynamic_cast<PredictiveRefinementDimensionIndicator*>(functor);
+
+    //size_t min_idx = 0;
+    std::vector<value_type> errors;
+
+    // max value equals min value
+    //PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
+    //PredictiveRefinementDimensionIndicator::value_type max_value = max_values[min_idx];
+
+    index_type index;
+    GridStorage::grid_map_iterator end_iter = storage->end();
+
+
+    // start iterating over whole grid
+    for (GridStorage::grid_map_iterator iter = storage->begin();
+    		iter != end_iter; iter++) {
+    	index = *(iter->first);
+
+    	GridStorage::grid_map_iterator child_iter;
+
+    	// check for each grid point whether it can be refined (i.e., whether not all kids exist yet)
+    	// if yes, check whether it belongs to the refinements_num largest ones
+    	for (size_t d = 0; d < storage->dim(); d++) {
+    		index_t source_index;
+    		level_t source_level;
+    		index.get(d, source_level, source_index);
+    		double error = functor->start();
+    		//errorIndicator->setActiveDim(d);
+
+    		// test existence of left child
+    		index.set(d, source_level + 1, 2 * source_index - 1);
+    		child_iter = storage->find(&index);
+
+    		if (child_iter == end_iter) {
+    			//use the predictive error indicator, which takes a pointer to the grid point object
+    			//instead of the storage index
+    			error += (*errorIndicator)(&index);
+    		}
+
+    		// test existance of right child
+    		index.set(d, source_level + 1, 2 * source_index + 1);
+    		child_iter = storage->find(&index);
+
+    		if (child_iter == end_iter) {//use predictive refinement indicator
+    			//use the predictive error indicator, which takes a pointer to the grid point object
+    			//instead of the storage index
+    			error += (*errorIndicator)(&index);
+    		}
+    		// reset current grid point in dimension d
+    		index.set(d, source_level, source_index);
+
+    		if (error > functor->start()){
+    			errors.push_back(error);
+    		}
+
+    		if (error > iThreshold_) {
+    			key_type key(storage->seq(iter->first), d);
+    //				if (refinementCollection_.find(key)
+    //						!= refinementCollection_.end()) {
+    //					refinementCollection_[key] = refinementCollection_[key] + error;
+    //				} else {
+    				refinementCollection_[key] = error;
+    //				}
+    		}
+    	}
+}
+
+    // get new thershold for the next iteration
+    std::nth_element(errors.begin(), errors.begin()+refinements_num, errors.end(), doubleReverseCompare);
+    //iThreshold_ = errors[refinements_num];
+     *
+     */
 
 }
 
 bool refinementPairCompare(const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& firstEl,
-const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& secondEl){
-	return firstEl.second > secondEl.second;
+                           const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& secondEl)
+{
+    return firstEl.second > secondEl.second;
 }
 
 
 void OnlinePredictiveRefinementDimension::refineGridpointsCollection(
-		GridStorage* storage, RefinementFunctor* functor,
-		size_t refinements_num, size_t* max_indices,
-		PredictiveRefinementDimensionIndicator::value_type* max_values) {
-	PredictiveRefinementDimensionIndicator::value_type max_value;
-	//size_t max_index;
-	//PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
-	// now refine all grid points which satisfy the refinement criteria
-	double threshold = functor->getRefinementThreshold();
+    GridStorage* storage, RefinementFunctor* functor,
+    size_t refinements_num, size_t* max_indices,
+    PredictiveRefinementDimensionIndicator::value_type* max_values)
+{
+    /*
+       PredictiveRefinementDimensionIndicator::value_type max_value;
+       //size_t max_index;
+       //PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
+       // now refine all grid points which satisfy the refinement criteria
+       double threshold = functor->getRefinementThreshold();
 
-	std::vector< std::pair<key_type, value_type> > errorsVector;
-	std::cout << "refinement collection size " << refinementCollection_.size() << std::endl;
-	std::copy(refinementCollection_.begin(),
-	       refinementCollection_.end(),
-	       std::back_inserter<std::vector<std::pair<key_type, value_type> > >(errorsVector));
+       std::vector< std::pair<key_type, value_type> > errorsVector;
+       std::cout << "refinement collection size " << refinementCollection_.size() << std::endl;
+       std::copy(refinementCollection_.begin(),
+                 refinementCollection_.end(),
+                 std::back_inserter<std::vector<std::pair<key_type, value_type> > >(errorsVector));
 
-	std::nth_element(errorsVector.begin(), errorsVector.begin()+refinements_num,
-			errorsVector.end(), refinementPairCompare);
+       std::nth_element(errorsVector.begin(), errorsVector.begin()+refinements_num,
+                        errorsVector.end(), refinementPairCompare);
 
-	std::vector<std::pair<key_type, value_type> >::const_iterator iter;
-	for (iter = errorsVector.begin(); iter < errorsVector.begin() + refinements_num; iter++){
-		if (iter->second > functor->start() && iter->second >= threshold){
-			index_type index((*storage)[iter->first.first]);
-			//Sets leaf property of index, which is refined to false
-			(*storage)[iter->first.first]->setLeaf(false);
-			std::cout << "Refining grid point " << iter->first.first << " dim " << iter->first.second << " value "
-					<< iter->second << std::endl;
-			this->refineGridpoint1D(storage, index, iter->first.second);
-		}
-	}
+       std::vector<std::pair<key_type, value_type> >::const_iterator iter;
+       for (iter = errorsVector.begin(); iter < errorsVector.begin() + refinements_num; iter++)
+       {
+           if (iter->second > functor->start() && iter->second >= threshold)
+           {
+               index_type index((*storage)[iter->first.first]);
+               //Sets leaf property of index, which is refined to false
+               (*storage)[iter->first.first]->setLeaf(false);
+               std::cout << "Refining grid point " << iter->first.first << " dim " << iter->first.second << " value "
+               << iter->second << std::endl;
+               this->refineGridpoint1D(storage, index, iter->first.second);
+           }
+       }
+    */
+    /*for (size_t i = 0; i < refinements_num; i++) {
+    	max_value = max_values[i];
+    	max_index = max_indices[i];
 
-	/*for (size_t i = 0; i < refinements_num; i++) {
-		max_value = max_values[i];
-		max_index = max_indices[i];
-
-		if (max_value.second > functor->start()
-				&& max_value.second >= threshold) {
-			index_type index((*storage)[max_index]);
-			//Sets leaf property of index, which is refined to false
-			(*storage)[max_index]->setLeaf(false);
-			std::cout << "Refining grid point " << max_index << " value "
-					<< max_value.second << std::endl;
-			this->refineGridpoint1D(storage, index, max_value.first);
-		}
-	}*/
+    	if (max_value.second > functor->start()
+    			&& max_value.second >= threshold) {
+    		index_type index((*storage)[max_index]);
+    		//Sets leaf property of index, which is refined to false
+    		(*storage)[max_index]->setLeaf(false);
+    		std::cout << "Refining grid point " << max_index << " value "
+    				<< max_value.second << std::endl;
+    		this->refineGridpoint1D(storage, index, max_value.first);
+    	}
+}*/
 
 }
 
 void OnlinePredictiveRefinementDimension::free_refine(GridStorage* storage,
-		PredictiveRefinementDimensionIndicator* functor) {
-	if (storage->size() == 0) {
-		throw generation_exception("storage empty");
-	}
+        PredictiveRefinementDimensionIndicator* functor)
+{
+    /*
+       if (storage->size() == 0)
+       {
+           throw generation_exception("storage empty");
+       }
 
-	// the functor->getRefinementsNum() largest grid points should be refined.
-	// gather them in an array max_values
-	size_t refinements_num = functor->getRefinementsNum();
-	// values
-	PredictiveRefinementDimensionIndicator::value_type* max_values =
-			new PredictiveRefinementDimensionIndicator::value_type[refinements_num];
-	// indices
-	size_t* max_indices = new size_t[refinements_num];
+       // the functor->getRefinementsNum() largest grid points should be refined.
+       // gather them in an array max_values
+       size_t refinements_num = functor->getRefinementsNum();
+       // values
+       PredictiveRefinementDimensionIndicator::value_type* max_values =
+           new PredictiveRefinementDimensionIndicator::value_type[refinements_num];
+       // indices
+       size_t* max_indices = new size_t[refinements_num];
 
-	// initialization
-	for (size_t i = 0; i < refinements_num; i++) {
-		max_values[i].second = functor->start();
-		max_indices[i] = 0;
-	}
+       // initialization
+       for (size_t i = 0; i < refinements_num; i++)
+       {
+           max_values[i].second = functor->start();
+           max_indices[i] = 0;
+       }
 
-	collectRefinablePoints(storage, functor, refinements_num, max_indices,
-			max_values);
-	// now refine all grid points which satisfy the refinement criteria
-	refineGridpointsCollection(storage, functor, refinements_num, max_indices,
-			max_values);
-	refinementCollection_.clear();
-	delete[] max_values;
-	delete[] max_indices;
+       //collectRefinablePoints(storage, functor, refinements_num, max_indices,
+       //                       max_values);
+       // now refine all grid points which satisfy the refinement criteria
+       refineGridpointsCollection(storage, functor, refinements_num, max_indices,
+                                  max_values);
+       refinementCollection_.clear();
+       delete[] max_values;
+       delete[] max_indices;
+    */
+}
 
+bool OnlinePredictiveRefinementDimension::hasLeftChild(GridStorage* storage, GridIndex* gridIndex, size_t dim)
+{
+    GridIndex tmp = GridIndex(*gridIndex);
+    storage->left_child(&tmp, dim);
+    return storage->has_key(&tmp);
 }
 
 size_t OnlinePredictiveRefinementDimension::getIndexOfMin(
-		PredictiveRefinementDimensionIndicator::value_type* array,
-		size_t length) {
-	size_t min_idx = 0;
+    PredictiveRefinementDimensionIndicator::value_type* array,
+    size_t length)
+{
+    size_t min_idx = 0;
 
-	for (size_t i = 1; i < length; i++) {
-		if (array[i].second < array[min_idx].second)
-			min_idx = i;
-	}
+    for (size_t i = 1; i < length; i++)
+    {
+        if (array[i].second < array[min_idx].second)
+            min_idx = i;
+    }
 
-	return min_idx;
+    return min_idx;
 }
+
+void OnlinePredictiveRefinementDimension::setTrainDataset(
+    DataMatrix* trainDataset_)
+{
+    trainDataset = trainDataset_;
+}
+
+void OnlinePredictiveRefinementDimension::setClasses(DataVector* classes_)
+{
+    classes = classes_;
+}
+
+void OnlinePredictiveRefinementDimension::setErrors(DataVector* errors_)
+{
+    errors = errors_;
+}
+
+double OnlinePredictiveRefinementDimension::basisFunctionEvalHelper(unsigned int level, unsigned int index, double value)
+{
+    LinearBasis<unsigned int,unsigned int> linBasis;
+    return linBasis.eval(level,index,value);
+}
+
 
 } /* namespace base */
 } /* namespace sg */

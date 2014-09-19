@@ -61,7 +61,10 @@ namespace std {
 	%template(BoolVector) vector<bool>;
 	%template(DoubleVector) vector<double>;
 	%template(IndexValPair) pair<size_t, double>;
-	%template(IndexValVector) vector<pair<size_t, double> >;
+        %template(IndexValVector) vector<pair<size_t, double> >;
+        // For OnlinePredictiveRefinementDimension
+        %template(refinement_key) std::pair<size_t, unsigned int>;
+        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
 
 }
 
@@ -110,7 +113,6 @@ namespace std {
 %include "src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "src/sgpp/base/grid/common/Stretching.hpp"
 %include "src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
-
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
@@ -119,6 +121,7 @@ namespace std {
 %include "src/sgpp/base/grid/generation/hashmap/SubspaceCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %include "src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
+%include "src/sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
@@ -128,6 +131,7 @@ namespace std {
 %include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
 %include "src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
@@ -301,5 +305,3 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
-
-

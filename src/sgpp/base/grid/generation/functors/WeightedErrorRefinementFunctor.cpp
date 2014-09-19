@@ -25,7 +25,7 @@ WeightedErrorRefinementFunctor::~WeightedErrorRefinementFunctor() {
 double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
-	if (trainDataset == NULL || classes == NULL) {
+	if (trainDataset == NULL || classes == NULL || errors == NULL) {
 		throw base::application_exception("Training dataset or classes not set");
 	}
 
@@ -48,8 +48,8 @@ double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 	double error = 0;
 	for (size_t i = 0; i < numData; i++) {
 		/* abs(phi_j(x_i) * alpha_j * r_i^2) */
-		double tmp1 = val1.get(i);
-		error += fabs(tmp1 * errors->get(i) * errors->get(i));
+		//error += fabs(errors->get(i) * errors->get(i));
+		error += fabs(val1.get(i) * errors->get(i) * errors->get(i));
 	}
 
 	return error;
