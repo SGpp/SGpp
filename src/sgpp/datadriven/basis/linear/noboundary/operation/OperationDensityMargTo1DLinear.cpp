@@ -21,10 +21,8 @@ namespace sg {
         marg_next_dim(this->grid, alpha, grid_x, alpha_x, dims, dim_x, count);
       else if (dims <= 1)
         throw base::operation_exception("Error: grid dimension is not greater than one. Operation aborted!");
-      else {
-    	std::cout << dim_x << ", " << dims << std::endl;
+      else
         throw base::operation_exception("Error: dimension out of range. Operation aborted!");
-      }
 
       return;
     }
