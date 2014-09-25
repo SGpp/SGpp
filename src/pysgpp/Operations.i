@@ -111,6 +111,13 @@ public:
 	static const int ANISOTROPIC_PENALTY = 4;
 };
 
+class OperationRosenblattTransformation
+{
+public:
+	virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf) = 0;
+	virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf, size_t dim_start) = 0;
+};
+
 }
 //- end namespace datadriven ------------------------------------------
 #endif
