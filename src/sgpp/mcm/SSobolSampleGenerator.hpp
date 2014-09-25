@@ -40,7 +40,7 @@ namespace sg {
          *
          * @param dimension number of dimensions used for sample generation
          * @param count maximum number of Samples to generate.
-         * @param iFlag type of scrambling to use, according to SSOBOL: 
+         * @param iflag type of scrambling to use, according to SSOBOL:
          *      iflag = 0 : No Scrambling
          *      iflag = 1 : Owen type Scrambling
          *      iflag = 2 : Faure-Tezuka type Scrambling
