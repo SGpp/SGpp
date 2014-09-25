@@ -29,8 +29,7 @@ namespace sg {
      /**
      * @brief Constructor, init
      * 
-     * @param dimension define Dimensions
-     * @param mcPaths defines number of sampels
+     * @param dimensions define Dimensions
      * @param seed seed skips the first x values in sobol' sequence
      * 		
      * @return void
@@ -82,7 +81,7 @@ namespace sg {
     *
     *      Parameters:
     *	     @brief I4_BIT_HI1 returns the position of the high 1 bit base 2 in an integer.
-    *        @param Input, integer N, the integer to be measured.
+    *        @param n the integer to be measured.
     *               N should be nonnegative.  If N is nonpositive, the value will always be 0.
     *	     @return Output, integer BIT, the number of bits base 2.
     *            

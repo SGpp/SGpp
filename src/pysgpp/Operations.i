@@ -118,6 +118,13 @@ public:
 	virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* points, base::DataMatrix* pointscdf, size_t dim_start) = 0;
 };
 
+class OperationInverseRosenblattTransformation
+{
+public:
+	virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points) = 0;
+	virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points, size_t dim_start) = 0;
+};
+
 }
 //- end namespace datadriven ------------------------------------------
 #endif
