@@ -70,7 +70,8 @@ namespace base
 %include "src/sgpp/base/tools/OperationQuadratureMC.hpp"
 
 // attach a new method to OperationQuadratureMC
-%extend sg::base::OperationQuadratureMC {
+%define QUADRATURE_CALLBACK_EXTEND(class)
+%extend class {
    // set a Python function object as a callback function
    // overloads functions
    // note : PyObject *pyfunc is remapped with a typemap
@@ -85,4 +86,14 @@ namespace base
      return d;
    }
 }
+%enddef
+
+%include "src/sgpp/base/tools/OperationQuadratureMC.hpp"
+QUADRATURE_CALLBACK_EXTEND(sg::base::OperationQuadratureMC)
+
+#ifdef SG_MCM
+%apply (long long int* IN_ARRAY1, int DIM1) {(long long int* n, int dim)};
+%include "src/sgpp/mcm/tools/OperationQuadratureMCAdvanced.hpp"
+QUADRATURE_CALLBACK_EXTEND(sg::mcm::OperationQuadratureMCAdvanced)
+#endif
 

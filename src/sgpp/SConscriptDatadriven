@@ -27,6 +27,9 @@ datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.cp
 datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.cpp
 datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.cpp
 datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
+datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformationLinear.cpp
+datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformation1DLinear.cpp
+datadriven/basis/linear/noboundary/operation/OperationInverseRosenblattTransformationLinear.cpp
 datadriven/basis/modbspline/operation/OperationTestModBspline.cpp
 datadriven/basis/modlinear/operation/OperationTestModLinear.cpp
 datadriven/basis/modpoly/operation/OperationTestModPoly.cpp

@@ -18,6 +18,9 @@
 #include "datadriven/operation/OperationDensitySampling1D.hpp"
 #include "datadriven/operation/OperationDensitySampling.hpp"
 #include "datadriven/operation/OperationDensityRejectionSampling.hpp"
+#include "datadriven/operation/OperationRosenblattTransformation.hpp"
+#include "datadriven/operation/OperationTransformation1D.hpp"
+#include "datadriven/operation/OperationInverseRosenblattTransformation.hpp"
 
 /*
  * This file contains factory methods for operations.
@@ -99,6 +102,32 @@ namespace sg {
      */
     datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid);
 
+    /**
+     * Factory method, returning an OperationRosenblattTransformation for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationRosenblattTransformation for the Grid grid
+     */
+    datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(base::Grid& grid);
+
+    /**
+     * Factory method, returning an OperationInverseRosenblattTransformation for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationRosenblattTransformation for the Grid grid
+     */
+    datadriven::OperationInverseRosenblattTransformation* createOperationInverseRosenblattTransformation(base::Grid& grid);
+
+    /**
+     * Factory method, returning an OperationRosenblattTransformation1D for the grid.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used for the operation
+     * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid
+     */
+    datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid& grid);
   }
 }
 
