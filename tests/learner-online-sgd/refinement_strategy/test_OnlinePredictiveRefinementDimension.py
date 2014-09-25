@@ -56,8 +56,6 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
     def calc_indicator_value(self, index):
 
-        print "value for", index.toString()
-
         num = 0
         denom = 0
 
@@ -73,16 +71,17 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 l = index.getLevel(d)
                 i = index.getIndex(d)
                 basis *= self.strategy.basisFunctionEvalHelper(l, i, row.__getitem__(d))
-
-            if basis < 0:
-                basis = 0
             
             num += self.errors.__getitem__(i) * basis
             denom += basis**2
 
         num **= 2
 
-        return num/denom
+        value = num/denom 
+
+        print "value for", index.toString(), "is", value
+
+        return value
 
     def test_1(self):
 
@@ -91,24 +90,32 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         numDim = storage.dim()
 
         #
-        # Result
-        # 
+        # Expected result
+        #
 
-        result = refinement_map({})
-        self.strategy.collectRefinablePoints(storage, 10, result)
+        print "######"
+        print "Calculate expected result:"
+        print "######"
+
+        expected = refinement_map({})
+        self.strategy.collectRefinablePoints(storage, 10, expected)
+
+        print "######"
+        print "Expected result:"
+        print "######"
         
-        for k, v in result.iteritems():
+        for k, v in expected.iteritems():
             print(k, v)
 
-        print ""
         print "######"
-        print ""
+        print "Calculate actual result:"
+        print "######"
 
         #
-        # Expected
-        #
+        # Actual result
+        # 
 
-        expected = {}
+        result = {}
 
         # Helper Grid with one single point
 
@@ -140,35 +147,14 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 val1 = self.calc_indicator_value(leftChild)
                 val2 = self.calc_indicator_value(rightChild)
 
-                expected[(j, d)] = val1 + val2
+                result[(j, d)] = val1 + val2
 
+        print "######"
+        print "Actual result:"
+        print "######"
                 
-        for k, v in expected.iteritems():
+        for k, v in result.iteritems():
             print(k, v)
 
-        # use the STRAIGHTOFRWARD WAY TO CALCUALTE THIS
-
-#        coord = DataVector(storage.dim())
-#        num_coeff = self.alpha.__len__()
-#
-#        values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
-#        expect = []
-#        for i in xrange(num_coeff):
-#            # print i
-#            val = 0
-#            single = DataVector(num_coeff)
-#            single.__setitem__(i, self.alpha.__getitem__(i))
-#            for j in xrange(self.trainData.getNrows()):
-#                self.trainData.getRow(j, coord)
-#                val += abs( self.grid.eval(single, coord) * (self.errors.__getitem__(j)**2) )
-#            expect.append(val)
-#
-#        # print values
-#        # print expect
-#
-#        # print [ values[i]/expect[i] for i in xrange(values.__len__())]
-#        
-#        self.assertEqual(values, expect)
-        
 if __name__=='__main__':
     unittest.main()

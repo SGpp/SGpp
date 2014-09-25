@@ -99,18 +99,18 @@ private:
      * Other
      */
 
-    sg::base::DataVector* __mainError;
+    sg::base::DataVector* mainError;
 
-    sg::base::DataMatrix* __minibatchTrainDataset;
-    sg::base::DataVector* __minibatchClasses;
-    sg::base::DataVector* __minibatchError;
+    sg::base::DataMatrix* minibatchTrainDataset;
+    sg::base::DataVector* minibatchClasses;
+    sg::base::DataVector* minibatchError;
 
-    sg::base::DataVector* __errorPerBasisFunction;
-    sg::base::DataVector* __alphaAvg;
+    sg::base::DataVector* errorPerBasisFunction;
+    sg::base::DataVector* alphaAvg;
 
-    std::list<double> __smoothedErrorDeclineBuffer;
-    double __currentGamma;
-    size_t __currentRunIterations;
+    std::list<double> smoothedErrorDeclineBuffer;
+    double currentGamma;
+    size_t currentRunIterations;
 };
 
 }
