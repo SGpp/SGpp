@@ -42,14 +42,21 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     Grid* predictiveGrid = Grid::createLinearGrid(dim);
     GridGenerator* predictiveGridGenerator = predictiveGrid->createGridGenerator();
     predictiveGridGenerator->regular(2);
+    delete predictiveGridGenerator;
 
     GridStorage* predictiveGridStorage = predictiveGrid->getStorage();
     size_t predictiveGridSize = predictiveGrid->getSize();
 
     OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid, trainDataset);
 
-    GridIndex* gridIndex;
+    std::cout << predictiveGridSize << std::endl;
+    std::cout << errors->toString() << std::endl;
+    std::cout << "THIS SHOULD NOT BE [0,0,0,0,0]:" << std::endl;
+    DataVector testVector(predictiveGridSize);
+    eval->mult(*errors, testVector);
+    std::cout << testVector.toString() << std::endl;
 
+    GridIndex* gridIndex;
     GridStorage::grid_map_iterator end_iter = storage->end();
     for (GridStorage::grid_map_iterator iter = storage->begin();
             iter != end_iter; iter++)
@@ -105,21 +112,6 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
         eval->mult(*errors, numerators);
         numerators.sqr();
 
-        /*
-        DataVector t1 = DataVector(5);
-        t1.set(0, 1);
-        t1.set(1, 2);
-        t1.set(2, 3);
-        t1.set(3, 4);
-        t1.set(4, 5);
-
-        DataVector t2 = DataVector(2);
-        t2.set(0, 0.2);
-        t2.set(1, 0.5);
-        std::cout << "hello " << t2.toString() << predictiveGrid->eval(t1, t2) << std::endl;
-        */
-
-
         // All denominators
         DataVector denominators(predictiveGridSize);
 
@@ -135,8 +127,6 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             col.sqr();
             denominators.set(j, col.sum());
         }
-
-        std::cout << denominators.toString() << std::endl;
 
         // Calculate the indicator value for all refinable dimensions
 
