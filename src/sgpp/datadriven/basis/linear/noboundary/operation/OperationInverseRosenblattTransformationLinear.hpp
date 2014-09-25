@@ -28,20 +28,20 @@ public:
 	 * Transformation with mixed starting dimensions
 	 *
 	 * @param alpha Coefficient vector for current grid
-	 * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
-	 * @param num_samples # of samples to draw
+     * @param pointscdf Input Matrix
+     * @param points Output Matrix
 	 */
 	void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf,
 			base::DataMatrix* points);
 
 	/**
-	 * Transformation with specified starting dimension
-	 *
-	 * @param alpha Coefficient vector for current grid
-	 * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
-	 * @param num_samples # of samples to draw
-	 * @param dim_start Starting dimension
-	 */
+     * Transformation with specified starting dimension
+     *
+     * @param alpha Coefficient vector for current grid
+     * @param pointscdf Input Matrix
+     * @param points Output Matrix
+     * @param dim_start Starting dimension
+     */
 	void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf,
 			base::DataMatrix* points, size_t dim_start);
 

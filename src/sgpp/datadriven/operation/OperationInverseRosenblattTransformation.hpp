@@ -27,22 +27,22 @@ public:
 	 * Rosenblatt Transformation with mixed starting dimension
 	 *
 	 * @param alpha Coefficient vector for current grid
-	 * @param points Input DataMatrix (rows: # of samples, columns: # of dims)
+	 * @param pointscdf Input DataMatrix (rows: # of samples, columns: # of dims)
 	 * @param points Output DataMatrix (rows: # of samples, columns: # of dims)
 	 */
 	virtual void doTransformation(base::DataVector* alpha,
-			base::DataMatrix* points, base::DataMatrix* pointscdf) = 0;
+			base::DataMatrix* pointscdf, base::DataMatrix* points) = 0;
 
 	/**
 	 * Rosenblatt Transformation with fixed starting dimension
 	 *
 	 * @param alpha Coefficient vector for current grid
-	 * @param points Input DataMatrix (rows: # of samples, columns: # of dims)
+	 * @param pointscdf Input DataMatrix (rows: # of samples, columns: # of dims)
 	 * @param points Output DataMatrix (rows: # of samples, columns: # of dims)
 	 * @param dim_start starting dimension
 	 */
 	virtual void doTransformation(base::DataVector* alpha,
-			base::DataMatrix* points, base::DataMatrix* pointscdf,
+			base::DataMatrix* pointscdf, base::DataMatrix* points,
 			size_t dim_start) = 0;
 };
 

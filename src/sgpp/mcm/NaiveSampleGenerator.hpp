@@ -28,7 +28,7 @@ namespace sg {
         /**
          * Standard constructor 
          *
-         * @param dimensions number of dimensions used for sample generation
+         * @param dimension number of dimensions used for sample generation
          */
         NaiveSampleGenerator(size_t dimension): SampleGenerator(dimension){};
 

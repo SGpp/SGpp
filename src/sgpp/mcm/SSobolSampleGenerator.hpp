@@ -38,7 +38,7 @@ namespace sg {
         /**
          * Standard constructor 
          *
-         * @param dimensions number of dimensions used for sample generation
+         * @param dimension number of dimensions used for sample generation
          * @param count maximum number of Samples to generate.
          * @param iFlag type of scrambling to use, according to SSOBOL: 
          *      iflag = 0 : No Scrambling

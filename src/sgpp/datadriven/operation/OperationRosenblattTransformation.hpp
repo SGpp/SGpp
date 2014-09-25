@@ -28,7 +28,7 @@ public:
 	 *
 	 * @param alpha Coefficient vector for current grid
 	 * @param points Input DataMatrix (rows: # of samples, columns: # of dims)
-	 * @param points Output DataMatrix (rows: # of samples, columns: # of dims)
+	 * @param pointscdf Output DataMatrix (rows: # of samples, columns: # of dims)
 	 */
 	virtual void doTransformation(base::DataVector* alpha,
 			base::DataMatrix* points, base::DataMatrix* pointscdf) = 0;
@@ -38,7 +38,7 @@ public:
 	 *
 	 * @param alpha Coefficient vector for current grid
 	 * @param points Input DataMatrix (rows: # of samples, columns: # of dims)
-	 * @param points Output DataMatrix (rows: # of samples, columns: # of dims)
+	 * @param pointscdf Output DataMatrix (rows: # of samples, columns: # of dims)
 	 * @param dim_start starting dimension
 	 */
 	virtual void doTransformation(base::DataVector* alpha,

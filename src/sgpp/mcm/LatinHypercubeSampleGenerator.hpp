@@ -31,6 +31,7 @@ namespace sg {
          * Standard constructor 
          *
          * @param dimensions number of dimensions used for sample generation
+         * @param numberOfSamples number of samples to be drawn
          */
 
         LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples);
@@ -49,8 +50,6 @@ namespace sg {
         /**
          * This method generates one sample .
          * Implementation of the abstract Method getSample from SampelGenerator.
-         *
-         * @param sample DataVector storing the new generated sample vector.
          */
 
         void shuffleStrataSequence();

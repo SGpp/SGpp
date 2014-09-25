@@ -25,7 +25,7 @@ namespace sg {
         /**
          * Standard constructor 
          *
-         * @param dimensions number of dimensions used for sample generation
+         * @param dimension number of dimensions used for sample generation
          */
         HaltonSampleGenerator(size_t dimension);
 
