@@ -89,42 +89,26 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         gridSize = self.grid.getSize()
         numDim = storage.dim()
 
-        #
-        # Expected result
-        #
-
         print "######"
-        print "Calculate expected result:"
+        print "OnlinePredictiveRefinementDimension:"
         print "######"
 
         expected = refinement_map({})
-        self.strategy.collectRefinablePoints(storage, 10, expected)
+        #self.strategy.collectRefinablePoints(storage, 10, expected)
 
         print "######"
-        print "Expected result:"
+        print "OnlinePredictiveRefinementDimension result:"
         print "######"
         
         for k, v in expected.iteritems():
             print(k, v)
 
         print "######"
-        print "Calculate actual result:"
+        print "Test:"
         print "######"
-
-        #
-        # Actual result
-        # 
 
         result = {}
 
-        # Helper Grid with one single point
-
-        self.helperGrid = Grid.createLinearGrid(numDim)
-        self.helperGridGen = self.helperGrid.createGridGenerator()
-        self.helperGridGen.regular(1)
-
-        self.helperGridStorage = self.helperGrid.getStorage()
-        
         for j in xrange(gridSize):
 
             gridIndex = storage.get(j)
@@ -150,7 +134,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 result[(j, d)] = val1 + val2
 
         print "######"
-        print "Actual result:"
+        print "Test result:"
         print "######"
                 
         for k, v in result.iteritems():
