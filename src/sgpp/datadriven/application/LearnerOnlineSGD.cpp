@@ -498,8 +498,6 @@ void LearnerOnlineSGD::performSGDStep()
 
     // L. Bottou exciting smoothing
     size_t t1 = (currentRunIterations > numMainDim+1) ? currentRunIterations - numMainDim : 1;
-
-    // TODO: numMainData instead of numMainDim?
     size_t t2 = (currentRunIterations > numMainData+1) ? currentRunIterations - numMainData: 1;
     double mu = (t1>t2) ? static_cast<double>(t1) : static_cast<double>(t2);
     mu = 1.0/mu;

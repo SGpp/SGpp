@@ -49,13 +49,6 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
     OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid, trainDataset);
 
-    std::cout << predictiveGridSize << std::endl;
-    std::cout << errors->toString() << std::endl;
-    std::cout << "THIS SHOULD NOT BE [0,0,0,0,0]:" << std::endl;
-    DataVector testVector(predictiveGridSize);
-    eval->mult(*errors, testVector);
-    std::cout << testVector.toString() << std::endl;
-
     GridIndex* gridIndex;
     GridStorage::grid_map_iterator end_iter = storage->end();
     for (GridStorage::grid_map_iterator iter = storage->begin();
@@ -109,8 +102,10 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
         // All numerators
         DataVector numerators(predictiveGridSize);
-        eval->mult(*errors, numerators);
+        eval->multTranspose(*errors, numerators);
         numerators.sqr();
+
+        std::cout << numerators.toString() << std::endl;
 
         // All denominators
         DataVector denominators(predictiveGridSize);
@@ -122,11 +117,13 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             single.set(j, 1.0);
 
             DataVector col(numData);
-            eval->multTranspose(single, col);
+            eval->mult(single, col);
 
             col.sqr();
             denominators.set(j, col.sum());
         }
+
+        std::cout << denominators.toString() << std::endl;
 
         // Calculate the indicator value for all refinable dimensions
 

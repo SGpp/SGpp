@@ -3,7 +3,7 @@ import math
 import random
 from bin.pysgpp import Grid, DataVector, DataMatrix, PersistentErrorRefinementFunctor
 
-BETA = 0.9
+BETA = 0.1
 DIM = 2
 LEVEL = 2
 
@@ -58,62 +58,66 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         self.functor.setErrors(self.errors)
 
         self.accum = DataVector(self.alpha.__len__())
+        self.accum.setAll(0.0)
 
     def test_1(self):
         storage = self.grid.getStorage()
         coord = DataVector(storage.dim())
         num_coeff = self.alpha.__len__()
 
+        #
+        # First part
+        # 
+
         values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
         expect = []
 
         for j in xrange(num_coeff):
-            val = 0
-            current = 0
 
             row = DataVector(DIM)
 
             tmp_alpha = DataVector(self.alpha.__len__())
+            tmp_alpha.setAll(0.0)
             tmp_alpha.__setitem__(j, 1.0)
 
+            current = 0
             for i in xrange(self.trainData.getNrows()):
                 self.trainData.getRow(i, row)
-                current += (self.errors.__getitem__(i) + self.classes.__getitem__(i)) * self.grid.eval(tmp_alpha, row)
+                current += (self.errors.__getitem__(i) * self.grid.eval(tmp_alpha, row)) ** 2
+            
+            self.accum.__setitem__(j, self.accum.__getitem__(j) * (1-BETA) + BETA * current * abs(self.alpha.__getitem__(j)))
+            expect.append(self.accum.__getitem__(j))
 
-            self.accum.__setitem__(j, self.accum.__getitem__(j) * BETA + current)
-            val = -self.alpha.__getitem__(j) * self.accum.__getitem__(j)
-            expect.append(val)
-
-        # print values
-        # print expect 
+        print values
+        print expect
 
         self.assertEqual(values, expect)
 
-    def test_2(self):
-        storage = self.grid.getStorage()
-        coord = DataVector(storage.dim())
-        num_coeff = self.alpha.__len__()
+        #
+        # Second part
+        #
 
         values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
         expect = []
 
         for j in xrange(num_coeff):
-            val = 0
-            current = 0
 
             row = DataVector(DIM)
 
             tmp_alpha = DataVector(self.alpha.__len__())
+            tmp_alpha.setAll(0.0)
             tmp_alpha.__setitem__(j, 1.0)
 
+            current = 0
             for i in xrange(self.trainData.getNrows()):
                 self.trainData.getRow(i, row)
-                current += (self.errors.__getitem__(i) + self.classes.__getitem__(i)) * self.grid.eval(tmp_alpha, row)
+                current += (self.errors.__getitem__(i) * self.grid.eval(tmp_alpha, row)) ** 2
+            
+            self.accum.__setitem__(j, self.accum.__getitem__(j) * (1-BETA) + BETA * current * abs(self.alpha.__getitem__(j)))
+            expect.append(self.accum.__getitem__(j))
 
-            self.accum.__setitem__(j, self.accum.__getitem__(j) * BETA + current)
-            val = -self.alpha.__getitem__(j) * self.accum.__getitem__(j)
-            expect.append(val)
-
+        print values
+        print expect
         self.assertEqual(values, expect)
         
 if __name__=='__main__':
