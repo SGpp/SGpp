@@ -1,0 +1,4 @@
+#!/bin/bash
+
+scons --clean
+find -name '*.os' | xargs -I X rm X
