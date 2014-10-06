@@ -56,41 +56,28 @@ class TestAlgorithmEvaluation(unittest.TestCase):
 
         self.alpha = DataVector([1,1,1,1,1])
 
-    def test_withoutBB(self):
+    def test_insideBB(self):
 
-        self.grid.getStorage().setBoundingBox(self.bbn)
-        p = DataVector([0.3, 0.1])
+        #
+        # If you translate (0.3, 0.1) on the 
+        # bounding box, you get (0.1, 0.1)
+        #
 
-        r = self.grid.eval(self.alpha, p)
+        # Calculate the expected value without the bounding box
 
-        val = (0.3 * 2 + (1 - (0.3-0.25) * 4)) * (0.1 * 2)
-        self.assertAlmostEqual(r, val)
+        p_test = DataVector([0.1, 0.1])
+        expected = self.grid.eval(self.alpha, p_test)
 
-    def _test_withoutBB2(self):
-
-        self.grid.getStorage().setBoundingBox(self.bbn)
-
-        p = DataVector([0.1, 0.1])
-
-        r = self.grid.eval(self.alpha, p)
-
-        val = (0.1 * 2) * (0.1 * 2)
-        self.assertAlmostEqual(r, val)
-
-    def _test_insideBB(self):
+        # Now set the bounding box
 
         self.grid.getStorage().setBoundingBox(self.bb)
 
         p = DataVector([0.3, 0.1])
         r = self.grid.eval(self.alpha, p)
 
-        p_d1 = (0.3 - 0.25) / (0.75 - 0.25)
-        p_d2 = (0.1 - 0) / (1 - 0)
-        val = (p_d1 * 2) * (p_d2 * 2)
+        self.assertAlmostEqual(r, expected)
 
-        self.assertEqual(r, val)
-
-    def _test_outsideBB(self):
+    def test_outsideBB(self):
 
         self.grid.getStorage().setBoundingBox(self.bb)
 

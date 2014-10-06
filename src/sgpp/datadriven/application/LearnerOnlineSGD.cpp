@@ -91,14 +91,23 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     numMainDim = mainTrainDataset->getNcols();
 
     mainError = new DataVector(numMainData);
+    mainError->setAll(0.0);
 
     minibatchTrainDataset = new sg::base::DataMatrix(0, numMainDim);
     minibatchTrainDataset->addSize(config.minibatchSize);
+    minibatchTrainDataset->setAll(0.0);
+
     minibatchClasses = new DataVector(config.minibatchSize);
+    minibatchClasses->setAll(0.0);
+
     minibatchError = new DataVector(config.minibatchSize);
+    minibatchError->setAll(0.0);
 
     errorPerBasisFunction = new DataVector(grid_->getSize());
+    errorPerBasisFunction->setAll(0.0);
+
     alphaAvg = new DataVector(grid_->getSize());
+    alphaAvg->setAll(0.0);
 
     currentGamma = config.gamma;
 
@@ -420,6 +429,7 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 
     eval->mult(*alphaAvg, result);
     //eval->mult(*alpha_, result);
+    delete eval;
 
     double res = -1.0;
 
@@ -453,7 +463,6 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 
     }
 
-    delete eval;
     if (cleanup)
     {
         delete error;
@@ -476,6 +485,15 @@ void LearnerOnlineSGD::performSGDStep()
     // Store in minibatch
     pushMinibatch(x, y);
 
+
+	// Update SGDCurrentIndex
+	if (SGDCurrentIndex == SGDIndexOrder.size() - 1) {
+		std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
+		SGDCurrentIndex = 0;
+	} else {
+		SGDCurrentIndex++;
+	}
+
     // Calculate delta^n according to [Maier BA, 5.10]:
     // b_k^T * alpha^n - y_k
     double tmp1 = grid_->eval(*alpha_, x) - y;
@@ -489,8 +507,9 @@ void LearnerOnlineSGD::performSGDStep()
     singleAlpha[0] = 1.0;
 
     DataMatrix dm(x.getPointer(), 1, x.getSize());
-    sg::op_factory::createOperationMultipleEval(*grid_, &dm)->multTranspose(
-        singleAlpha, delta);
+    OperationMultipleEval *multEval = sg::op_factory::createOperationMultipleEval(*grid_, &dm);
+    multEval->multTranspose(singleAlpha, delta);
+    delete multEval;
     alpha_->mult(1-currentGamma * config.lambda);
     alpha_->axpy(-currentGamma * tmp1, delta);
 

@@ -18,6 +18,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         self.grid_gen = self.grid.createGridGenerator()
         self.grid_gen.regular(LEVEL)
 
+
         #
         # trainData, classes, errors
         #
@@ -36,6 +37,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         self.trainData = DataMatrix(xs)
         self.classes = DataVector(ys)
         self.alpha = DataVector([3, 6, 7, 9, -1])
+        self.multEval = createOperationMultipleEval(self.grid, self.trainData)
 
         self.errors = DataVector(DELTA_RECI**2)
         coord = DataVector(DIM)
@@ -54,35 +56,6 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         self.strategy.setClasses(self.classes)
         self.strategy.setErrors(self.errors)
 
-    def calc_indicator_value(self, index):
-
-        num = 0
-        denom = 0
-
-        numData = self.trainData.getNrows()
-        numDim = self.trainData.getNcols()
-
-        for i in xrange(numData):
-            row = DataVector(numDim)
-            self.trainData.getRow(i, row)
-
-            basis = 1
-            for d in xrange(numDim):
-                l = index.getLevel(d)
-                i = index.getIndex(d)
-                basis *= self.strategy.basisFunctionEvalHelper(l, i, row.__getitem__(d))
-            
-            num += self.errors.__getitem__(i) * basis
-            denom += basis**2
-
-        num **= 2
-
-        value = num/denom 
-
-        print "value for", index.toString(), "is", value
-
-        return value
-
     def test_1(self):
 
         storage = self.grid.getStorage()
@@ -90,32 +63,22 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         numDim = storage.dim()
 
         print "######"
-        print "OnlinePredictiveRefinementDimension:"
+        print "Expected result:"
         print "######"
 
-        expected = refinement_map({})
-        #self.strategy.collectRefinablePoints(storage, 10, expected)
-
-        print "######"
-        print "OnlinePredictiveRefinementDimension result:"
-        print "######"
-        
-        for k, v in expected.iteritems():
-            print(k, v)
-
-        print "######"
-        print "Test:"
-        print "######"
-
-        result = {}
+        expected = {}
 
         for j in xrange(gridSize):
 
             gridIndex = storage.get(j)
                 
-            print "Current grid point:", gridIndex.toString()
+            print "Point: ", j, " (", gridIndex.toString(), ")"
 
             for d in xrange(numDim):
+
+                #
+                # Get left and right child
+                #
 
                 leftChild = GridIndex(gridIndex)
                 rightChild = GridIndex(gridIndex)
@@ -123,22 +86,91 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 storage.left_child(leftChild, d)
                 storage.right_child(rightChild, d)
 
-                if storage.has_key(leftChild):
+                #
+                # Check if point is refinable
+                #
+
+                if storage.has_key(leftChild) or storage.has_key(rightChild):
                     continue
-                
-                print "Refinable in dimension: ", d
-                
+
+                #
+                # Insert children temporarily
+                #
+
+                storage.insert(leftChild) 
+                storage.insert(rightChild) 
+
                 val1 = self.calc_indicator_value(leftChild)
                 val2 = self.calc_indicator_value(rightChild)
-
-                result[(j, d)] = val1 + val2
-
-        print "######"
-        print "Test result:"
-        print "######"
                 
-        for k, v in result.iteritems():
+                storage.deleteLast()
+                storage.deleteLast()
+
+                print self.grid.getSize()
+
+                print "Dimension: ", d
+                print "Left Child: ", val1
+                print "Right Child: ", val2
+                print ""
+
+                expected[(j, d)] = val1 + val2
+            
+            print ""
+
+        for k, v in expected.iteritems():
             print(k, v)
+
+        print "######"
+        print "Actual result:"
+        print "######"
+
+        actual = refinement_map({})
+        self.strategy.collectRefinablePoints(storage, 10, actual)
+        
+        for k, v in actual.iteritems():
+            print(k, v)
+
+        #
+        # Assertions
+        #
+
+        for k, v in expected.iteritems():
+            self.assertEqual(actual[k], v)
+
+    def calc_indicator_value(self, index):
+
+        numData = self.trainData.getNrows()
+        numCoeff = self.grid.getSize()
+        seq = self.grid.getStorage().seq(index)
+
+        num = 0
+        denom = 0
+
+        tmp = DataVector(numCoeff)
+        self.multEval.multTranspose(self.errors, tmp) 
+
+        num = tmp.__getitem__(seq)
+        num **= 2
+
+        alpha = DataVector(numCoeff)
+        col = DataVector(numData)
+        alpha.__setitem__(seq, 1.0)
+        self.multEval.mult(alpha, col)
+
+        col.sqr()
+
+        denom = col.sum()
+
+        print num
+        print denom
+
+        if denom == 0:
+            print "Denominator is zero"
+            value = 0
+        else:
+            value = num/denom 
+
+        return value
 
 if __name__=='__main__':
     unittest.main()

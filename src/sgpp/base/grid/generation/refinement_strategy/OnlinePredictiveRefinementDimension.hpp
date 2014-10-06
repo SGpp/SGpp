@@ -56,6 +56,7 @@ public:
 				size_t refinements_num, refinement_map* result);
 
 	bool hasLeftChild(GridStorage* storage, GridIndex* gridIndex, size_t dim);
+	bool hasRightChild(GridStorage* storage, GridIndex* gridIndex, size_t dim);
 
 	void setTrainDataset(DataMatrix* trainDataset_);
 	void setClasses(DataVector* classes_);
