@@ -110,23 +110,24 @@ public:
         BoundingBox *bb = storage->getBoundingBox();
         if ( bb != NULL )
         {
-        	//std::cout << "has bounding box" << std::endl;
-
             for (size_t d = 0; d < dim; ++d)
             {
                 DimensionBoundary dimbb = bb->getBoundary(d);
+                std::cout << "Dimension: " << d << " (left: " << dimbb.leftBoundary << ", right: " << dimbb.rightBoundary << ")" << std::endl;
 
-                //std::cout << "Dimension: " << d << " (left: " << dimbb.leftBoundary << ", right: " << dimbb.rightBoundary << ")" << std::endl;
+                if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
+                	continue;
+                }
 
                 if ( ! (dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary) )
                 {
-                	//std::cout << "OUT OF BOUNDS " << point[d] << std::endl;
+                	std::cout << "Out of bounds: " << point[d] << std::endl;
                     return 0.0;
                 }
 
-                //std::cout << "Old: " << point[d] << std::endl;
+                std::cout << "Old: " << point[d] << std::endl;
                 point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
-                //std::cout << "New: " << point[d] << std::endl;
+                std::cout << "New: " << point[d] << std::endl;
             }
         }
 

@@ -143,8 +143,8 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
             value1 = numerators.get(childSeq) / denominators.get(childSeq);
 
-            std::cout << numerators.get(childSeq) << std::endl;
-            std::cout << denominators.get(childSeq) << std::endl;
+           // std::cout << numerators.get(childSeq) << std::endl;
+            //std::cout << denominators.get(childSeq) << std::endl;
             std::cout << "Left Child: " << value1 << std::endl;
 
             // Right Child
@@ -166,8 +166,8 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
                                               (unsigned int) k), value1 + value2)
                           );
 
-            std::cout << numerators.get(childSeq) << std::endl;
-            std::cout << denominators.get(childSeq) << std::endl;
+           // std::cout << numerators.get(childSeq) << std::endl;
+            //std::cout << denominators.get(childSeq) << std::endl;
             std::cout << "Right Child: " << value2 << std::endl;
 
             std::cout << std::endl;
