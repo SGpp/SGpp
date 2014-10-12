@@ -71,6 +71,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         for j in xrange(gridSize):
 
             gridIndex = storage.get(j)
+            gridIndex.setLeaf(False)
                 
             print "Point: ", j, " (", gridIndex.toString(), ")"
 
@@ -105,8 +106,6 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 
                 storage.deleteLast()
                 storage.deleteLast()
-
-                print self.grid.getSize()
 
                 print "Dimension: ", d
                 print "Left Child: ", val1
@@ -160,9 +159,6 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         col.sqr()
 
         denom = col.sum()
-
-        print num
-        print denom
 
         if denom == 0:
             print "Denominator is zero"
