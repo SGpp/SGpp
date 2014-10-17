@@ -52,15 +52,14 @@ namespace sg {
           #pragma omp parallel if (system.isCloneable()) \
           shared(system, A, nnz, tools::printer) default(none)
           {
-            system::System* system2;
+            system::System* system2 = &system;
+#ifdef _OPENMP
             tools::SmartPointer<system::System> cloned_system;
-
-            if (system.isCloneable()) {
+            if (system.isCloneable() && (omp_get_max_threads() > 1)) {
               cloned_system = dynamic_cast<system::Cloneable&>(system).clone();
               system2 = cloned_system.get();
-            } else {
-              system2 = &system;
             }
+#endif
 
             // copy system matrix to Armadillo matrix object
             #pragma omp for ordered schedule(dynamic)

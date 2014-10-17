@@ -133,7 +133,14 @@ namespace sg {
           x_old, d, fx, fopt, xopt_index, x_new) default(none)
           {
             std::vector<double> y(d, 0.0);
-            tools::SmartPointer<function::Objective> cur_f(f->clone());
+            function::Objective* cur_f_ptr = f.get();
+#ifdef _OPENMP
+            tools::SmartPointer<function::Objective> cur_f;
+            if (omp_get_max_threads() > 1) {
+              cur_f = tools::SmartPointer<function::Objective>(f->clone());
+              cur_f_ptr = cur_f.get();
+            }
+#endif
 
             // for each point in the population
             #pragma omp for schedule(dynamic)
@@ -164,7 +171,7 @@ namespace sg {
               }
 
               // evaluate mutated point (if not out of bounds)
-              double fy = (in_domain ? cur_f->eval(y) : INFINITY);
+              double fy = (in_domain ? cur_f_ptr->eval(y) : INFINITY);
 
               if (fy < fx[i]) {
                 // function_value is better ==> replace point with mutated one

@@ -127,7 +127,14 @@ namespace sg {
         #pragma omp parallel shared(fX, current_N, grid_storage) default(none)
         {
           std::vector<double> x(d, 0.0);
-          tools::SmartPointer<function::Objective> cur_f(f.clone());
+          function::Objective* cur_f_ptr = &f;
+#ifdef _OPENMP
+          tools::SmartPointer<function::Objective> cur_f;
+          if (omp_get_max_threads() > 1) {
+            cur_f = tools::SmartPointer<function::Objective>(f.clone());
+            cur_f_ptr = cur_f.get();
+          }
+#endif
 
           #pragma omp for
           for (size_t i = 0; i < current_N; i++) {
@@ -141,7 +148,7 @@ namespace sg {
               }
             }
 
-            double fx = cur_f->eval(x);
+            double fx = cur_f_ptr->eval(x);
 
             #pragma omp critical
             fX[i] = fx;
@@ -308,10 +315,17 @@ namespace sg {
           }
 
           // parallel evaluation of f in the new grid points
-          #pragma omp parallel shared(fX, current_N, new_N, grid_storage, std::cout) default(none)
+          #pragma omp parallel shared(fX, current_N, new_N, grid_storage) default(none)
           {
             std::vector<double> x(d, 0.0);
-            tools::SmartPointer<function::Objective> cur_f(f.clone());
+            function::Objective* cur_f_ptr = &f;
+#ifdef _OPENMP
+            tools::SmartPointer<function::Objective> cur_f;
+            if (omp_get_max_threads() > 1) {
+              cur_f = tools::SmartPointer<function::Objective>(f.clone());
+              cur_f_ptr = cur_f.get();
+            }
+#endif
 
             #pragma omp for
             for (size_t i = current_N; i < new_N; i++) {
@@ -325,7 +339,7 @@ namespace sg {
                 }
               }
 
-              double fx = cur_f->eval(x);
+              double fx = cur_f_ptr->eval(x);
 
               #pragma omp critical
               fX[i] = fx;

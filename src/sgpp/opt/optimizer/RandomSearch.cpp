@@ -69,7 +69,14 @@ namespace sg {
 
         #pragma omp parallel shared(d, x0, round_N, xopt, fopt, tools::printer) default(none)
         {
-          tools::SmartPointer<Optimizer> cur_optimizer(optimizer.clone());
+          Optimizer* cur_optimizer_ptr = &optimizer;
+#ifdef _OPENMP
+          tools::SmartPointer<Optimizer> cur_optimizer;
+          if (omp_get_max_threads() > 1) {
+            cur_optimizer = tools::SmartPointer<Optimizer>(optimizer.clone());
+            cur_optimizer_ptr = cur_optimizer.get();
+          }
+#endif
 
           std::vector<double> cur_xopt(d, 0.0);
           double cur_fopt;
@@ -77,11 +84,11 @@ namespace sg {
           #pragma omp for ordered schedule(dynamic)
           for (size_t k = 0; k < population_size; k++) {
             // optimize with k-th starting point
-            cur_optimizer->setStartingPoint(x0[k]);
-            cur_optimizer->setN(round_N[k]);
-            cur_optimizer->optimize(cur_xopt);
+            cur_optimizer_ptr->setStartingPoint(x0[k]);
+            cur_optimizer_ptr->setN(round_N[k]);
+            cur_optimizer_ptr->optimize(cur_xopt);
 
-            cur_fopt = cur_optimizer->getObjectiveFunction()->eval(cur_xopt);
+            cur_fopt = cur_optimizer_ptr->getObjectiveFunction()->eval(cur_xopt);
 
             #pragma omp critical
             {
