@@ -45,8 +45,8 @@ public:
      * @param[out]  gradient    gradient vector of the linear combination
      * @return                  value of the linear combination
      */
-    virtual double evalGradient(base::DataVector &alpha, const std::vector<double> &point,
-                                base::DataVector &gradient) = 0;
+    virtual double evalGradient(base::DataVector& alpha, const std::vector<double>& point,
+                                base::DataVector& gradient) = 0;
     
     /**
      * Convenience function for using base::DataVector as points.
@@ -56,8 +56,8 @@ public:
      * @param[out]  gradient    gradient vector of the linear combination
      * @return                  value of the linear combination
      */
-    virtual double evalGradient(base::DataVector &alpha, base::DataVector &point,
-                                base::DataVector &gradient)
+    virtual double evalGradient(base::DataVector& alpha, base::DataVector& point,
+                                base::DataVector& gradient)
     {
         const std::vector<double> p(point.getPointer(), point.getPointer() + point.getSize());
         return evalGradient(alpha, p, gradient);
