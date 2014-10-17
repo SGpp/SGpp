@@ -84,7 +84,7 @@ namespace sg {
             /**
              * Generate normally distributed pseudorandom displacement with default standard deviation.
              */
-            void generateDisplacement();
+            virtual void generateDisplacement();
 
             /**
              * Generate normally distributed pseudorandom displacement.
