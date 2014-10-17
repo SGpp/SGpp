@@ -70,6 +70,33 @@ public:
 	virtual double eval(sg::base::DataVector& alpha, sg::base::DataVector& point) = 0;
 };
 
+class OperationNaiveEval
+{
+public:
+    virtual double eval(sg::base::DataVector& alpha, sg::base::DataVector& point) = 0;
+};
+
+class OperationNaiveEvalGradient
+{
+public:
+    virtual double evalGradient(sg::base::DataVector& alpha, sg::base::DataVector& point,
+                                sg::base::DataVector& gradient) = 0;
+};
+
+class OperationNaiveEvalHessian
+{
+public:
+    virtual double evalHessian(sg::base::DataVector& alpha, sg::base::DataVector& point,
+                               sg::base::DataVector& gradient, sg::base::DataMatrix& hessian) = 0;
+};
+
+class OperationNaiveEvalPartialDerivative
+{
+public:
+    virtual double evalPartialDerivative(sg::base::DataVector& alpha, sg::base::DataVector& point,
+                                         size_t deriv_dim) = 0;
+};
+
 class OperationHierarchisation
 {
 public:
@@ -129,6 +156,23 @@ public:
 
 }
 //- end namespace parallel --------------------------------------------
+#endif
+
+#ifdef SG_OPT
+//-     namespace opt -------------------------------------------------
+namespace opt {
+
+class OperationMultipleHierarchisation
+{
+public:
+    virtual void doHierarchisation(sg::base::DataVector& node_values) = 0;
+    virtual void doDehierarchisation(sg::base::DataVector& alpha) = 0;
+    virtual void doHierarchisation(std::vector<base::DataVector*> node_values) = 0;
+    virtual void doDehierarchisation(std::vector<base::DataVector*> alpha) = 0;
+};
+
+}
+//- end namespace opt -------------------------------------------------
 #endif
 }
 
