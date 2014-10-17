@@ -39,6 +39,14 @@ namespace sg {
             }
 
             /**
+             * Generate normally distributed pseudorandom displacement with default standard deviation and
+             * with the restriction of \f$d_1 = 0\f$.
+             */
+            void generateDisplacement() {
+              generateDisplacement(Test::DEFAULT_STANDARD_DEVIATION);
+            }
+
+            /**
              * Generate normally distributed pseudorandom displacement
              * with the restriction of \f$d_1 = 0\f$.
              *
