@@ -16,11 +16,17 @@
 #include "base/grid/type/LinearBoundaryGrid.hpp"
 #include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
+#include "base/grid/type/LinearClenshawCurtisGrid.hpp"
 #include "base/grid/type/ModLinearGrid.hpp"
 #include "base/grid/type/PolyGrid.hpp"
 #include "base/grid/type/ModPolyGrid.hpp"
-#include "base/grid/type/ModBsplineGrid.hpp"
+#include "base/grid/type/WaveletGrid.hpp"
+#include "base/grid/type/WaveletTrapezoidBoundaryGrid.hpp"
 #include "base/grid/type/ModWaveletGrid.hpp"
+#include "base/grid/type/BsplineGrid.hpp"
+#include "base/grid/type/BsplineTrapezoidBoundaryGrid.hpp"
+#include "base/grid/type/BsplineClenshawCurtisGrid.hpp"
+#include "base/grid/type/ModBsplineGrid.hpp"
 #include "base/grid/type/SquareRootGrid.hpp"
 #include "base/grid/type/TruncatedTrapezoidGrid.hpp"
 #include "base/grid/type/PrewaveletGrid.hpp"
@@ -61,6 +67,10 @@ namespace sg {
       return new LinearStretchedTrapezoidBoundaryGrid(dim);
     }
 
+    Grid* Grid::createLinearClenshawCurtisGrid(size_t dim) {
+      return new LinearClenshawCurtisGrid(dim);
+    }
+
     Grid* Grid::createModLinearGrid(size_t dim) {
       return new ModLinearGrid(dim);
     }
@@ -69,8 +79,28 @@ namespace sg {
       return new PolyGrid(dim, degree);
     }
 
+    Grid* Grid::createWaveletGrid(size_t dim) {
+      return new WaveletGrid(dim);
+    }
+
+    Grid* Grid::createWaveletTrapezoidBoundaryGrid(size_t dim) {
+      return new WaveletTrapezoidBoundaryGrid(dim);
+    }
+
     Grid* Grid::createModWaveletGrid(size_t dim) {
       return new ModWaveletGrid(dim);
+    }
+
+    Grid* Grid::createBsplineGrid(size_t dim, size_t degree) {
+      return new BsplineGrid(dim, degree);
+    }
+
+    Grid* Grid::createBsplineTrapezoidBoundaryGrid(size_t dim, size_t degree) {
+      return new BsplineTrapezoidBoundaryGrid(dim, degree);
+    }
+
+    Grid* Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+      return new BsplineClenshawCurtisGrid(dim, degree);
     }
 
     Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
@@ -146,10 +176,16 @@ namespace sg {
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinearstencil", ModLinearGridStencil::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("Wavelet", WaveletGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("WaveletTrapezoidBoundary", WaveletTrapezoidBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modWavelet", ModWaveletGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("Bspline", BsplineGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("BsplineTrapezoidBoundary", BsplineTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("BsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
 #else
@@ -161,10 +197,16 @@ namespace sg {
         tMap->insert(std::make_pair("modlinearstencil", ModLinearGridStencil::unserialize));
         tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
         tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
+        tMap->insert(std::make_pair("Wavelet", WaveletGrid::unserialize));
+        tMap->insert(std::make_pair("WaveletTrapezoidBoundary", WaveletTrapezoidBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("modWavelet", ModWaveletGrid::unserialize));
+        tMap->insert(std::make_pair("Bspline", BsplineGrid::unserialize));
+        tMap->insert(std::make_pair("BsplineTrapezoidBoundary", BsplineTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("BsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
         tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
 #endif
