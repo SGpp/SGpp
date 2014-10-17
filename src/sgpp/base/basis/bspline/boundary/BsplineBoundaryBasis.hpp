@@ -85,7 +85,7 @@ namespace sg {
          * @return      B-spline degree
          */
         inline size_t getDegree() const {
-          return bspline_basis.degree;
+          return bspline_basis.getDegree();
         }
     };
 
