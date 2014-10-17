@@ -39,14 +39,25 @@ namespace sg {
           const size_t n = b.size();
           std::vector<double> r(n, 0.0);
 
-          std::vector<double> my_x0 = x0;
-
-          if (my_x0.empty()) {
-            my_x0 = std::vector<double>(n, 0.0);
+          if (n == 1) {
+            const double A = system.getMatrixEntry(0, 0);
+            if (A != 0.0) {
+              x = std::vector<double>(1, b[0] / A);
+              tools::printer.printStatusEnd();
+              return true;
+            } else {
+              tools::printer.printStatusEnd("error: could not solve linear system!");
+              return false;
+            }
           }
 
-          x = std::vector<double>(n, 0.0);
-          system.matrixVectorMultiplication(my_x0, r);
+          if (x0.size() == n) {
+            x = x0;
+          } else {
+            x = std::vector<double>(n, 0.0);
+          }
+
+          system.matrixVectorMultiplication(x, r);
 
           for (size_t i = 0; i < n; i++) {
             r[i] = b[i] - r[i];
