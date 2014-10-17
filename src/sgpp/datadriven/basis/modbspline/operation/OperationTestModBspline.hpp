@@ -11,7 +11,7 @@
 #include "datadriven/operation/OperationTest.hpp"
 #include "base/grid/GridStorage.hpp"
 
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "base/basis/bspline/modified/ModBsplineBasis.hpp"
 
 
 namespace sg {
