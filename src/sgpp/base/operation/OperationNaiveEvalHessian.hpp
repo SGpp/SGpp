@@ -49,8 +49,8 @@ public:
      * @param[out]  hessian     Hessian matrix of the linear combination
      * @return                  value of the linear combination
      */
-    virtual double evalHessian(base::DataVector &alpha, const std::vector<double> &point,
-                               base::DataVector &gradient, base::DataMatrix &hessian) = 0;
+    virtual double evalHessian(base::DataVector& alpha, const std::vector<double>& point,
+                               base::DataVector& gradient, base::DataMatrix& hessian) = 0;
     
     /**
      * Convenience function for using base::DataVector as points.
@@ -61,8 +61,8 @@ public:
      * @param[out]  hessian     Hessian matrix of the linear combination
      * @return                  value of the linear combination
      */
-    virtual double evalHessian(base::DataVector &alpha, base::DataVector &point,
-                               base::DataVector &gradient, base::DataMatrix &hessian)
+    virtual double evalHessian(base::DataVector& alpha, base::DataVector& point,
+                               base::DataVector& gradient, base::DataMatrix& hessian)
     {
         const std::vector<double> p(point.getPointer(), point.getPointer() + point.getSize());
         return evalHessian(alpha, p, gradient, hessian);

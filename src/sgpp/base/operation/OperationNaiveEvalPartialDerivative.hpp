@@ -47,8 +47,8 @@ public:
      * @param deriv_dim dimension in which the partial derivative should be taken (0, ..., d-1)
      * @return          value of the partial derivative of the linear combination
      */
-    virtual double evalPartialDerivative(base::DataVector &alpha,
-                                         const std::vector<double> &point,
+    virtual double evalPartialDerivative(base::DataVector& alpha,
+                                         const std::vector<double>& point,
                                          size_t deriv_dim) = 0;
     
     /**
@@ -59,8 +59,8 @@ public:
      * @param deriv_dim dimension in which the partial derivative should be taken (0, ..., d-1)
      * @return          value of the partial derivative of the linear combination
      */
-    virtual double evalPartialDerivative(base::DataVector &alpha,
-                                         base::DataVector &point,
+    virtual double evalPartialDerivative(base::DataVector& alpha,
+                                         base::DataVector& point,
                                          size_t deriv_dim)
     {
         const std::vector<double> p(point.getPointer(), point.getPointer() + point.getSize());
