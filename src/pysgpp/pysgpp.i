@@ -88,6 +88,9 @@ namespace std {
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
 #endif
+#ifdef SG_OPT
+#include "sgpp_opt.hpp"
+#endif
 %}
 
 // the Bad
@@ -109,6 +112,8 @@ namespace std {
 %include "src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "src/sgpp/base/grid/common/Stretching.hpp"
 %include "src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
+
+%include "src/sgpp/base/tools/CosineTable.hpp"
 
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
@@ -142,13 +147,19 @@ namespace std {
 
 %include "src/sgpp/base/basis/linear/noboundary/LinearBasis.hpp"
 %include "src/sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp"
+%include "src/sgpp/base/basis/linear/clenshawcurtis/LinearClenshawCurtisBasis.hpp"
 %include "src/sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
 %include "src/sgpp/base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
-%include "src/sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp"
+%include "src/sgpp/base/basis/linear/modified/ModLinearBasis.hpp"
 %include "src/sgpp/base/basis/poly/PolyBasis.hpp"
 %include "src/sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp"
-%include "src/sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-%include "src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
+%include "src/sgpp/base/basis/wavelet/noboundary/WaveletBasis.hpp"
+%include "src/sgpp/base/basis/wavelet/boundary/WaveletBoundaryBasis.hpp"
+%include "src/sgpp/base/basis/wavelet/modified/ModWaveletBasis.hpp"
+%include "src/sgpp/base/basis/bspline/noboundary/BsplineBasis.hpp"
+%include "src/sgpp/base/basis/bspline/boundary/BsplineBoundaryBasis.hpp"
+%include "src/sgpp/base/basis/bspline/clenshawcurtis/BsplineClenshawCurtisBasis.hpp"
+%include "src/sgpp/base/basis/bspline/modified/ModBsplineBasis.hpp"
 %include "src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
 // static factory methods
@@ -213,6 +224,188 @@ namespace std {
 %include "src/sgpp/misc/operation/MiscOpFactory.hpp"
 #endif
 
+#ifdef SG_OPT
+// to disable OpenMP multi-threading within Python
+void omp_set_num_threads(int num_threads);
+%init %{
+    omp_set_num_threads(1);
+%}
+
+// global variables for the support of SLE solver libaries (set at compile-time)
+const bool ARMADILLO_ENABLED;
+const bool EIGEN_ENABLED;
+const bool GMMPP_ENABLED;
+const bool UMFPACK_ENABLED;
+
+%{
+#ifdef USEARMADILLO
+    const bool ARMADILLO_ENABLED = true;
+#else
+    const bool ARMADILLO_ENABLED = false;
+#endif
+    
+#ifdef USEEIGEN
+    const bool EIGEN_ENABLED = true;
+#else
+    const bool EIGEN_ENABLED = false;
+#endif
+    
+#ifdef USEGMMPP
+    const bool GMMPP_ENABLED = true;
+#else
+    const bool GMMPP_ENABLED = false;
+#endif
+    
+#ifdef USEUMFPACK
+    const bool UMFPACK_ENABLED = true;
+#else
+    const bool UMFPACK_ENABLED = false;
+#endif
+%}
+
+// necessary tools
+%rename(OptRNG)         sg::opt::tools::RNG;
+%rename(OptRNGInstance) sg::opt::tools::rng;
+%include "src/sgpp/opt/tools/RNG.hpp"
+%include "src/sgpp/opt/tools/SmartPointer.hpp"
+
+// renames
+%rename(OptObjective)           sg::opt::function::Objective;
+%rename(OptObjectiveGradient)   sg::opt::function::ObjectiveGradient;
+%rename(OptObjectiveHessian)    sg::opt::function::ObjectiveHessian;
+%rename(OptInterpolant)         sg::opt::function::Interpolant;
+%rename(OptInterpolantGradient) sg::opt::function::InterpolantGradient;
+%rename(OptInterpolantHessian)  sg::opt::function::InterpolantHessian;
+
+%rename(OptTestFunction)    sg::opt::function::test::Test;
+%rename(OptAckley)          sg::opt::function::test::Ackley;
+%rename(OptBeale)           sg::opt::function::test::Beale;
+%rename(OptBranin)          sg::opt::function::test::Branin;
+%rename(OptEasom)           sg::opt::function::test::Easom;
+%rename(OptEggholder)       sg::opt::function::test::Eggholder;
+%rename(OptGoldsteinPrice)  sg::opt::function::test::GoldsteinPrice;
+%rename(OptGriewank)        sg::opt::function::test::Griewank;
+%rename(OptHartman3)        sg::opt::function::test::Hartman3;
+%rename(OptHartman6)        sg::opt::function::test::Hartman6;
+%rename(OptHimmelblau)      sg::opt::function::test::Himmelblau;
+%rename(OptHoelderTable)    sg::opt::function::test::HoelderTable;
+%rename(OptMichalewicz)     sg::opt::function::test::Michalewicz;
+%rename(OptMladineo)        sg::opt::function::test::Mladineo;
+%rename(OptRastrigin)       sg::opt::function::test::Rastrigin;
+%rename(OptRosenbrock)      sg::opt::function::test::Rosenbrock;
+%rename(OptSHCB)            sg::opt::function::test::SHCB;
+%rename(OptSchwefel)        sg::opt::function::test::Schwefel;
+%rename(OptSphere)          sg::opt::function::test::Sphere;
+
+%rename(OptHashRefinementMultiple)              sg::opt::gridgen::HashRefinementMultiple;
+%rename(OptIterativeGridGenerator)              sg::opt::gridgen::IterativeGridGenerator;
+%rename(OptIterativeGridGeneratorLinearSurplus) sg::opt::gridgen::IterativeGridGeneratorLinearSurplus;
+%rename(OptIterativeGridGeneratorRitterNovak)   sg::opt::gridgen::IterativeGridGeneratorRitterNovak;
+
+%rename(OptSLESystem)               sg::opt::sle::system::System;
+%rename(OptCloneableSystem)         sg::opt::sle::system::Cloneable;
+%rename(OptFullSystem)              sg::opt::sle::system::Full;
+%rename(OptHierarchisationSystem)   sg::opt::sle::system::Hierarchisation;
+%rename(OptSLESolver)               sg::opt::sle::solver::Solver;
+%rename(OptArmadillo)               sg::opt::sle::solver::Armadillo;
+%rename(OptAutoSolver)              sg::opt::sle::solver::Auto;
+%rename(OptBiCGStab)                sg::opt::sle::solver::BiCGStab;
+%rename(OptEigen)                   sg::opt::sle::solver::Eigen;
+%rename(OptGmmpp)                   sg::opt::sle::solver::Gmmpp;
+%rename(OptUMFPACK)                 sg::opt::sle::solver::UMFPACK;
+
+%rename(OptOptimizer)               sg::opt::optimizer::Optimizer;
+%rename(OptDifferentialEvolution)   sg::opt::optimizer::DifferentialEvolution;
+%rename(OptGradientMethod)          sg::opt::optimizer::GradientMethod;
+%rename(OptNelderMead)              sg::opt::optimizer::NelderMead;
+%rename(OptNewton)                  sg::opt::optimizer::Newton;
+%rename(OptNLCG)                    sg::opt::optimizer::NLCG;
+%rename(OptNewton)                  sg::opt::optimizer::Newton;
+%rename(OptRandomSearch)            sg::opt::optimizer::RandomSearch;
+
+%rename(OptMutexType)       sg::opt::tools::MutexType;
+%rename(OptPrinter)         sg::opt::tools::Printer;
+%rename(OptPrinterInstance) sg::opt::tools::printer;
+
+// smart pointer templates
+%template(OptSmPtrObjective)            sg::opt::tools::SmartPointer<sg::opt::function::Objective>;
+%template(OptSmPtrObjectiveGradient)    sg::opt::tools::SmartPointer<sg::opt::function::ObjectiveGradient>;
+%template(OptSmPtrObjectiveHessian)     sg::opt::tools::SmartPointer<sg::opt::function::ObjectiveHessian>;
+%template(OptSmPtrCloneableSLESystem)   sg::opt::tools::SmartPointer<sg::opt::sle::system::Cloneable>;
+%template(OptSmPtrOptimizer)            sg::opt::tools::SmartPointer<sg::opt::optimizer::Optimizer>;
+
+// classes with director interface
+%feature("director") sg::opt::function::test::Test;
+%feature("director") sg::opt::function::Objective;
+%feature("director") sg::opt::function::ObjectiveGradient;
+%feature("director") sg::opt::function::ObjectiveHessian;
+%feature("director") sg::opt::gridgen::IterativeGridGenerator;
+%feature("director") sg::opt::sle::system::System;
+%feature("director") sg::opt::sle::system::Cloneable;
+%feature("director") sg::opt::sle::solver::Solver;
+%feature("director") sg::opt::optimizer::Optimizer;
+
+// includes
+%include "src/sgpp/opt/function/Objective.hpp"
+%include "src/sgpp/opt/function/ObjectiveGradient.hpp"
+%include "src/sgpp/opt/function/ObjectiveHessian.hpp"
+%include "src/sgpp/opt/function/Interpolant.hpp"
+%include "src/sgpp/opt/function/InterpolantGradient.hpp"
+%include "src/sgpp/opt/function/InterpolantHessian.hpp"
+
+%include "src/sgpp/opt/function/test/Test.hpp"
+%include "src/sgpp/opt/function/test/Ackley.hpp"
+%include "src/sgpp/opt/function/test/Beale.hpp"
+%include "src/sgpp/opt/function/test/Branin.hpp"
+%include "src/sgpp/opt/function/test/Easom.hpp"
+%include "src/sgpp/opt/function/test/Eggholder.hpp"
+%include "src/sgpp/opt/function/test/GoldsteinPrice.hpp"
+%include "src/sgpp/opt/function/test/Griewank.hpp"
+%include "src/sgpp/opt/function/test/Hartman3.hpp"
+%include "src/sgpp/opt/function/test/Hartman6.hpp"
+%include "src/sgpp/opt/function/test/Himmelblau.hpp"
+%include "src/sgpp/opt/function/test/HoelderTable.hpp"
+%include "src/sgpp/opt/function/test/Michalewicz.hpp"
+%include "src/sgpp/opt/function/test/Mladineo.hpp"
+%include "src/sgpp/opt/function/test/Rastrigin.hpp"
+%include "src/sgpp/opt/function/test/Rosenbrock.hpp"
+%include "src/sgpp/opt/function/test/SHCB.hpp"
+%include "src/sgpp/opt/function/test/Schwefel.hpp"
+%include "src/sgpp/opt/function/test/Sphere.hpp"
+
+%include "src/sgpp/opt/gridgen/HashRefinementMultiple.hpp"
+%include "src/sgpp/opt/gridgen/IterativeGridGenerator.hpp"
+%include "src/sgpp/opt/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
+%include "src/sgpp/opt/gridgen/IterativeGridGeneratorRitterNovak.hpp"
+
+%include "src/sgpp/opt/operation/OpFactory.hpp"
+
+%include "src/sgpp/opt/sle/system/System.hpp"
+%include "src/sgpp/opt/sle/system/Cloneable.hpp"
+%include "src/sgpp/opt/sle/system/Full.hpp"
+%include "src/sgpp/opt/sle/system/Hierarchisation.hpp"
+
+%include "src/sgpp/opt/sle/solver/Solver.hpp"
+%include "src/sgpp/opt/sle/solver/Armadillo.hpp"
+%include "src/sgpp/opt/sle/solver/Auto.hpp"
+%include "src/sgpp/opt/sle/solver/BiCGStab.hpp"
+%include "src/sgpp/opt/sle/solver/Eigen.hpp"
+%include "src/sgpp/opt/sle/solver/Gmmpp.hpp"
+%include "src/sgpp/opt/sle/solver/UMFPACK.hpp"
+
+%include "src/sgpp/opt/optimizer/Optimizer.hpp"
+%include "src/sgpp/opt/optimizer/DifferentialEvolution.hpp"
+%include "src/sgpp/opt/optimizer/GradientMethod.hpp"
+%include "src/sgpp/opt/optimizer/NelderMead.hpp"
+%include "src/sgpp/opt/optimizer/Newton.hpp"
+%include "src/sgpp/opt/optimizer/NLCG.hpp"
+%include "src/sgpp/opt/optimizer/Newton.hpp"
+%include "src/sgpp/opt/optimizer/RandomSearch.hpp"
+
+%include "src/sgpp/opt/tools/MutexType.hpp"
+%include "src/sgpp/opt/tools/Printer.hpp"
+#endif
+
 // the new combigrid!
 
 #ifdef SG_COMBIGRID
@@ -269,13 +462,19 @@ namespace std {
 
 %template(SLinearBase) sg::base::LinearBasis<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sg::base::LinearBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearClenshawCurtisBase) sg::base::LinearClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBase) sg::base::LinearStretchedBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBoundaryBase) sg::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-%template(SModLinearBase) sg::base::ModifiedLinearBasis<unsigned int, unsigned int>;
+%template(SModLinearBase) sg::base::ModLinearBasis<unsigned int, unsigned int>;
 %template(SPolyBase) sg::base::PolyBasis<unsigned int, unsigned int>;
 %template(SModPolyBase) sg::base::ModifiedPolyBasis<unsigned int, unsigned int>;
-%template(SModWaveletBase) sg::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
-%template(SModBsplineBase) sg::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
+%template(SWaveletBase) sg::base::WaveletBasis<unsigned int, unsigned int>;
+%template(SWaveletBoundaryBase) sg::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
+%template(SModWaveletBase) sg::base::ModWaveletBasis<unsigned int, unsigned int>;
+%template(SBsplineBase) sg::base::BsplineBasis<unsigned int, unsigned int>;
+%template(SBsplineBoundaryBase) sg::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
+%template(SBsplineClenshawCurtisBase) sg::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SModBsplineBase) sg::base::ModBsplineBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sg::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
@@ -287,5 +486,3 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
-
-
