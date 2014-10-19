@@ -59,7 +59,6 @@ public:
 	bool hasRightChild(GridStorage* storage, GridIndex* gridIndex, size_t dim);
 
 	void setTrainDataset(DataMatrix* trainDataset_);
-	void setClasses(DataVector* classes_);
 	void setErrors(DataVector* errors_);
 
 	// For the Python test case

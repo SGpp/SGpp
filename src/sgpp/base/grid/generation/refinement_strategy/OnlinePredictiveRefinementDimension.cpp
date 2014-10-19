@@ -27,7 +27,7 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
     using namespace sg::base;
 
-    if (trainDataset == NULL || classes == NULL || errors == NULL)
+    if (trainDataset == NULL || errors == NULL)
     {
         throw base::application_exception(
             "Training dataset, classes or errors not set");
@@ -44,6 +44,16 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     size_t predictiveGridSize = predictiveGrid->getSize();
 
     OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid, trainDataset);
+
+    // Display points on predictive Grid
+
+    GridStorage::grid_map_iterator predictive_end_iter = predictiveGrid->getStorage()->end();
+    for (GridStorage::grid_map_iterator iter = predictiveGrid->getStorage()->begin();
+            iter != predictive_end_iter; iter++)
+    {
+    	std::cout << predictiveGrid->getStorage()->seq(iter->first) << ": " << iter->first->toString() << std::endl;
+    }
+
 
     GridIndex* gridIndex;
     GridStorage::grid_map_iterator end_iter = storage->end();
@@ -72,10 +82,14 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
         // Bounding box = support of refinable point
 
+        // std::cout << "New bounding box:" << std::endl;
+
         DimensionBoundary* boundaries = new DimensionBoundary[dim];
 
         for (size_t k = 0; k < dim; k++ )
         {
+        	// std::cout << "Dimension " << k << std::endl;
+
             unsigned int index = gridIndex->getIndex(k);
             unsigned int level = gridIndex->getLevel(k);
             double intval = pow(2.0, -static_cast<double>(level));
@@ -84,6 +98,9 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             boundary.leftBoundary = (index-1) * intval;
             boundary.rightBoundary = (index+1) * intval;
             boundaries[k] = boundary;
+
+            //std::cout << "left boundary: " << boundary.leftBoundary << std::endl;
+            //std::cout << "right boundary: " << boundary.rightBoundary << std::endl;
         }
 
         BoundingBox* bb = new BoundingBox(dim, boundaries);
@@ -141,7 +158,12 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             }
             childSeq = predictiveGridStorage->seq(&childIndex);
 
-            value1 = numerators.get(childSeq) / denominators.get(childSeq);
+            if (denominators.get(childSeq) != 0) {
+            	value1 = numerators.get(childSeq) / denominators.get(childSeq);
+            } else {
+            	// No points or only boundary points
+            	value1 = 0;
+            }
 
            // std::cout << numerators.get(childSeq) << std::endl;
             //std::cout << denominators.get(childSeq) << std::endl;
@@ -158,7 +180,12 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             }
             childSeq = predictiveGridStorage->seq(&childIndex);
 
-            value2 = numerators.get(childSeq) / denominators.get(childSeq);
+            if (denominators.get(childSeq) != 0) {
+            	value2 = numerators.get(childSeq) / denominators.get(childSeq);
+            } else {
+            	// No points or only boundary points
+            	value2 = 0;
+            }
 
             // TODO only the highest
             result->insert(std::pair<refinement_key, double>(
@@ -394,11 +421,6 @@ void OnlinePredictiveRefinementDimension::setTrainDataset(
     DataMatrix* trainDataset_)
 {
     trainDataset = trainDataset_;
-}
-
-void OnlinePredictiveRefinementDimension::setClasses(DataVector* classes_)
-{
-    classes = classes_;
 }
 
 void OnlinePredictiveRefinementDimension::setErrors(DataVector* errors_)

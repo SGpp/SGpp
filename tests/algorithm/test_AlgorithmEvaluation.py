@@ -5,164 +5,82 @@ from bin.pysgpp import Grid, DataVector, DataMatrix, DimensionBoundary, Bounding
 
 class TestAlgorithmEvaluation(unittest.TestCase):
 
-    def setUp(self):
+    def test_simple(self):
 
-        #
-        # Grid
-        #
+        d = 2
+        l = 2
 
-        DIM = 2
-        LEVEL = 2
+        for i in xrange(100):
+            self.general_test(d, l, self.get_random_bb(d), self.get_random_x(d))
 
-        self.grid = Grid.createLinearGrid(DIM)
+    def general_test(self, d, l, bb, x):
+
+        test_desc = "dim=%d, level=%d, bb=%s, x=%s" % (d, l, bb, x)
+        print test_desc
+
+        self.grid = Grid.createLinearGrid(d)
         self.grid_gen = self.grid.createGridGenerator()
-        self.grid_gen.regular(LEVEL)
+        self.grid_gen.regular(l)
 
-        self.alpha = DataVector([1,1,1,1,1])
-        
-        #
-        # Reset BB
-        #
+        alpha = DataVector([1] * self.grid.getSize())
 
-        dimbb1 = DimensionBoundary()
-        dimbb1.leftBoundary = 0
-        dimbb1.rightBoundary = 1
+        bb_ = BoundingBox(d)
 
-        dimbb2 = DimensionBoundary()
-        dimbb2.leftBoundary = 0
-        dimbb2.rightBoundary = 1
-
-        self.reset_bb = BoundingBox(DIM)
-        self.reset_bb.setBoundary(0, dimbb1)
-        self.reset_bb.setBoundary(1, dimbb2)
-
-    def test_insideBB(self):
-
-        print "#"*10
-        print "test_insideBB1"
-
-        DIM = 2
-
-        #
-        # bb is a bounding box 
-        # with
-        # ((0.25, 0.75), (0, 1))
-        #
-
-        dimbb1 = DimensionBoundary()
-        dimbb1.leftBoundary = 0.25
-        dimbb1.rightBoundary = 0.75
-
-        dimbb2 = DimensionBoundary()
-        dimbb2.leftBoundary = 0
-        dimbb2.rightBoundary = 1
-
-        bb = BoundingBox(DIM)
-        bb.setBoundary(0, dimbb1)
-        bb.setBoundary(1, dimbb2)
-
-        #
-        # If you translate (0.3, 0.1) on the 
-        # bounding box, you get (0.1, 0.1)
-        #
+        for d_k in xrange(d):
+            dimbb = DimensionBoundary()
+            dimbb.leftBoundary = bb[d_k][0]
+            dimbb.rightBoundary = bb[d_k][1]
+            bb_.setBoundary(d_k, dimbb)
 
         # Calculate the expected value without the bounding box
 
-        self.grid.getStorage().setBoundingBox(self.reset_bb)
+        expected = 0.0
 
-        p_test = DataVector([0.1, 0.1])
-        expected = self.grid.eval(self.alpha, p_test)
+        inside = True
 
-        # Now set the bounding box
+        x_trans = DataVector(d)
 
-        self.grid.getStorage().setBoundingBox(bb)
+        for d_k in xrange(d):
+            if not (bb[d_k][0] <= x[d_k] and x[d_k] <= bb[d_k][1]):
+                inside = False
+                break
+            else:
+                x_trans[d_k] = (x[d_k] - bb[d_k][0]) / (bb[d_k][1] - bb[d_k][0])
 
-        p = DataVector([0.3, 0.1])
-        r = self.grid.eval(self.alpha, p)
-
-        self.assertAlmostEqual(r, expected)
-    
-    def test_insideBB2(self):
-
-        print "#"*10
-        print "test_insideBB2"
-
-        DIM = 2
-
-        #
-        # bb is a bounding box 
-        # with
-        # ((0.25, 0.5), (0, 1))
-        #
-
-        dimbb1 = DimensionBoundary()
-        dimbb1.leftBoundary = 0.25
-        dimbb1.rightBoundary = 0.5
-
-        dimbb2 = DimensionBoundary()
-        dimbb2.leftBoundary = 0
-        dimbb2.rightBoundary = 1
-
-        bb = BoundingBox(DIM)
-        bb.setBoundary(0, dimbb1)
-        bb.setBoundary(1, dimbb2)
-
-        # Calculate the expected value without the bounding box
-
-        self.grid.getStorage().setBoundingBox(self.reset_bb)
-
-        p_test = DataVector([0.2, 0.8])
-        expected = self.grid.eval(self.alpha, p_test)
+        if inside:
+            p = DataVector(x_trans)
+            expected = self.grid.eval(alpha, p)
+        else:
+            expected = 0.0
 
         # Now set the bounding box
 
-        self.grid.getStorage().setBoundingBox(bb)
+        self.grid.getStorage().setBoundingBox(bb_)
 
-        p = DataVector([0.3, 0.8])
-        r = self.grid.eval(self.alpha, p)
+        p = DataVector(x)
+        actual = self.grid.eval(alpha, p)
 
-        self.assertAlmostEqual(r, expected)
+        self.assertAlmostEqual(actual, expected)
 
-    def test_outsideBB(self):
+        del self.grid
 
-        print "#"*10
-        print "test_outsideBB"
+    def get_random_bb(self, d):
+        base = [[0, 1], [0, 0.5], [0.5, 1], [0, 0.25], [0.25, 0.5], [0.5, 0.75], [0.75, 1]]
 
-        DIM = 2
-        #
-        # bb is a bounding box 
-        # with
-        # ((0.25, 0.75), (0, 1))
-        #
+        bb = []
+        for i in xrange(d):
+            bb.append(random.choice(base))
 
-        dimbb1 = DimensionBoundary()
-        dimbb1.leftBoundary = 0.25
-        dimbb1.rightBoundary = 0.75
+        return bb
 
-        dimbb2 = DimensionBoundary()
-        dimbb2.leftBoundary = 0
-        dimbb2.rightBoundary = 1
+    def get_random_x(self, d):
+        base = [i * 0.1 for i in xrange (11)]
 
-        bb = BoundingBox(DIM)
-        bb.setBoundary(0, dimbb1)
-        bb.setBoundary(1, dimbb2)
+        x = []
+        for i in xrange(d):
+            x.append(random.choice(base))
 
-        self.grid.getStorage().setBoundingBox(bb)
-
-        p = DataVector([0.05, 0.05])
-        r = self.grid.eval(self.alpha, p)
-
-        self.assertEqual(r, 0)
-
-    def display_bounding_box(self):
-        print "Bounding box:"
-        bb = self.grid.getStorage().getBoundingBox()
-        dim = bb.getDimensions()
-
-        for d in xrange(dim):
-            boundary = bb.getBoundary(d)
-            print "Dim", d, "left:", boundary.leftBoundary, "right:", boundary.rightBoundary
-
+        return x
                 
 if __name__=='__main__':
     unittest.main()
