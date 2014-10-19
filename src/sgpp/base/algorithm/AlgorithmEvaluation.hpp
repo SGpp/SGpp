@@ -88,6 +88,31 @@ public:
 
         size_t dim = storage->dim();
 
+        // Check for bounding box
+        BoundingBox *bb = storage->getBoundingBox();
+        if ( bb != NULL )
+        {
+            for (size_t d = 0; d < dim; ++d)
+            {
+                DimensionBoundary dimbb = bb->getBoundary(d);
+                //std::cout << "Dimension: " << d << " (left: " << dimbb.leftBoundary << ", right: " << dimbb.rightBoundary << ")" << std::endl;
+
+                if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
+                	continue;
+                }
+
+                if ( ! (dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary) )
+                {
+                	//std::cout << "Out of bounds: " << point[d] << std::endl;
+                    return 0.0;
+                }
+
+                //std::cout << "Old: " << point[d] << std::endl;
+                point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
+                //std::cout << "New: " << point[d] << std::endl;
+            }
+        }
+
         index_type* source = new index_type[dim];
 
         for (size_t d = 0; d < dim; ++d)
@@ -104,31 +129,6 @@ public:
                 source[d] = static_cast<index_type> (temp + 1);
             }
 
-        }
-
-        // Check for bounding box
-        BoundingBox *bb = storage->getBoundingBox();
-        if ( bb != NULL )
-        {
-            for (size_t d = 0; d < dim; ++d)
-            {
-                DimensionBoundary dimbb = bb->getBoundary(d);
-                std::cout << "Dimension: " << d << " (left: " << dimbb.leftBoundary << ", right: " << dimbb.rightBoundary << ")" << std::endl;
-
-                if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
-                	continue;
-                }
-
-                if ( ! (dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary) )
-                {
-                	std::cout << "Out of bounds: " << point[d] << std::endl;
-                    return 0.0;
-                }
-
-                std::cout << "Old: " << point[d] << std::endl;
-                point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
-                std::cout << "New: " << point[d] << std::endl;
-            }
         }
 
         double result = 0.0;
