@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2012 Technische Universitaet Muenchen                         *
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -13,6 +13,9 @@
 #include "base/operation/OperationIdentity.hpp"
 #include "base/exception/data_exception.hpp"
 #include "base/datatypes/DataVector.hpp"
+#include "base/operation/OperationMultipleEval.hpp"
+#include "base/operation/BaseOpFactory.hpp"
+#include "base/exception/factory_exception.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -26,17 +29,16 @@
 
 using namespace alglib;
 
-#include <boost/config.hpp>
 #include <iostream>
 #include <algorithm>
 #include <utility>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/connected_components.hpp>
 
+#include "Graph.hpp"
 #include <iostream>
 #include <string>
 #include <stdio.h>
 #include <time.h>
+#include <limits>
 
 namespace sg {
 
@@ -46,8 +48,28 @@ namespace sg {
 
   	}
 
+  	LearnerDensityCluster::LearnerDensityCluster(bool isVerbose) : LearnerBase(false, isVerbose){
+
+  	}
+
   	LearnerDensityCluster::~LearnerDensityCluster() {
-  		delete component_;
+  		delete minimumPoint_;
+  		delete clusterAssignments_;
+  		clusterAssignments_ = NULL;
+  		delete gridVals_;
+  		gridVals_ = NULL;
+  		deleteNeighbors();
+  	}
+
+  	void LearnerDensityCluster::deleteNeighbors(){
+  		if(neighbors_ != NULL){
+  			for(int i = 0;i<neighborsRows_;i++){
+  				delete [] neighbors_[i];
+  				neighbors_[i] =NULL;
+  			}
+  		}
+  		delete [] neighbors_;
+  		neighbors_ = NULL;
   	}
 
   	const std::string currentDateTime() {
@@ -62,6 +84,7 @@ namespace sg {
   	    return buf;
   	}
 
+
     /**
      * Learning a dataset with regular sparse grids
      *
@@ -71,7 +94,7 @@ namespace sg {
      * @param SolverConfig configuration of the SLE solver
      * @param lamda regularization parameter lambda
      */
-    LearnerTiming LearnerDensityCluster::train(sg::base::DataMatrix& trainDataset,  sg::base::DataVector& classes,
+    LearnerTiming LearnerDensityCluster::train(sg::base::DataMatrix& testDataset,  sg::base::DataVector& classes,
 					  const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
 					  const double lambda){
 
@@ -85,13 +108,27 @@ namespace sg {
 		result.GFlop_ = 0.0;
 		result.GByte_ = 0.0;
 
-		if(GridConfig.type_ == sg::base::Periodic){
+
+		calculateGridValues(testDataset, GridConfig, SolverConfig, lambda);
+		cluster(testDataset, GridConfig);
+
+    	return result;
+    }
+
+    void LearnerDensityCluster::calculateGridValues(sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig,
+        			const sg::solver::SLESolverConfiguration& SolverConfig, const double lambda){
+    	if(GridConfig.type_ == sg::base::Periodic){
 			grid_ = sg::base::Grid::createPeriodicGrid(GridConfig.dim_);
 			grid_->createGridGenerator()->regular(GridConfig.level_);
+		}else if(GridConfig.type_ == sg::base::Linear){
+			grid_ = sg::base::Grid::createLinearGrid(GridConfig.dim_);
+			grid_->createGridGenerator()->regular(GridConfig.level_);
+		}else if(GridConfig.type_ == sg::base::LinearBoundary){
+			grid_ = sg::base::Grid::createLinearBoundaryGrid(GridConfig.dim_);
+			grid_->createGridGenerator()->regular(GridConfig.level_);
 		}else{
-			throw base::data_exception ("Just periodic grids are supported now.");
+			throw base::data_exception ("Not supported grid.");
 		}
-
 
 		//Equation: (A + lI)a = f
 		//A = (phi_i,phi_j)_L2  - LTwoDot
@@ -100,52 +137,254 @@ namespace sg {
 		//a = alpha
 		//f_i = 1/M * sum_j=1^M (phi_i(x_j))
 		//M = number of data points (testDataset)
+		if(isVerbose_)
+			std::cout << currentDateTime() <<  " Start clustering"  << std::endl;
 
-		std::cout << "Start " << currentDateTime() << std::endl;
-
-    	sg::solver::SLESolver* myCG;
-    	myCG = new sg::solver::ConjugateGradients(SolverConfig.maxIterations_, SolverConfig.eps_);
+		sg::solver::SLESolver* myCG;
+		myCG = new sg::solver::ConjugateGradients(SolverConfig.maxIterations_, SolverConfig.eps_);
 
 
-    	sg::base::OperationIdentity C_;
-		sg::datadriven::DensitySystemMatrix DMatrix(*grid_, trainDataset, C_, lambda);
+		sg::base::OperationIdentity C_;
+		sg::datadriven::DensitySystemMatrix DMatrix(*grid_, testDataset, C_, lambda);
 
 		sg::base::DataVector rhs(grid_->getStorage()->size());
 		DMatrix.generateb(rhs);
-		//std::cout << rhs.toString() << std::endl;
 
-		sg::base::DataVector alpha(grid_->getStorage()->size());
-		alpha.setAll(0);
+		if(isVerbose_)
+			std::cout  << currentDateTime() << " System of linear equations created" << std::endl;
 
-		std::cout << "Matrizen erstell t" << currentDateTime() << std::endl;
+		delete alpha_;
+		alpha_ = new sg::base::DataVector(grid_->getStorage()->size());
+		alpha_->setAll(0);
+		myCG->solve(DMatrix, *alpha_, rhs, false, isVerbose_, -1.0);
 
-		myCG->solve(DMatrix, alpha, rhs, false, true, -1.0);
-		alpha_ = new sg::base::DataVector(alpha);
+		if(isVerbose_)
+			std::cout << currentDateTime() << " Equation solved" << std::endl;
 
-		std::cout << "geloest " << currentDateTime() << std::endl;
-		//std::cout << alpha.toString() << std::endl;
+		delete gridVals_;
+		gridVals_ = new sg::base::DataVector(testDataset.getNrows());
 
-		//alpha_ = new sg::base::DataVector(alpha);
-		// calculate for each point the estimated density
-		// insert the points to the kdtree from alglib
-		// calculate the 5 nearest points
-		// if the difference between the points is under the threshold
-		// add the points to the similarity graph from boost
-		// get the result
+		sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*grid_, &testDataset);
+		MultEval->mult(*alpha_, *gridVals_);
 
-		double *points = new double[(GridConfig.dim_ + 2) * trainDataset.getNrows()];
-		for(size_t i = 0; i < trainDataset.getNrows();i++){
-			sg::base::DataVector point(GridConfig.dim_);
-			trainDataset.getRow(i,point);
-			double y = grid_->eval(alpha,point);
-			points[(GridConfig.dim_+2)*(i+1)-2] = double(i);
-			points[(GridConfig.dim_+2)*(i+1)-1] = y;
+		if(isVerbose_)
+			std::cout << currentDateTime() << " Grid evaluated" << std::endl;
 
-			std::copy(point.getPointer(), point.getPointer() + GridConfig.dim_, points+(i)*(GridConfig.dim_+2));
+		delete myCG;
+		myCG = NULL;
+    }
+
+    bool LearnerDensityCluster::pairCompare(const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+      return firstElem.second > secondElem.second;
+    }
+
+    void LearnerDensityCluster::cluster(sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig){
+    	ae_int_t nx = GridConfig.dim_;
+		ae_int_t ny = 2;
+		ae_int_t normtype = 3;
+		kdtree kdt;
+		real_1d_array x = real_1d_array();
+		real_2d_array r = "[[]]";
+		real_1d_array dist = "[]";
+
+    	if(neighbors_ == NULL){
+    		double *points = new double[(GridConfig.dim_ + 2) * testDataset.getNrows()];
+			for(size_t i = 0; i < testDataset.getNrows();i++){
+				sg::base::DataVector point(GridConfig.dim_);
+				testDataset.getRow(i,point);
+				points[(GridConfig.dim_+2)*(i+1)-2] = double(i);
+				points[(GridConfig.dim_+2)*(i+1)-1] = (*gridVals_)[i];
+				std::copy(point.getPointer(), point.getPointer() + GridConfig.dim_, points+(i)*(GridConfig.dim_+2));
+			}
+			real_2d_array a = real_2d_array();
+			a.setcontent(testDataset.getNrows(), GridConfig.dim_ + 2, points);
+			delete [] points;
+			points = NULL;
+
+			kdtreebuild(a, nx, ny, normtype, kdt);
+    	}
+		Graph G(int(testDataset.getNrows()));
+
+		bool (LearnerDensityCluster::*thresholdFunction)(sg::base::DataMatrix& testDataset, int, int);
+		thresholdFunction = &LearnerDensityCluster::constantThreshold;
+		switch(thresholdType){
+			case sg::datadriven::Constant:
+				thresholdFunction = &LearnerDensityCluster::constantThreshold;
+				break;
+			case sg::datadriven::Relative:
+				thresholdFunction = &LearnerDensityCluster::relativeThreshold;
+				break;
+			case sg::datadriven::Difference:
+				thresholdFunction = &LearnerDensityCluster::differenceThreshold;
+				break;
+			case sg::datadriven::Minima:
+				thresholdFunction = &LearnerDensityCluster::relativeThreshold;
+				break;
+		}
+
+		delete minimumPoint_;
+		minimumPoint_ = new std::vector<bool>(testDataset.getNrows());
+
+		if(thresholdType==sg::datadriven::Minima){
+			for(size_t i = 0; i < testDataset.getNrows();i++){
+				if(neighbors_ == NULL){
+					sg::base::DataVector point(GridConfig.dim_);
+					testDataset.getRow(i,point);
+
+					x.setcontent(GridConfig.dim_, point.getPointer());
+					kdtreequeryknn(kdt, x, numberOfNeighbors+1);
+					kdtreequeryresultsxy(kdt, r);
+					kdtreequeryresultsdistances(kdt, dist);
+				}else{
+					double * neighbors = new double [(numberOfNeighbors+1)*(GridConfig.dim_+1)];
+					for(int k = 0;k < numberOfNeighbors+1;k++){
+						neighbors[(GridConfig.dim_+1)*(k+1)-1] = neighbors_[i][k];
+					}
+					r.setcontent(numberOfNeighbors+1,GridConfig.dim_+1,neighbors);
+
+					delete [] neighbors;
+					neighbors = NULL;
+				}
+				std::vector<std::pair<int,double> > densityNeighbours;
+				// check the threshold
+
+				for(int j = 1; j < numberOfNeighbors+1; j++){
+					densityNeighbours.push_back(std::make_pair(j,gridVals_->get(int(r[j][GridConfig.dim_]))));
+				}
+
+				std::sort(densityNeighbours.begin(), densityNeighbours.end(), (LearnerDensityCluster::pairCompare));
+				double min = densityNeighbours.at(numberOfNeighbors-1).second;
+				double max = densityNeighbours.at(0).second;
+
+				if(gridVals_->get(i) < min)
+					min = gridVals_->get(i);
+				if(gridVals_->get(i) > max)
+					max = gridVals_->get(i);
+
+				minimumPoint_->at(i) = minimumPoint_->at(i) =  (gridVals_->get(i)-min)/(max - min) < threshold;
+			}
+		}
+
+		for(size_t i = 0; i < testDataset.getNrows();i++){
+			if(neighbors_ == NULL){
+				sg::base::DataVector point(GridConfig.dim_);
+				testDataset.getRow(i,point);
+
+				x.setcontent(GridConfig.dim_, point.getPointer());
+				kdtreequeryknn(kdt, x, numberOfNeighbors+1);
+				kdtreequeryresultsxy(kdt, r);
+				kdtreequeryresultsdistances(kdt, dist);
+			}else{
+
+				double * neighbors = new double [(numberOfNeighbors+1)*(GridConfig.dim_+1)];
+				for(int k = 0;k < numberOfNeighbors+1;k++){
+					neighbors[(GridConfig.dim_+1)*(k+1)-1] = neighbors_[i][k];
+				}
+				r.setcontent(numberOfNeighbors+1,GridConfig.dim_+1,neighbors);
+
+				delete [] neighbors;
+				neighbors = NULL;
+			}
+			if(thresholdType==sg::datadriven::Minima && minimumPoint_->at(i)){
+				for(int j = 1; j < numberOfNeighbors+1; j++){
+					if(minimumPoint_->at(int(r[j][GridConfig.dim_])))
+						continue;
+					G.addEdge(i, int(r[j][GridConfig.dim_]));
+					break;
+				}
+			}else{
+
+				int numberOfAddedEdges = 0;
+				// check the threshold
+				for(int j = 1; j < numberOfNeighbors+1; j++){
+					if(thresholdType==sg::datadriven::Minima && minimumPoint_->at(int(r[j][GridConfig.dim_])))
+						break;
+					if((*this.*thresholdFunction)(testDataset,int(i), int(r[j][GridConfig.dim_]))){
+						G.addEdge(int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]));
+						numberOfAddedEdges ++;
+					}
+				}
+
+				if(numberOfAddedEdges == 0)
+					G.addEdge(int(r[0][GridConfig.dim_]), int(r[1][GridConfig.dim_]));
+			}
+			G.addEdge(int(i), int(i));
 		}
 
 
-		ae_int_t nx = GridConfig.dim_;
+		if(isVerbose_)
+			std::cout << currentDateTime() << " Graph created" << std::endl;
+
+		std::vector<int> component = G.getComponents();
+
+		if(isVerbose_)
+			std::cout << currentDateTime() << " Connected components calculated"  << std::endl;
+
+
+		delete clusterAssignments_;
+		clusterAssignments_ = new sg::base::DataVector(component);
+    }
+
+
+    bool LearnerDensityCluster::constantThreshold(sg::base::DataMatrix& testDataset, int i, int j){
+    	return (gridVals_->get(i) >= eps || gridVals_->get(j) >= eps);
+    }
+	bool LearnerDensityCluster::relativeThreshold(sg::base::DataMatrix& testDataset, int i, int j){
+		return (std::abs(std::min(gridVals_->get(i),gridVals_->get(j)))/std::abs(std::max(gridVals_->get(i),gridVals_->get(j))) >= eps);
+	}
+	bool LearnerDensityCluster::differenceThreshold(sg::base::DataMatrix& testDataset, int i, int j){
+		return (std::abs(gridVals_->get(i)-gridVals_->get(j)) <= eps);
+	}
+
+    sg::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda){
+    	throw base::factory_exception("createDMSystem is not implemented yet.");
+    }
+
+    sg::base::DataVector LearnerDensityCluster::getClusterAssignments(){
+    	return *clusterAssignments_;
+    }
+
+    void LearnerDensityCluster::setClusterConfiguration(const sg::datadriven::DensityBasedClusteringConfiguration& ClusterConfig){
+    	eps = ClusterConfig.eps;
+    	numberOfNeighbors = ClusterConfig.numberOfNeighbors;
+    	thresholdType = ClusterConfig.thresholdType;
+    	threshold = ClusterConfig.threshold;
+    }
+
+    void LearnerDensityCluster::precalculateGridValues(const char * filename, sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig,
+    		const sg::solver::SLESolverConfiguration& SolverConfig, const double lambda){
+    	delete gridVals_;
+    	gridVals_ = NULL;
+    	calculateGridValues(testDataset, GridConfig, SolverConfig, lambda);
+    	saveArray(filename, int(gridVals_->getSize()), gridVals_->getPointer());
+    	if(isVerbose_)
+    		std::cout << currentDateTime() << " Grid values saved" << std::endl;
+    }
+
+    void LearnerDensityCluster::loadPrecalculatedValues(const char * filename){
+
+    	int len  = 0;
+    	double * data = loadArray(filename, &len);
+    	delete gridVals_;
+    	gridVals_ = NULL;
+    	gridVals_ = new sg::base::DataVector(data, len);
+    	if(isVerbose_)
+    	    std::cout << currentDateTime() << " Grid values loaded" << std::endl;
+    	delete [] data;
+    	data =  NULL;
+    }
+
+    void LearnerDensityCluster::precalculateNeighbors(const char * filename, sg::base::DataMatrix& testDataset, int n){
+    	double *points = new double[(testDataset.getNcols() + 2) * testDataset.getNrows()];
+		for(size_t i = 0; i < testDataset.getNrows();i++){
+			sg::base::DataVector point(testDataset.getNcols());
+			testDataset.getRow(i,point);
+			points[(testDataset.getNcols()+2)*(i+1)-2] = double(i);
+			//points[(testDataset.getNcols()+2)*(i+1)-1] = (*gridVals_)[i];
+			std::copy(point.getPointer(), point.getPointer() + testDataset.getNcols(), points+(i)*(testDataset.getNcols()+2));
+		}
+
+		ae_int_t nx = testDataset.getNcols();
 		ae_int_t ny = 2;
 		ae_int_t normtype = 3;
 		kdtree kdt;
@@ -154,69 +393,156 @@ namespace sg {
 		real_1d_array dist = "[]";
 
 		real_2d_array a = real_2d_array();
-		a.setcontent(trainDataset.getNrows(), GridConfig.dim_ + 2, points);
+		a.setcontent(testDataset.getNrows(), testDataset.getNcols() + 2, points);
 		delete points;
+		points = NULL;
 
-		std::cout << "alglib array erstellt" << currentDateTime() << std::endl;
-
-		//printf("%s\n", a.tostring(1).c_str());
 		kdtreebuild(a, nx, ny, normtype, kdt);
+		deleteNeighbors();//delete neighbors_; //TODO
+		neighborsRows_ = testDataset.getNrows();
+		neighborsCols_ = n;
+		delete neighbors_;
+		neighbors_ = new int *[testDataset.getNrows()];
 
-		// query all neighbors
-		typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS> Graph;
-		Graph G;
+		for(size_t i = 0; i < testDataset.getNrows();i++){
+			sg::base::DataVector point(testDataset.getNcols());
+			testDataset.getRow(i,point);
 
-		double eps = 2;
-		size_t k = 5;
-		for(size_t i = 0; i < trainDataset.getNrows();i++){
-			sg::base::DataVector point(GridConfig.dim_);
-			trainDataset.getRow(i,point);
-
-			x.setcontent(GridConfig.dim_, point.getPointer());
-			kdtreequeryknn(kdt, x, k);
+			x.setcontent(testDataset.getNcols(), point.getPointer());
+			kdtreequeryknn(kdt, x, n);
 			kdtreequeryresultsxy(kdt, r);
-
 			kdtreequeryresultsdistances(kdt, dist);
-			// check the threshold
-			//printf("----------------------------\n%d\n%d\n", int(i) , int(i));
-			for(size_t j = 1; j < k; j++){
-				double neighborY = r[j][GridConfig.dim_+1];
-				if(neighborY >= eps || r[0][GridConfig.dim_+1] >= eps){
-					//add to boost graph
-					//printf("(%d) <-> (%d)\n",int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]));
-					boost::add_edge(int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]), G);
-				}
-				//printf("%d %.5f\n",int(r[j][GridConfig.dim_]), dist[j]);
+			neighbors_[i] = new int[n];
+			for(int j = 0; j < n; j++){
+				neighbors_[i][j] = int(r[j][testDataset.getNcols()]);
 			}
-			boost::add_edge(i, i, G);
-			//printf("\n");
 		}
-		std::vector<int> component(boost::num_vertices(G));
-		int num = boost::connected_components(G, &component[0]);
 
-		std::cout << "component erstellt " << currentDateTime() << std::endl;
-		/*std::vector<int>::size_type i;
-		std::cout << "Total number of components: " << num << std::endl;
-		for (i = 0; i != component.size(); ++i){
-			std::cout << "Vertex " << i <<" is in component " << component[i] << std::endl;
+		saveArray(filename, testDataset.getNrows(),n, neighbors_);
+		if(isVerbose_)
+			std::cout << currentDateTime() << " Neighbors saved" << std::endl;
+	}
+
+    void LearnerDensityCluster::loadPrecalculatedNeighbors(const char * filename){
+    	int row=0;
+    	int col=0;
+    	deleteNeighbors();//delete neighbors_; //TODO
+		neighbors_ = loadArray(filename, &row, &col);
+    	neighborsRows_ = row;
+    	neighborsCols_ = col;
+		if(isVerbose_)
+			std::cout << currentDateTime() << " Neighbors loaded" << std::endl;
+	}
+
+
+    void LearnerDensityCluster::saveArray(const char * tFilename, int len, double data[]){
+    	fstream f;
+		f.open(tFilename, std::ios::out);
+		f.write((char *) &len, sizeof(int));
+		f.write((char *) data, sizeof(double) * (len));
+
+		f.close();
+
+    }
+
+    double * LearnerDensityCluster::loadArray(const char * tFilename,int * len){
+		fstream f;
+		f.open(tFilename, std::ios::in);
+		f.read((char *) len, sizeof(int));
+		double * data = new double[*len];
+		f.read((char *) data, sizeof(double)*(*len));
+		f.close();
+		return data;
+    }
+
+    void LearnerDensityCluster::saveArray(const char * tFilename, int row, int col, int ** data) {
+		fstream f;
+		f.open(tFilename, std::ios::out);
+		f.write((char *) &row, sizeof(int));
+		f.write((char *) &col, sizeof(int));
+		for (int i = 0; i < row; i++) {
+			f.write((char *) data[i], sizeof(int) * (col));
 		}
-		std::cout << std::endl;*/
-
-		if(component_ != NULL)
-			delete component_;
-		component_ = new sg::base::DataVector(component);
-		//printf("done");
-		delete myCG;
-    	return result;
+		f.close();
     }
 
-    sg::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda){
-    	return NULL;//DMatrix_;
+    int ** LearnerDensityCluster::loadArray(const char * tFilename, int * row, int * col) {
+		fstream f;
+		f.open(tFilename, std::ios::in);
+		f.read((char *) row, sizeof(int));
+		f.read((char *) col, sizeof(int));
+		int ** data = new int *[*row];
+		for(int i = 0; i <*row; i++)
+			data[i] = new int[*col];
+
+		for (int i = 0; i < *row; i++) {
+			f.read((char *) data[i], sizeof(int) * (*col));
+		}
+		f.close();
+		return data;
     }
 
-    sg::base::DataVector LearnerDensityCluster::getComponent(){
-    	return *component_;
-    }
+    sg::base::DataVector LearnerDensityCluster::postprocessing(sg::base::DataMatrix& trainDataset,sg::base::DataVector components, int n){
+		//sg::base::DataVector components = getClusterAssignments();
+		int numberOfClusters = int(components.max());
+
+		if(n == 0 ||  n > numberOfClusters+1)
+			return components;
+
+		int* dict = new int[numberOfClusters+1];
+		for(int i =0; i < numberOfClusters+1;i++){
+			dict[i] = 0;
+		}
+
+		for(int i = 0; i < components.getSize(); i++){
+			dict[int(components[i])]++;
+		}
+
+		int* sortedDict = new int[numberOfClusters+1];
+		std::memcpy(sortedDict,dict, sizeof(int)*(numberOfClusters+1));
+		std::sort(sortedDict, sortedDict + numberOfClusters + 1,std::greater<int>());
+
+		int threshold = sortedDict[n]+1;
+		delete [] sortedDict;
+
+
+		bool *aboveThreshold = new bool[trainDataset.getNrows()];
+		std::vector<int> *indexUnderThreshold = new std::vector<int>();
+
+		for(int i = 0;i < components.getSize();i++){
+			if(dict[int(components[i])] < threshold){
+				indexUnderThreshold->push_back(i);
+			}
+			aboveThreshold[i] = dict[int(components[i])] >= threshold;
+		}
+
+		sg::base::DataVector newComponents(components);
+
+
+		for(size_t i = 0; i < indexUnderThreshold->size();i++){
+			sg::base::DataVector point(trainDataset.getNcols());
+			trainDataset.getRow(indexUnderThreshold->at(i),point);
+
+
+			int index = indexUnderThreshold->at(i);
+			int indexNeighbor = 0; //r[1][trainDataset.getNcols()];//neighbors_[i][1];//
+			for(int j = 1; j<neighborsCols_;j++){
+				if(aboveThreshold[neighbors_[index][j]]){
+					indexNeighbor = neighbors_[index][j];
+					break;
+				}
+			}
+
+			newComponents.set(index,components.get(indexNeighbor));
+		}
+
+
+		delete [] aboveThreshold;
+		aboveThreshold = NULL;
+		delete indexUnderThreshold;
+		indexUnderThreshold = NULL;
+		return newComponents;
+	 }
   }
 }
 

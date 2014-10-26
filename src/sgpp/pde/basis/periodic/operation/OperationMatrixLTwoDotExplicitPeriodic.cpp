@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (C) 2012 Technische Universitaet Muenchen                         *
+* Copyright (C) 2014 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
@@ -12,7 +12,6 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
-
 
 namespace sg {
   namespace pde {
@@ -49,7 +48,7 @@ namespace sg {
             double iik = index.get(i, k);
             double ijk = index.get(j, k);
 
-            // i has always the lower level than j
+            // i has to be always the lower level than j
             if(lik > ljk){
               std::swap(lik,ljk);
               std::swap(iik,ijk);

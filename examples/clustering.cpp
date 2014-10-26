@@ -20,29 +20,34 @@ using namespace sg::base;
 
 int main() {
 
-	sg::datadriven::LearnerDensityCluster* clust = new sg::datadriven::LearnerDensityCluster();
+	sg::datadriven::LearnerDensityCluster* clust = new sg::datadriven::LearnerDensityCluster(false);
 
-	double raw_data[] = {  0.07450712,0.97926035,  0.09715328,0.22845448,  0.96487699,0.96487946,  0.23688192,0.11511521,  0.92957884,0.08138401,  0.93048735,0.93014054,  0.03629434,0.71300796,  0.24126233,0.41565687,  0.34807533,0.5471371 ,  0.36379639,0.28815444,  0.71984732,0.46613355,  0.51012923,0.28628777,  0.41834259,0.51663839,  0.32735096,0.5563547 ,  0.4099042, 0.95624594,  0.40974401,0.27784173,  0.49797542,0.84134336,  0.62338174,0.81687345,  0.53132954,0.70604948,  0.30077209,0.02952919,  0.61076999,0.02570524};
-	DataMatrix data(raw_data, 3,14);
+	double raw_data[] = { 0.01,0,0.3, 0.7,0.2, 0.78,  0.6,0.82,  0.71,0.18,0.5};
+	DataMatrix data(raw_data, 10,1);
 
 	DataVector classes(14);
 	classes.setAll(0);
-	std::cout << "start " << std::endl;
 	sg::base::RegularGridConfiguration gridConf;
-	gridConf.dim_ = 14;
-	gridConf.level_ = 3;
+	gridConf.dim_ = 1;
+	gridConf.level_ = 4;
 	gridConf.type_ = sg::base::Periodic;
 
 	sg::solver::SLESolverConfiguration solvConf;
-	solvConf.eps_ = 0.001;
+	solvConf.eps_ = 0.0001;
 	solvConf.maxIterations_ = 100;
 	solvConf.threshold_ = -1.0;
 	solvConf.type_ = sg::solver::CG;
 
-	clust->train(data, classes, gridConf, solvConf, 0.01);
 
-	//clust->getComponent();
-	std::cout << "done" << clust->getComponent().toString() << std::endl;
-	delete clust;
-	std::cout << "done";
+	sg::datadriven::DensityBasedClusteringConfiguration clustConf;
+	clustConf.eps = 10;
+	clustConf.numberOfNeighbors = 4;
+	clustConf.thresholdType = sg::datadriven::Constant;
+
+	clust->setClusterConfiguration(clustConf);
+	clust->train(data,classes,gridConf,solvConf,0.01);
+
+	DataVector res = clust->getClusterAssignments();
+ 	delete clust;
+ 	std::cout << res.toString() << std::endl;
 }
