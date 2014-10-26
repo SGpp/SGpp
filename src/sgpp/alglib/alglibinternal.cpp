@@ -458,7 +458,7 @@ double inttoreal(ae_int_t a, ae_state *_state)
     double result;
 
 
-    result = a;
+    result = double(a);
     return result;
 }
 
@@ -7081,7 +7081,7 @@ Output parameters:
     Tau -   scalar value Tau.
 
 This subroutine is the modification of CLARFG subroutines  from the LAPACK
-library. It has similar functionality except for the fact that it  doesn’t
+library. It has similar functionality except for the fact that it  doesnï¿½t
 handle errors when intermediate results cause an overflow.
 
   -- LAPACK auxiliary routine (version 3.0) --
@@ -7839,7 +7839,7 @@ Input parameters:
 
 
 Output parameters:
-    H   –   contains the matrix T.
+    H   ï¿½   contains the matrix T.
             Array whose indexes range within [1..N, 1..N].
             All elements below the blocks on the main diagonal are equal
             to 0.

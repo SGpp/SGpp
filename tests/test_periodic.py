@@ -1,5 +1,5 @@
 ##############################################################################
-# Copyright (C) 2009 Technische Universitaet Muenchen                         #
+# Copyright (C) 2014 Technische Universitaet Muenchen                         #
 # This file is part of the SG++ project. For conditions of distribution and   #
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
 ###############################################################################
@@ -318,31 +318,127 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.0555555555556 , 0.111111111111 , 0.0416666666667  , 0.0416666666667 ,0.0277777777778 ,  0.0208333333333 , 0.0208333333333 ,0.0555555555556 , 0.0416666666667, 0.0416666666667, 0.0208333333333 , 0.0208333333333  ]), res)
         
 class TestLearnerDensityCluster(unittest.TestCase):
-    def testExample(self):
-        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic
-        data = [0.07450712,0.97926035,  0.09715328,0.22845448,  0.96487699,0.96487946,  0.23688192,0.11511521,  0.92957884,0.08138401,  0.93048735,0.93014054,  0.03629434,0.71300796,  0.24126233,0.41565687,  0.34807533,0.5471371 ,  0.36379639,0.28815444,  0.71984732,0.46613355,  0.51012923,0.28628777,  0.41834259,0.51663839,  0.32735096,0.5563547 ,  0.4099042, 0.95624594,  0.40974401,0.27784173,  0.49797542,0.84134336,  0.62338174,0.81687345,  0.53132954,0.70604948,  0.30077209,0.02952919,  0.61076999,0.02570524]
-        trainData = DataMatrix(21,2)
-        for i in range(21):
-            trainData.set(i, 0, data[2*i])
-            trainData.set(i, 1, data[2*i+1])
-            
+    def testExample1D_relative(self):
+        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        data = [ 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5]
+        trainData = DataMatrix(10,1)
+        for i in range(10):
+            trainData.set(i, 0, data[i])
+        
         gridConf = RegularGridConfiguration()
-        gridConf.dim_ = 2;
-        gridConf.level_ = 3;
+        gridConf.dim_ = 1;
+        gridConf.level_ = 4;
         gridConf.type_ = Periodic;
     
         solvConf = SLESolverConfiguration()
-        solvConf.eps_ = 0.001;
+        solvConf.eps_ = 0.0001;
         solvConf.maxIterations_ = 100;
         solvConf.threshold_ = -1.0;
         solvConf.type_ = 0 # sg::solver::CG;
     
+        clustConf = DensityBasedClusteringConfiguration()
+        clustConf.eps = 0.8;
+        clustConf.numberOfNeighbors = 4;
+        clustConf.thresholdType = 1;
+    
         classes = DataVector(0)
         clust = LearnerDensityCluster()
+        clust.setClusterConfiguration(clustConf)
         clust.train(trainData, classes, gridConf, solvConf, 0.01);   
         
-        np.testing.assert_array_equal(clust.getComponent(), DataVector([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 4, 0, 0, 5]))
+        np.testing.assert_array_equal(clust.getClusterAssignments(), DataVector([0, 0, 1, 0, 0, 0, 2, 0, 0, 0]))
+    
+    def testExample1D_constant_classify(self):
+        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        data = [ 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5]
+        trainData = DataMatrix(10,1)
+        for i in range(10):
+            trainData.set(i, 0, data[i])
         
-                
+        gridConf = RegularGridConfiguration()
+        gridConf.dim_ = 1;
+        gridConf.level_ = 4;
+        gridConf.type_ = Periodic;
+    
+        solvConf = SLESolverConfiguration()
+        solvConf.eps_ = 0.0001;
+        solvConf.maxIterations_ = 100;
+        solvConf.threshold_ = -1.0;
+        solvConf.type_ = 0 # sg::solver::CG;
+    
+        clustConf = DensityBasedClusteringConfiguration()
+        clustConf.eps = 10;
+        clustConf.numberOfNeighbors = 4;
+        clustConf.thresholdType = 0;
+    
+        classes = DataVector(0)
+        clust = LearnerDensityCluster()
+        clust.setClusterConfiguration(clustConf)
+        clust.train(trainData, classes, gridConf, solvConf, 0.01);   
+        res = clust.postprocessing(trainData,clust.getClusterAssignments(),2);
+        
+        np.testing.assert_array_equal(res, DataVector([ 0.,  0.,  1.,  0.,  1.,  0.,  0.,  0.,  0.,  1.]))
+    
+    def testExample1D_constant(self):
+        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        data = [ 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5]
+        trainData = DataMatrix(10,1)
+        for i in range(10):
+            trainData.set(i, 0, data[i])
+        
+        gridConf = RegularGridConfiguration()
+        gridConf.dim_ = 1;
+        gridConf.level_ = 4;
+        gridConf.type_ = Periodic;
+    
+        solvConf = SLESolverConfiguration()
+        solvConf.eps_ = 0.0001;
+        solvConf.maxIterations_ = 100;
+        solvConf.threshold_ = -1.0;
+        solvConf.type_ = 0 # sg::solver::CG;
+    
+        clustConf = DensityBasedClusteringConfiguration()
+        clustConf.eps = 10;
+        clustConf.numberOfNeighbors = 4;
+        clustConf.thresholdType = 0;
+    
+        classes = DataVector(0)
+        clust = LearnerDensityCluster()
+        clust.setClusterConfiguration(clustConf)
+        clust.train(trainData, classes, gridConf, solvConf, 0.01);   
+        
+        np.testing.assert_array_equal(clust.getClusterAssignments(), DataVector([0, 0, 1, 2, 1, 3, 4, 3, 2, 1]))   
+        
+    def testExample2D_minima(self):
+        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        data = [ 0.5,0.5 , 0.2,0.2 , 0.2, 0.25 , 0.25,0.2, 0.8,0.85 ,0.8,0.8, 0.85,0.8]
+        trainData = DataMatrix(7,2)
+        for i in range(7):
+            trainData.set(i, 0, data[2*i])
+            trainData.set(i, 1, data[2*i+1])
+        
+        gridConf = RegularGridConfiguration()
+        gridConf.dim_ = 2;
+        gridConf.level_ = 4;
+        gridConf.type_ = Periodic;
+    
+        solvConf = SLESolverConfiguration()
+        solvConf.eps_ = 0.0001;
+        solvConf.maxIterations_ = 100;
+        solvConf.threshold_ = -1.0;
+        solvConf.type_ = 0 # sg::solver::CG;
+    
+        clustConf = DensityBasedClusteringConfiguration()
+        clustConf.eps = 0.1;
+        clustConf.numberOfNeighbors = 3;
+        clustConf.thresholdType = 3;
+        clustConf.threshold = 0.3
+    
+        classes = DataVector(0)
+        clust = LearnerDensityCluster()
+        clust.setClusterConfiguration(clustConf)
+        clust.train(trainData, classes, gridConf, solvConf, 0.01);   
+        
+        np.testing.assert_array_equal(clust.getClusterAssignments(), DataVector([ 0.,  0.,  0.,  0.,  1.,  1.,  1.]))           
 if __name__ == "__main__":
     unittest.main()   
