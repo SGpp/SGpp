@@ -9,6 +9,8 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
     def test_manual(self):
 
+        print "#"*20
+
         result = {(1, 0): 5, (2, 0): 25}
 
         #
@@ -40,7 +42,6 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         # OnlinePredictiveRefinementDimension
         #
 
-        print "#"*20
         print "OnlineRefinementDim"
 
         hash_refinement = HashRefinement();
@@ -61,13 +62,13 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         # Naive
         #
 
-        print "#"*20
+        print 
         print "Naive"
 
         naive_result = self.naive_calc()
 
-        #for k,v in naive_result.iteritems():
-            #print k, v
+        for k,v in naive_result.iteritems():
+            print k, v
 
         for k,v in naive_result.iteritems():
             self.assertAlmostEqual(naive_result[k], result[k])

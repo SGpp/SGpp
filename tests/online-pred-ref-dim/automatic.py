@@ -2,6 +2,7 @@ import unittest
 import math
 import random
 import numpy
+import collections
 
 from bin.pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
 
@@ -9,22 +10,45 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
     def test_automatic(self):
 
-        d = 1
-        l = 2
-        num_data_points = 2
+        d = [1,2]
+        l = [1,2]
+        num_points = [1, 2, 3, 4, 5]
 
-        num_tests = 100
+        num_tests = 1000
 
         for i in xrange(num_tests):
-            self.general_test(d, l, num_data_points)
+            d_k = random.choice(d)
+            l_k = random.choice(l)
+            n_k = random.choice(num_points) 
+            print d_k, "dim,", l_k, "level,", n_k, "num data points"
+            self.general_test(d_k, l_k, n_k)
+
+        #for d_k in xrange(2, 5):
+            #for l_k in xrange(2, 6):
+                #for n_k in xrange(3, 21):
+                    #print d_k, "dim,", l_k, "level,", n_k, "num data points"
 
     def general_test(self, d, l, num):
 
-        xs = [self.get_random_x(d) for i in xrange(num)]
-        errs = [self.get_random_err() for i in xrange(num)]
+        # print "#"*20
+        # print 
 
-        print xs
-        print errs
+        xs = [self.get_random_x(d) for i in xrange(num)]
+
+        dupl = True
+        while dupl:
+            dupl_tmp = False
+            for x in xs:
+                for y in xs:
+                    if x == y:
+                        dupl = True
+                        break
+                if dupl:
+                    break
+            dupl = dupl_tmp
+            xs = [self.get_random_x(d) for i in xrange(num)]
+
+        errs = [self.get_random_err() for i in xrange(num)]
 
         self.grid = Grid.createLinearGrid(d)
         self.grid_gen = self.grid.createGridGenerator()
@@ -41,8 +65,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         # OnlinePredictiveRefinementDimension
         #
 
-        print "#"*20
-        print "OnlineRefinementDim"
+        # print "OnlineRefinementDim"
 
         hash_refinement = HashRefinement();
         online = OnlinePredictiveRefinementDimension(hash_refinement)
@@ -52,27 +75,34 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         online_result = refinement_map({})
         online.collectRefinablePoints(self.storage, 10, online_result)
 
-        for k,v in online_result.iteritems():
-            print k, v
+        # for k,v in online_result.iteritems():
+            # print k, v
 
         #
         # Naive
         #
 
-        print "#"*20
-        print "Naive"
+        # print 
+        # print "Naive"
 
         naive_result = self.naive_calc()
         
-        for k,v in naive_result.iteritems():
-            print k, v
+        # for k,v in naive_result.iteritems():
+            # print k, v
 
         #
         # Assertions
         #
 
         for k,v in online_result.iteritems():
-            self.assertAlmostEqual(online_result[k], naive_result[k])
+            if abs(online_result[k] - naive_result[k]) >= 0.1:
+                print k
+                print xs
+                print errs
+                for k,v in online_result.iteritems():
+                    print k, ":", v, ",", naive_result[k]
+                self.assertTrue(False)
+            # self.assertAlmostEqual(online_result[k], naive_result[k])
 
         del self.grid
         del self.grid_gen
@@ -90,11 +120,11 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
             gridIndex = self.storage.get(j)
             gridIndex.setLeaf(False)
 
-            print "Point: ", j, " (", gridIndex.toString(), ")"
+            # print "Point: ", j, " (", gridIndex.toString(), ")"
 
             for d in xrange(self.dim):
 
-                print "Dimension: ", d
+                # print "Dimension: ", d
 
                 #
                 # Get left and right child
@@ -121,17 +151,17 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 self.storage.insert(rightChild) 
 
                 val1 = self.naive_calc_single(leftChild)
-                print "Left Child: ", val1
+                # print "Left Child: ", val1
 
                 val2 = self.naive_calc_single(rightChild)
-                print "Right Child: ", val2
+                # print "Right Child: ", val2
                 
                 self.storage.deleteLast()
                 self.storage.deleteLast()
 
                 result[(j, d)] = val1 + val2
 
-                print ""
+                # print ""
 
         return result
 
@@ -161,7 +191,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         denom = col.sum()
 
         if denom == 0:
-            print "Denominator is zero"
+            # print "Denominator is zero"
             value = 0
         else:
             value = num/denom 
@@ -177,9 +207,21 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
         return x
 
+    def get_random_x_wo_boundary(self, d):
+        DELTA = 0.10
+
+        x = []
+        for i in xrange(d):
+            x.append(random.choice(numpy.arange(0.1, 0.91, DELTA)))
+
+        return x
+
     def get_random_err(self):
         DELTA = 0.1
         return random.choice(numpy.arange(-3, 3.01, DELTA))
 
+    def get_random_err_pos(self):
+        DELTA = 0.1
+        return random.choice(numpy.arange(0, 3.01, DELTA))
 if __name__=='__main__':
     unittest.main()

@@ -51,7 +51,7 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     for (GridStorage::grid_map_iterator iter = predictiveGrid->getStorage()->begin();
             iter != predictive_end_iter; iter++)
     {
-    	std::cout << predictiveGrid->getStorage()->seq(iter->first) << ": " << iter->first->toString() << std::endl;
+    	// std::cout << predictiveGrid->getStorage()->seq(iter->first) << ": " << iter->first->toString() << std::endl;
     }
 
 
@@ -63,7 +63,7 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
         gridIndex = iter->first;
 
-        std::cout << "Point: " << storage->seq(gridIndex) << " (" << gridIndex->toString() << ")" << std::endl;
+        // std::cout << "Point: " << storage->seq(gridIndex) << " (" << gridIndex->toString() << ")" << std::endl;
 
         // Refinability
 
@@ -99,8 +99,8 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             boundary.rightBoundary = (index+1) * intval;
             boundaries[k] = boundary;
 
-            //std::cout << "left boundary: " << boundary.leftBoundary << std::endl;
-            //std::cout << "right boundary: " << boundary.rightBoundary << std::endl;
+            // std::cout << "left boundary: " << boundary.leftBoundary << std::endl;
+            // std::cout << "right boundary: " << boundary.rightBoundary << std::endl;
         }
 
         BoundingBox* bb = new BoundingBox(dim, boundaries);
@@ -109,6 +109,8 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
         // All numerators
         DataVector numerators(predictiveGridSize);
         eval->multTranspose(*errors, numerators);
+        std::cout << "Numerators: " << numerators.toString() << std::endl;
+        std::cout << "Errors: " << errors->toString() << std::endl;
         numerators.sqr();
 
         // All denominators
@@ -131,7 +133,7 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
         for (size_t k = 0; k < dim; k++ )
         {
-        	std::cout << "Dimension: " << k << std::endl;
+        	// std::cout << "Dimension: " << k << std::endl;
 
             // Is the current point refinable in the dimension k?
             if( hasLeftChild(storage, gridIndex, k) || hasRightChild(storage, gridIndex, k) )
@@ -160,8 +162,12 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
             if (denominators.get(childSeq) != 0) {
             	value1 = numerators.get(childSeq) / denominators.get(childSeq);
+            	std::cout << "Left Child: sequence: " << childSeq << std::endl;
+            	std::cout << "Left Child: numerator: " << numerators.get(childSeq) << std::endl;
+            	std::cout << "Left Child: denominators: " << denominators.get(childSeq) << std::endl;
             } else {
             	// No points or only boundary points
+            	std::cout << "Left Child: has no points" << std::endl;
             	value1 = 0;
             }
 
