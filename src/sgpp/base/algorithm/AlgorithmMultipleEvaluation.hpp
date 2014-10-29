@@ -52,6 +52,25 @@ namespace sg {
           result.setAll(0.0);
           size_t source_size = source.getSize();
 
+          DataVector privateResult(result.getSize());
+
+          std::vector<double> line;
+          AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
+
+          for (size_t i = 0; i < source_size; i++) {
+            x.getRow(i, line);
+
+            privateResult.setAll(0.0);
+            AlgoEvalTrans(basis, line, source[i], privateResult);
+            //std::cout << "priv result: " << privateResult.toString() << std::endl;
+
+            result.add(privateResult);
+            std::cout << "result: " << result.toString() << std::endl;
+          }
+
+          /*
+           * Parallel non-working solution:
+           *
           #pragma omp parallel
           {
             DataVector privateResult(result.getSize());
@@ -62,19 +81,25 @@ namespace sg {
 
             privateResult.setAll(0.0);
 
+
             #pragma omp for schedule(static)
 
             for (size_t i = 0; i < source_size; i++) {
               x.getRow(i, line);
 
               AlgoEvalTrans(basis, line, source[i], privateResult);
+              std::cout << "priv result: " << privateResult.toString() << std::endl;
             }
 
             #pragma omp critical
             {
               result.add(privateResult);
+              std::cout << "result: " << result.toString() << std::endl;
             }
+
           }
+		  */
+
         }
 
         /**

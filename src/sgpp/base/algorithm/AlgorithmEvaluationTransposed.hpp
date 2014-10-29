@@ -79,10 +79,7 @@ public:
 
             if ( !inside )
             {
-                for (size_t d = 0; d < dim; ++d)
-                {
-                    result[d] = 0.0;
-                }
+                result.setAll(0.0);
                 return;
             }
             else
@@ -93,50 +90,28 @@ public:
 
                     point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
                 }
-
-                index_type* source = new index_type[dim];
-
-                for (size_t d = 0; d < dim; ++d)
-                {
-                    // This does not really work on grids with borders.
-                    double temp = floor(point[d] * (1 << (bits - 2))) * 2;
-
-                    if (point[d] == 1.0)
-                    {
-                        source[d] = static_cast<index_type> (temp - 1);
-                    }
-                    else
-                    {
-                        source[d] = static_cast<index_type> (temp + 1);
-                    }
-                }
-
-                rec(basis, point, 0, 1.0, working, source, alpha, result);
-                delete[] source;
             }
         }
-        else
+
+        index_type* source = new index_type[dim];
+
+        for (size_t d = 0; d < dim; ++d)
         {
-            index_type* source = new index_type[dim];
+            // This does not really work on grids with borders.
+            double temp = floor(point[d] * (1 << (bits - 2))) * 2;
 
-            for (size_t d = 0; d < dim; ++d)
+            if (point[d] == 1.0)
             {
-                // This does not really work on grids with borders.
-                double temp = floor(point[d] * (1 << (bits - 2))) * 2;
-
-                if (point[d] == 1.0)
-                {
-                    source[d] = static_cast<index_type> (temp - 1);
-                }
-                else
-                {
-                    source[d] = static_cast<index_type> (temp + 1);
-                }
+                source[d] = static_cast<index_type> (temp - 1);
             }
-
-            rec(basis, point, 0, 1.0, working, source, alpha, result);
-            delete[] source;
+            else
+            {
+                source[d] = static_cast<index_type> (temp + 1);
+            }
         }
+
+        rec(basis, point, 0, 1.0, working, source, alpha, result);
+        delete[] source;
     }
 
 protected:
