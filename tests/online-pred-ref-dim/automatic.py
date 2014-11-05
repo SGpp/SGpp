@@ -20,7 +20,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
             d_k = random.choice(d)
             l_k = random.choice(l)
             n_k = random.choice(num_points) 
-            print d_k, "dim,", l_k, "level,", n_k, "num data points"
+            #print d_k, "dim,", l_k, "level,", n_k, "num data points"
             self.general_test(d_k, l_k, n_k)
 
         #for d_k in xrange(2, 5):
@@ -95,14 +95,14 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         #
 
         for k,v in online_result.iteritems():
-            if abs(online_result[k] - naive_result[k]) >= 0.1:
-                print k
-                print xs
-                print errs
-                for k,v in online_result.iteritems():
-                    print k, ":", v, ",", naive_result[k]
-                self.assertTrue(False)
-            # self.assertAlmostEqual(online_result[k], naive_result[k])
+#            if abs(online_result[k] - naive_result[k]) >= 0.1:
+#                print k
+#                print xs
+#                print errs
+#                for k,v in online_result.iteritems():
+#                    print k, ":", v, ",", naive_result[k]
+                #self.assertTrue(False)
+            self.assertAlmostEqual(online_result[k], naive_result[k])
 
         del self.grid
         del self.grid_gen
@@ -110,6 +110,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         del self.errors
         del self.multEval
         del self.storage
+
 
     def naive_calc(self):
 
