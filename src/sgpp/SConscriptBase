@@ -72,6 +72,7 @@ base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.cpp
 base/grid/generation/refinement_strategy/RefinementDecorator.cpp
 base/grid/generation/refinement_strategy/ANOVARefinement.cpp
 base/grid/generation/refinement_strategy/PredictiveRefinement.cpp
+base/grid/generation/refinement_strategy/PredictiveRefinementDimension.cpp
 base/grid/generation/refinement_strategy/SubspaceRefinement.cpp
 base/grid/generation/refinement_strategy/SubspaceGSGRefinement.cpp
 base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.cpp
