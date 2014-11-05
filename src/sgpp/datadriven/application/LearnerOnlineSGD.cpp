@@ -2,6 +2,7 @@
 
 #include "LearnerOnlineSGD.hpp"
 
+#include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 namespace sg
 {
 
@@ -209,6 +210,11 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
         cfunctor->setClasses(mainClasses);
     }
 
+    if(config.refinementType == "PREDICTIVE_ERROR_DIMENSION_REFINEMENT")
+    {
+       functor = new PredictiveRefinementDimensionIndicator(grid_, mainTrainDataset, mainError, config.refinementNumPoints, 0.0);
+    }
+
     if (functor == NULL)
     {
         throw base::application_exception("Invalid refinement type");
@@ -312,6 +318,12 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
                         continue;
                     }
                 }
+            }
+
+            if (config.refinementType == "PREDICTIVE_ERROR_DIMENSION_REFINEMENT")
+            {
+				(dynamic_cast<OnlinePredictiveRefinementDimension*>(&refinement))->free_refine(
+						  grid_->getStorage(), static_cast<PredictiveRefinementDimensionIndicator*>(functor));
             }
 
             if (config.refinementType == "MSE")
