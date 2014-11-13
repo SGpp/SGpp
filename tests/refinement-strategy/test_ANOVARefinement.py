@@ -12,7 +12,7 @@ from pysgpp import Grid, HashRefinement, GridIndex, \
     ANOVARefinement
 
 
-class Test_RefinementANOVA(unittest.TestCase):
+class Test_ANOVARefinement(unittest.TestCase):
 
     """ Test different classes and class interactions used in spatial and
     dimensionality refinement (ANOVA) routines.

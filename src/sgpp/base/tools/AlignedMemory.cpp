@@ -7,7 +7,12 @@
 
 #include "base/tools/AlignedMemory.hpp"
 
-void* operator new (size_t size) throw (std::bad_alloc) {
+void* operator new (size_t size)
+// to ensure compatibility wit C++11
+#if __cplusplus < 201103L
+throw (std::bad_alloc)
+#endif
+{
   void* p;
 
   //Workaround for apples non-standard implementation of posix_memalign().
@@ -36,7 +41,11 @@ void* operator new (size_t size) throw (std::bad_alloc) {
   return p;
 }
 
-void* operator new[] (size_t size) throw (std::bad_alloc) {
+void* operator new[] (size_t size)// to ensure compatibility wit C++11
+#if __cplusplus < 201103L
+throw (std::bad_alloc)
+#endif
+{
   void* p;
 
   //Workaround for apples non-standard implementation of posix_memalign().

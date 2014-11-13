@@ -112,11 +112,11 @@ namespace combigrid {
 
       /** Add a new FullGrid to the current CombigridLevelVec*/
       void update(std::vector<int> newFullGridLevels);
-
+      static const int LEVELMAX;
     protected:
       std::vector<std::vector<int> > levelVec_;
       std::vector<double> coef_;
-      static const int LEVELMAX = 128;
+
   };
 
 }

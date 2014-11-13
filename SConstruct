@@ -216,7 +216,7 @@ env['CPPFLAGS'] = []
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
-    env.Append(CPPFLAGS=['-std=c++0x'])
+    env.Append(CPPFLAGS=['-std=c++11'])
 
 if env['OPT']:
    env.Append(CPPFLAGS=['-O3'])
