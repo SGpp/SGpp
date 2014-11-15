@@ -5,10 +5,11 @@
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
 
 
-import os, sys
+import os, sys, subprocess
 import distutils.sysconfig
 import glob
 import SCons
+
 
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 5)
@@ -379,10 +380,19 @@ if not env.GetOption('clean'):
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
+    # print platform
+    print "Using platform", env['PLATFORM']
 
     # check scons
     EnsureSConsVersion(1, 0)
     print "Using SCons", SCons.__version__
+
+    # check for working C++
+    if not config.CheckCXX():
+        sys.stderr.write("Error: no working C++ compiler found. Abort!\n")
+        Exit(0)
+    else:
+        print "Using CXX", subprocess.check_output(env['CXX'].split()+ ["--version"]).split(os.linesep)[0]
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
