@@ -2,7 +2,6 @@
 
 #include "LearnerOnlineSGD.hpp"
 
-#include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 namespace sg
 {
 
@@ -33,8 +32,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
                              sg::base::DataMatrix& testTrainDataset_,
                              sg::base::DataVector& testClasses_,
                              sg::base::RegularGridConfiguration& gridConfig,
-                             sg::datadriven::LearnerOnlineSGDConfiguration& config_,
-                             sg::base::AbstractRefinement& refinement
+                             sg::datadriven::LearnerOnlineSGDConfiguration& config_
                             )
 {
     /*
@@ -210,16 +208,32 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
         cfunctor->setClasses(mainClasses);
     }
 
-    if(config.refinementType == "PREDICTIVE_ERROR_DIMENSION_REFINEMENT")
-    {
-       functor = new PredictiveRefinementDimensionIndicator(grid_, mainTrainDataset, mainError, config.refinementNumPoints, 0.0);
-    }
-
     if (functor == NULL)
     {
         throw base::application_exception("Invalid refinement type");
     }
 
+    /*
+     * Hash Refinement
+     */
+
+    if(config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION")
+    {
+        HashRefinement* hashRef = new HashRefinement();
+        online_refinement = new sg::base::OnlinePredictiveRefinementDimension(hashRef);
+        online_refinement->setTrainDataset(minibatchTrainDataset);
+        online_refinement->setErrors(minibatchError);
+    }
+
+    if (config.hashRefinementType == "HASH_REFINEMENT")
+    {
+        hash_refinement = new HashRefinement();
+    }
+
+    if (hash_refinement == NULL && online_refinement == NULL)
+    {
+        throw base::application_exception("Invalid hash refinement type");
+    }
 
     /*
      * Perform runs
@@ -305,25 +319,17 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
              */
 
             if (config.refinementType == "PERSISTENT_ERROR" ||
-                    config.refinementType == "WEIGHTED_ERROR_MINIBATCH")
+                    config.refinementType == "WEIGHTED_ERROR_MINIBATCH" || config.errorType == "ACCURACY"
+                    || config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION")
             {
-                if (config.errorType == "ACCURACY")
+                double accuracy = getError(minibatchTrainDataset,
+                                           minibatchClasses,
+                                           config.errorType,
+                                           minibatchError);
+                if (accuracy == 1.0)
                 {
-                    double accuracy = getError(minibatchTrainDataset,
-                                               minibatchClasses,
-                                               config.errorType,
-                                               minibatchError);
-                    if (accuracy == 1.0)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
-            }
-
-            if (config.refinementType == "PREDICTIVE_ERROR_DIMENSION_REFINEMENT")
-            {
-				(dynamic_cast<OnlinePredictiveRefinementDimension*>(&refinement))->free_refine(
-						  grid_->getStorage(), static_cast<PredictiveRefinementDimensionIndicator*>(functor));
             }
 
             if (config.refinementType == "MSE")
@@ -336,38 +342,62 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
                 delete eval;
             }
 
+            if (config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION" && config.errorType == "ACCURACY")
+            {
+                getError(mainTrainDataset, mainClasses, config.errorType, mainError);
+            }
+
             /*
              * Output
              */
+
+            size_t totalIterations = currentRunIterations + countRun * numMainData;
 
             double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL);
             double err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL);
             double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL);
 
-            ferr0 << currentRunIterations << "," << err0 << std::endl;
-            ferr1 << currentRunIterations << "," << err1 << std::endl;
-            ferr2 << currentRunIterations << "," << err2 << std::endl;
+            ferr0 << totalIterations << "," << err0 << std::endl;
+            ferr1 << totalIterations << "," << err1 << std::endl;
+            ferr2 << totalIterations << "," << err2 << std::endl;
 
             std::string grid_str;
             grid_->serialize(grid_str);
             fgrid << grid_str << std::endl;
 
-            double percent = (double) currentRunIterations + countRun * (double) numMainData;
-            percent /= (double) numMainData * config.numRuns;
+            double percent = (double) totalIterations / ((int) numMainData * config.numRuns);
             percent *= 100;
             if (percent > 100)
             {
                 percent = 100;
             }
 
-            printf("Accuracy: %2.2f%% (at %2.2f%%)\n", err1 * 100, percent);
-            fflush(stdout);
+            if(config.errorType == "MSE")
+            {
+                printf("MSE: %2.10f (at %2.2f%%)\n", err1, percent);
+                fflush(stdout);
+            }
+            if(config.errorType == "ACCURACY")
+            {
+                printf("Accuracy: %2.2f%% (at %2.2f%%)\n", err1 * 100, percent);
+                fflush(stdout);
+            }
+
 
             /*
              * Refinement
              */
 
-            refinement.free_refine(grid_->getStorage(), functor);
+            if(config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION")
+            {
+                online_refinement->free_refine(grid_->getStorage(), functor);
+            }
+
+            if (config.hashRefinementType == "HASH_REFINEMENT")
+            {
+                hash_refinement->free_refine(grid_->getStorage(), functor);
+            }
+
             alpha_->resizeZero(grid_->getSize());
             alphaAvg->resizeZero(grid_->getSize());
         }
@@ -377,9 +407,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
      * Perform CG
      */
 
-    std::cout << "Error before CG (" << config.errorType << "): " <<
+    std::cout << "Error before CG (ACCURACY): " <<
     getError(mainTrainDataset, mainClasses, "ACCURACY", NULL) << std::endl;
-    std::cout << "Error before CG (" << config.errorType << "): " <<
+    std::cout << "Error before CG (MSE): " <<
     getError(mainTrainDataset, mainClasses, "MSE", NULL) << std::endl;
 
     sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
@@ -395,14 +425,14 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
     cg->solve(matrix, *alpha_, b, true, false);
 
-    std::cout << "Error after CG (" << config.errorType << "): " <<
+    std::cout << "Error after CG (ACCURACY): " <<
     getError(mainTrainDataset, mainClasses, "ACCURACY", NULL) << std::endl;
-    std::cout << "Error after CG (" << config.errorType << "): " <<
+    std::cout << "Error after CG (MSE): " <<
     getError(mainTrainDataset, mainClasses, "MSE", NULL) << std::endl;
 
-    std::cout << "Error on test (" << config.errorType << "): " <<
+    std::cout << "Error on test (ACCURACY): " <<
     getError(testTrainDataset, mainClasses, "ACCURACY", NULL) << std::endl;
-    std::cout << "Error on test (" << config.errorType << "): " <<
+    std::cout << "Error on test (MSE): " <<
     getError(testTrainDataset, mainClasses, "MSE", NULL) << std::endl;
 
     /*
@@ -498,13 +528,16 @@ void LearnerOnlineSGD::performSGDStep()
     pushMinibatch(x, y);
 
 
-	// Update SGDCurrentIndex
-	if (SGDCurrentIndex == SGDIndexOrder.size() - 1) {
-		std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
-		SGDCurrentIndex = 0;
-	} else {
-		SGDCurrentIndex++;
-	}
+    // Update SGDCurrentIndex
+    if (SGDCurrentIndex == SGDIndexOrder.size() - 1)
+    {
+        std::random_shuffle(SGDIndexOrder.begin(), SGDIndexOrder.end());
+        SGDCurrentIndex = 0;
+    }
+    else
+    {
+        SGDCurrentIndex++;
+    }
 
     // Calculate delta^n according to [Maier BA, 5.10]:
     // b_k^T * alpha^n - y_k

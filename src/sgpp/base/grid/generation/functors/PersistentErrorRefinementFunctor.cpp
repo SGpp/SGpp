@@ -15,11 +15,6 @@ PersistentErrorRefinementFunctor::PersistentErrorRefinementFunctor(
 PersistentErrorRefinementFunctor::~PersistentErrorRefinementFunctor() {
 }
 
-/*
- * current[j] = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
- * accum[j] = BETA * accum[j] + current[j]
- * functor value = -alpha_j * accum[j]
- */
 double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
@@ -46,8 +41,6 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		return start(); // threshold is 0.0
 	}
 
-	// Make sure that the error vector is as large as
-	// the coefficient vector
 	size_t numCoeff = alpha->getSize();
 
 	if (accum == NULL) {
@@ -57,24 +50,15 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		accum->resizeZero(numCoeff);
 	}
 
-	// Calculate current
-
-	// Calculate
-	// current[j] = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
-
 	double current_j = 0;
 	double tmp = 0;
 	for (size_t i = 0; i < numData; i++) {
-		/* (r_i + y_i) * \phi_j(x_i) */
 		tmp = (errors->get(i)) * phi_x[i];
 		current_j += tmp*tmp;
 
 	}
 
 	// Accumulation
-	/*for (size_t i = 0; i < numCoeff; i++) {
-	 accum->set(i, accum->get(i) * BETA + current->get(i));
-	 }*/
 	accum->set(seq, accum->get(seq) * (1-BETA) + BETA*current_j*fabs(alpha->get(seq)));
 
 	double func_val = accum->get(seq);

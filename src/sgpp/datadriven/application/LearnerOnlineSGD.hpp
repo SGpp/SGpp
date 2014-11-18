@@ -18,6 +18,7 @@
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
+#include "base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
 
 namespace sg
 {
@@ -49,6 +50,8 @@ struct LearnerOnlineSGDConfiguration
     int CG_max;
     double CG_eps;
     double smoothedErrorDecline;
+
+    std::string hashRefinementType;
 };
 
 class LearnerOnlineSGD: public sg::datadriven::Learner
@@ -67,8 +70,8 @@ public:
                        sg::base::DataVector& testClasses_,
 
                        sg::base::RegularGridConfiguration& gridConfig,
-                       sg::datadriven::LearnerOnlineSGDConfiguration& config,
-                       sg::base::AbstractRefinement& refinement);
+                       sg::datadriven::LearnerOnlineSGDConfiguration& config
+                       );
 
     virtual ~LearnerOnlineSGD();
 
@@ -86,6 +89,10 @@ private:
 
     size_t numMainData;
     size_t numMainDim;
+
+    sg::base::HashRefinement* hash_refinement;
+    sg::base::OnlinePredictiveRefinementDimension* online_refinement;
+
 
     double getError(sg::base::DataMatrix* trainDataset,
                     sg::base::DataVector* classes,

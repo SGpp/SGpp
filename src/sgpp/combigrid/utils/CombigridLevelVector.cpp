@@ -10,8 +10,6 @@
 
 namespace combigrid {
 
-  const int CombigridLevelVector::LEVELMAX = 128;
-
   CombigridLevelVector::CombigridLevelVector(int dim) {
     levelVec_.push_back(std::vector<int>(dim, LEVELMAX));
     coef_.push_back(1);

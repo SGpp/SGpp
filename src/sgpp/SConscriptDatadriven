@@ -23,7 +23,6 @@ datadriven/application/LearnerSGD.cpp
 datadriven/application/LearnerOnlineSGD.cpp
 datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
 datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
-datadriven/basis/linear/noboundary/operation/OperationDotProductLinear.cpp
 datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
 datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.cpp
 datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.cpp
@@ -32,7 +31,6 @@ datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLi
 datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.cpp
 datadriven/basis/modbspline/operation/OperationTestModBspline.cpp
 datadriven/basis/modlinear/operation/OperationTestModLinear.cpp
-datadriven/basis/modlinear/operation/OperationDotProductModLinear.cpp
 datadriven/basis/modpoly/operation/OperationTestModPoly.cpp
 datadriven/basis/modwavelet/operation/OperationTestModWavelet.cpp
 datadriven/basis/poly/operation/OperationTestPoly.cpp

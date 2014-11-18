@@ -10,23 +10,33 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
     def test_automatic(self):
 
-        d = [1,2]
+        d = [2,3,4]
         l = [1,2]
-        num_points = [1, 2, 3, 4, 5]
+        num_points = [2,3,4]
 
-        num_tests = 1000
+        num_tests = 1
 
         for i in xrange(num_tests):
             d_k = random.choice(d)
             l_k = random.choice(l)
             n_k = random.choice(num_points) 
-            #print d_k, "dim,", l_k, "level,", n_k, "num data points"
+            print d_k, "dim,", l_k, "level,", n_k, "num data points"
             self.general_test(d_k, l_k, n_k)
 
-        #for d_k in xrange(2, 5):
-            #for l_k in xrange(2, 6):
-                #for n_k in xrange(3, 21):
-                    #print d_k, "dim,", l_k, "level,", n_k, "num data points"
+    def test_fail(self):
+
+        # For l >= 3, the naive algorithm does not evaluate some points (thus, the result is 0)
+        # E.g. for d = 2, the value of all grid points (1, 1, X, Y) with seq numbers 9-12 are 0
+
+        num_tests = 1000
+
+        for i in xrange(num_tests):
+            d_k = 2
+            l_k = 3
+            n_k = 250
+            print d_k, "dim,", l_k, "level,", n_k, "num data points"
+            self.general_test(d_k, l_k, n_k)
+
 
     def general_test(self, d, l, num):
 
@@ -73,7 +83,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         online.setErrors(self.errors)
 
         online_result = refinement_map({})
-        online.collectRefinablePoints(self.storage, 10, online_result)
+        online.collectRefinablePoints(self.storage, 5, online_result)
 
         # for k,v in online_result.iteritems():
             # print k, v
@@ -95,14 +105,26 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         #
 
         for k,v in online_result.iteritems():
-#            if abs(online_result[k] - naive_result[k]) >= 0.1:
-#                print k
-#                print xs
-#                print errs
-#                for k,v in online_result.iteritems():
-#                    print k, ":", v, ",", naive_result[k]
-                #self.assertTrue(False)
-            self.assertAlmostEqual(online_result[k], naive_result[k])
+            if abs(online_result[k] - naive_result[k]) >= 0.1:
+                #print "Error in:", k
+                #print online_result[k]
+                #print naive_result[k]
+
+                #print naive_result
+
+                #print "Datapoints"
+                #print xs
+                #print "Errors"
+                #print errs
+
+                #print "All values:"
+                #print "Key: Online result, naive result"
+                #for k,v in online_result.iteritems():
+                #    print("{} ({}): {}, {}".format(k, self.storage.get(k[0]).toString(), v, naive_result[k]))
+
+                self.assertTrue(False)
+
+            # self.assertAlmostEqual(online_result[k], naive_result[k])
 
         del self.grid
         del self.grid_gen
@@ -110,7 +132,6 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         del self.errors
         del self.multEval
         del self.storage
-
 
     def naive_calc(self):
 

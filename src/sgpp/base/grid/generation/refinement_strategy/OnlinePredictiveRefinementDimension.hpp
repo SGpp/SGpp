@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-//@author Michael Lettrich (m.lettrich@mytum.de), Maxim Schmidt (maxim.schmidt@tum.de)
+//@author Maxim Schmidt (maxim.schmidt@tum.de)
 #ifndef ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
 #define ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
 
@@ -12,22 +12,16 @@
 #include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 #include <vector>
 #include <utility>
-#include "sgpp_base.hpp"
-#include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
+#include "base/operation/OperationMultipleEval.hpp"
+#include "base/basis/linear/noboundary/LinearBasis.hpp"
+#include "base/operation/BaseOpFactory.hpp"
+
 
 namespace sg {
 namespace base {
 
-
-/*
- * PredictiveRefinement performs local adaptive refinement of a sparse grid using the PredictiveRefinementIndicator.
- * This way, instead of surpluses that are most often used for refinement, refinement decisions are based upon an estimation
- * to the contribution of the MSE, which is especially helpfull for regression.
- *
- */
 class OnlinePredictiveRefinementDimension: public virtual RefinementDecorator {
-	friend class LearnerOnlineSGD;
 public:
 
   typedef std::pair<size_t, size_t> key_type; // gred point seq number and dimension
@@ -36,22 +30,9 @@ public:
   typedef std::pair<size_t, unsigned int> refinement_key;
   typedef std::map<refinement_key, double> refinement_map;
 
-	OnlinePredictiveRefinementDimension(AbstractRefinement* refinement): RefinementDecorator(refinement), iThreshold_(0.0){};
-  void free_refine(GridStorage* storage, PredictiveRefinementDimensionIndicator* functor);
+  OnlinePredictiveRefinementDimension(AbstractRefinement* refinement): RefinementDecorator(refinement), iThreshold_(0.0){};
+  void free_refine(GridStorage* storage, RefinementFunctor* functor);
 
-
-
-	/**
-	 * Examines the grid points and stores those indices that can be refined
-	 * and have maximal indicator values.
-	 *
-	 * @param storage hashmap that stores the grid points
-	 * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
-	 * @param refinements_num number of points to refine
-	 * @param max_indices the array where the point indices should be stored
-	 * @param max_values the array where the corresponding indicator values
-	 * should be stored
-	 */
 	virtual void collectRefinablePoints(GridStorage* storage,
 				size_t refinements_num, refinement_map* result);
 
