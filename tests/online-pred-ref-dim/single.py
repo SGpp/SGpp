@@ -17,7 +17,8 @@ import numpy
 
 from bin.pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
 
-print "(1, 0) : 0.04 , 4.04 (must be 4.04)"
+print "Expected:"
+print "(1, 0): 4.04"
 print "#" * 10
 
 d = 2
