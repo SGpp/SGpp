@@ -38,6 +38,10 @@ namespace sg {
          */
         virtual void regular(int level) = 0;
 
+
+
+        virtual void cliques(int level, size_t clique_size) = 0;
+
         /**
          * Creates a full grid for a certain level @f$ n @f$, i.e., @f$ V_n = \bigoplus_{|\vec{l}|_\infty \leq n} W_{\vec{l}}@f$.
          *
