@@ -397,15 +397,15 @@ if not env.GetOption('clean'):
     # check C++11 support
     compiler = subprocess.check_output(env['CXX'].split()+ ["--version"]).lower()
     if "intel" in compiler:
-        compilerVersion = ".".join(commands.getoutput(env['CXX'] + ' -dumpversion').split('.')[0:1])
+        compilerVersion = ".".join(subprocess.check_output(env['CXX'].split() + ["-dumpversion"]).split('.')[0:2])
         if float(compilerVersion) < 14.0:
             sys.stderr.write("Error: Intel compiler >=14.0 is required to support C++11. Abort!\n")
-        Exit(0)
+            Exit(0)
     elif "gcc" in compiler:
-        compilerVersion = ".".join(commands.getoutput(env['CXX'] + ' -dumpversion').split('.')[0:1])
+        compilerVersion = ".".join(subprocess.check_output(env['CXX'].split() + ["-dumpversion"]).split('.')[0:2])
         if float(compilerVersion) < 4.8:
             sys.stderr.write("Error: GCC compiler >=4.8 is required to support C++11. Abort!\n")
-        Exit(0)
+            Exit(0)
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
