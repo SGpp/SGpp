@@ -213,7 +213,7 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 # white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
-env['CPPFLAGS'] = ['-std=c++11'] # set C++11 support by default
+env['CPPFLAGS'] = [] 
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
@@ -406,6 +406,9 @@ if not env.GetOption('clean'):
         if float(compilerVersion) < 4.8:
             sys.stderr.write("Error: GCC compiler >=4.8 is required to support C++11. Abort!\n")
             Exit(0)
+    else:
+        env.Append(CPPFLAGS=['-std=c++11'])
+
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
