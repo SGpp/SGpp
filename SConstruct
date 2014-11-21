@@ -213,11 +213,11 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 # white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
-env['CPPFLAGS'] = []
+env['CPPFLAGS'] = ['-std=c++11'] # set C++11 support by default
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
-    env.Append(CPPFLAGS=['-std=c++0x'])
+    env.Append(CPPFLAGS=[''])
 
 if env['OPT']:
    env.Append(CPPFLAGS=['-O3'])
@@ -393,6 +393,19 @@ if not env.GetOption('clean'):
         Exit(0)
     else:
         print "Using CXX", subprocess.check_output(env['CXX'].split()+ ["--version"]).split(os.linesep)[0]
+    
+    # check C++11 support
+    compiler = subprocess.check_output(env['CXX'].split()+ ["--version"]).lower()
+    if "intel" in compiler:
+        compilerVersion = ".".join(commands.getoutput(env['CXX'] + ' -dumpversion').split('.')[0:1])
+        if float(compilerVersion) < 14.0:
+            sys.stderr.write("Error: Intel compiler >=14.0 is required to support C++11. Abort!\n")
+        Exit(0)
+    elif "gcc" in compiler:
+        compilerVersion = ".".join(commands.getoutput(env['CXX'] + ' -dumpversion').split('.')[0:1])
+        if float(compilerVersion) < 4.8:
+            sys.stderr.write("Error: GCC compiler >=4.8 is required to support C++11. Abort!\n")
+        Exit(0)
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
