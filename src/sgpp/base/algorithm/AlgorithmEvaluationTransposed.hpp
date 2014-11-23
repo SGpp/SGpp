@@ -79,7 +79,7 @@ public:
 
             if ( !inside )
             {
-                result.setAll(0.0);
+            	//nothing to change
                 return;
             }
             else
