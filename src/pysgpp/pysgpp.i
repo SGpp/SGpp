@@ -132,6 +132,7 @@ namespace std {
 %include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 %include "src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"

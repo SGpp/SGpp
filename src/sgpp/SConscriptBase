@@ -77,6 +77,7 @@ base/grid/generation/refinement_strategy/SubspaceGSGRefinement.cpp
 base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.cpp
 base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.cpp
 base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.cpp
+base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.cpp
 base/grid/generation/BoundaryGridGenerator.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp

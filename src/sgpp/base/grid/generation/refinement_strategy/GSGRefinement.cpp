@@ -5,6 +5,7 @@
  ******************************************************************************/
 //@author Maxim Schmidt (maxim.schmidt@tum.de)
 #include "GSGRefinement.hpp"
+#include "dataStructures/ErrorStorage.hpp"
 
 namespace sg {
 namespace base {
