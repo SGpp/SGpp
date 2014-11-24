@@ -7,18 +7,20 @@
 #ifndef LEARNERONLINESGD_HPP
 #define LEARNERONLINESGD_HPP
 
-#include <iostream>
-#include <cmath>
-#include <string>
 #include <algorithm>
-#include <list>
+#include <cmath>
 #include <fstream>
 #include <iostream>
+#include <list>
+#include <string>
 #include <vector>
+
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
+#include "parallel/tools/TypesParallel.hpp"
+
 
 namespace sg
 {
@@ -74,6 +76,8 @@ public:
                        );
 
     virtual ~LearnerOnlineSGD();
+protected:
+    static const sg::parallel::VectorizationType vecType_;
 
 private:
     sg::base::DataMatrix* mainTrainDataset;
