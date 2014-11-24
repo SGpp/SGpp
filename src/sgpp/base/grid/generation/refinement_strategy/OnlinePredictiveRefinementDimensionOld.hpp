@@ -4,8 +4,8 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 //@author Michael Lettrich (m.lettrich@mytum.de), Maxim Schmidt (maxim.schmidt@tum.de)
-#ifndef ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
-#define ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
+#ifndef ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_
+#define ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_
 
 #include "RefinementDecorator.hpp"
 #include "base/grid/generation/hashmap/AbstractRefinement.hpp"
@@ -68,4 +68,4 @@ private:
 
 } /* namespace base */
 } /* namespace sg */
-#endif /* ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_ */
+#endif /* ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_ */

@@ -12,16 +12,15 @@
 #include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 #include <vector>
 #include <utility>
+#include "sgpp_base.hpp"
+//#include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-
 
 namespace sg {
 namespace base {
 
 class OnlinePredictiveRefinementDimension: public virtual RefinementDecorator {
+	friend class LearnerOnlineSGD;
 public:
 
   typedef std::pair<size_t, size_t> key_type; // gred point seq number and dimension

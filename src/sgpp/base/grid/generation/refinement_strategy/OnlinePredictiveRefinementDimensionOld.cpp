@@ -106,9 +106,10 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 }
 
 bool refinementPairCompare(const std::pair<OnlinePredictiveRefinementDimensionOld::key_type, OnlinePredictiveRefinementDimensionOld::value_type>& firstEl,
-const std::pair<OnlinePredictiveRefinementDimensionOld::key_type, OnlinePredictiveRefinementDimensionOld::value_type>& secondEl){
+const std::pair<OnlinePredictiveRefinementDimensionOld::key_type, OnlinePredictiveRefinementDimensionOld::value_type>& secondEl);
+/*{
 	return firstEl.second > secondEl.second;
-}
+}*/
 
 
 void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
