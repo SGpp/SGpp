@@ -73,7 +73,7 @@ class Regressor(Learner):
         if size == 0: return 0
         
         self.error = DataVector(size)
-        self.specification.getBOperator().mult(alpha, self.error)
+        self.specification.getBOperator(data.getName()).mult(alpha, self.error)
         self.error.sub(data.getValues()) # error vector
         self.error.sqr() # entries squared
         errorsum = self.error.sum()
@@ -81,7 +81,7 @@ class Regressor(Learner):
         
         # calculate error per basis function
         self.errors = DataVector(len(alpha))
-        self.specification.getBOperator().multTranspose(self.error, self.errors)
+        self.specification.getBOperator(data.getName()).multTranspose(self.error, self.errors)
         self.errors.componentwise_mult(alpha)
         
         # calculate error per basis function
