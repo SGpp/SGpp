@@ -259,8 +259,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withSequentialFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.SEQUENTIAL)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.SEQUENTIAL)
+        return self.__foldingPolicyDescriptor
     
     
     ## 
@@ -269,8 +269,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withRandomFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.RANDOM)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.RANDOM)
+        return self.__foldingPolicyDescriptor
     
     
     ## 
@@ -279,8 +279,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withStratifiedFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
+        return self.__foldingPolicyDescriptor
     
     
     ## 
@@ -289,8 +289,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withFilesFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
+        return self.__foldingPolicyDescriptor
 
     
     ## 
@@ -308,6 +308,8 @@ class LearnerBuilder(object):
             self.__learner.setDataContainer(dataContainer)        
         return self
     
+    
+
 
     ## 
     # Signals to use data from ARFF file for testing dataset
@@ -322,6 +324,19 @@ class LearnerBuilder(object):
         else:
             self.__learner.setDataContainer(dataContainer)
         return self
+    
+    
+    def withTrainingDataFromNumPyArray(self, points, values, name="train"):
+        dataContainer = DataContainer(points=points, values=values, name=name)
+        if self.__learner.dataContainer != None:
+            self.__learner.setDataContainer(self.__learner.dataContainer.combine(dataContainer))
+        else:
+            self.__learner.setDataContainer(dataContainer)        
+        return self
+    
+    
+    def withTestingDataFromNumPyArray(self, points, values, name="train"):
+        return self.withTestingDataFromNumPyArray(self, points, values, "test")
     
     
     ## 
@@ -417,6 +432,7 @@ class LearnerBuilder(object):
             self.__level = None
             self.__file = None
             self.__border = None
+            self.__cliqueSize = None
             
         
         ## 
@@ -452,7 +468,10 @@ class LearnerBuilder(object):
                             grid = Grid.createLinearGrid(self.__dim)
                             
                 generator = grid.createGridGenerator()
-                generator.regular(self.__level)
+                if self.__cliqueSize == None:
+                    generator.regular(self.__level)
+                else:
+                    generator.cliques(self.__level, self.__cliqueSize)
             self.__builder.getLearner().setGrid(grid)
             return getattr(self.__builder, attr)
             
@@ -497,6 +516,21 @@ class LearnerBuilder(object):
         ##
         def fromFile(self, filename):
             self.__file = filename
+            return self
+        
+        
+        ##
+        # Creates a special kind of grid where every cliqueSize dimensions are 
+        # complitely interconnected (building a clique in a corresponding 
+        # graphical model), while the connection between cliques exist only over
+        # the level 1 functions
+        #
+        # @param cliqueSize the number of dimensions in a clique
+        # @return: GridDescriptor itself 
+        def withCliques(self, cliqueSize):
+            if self.__dim < cliqueSize:
+                raise Exception("Grid dimensionality should be not smaller than the clique size")
+            self.__cliqueSize = cliqueSize
             return self
         
         
@@ -841,6 +875,7 @@ class LearnerBuilder(object):
         ##
         def withLevel(self, level):
             self.__level = level
+            return self
             
         ##
         # Defines the seed for random folding policy
@@ -850,5 +885,6 @@ class LearnerBuilder(object):
         ##
         def withSeed(self, seed):
             self.__seed = seed
+            return self
             
         
