@@ -33,6 +33,7 @@ class GridGenerator
 {
 public:
 	virtual void regular(size_t level) = 0;
+	virtual void cliques(int level, size_t clique_size) = 0;
 	virtual void full(size_t level) = 0;
 	virtual void truncated(size_t level,size_t l_user) = 0;
 	virtual void refine(sg::base::RefinementFunctor* func) = 0;

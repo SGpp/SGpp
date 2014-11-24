@@ -80,6 +80,11 @@ namespace sg {
 			throw generation_exception("storage not empty");
 		  }
 
+		  if (storage->dim() < clique_size){
+			  throw generation_exception("clique size should be not greater than grid dimension");
+			}
+
+
 		  this->cliques_iter(storage, level, clique_size);
 		}
 
@@ -297,10 +302,6 @@ namespace sg {
                   if (storage->dim() == 0)
                     return;
 
-                  if (storage->dim() % clique_size != 0){
-                	  throw generation_exception("grid dimension is not a multiple of the clique size");
-                  }
-
                   index_type idx_1d(storage->dim());
 
                   for (size_t d = 0; d < storage->dim(); d++) {
@@ -326,7 +327,7 @@ namespace sg {
                   for (size_t d = 1; d < storage->dim(); d++) {
                     // current size
                     size_t grid_size = storage->size();
-                    size_t clique_num = d / clique_size;
+                    size_t clique_num = d/clique_size;
 
                     // loop over all current grid points
                     for (size_t g = 0; g < grid_size; g++) {
@@ -337,7 +338,7 @@ namespace sg {
                       // calculate current level-sum - 1
                       level_t level_sum = idx.getLevelSum() - 1;
 
-                      for (size_t dt = 0; dt < clique_size*clique_num; dt++){
+                      for (size_t dt = 0; dt < clique_size*clique_num && dt < d; dt++){
                     	  // if the level in dt dimension > 1, ignore the point and continue
                     	  level_t lt;
                     	  index_t it; // level and index in the particular dimension
