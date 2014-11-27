@@ -11,9 +11,7 @@
 #include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "pde/operation/PdeOpFactory.hpp"
-#ifdef USE_ENHANCED_UPDOWN
-#include "misc/operation/MiscOpFactory.hpp"
-#endif
+
 #include <cmath>
 
 namespace sg {
@@ -86,13 +84,8 @@ namespace sg {
       this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
 
       // Create operations
-#ifdef USE_ENHANCED_UPDOWN
-      this->OpLaplaceInner = sg::op_factory::createOperationLaplaceEnhanced(*this->InnerGrid, *this->lambda);
-      this->OpLaplaceBound = sg::op_factory::createOperationLaplaceEnhanced(*this->BoundGrid, *this->lambda);
-#else
       this->OpLaplaceInner = sg::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda);
       this->OpLaplaceBound = sg::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
-#endif
 
       this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
       this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);

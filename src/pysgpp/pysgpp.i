@@ -8,6 +8,19 @@
 %module(directors="1") pysgpp
 %feature("docstring");
 
+// renaming overloaded functions
+// %rename(GridDataBaseStr) sg::base::GridDataBase::GridDataBase(std::string);
+
+// SG_PARALLEL for using OperationMultEvalVectorized
+%rename(padDataset) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType);
+%rename(padDatasetSP) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType);
+
+%typemap(in) sg::parallel::VectorizationType& {
+  int i = (int) PyInt_AsLong($input);
+  sg::parallel::VectorizationType vecType = static_cast<sg::parallel::VectorizationType>(i);
+  $1 = &vecType;
+}
+
 // %include "includeDoxy.i"
 
 %include "stl.i"
@@ -84,6 +97,9 @@ namespace std {
 #endif
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"
+#endif
+#ifdef SG_MCM
+#include "sgpp_mcm.hpp"
 #endif
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
@@ -171,6 +187,7 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
+%include "src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 
 %include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
 #endif
@@ -216,8 +233,23 @@ namespace std {
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
 #endif
 
+#ifdef SG_MCM
+%include "src/sgpp/mcm/SampleGenerator.hpp"
+%include "src/sgpp/mcm/Random.hpp"
+%include "src/sgpp/mcm/NaiveSampleGenerator.hpp"
+%include "src/sgpp/mcm/LatinHypercubeSampleGenerator.hpp"
+%apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
+%include "src/sgpp/mcm/StratifiedSampleGenerator.hpp"
+%include "src/sgpp/mcm/SobolSampleGenerator.hpp"
+%include "src/sgpp/mcm/ScrambledSobolSampleGenerator.hpp"
+%include "src/sgpp/mcm/SSobolSampleGenerator.hpp"
+%include "src/sgpp/mcm/HaltonSampleGenerator.hpp"
+#endif
+
 #ifdef SG_PARALLEL
 %include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
+%include "src/sgpp/parallel/tools/TypesParallel.hpp"
+%include "src/sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
 #endif
 
 #ifdef SG_MISC

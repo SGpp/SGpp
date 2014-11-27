@@ -8,6 +8,10 @@
 #ifndef PARALLEL_HPP
 #define PARALLEL_HPP
 
+#ifndef _OPENMP
+#error "SGpp parallel module requires OpenMP support"
+#endif
+
 #include "parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
 #include "parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
 

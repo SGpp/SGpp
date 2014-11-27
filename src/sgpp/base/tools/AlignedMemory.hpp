@@ -34,29 +34,24 @@
  *
  * @param size size of object
  */
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) && \
-		(__GNUC__ == 4 && ((__GNUC_MINOR__ == 7) || (__GNUC_MINOR__ == 8)))
-// g++ with C++11 enabled (at least 4.7 and 4.8) seem to have a different exception
-// specifier for "new"
-void* operator new (size_t size) _GLIBCXX_THROW (std::bad_alloc);
-#else
-void* operator new (size_t size) throw (std::bad_alloc);
+void* operator new (size_t size)
+// to ensure compatibility wit C++11
+#if __cplusplus < 201103L
+throw (std::bad_alloc)
 #endif
+;
 
 /**
  * Overrides normal new[]
  *
  * @param size size of object
  */
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) && \
-		(__GNUC__ == 4 && ((__GNUC_MINOR__ == 7) || (__GNUC_MINOR__ == 8)))
-// g++ with C++11 enabled (at least 4.7 and 4.8) seem to have a different exception
-// specifier for "new"
-void* operator new[] (size_t size) _GLIBCXX_THROW (std::bad_alloc);
-#else
-void* operator new[] (size_t size) throw (std::bad_alloc);
+void* operator new[] (size_t size)
+// to ensure compatibility wit C++11
+#if __cplusplus < 201103L
+throw (std::bad_alloc)
 #endif
-
+;
 /**
  * Overrides normal delete
  *
