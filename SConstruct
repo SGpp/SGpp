@@ -399,9 +399,6 @@ if not env.GetOption('clean'):
     EnsureSConsVersion(1, 0)
     print "Using SCons", SCons.__version__
 
-<<<<<<< .working
-    # check whether doxygen installed
-=======
     # check for working C++
     if not config.CheckCXX():
         sys.stderr.write("Error: no working C++ compiler found. Abort!\n")
@@ -425,8 +422,7 @@ if not env.GetOption('clean'):
         env.Append(CPPFLAGS=['-std=c++11'])
 
 
-    # check whether swig installed
->>>>>>> .merge-right.r3841
+    # check whether doxygen installed
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
 
