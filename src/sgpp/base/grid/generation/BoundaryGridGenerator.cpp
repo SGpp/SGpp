@@ -31,6 +31,10 @@ namespace sg {
       gen.regularWithBoundaries(this->storage, static_cast<HashGenerator::level_t>(level), false);
     }
 
+    void BoundaryGridGenerator::cliques(int level, size_t clique_size) {
+		throw generation_exception("Method is not implemented");
+	}
+
     void BoundaryGridGenerator::full(int level) {
       if (level < 0) {
         throw generation_exception("Grid level value is negative");

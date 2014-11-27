@@ -20,6 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
+import numpy as np
 
 from DataSpecification import DataSpecification
 from bin.pysgpp import DataVector, DataMatrix
@@ -103,7 +104,7 @@ class DataContainer(object):
     # @exception if requested category name doesn't exist
     def getDataSubsetByCategory(self, category):
         if self.points.has_key(category) and self.values.has_key(category):
-            result = DataContainer(DataMatrix(self.points[category]), DataVector(self.values[category]), category)
+            result = DataContainer(points=DataMatrix(self.points[category]), values=DataVector(self.values[category]), name=category)
             return result
         else:
             raise Exception("Requested category name doesn't exist")
@@ -128,7 +129,7 @@ class DataContainer(object):
             subset_points.setRow(i, row)
             subset_values[i] = values[index]
             i = i + 1
-        return DataContainer(subset_points, subset_values, name)
+        return DataContainer(points=subset_points, values=subset_values, name=name)
     
     
     ##Creates DataContainer only with train data set
@@ -151,6 +152,7 @@ class DataContainer(object):
     ## Constructor
     # possible parameter combinations:
     # DataContainer(adapter)
+    # DataContainer(array, array)
     # DataContainer(size, dim, [name="train", filename=None])
     # DataContianer(points, values, [name="train", filename=None])
     #
@@ -160,14 +162,16 @@ class DataContainer(object):
     # param name: category name, default: "train"
     # param points: DataVector with points
     # param values: DataVector with values
-    def __init__(self, *args):
+    def __init__(self, **kwargs):
         self.points={}
         self.values={}
         self.specifications = {} 
+        if kwargs is None:
+            raise Exception("Argument list is empty")
         try:
-            if isinstance(args[0], DataAdapter): #takes (adapter: DataAdapter)
+            if kwargs.has_key('adapter'): #takes (adapter: DataAdapter)
                 # @todo (khakhutv) implement test for this part
-                adapter = args[0]
+                adapter = kwargs['adapter']
                 container = adapter.loadData()
                 self.points = container.points
                 self.values = container.values
@@ -176,17 +180,11 @@ class DataContainer(object):
                 self.specifications = container.specifications
                 self.name = container.name
             else:
-                if type(args[0]) == types.IntType: #takes (size: int, dim: int, name="train")
-                    try:
-                        if args[2] is None:
-                            self.name = self.TRAIN_CATEGORY
-                        else:
-                            self.name = args[2]
-                    except IndexError:
-                        self.name = self.TRAIN_CATEGORY
+                if kwargs.has_key('size') and kwargs.has_key('dim'): #takes (size: int, dim: int, name="train")
+                    self.name = kwargs.get('name', self.TRAIN_CATEGORY)
                         
-                    self.size = args[0]
-                    self.dim = args[1]
+                    self.size = kwargs['size']
+                    self.dim = kwargs['dim']
                     self.points[self.name] = DataMatrix(self.size, self.dim)
         
                     self.values[self.name] = DataVector(self.size)
@@ -194,17 +192,17 @@ class DataContainer(object):
                     specification.createNumericAttributes(self.dim)
                     self.specifications[self.name] = specification
                     
-                elif isinstance(args[0], DataMatrix): #takes (points: DataVector, values: DataVector, name="train", filename=None)
-                    try:
-                        if args[2] is None:
-                            self.name = self.TRAIN_CATEGORY
-                        else:
-                            self.name = args[2]
-                    except IndexError:
-                        self.name = self.TRAIN_CATEGORY
+                elif kwargs.has_key('points') and kwargs.has_key('values'): #takes (points: DataVector, values: DataVector, name="train", filename=None)
                     
-                    self.points[self.name] = args[0]
-                    self.values[self.name] = args[1]
+                    self.name = kwargs.get('name', self.TRAIN_CATEGORY)
+                    if isinstance(kwargs['points'], DataMatrix):
+                        self.points[self.name] = kwargs['points']
+                    else:
+                        self.points[self.name] = DataMatrix(kwargs['points'])
+                    if isinstance(kwargs['values'], DataVector):
+                        self.values[self.name] = kwargs['values']
+                    else:
+                        self.values[self.name] = DataVector(kwargs['values'])
                     self.size = self.points[self.name].getNrows()
                     self.dim = self.points[self.name].getNcols()
                     
@@ -212,12 +210,10 @@ class DataContainer(object):
                     specification.createNumericAttributes(self.dim)
                     
                     # if data comes from a file, note it in the specification
-                    try:
-                        if not args[3] is None:
-                            specification.setFilename(args[3])
-                            specification.setSaved()
-                    except IndexError:
-                        pass
+                    filename = kwargs.get('filename', None)
+                    if not filename is None:
+                        specification.setFilename(filename)
+                        specification.setSaved()
                     
                     self.specifications[self.name] = specification
           
@@ -233,7 +229,7 @@ class DataContainer(object):
     # @param container: DataContainer that has to be combined with the called one
     # @return: new DataContainer with several data sets
     def combine(self, container):
-        newContainer = DataContainer(self.getPoints(), self.getValues(), self.name)
+        newContainer = DataContainer(points=self.getPoints(), values=self.getValues(), name=self.name)
         for k in self.points.keys():
             if k != self.name:
                 newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.specifications[k], k)
@@ -272,7 +268,7 @@ class DataContainer(object):
                 i += 1
         
         # return new DataContainer
-        return DataContainer(allPoints, allValues)
+        return DataContainer(points=allPoints, values=allValues)
             
     
     ##Adds points and values into dictionaries

@@ -35,42 +35,29 @@ namespace sg {
          * Is the same as the regular trapezoid grid
          * */
         virtual void regular(int level);
-        virtual void full(int level) {
-          (void)level;
-        };
+        virtual void cliques(int level, size_t clique_size);
+        virtual void full(int level) {};
         /**
          * Creates a super trapezoid boundary grid with given level and l_user
          * @param level the maximum level of the grid
          * @param l_user the number of fullgrids cut off from the boundaries.
          * */
         virtual void truncated(int level, int l_user);
-        virtual void refine(RefinementFunctor* func) {
-          (void)func;
-        };
+        virtual void refine(RefinementFunctor* func) {};
         virtual size_t getNumberOfRefinablePoints() {
           return 0;
         };
 
-        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) {
-          (void)func;
-          (void)alpha;
-        };
-        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {
-          (void)func;
-          (void)alpha;
-          (void)numFirstOnly;
-        };
+        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) {};
+        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {};
         virtual size_t getNumberOfRemovablePoints() {
           return 0;
         };
 
         virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel) {
-          (void)func;
-          (void)maxLevel;
           throw generation_exception("refineMaxLevel is not implemented");
         };
         virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel) {
-          (void)maxLevel;
           throw generation_exception("getNumberOfRefinablePointsToMaxLevel is not implemented");
           return 0;
         };

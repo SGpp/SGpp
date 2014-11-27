@@ -5,10 +5,11 @@
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de), Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
 
 
-import os, sys
+import os, sys, subprocess
 import distutils.sysconfig
 import glob
 import SCons
+
 
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 5)
@@ -216,11 +217,11 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 # white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
-env['CPPFLAGS'] = []
+env['CPPFLAGS'] = [] 
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
-    env.Append(CPPFLAGS=['-std=c++0x'])
+    env.Append(CPPFLAGS=[''])
 
 if env['OPT']:
    env.Append(CPPFLAGS=['-O3'])
@@ -357,11 +358,22 @@ for sup in supportList:
     if env[sup]:
         print "Compiling support for", sup
 
+# include Parallel and dependent modules only if OpenMP support is activated
+# FIXME: it is actually a work around, the proper solution would involve change of source files. Afterwards this fix should be removed.
+if env['SG_PARALLEL'] and not env['OMP']:
+            print 'Warning: Building module Parallel requires OpenMP support. Please compile with OMP=1.'
+            print 'Skipping modules Parallel, Misc, and Java support'
+            env['SG_PARALLEL'] = False
+            env['SG_MISC'] = False
+            env['SG_JAVA'] = False
+
 # add C++ defines for all modules
 cppdefines = []
+print moduleList
 for modl in moduleList.keys():
     if env[modl]:
         cppdefines.append(modl)
+print cppdefines
 env.Append(CPPDEFINES=cppdefines)
 
 
@@ -380,12 +392,41 @@ if not env.GetOption('clean'):
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
+    # print platform
+    print "Using platform", env['PLATFORM']
 
     # check scons
     EnsureSConsVersion(1, 0)
     print "Using SCons", SCons.__version__
 
+<<<<<<< .working
     # check whether doxygen installed
+=======
+    # check for working C++
+    if not config.CheckCXX():
+        sys.stderr.write("Error: no working C++ compiler found. Abort!\n")
+        Exit(0)
+    else:
+        print "Using CXX", subprocess.check_output(env['CXX'].split()+ ["--version"]).split(os.linesep)[0]
+    
+    # check C++11 support
+    compiler = subprocess.check_output(env['CXX'].split()+ ["--version"]).lower()
+    if "intel" in compiler:
+        compilerVersion = ".".join(subprocess.check_output(env['CXX'].split() + ["-dumpversion"]).split('.')[0:2])
+        if float(compilerVersion) < 14.0:
+            sys.stderr.write("Error: Intel compiler >=14.0 is required to support C++11. Abort!\n")
+            Exit(0)
+    elif "gcc" in compiler:
+        compilerVersion = ".".join(subprocess.check_output(env['CXX'].split() + ["-dumpversion"]).split('.')[0:2])
+        if float(compilerVersion) < 4.8:
+            sys.stderr.write("Error: GCC compiler >=4.8 is required to support C++11. Abort!\n")
+            Exit(0)
+    else:
+        env.Append(CPPFLAGS=['-std=c++11'])
+
+
+    # check whether swig installed
+>>>>>>> .merge-right.r3841
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
 

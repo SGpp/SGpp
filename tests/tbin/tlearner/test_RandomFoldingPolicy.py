@@ -42,7 +42,7 @@ class TestRandomFoldingPolicy(unittest.TestCase):
         for i in xrange(self.size):
             points.set(i,0, i)
             values[i] = i
-        self.dataContainer = DataContainer(points, values)
+        self.dataContainer = DataContainer(points=points, values=values)
         self.policy = RandomFoldingPolicy(self.dataContainer, self.level, self.seed)
     
     

@@ -41,7 +41,7 @@ class TestDataContainer(unittest.TestCase):
     def setUp(self):
         self.size = 42
         self.dim = 5
-        self.container = DataContainer(self.size,self.dim)
+        self.container = DataContainer(size=self.size,dim=self.dim)
         values = self.container.getValues()
         points = self.container.getPoints()
         self.vectors = []
@@ -82,7 +82,7 @@ class TestDataContainer(unittest.TestCase):
     ##
     # Tests the function @link bin.data.DataContainer.DataContainer.getTestDataset() DataContainer.getTestDataset() @endlink
     def testGetTestDataset(self):
-        container = DataContainer(self.container.getPoints(), self.container.getValues(), DataContainer.TEST_CATEGORY)
+        container = DataContainer(points=self.container.getPoints(), values=self.container.getValues(), name=DataContainer.TEST_CATEGORY)
         c = 0
         testContainer = container.getTestDataset()
         for entry in testContainer:
@@ -102,7 +102,7 @@ class TestDataContainer(unittest.TestCase):
     ##
     # Tests the function @link bin.data.DataContainer.DataContainer.combine() DataContainer.combine() @endlink
     def testCombine(self):
-        container = DataContainer(self.container.getPoints(), self.container.getValues(), DataContainer.TEST_CATEGORY)
+        container = DataContainer(points=self.container.getPoints(), values=self.container.getValues(), name=DataContainer.TEST_CATEGORY)
         self.container = self.container.combine(container)
         self.testGetTrainDataset()
         self.testGetTestDataset()

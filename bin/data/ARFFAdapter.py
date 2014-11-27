@@ -147,7 +147,7 @@ class ARFFAdapter(DataAdapter):
             dataMatrix.setRow(rowIndex, tempVector)
             valuesVector[rowIndex] = classes[rowIndex]
             
-        return DataContainer(dataMatrix, valuesVector, name, self.filename)
+        return DataContainer(points=dataMatrix, values=valuesVector, name=name, filename=self.filename)
 
 
     ## Loads attribute specification from file
