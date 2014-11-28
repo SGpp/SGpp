@@ -94,8 +94,9 @@ class TrainingSpecification(object):
     ## Setter for B operator
     #
     # @param value: OperationB
-    def setBOperator(self, value):
-        self.__bOperator = value
+    def setBOperator(self, value, name="train"):
+        if self.__bOperator == None: self.__bOperator = {}
+        self.__bOperator[name] = value
 
 
     ## Getter for Number of points to refine
@@ -129,8 +130,10 @@ class TrainingSpecification(object):
     ## Getter for B operator
     #
     # @return: OperationB
-    def getBOperator(self):
-        return self.__bOperator
+    def getBOperator(self, name="train"):
+        if self.__bOperator != None:
+            return self.__bOperator[name]
+        else: return None
     
     
     ## Calculates the number of points which should be refined

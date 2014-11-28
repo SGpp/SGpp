@@ -248,7 +248,12 @@ class LearnerBuilder(object):
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
             self.__learner.specification.setBOperator(
-            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)), DataContainer.TRAIN_CATEGORY)
+            try:
+                self.__learner.specification.setBOperator(
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
+            except:
+                pass 
 
         return self.__learner
 
@@ -335,8 +340,8 @@ class LearnerBuilder(object):
         return self
     
     
-    def withTestingDataFromNumPyArray(self, points, values, name="train"):
-        return self.withTestingDataFromNumPyArray(self, points, values, "test")
+    def withTestingDataFromNumPyArray(self, points, values, name="test"):
+        return self.withTrainingDataFromNumPyArray(points, values, "test")
     
     
     ## 

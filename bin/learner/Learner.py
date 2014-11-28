@@ -239,6 +239,7 @@ class Learner(object):
                                            self.specification.getL())
         size =  self.grid.getStorage().size() 
         # Reuse data from old alpha vector increasing its dimension
+        self.solver.getReuse()
         if self.solver.getReuse() and self.alpha != None:
             alpha = DataVector(self.alpha)
             alpha.resize(size)
@@ -249,8 +250,8 @@ class Learner(object):
         b = DataVector(size)
         self.linearSystem.generateb(set.getValues(), b)
         #calculates alphas
-        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), 
-                          False, self.solver.getThreshold())
+        self.solver.getReuse()
+        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), False, self.solver.getThreshold())
         return alpha
 
 
