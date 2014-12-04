@@ -27,6 +27,7 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 		GridStorage* storage, RefinementFunctor* functor,
 		size_t refinements_num, size_t* max_indices,
 		PredictiveRefinementDimensionIndicator::value_type* max_values) {
+
 	//this refinement algorithm uses the predictive refinement indicator.
 	//dynamic casting is used to maintain the signature of the algorithm, but still be able to use the
 	//predictive refinement indicator with it.
@@ -42,7 +43,6 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 
 	index_type index;
 	GridStorage::grid_map_iterator end_iter = storage->end();
-
 
 	// start iterating over whole grid
 	for (GridStorage::grid_map_iterator iter = storage->begin();
@@ -82,6 +82,9 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			}
 			// reset current grid point in dimension d
 			index.set(d, source_level, source_index);
+
+			//printf("%2.10f\n", error);
+			//fflush(stdout);
 
 			if (error > functor->start()){
 				errors.push_back(error);

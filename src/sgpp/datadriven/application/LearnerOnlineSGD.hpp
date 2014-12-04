@@ -96,12 +96,13 @@ private:
 
     sg::base::HashRefinement* hash_refinement;
     sg::base::OnlinePredictiveRefinementDimension* online_refinement;
+    sg::base::OnlinePredictiveRefinementDimensionOld* online_refinement_old;
 
 
     double getError(sg::base::DataMatrix* trainDataset,
                     sg::base::DataVector* classes,
                     std::string errorType,
-                    sg::base::DataVector* error);
+                    sg::base::DataVector* error, bool useEvalVectorized);
 
     void pushMinibatch(sg::base::DataVector& x, double y);
     void performSGDStep();

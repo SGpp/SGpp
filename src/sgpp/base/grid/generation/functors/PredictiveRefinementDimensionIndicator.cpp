@@ -81,7 +81,11 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 		  counter++;
 		}
 	}
+
 	if (denominator != 0 && counter >= MIN_POINTS_SUPPORT){
+	  // to match with OnlineRefDim, use this:
+	  return (errorIndicator * errorIndicator) / denominator;
+
 	  double a = (errorIndicator/denominator);
 	  return /*2*r22 - 2*a*r2phi + a*a*denominator*/ a*(2*r2phi - a*denominator);
 	  //return fabs(a);
@@ -95,6 +99,11 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 
 double PredictiveRefinementDimensionIndicator::operator ()(GridStorage* storage,size_t seq) {
   return errorVector->get(seq);
+}
+
+
+double PredictiveRefinementDimensionIndicator::runOperator(GridStorage* storage,size_t seq) {
+	return (*this)(storage->get(seq));
 }
 
 

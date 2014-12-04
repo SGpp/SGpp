@@ -313,7 +313,8 @@ void OnlinePredictiveRefinementDimension::free_refine(GridStorage* storage,
     	// if does not work, try
     	// (*storage)[max_index]->setLeaf(false);
 
-    	std::cout << "Refine: (" << seq << ", " << dim << ") with value: " << val << std::endl;
+    	printf("Refine: (%d,%d) with value %2.10f\n", (int)seq, (int)dim, val);
+    	fflush(stdout);
 
     	this->refineGridpoint1D(storage, index, dim);
     }

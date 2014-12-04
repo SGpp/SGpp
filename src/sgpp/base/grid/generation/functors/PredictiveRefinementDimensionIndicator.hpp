@@ -57,6 +57,7 @@ public:
 	 */
 	double operator()(AbstractRefinement::index_type* gridPoint);
 
+	double runOperator(GridStorage* storage, size_t seq);
 
 	/**
 	 * Returns the squared residual for each point in the dataset
