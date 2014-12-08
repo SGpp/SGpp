@@ -107,6 +107,7 @@ vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means 
 vars.Add(BoolVariable('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False))
 vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", False))
 vars.Add('OPT', "Sets optimization on and off", False)
+vars.Add(BoolVariable('JENKINS_COMPILER', "Use fixed version compiler to better support jenkins", False))
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
@@ -240,6 +241,9 @@ if env['TARGETCPU'] == 'default':
     else:
         # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
+        
+    if env['JENKINS_COMPILER']:
+        env.Replace(CXX = 'g++-4.8')
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
