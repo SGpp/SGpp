@@ -70,7 +70,7 @@ namespace sg {
 
   namespace op_factory {
 
-    parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
+    parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType vecType, base::DataMatrix* dataset,
         size_t gridFrom, size_t gridTo, size_t datasetFrom, size_t datasetTo) {
       // handle default upper boundaries
       if (gridTo == std::numeric_limits<size_t>::max()) {

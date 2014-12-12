@@ -21,7 +21,6 @@
 #############################################################################
 
 
-
 import types
 
 ## Collection of parameters, which specify the learning process.
@@ -35,6 +34,7 @@ class TrainingSpecification(object):
     __cOperator = None      #C operator
     __bOperator = None      #B operator
     __cOperatorType = None  #Type of the c operator as a string
+    __vecType = None
     
     ## Returns the type of the C operator
     # @return: the type of the C operator as a string
@@ -134,6 +134,14 @@ class TrainingSpecification(object):
         if self.__bOperator != None:
             return self.__bOperator[name]
         else: return None
+        
+        
+    def getVectorizationType(self):
+        return self.__vecType
+    
+    
+    def setVectorizationType(self, vecType):
+        self.__vecType = vecType
     
     
     ## Calculates the number of points which should be refined
@@ -187,6 +195,8 @@ class TrainingSpecification(object):
             specification.__adaptRate = jsonObject['_TrainingSpecification__adaptRate']
         if jsonObject.has_key('_TrainingSpecification__adaptThreshold'):
             specification.__adaptThreshold = jsonObject['_TrainingSpecification__adaptThreshold']
+        if jsonObject.has_key('_TrainingSpecification__vecType'):
+            specification.__vecType = jsonObject['_TrainingSpecification__vecType']
         specification.__cOperator = None
         specification.__bOperator = None
         return specification
