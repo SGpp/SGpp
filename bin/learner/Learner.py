@@ -56,6 +56,8 @@ import types
 #
 # Observer can also want to retrieve the process information from LinearSolver. 
 # See documentation of@link bin.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+#
+# @todo Right now it is not tested if the datasets were transposed for use with the vectorized algorithms. If the intereset will be present, the feature will be implemented.
 class Learner(object):
     
     ##list of object listening to the learning events
@@ -104,11 +106,13 @@ class Learner(object):
     testingOverall = None    
     
     ##List of numbers of point on grid for different refinement iterations
-    numberPoints = None       
+    numberPoints = None    
+    
     
     __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer', 
                                  'stopPolicy', 'specification', 'grid', 
-                                 'knowledge','foldingPolicy', 'solver']
+                                 'knowledge','foldingPolicy', 'solver' 
+                                 ]
     
     
     ## Constructor
@@ -130,7 +134,7 @@ class Learner(object):
     def learnDataWithTest(self, dataset = None):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
-                  self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+              self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         
         if dataset == None: dataset = self.dataContainer
         
@@ -173,7 +177,9 @@ class Learner(object):
     def applyData(self, points):
         self.notifyEventControllers(LearnerEvents.APPLICATION_STARTED)
         # if learner is restored from checkpoint, you need to create new B Operator
+         
         if self.specification.getBOperator() == None:
+            # FIXME: createOperationB() does not exist
             self.specification.setBOperator(self.grid.createOperationB())
         size = points.getNrows()
         dim = points.getNcols()
@@ -192,7 +198,7 @@ class Learner(object):
     def learnData(self):
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
-                    self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+                self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         
         while True: #repeat until policy says "stop"
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_STARTED)
@@ -216,6 +222,7 @@ class Learner(object):
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_FOLDING_STARTED)
+        
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
                   self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
      
@@ -233,7 +240,15 @@ class Learner(object):
     # @return: DataVector alpha vector
     def doLearningIteration(self, set):
         #initialize values
-        self.linearSystem = DMSystemMatrix(self.grid,
+        # if C Operator is Identity: use the single precision vectorized version
+        if self.specification.getCOperatorType() == 'identity' \
+            and self.specification.getVectorizationType() != None:
+            self.linearSystem = DMSystemMatrixVectorizedIdentity(self.grid,
+                                               set.getPoints(),
+                                               self.specification.getL(), 
+                                               self.specification.getVectorizationType())
+        else: 
+            self.linearSystem = DMSystemMatrix(self.grid,
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())

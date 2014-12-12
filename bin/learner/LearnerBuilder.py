@@ -734,6 +734,12 @@ class LearnerBuilder(object):
             self.__specification.setCOperatorType('identity')
             return self
         
+        
+        def withVectorizationType(self, vecType):
+            self.__specification.setVectorizationType(vecType)
+            return self
+            
+        
     
     ##
     # CGSolver Descriptor helps to implement fluid interface patter on python

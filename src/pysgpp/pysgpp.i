@@ -239,6 +239,7 @@ namespace std {
 %include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
 %include "src/sgpp/parallel/tools/TypesParallel.hpp"
 %include "src/sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+%include "src/sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #endif
 
 #ifdef SG_MISC

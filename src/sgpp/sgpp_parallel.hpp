@@ -16,5 +16,6 @@
 #include "parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
 
 #include "parallel/operation/ParallelOpFactory.hpp"
+#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 
 #endif /* PARALLEL_HPP */
