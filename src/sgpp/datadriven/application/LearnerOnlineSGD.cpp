@@ -87,9 +87,15 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
      * Members
      */
 
+    if (mainTrainDataset_.getNrows() % 2 == 1) {
+    	mainTrainDataset_.resize(mainTrainDataset_.getNrows()-1);
+    	mainClasses_.resize(mainTrainDataset_.getNrows()-1);
+    }
+
     mainTrainDataset = &mainTrainDataset_;
     DataMatrix mainTrainDatasetT(*mainTrainDataset);
     mainTrainDatasetT.transpose();
+
     mainClasses = &mainClasses_;
 
     testTrainDataset = &testTrainDataset_;
@@ -368,7 +374,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
             if (config.refinementType == "MSE")
             {
-            	//getError(mainTrainDataset, mainClasses, config.errorType, mainError, false);
+                //getError(mainTrainDataset, mainClasses, config.errorType, mainError, false);
                 getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
                 mainError->sqr();
                 //OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, mainTrainDataset);
@@ -380,9 +386,8 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
             if (config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION" || config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION_OLD")
             {
-            	// parallel version does not work
-                // getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
-            	getError(mainTrainDataset, mainClasses, config.errorType, mainError, false);
+                getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
+                // getError(mainTrainDataset, mainClasses, config.errorType, mainError, false);
             }
 
             /*
@@ -390,9 +395,13 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
              */
 
             size_t totalIterations = currentRunIterations + countRun * numMainData;
+
             double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
-            double err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL, false);
+            double err1 = getError(&mainTrainDatasetT, mainClasses, config.errorType, NULL, true);
             double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
+            // double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
+            // double err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL, false);
+            // double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
 
             /*
             ferr0 << totalIterations << "," << err0 << std::endl;
@@ -456,10 +465,19 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
      * Perform CG
      */
 
+    /*
     std::cout << "Error before CG (ACCURACY): " <<
     getError(mainTrainDataset, mainClasses, "ACCURACY", NULL, false) << std::endl;
+    */
+    std::cout << "Error before CG (ACCURACY): " <<
+    getError(&mainTrainDatasetT, mainClasses, "ACCURACY", NULL, true) << std::endl;
+
+    /*
     std::cout << "Error before CG (MSE): " <<
     getError(mainTrainDataset, mainClasses, "MSE", NULL, false) << std::endl;
+     */
+    std::cout << "Error before CG (MSE): " <<
+    getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
 
     sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
                                              config.CG_max, config.CG_eps);
@@ -477,10 +495,17 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
     cg->solve(matrix, *alpha_, b, true, false);
 
+    /*
     std::cout << "Error after CG (ACCURACY): " <<
     getError(mainTrainDataset, mainClasses, "ACCURACY", NULL, false) << std::endl;
     std::cout << "Error after CG (MSE): " <<
     getError(mainTrainDataset, mainClasses, "MSE", NULL, false) << std::endl;
+    */
+    std::cout << "Error after CG (ACCURACY): " <<
+    getError(&mainTrainDatasetT, mainClasses, "ACCURACY", NULL, true) << std::endl;
+    std::cout << "Error after CG (MSE): " <<
+    getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
+
     std::cout << "Error on test (ACCURACY): " <<
     getError(testTrainDataset, mainClasses, "ACCURACY", NULL, false) << std::endl;
     std::cout << "Error on test (MSE): " <<
@@ -508,7 +533,14 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 {
     using namespace sg::base;
 
-    size_t numData = trainDataset->getNrows();
+    size_t numData;
+
+    if( useEvalVectorized ) {
+    	numData = trainDataset->getNcols();
+    } else {
+    	numData = trainDataset->getNrows();
+    }
+
 
     bool cleanup = false;
     if( error == NULL )
