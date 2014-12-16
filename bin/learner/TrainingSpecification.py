@@ -94,6 +94,7 @@ class TrainingSpecification(object):
     ## Setter for B operator
     #
     # @param value: OperationB
+    # @param name: operator identifier
     def setBOperator(self, value, name="train"):
         if self.__bOperator == None: self.__bOperator = {}
         self.__bOperator[name] = value
@@ -129,6 +130,7 @@ class TrainingSpecification(object):
 
     ## Getter for B operator
     #
+    # @param name: operator identifier
     # @return: OperationB
     def getBOperator(self, name="train"):
         if self.__bOperator != None:
