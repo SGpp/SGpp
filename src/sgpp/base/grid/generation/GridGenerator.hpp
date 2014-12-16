@@ -42,6 +42,7 @@ namespace sg {
         /**
          * Creates a sparse grid with fully connected cliques
          *
+         * @param level Grid level
          * @param clique_size clique size
          */
         virtual void cliques(int level, size_t clique_size) = 0;
