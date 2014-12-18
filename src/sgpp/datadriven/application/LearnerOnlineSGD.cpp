@@ -6,7 +6,7 @@
 #include "parallel/tools/TypesParallel.hpp"
 #include "parallel/operation/ParallelOpFactory.hpp"
 #include "base/grid/generation/hashmap/HashRefinementInconsistent.hpp"
-
+#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
 
 namespace sg
 {
@@ -87,10 +87,10 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
      * Members
      */
 
-    if (mainTrainDataset_.getNrows() % 2 == 1) {
-    	mainTrainDataset_.resize(mainTrainDataset_.getNrows()-1);
-    	mainClasses_.resize(mainTrainDataset_.getNrows()-1);
-    }
+    size_t chunkSize = sg::parallel::X86SimdKernelBase::getChunkDataPoints();
+    size_t newSize = (mainTrainDataset_.getNrows() / chunkSize) * chunkSize;
+    mainTrainDataset_.resize(newSize);
+    mainClasses_.resize(newSize);
 
     mainTrainDataset = &mainTrainDataset_;
     DataMatrix mainTrainDatasetT(*mainTrainDataset);
@@ -372,22 +372,23 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
                 }
             }
 
+            // Update main error
+            getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
+
             if (config.refinementType == "MSE")
             {
+            	/*
                 //getError(mainTrainDataset, mainClasses, config.errorType, mainError, false);
                 getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
                 mainError->sqr();
-                //OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, mainTrainDataset);
-                sg::parallel::OperationMultipleEvalVectorized* eval = sg::op_factory::createOperationMultipleEvalVectorized(*grid_,
-                        vecType_, &mainTrainDatasetT);
-                eval->multTransposeVectorized(*mainError, *errorPerBasisFunction);
+                */
+                OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, mainTrainDataset);
+                eval->mult(*mainError, *errorPerBasisFunction);
+                //sg::parallel::OperationMultipleEvalVectorized* eval = sg::op_factory::createOperationMultipleEvalVectorized(*grid_,
+                //        vecType_, &mainTrainDatasetT);
+                //eval->multTransposeVectorized(*mainError, *errorPerBasisFunction);
                 delete eval;
-            }
 
-            if (config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION" || config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION_OLD")
-            {
-                getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
-                // getError(mainTrainDataset, mainClasses, config.errorType, mainError, false);
             }
 
             /*
@@ -396,7 +397,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
             size_t totalIterations = currentRunIterations + countRun * numMainData;
 
-            double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
+            //double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
             double err1 = getError(&mainTrainDatasetT, mainClasses, config.errorType, NULL, true);
             double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
             // double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
@@ -410,7 +411,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
             */
 
             size_t numGridPoints = grid_->getStorage()->size();
-            ferr0 << numGridPoints << "," << err0 << std::endl;
+            //ferr0 << numGridPoints << "," << err0 << std::endl;
             ferr1 << numGridPoints << "," << err1 << std::endl;
             ferr2 << numGridPoints << "," << err2 << std::endl;
 
