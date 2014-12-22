@@ -8,9 +8,10 @@
 #ifndef OPERATIONMULTIPLEEVALITERATIVESPCUDALINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVESPCUDALINEAR_HPP
 
-#include "operation/datadriven/OperationMultipleEvalVectorizedSP.hpp"
-#include "grid/GridStorage.hpp"
-#include "tools/common/SGppStopwatch.hpp"
+#include "base/grid/GridStorage.hpp"
+#include "base/tools/SGppStopwatch.hpp"
+
+#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
 
 namespace sg {
 
@@ -28,7 +29,7 @@ namespace sg {
      * @li data MUST a have even number of points AND it must be transposed
      * @li result MUST have the same size as data points that should be evaluated
      */
-    class OperationMultipleEvalIterativeSPCUDALinear : public sg::base::OperationMultipleEvalVectorizedSP {
+    class OperationMultipleEvalIterativeSPCUDALinear : public sg::parallel::OperationMultipleEvalVectorizedSP {
       public:
         /**
          * Construtor of OperationMultipleEvalVectorizedSP
@@ -52,11 +53,9 @@ namespace sg {
 
         virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result);
 
-        virtual void rebuildLevelAndIndex();
+        virtual void rebuildLevelAndIndex(size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max());
 
       protected:
-        /// Pointer to the grid's gridstorage object
-        sg::base::GridStorage* storage;
         /// Timer object to handle time measurements
         sg::base::SGppStopwatch* myTimer;
         /// old storage size for deleting buffer on KNF

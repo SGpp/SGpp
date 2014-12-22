@@ -5,17 +5,17 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "sgpp.hpp"
-#include "basis/linear/noboundary/operation/datadriven/OperationMultipleEvalIterativeSPCUDALinear.hpp"
-#include "exception/operation_exception.hpp"
-#include "basis/common/operation/datadriven/CUDAKernels.hpp"
+#include "base/exception/operation_exception.hpp"
+
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPCUDALinear.hpp"
+#include "parallel/datadriven/basis/common/CUDAKernels.hpp"
 
 namespace sg {
 
   namespace parallel {
 
-    OperationMultipleEvalIterativeSPCUDALinear::OperationMultipleEvalIterativeSPCUDALinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::base::OperationMultipleEvalVectorizedSP(dataset), old_storage_size(0) {
-      this->storage = storage;
+    OperationMultipleEvalIterativeSPCUDALinear::OperationMultipleEvalIterativeSPCUDALinear(sg::base::GridStorage* storage, sg::base::DataMatrixSP* dataset) : sg::parallel::OperationMultipleEvalVectorizedSP(storage, dataset), old_storage_size(0) {
+      this->storage_ = storage;
 
       this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
       this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
@@ -24,9 +24,9 @@ namespace sg {
 
       myTimer = new sg::base::SGppStopwatch();
 
-      this->old_storage_size = storage->size();
+      this->old_storage_size = this->storage_->size();
 
-      uploadGridSPCUDA(this->level_->getPointer(), this->index_->getPointer(), storage->size(), storage->dim());
+      uploadGridSPCUDA(this->level_->getPointer(), this->index_->getPointer(), this->storage_->size(), this->storage_->dim());
       uploadDataSPCUDA(this->dataset_->getPointer(), this->dataset_->getNcols(), this->dataset_->getNrows());
     }
 
@@ -36,24 +36,26 @@ namespace sg {
       delete myTimer;
     }
 
-    void OperationMultipleEvalIterativeSPCUDALinear::rebuildLevelAndIndex() {
+    void OperationMultipleEvalIterativeSPCUDALinear::rebuildLevelAndIndex(size_t gridFrom, size_t gridTo) {
       deleteGridSPCUDA();
+      gridFrom = gridTo;
+      gridTo = gridFrom;
 
       delete this->level_;
       delete this->index_;
 
-      this->level_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
-      this->index_ = new sg::base::DataMatrixSP(storage->size(), storage->dim());
+      this->level_ = new sg::base::DataMatrixSP(this->storage_->size(), this->storage_->dim());
+      this->index_ = new sg::base::DataMatrixSP(this->storage_->size(), this->storage_->dim());
 
-      storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+      this->storage_->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-      uploadGridSPCUDA(this->level_->getPointer(), this->index_->getPointer(), storage->size(), storage->dim());
+      uploadGridSPCUDA(this->level_->getPointer(), this->index_->getPointer(), this->storage_->size(), this->storage_->dim());
     }
-
-    double OperationMultipleEvalIterativeSPCUDALinear::multTransposeVectorized(DataVectorSP& source, DataVectorSP& result) {
+    
+    double OperationMultipleEvalIterativeSPCUDALinear::multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result) {
       size_t source_size = source.getSize();
-      size_t dims = storage->dim();
-      size_t storageSize = storage->size();
+      size_t dims = this->storage_->dim();
+      size_t storageSize = this->storage_->size();
       double time = 0.0;
 
       result.setAll(0.0f);
@@ -61,8 +63,11 @@ namespace sg {
       float* ptrSource = source.getPointer();
       float* ptrGlobalResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % 128 != 0 || source_size != this->dataset_->getNrows()) {
-        throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+      //std::cout << this->dataset_->getNrows() << std::endl;
+      //std::cout << this->dataset_->getNcols() << std::endl;
+
+      if (this->dataset_->getNrows() % 64 != 0 || source_size != this->dataset_->getNrows()) {
+        throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 
       size_t tmp = storageSize / 64;
@@ -88,7 +93,7 @@ namespace sg {
           for (size_t d = 0; d < dims; d++) {
             float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
             float index_calc = eval - (ptrIndex[(j * dims) + d]);
-            float abs = fabs(index_calc);
+            float abs = (float)fabs(index_calc);
             float last = 1.0f - abs;
             float localSupport = std::max<float>(last, 0.0f);
             curSupport *= localSupport;
@@ -100,11 +105,11 @@ namespace sg {
 
       return time;
     }
-
-    double OperationMultipleEvalIterativeSPCUDALinear::multVectorized(DataVectorSP& alpha, DataVectorSP& result) {
+    
+    double OperationMultipleEvalIterativeSPCUDALinear::multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
       size_t result_size = result.getSize();
-      size_t dims = storage->dim();
-      size_t storageSize = storage->size();
+      size_t dims = this->storage_->dim();
+      size_t storageSize = this->storage_->size();
       double time = 0.0;
 
       result.setAll(0.0f);
@@ -112,15 +117,17 @@ namespace sg {
       float* ptrAlpha = alpha.getPointer();
       float* ptrResult = result.getPointer();
 
-      if (this->dataset_->getNrows() % 128 != 0 || result_size != this->dataset_->getNrows()) {
-        throw operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+      //std::cout << this->dataset_->getNrows() << std::endl;
+      //std::cout << this->dataset_->getNcols() << std::endl;
+      
+      if (this->dataset_->getNrows() % 64 != 0 || result_size != this->dataset_->getNrows()) {
+        throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 
       time = multSPCUDA(ptrAlpha, ptrResult, result_size, storageSize, dims);
 
       return time;
     }
-
   }
 
 }
