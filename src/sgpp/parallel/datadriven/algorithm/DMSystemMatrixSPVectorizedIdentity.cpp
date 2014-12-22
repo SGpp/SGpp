@@ -26,7 +26,7 @@ namespace sg {
       this->numTrainingInstances_ = this->dataset_->getNrows();
       this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
-      if (this->vecMode_ != ArBB && this->vecMode_ != CUDA) {
+      if (this->vecMode_ != ArBB) {
         this->dataset_->transpose();
       }
 

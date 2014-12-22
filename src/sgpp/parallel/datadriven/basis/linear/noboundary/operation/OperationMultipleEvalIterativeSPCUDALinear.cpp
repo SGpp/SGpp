@@ -66,7 +66,7 @@ namespace sg {
       //std::cout << this->dataset_->getNrows() << std::endl;
       //std::cout << this->dataset_->getNcols() << std::endl;
 
-      if (this->dataset_->getNrows() % 64 != 0 || source_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % 64 != 0 || source_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
       }
 
@@ -91,7 +91,7 @@ namespace sg {
           float curSupport = ptrSource[i];
 
           for (size_t d = 0; d < dims; d++) {
-            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(i * dims) + d]));
+            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
             float index_calc = eval - (ptrIndex[(j * dims) + d]);
             float abs = (float)fabs(index_calc);
             float last = 1.0f - abs;
@@ -120,7 +120,7 @@ namespace sg {
       //std::cout << this->dataset_->getNrows() << std::endl;
       //std::cout << this->dataset_->getNcols() << std::endl;
       
-      if (this->dataset_->getNrows() % 64 != 0 || result_size != this->dataset_->getNrows()) {
+      if (this->dataset_->getNcols() % 64 != 0 || result_size != this->dataset_->getNcols()) {
         throw sg::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
       }
 

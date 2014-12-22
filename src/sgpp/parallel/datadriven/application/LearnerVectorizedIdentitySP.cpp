@@ -73,7 +73,7 @@ namespace sg {
 
       classesComputed.setAll(0.0);
 
-      if (this->vecType_ != ArBB && this->vecType_ != CUDA) {
+      if (this->vecType_ != ArBB) {
         tmpDataSet.transpose();
       }
 
