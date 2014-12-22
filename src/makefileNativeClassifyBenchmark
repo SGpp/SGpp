@@ -15,10 +15,10 @@ OBJS = NativeCppClassifyBenchmark.o
 default: $(OBJS)
 ifeq ($(CC),icl)
 	$(CC) $(LFLAGS) $(BUILDDIR)NativeCppClassifyBenchmark.obj $(LIBDIR)$(LIBNAME) /Fe$(BINDIR)$(BINNAME)
-	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark.exe
+	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark_${EXT}.exe
 else
 	$(CC) $(BUILDDIR)NativeCppClassifyBenchmark.o $(LIBDIR)$(LIBNAME) $(LFLAGS) -o $(BINDIR)$(BINNAME)
-	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark
+	cp $(BINDIR)$(BINNAME) $(BINDIR)ClassifyBenchmark_$(EXT)
 endif
 	
 NativeCppClassifyBenchmark.o : $(SRCDIR)NativeCppClassifyBenchmark.cpp

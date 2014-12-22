@@ -5,8 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "basis/common/operation/datadriven/CUDAKernels.hpp"
-#include "tools/common/SGppStopwatch.hpp"
+#include "base/tools/SGppStopwatch.hpp"
+
+#include "parallel/datadriven/basis/common/CUDAKernels.hpp"
 
 // including CUDA
 #include <cuda.h>
