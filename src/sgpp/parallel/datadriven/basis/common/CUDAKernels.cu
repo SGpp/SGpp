@@ -50,7 +50,7 @@ __global__ void multTransSP_CUDA(float* ptrSource,
 #pragma unroll 5
 
     for (unsigned int d = 0; d < dims; d++) {
-      locData[(localIdx * dims) + d] = ptrData[((i + localIdx) * dims) + d];
+      locData[(d*64)+localIdx] = ptrData[(d*sourceSize)+(i+localIdx)];
     }
 
     locSource[localIdx] = ptrSource[i + localIdx];
@@ -64,7 +64,7 @@ __global__ void multTransSP_CUDA(float* ptrSource,
 #pragma unroll 5
 
       for (unsigned int d = 0; d < dims; d++) {
-        eval = locLevel[d] * locData[(k * dims) + d];
+        eval = locLevel[d] * locData[(d*64) + k];
         index_calc = eval - locIndex[d];
         abs = fabsf(index_calc);
         last = 1.0f - abs;
@@ -120,11 +120,11 @@ __global__ void multTransSP_CUDA_5d(float* ptrSource,
 
   // Iterate over all instances of the dataset
   for (unsigned int i = 0; i < sourceSize; i += 64) {
-    locData[(localIdx * 5) + 0] = ptrData[((i + localIdx) * 5) + 0];
-    locData[(localIdx * 5) + 1] = ptrData[((i + localIdx) * 5) + 1];
-    locData[(localIdx * 5) + 2] = ptrData[((i + localIdx) * 5) + 2];
-    locData[(localIdx * 5) + 3] = ptrData[((i + localIdx) * 5) + 3];
-    locData[(localIdx * 5) + 4] = ptrData[((i + localIdx) * 5) + 4];
+    locData[(0*64)+localIdx] = ptrData[(i + localIdx) + (0*sourceSize)];
+    locData[(1*64)+localIdx] = ptrData[(i + localIdx) + (1*sourceSize)];
+    locData[(2*64)+localIdx] = ptrData[(i + localIdx) + (2*sourceSize)];
+    locData[(3*64)+localIdx] = ptrData[(i + localIdx) + (3*sourceSize)];
+    locData[(4*64)+localIdx] = ptrData[(i + localIdx) + (4*sourceSize)];
 
     locSource[localIdx] = ptrSource[i + localIdx];
 
@@ -134,35 +134,35 @@ __global__ void multTransSP_CUDA_5d(float* ptrSource,
     for (unsigned int k = 0; k < 64; k++) {
       curSupport = locSource[k];
 
-      eval = locLevel_0 * locData[(k * 5) + 0];
+      eval = locLevel_0 * locData[(0*64)+k];
       index_calc = eval - locIndex_0;
       abs = fabsf(index_calc);
       last = 1.0f - abs;
       localSupport = fmaxf(last, 0.0f);
       curSupport *= localSupport;
 
-      eval = locLevel_1 * locData[(k * 5) + 1];
+      eval = locLevel_1 * locData[(1*64)+k];
       index_calc = eval - locIndex_1;
       abs = fabsf(index_calc);
       last = 1.0f - abs;
       localSupport = fmaxf(last, 0.0f);
       curSupport *= localSupport;
 
-      eval = locLevel_2 * locData[(k * 5) + 2];
+      eval = locLevel_2 * locData[(2*64)+k];
       index_calc = eval - locIndex_2;
       abs = fabsf(index_calc);
       last = 1.0f - abs;
       localSupport = fmaxf(last, 0.0f);
       curSupport *= localSupport;
 
-      eval = locLevel_3 * locData[(k * 5) + 3];
+      eval = locLevel_3 * locData[(3*64)+k];
       index_calc = eval - locIndex_3;
       abs = fabsf(index_calc);
       last = 1.0f - abs;
       localSupport = fmaxf(last, 0.0f);
       curSupport *= localSupport;
 
-      eval = locLevel_4 * locData[(k * 5) + 4];
+      eval = locLevel_4 * locData[(4*64)+k];
       index_calc = eval - locIndex_4;
       abs = fabsf(index_calc);
       last = 1.0f - abs;
@@ -187,6 +187,7 @@ __global__ void multSP_CUDA(float* ptrAlpha,
                             unsigned int fastStorageSize,
                             unsigned int storageSize,
                             unsigned int dims,
+                            unsigned int datasize,
                             unsigned int offset) {
   int globalIdx = (blockIdx.x * blockDim.x) + threadIdx.x + offset;
   int localIdx = threadIdx.x;
@@ -201,7 +202,7 @@ __global__ void multSP_CUDA(float* ptrAlpha,
 #pragma unroll 5
 
   for (unsigned int d = 0; d < dims; d++) {
-    locData[d] = ptrData[(globalIdx * dims) + d];
+    locData[d] = ptrData[(d*datasize)+globalIdx];
   }
 
   // Iterate over all grid points (fast ones, with cache)
@@ -265,6 +266,7 @@ __global__ void multSP_CUDA_5d(float* ptrAlpha,
                                float* ptrResult,
                                unsigned int fastStorageSize,
                                unsigned int storageSize,
+                               unsigned int datasize,
                                unsigned int offset) {
   int globalIdx = (blockIdx.x * blockDim.x) + threadIdx.x + offset;
   int localIdx = threadIdx.x;
@@ -280,11 +282,11 @@ __global__ void multSP_CUDA_5d(float* ptrAlpha,
   __shared__ float locIndex[320];
   __shared__ float locAlpha[64];
 
-  locData_0 = ptrData[(globalIdx * 5) + 0];
-  locData_1 = ptrData[(globalIdx * 5) + 1];
-  locData_2 = ptrData[(globalIdx * 5) + 2];
-  locData_3 = ptrData[(globalIdx * 5) + 3];
-  locData_4 = ptrData[(globalIdx * 5) + 4];
+  locData_0 = ptrData[(0*datasize)+globalIdx];
+  locData_1 = ptrData[(1*datasize)+globalIdx];
+  locData_2 = ptrData[(2*datasize)+globalIdx];
+  locData_3 = ptrData[(3*datasize)+globalIdx];
+  locData_4 = ptrData[(4*datasize)+globalIdx];
 
   // Iterate over all grid points (fast ones, with cache)
   for (unsigned int j = 0; j < fastStorageSize; j += 64) {
@@ -442,9 +444,9 @@ double multSPCUDA(float* ptrAlpha, float* ptrResult, size_t result_size, size_t 
   mytimer->start();
 
   if (dims == 5) {
-    multSP_CUDA_5d <<< result_size / 64, 64 >>> (gpu_alpha_sp, gpu_dataset_sp, gpu_grid_level_sp, gpu_grid_index_sp, gpu_datavec_sp, fastStorageSize, (unsigned int)storageSize, 0);
+    multSP_CUDA_5d <<< result_size / 64, 64 >>> (gpu_alpha_sp, gpu_dataset_sp, gpu_grid_level_sp, gpu_grid_index_sp, gpu_datavec_sp, fastStorageSize, (unsigned int)storageSize, (unsigned int)result_size, 0);
   } else {
-    multSP_CUDA <<< result_size / 64, 64 >>> (gpu_alpha_sp, gpu_dataset_sp, gpu_grid_level_sp, gpu_grid_index_sp, gpu_datavec_sp, fastStorageSize, (unsigned int)storageSize, (unsigned int)dims, 0);
+    multSP_CUDA <<< result_size / 64, 64 >>> (gpu_alpha_sp, gpu_dataset_sp, gpu_grid_level_sp, gpu_grid_index_sp, gpu_datavec_sp, fastStorageSize, (unsigned int)storageSize, (unsigned int)dims, (unsigned int)result_size, 0);
   }
 
   // copy results back to host
