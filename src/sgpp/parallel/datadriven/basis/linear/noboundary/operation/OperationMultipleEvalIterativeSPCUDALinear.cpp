@@ -5,6 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+#include <omp.h>
+
 #include "base/exception/operation_exception.hpp"
 
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPCUDALinear.hpp"
@@ -73,33 +75,43 @@ namespace sg {
       size_t tmp = storageSize / 64;
       size_t myStorageSize = tmp * 64;
 
-      if (myStorageSize > 0) {
-        time = multTransSPCUDA(ptrSource, ptrGlobalResult, source_size, myStorageSize, dims);
-      }
-
-      // do padding
-      float* ptrData = this->dataset_->getPointer();
-      float* ptrLevel = this->level_->getPointer();
-      float* ptrIndex = this->index_->getPointer();
-
-      #pragma omp parallel for
-
-      for (size_t j = myStorageSize; j < storageSize; j++) {
-        ptrGlobalResult[j] = 0.0f;
-
-        for (size_t i = 0; i < source_size; i++) {
-          float curSupport = ptrSource[i];
-
-          for (size_t d = 0; d < dims; d++) {
-            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
-            float index_calc = eval - (ptrIndex[(j * dims) + d]);
-            float abs = (float)fabs(index_calc);
-            float last = 1.0f - abs;
-            float localSupport = std::max<float>(last, 0.0f);
-            curSupport *= localSupport;
+      #pragma omp parallel
+      {
+        if (omp_get_thread_num() == 0) {
+          if (myStorageSize > 0) {
+            time = multTransSPCUDA(ptrSource, ptrGlobalResult, source_size, myStorageSize, dims);
           }
+        } else {
+          // do CPU padding
+          float* ptrData = this->dataset_->getPointer();
+          float* ptrLevel = this->level_->getPointer();
+          float* ptrIndex = this->index_->getPointer();
 
-          ptrGlobalResult[j] += curSupport;
+          size_t my_range = storageSize - myStorageSize;
+          size_t my_tid = omp_get_thread_num() - 1;
+          size_t num_threads = omp_get_num_threads()-1;
+          
+          my_range = (my_range/num_threads)+1;
+          size_t my_start = myStorageSize + (my_range*my_tid);
+          size_t my_end = std::min<size_t>(my_start + my_range, storageSize); 
+
+          for (size_t j = my_start; j < my_end; j++) {
+            ptrGlobalResult[j] = 0.0f;
+
+            for (size_t i = 0; i < source_size; i++) {
+              float curSupport = ptrSource[i];
+
+              for (size_t d = 0; d < dims; d++) {
+                float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * source_size) + i]));
+                float index_calc = eval - (ptrIndex[(j * dims) + d]);
+                float abs = (float)fabs(index_calc);
+                float last = 1.0f - abs;
+                float localSupport = std::max<float>(last, 0.0f);
+                curSupport *= localSupport;
+              }
+              ptrGlobalResult[j] += curSupport;
+            }
+          }
         }
       }
 
