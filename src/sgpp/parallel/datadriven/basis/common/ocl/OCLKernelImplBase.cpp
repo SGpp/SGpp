@@ -104,10 +104,10 @@ namespace sg {
 #endif
 #ifdef USEOCL_NVIDIA
 
-          if (strcmp(vendor_name, "NVIDIA Corporation") == 0) {
+          //if (strcmp(vendor_name, "NVIDIA Corporation") == 0) {
             std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
             platform_id = platform_ids[ui];
-          }
+          //}
 
 #endif
         }
@@ -170,7 +170,8 @@ namespace sg {
 
 #endif
 #ifdef USEOCL_NVIDIA
-      err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, NULL, &num_devices);
+      //err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, NULL, &num_devices);
+      err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ALL, max_number_ocl_devices, NULL, &num_devices);
 
       if (num_devices == 0) {
         std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
@@ -182,7 +183,8 @@ namespace sg {
       }
 
       device_ids = new cl_device_id[num_devices];
-      err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
+      //err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
+      err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ALL, num_devices, device_ids, NULL);
 
       if (err != CL_SUCCESS) {
         std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
@@ -240,6 +242,7 @@ namespace sg {
 #else
         command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
 #endif
+
 
         if (err != CL_SUCCESS) {
           std::cout << "OCL Error: Failed to create command queue! Error Code: " << err << std::endl;

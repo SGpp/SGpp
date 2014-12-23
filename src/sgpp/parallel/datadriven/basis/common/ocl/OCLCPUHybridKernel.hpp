@@ -10,7 +10,6 @@
 #define OCLCPUHYBRIDKERNEL_HPP
 
 // OpenMP is required for hybrid execution
-#ifdef _OPENMP
 #include <omp.h>
 
 #include "base/grid/GridStorage.hpp"
@@ -218,6 +217,5 @@ namespace sg {
     };
   }
 }
-#endif // _OPENMP
 
 #endif // OCLCPUHYBRIDKERNEL_HPP

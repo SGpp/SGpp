@@ -19,6 +19,11 @@ namespace sg {
       this->mask_ = NULL;
       this->offset_ = NULL;
       this->myTimer_ = new sg::base::SGppStopwatch();
+
+      this->m_gridFrom = 0;
+      this->m_gridTo = 0;
+      this->m_datasetFrom = 0;
+      this->m_datasetTo = 0;
     }
 
     OperationMultipleEvalVectorized::~OperationMultipleEvalVectorized() {

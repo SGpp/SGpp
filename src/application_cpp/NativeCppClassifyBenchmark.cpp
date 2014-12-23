@@ -209,7 +209,7 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
                              const double lambda, const sg::parallel::VectorizationType vecType) {
   sg::datadriven::LearnerBase* myLearner;
 
-  myLearner = new sg::parallel::LearnerVectorizedIdentity(vecType, isRegression, true);
+  myLearner = new sg::parallel::LearnerLeastSquaresIdentity(vecType, isRegression, true);
 
   // training
   gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,  SolverConfigFinal, AdaptConfig, false, lambda);

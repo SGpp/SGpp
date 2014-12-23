@@ -49,12 +49,17 @@ namespace sg {
       public:
         cl_int createMultTrans(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
           std::string program_src = generateSourceMultTrans(dims, local_workgroup_size);
+          std::cout << program_src << std::endl;
           return OCLKernelBase::buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel);
         }
 
         cl_int createMult(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
           std::string program_src = generateSourceMult(dims, local_workgroup_size);
           return OCLKernelBase::buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel);
+        }
+
+        virtual ~OCLKernelBase() {
+
         }
 
       private:

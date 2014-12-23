@@ -6,6 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
+#ifdef USE_MPI
+
 #include "parallel/tools/MPI/SGppMPITools.hpp"
 #include "base/exception/operation_exception.hpp"
 
@@ -182,3 +184,5 @@ namespace sg {
 
   }
 }
+
+#endif

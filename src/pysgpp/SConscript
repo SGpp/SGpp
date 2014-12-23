@@ -30,6 +30,8 @@ if env['PLATFORM']=='cygwin':
     py_env.Append(LIBS=['python2.7'])    
 elif env['PLATFORM']=='darwin':
     py_env['SHLIBSUFFIX'] = '.so'
+    
+py_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
 
 py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']], CPPPATH=['#/src/sgpp'])
 

@@ -25,8 +25,8 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param dataset Pointer to the dataset that should be evaluated
          */
-        OperationMultipleEvalLinearStretched(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-          this->storage = storage;
+        OperationMultipleEvalLinearStretched(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+          this->storage = grid.getStorage();
         }
 
         /**

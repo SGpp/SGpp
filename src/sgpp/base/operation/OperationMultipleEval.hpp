@@ -10,7 +10,9 @@
 
 #include "base/datatypes/DataVector.hpp"
 #include "base/datatypes/DataMatrix.hpp"
-#include "base/operation/OperationMatrix.hpp"
+//#include "base/operation/OperationMatrix.hpp"
+#include "base/grid/Grid.hpp"
+#include "base/exception/operation_exception.hpp"
 
 namespace sg {
   namespace base {
@@ -23,7 +25,9 @@ namespace sg {
     class OperationMultipleEval {
       protected:
         /// Pointer to the dataset that should be evaluated on the grid
-        DataMatrix* dataset_;
+        Grid &grid;
+        DataMatrix &dataset;
+
 
       public:
         /**
@@ -31,7 +35,7 @@ namespace sg {
          *
          * @param dataset data set that should be evaluated on the sparse grid
          */
-        OperationMultipleEval(DataMatrix* dataset) : dataset_(dataset) {}
+        OperationMultipleEval(sg::base::Grid &grid, DataMatrix &dataset) : grid(grid), dataset(dataset) {}
 
         /**
          * Destructor
@@ -53,6 +57,15 @@ namespace sg {
          * @param result the result vector of the matrix vector multiplication
          */
         virtual void multTranspose(DataVector& source, DataVector& result) = 0;
+
+        //Useful for comparing kernels
+        virtual std::string getImplementationName() {
+        	throw new sg::base::operation_exception("error: OperationMultipleEval::getImplementationName(): not implemented for this kernel");
+        }
+
+        virtual double getLastOperationDuration() {
+        	throw new sg::base::operation_exception("error: OperationMultipleEval::getLastOperationDuration(): not implemented for this kernel");
+        }
     };
 
   }

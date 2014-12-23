@@ -23,7 +23,7 @@ namespace sg {
      * Furthermore this Learner provides support for several
      * vectorization approaches covering GPUs, CPUs and coprocessors.
      */
-    class LearnerVectorizedIdentity : public sg::datadriven::LearnerBase {
+    class LearnerLeastSquaresIdentity : public sg::datadriven::LearnerBase {
       protected:
         /// vectorization selector
         VectorizationType vecType_;
@@ -43,8 +43,8 @@ namespace sg {
          * @param isRegression set to true if a regression task should be executed
          * @param isVerbose set to true in order to allow console output
          */
-        LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
-        LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
+        LearnerLeastSquaresIdentity(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
+        LearnerLeastSquaresIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
 
         /**
          * Constructor
@@ -55,13 +55,13 @@ namespace sg {
          * @param isRegression set to true if a regression task should be executed
          * @param isVerbose set to true in order to allow console output
          */
-        LearnerVectorizedIdentity(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
+        LearnerLeastSquaresIdentity(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
                                   const bool isRegression, const bool isVerbose = true);
 
         /**
          * Destructor
          */
-        virtual ~LearnerVectorizedIdentity();
+        virtual ~LearnerLeastSquaresIdentity();
 
         virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
     };

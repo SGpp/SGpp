@@ -16,8 +16,8 @@ SRCDIR=./../../../src/sgpp
 ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
 ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
-OCLINCLUDE = /usr/local/cuda/include
-OCLLIB = /usr/lib64/
+OCLINCLUDE = /opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-sdk-4.6.0.92/include/
+OCLLIB = /opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/
 #OCLINCLUDE = ${CUDATOOLKIT_HOME}/include
 #OCLLIB = /opt/cray/nvidia/default/lib64
 # Intel OpenCL
@@ -25,8 +25,8 @@ OCLLIB = /usr/lib64/
 #IOCLLIB = /usr/lib64/OpenCL/vendors/intel
 #IOCLINCLUDE = /etc/alternatives/opencl-headers
 #IOCLLIB = /etc/alternatives/opencl-intel-runtime/lib64
-IOCLINCLUDE = /opt/intel/opencl/include
-IOCLLIB = /opt/intel/opencl/lib64
+IOCLINCLUDE = /opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-sdk-4.6.0.92/include/
+IOCLLIB = /opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/
 # AMD OpenCL
 # AMDOCLINCLUDE = /opt/AMDAPP/include
 # AMDOCLLIB = /opt/AMDAPP/lib/x86_64
@@ -61,7 +61,7 @@ VEC=sse3
 #       MIC_OFFLOAD - Intel MIC coprocessor in offload mode
 #       MIC_NATIVE - compile for native execution on Intel MIC coprocessor
 #       NO - no extensions, default
-EXT=NO
+EXT=NVOCL
 #	MPI - MPI support
 MPI=0
 # instances used to compile
@@ -81,7 +81,7 @@ IPO=0
 ###################################################################
 # Compiler Flags
 ###################################################################	
-CFLAGS_GCC:=-Wall -Werror -Wconversion -Wno-deprecated -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR)
+CFLAGS_GCC:=-Wno-deprecated-declarations -Wall -Werror -Wconversion -Wno-deprecated -Wno-long-long -pedantic -ansi -c -O3 -funroll-loops -fno-strict-aliasing -fPIC -mfpmath=sse -I$(SRCDIR)
 LFLAGS_GCC:=-Wall -pedantic -ansi -O3
 
 CFLAGS_ICC:=-Wall -Werror -wd1125 -Wconversion -Wno-deprecated -ipo -ip -ansi -ansi-alias -fp-speculation=safe -c -O3 -funroll-loops -fPIC -I$(SRCDIR)
@@ -115,7 +115,7 @@ endif
 ifeq ($(CC),g++)
 CFLAGS:=$(CFLAGS_GCC)
 LFLAGS:=$(LFLAGS_GCC)
-EXT=NO
+#EXT=NO
 ifeq ($(OMP),1)
 CFLAGS:=$(CFLAGS) -fopenmp
 LFLAGS:=$(LFLAGS) -fopenmp

@@ -9,6 +9,8 @@ import os, sys, subprocess
 import distutils.sysconfig
 import glob
 import SCons
+import fnmatch
+import os
 
 
 # Check for versions of Scons and Python
@@ -114,7 +116,8 @@ vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 # modules and dependencies
 moduleList = {}
 src_files = {}
-supportList = ['SG_PYTHON', 'SG_JAVA']
+#supportList = ['SG_PYTHON', 'SG_JAVA']
+supportList = ['SG_PYTHON']
 
 # find all modules
 modules = getModules('src/sgpp')
@@ -150,6 +153,10 @@ vars.Add('CMD_LOGFILE','Specifies a file to capture the build log','build_log.tx
 
 # initialize environment
 env = Environment(variables = vars, ENV = os.environ)
+#env['CXX'] = 'clang++'
+#env['ENV']['PATH'] += ':/home/pfandedd/swig-3.0.2/'
+#env['SWIG'] = '/home/pfandedd/swig-3.0.2/swig'
+#print env['ENV']['PATH']
 
 # sanity check in case user didn't read the variable description
 if not env['OUTPUT_PATH'] == '':
@@ -213,7 +220,7 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 # white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
-env['CPPFLAGS'] = [] 
+env['CPPFLAGS'] = ['-mavx'] # avx has to be always enabled to enabled intrinsics-based algorithms 
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
@@ -222,7 +229,7 @@ if env['TRONE']:
 if env['OPT']:
    env.Append(CPPFLAGS=['-O3'])
 else:	
-   env.Append(CPPFLAGS=['-g'])	
+   env.Append(CPPFLAGS=['-g', '-O0'])	
 
 if env['TARGETCPU'] == 'default':
     print "Using default gcc"
@@ -230,8 +237,16 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
-                         '-fno-strict-aliasing', '-O3', '-Wconversion',
+    env.Append(CPPFLAGS=['-Wall', '-std=c++11', '-Wno-long-long', '-Wno-deprecated', 
+                         '-Werror',
+                         '-Wconversion', #'-Wno-sign-conversion',
+#                         '-Wno-header-guard',
+#                         '-Wno-overloaded-virtual',
+#                         '-Wno-unused-private-field',
+#                         '-Wno-unneeded-internal-declaration',
+#                         '-Wno-self-assign-field',
+#                         '-Wno-parentheses-equality',
+                         '-fno-strict-aliasing', 
                          '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
     if env['OMP']:
@@ -388,11 +403,11 @@ if not env.GetOption('clean'):
     print "Using SCons", SCons.__version__
 
     # check for working C++
-    if not config.CheckCXX():
-        sys.stderr.write("Error: no working C++ compiler found. Abort!\n")
-        Exit(0)
-    else:
-        print "Using CXX", subprocess.check_output(env['CXX'].split()+ ["--version"]).split(os.linesep)[0]
+   # if not config.CheckCXX():
+   #     sys.stderr.write("Error: no working C++ compiler found. Abort!\n")
+   #     Exit(0)
+   # else:
+   #     print "Using CXX", subprocess.check_output(env['CXX'].split()+ ["--version"]).split(os.linesep)[0]
     
     # check C++11 support
     compiler = subprocess.check_output(env['CXX'].split()+ ["--version"]).lower()
@@ -515,6 +530,8 @@ Export('moduleList')
 # Now compile
 #########################################################################
 lib_sgpp_targets = []
+all_src_files = []
+test_src_files = []
 src_objs = {}                
 
 # compile libraries
@@ -528,6 +545,15 @@ for name in modules:
         for index in range(0, len(src_files[name])):
            src_files[name][index] = 'src/sgpp/' + src_files[name][index]
 
+        
+        all_src_files.extend(src_files[name])
+        
+        for root, dirnames, filenames in os.walk("src/sgpp/" + name + "/test/"):
+            for filename in fnmatch.filter(filenames, '*.cpp'):
+                test_src_files.append(os.path.join(root, filename))
+        #print "test_src_files", test_src_files
+        
+        #test_src_files += glob.glob("src/sgpp/" + name + "/test/*.cpp")
         src_objs[name] = env.SharedObject(src_files[name])
 
         lib = None
@@ -582,10 +608,21 @@ if swigAvail and javaAvail and env['SG_JAVA']:
     # install
     jinst = env.Install(env['OUTPUT_PATH'] + 'lib/jsgpp', [libjsgpp])
     
+    
 env.Install(env['OUTPUT_PATH'] + 'lib/sgpp', lib_sgpp_targets)
 
 # Unit tests
 #########################################################################
+
+
+if env['SG_ALL']:
+    #print "all_src_files: ", all_src_files
+    #print "test_src_files: ", test_src_files
+    # + ["src/sgpp/base/test/test_runner.cpp"]
+    cppUnitTests = env.Program(target="cppUnitTests", source = all_src_files + test_src_files)
+    env.Install(env['OUTPUT_PATH'] + 'tests/', cppUnitTests)
+else:
+    print "cpp unittests only built if all modules are enabled"
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail and swigAvail:
     testdep = env.SConscript('tests/SConscript')

@@ -95,7 +95,7 @@ namespace sg {
      * the sparse grid function
      * @return Pointer to the new OperationMultipleEval object for the Grid grid
      */
-    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix* dataset);
+    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix &dataset);
   }
 
 }

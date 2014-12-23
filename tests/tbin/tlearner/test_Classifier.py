@@ -98,7 +98,9 @@ class TestClassifier(unittest.TestCase):
             temp[0] = points[i][0]
             temp[1] = points[i][1]
             data.setRow(i, temp)
+
         val = self.classifier.applyData(data)
+
         self.assertEqual(len(val), len(correct))
         for i in xrange(len(correct)):
             self.assertAlmostEqual(val[i], correct[i])
@@ -158,4 +160,4 @@ class TestClassifier(unittest.TestCase):
         
         
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main(verbosity=9) 

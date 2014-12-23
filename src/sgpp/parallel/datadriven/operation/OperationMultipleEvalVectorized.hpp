@@ -93,7 +93,7 @@ namespace sg {
          */
         virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
 
-        /**
+        /**13
          * rebuilds the DataMatrix for Level and Index in Derivatives
          * needed for vectorization.
          *
