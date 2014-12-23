@@ -19,6 +19,8 @@ float* gpu_grid_index_sp;
 float* gpu_dataset_sp;
 float* gpu_alpha_sp;
 float* gpu_datavec_sp;
+float* host_alpha_sp;
+float* host_datavec_sp;
 
 __global__ void multTransSP_CUDA(float* ptrSource,
                                  float* ptrData,
@@ -397,11 +399,8 @@ __global__ void multSP_CUDA_5d(float* ptrAlpha,
 }
 
 double multTransSPCUDA(float* ptrSource, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims) {
-  // allocate memory on GPU
-  cudaMalloc((void**) &gpu_alpha_sp, storageSize * sizeof(float));
-  cudaMalloc((void**) &gpu_datavec_sp, sourceSize * sizeof(float));
-
   // copy coefficients to GPU
+  memcpy(host_datavec_sp, ptrSource, sourceSize * sizeof(float));
   cudaMemcpy(gpu_datavec_sp, ptrSource, sourceSize * sizeof(float), cudaMemcpyHostToDevice);
   int myStorageSize = ((int)storageSize) / 64;
 
@@ -416,25 +415,19 @@ double multTransSPCUDA(float* ptrSource, float* ptrGlobalResult, size_t sourceSi
   }
 
   // copy results back to host
-  cudaMemcpy(ptrGlobalResult, gpu_alpha_sp, storageSize * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(host_alpha_sp, gpu_alpha_sp, storageSize * sizeof(float), cudaMemcpyDeviceToHost);
+  memcpy(ptrGlobalResult, host_alpha_sp, storageSize * sizeof(float));
 
   double time = mytimer->stop();
   delete mytimer;
-
-  // free data on GPU
-  cudaFree(gpu_datavec_sp);
-  cudaFree(gpu_alpha_sp);
 
   return time;
 }
 
 double multSPCUDA(float* ptrAlpha, float* ptrResult, size_t result_size, size_t storageSize, size_t dims) {
-  // allocate memory on GPU
-  cudaMalloc((void**) &gpu_alpha_sp, storageSize * sizeof(float));
-  cudaMalloc((void**) &gpu_datavec_sp, result_size * sizeof(float));
-
   // copy coefficients to GPU
-  cudaMemcpy(gpu_alpha_sp, ptrAlpha, storageSize * sizeof(float), cudaMemcpyHostToDevice);
+  memcpy(host_alpha_sp, ptrAlpha, storageSize * sizeof(float));
+  cudaMemcpy(gpu_alpha_sp, host_alpha_sp, storageSize * sizeof(float), cudaMemcpyHostToDevice);
 
   unsigned int tmp = ((unsigned int)storageSize) / CUDA_BLOCK_SIZE_GPU;
   unsigned int fastStorageSize = tmp * CUDA_BLOCK_SIZE_GPU;
@@ -450,14 +443,11 @@ double multSPCUDA(float* ptrAlpha, float* ptrResult, size_t result_size, size_t 
   }
 
   // copy results back to host
-  cudaMemcpy(ptrResult, gpu_datavec_sp, result_size * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaMemcpy(host_datavec_sp, gpu_datavec_sp, result_size * sizeof(float), cudaMemcpyDeviceToHost);
+  memcpy(ptrResult, host_datavec_sp, result_size * sizeof(float));
 
   double time = mytimer->stop();
   delete mytimer;
-
-  // free data on GPU
-  cudaFree(gpu_datavec_sp);
-  cudaFree(gpu_alpha_sp);
 
   return time;
 }
@@ -468,6 +458,8 @@ void uploadGridSPCUDA(float* ptrLevel, float* ptrIndex, size_t storageSize, size
   // allocate memory on GPU
   cudaMalloc((void**) &gpu_grid_level_sp, mem_size);
   cudaMalloc((void**) &gpu_grid_index_sp, mem_size);
+  cudaMalloc((void**) &gpu_alpha_sp, storageSize * sizeof(float));
+  cudaMallocHost((void**) &host_alpha_sp, storageSize * sizeof(float));
 
   // copy host memory to device
   cudaMemcpy(gpu_grid_level_sp, ptrLevel, mem_size, cudaMemcpyHostToDevice);
@@ -479,6 +471,8 @@ void uploadDataSPCUDA(float* ptrData, size_t dataSize, size_t dims) {
 
   // allocate memory on GPU
   cudaMalloc((void**) &gpu_dataset_sp, mem_size);
+  cudaMalloc((void**) &gpu_datavec_sp, dataSize * sizeof(float));
+  cudaMallocHost((void**) &host_datavec_sp, dataSize * sizeof(float));
 
   // copy host memory to device
   cudaMemcpy(gpu_dataset_sp, ptrData, mem_size, cudaMemcpyHostToDevice);
@@ -487,8 +481,12 @@ void uploadDataSPCUDA(float* ptrData, size_t dataSize, size_t dims) {
 void deleteGridSPCUDA() {
   cudaFree(gpu_grid_level_sp);
   cudaFree(gpu_grid_index_sp);
+  cudaFree(gpu_alpha_sp);
+  cudaFreeHost(host_alpha_sp);
 }
 
 void deleteDataSPCUDA() {
   cudaFree(gpu_dataset_sp);
+  cudaFree(gpu_datavec_sp);
+  cudaFreeHost(host_datavec_sp);
 }
