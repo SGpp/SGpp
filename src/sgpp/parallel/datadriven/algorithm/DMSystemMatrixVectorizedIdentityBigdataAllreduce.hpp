@@ -34,6 +34,10 @@ namespace sg {
           rebuildLevelAndIndex();
         }
 
+        virtual ~DMSystemMatrixVectorizedIdentityBigdataAllreduce() {
+
+        }
+
         virtual void mult(base::DataVector& alpha, base::DataVector& result) {
           this->tempData->setAll(0.0);
           this->result_tmp->setAll(0.0);

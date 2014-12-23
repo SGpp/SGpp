@@ -6,6 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
+#ifdef USE_MPI
+
 #ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPI_HPP
 #define DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPI_HPP
 
@@ -92,3 +94,5 @@ namespace sg {
 }
 
 #endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPI_HPP */
+
+#endif

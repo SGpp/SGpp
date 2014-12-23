@@ -193,32 +193,32 @@ namespace sg {
         throw base::factory_exception("OperationEval is not implemented for this grid type.");
     }
 
-    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix* dataset) {
+    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix &dataset) {
 
       if (strcmp(grid.getType(), "linear") == 0) {
-        return new base::OperationMultipleEvalLinear(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalLinear(grid, dataset);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
                  || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
-        return new base::OperationMultipleEvalLinearBoundary(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalLinearBoundary(grid, dataset);
       } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
-        return new base::OperationMultipleEvalModLinear(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalModLinear(grid, dataset);
       } else if (strcmp(grid.getType(), "poly") == 0 ) {
-        return new base::OperationMultipleEvalPoly(grid.getStorage(),
+        return new base::OperationMultipleEvalPoly(grid,
                ((base::PolyGrid*) &grid)->getDegree(), dataset);
       } else if (strcmp(grid.getType(), "modpoly") == 0 ) {
-        return new base::OperationMultipleEvalModPoly(grid.getStorage(),
+        return new base::OperationMultipleEvalModPoly(grid,
                ((base::ModPolyGrid*) &grid)->getDegree(), dataset);
       } else if (strcmp(grid.getType(), "modBspline") == 0 ) {
-        return new base::OperationMultipleEvalModBspline(grid.getStorage(),
+        return new base::OperationMultipleEvalModBspline(grid,
                ((base::ModBsplineGrid*) &grid)->getDegree(), dataset);
       } else if (strcmp(grid.getType(), "modWavelet") == 0 ) {
-        return new base::OperationMultipleEvalModWavelet(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalModWavelet(grid, dataset);
       } else if (strcmp(grid.getType(), "prewavelet") == 0 ) {
-        return new base::OperationMultipleEvalPrewavelet(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalPrewavelet(grid, dataset);
       } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
-        return new base::OperationMultipleEvalLinearStretched(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalLinearStretched(grid, dataset);
       } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
-        return new base::OperationMultipleEvalLinearStretchedBoundary(grid.getStorage(), dataset);
+        return new base::OperationMultipleEvalLinearStretchedBoundary(grid, dataset);
       }
 
       else

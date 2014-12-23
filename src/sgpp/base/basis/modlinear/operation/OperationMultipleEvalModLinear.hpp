@@ -27,8 +27,8 @@ namespace sg {
          * @param storage the grid's GridStorage object
          * @param dataset the dataset that should be evaluated
          */
-        OperationMultipleEvalModLinear(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-          this->storage = storage;
+        OperationMultipleEvalModLinear(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+          this->storage = grid.getStorage();
         }
 
         /**

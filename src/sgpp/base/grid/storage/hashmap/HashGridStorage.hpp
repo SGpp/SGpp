@@ -8,7 +8,9 @@
 #ifndef HASHGRIDSTORAGE_HPP
 #define HASHGRIDSTORAGE_HPP
 
-#include "base/tools/hash_map_config.hpp"
+//#include "base/tools/hash_map_config.hpp"
+
+#include <unordered_map>
 
 #include "base/exception/generation_exception.hpp"
 
@@ -47,11 +49,13 @@ namespace sg {
       public:
         typedef GIT index_type;
         typedef GIT* index_pointer;
-#ifndef USETRONE
-        typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
-#else
-        typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
-#endif
+//#ifndef USETRONE
+//        typedef std::hash_map<index_pointer, size_t, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
+//#else
+        //typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+//#endif
+        typedef std::unordered_map<index_pointer, size_t, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
+
         typedef typename grid_map::iterator grid_map_iterator;
         typedef typename grid_map::const_iterator grid_map_const_iterator;
 
@@ -843,7 +847,6 @@ namespace sg {
           //    }
         }
 
-#ifdef SG_PARALLEL
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative function evaluation. The Level
@@ -891,7 +894,6 @@ namespace sg {
             }
           }
         }
-#endif
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -945,7 +947,6 @@ namespace sg {
           //    }
         }
 
-#ifdef SG_PARALLEL
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative Laplace Calculations: the level
@@ -985,7 +986,6 @@ namespace sg {
             }
           }
         }
-#endif
 
         /**
          * returns the max. depth in all dimension of the grid

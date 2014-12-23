@@ -17,14 +17,14 @@ namespace sg {
       AlgorithmMultipleEvaluation<SLinearBase> op;
       LinearBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, *(this->dataset_), result);
+      op.mult(storage, base, alpha, this->dataset, result);
     }
 
     void OperationMultipleEvalLinear::multTranspose(DataVector& alpha, DataVector& result) {
       AlgorithmMultipleEvaluation<SLinearBase> op;
       LinearBasis<unsigned int, unsigned int> base;
 
-      op.mult_transpose(storage, base, alpha, *(this->dataset_), result);
+      op.mult_transpose(storage, base, alpha, this->dataset, result);
     }
 
   }

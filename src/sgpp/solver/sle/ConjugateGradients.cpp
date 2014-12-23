@@ -10,6 +10,8 @@
 #endif
 #include "solver/sle/ConjugateGradients.hpp"
 
+#include <cstdio>
+
 namespace sg {
   namespace solver {
 
@@ -58,6 +60,7 @@ namespace sg {
 
       // calculate the starting residuum
       SystemMatrix.mult(alpha, temp);
+
       r.sub(temp);
 
       sg::base::DataVector d(r);

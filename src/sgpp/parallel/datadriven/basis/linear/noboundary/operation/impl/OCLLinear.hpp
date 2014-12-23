@@ -19,6 +19,10 @@ namespace sg {
     class OCLLinear : public OCLKernelBase {
       public:
         static const KernelType kernelType = Standard;
+
+        virtual ~OCLLinear() {
+
+        }
       private:
         virtual std::string generateSourceMult(size_t dims, size_t local_workgroup_size) {
           std::stringstream stream_program_src;

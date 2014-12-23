@@ -25,7 +25,7 @@ namespace sg {
         float* pinnedGrid;
         float* pinnedTmp;
       public:
-        SPOCLKernelImpl(): OCLKernelImplBase() {}
+        SPOCLKernelImpl(): OCLKernelImplBase(), pinnedGrid(NULL), pinnedTmp(NULL) {}
 
         inline void initOCLBuffers(
           sg::base::DataMatrixSP* level,

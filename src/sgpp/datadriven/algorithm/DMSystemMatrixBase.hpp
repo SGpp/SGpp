@@ -23,7 +23,7 @@ namespace sg {
     class DMSystemMatrixBase : public sg::base::OperationMatrix {
       protected:
         /// the dataset
-        sg::base::DataMatrix* dataset_;
+        sg::base::DataMatrix *dataset_;
         /// the lambda, the regularisation parameter
         double lambda_;
         /// time needed for Mult

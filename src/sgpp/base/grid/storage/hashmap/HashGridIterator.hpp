@@ -359,7 +359,7 @@ namespace sg {
         /// GridIndex object used to operate on the current position in the hashmap
         GIT index;
         /// true if the current point is a leaf, otherwise false
-        bool Leaf;
+        //bool Leaf;
         /// the current gridpoint's index
         size_t seq_;
     };

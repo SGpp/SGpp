@@ -13,7 +13,6 @@
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
 
 namespace sg {
-
   namespace datadriven {
 
     Learner::Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
@@ -38,6 +37,7 @@ namespace sg {
       if (C_ != NULL)
         delete C_;
 
+      std::cout << "test:" << "blubb" << std::endl;
       if (this->CMode_ == Laplace) {
         C_ = sg::op_factory::createOperationLaplace(*this->grid_);
       } else if (this->CMode_ == Identity) {

@@ -8,6 +8,7 @@
 #ifndef HASH_MAP_CONFIG
 #define HASH_MAP_CONFIG
 
+/*
 // backward compatible: able to use the  standard gnu hashmap of linux (SGI/STLPort)
 #ifndef USETRONE
 #include <ext/hash_map>
@@ -34,6 +35,7 @@ namespace std {
 #endif
 
 #endif
+*/
 
 // forward declaration of hash function and hash comparison function
 namespace sg {

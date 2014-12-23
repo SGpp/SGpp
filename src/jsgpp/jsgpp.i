@@ -149,7 +149,7 @@ namespace std {
 
  // static factory methods
  //%include "src/sgpp/base/basis/operations_factory.hpp"
-%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 %include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
 %include "src/sgpp/finance/operation/FinanceOpFactory.hpp"
 %include "src/sgpp/pde/operation/PdeOpFactory.hpp"

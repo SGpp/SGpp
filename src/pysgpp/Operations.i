@@ -49,7 +49,7 @@ class OperationMultipleEval
 {
 public:
 	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
-	virtual void multTranspose(sg::base::DataVector& soruce, sg::base::DataVector& result) = 0;
+	virtual void multTranspose(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
 };
 
 class OperationMatrix

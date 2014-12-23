@@ -33,7 +33,6 @@ namespace base
 %rename(assign) DataVector::operator=;
 %rename(__len__) DataVector::getSize;
 
-
 		
 class DataVector
 {

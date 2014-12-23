@@ -20,26 +20,25 @@ namespace sg {
 
   namespace parallel {
 
-    LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression, const bool verbose)
+    LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const VectorizationType vecType, const bool isRegression, const bool verbose)
       : sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone) {
     }
 
-    LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool verbose)
+    LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool verbose)
       : sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {
     }
 
-    LearnerVectorizedIdentity::LearnerVectorizedIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
+    LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
         const VectorizationType vecType, const bool isRegression, const bool verbose)
       : sg::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType) {
       // @TODO implement
+    	this->mpiType_ = MPINone; //might not be a good initializer - David
     }
 
-    LearnerVectorizedIdentity::~LearnerVectorizedIdentity() {
+    LearnerLeastSquaresIdentity::~LearnerLeastSquaresIdentity() {
     }
 
-
-
-    sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) {
+    sg::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) {
       if (this->grid_ == NULL)
         return NULL;
 
@@ -50,9 +49,7 @@ namespace sg {
 #endif
     }
 
-
-
-    void LearnerVectorizedIdentity::postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+    void LearnerLeastSquaresIdentity::postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
         const size_t numNeededIterations) {
       LearnerVectorizedPerformance currentPerf = LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(*this->grid_,
           trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
@@ -69,7 +66,7 @@ namespace sg {
       }
     }
 
-    sg::base::DataVector LearnerVectorizedIdentity::predict(sg::base::DataMatrix& testDataset) {
+    sg::base::DataVector LearnerLeastSquaresIdentity::predict(sg::base::DataMatrix& testDataset) {
       sg::base::DataMatrix tmpDataSet(testDataset);
       size_t originalSize = testDataset.getNrows();
       size_t paddedSize = sg::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
