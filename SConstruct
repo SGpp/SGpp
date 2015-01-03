@@ -297,6 +297,7 @@ if env['PLATFORM'] != 'cygwin':
 
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
+env.Append(CPPFLAGS=['-std=c++11'])
 
 # Decide what to compile
 #########################################################################
