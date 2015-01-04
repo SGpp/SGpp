@@ -99,6 +99,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     mainClasses = &mainClasses_;
 
     testTrainDataset = &testTrainDataset_;
+    DataMatrix testDatasetT(*testTrainDataset);
+    testDatasetT.transpose();
+
     testClasses = &testClasses_;
 
     config = config_;
@@ -399,7 +402,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
             //double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
             double err1 = getError(&mainTrainDatasetT, mainClasses, config.errorType, NULL, true);
-            double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
+            double err2 = getError(&testDatasetT, testClasses, config.errorType, NULL, true);
             // double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
             // double err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL, false);
             // double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
@@ -488,13 +491,14 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     //    sg::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
     //                                          config.lambda);
 
-    sg::parallel::DMSystemMatrixVectorizedIdentity matrix(*grid_, mainTrainDatasetT,
+    sg::parallel::DMSystemMatrixVectorizedIdentity matrix(*grid_, *mainTrainDataset,
             config.lambda, vecType_);
 
     sg::base::DataVector b(alpha_->getSize());
     matrix.generateb(*mainClasses, b);
 
     cg->solve(matrix, *alpha_, b, true, false);
+    *alphaAvg = *alpha_;
 
     /*
     std::cout << "Error after CG (ACCURACY): " <<
@@ -508,9 +512,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
 
     std::cout << "Error on test (ACCURACY): " <<
-    getError(testTrainDataset, mainClasses, "ACCURACY", NULL, false) << std::endl;
+    getError(&testDatasetT, mainClasses, "ACCURACY", NULL, true) << std::endl;
     std::cout << "Error on test (MSE): " <<
-    getError(testTrainDataset, mainClasses, "MSE", NULL, false) << std::endl;
+    getError(&testDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
 
     /*
      * Clean up
