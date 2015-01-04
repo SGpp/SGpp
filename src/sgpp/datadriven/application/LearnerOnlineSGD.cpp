@@ -512,9 +512,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
 
     std::cout << "Error on test (ACCURACY): " <<
-    getError(&testDatasetT, mainClasses, "ACCURACY", NULL, true) << std::endl;
+    getError(&testDatasetT, testClasses, "ACCURACY", NULL, true) << std::endl;
     std::cout << "Error on test (MSE): " <<
-    getError(&testDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
+    getError(&testDatasetT, testClasses, "MSE", NULL, true) << std::endl;
 
     /*
      * Clean up
