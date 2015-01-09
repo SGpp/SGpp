@@ -8,11 +8,12 @@ namespace datadriven {
 
 OperationMultipleEvalSubspaceCombined::OperationMultipleEvalSubspaceCombined(Grid &grid, DataMatrix &dataset) :
 		AbstractOperationMultipleEvalSubspace(grid, dataset) {
+	this->paddedDataset = this->padDataset(dataset);
 	this->storage = grid.getStorage();
 	//this->dataset = dataset;
 	this->dim = dataset.getNcols();
 
-	this->subspaceSize = (2 * this->dim) + 8;
+	//this->subspaceSize = (2 * this->dim) + 8;
 	this->maxGridPointsOnLevel = 0;
 
 #ifdef X86COMBINED_WRITE_STATS
@@ -94,7 +95,8 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector &result) {
 	}
 }
 
-void OperationMultipleEvalSubspaceCombined::setSurplus(DataVector &level, DataVector &maxIndices, DataVector &index, double value) {
+void OperationMultipleEvalSubspaceCombined::setSurplus(DataVector &level, DataVector &maxIndices, DataVector &index,
+		double value) {
 	uint32_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
 	uint32_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
 	uint32_t subspaceIndex = this->allLevelsIndexMap.find(levelFlat)->second;
@@ -102,8 +104,8 @@ void OperationMultipleEvalSubspaceCombined::setSurplus(DataVector &level, DataVe
 	subspace.setSurplus(indexFlat, value);
 }
 
-void OperationMultipleEvalSubspaceCombined::getSurplus(DataVector &level, DataVector &maxIndices, DataVector &index, double &value,
-		bool &isVirtual) {
+void OperationMultipleEvalSubspaceCombined::getSurplus(DataVector &level, DataVector &maxIndices, DataVector &index,
+		double &value, bool &isVirtual) {
 	uint32_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
 	uint32_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
 	uint32_t subspaceIndex = this->allLevelsIndexMap.find(levelFlat)->second;
@@ -141,30 +143,54 @@ uint32_t OperationMultipleEvalSubspaceCombined::flattenLevel(size_t dim, size_t 
 	return levelFlat;
 }
 
-void OperationMultipleEvalSubspaceCombined::padDataset() {
+DataMatrix *OperationMultipleEvalSubspaceCombined::padDataset(sg::base::DataMatrix &dataset) {
 	size_t chunkSize = X86COMBINED_PARALLEL_DATA_POINTS;
 
 	// Assure that data has a even number of instances -> padding might be needed
-	size_t remainder = this->dataset.getNrows() % chunkSize;
+	size_t remainder = dataset.getNrows() % chunkSize;
 	size_t loopCount = chunkSize - remainder;
 
-	if (loopCount != chunkSize) {
-		sg::base::DataVector lastRow(this->dataset.getNcols());
-		size_t oldSize = this->dataset.getNrows();
-		this->dataset.getRow(this->dataset.getNrows() - 1, lastRow);
-		this->dataset.resize(this->dataset.getNrows() + loopCount);
+	if (loopCount == chunkSize) {
+		return &dataset;
+	}
 
-		for (size_t i = 0; i < loopCount; i++) {
-			this->dataset.setRow(oldSize + i, lastRow);
+	sg::base::DataVector lastRow(dataset.getNcols());
+	size_t oldSize = dataset.getNrows();
+	dataset.getRow(dataset.getNrows() - 1, lastRow);
+
+	DataMatrix *paddedDataset = new DataMatrix(dataset);
+	//pad to make dataset % X86COMBINED_PARALLEL_DATA_POINTS == 0
+	paddedDataset->resize(dataset.getNrows() + loopCount);
+
+	for (size_t i = 0; i < loopCount; i++) {
+		paddedDataset->setRow(oldSize + i, lastRow);
+	}
+
+	//additional padding for subspace skipping
+	//if validIndices contain X86COMBINED_PARALLEL_DATA_POINTS - 1 it is possible for a vector iteration to contain
+	//indices larger than size(dataset) (even though the dataset is divided by X86COMBINED_PARALLEL_DATA_POINTS)
+	//add X86COMBINED_VEC_PADDING dummy data points to avoid that problem
+	//add X86COMBINED_VEC_PADDING * 2 to also enable the calculateIndexCombined2() method
+	paddedDataset->addSize(X86COMBINED_VEC_PADDING * 2);
+	for (size_t i = paddedDataset->getNrows(); i < paddedDataset->getNrows() + paddedDataset->getUnused(); i++) {
+		for (size_t j = 0; j < paddedDataset->getNcols(); j++) {
+			paddedDataset->set(i, j, 0.0);
 		}
 	}
-	//TODO initialize padding area - hacky
-	this->dataset.addSize(X86COMBINED_VEC_PADDING * 2);
-	for (size_t i = this->dataset.getNrows(); i < this->dataset.getNrows() + this->dataset.getUnused(); i++) {
-		for (size_t j = 0; j < this->dataset.getNcols(); j++) {
-			this->dataset.set(i, j, 0.0);
-		}
-	}
+
+	return paddedDataset;
+
+	//TODO initialize padding area - hacky -> remove this? -> should not be required as long as vector size divides chunksize
+//	this->paddedDataset.addSize(X86COMBINED_VEC_PADDING * 2);
+//	for (size_t i = this->dataset.getNrows(); i < this->dataset.getNrows() + this->dataset.getUnused(); i++) {
+//		for (size_t j = 0; j < this->dataset.getNcols(); j++) {
+//			this->dataset.set(i, j, 0.0);
+//		}
+//	}
+}
+
+size_t OperationMultipleEvalSubspaceCombined::getPaddedDatasetSize() {
+	return this->paddedDataset->getNrows();
 }
 
 size_t OperationMultipleEvalSubspaceCombined::getAlignment() {

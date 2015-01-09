@@ -15,6 +15,7 @@
 #include <solver/SLESolver.hpp>
 
 #include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
+#include "datadriven/operation/DatadrivenOperationCommon.hpp"
 
 namespace sg {
 namespace datadriven {
@@ -66,30 +67,34 @@ public:
 		}
 	}
 
-	void learn(sg::base::OperationMultipleEval *kernel, std::string datasetFileName);
+	void learn(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, std::string datasetFileName);
 
 	void learnReference(std::string fileName);
 
 	//learn and test against test dataset and measure hits/mse
-	void learnAndTest(sg::base::OperationMultipleEval *kernel, std::string datasetFileName, std::string testFileName,
-			bool isBinaryClassification);
+	void learnAndTest(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+			std::string datasetFileName, std::string testFileName, bool isBinaryClassification);
 
 	//learn and test against the streaming implemenation
-	double learnAndCompare(sg::base::OperationMultipleEval *kernel, std::string datasetFileName, size_t gridGranularity, double tolerance);
+	double learnAndCompare(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+			std::string datasetFileName, size_t gridGranularity, double tolerance);
 
-	void refinementAndOverallPerformance(std::vector<sg::base::OperationMultipleEval *> kernels,
+	void refinementAndOverallPerformance(
+			std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
 			std::vector<std::string> datasets, std::vector<std::string> experimentHeaders, std::string metaInformation,
 			std::string fileName, bool referenceComparison = false);
 
-	void regularGridSpeedup(sg::base::OperationMultipleEval *kernel, std::vector<size_t> dimList,
-			std::vector<size_t> levelList, size_t instances, std::string metaInformation, std::string experimentName);
+	void regularGridSpeedup(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+			std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances, std::string metaInformation,
+			std::string experimentName);
 
 	void appendToPerformanceRun(std::string fileName, std::string changingRowName, std::string currentValues,
-			std::vector<sg::base::OperationMultipleEval *> kernels, std::vector<std::string> datasets,
-			std::vector<std::string> datasetNames, std::string metaInformation, bool removeOld);
+			std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
+			std::vector<std::string> datasets, std::vector<std::string> datasetNames, std::string metaInformation,
+			bool removeOld);
 
-	void testRegular(sg::base::OperationMultipleEval *kernel, size_t dim, size_t level, size_t instances,
-			double &duration, double &durationReference);
+	void testRegular(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
+			size_t level, size_t instances, double &duration, double &durationReference);
 };
 
 }

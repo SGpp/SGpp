@@ -17,13 +17,14 @@ namespace datadriven {
 class OperationMultipleEvalSubspaceCombined: public AbstractOperationMultipleEvalSubspace {
 private:
 
-	size_t subspaceSize = -1;
+	sg::base::DataMatrix *paddedDataset;
+
+	//size_t subspaceSize = -1;
 
 	size_t maxGridPointsOnLevel;
 
 	std::map<uint32_t, uint32_t> allLevelsIndexMap;
 
-	//sg::base::DataMatrix *dataset = nullptr;
 	size_t dim = -1;
 	size_t maxLevel = 0;
 
@@ -41,11 +42,6 @@ private:
 #endif
 
 	void prepareSubspaceIterator();
-
-//    void uncachedMultInner(size_t dim, const double * const datasetPtr, sg::base::DataVector &alpha,
-//            size_t dataIndexBase, size_t end_index_data, X86CombinedSubspaceNode &subspace, size_t validIndicesCount,
-//            size_t *validIndices, size_t *levelIndices, size_t *nextIterationToRecalcReferences,
-//            double *evalIndexValuesAll, uint32_t *intermediatesAll);
 
 	void listMultInner(size_t dim, const double * const datasetPtr, sg::base::DataVector &alpha, size_t dataIndexBase,
 			size_t end_index_data, X86CombinedSubspaceNode &subspace, double *levelArrayContinuous,
@@ -88,17 +84,19 @@ public:
 
 	void prepare() override;
 
-	void multImpl(sg::base::DataVector &alpha, sg::base::DataVector &result, const size_t start_index_data,
+	void multTransposeImpl(sg::base::DataVector &alpha, sg::base::DataVector &result, const size_t start_index_data,
 			const size_t end_index_data) override;
 
-	void multTransposeImpl(sg::base::DataVector &source, sg::base::DataVector &result, const size_t start_index_data,
+	void multImpl(sg::base::DataVector &source, sg::base::DataVector &result, const size_t start_index_data,
 			const size_t end_index_data) override;
 
-	void padDataset() override;
+	sg::base::DataMatrix *padDataset(sg::base::DataMatrix &dataset);
 
 	size_t getAlignment() override;
 
 	std::string getImplementationName() override;
+
+	size_t getPaddedDatasetSize() override;
 };
 
 }

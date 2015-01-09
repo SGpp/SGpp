@@ -413,10 +413,6 @@ size_t OperationMultipleEvalSubspaceSimple::flattenLevel(size_t dim, size_t maxL
     return levelFlat;
 }
 
-void OperationMultipleEvalSubspaceSimple::padDataset() {
-	//not required for this kernel
-}
-
 size_t OperationMultipleEvalSubspaceSimple::flattenIndex(double *intermediates, size_t dim, size_t *maxIndicesPtr, size_t *indexPtr, size_t toRecalc) {
 
 #if X86SIMPLE_ENABLE_PARTIAL_RESULT_REUSAGE == 1

@@ -7,7 +7,6 @@
 #include <cstdio>
 
 #include "LearnerLeastSquaresIdentity.hpp"
-#include "LearnerVectorizedSubspaces.hpp"
 
 using namespace sg::base;
 
@@ -40,7 +39,8 @@ MetaLearner::MetaLearner(sg::solver::SLESolverConfiguration solverConfig,
  }
  */
 
-void MetaLearner::learn(sg::base::OperationMultipleEval *kernel, std::string datasetFileName) {
+void MetaLearner::learn(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+		std::string datasetFileName) {
 
 	this->dim = arffTools.getDimension(datasetFileName);
 	this->instances = arffTools.getNumberInstances(datasetFileName);
@@ -61,7 +61,8 @@ void MetaLearner::learn(sg::base::OperationMultipleEval *kernel, std::string dat
 
 	bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
 	//TODO kernel must be configurable here
-	LearnerVectorizedSubspaces *myLearner = new LearnerVectorizedSubspaces(kernel, isRegression, this->verbose);
+	LearnerLeastSquaresIdentity *myLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
+	myLearner->setImplementation(operationConfiguration);
 
 	LearnerTiming timings = myLearner->train(trainingData, classesVector, this->gridConfig, this->solverConfig,
 			this->solverFinalStep, this->adaptivityConfiguration, false, this->lambda);
@@ -97,7 +98,7 @@ void MetaLearner::learnReference(std::string fileName) {
 
 	bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
 	//TODO kernel must be configurable here
-	LearnerLeastSquaresIdentity *referenceLearner = new LearnerLeastSquaresIdentity(nullptr, isRegression, this->verbose);
+	LearnerLeastSquaresIdentity *referenceLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
 
 	LearnerTiming timings = referenceLearner->train(trainingData, classesVector, gridConfig, solverConfig,
 			solverFinalStep, adaptivityConfiguration, false, lambda);
@@ -112,11 +113,11 @@ void MetaLearner::learnReference(std::string fileName) {
 }
 
 //learn and test against test dataset and measure hits/mse
-void MetaLearner::learnAndTest(sg::base::OperationMultipleEval *kernel, std::string datasetFileName,
-		std::string testFileName, bool isBinaryClassification) {
+void MetaLearner::learnAndTest(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+		std::string datasetFileName, std::string testFileName, bool isBinaryClassification) {
 
 	//always to this first
-	this->learn(kernel, datasetFileName);
+	this->learn(operationConfiguration, datasetFileName);
 
 	size_t testDim = arffTools.getDimension(testFileName);
 	size_t testInstances = arffTools.getNumberInstances(testFileName);
@@ -171,10 +172,10 @@ void MetaLearner::learnAndTest(sg::base::OperationMultipleEval *kernel, std::str
 }
 
 //learn and test against the streaming implemenation
-double MetaLearner::learnAndCompare(sg::base::OperationMultipleEval *kernel, std::string datasetFileName,
-		size_t gridGranularity, double tolerance) {
+double MetaLearner::learnAndCompare(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+		std::string datasetFileName, size_t gridGranularity, double tolerance) {
 	//always do this first
-	this->learn(kernel, datasetFileName);
+	this->learn(operationConfiguration, datasetFileName);
 	this->learnReference(datasetFileName);
 
 	DataMatrix testTrainingData(0, this->dim);
@@ -327,21 +328,22 @@ void MetaLearner::writeRefinementResults(std::string fileName, std::string fileH
 	myFile.close();
 }
 
-void MetaLearner::refinementAndOverallPerformance(std::vector<sg::base::OperationMultipleEval *> kernels,
+void MetaLearner::refinementAndOverallPerformance(
+		std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
 		std::vector<std::string> datasets, std::vector<std::string> experimentHeaders, std::string metaInformation,
 		std::string experimentName, bool referenceComparison) {
-	for (sg::base::OperationMultipleEval *kernel : kernels) {
+	for (sg::datadriven::OperationMultipleEvalConfiguration * operationConfiguration : operationConfigurations) {
 		std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > refinementDetails;
 		std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > refinementDetailsReference;
 
-		std::string kernelMetaInformation = metaInformation + " kernel: " + kernel->getImplementationName();
+		std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration->name;
 
 		std::ofstream myFile;
-		std::string experimentFile = "results/data/overall_" + experimentName + "_" + kernel->getImplementationName()
+		std::string experimentFile = "results/data/overall_" + experimentName + "_" + operationConfiguration->name
 				+ ".csv";
 		remove(experimentFile.c_str());
 		std::string experimentDetailsFile = "results/data/refinement_" + experimentName + "_"
-				+ kernel->getImplementationName() + ".csv";
+				+ operationConfiguration->name + ".csv";
 		myFile.open(experimentFile, std::ios::out | std::ios::app);
 		myFile << "# " << kernelMetaInformation << std::endl;
 		myFile << "experiment" << csvSep << "duration" << csvSep << "durationLastIt";
@@ -354,7 +356,7 @@ void MetaLearner::refinementAndOverallPerformance(std::vector<sg::base::Operatio
 		myFile << std::endl;
 
 		for (size_t i = 0; i < datasets.size(); i++) {
-			this->learn(kernel, datasets[i]);
+			this->learn(*operationConfiguration, datasets[i]);
 			refinementDetails.push_back(make_pair(datasets[i], this->ExecTimesOnStep));
 
 			if (referenceComparison) {
@@ -382,13 +384,14 @@ void MetaLearner::refinementAndOverallPerformance(std::vector<sg::base::Operatio
 	}
 }
 
-void MetaLearner::regularGridSpeedup(sg::base::OperationMultipleEval *kernel, std::vector<size_t> dimList,
-		std::vector<size_t> levelList, size_t instances, std::string metaInformation, std::string experimentName) {
+void MetaLearner::regularGridSpeedup(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+		std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances, std::string metaInformation,
+		std::string experimentName) {
 
-	std::string kernelMetaInformation = metaInformation + " kernel: " + kernel->getImplementationName();
+	std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration.name;
 
 	std::ofstream myFile;
-	std::string experimentFile = "results/data/" + experimentName + "_" + kernel->getImplementationName() + ".csv";
+	std::string experimentFile = "results/data/" + experimentName + "_" + operationConfiguration.name + ".csv";
 	remove(experimentFile.c_str());
 
 	myFile.open(experimentFile, std::ios::out | std::ios::app);
@@ -404,7 +407,7 @@ void MetaLearner::regularGridSpeedup(sg::base::OperationMultipleEval *kernel, st
 		for (size_t level : levelList) {
 			double duration;
 			double durationReference;
-			this->testRegular(kernel, dim, level, instances, duration, durationReference);
+			this->testRegular(operationConfiguration, dim, level, instances, duration, durationReference);
 
 			myFile << dim << csvSep << level << csvSep << duration << csvSep << durationReference << csvSep;
 			myFile << (durationReference / duration) << std::endl;
@@ -416,8 +419,9 @@ void MetaLearner::regularGridSpeedup(sg::base::OperationMultipleEval *kernel, st
 }
 
 void MetaLearner::appendToPerformanceRun(std::string fileName, std::string changingRowName, std::string currentValues,
-		std::vector<sg::base::OperationMultipleEval *> kernels, std::vector<std::string> datasets,
-		std::vector<std::string> datasetNames, std::string metaInformation, bool removeOld) {
+		std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
+		std::vector<std::string> datasets, std::vector<std::string> datasetNames, std::string metaInformation,
+		bool removeOld) {
 
 	if (removeOld) {
 		std::ifstream fileForTest(fileName.c_str());
@@ -439,9 +443,9 @@ void MetaLearner::appendToPerformanceRun(std::string fileName, std::string chang
 		myFile.open(fileName, std::ios::out | std::ios::app);
 		myFile << "# " << metaInformation << std::endl;
 		myFile << changingRowName;
-		for (sg::base::OperationMultipleEval *kernel : kernels) {
+		for (sg::datadriven::OperationMultipleEvalConfiguration *operationConfiguration : operationConfigurations) {
 			for (std::string datasetName : datasetNames) {
-				myFile << csvSep << kernel->getImplementationName() << "/" << datasetName;
+				myFile << csvSep << operationConfiguration->name << "/" << datasetName;
 			}
 		}
 		myFile << std::endl;
@@ -452,9 +456,9 @@ void MetaLearner::appendToPerformanceRun(std::string fileName, std::string chang
 	myFile.open(fileName, std::ios::out | std::ios::app);
 	std::cout << "filename: " << fileName << std::endl;
 	myFile << currentValues;
-	for (sg::base::OperationMultipleEval *kernel : kernels) {
+	for (sg::datadriven::OperationMultipleEvalConfiguration *operationConfiguration : operationConfigurations) {
 		for (std::string dataset : datasets) {
-			this->learn(kernel, dataset);
+			this->learn(*operationConfiguration, dataset);
 			myFile << csvSep << this->myTiming.timeComplete_;
 		}
 	}
@@ -467,8 +471,9 @@ double fRand(double fMin, double fMax) {
 	return fMin + f * (fMax - fMin);
 }
 
-void MetaLearner::testRegular(sg::base::OperationMultipleEval *kernel, size_t dim, size_t level, size_t instances,
-		double &duration, double &durationReference) {
+//TODO: replace kernel parameter by type/subtype
+void MetaLearner::testRegular(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
+		size_t level, size_t instances, double &duration, double &durationReference) {
 
 	srand(static_cast<unsigned int>(time(NULL)));
 	this->dim = dim;
@@ -500,10 +505,11 @@ void MetaLearner::testRegular(sg::base::OperationMultipleEval *kernel, size_t di
 	}
 
 	bool isRegression = true;
-	LearnerVectorizedSubspaces *learner = new LearnerVectorizedSubspaces(kernel, isRegression, this->verbose);
+	LearnerLeastSquaresIdentity *learner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
+	learner->setImplementation(operationConfiguration);
 
 	//TODO plug default kernel here instead of "kernel"
-	LearnerLeastSquaresIdentity *learnerReference = new LearnerLeastSquaresIdentity(kernel, isRegression,
+	LearnerLeastSquaresIdentity *learnerReference = new LearnerLeastSquaresIdentity(isRegression,
 			this->verbose);
 
 	duration = learner->testRegular(this->gridConfig, testTrainingData);

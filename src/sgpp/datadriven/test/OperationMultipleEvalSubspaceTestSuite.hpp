@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "datadriven/test/OperationMultipleEval/OperationMultipleEvalSubspaceSimpleTestCase.hpp"
+#include "datadriven/test/OperationMultipleEvalSubspace/OperationMultipleEvalSubspaceSimpleTestCase.hpp"
 
 namespace sg {
 namespace test {
@@ -17,7 +17,7 @@ namespace test {
 class OperationMultipleEvalSubspaceTestSuite : public TestSuite {
 public:
 	std::string getName() override {
-		return "OperationMultipleEvalSubspaceTestSuite";
+		return "LearnerLeastSquaresIdentityTestSuite";
 	}
 
 	void runAllTests() override {

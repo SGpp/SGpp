@@ -124,6 +124,7 @@ namespace std {
 
 // The Good, i.e. without any modifications
 %include "src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
+%include "src/sgpp/base/tools/hash_map_config.hpp"
 %ignore sg::base::HashGridIndex::operator=;
 %include "src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
 %include "src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"

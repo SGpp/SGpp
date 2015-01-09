@@ -40,6 +40,8 @@
 #include "datadriven/operation/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 #include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
 
+#include "base/operation/BaseOpFactory.hpp"
+
 namespace sg {
 
 namespace op_factory {
@@ -145,17 +147,21 @@ datadriven::OperationInverseRosenblattTransformation* createOperationInverseRose
 }
 
 base::OperationMultipleEval *createOperationMultipleEval(base::Grid &grid, base::DataMatrix &dataset,
-		sg::datadriven::OperationMultipleEvalType type, sg::datadriven::OperationMultipleEvalSubType subtype) {
+		sg::datadriven::OperationMultipleEvalConfiguration configuration) {
+	if (configuration.type == sg::datadriven::OperationMultipleEvalType::DEFAULT) {
+		return createOperationMultipleEval(grid, dataset);
+	}
+
 	if (strcmp(grid.getType(), "linear") == 0) {
-		switch (type) {
+		switch (configuration.type) {
 		case datadriven::OperationMultipleEvalType::STREAMING:
-			if (subtype != sg::datadriven::OperationMultipleEvalSubType::DEFAULT) {
+			if (configuration.subType != sg::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 				throw base::factory_exception("OperationMultiEval is not implemented for this implementation subtype.");
 			}
 			return new datadriven::OperationMultiEvalLinearNoBoundaryHashGridCPU(grid, dataset);
 			break;
 		case datadriven::OperationMultipleEvalType::SUBSPACELINEAR:
-			switch (subtype) {
+			switch (configuration.subType) {
 			case sg::datadriven::OperationMultipleEvalSubType::DEFAULT:
 			case sg::datadriven::OperationMultipleEvalSubType::COMBINED:
 				return new datadriven::OperationMultipleEvalSubspaceCombined(grid, dataset);

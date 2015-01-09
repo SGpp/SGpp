@@ -9,6 +9,7 @@
 
 #include "datadriven/application/LearnerBase.hpp"
 #include "base/operation/OperationMultipleEval.hpp"
+#include "datadriven/operation/DatadrivenOperationCommon.hpp"
 
 namespace sg {
 
@@ -22,6 +23,12 @@ namespace datadriven {
  * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
 class LearnerLeastSquaresIdentity: public sg::datadriven::LearnerBase {
+private:
+	std::vector<std::pair<size_t, double> > ExecTimeOnStep;
+
+	sg::base::OperationMultipleEval *kernel = nullptr;
+
+	sg::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 protected:
 
 	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
@@ -37,8 +44,7 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param isVerbose set to true in order to allow console output
 	 */
-	LearnerLeastSquaresIdentity(const sg::base::OperationMultipleEval *kernel, const bool isRegression,
-			const bool isVerbose = true);
+	LearnerLeastSquaresIdentity(const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Constructor
@@ -50,7 +56,7 @@ public:
 	 * @param isVerbose set to true in order to allow console output
 	 */
 	LearnerLeastSquaresIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
-			const sg::base::OperationMultipleEval *kernel, const bool isRegression, const bool isVerbose = true);
+			const bool isRegression, const bool isVerbose = true);
 
 	/**
 	 * Destructor
@@ -60,6 +66,12 @@ public:
 	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
 
 	double testRegular(const sg::base::RegularGridConfiguration& GridConfig, sg::base::DataMatrix& testDataset);
+
+	std::vector<std::pair<size_t, double> > getRefinementExecTimes();
+
+	void setImplementation(sg::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
+		this->implementationConfiguration = operationConfiguration;
+	}
 };
 
 }
