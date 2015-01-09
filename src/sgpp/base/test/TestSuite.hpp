@@ -36,13 +36,6 @@ public:
 	}
 
 	void run(TestCase &test) {
-		try {
-			test.setup();
-		} catch (TestException &e) {
-			std::cout << "test " << test.getName() << "failed during setup(): " << e.getMessage() << std::endl;
-			success = false;
-			return;
-		}
 
 		try {
 			test.run();
@@ -52,14 +45,12 @@ public:
 			return;
 		}
 
-		try {
-			test.tearDown();
-		} catch (TestException &e) {
-			std::cout << "test " << test.getName() << "failed during tearDown() : " << e.getMessage() << std::endl;
+		if (test.getSuccessStatus()) {
+			std::cout << "  test " << test.getName() << ": OK" << std::endl;
+		} else {
 			success = false;
-			return;
+			std::cout << "  test " << test.getName() << ": failed" << std::endl;
 		}
-		std::cout << "  test " << test.getName() << ": OK" << std::endl;
 	}
 
 

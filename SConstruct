@@ -222,11 +222,11 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 opt_flags = Split(env['CPPFLAGS'])
 env['CPPFLAGS'] = ['-mavx'] # avx has to be always enabled to enabled intrinsics-based algorithms 
 
-if env['TRONE']:
-    env.Append(CPPDEFINES=['USETRONE'])
-    env.Append(CPPFLAGS=[''])
+# if env['TRONE']:
+#     env.Append(CPPDEFINES=['USETRONE'])
+#     env.Append(CPPFLAGS=[''])
 
-if env['OPT']:
+if env['OPT'] == 1:
    env.Append(CPPFLAGS=['-O3'])
 else:	
    env.Append(CPPFLAGS=['-g', '-O0'])	

@@ -4,6 +4,11 @@
 
 # author Joerg Blank (blankj@in.tum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
 
+import os
+
+# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+if os.path.exists("pysgpp_wrap.cc"):
+    os.remove("pysgpp_wrap.cc")
 
 srcs = Split("""
 pysgpp.i
@@ -37,6 +42,7 @@ py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPD
 
 # The explicit ".so" suffix is required for OSX as otherwise ".dylib" is used in OSX. Python however requires ".so" on OSX as well. On all other plattforms ".so" actually is the default.
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs_combined+srcs, SHLIBPREFIX = '_')
+
 
 Export('pysgpp')
 Return('pysgpp')

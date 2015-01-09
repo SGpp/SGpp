@@ -69,13 +69,11 @@ public:
 
 	void prepare() override;
 
-	void multImpl(sg::base::DataVector &alpha, sg::base::DataVector &result, const size_t start_index_data,
+	void multTransposeImpl(sg::base::DataVector &alpha, sg::base::DataVector &result, const size_t start_index_data,
 			const size_t end_index_data) override;
 
-	void multTransposeImpl(sg::base::DataVector &source, sg::base::DataVector &result, const size_t start_index_data,
+	void multImpl(sg::base::DataVector &source, sg::base::DataVector &result, const size_t start_index_data,
 			const size_t end_index_data) override;
-
-	void padDataset() override;
 
 	size_t getAlignment() override;
 

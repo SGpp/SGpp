@@ -131,8 +131,8 @@ datadriven::OperationInverseRosenblattTransformation* createOperationInverseRose
 datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid &grid);
 
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid &grid, base::DataMatrix &dataset,
-		sg::datadriven::OperationMultipleEvalType type, sg::datadriven::OperationMultipleEvalSubType subtype =
-				sg::datadriven::OperationMultipleEvalSubType::DEFAULT);
+		sg::datadriven::OperationMultipleEvalConfiguration configuration);
+
 }
 }
 

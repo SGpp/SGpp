@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "datadriven/test/OperationMultipleEval/OperationMultipleEvalStreamingSimpleTestCase.hpp"
+#include "datadriven/test/OperationMultipleEvalStreaming/OperationMultipleEvalStreamingSimpleTestCase.hpp"
 
 namespace sg {
 namespace test {

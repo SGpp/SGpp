@@ -8,7 +8,7 @@
 #include "datadriven/algorithm/DMSystemMatrixSubspaces.hpp"
 #include "datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
 //#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
 
 //TODO how do I construct the operation here (type/subtype)
 
@@ -17,14 +17,12 @@
 namespace sg {
 namespace datadriven {
 
-LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const sg::base::OperationMultipleEval *kernel,
-		const bool isRegression, const bool verbose) :
+LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const bool isRegression, const bool verbose) :
 		sg::datadriven::LearnerBase(isRegression, verbose) {
 }
 
 LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const std::string tGridFilename,
-		const std::string tAlphaFilename, const sg::base::OperationMultipleEval *kernel, const bool isRegression,
-		const bool verbose) :
+		const std::string tAlphaFilename, const bool isRegression, const bool verbose) :
 		sg::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose) {
 }
 
@@ -36,7 +34,10 @@ sg::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSystem(
 	if (this->grid_ == NULL)
 		return NULL;
 
-	return new sg::datadriven::DMSystemMatrixSubspaces(*(this->grid_), trainDataset, lambda);
+	sg::datadriven::DMSystemMatrixSubspaces *systemMatrix = new sg::datadriven::DMSystemMatrixSubspaces(*(this->grid_),
+			trainDataset, lambda);
+	systemMatrix->setImplementation(this->implementationConfiguration);
+	return systemMatrix;
 }
 
 void LearnerLeastSquaresIdentity::postProcessing(const sg::base::DataMatrix& trainDataset,
@@ -70,8 +71,8 @@ sg::base::DataVector LearnerLeastSquaresIdentity::predict(sg::base::DataMatrix& 
 	 tmpDataSet.transpose();
 	 }*/
 
-	sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*(this->grid_),
-			tmpDataSet);
+	sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*(this->grid_), tmpDataSet,
+			this->implementationConfiguration);
 	MultEval->mult(*alpha_, classesComputed);
 	delete MultEval;
 
@@ -90,7 +91,8 @@ double LearnerLeastSquaresIdentity::testRegular(const sg::base::RegularGridConfi
 	InitializeGrid(GridConfig);
 
 	//cout << "originalSize: " << originalSize << endl;
-	sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*(this->grid_), tmpDataSet);
+	sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*(this->grid_), tmpDataSet,
+			this->implementationConfiguration);
 	//TODO don't forget to adjust changes in the padding api here, too
 	size_t paddedSize = tmpDataSet.getNrows();
 	//cout << "paddedSize: " << paddedSize << endl;
@@ -104,7 +106,8 @@ double LearnerLeastSquaresIdentity::testRegular(const sg::base::RegularGridConfi
 	sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
 	myStopwatch->start();
 
-	MultEval->multTranspose(*alpha_, classesComputed);
+	//TODO could be wrong
+	MultEval->mult(*alpha_, classesComputed);
 	double stopTime = myStopwatch->stop();
 	this->execTime_ += stopTime;
 	std::cout << "execution duration: " << this->execTime_ << std::endl;
@@ -114,6 +117,10 @@ double LearnerLeastSquaresIdentity::testRegular(const sg::base::RegularGridConfi
 	classesComputed.resize(originalSize);
 
 	return stopTime;
+}
+
+std::vector<std::pair<size_t, double> > LearnerLeastSquaresIdentity::getRefinementExecTimes() {
+	return this->ExecTimeOnStep;
 }
 
 }

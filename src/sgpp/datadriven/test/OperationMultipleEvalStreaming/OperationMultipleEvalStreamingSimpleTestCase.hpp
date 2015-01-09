@@ -47,16 +47,17 @@ public:
 
 		sg::base::DataVector result(numberDataPoints);
 
-		sg::datadriven::OperationMultipleEvalType type = sg::datadriven::OperationMultipleEvalType::STREAMING;
+		sg::datadriven::OperationMultipleEvalConfiguration configuration;
+		configuration.type = sg::datadriven::OperationMultipleEvalType::STREAMING;
 		sg::base::OperationMultipleEval *multiEvalOp = sg::op_factory::createOperationMultipleEval(*grid, evalPoints,
-				type);
+				configuration);
 
 		multiEvalOp->mult(alpha, result);
 		delete multiEvalOp;
 
-		this->assertEqual(result[0], 1.8, 10E-10);
-		this->assertEqual(result[1], 2.72, 10E-10);
-		this->assertEqual(result[2], 1.64, 10E-10);
+		this->assertEqual(result[0], 1.8, 1E-10);
+		this->assertEqual(result[1], 2.72, 1E-10);
+		this->assertEqual(result[2], 1.64, 1E-10);
 
 		delete grid;
 	}

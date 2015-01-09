@@ -10,6 +10,9 @@
 
 #include "base/operation/OperationMultipleEval.hpp"
 
+#include "datadriven/operation/DatadrivenOperationCommon.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
+
 //#include "AbstractOperationMultipleEval.hpp"
 
 namespace sg {
@@ -36,6 +39,10 @@ private:
 	//AbstractOperationMultipleEval* B;
 	sg::base::OperationMultipleEval *B;
 
+	sg::base::Grid &grid;
+
+	sg::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
+
 public:
 	/**
 	 * Std-Constructor
@@ -57,6 +64,11 @@ public:
 	virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
 
 	virtual void rebuildLevelAndIndex();
+
+	void setImplementation(sg::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
+		this->implementationConfiguration = operationConfiguration;
+		this->B = sg::op_factory::createOperationMultipleEval(this->grid, *(this->dataset_), this->implementationConfiguration);
+	}
 };
 
 }

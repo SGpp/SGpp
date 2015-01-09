@@ -13,6 +13,7 @@
 #include "datadriven/test/OperationMultipleEvalBaseTestSuite.hpp"
 #include "datadriven/test/OperationMultipleEvalStreamingTestSuite.hpp"
 #include "datadriven/test/OperationMultipleEvalSubspaceTestSuite.hpp"
+#include "datadriven/test/LearnerLeastSquaresIdentityTestSuite.hpp"
 
 //include tests suites here
 
@@ -24,13 +25,14 @@ int main(int argc, char **argv) {
 	std::vector<sg::test::TestSuite *> testSuites = {
 			new sg::test::OperationMultipleEvalBaseTestSuite(),
 			new sg::test::OperationMultipleEvalStreamingTestSuite(),
-			new sg::test::OperationMultipleEvalSubspaceTestSuite()
+			new sg::test::OperationMultipleEvalSubspaceTestSuite(),
+			new sg::test::LearnerLeastSquaresIdentityTestSuite()
 	};
 
 	std::cout << "OK" << std::endl;
 	std::cout << "running test suites:" << std::endl;
 
-	bool success = true;
+	bool overallSuccess = true;
 
 	for (sg::test::TestSuite *testSuite : testSuites) {
 		std::cout << "processing test suite \"" << testSuite->getName() << "\"" << std::endl;
@@ -39,18 +41,16 @@ int main(int argc, char **argv) {
 			std::cout << testSuite->getName() << ": OK" << std::endl;
 		} else {
 			std::cout << testSuite->getName() << ": failed" << std::endl;
-			success = false;
+			overallSuccess = false;
 		}
 		delete testSuite;
 	}
 
-	if (success) {
+	if (overallSuccess) {
 		std::cout << "unittester finished: OK" << std::endl;
 	} else {
 		std::cout << "unittester finished: failed" << std::endl;
 	}
-
-
 
 	return 0;
 }

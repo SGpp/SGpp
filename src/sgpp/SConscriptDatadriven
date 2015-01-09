@@ -41,7 +41,6 @@ datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretch
 
 datadriven/algorithm/DMSystemMatrixSubspaces.cpp
 datadriven/application/LearnerLeastSquaresIdentity.cpp
-datadriven/application/LearnerVectorizedSubspaces.cpp
 datadriven/application/MetaLearner.cpp
 
 datadriven/tools/LearnerVectorizedPerformanceCalculator.cpp

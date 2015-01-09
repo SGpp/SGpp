@@ -11,12 +11,12 @@ namespace parallel {
 
 // list of kernels
 enum ComputeKernelType {
-	SIMPLE, COMBINED, ACCELERATOR
+	SIMPLE, COMBINED
 };
 
-static std::map<ComputeKernelType, std::string> ComputeKernelTypeMap = { { SIMPLE, "SIMPLE" }, { COMBINED, "COMBINED" }, { ACCELERATOR, "ACCELERATOR" } };
+static std::map<ComputeKernelType, std::string> ComputeKernelTypeMap = { { SIMPLE, "SIMPLE" }, { COMBINED, "COMBINED" } };
 
-static std::map<std::string, ComputeKernelType> NameComputeKernelTypeMap = { { "SIMPLE", SIMPLE }, { "COMBINED", COMBINED }, { "ACCELERATOR", ACCELERATOR } };
+static std::map<std::string, ComputeKernelType> NameComputeKernelTypeMap = { { "SIMPLE", SIMPLE }, { "COMBINED", COMBINED } };
 
 }
 }

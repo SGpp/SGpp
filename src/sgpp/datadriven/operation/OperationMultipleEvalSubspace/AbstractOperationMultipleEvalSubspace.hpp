@@ -30,6 +30,7 @@ private:
 public:
 	AbstractOperationMultipleEvalSubspace(base::Grid &grid, base::DataMatrix &dataset) :
 			base::OperationMultipleEval(grid, dataset), isPrepared(false), storage(grid.getStorage()), duration(-1.0) {
+
 	}
 
 	~AbstractOperationMultipleEvalSubspace() {
@@ -42,16 +43,10 @@ public:
 		if (gridTo == std::numeric_limits<size_t>::max()) {
 			gridTo = this->storage->size();
 		}
-
-		this->resetKernel();
 	}
 
+	//TODO is this function redundant?
 	virtual void prepare() = 0;
-
-	//TODO possible bug "=0;" results in undefined symbol when importing the python library
-	//TODO does this have to be public?
-	virtual void padDataset() {
-	}
 
 	//TODO where and when to do the padding? (currently in multTranspose done and reverted)
 
@@ -61,15 +56,19 @@ public:
 	virtual void multTransposeImpl(sg::base::DataVector &source, sg::base::DataVector &result,
 			const size_t start_index_data, const size_t end_index_data) = 0;
 
-	void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) override {
+	void multTranspose(sg::base::DataVector& alpha, sg::base::DataVector& result) override {
 		if (!this->isPrepared) {
-			this->padDataset();
 			this->prepareExecution();
 		}
 
+		size_t originalAlphaSize = alpha.getSize();
+
 		const size_t start_index_data = 0;
 		//TODO handle transposed matrix? or use transposed matrix?
-		const size_t end_index_data = this->dataset.getNrows();
+		const size_t end_index_data = this->getPaddedDatasetSize();
+
+		//pad the alpha vector to the padded size of the dataset
+		alpha.resizeZero(this->getPaddedDatasetSize());
 
 		this->timer.start();
 		result.setAll(0.0);
@@ -80,31 +79,25 @@ public:
 			size_t end;
 			PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data, &start, &end,
 					this->getAlignment());
-			this->multImpl(alpha, result, start, end);
+			this->multTransposeImpl(alpha, result, start, end);
 		}
 
+		alpha.resize(originalAlphaSize);
 		this->duration = this->timer.stop();
 	}
 
 	//TODO assumes padded "result" vector -> document somewhere or improve eval interface
-	void multTranspose(sg::base::DataVector& source, sg::base::DataVector& result) override {
-		bool resultResized = false;
-		size_t originalResultSize = result.getSize();
-		if (!this->isPrepared) {
+	void mult(sg::base::DataVector& source, sg::base::DataVector& result) override {
 
-			this->padDataset();
+		if (!this->isPrepared) {
 			this->prepareExecution();
-			if (result.getSize() != this->dataset.getSize()) {
-				result.resize(this->dataset.getSize());
-				for (size_t i = originalResultSize; i < result.getSize(); i++) {
-					result[i] = 0.0;
-				}
-				resultResized = true;
-			}
 		}
 
+		size_t originalResultSize = result.getSize();
+		result.resizeZero(this->getPaddedDatasetSize());
+
 		const size_t start_index_data = 0;
-		const size_t end_index_data = this->dataset.getNrows();
+		const size_t end_index_data = this->getPaddedDatasetSize();
 
 		this->timer.start();
 		result.setAll(0.0);
@@ -115,19 +108,19 @@ public:
 			size_t end;
 			PartitioningTool::getOpenMPPartitionSegment(start_index_data, end_index_data, &start, &end,
 					this->getAlignment());
-			this->multTransposeImpl(source, result, start, end);
+			this->multImpl(source, result, start, end);
 		}
 
-		if (resultResized) {
-			result.resize(originalResultSize);
-		}
+		result.resize(originalResultSize);
+
 		this->duration = this->timer.stop();
 	}
 
-	virtual size_t getAlignment() = 0;
-
-	void resetKernel() {
+	virtual size_t getPaddedDatasetSize() {
+		return this->dataset.getNrows();
 	}
+
+	virtual size_t getAlignment() = 0;
 
 	static inline size_t getChunkGridPoints() {
 		return 12;
