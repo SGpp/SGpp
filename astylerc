@@ -1,0 +1,14 @@
+--brackets=attach
+--indent-classes
+--indent-switches
+--indent-col1-comments
+--indent-namespaces
+--min-conditional-indent=0
+--break-blocks
+--pad-oper
+--pad-header
+--convert-tabs
+--align-pointer=type
+--align-reference=type
+--mode=c
+--indent=spaces=2
