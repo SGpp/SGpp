@@ -619,7 +619,7 @@ if env['SG_ALL']:
     #print "all_src_files: ", all_src_files
     #print "test_src_files: ", test_src_files
     # + ["src/sgpp/base/test/test_runner.cpp"]
-    cppUnitTests = env.Program(target="cppUnitTests", source = all_src_files + test_src_files)
+    cppUnitTests = env.Program(target="tmp/build/cppUnitTests", source = all_src_files + test_src_files)
     env.Install(env['OUTPUT_PATH'] + 'tests/', cppUnitTests)
 else:
     print "cpp unittests only built if all modules are enabled"
