@@ -189,7 +189,7 @@ namespace std {
 %include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
 %include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
 %include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
-%include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/SubspaceNode.hpp"
+%include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp"
 
 %include "src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 #endif

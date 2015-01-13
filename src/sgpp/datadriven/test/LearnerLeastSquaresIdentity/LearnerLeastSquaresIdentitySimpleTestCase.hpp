@@ -21,11 +21,8 @@ class LearnerLeastSquaresIdentitySimpleTestCase: public TestCase {
 public:
 
 	void run() override {
-		std::cout << "testSubspaceLinearSimple();" << std::endl;
 		testSubspaceLinearSimple();
-		std::cout << "testSubspaceLinearCombined();" << std::endl;
 		testSubspaceLinearCombined();
-		std::cout << "testStreaming()" << std::endl;
 		testStreaming();
 	}
 

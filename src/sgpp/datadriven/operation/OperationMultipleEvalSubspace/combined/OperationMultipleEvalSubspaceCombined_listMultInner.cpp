@@ -4,12 +4,10 @@ namespace sg {
 namespace datadriven {
 
 void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim, const double * const datasetPtr, sg::base::DataVector &alpha,
-        size_t dataIndexBase, size_t end_index_data, X86CombinedSubspaceNode &subspace, double *levelArrayContinuous,
+        size_t dataIndexBase, size_t end_index_data, SubspaceNodeCombined &subspace, double *levelArrayContinuous,
         size_t validIndicesCount, size_t *validIndices, size_t *levelIndices,
-        //size_t *nextIterationToRecalcReferences, size_t nextIterationToRecalc,
         double *evalIndexValuesAll, uint32_t *intermediatesAll) {
 
-    //for (size_t validIndex = 0; validIndex < validIndicesCount; validIndex += 4) {
     for (size_t validIndex = 0; validIndex < validIndicesCount; validIndex += X86COMBINED_VEC_PADDING) {
         size_t parallelIndices[4];
         parallelIndices[0] = validIndices[validIndex];
@@ -17,9 +15,6 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim, const doub
         parallelIndices[2] = validIndices[validIndex + 2];
         parallelIndices[3] = validIndices[validIndex + 3];
 
-        //cout << "firstRound: " << firstRound << endl;
-
-        //size_t nextIterationToRecalc = nextIterationToRecalcReferences[parallelIndices[0]];
 #if X86COMBINED_ENABLE_PARTIAL_RESULT_REUSAGE == 1
         size_t nextIterationToRecalc = subspace.arriveDiff;
 #else

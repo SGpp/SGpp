@@ -12,7 +12,7 @@ void OperationMultipleEvalSubspaceCombined::multImpl(sg::base::DataVector &sourc
         this->setCoefficients(source);
     }
 
-#pragma omp barrier
+    #pragma omp barrier
 
     size_t dim = this->paddedDataset->getNcols();
     double * datasetPtr = this->paddedDataset->getPointer();
@@ -44,7 +44,7 @@ void OperationMultipleEvalSubspaceCombined::multImpl(sg::base::DataVector &sourc
 
     //process the next chunk of data tuples in parallel
     for (size_t dataIndexBase = start_index_data; dataIndexBase < end_index_data; dataIndexBase +=
-    X86COMBINED_PARALLEL_DATA_POINTS) {
+                X86COMBINED_PARALLEL_DATA_POINTS) {
 
         for (size_t i = 0; i < totalThreadNumber; i++) {
             levelIndices[i] = 0.0;
@@ -53,11 +53,11 @@ void OperationMultipleEvalSubspaceCombined::multImpl(sg::base::DataVector &sourc
         }
 
         for (size_t subspaceIndex = 0; subspaceIndex < subspaceCount; subspaceIndex++) {
-            X86CombinedSubspaceNode &subspace = this->allSubspaceNodes[subspaceIndex];
+            SubspaceNodeCombined &subspace = this->allSubspaceNodes[subspaceIndex];
 
             double *levelArrayContinuous = nullptr;
             //prepare the subspace array for a list type subspace
-            if (subspace.type == X86CombinedSubspaceNode::SubspaceType::LIST) {
+            if (subspace.type == SubspaceNodeCombined::SubspaceType::LIST) {
                 //fill with surplusses
                 for (std::pair<uint32_t, double> tuple : subspace.indexFlatSurplusPairs) {
                     //actual values are utilized, but only read
@@ -78,7 +78,7 @@ void OperationMultipleEvalSubspaceCombined::multImpl(sg::base::DataVector &sourc
             }
 
             size_t paddingSize = std::min((int) (validIndicesCount + X86COMBINED_VEC_PADDING),
-            X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING);
+                                          X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING);
             for (size_t i = validIndicesCount; i < paddingSize; i++) {
                 size_t threadId = X86COMBINED_PARALLEL_DATA_POINTS + (i - validIndicesCount);
                 validIndices[i] = threadId;
@@ -96,11 +96,11 @@ void OperationMultipleEvalSubspaceCombined::multImpl(sg::base::DataVector &sourc
             }
 
             uncachedMultTransposeInner(dim, datasetPtr, dataIndexBase, end_index_data, subspace, levelArrayContinuous,
-                    validIndicesCount, validIndices, levelIndices, //nextIterationToRecalcReferences,
-                    componentResults,
-                    evalIndexValuesAll, intermediatesAll);
+                                       validIndicesCount, validIndices, levelIndices, //nextIterationToRecalcReferences,
+                                       componentResults,
+                                       evalIndexValuesAll, intermediatesAll);
 
-            if (subspace.type == X86CombinedSubspaceNode::SubspaceType::LIST) {
+            if (subspace.type == SubspaceNodeCombined::SubspaceType::LIST) {
                 for (std::pair<uint32_t, double> &tuple : subspace.indexFlatSurplusPairs) {
                     listSubspace[tuple.first] = std::numeric_limits<double>::quiet_NaN();
                 }

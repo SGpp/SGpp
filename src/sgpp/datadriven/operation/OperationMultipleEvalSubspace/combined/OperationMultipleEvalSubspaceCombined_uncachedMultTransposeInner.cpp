@@ -4,7 +4,7 @@ namespace sg {
 namespace datadriven {
 
 void OperationMultipleEvalSubspaceCombined::uncachedMultTransposeInner(size_t dim, const double * const datasetPtr, size_t dataIndexBase,
-        size_t end_index_data, X86CombinedSubspaceNode &subspace, double *levelArrayContinuous,
+        size_t end_index_data, SubspaceNodeCombined &subspace, double *levelArrayContinuous,
         size_t validIndicesCount, size_t *validIndices, size_t *levelIndices, // size_t *nextIterationToRecalcReferences,
         double *componentResults, double *evalIndexValuesAll, uint32_t *intermediatesAll) {
 

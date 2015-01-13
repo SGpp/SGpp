@@ -21,7 +21,6 @@ int subspaceComparator(const void *first, const void *second) {
 }
 
 size_t getHighestDifferentIndex(size_t *base, size_t cur, size_t last) {
-    //for (int i = problemDimForSorting - 1; i >= 0; i--) {
     for (size_t i = 0; i < problemDimForSorting; i++) {
         if (base[cur + (size_t) i] != base[last + (size_t) i]) {
             return i;
@@ -31,23 +30,23 @@ size_t getHighestDifferentIndex(size_t *base, size_t cur, size_t last) {
 }
 
 void printSubspace(size_t *base, size_t dim, size_t cur, int subspaceSize) {
-    cout << "l: ";
+    std::cout << "l: ";
     for (size_t j = 0; j < dim; j++) {
         if (j > 0) {
-            cout << ", ";
+            std::cout << ", ";
         }
-        cout << base[cur + j];
+        std::cout << base[cur + j];
     }
     if (subspaceSize != -1) {
-        cout << " next: ";
-        cout << (base[cur + dim] / subspaceSize);
+        std::cout << " next: ";
+        std::cout << (base[cur + dim] / subspaceSize);
     }
 }
 
 }
 
-OperationMultipleEvalSubspaceSimple::OperationMultipleEvalSubspaceSimple(Grid &grid, DataMatrix &dataset)
-	: AbstractOperationMultipleEvalSubspace(grid, dataset) {
+OperationMultipleEvalSubspaceSimple::OperationMultipleEvalSubspaceSimple(base::Grid &grid, base::DataMatrix &dataset) :
+    AbstractOperationMultipleEvalSubspace(grid, dataset) {
     this->dim = this->dataset.getNcols();
 }
 
@@ -71,7 +70,6 @@ void OperationMultipleEvalSubspaceSimple::prepare() {
     }
     this->allSurplussesIndexMap.clear();
 
-
     this->prepareSubspaceIterator();
 
     this->createFlatStorage();
@@ -91,19 +89,18 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     // and put them in a map with flatLevel -> subspace
     /////////////////////////////////////////////////////
 
-    map<size_t, SubspaceNode> allLevelsMap;
+    std::map<size_t, SubspaceNodeSimple> allLevelsMap;
 
     size_t maxLevel = 0;
 
-    DataVector level(this->dim);
-    DataVector index(this->dim);
-    DataVector maxIndex(this->dim);
+    std::vector<size_t> level(this->dim);
+    std::vector<size_t> index(this->dim);
+    std::vector<size_t> maxIndex(this->dim);
 
     unsigned int curLevel;
     unsigned int curIndex;
 
     //calculate the maxLevel first
-    //TODO: this should be removed, maxLevel shouldn't be needed
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
@@ -120,20 +117,18 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
 
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
-            level.set(d, curLevel);
-            index.set(d, curIndex);
-            maxIndex.set(d, 1 << curLevel);
+            level[d] = curLevel;
+            index[d] = curIndex;
+            maxIndex[d] = 1 << curLevel;
         }
 
         size_t flatLevel = OperationMultipleEvalSubspaceSimple::flattenLevel(this->dim, maxLevel, level);
 
         if (allLevelsMap.find(flatLevel) == allLevelsMap.end()) {
-            SubspaceNode newNode(level, maxIndex, index);
-            allLevelsMap.insert(std::pair<size_t, SubspaceNode>(flatLevel, newNode));
-            //allLevelsMap[flatLevel] = newNode;
-            //allLevelsMap.emplace(flatLevel, SubspaceNode(level, maxIndex, index));
+            SubspaceNodeSimple newNode(level, maxIndex, index);
+            allLevelsMap.insert(std::pair<size_t, SubspaceNodeSimple>(flatLevel, newNode));
         } else {
-            SubspaceNode &subspace = allLevelsMap.find(flatLevel)->second;
+            SubspaceNodeSimple &subspace = allLevelsMap.find(flatLevel)->second;
             subspace.addGridPoint(index);
         }
     }
@@ -179,7 +174,6 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     ///////////////////////////////////////////////////////////////
     // now build the complex and fast iterable structure
     ///////////////////////////////////////////////////////////////
-
     // layout [#level #hInverse #next #flatLevel #nextDiff #jumpDiff #level2 ...]
     size_t subspaceSize = (2 * this->dim) + 4;
     this->subspaceSize = subspaceSize;
@@ -194,11 +188,11 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     // create linear structure by iterate though the previously create array
     size_t i = 0;
     uint32_t linearLevelIndexCounter = 0;
-    for (typename std::map<size_t, SubspaceNode>::iterator it = allLevelsMap.begin(); it != allLevelsMap.end(); ++it) {
-        SubspaceNode &subspace = it->second;
+    for (typename std::map<size_t, SubspaceNodeSimple>::iterator it = allLevelsMap.begin(); it != allLevelsMap.end(); ++it) {
+        SubspaceNodeSimple &subspace = it->second;
 
         for (size_t j = 0; j < this->dim; j++) {
-            level.set(j, (double) subspace.level[j]); //TODO use a different type, ugly conversion
+            level[j] = subspace.level[j];
             allSubspaces[i * subspaceSize + j] = subspace.level[j];
             allSubspaces[i * subspaceSize + this->dim + j] = subspace.hInverse[j];
         }
@@ -305,7 +299,7 @@ void OperationMultipleEvalSubspaceSimple::createFlatStorage() {
 
         size_t gridPointsOnLevel = 1;
         for (size_t j = 0; j < this->dim; j++) {
-            size_t dimTemp = hInversePtr[j]; //TODO was changed
+            size_t dimTemp = hInversePtr[j];
             dimTemp >>= 1; //skip even indices
             gridPointsOnLevel *= dimTemp;
         }
@@ -316,10 +310,10 @@ void OperationMultipleEvalSubspaceSimple::createFlatStorage() {
     this->allSurplusses = new double[totalGridPoints];
 }
 
-void OperationMultipleEvalSubspaceSimple::setCoefficients(DataVector &surplusVector) {
-    DataVector level(dim);
-    DataVector maxIndex(dim);
-    DataVector index(dim);
+void OperationMultipleEvalSubspaceSimple::setCoefficients(base::DataVector &surplusVector) {
+    std::vector<size_t> level(dim);
+    std::vector<size_t> maxIndex(dim);
+    std::vector<size_t> index(dim);
 
     for (size_t i = 0; i < this->totalGridPoints; i++) {
         this->allSurplusses[i] = std::numeric_limits<double>::quiet_NaN();
@@ -331,9 +325,9 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(DataVector &surplusVec
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
-            level.set(d, curLevel);
-            index.set(d, curIndex);
-            maxIndex.set(d, 1 << curLevel);
+            level[d] = curLevel;
+            index[d] = curIndex;
+            maxIndex[d] = 1 << curLevel;
         }
 
         this->setSurplus(level, maxIndex, index, surplusVector.get(gridIndex));
@@ -341,10 +335,10 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(DataVector &surplusVec
 }
 
 //writes a result vector in the order of the points in the grid storage
-void OperationMultipleEvalSubspaceSimple::unflatten(DataVector &result) {
-    DataVector level(dim);
-    DataVector maxIndex(dim);
-    DataVector index(dim);
+void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector &result) {
+    std::vector<size_t> level(dim);
+    std::vector<size_t> maxIndex(dim);
+    std::vector<size_t> index(dim);
 
     unsigned int curLevel;
     unsigned int curIndex;
@@ -352,9 +346,9 @@ void OperationMultipleEvalSubspaceSimple::unflatten(DataVector &result) {
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
-            level.set(d, curLevel);
-            index.set(d, curIndex);
-            maxIndex.set(d, 1 << curLevel);
+            level[d] = curLevel;
+            index[d] = curIndex;
+            maxIndex[d] = 1 << curLevel;
         }
         double surplus;
         bool isVirtual;
@@ -364,21 +358,20 @@ void OperationMultipleEvalSubspaceSimple::unflatten(DataVector &result) {
     }
 }
 
-void OperationMultipleEvalSubspaceSimple::setSurplus(DataVector &level, DataVector &maxIndices, DataVector &index, double value) {
+void OperationMultipleEvalSubspaceSimple::setSurplus(std::vector<size_t> &level, std::vector<size_t> &maxIndices,
+        std::vector<size_t> &index, double value) {
     size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
     size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
     uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>(levelFlat)];
-    //double *levelArray = this->flatLevels[levelFlat];
     double *levelArray = &(this->allSurplusses[linearLevelIndex]);
     levelArray[indexFlat] = value;
 }
 
-void OperationMultipleEvalSubspaceSimple::getSurplus(DataVector &level, DataVector &maxIndices, DataVector &index, double &value,
-        bool &isVirtual) {
+void OperationMultipleEvalSubspaceSimple::getSurplus(std::vector<size_t> &level, std::vector<size_t> &maxIndices,
+        std::vector<size_t> &index, double &value, bool &isVirtual) {
     size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
     size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
     uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>(levelFlat)];
-    //double *levelArray = this->flatLevels[levelFlat];
     double *levelArray = &(this->allSurplusses[linearLevelIndex]);
     value = levelArray[indexFlat];
     if (std::isnan(value)) {
@@ -388,58 +381,60 @@ void OperationMultipleEvalSubspaceSimple::getSurplus(DataVector &level, DataVect
     }
 }
 
-size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t dim, DataVector &maxIndices, DataVector &index) {
-    size_t indexFlat = static_cast<size_t>(index.get(0)); //TODO ugly conversion
+size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t dim, std::vector<size_t> &maxIndices,
+        std::vector<size_t> &index) {
+    size_t indexFlat = index[0];
     indexFlat >>= 1;
     for (size_t i = 1; i < dim; i++) {
-        int actualDirectionGridPoints = static_cast<int>(maxIndices.get(i)); //TODO ugly conversion
+        size_t actualDirectionGridPoints = maxIndices[i];
         actualDirectionGridPoints >>= 1;
         indexFlat *= actualDirectionGridPoints;
-        size_t actualIndex = static_cast<size_t>(index.get(i)); //TODO ugly conversion
+        size_t actualIndex = index[i];
         actualIndex >>= 1; //divide index by 2, skip even indices
         indexFlat += actualIndex;
     }
     return indexFlat;
 }
 
-size_t OperationMultipleEvalSubspaceSimple::flattenLevel(size_t dim, size_t maxLevel, DataVector &level) {
+size_t OperationMultipleEvalSubspaceSimple::flattenLevel(size_t dim, size_t maxLevel, std::vector<size_t> &level) {
     size_t levelFlat = 0;
-    levelFlat += (size_t) level.get(dim - 1); //TODO ugly conversion
+    levelFlat += (size_t) level[dim - 1];
     // loop terminates at -1
     for (int i = ((int) dim) - 2; i >= 0; i--) {
         levelFlat *= maxLevel;
-        levelFlat += (size_t) level.get(i); //TODO ugly conversion
+        levelFlat += (size_t) level[i];
     }
     return levelFlat;
 }
 
-size_t OperationMultipleEvalSubspaceSimple::flattenIndex(double *intermediates, size_t dim, size_t *maxIndicesPtr, size_t *indexPtr, size_t toRecalc) {
+size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t *intermediates, size_t dim, size_t *maxIndicesPtr,
+        size_t *indexPtr, size_t toRecalc) {
 
 #if X86SIMPLE_ENABLE_PARTIAL_RESULT_REUSAGE == 1
-	size_t indexFlat = intermediates[toRecalc]; // toRecalc 0 -> indexFlat 0
-	for (size_t i = toRecalc; i < dim; i++) {
+    size_t indexFlat = intermediates[toRecalc]; // toRecalc 0 -> indexFlat 0
+    for (size_t i = toRecalc; i < dim; i++) {
 #else
-	size_t indexFlat = 0;
-	for (size_t i = 0; i < dim; i++) {
+    size_t indexFlat = 0;
+    for (size_t i = 0; i < dim; i++) {
 #endif
-		int actualDirectionGridPoints = static_cast<int>(maxIndicesPtr[i]); //TODO ugly conversion
-		actualDirectionGridPoints >>= 1;
-		indexFlat *= actualDirectionGridPoints;
-		size_t actualIndex = indexPtr[i];
-		actualIndex >>= 1; //divide index by 2, skip even indices
-		indexFlat += actualIndex;
-		intermediates[i + 1] = static_cast<double>(indexFlat);
-	}
+        size_t actualDirectionGridPoints = maxIndicesPtr[i];
+        actualDirectionGridPoints >>= 1;
+        indexFlat *= actualDirectionGridPoints;
+        size_t actualIndex = indexPtr[i];
+        actualIndex >>= 1; //divide index by 2, skip even indices
+        indexFlat += actualIndex;
+        intermediates[i + 1] = indexFlat;
+    }
 
-	return indexFlat;
+    return indexFlat;
 }
 
 size_t OperationMultipleEvalSubspaceSimple::getAlignment() {
-	return 1;
+    return 1;
 }
 
 std::string OperationMultipleEvalSubspaceSimple::getImplementationName() {
-	return "SIMPLE";
+    return "SIMPLE";
 }
 
 }

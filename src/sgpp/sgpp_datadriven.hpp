@@ -27,7 +27,7 @@
 
 #include "datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
 #include "datadriven/operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
-#include "datadriven/operation/OperationMultipleEvalSubspace/SubspaceNode.hpp"
+#include "datadriven/operation/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp"
 #include "datadriven/DatadrivenOpFactory.hpp"
 #include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
 #include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp"
