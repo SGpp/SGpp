@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "ScrambledSobolSampleGenerator.hpp"
-#include "SobolParameters.hpp"
 
 using namespace sg::base;
 using namespace std;
