@@ -9,6 +9,7 @@ namespace sg {
 namespace test {
 
 class LearnerLeastSquaresIdentityTestSuite : public TestSuite {
+
 public:
 	std::string getName() override {
 		return "LearnerLeastSquaresIdentityTestSuite";

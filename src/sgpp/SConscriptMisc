@@ -4,7 +4,7 @@
 
 # author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-dependencies = ["Base", "Pde", "Datadriven", "Finance", "Parallel"]
+dependencies = ["Base", "Pde", "Datadriven", "Finance"]
 
 srcs = Split("""
 misc/pde/algorithm/UpDownOneOpDimEnhanced.cpp

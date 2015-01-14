@@ -33,6 +33,8 @@ public:
 	 */
 	SobolSampleGenerator(size_t dimensions, size_t seed);
 
+	virtual ~SobolSampleGenerator() {};
+
 	/**
 	 *
 	 *  Example:

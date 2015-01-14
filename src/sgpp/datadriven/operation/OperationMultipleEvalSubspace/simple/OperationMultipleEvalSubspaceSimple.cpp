@@ -9,8 +9,8 @@ size_t problemDimForSorting;
 
 int subspaceComparator(const void *first, const void *second) {
     for (size_t i = 0; i < problemDimForSorting; i++) {
-        if (((size_t *) first)[i] >= ((size_t *) second)[i]) {
-            if (((size_t *) first)[i] > ((size_t *) second)[i]) {
+        if (((const size_t *) first)[i] >= ((const size_t *) second)[i]) {
+            if (((const size_t *) first)[i] > ((const size_t *) second)[i]) {
                 return 1;
             }
         } else {
@@ -97,8 +97,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     std::vector<size_t> index(this->dim);
     std::vector<size_t> maxIndex(this->dim);
 
-    unsigned int curLevel;
-    unsigned int curIndex;
+    base::level_t curLevel;
+    base::index_t curIndex;
 
     //calculate the maxLevel first
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
@@ -319,8 +319,8 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(base::DataVector &surp
         this->allSurplusses[i] = std::numeric_limits<double>::quiet_NaN();
     }
 
-    unsigned int curLevel;
-    unsigned int curIndex;
+    base::level_t curLevel;
+    base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
@@ -340,8 +340,8 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector &result) {
     std::vector<size_t> maxIndex(dim);
     std::vector<size_t> index(dim);
 
-    unsigned int curLevel;
-    unsigned int curIndex;
+    base::level_t curLevel;
+    base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {

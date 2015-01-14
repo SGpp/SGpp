@@ -27,8 +27,8 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
     std::vector<uint32_t> index(this->dim);
     std::vector<uint32_t> maxIndex(this->dim);
 
-    unsigned int curLevel;
-    unsigned int curIndex;
+    base::level_t curLevel;
+    base::index_t curIndex;
 
     this->allSubspaceNodes.clear();
     this->subspaceCount = 0;
