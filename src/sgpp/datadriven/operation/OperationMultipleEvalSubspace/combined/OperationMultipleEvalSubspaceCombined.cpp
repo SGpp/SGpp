@@ -55,9 +55,8 @@ void OperationMultipleEvalSubspaceCombined::setCoefficients(DataVector &surplusV
     std::vector<uint32_t> maxIndex(dim);
     std::vector<uint32_t> index(dim);
 
-    //TODO: use appropriate types here
-    unsigned int curLevel;
-    unsigned int curIndex;
+    base::level_t curLevel;
+    base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
@@ -77,8 +76,8 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector &result) {
     std::vector<uint32_t> maxIndex(dim);
     std::vector<uint32_t> index(dim);
 
-    unsigned int curLevel;
-    unsigned int curIndex;
+    base::level_t curLevel;
+    base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
         sg::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {

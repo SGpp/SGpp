@@ -23,12 +23,14 @@ namespace mcm {
 SobolSampleGenerator::SobolSampleGenerator(size_t dimensions) :
 		SampleGenerator(dimensions) {
 	this->seed = 1;
+	this->numberOfCurrentSample = 0;
 }
 
 SobolSampleGenerator::SobolSampleGenerator(size_t dimensions, size_t seed) :
 		SampleGenerator(dimensions) {
 
 	this->seed = seed + 1;
+	this->numberOfCurrentSample = 0;
 }
 
 size_t SobolSampleGenerator::i4_bit_hi1(size_t n) {

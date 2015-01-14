@@ -847,53 +847,53 @@ namespace sg {
           //    }
         }
 
-        /**
-         * Converts this storage from AOS (array of structures) to SOA (structure of array)
-         * with modification to speed up iterative function evaluation. The Level
-         * array won't contain the levels, it contains the level to the power of two
-        *
-        * The generated arrays are made in format optimized for minimizing page faults
-         *
-         * @param level DataMatrix to store the grid's level to the power of two
-         * @param index DataMatrix to store the grid's indices
-         * @param vectorizationType Vectorization type
-         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
-         */
-        void getLevelIndexArraysForEvalTLBOptimized(DataMatrix& level, DataMatrix& index, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
-          typename index_type::level_type curLevel;
-          typename index_type::level_type curIndex;
-
-          //pad datasets
-          sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
-          sg::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
-
-          level.setAll(0.0);
-          index.setAll(0.0);
-
-          //transpose
-          level.transpose();
-          index.transpose();
-
-          //make optimized for reducing page faults
-
-          double* level_ptr = level.getPointer();
-          double* index_ptr = index.getPointer();
-
-          for (size_t i = 0; i < list.size(); i += blocking_length) {
-            for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
-              for (size_t t = i; t < i + blocking_length; ++t) {
-                if (t < list.size()) {
-                  (list[t])->get(current_dim, curLevel, curIndex);
-                  *level_ptr = static_cast<double>(1 << curLevel);
-                  *index_ptr = static_cast<double>(curIndex);
-                }
-
-                ++level_ptr;
-                ++index_ptr;
-              }
-            }
-          }
-        }
+//        /**
+//         * Converts this storage from AOS (array of structures) to SOA (structure of array)
+//         * with modification to speed up iterative function evaluation. The Level
+//         * array won't contain the levels, it contains the level to the power of two
+//        *
+//        * The generated arrays are made in format optimized for minimizing page faults
+//         *
+//         * @param level DataMatrix to store the grid's level to the power of two
+//         * @param index DataMatrix to store the grid's indices
+//         * @param vectorizationType Vectorization type
+//         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
+//         */
+//        void getLevelIndexArraysForEvalTLBOptimized(DataMatrix& level, DataMatrix& index, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
+//          typename index_type::level_type curLevel;
+//          typename index_type::level_type curIndex;
+//
+//          //pad datasets
+//          sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+//          sg::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
+//
+//          level.setAll(0.0);
+//          index.setAll(0.0);
+//
+//          //transpose
+//          level.transpose();
+//          index.transpose();
+//
+//          //make optimized for reducing page faults
+//
+//          double* level_ptr = level.getPointer();
+//          double* index_ptr = index.getPointer();
+//
+//          for (size_t i = 0; i < list.size(); i += blocking_length) {
+//            for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+//              for (size_t t = i; t < i + blocking_length; ++t) {
+//                if (t < list.size()) {
+//                  (list[t])->get(current_dim, curLevel, curIndex);
+//                  *level_ptr = static_cast<double>(1 << curLevel);
+//                  *index_ptr = static_cast<double>(curIndex);
+//                }
+//
+//                ++level_ptr;
+//                ++index_ptr;
+//              }
+//            }
+//          }
+//        }
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -947,45 +947,45 @@ namespace sg {
           //    }
         }
 
-        /**
-         * Converts this storage from AOS (array of structures) to SOA (structure of array)
-         * with modification to speed up iterative Laplace Calculations: the level
-         * won't contain the levels, it contains 2 to the neagative power of the level.
-         * Additional blocking for better TLB usage is provided.
-         *
-         * @param level DataMatrix to store the grid's modified level
-         * @param vectorizationType Vectorization type
-         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
-         */
-        void getLevelForIntegralTLBOptimized(DataMatrix& level, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
-          typename index_type::level_type curLevel;
-          typename index_type::level_type curIndex;
-
-          //pad datasets
-          sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
-
-          level.setAll(0.0);
-
-          //transpose
-          level.transpose();
-
-          //make optimized for reducing page faults
-
-          double* level_ptr = level.getPointer();
-
-          for (size_t i = 0; i < list.size(); i += blocking_length) {
-            for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
-              for (size_t t = i; t < i + blocking_length; ++t) {
-                if (t < list.size()) {
-                  (list[t])->get(current_dim, curLevel, curIndex);
-                  *level_ptr = pow(2.0, static_cast<int>(-curLevel));
-                }
-
-                ++level_ptr;
-              }
-            }
-          }
-        }
+//        /**
+//         * Converts this storage from AOS (array of structures) to SOA (structure of array)
+//         * with modification to speed up iterative Laplace Calculations: the level
+//         * won't contain the levels, it contains 2 to the neagative power of the level.
+//         * Additional blocking for better TLB usage is provided.
+//         *
+//         * @param level DataMatrix to store the grid's modified level
+//         * @param vectorizationType Vectorization type
+//         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
+//         */
+//        void getLevelForIntegralTLBOptimized(DataMatrix& level, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
+//          typename index_type::level_type curLevel;
+//          typename index_type::level_type curIndex;
+//
+//          //pad datasets
+//          sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+//
+//          level.setAll(0.0);
+//
+//          //transpose
+//          level.transpose();
+//
+//          //make optimized for reducing page faults
+//
+//          double* level_ptr = level.getPointer();
+//
+//          for (size_t i = 0; i < list.size(); i += blocking_length) {
+//            for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+//              for (size_t t = i; t < i + blocking_length; ++t) {
+//                if (t < list.size()) {
+//                  (list[t])->get(current_dim, curLevel, curIndex);
+//                  *level_ptr = pow(2.0, static_cast<int>(-curLevel));
+//                }
+//
+//                ++level_ptr;
+//              }
+//            }
+//          }
+//        }
 
         /**
          * returns the max. depth in all dimension of the grid

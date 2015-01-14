@@ -20,8 +20,6 @@
 
 #include <iostream>
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-
 namespace sg {
 
 namespace datadriven {
@@ -29,17 +27,6 @@ namespace datadriven {
 LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose) :
     alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(
         0.0), stepExecTime_(0.0), GFlop_(0.0), stepGFlop_(0.0), GByte_(0.0), stepGByte_(0.0), currentRefinementStep(0) {
-#ifdef USE_MPI
-
-    // suppress output from all process but proc0,
-    // output is (in the normal, correctly working
-    // case) the same for all MPI processes, so no
-    // need to see output more than once
-    if (sg::parallel::myGlobalMPIComm->getMyRank() != 0) {
-        this->isVerbose_ = false;
-    }
-
-#endif
 }
 
 LearnerBase::LearnerBase(const std::string tGridFilename, const std::string tAlphaFilename, const bool isRegression,
@@ -192,40 +179,17 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
             std::cout << std::endl << "Doing refinement: " << i << std::endl;
         this->currentRefinementStep = i;
 
-#ifdef USE_MPI
-        // This barrier is needed since just the time measurement
-        // of process 0 is printed
-        MPI_Barrier(MPI_COMM_WORLD);
-#endif
         myStopwatch->start();
 
         // Do Refinements
         if (i > 0) {
             myStopwatch2->start();
 
-#ifdef USE_MPI
-
-            if (parallel::myGlobalMPIComm->getMyRank() == 0) {
-#endif
-                // disable refinement here!
-                sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(alpha_,
-                        AdaptConfig.noPoints_, AdaptConfig.threshold_);
-                grid_->createGridGenerator()->refine(myRefineFunc);
-                delete myRefineFunc;
-#ifdef USE_MPI
-                std::string serialized_grid = grid_->getStorage()->serialize();
-
-                parallel::myGlobalMPIComm->broadcastGridStorage(serialized_grid);
-            } else {
-                std::string serialized_grid = "";
-
-                parallel::myGlobalMPIComm->receiveGridStorage(serialized_grid);
-
-                grid_->getStorage()->emptyStorage();
-                grid_->getStorage()->unserialize_noAlgoDims(serialized_grid);
-            }
-
-#endif
+            // disable refinement here!
+            sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(alpha_,
+                    AdaptConfig.noPoints_, AdaptConfig.threshold_);
+            grid_->createGridGenerator()->refine(myRefineFunc);
+            delete myRefineFunc;
 
             DMSystem->rebuildLevelAndIndex();
 
@@ -250,11 +214,6 @@ LearnerTiming LearnerBase::train(sg::base::DataMatrix& trainDataset, sg::base::D
 
         myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
-#ifdef USE_MPI
-        // This barrier is needed since just the time measurement
-        // of process 0 is printed
-        MPI_Barrier(MPI_COMM_WORLD);
-#endif
         double stopTime = myStopwatch->stop();
         this->execTime_ += stopTime;
         this->stepExecTime_ = stopTime;
