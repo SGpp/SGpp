@@ -15,6 +15,8 @@
 #include "sgpp_base.hpp"
 //#include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
+#include "parallel/tools/TypesParallel.hpp"
+
 
 namespace sg {
 namespace base {
@@ -29,7 +31,20 @@ public:
   typedef std::pair<size_t, unsigned int> refinement_key;
   typedef std::map<refinement_key, double> refinement_map;
 
-  OnlinePredictiveRefinementDimension(AbstractRefinement* refinement): RefinementDecorator(refinement), iThreshold_(0.0){};
+
+  OnlinePredictiveRefinementDimension(AbstractRefinement* refinement, size_t dim): RefinementDecorator(refinement), iThreshold_(0.0),
+		  trainDataset(NULL), classes(NULL), errors(NULL){
+	  predictiveGrid_ = Grid::createLinearGrid(dim);
+	  GridGenerator* predictiveGridGenerator = predictiveGrid_->createGridGenerator();
+	  predictiveGridGenerator->regular(2);
+	  delete predictiveGridGenerator;
+  };
+
+
+  virtual ~OnlinePredictiveRefinementDimension(){
+	  delete predictiveGrid_;
+  }
+
   void free_refine(GridStorage* storage, RefinementFunctor* functor);
 
 	virtual void collectRefinablePoints(GridStorage* storage,
@@ -60,6 +75,9 @@ private:
 	DataMatrix* trainDataset;
 	DataVector* classes;
 	DataVector* errors;
+	Grid* predictiveGrid_;
+
+	static const sg::parallel::VectorizationType vecType_;
 
 };
 

@@ -12,6 +12,8 @@
 
 #include "base/exception/factory_exception.hpp"
 
+#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
+
 
 #include <iostream>
 
@@ -36,6 +38,14 @@ namespace sg {
     const char* ModLinearGridStencil::getType() {
       return "modlinearstencil";
     }
+
+    const SBasis& ModLinearGridStencil::getBasis(){
+		throw new factory_exception("Not implemented");
+		// it should never get so far, code just for compilation reasons
+		// If there will be a meaningful basis, this following lines should be changed
+		static SModLinearBase basis;
+		return basis;
+	}
 
     Grid* ModLinearGridStencil::unserialize(std::istream& istr) {
       return new ModLinearGridStencil(istr);

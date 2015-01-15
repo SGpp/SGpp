@@ -94,7 +94,6 @@ void HashRefinement::refineGridpointsCollection(GridStorage* storage, Refinement
     max_index = max_indices[i];
 
     if (max_value > functor->start() && max_value >= threshold) {
-      std::cout << "Refining grid point " << max_index << " value " << max_value << std::endl;
       refineGridpoint(storage, max_index);
     }
   }

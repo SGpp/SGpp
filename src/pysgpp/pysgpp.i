@@ -98,6 +98,8 @@ namespace std {
 // really dirty
 %include "src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
+%import "src/sgpp/base/basis/Basis.hpp"
+%template(SBasis) sg::base::Basis<unsigned int, unsigned int>;
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"

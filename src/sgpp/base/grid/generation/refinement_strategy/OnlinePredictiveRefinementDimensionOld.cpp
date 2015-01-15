@@ -86,11 +86,12 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			//printf("%2.10f\n", error);
 			//fflush(stdout);
 
+
 			if (error > functor->start()){
 				errors.push_back(error);
 			}
 
-			if (error > iThreshold_) {
+			//if (error > iThreshold_) {
 				key_type key(storage->seq(iter->first), d);
 //				if (refinementCollection_.find(key)
 //						!= refinementCollection_.end()) {
@@ -98,12 +99,12 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 //				} else {
 					refinementCollection_[key] = error;
 //				}
-			}
+			//}
 		}
 	}
 
 	// get new thershold for the next iteration
-	std::nth_element(errors.begin(), errors.begin()+refinements_num, errors.end(), doubleReverseCompare);
+	//std::nth_element(errors.begin(), errors.begin()+refinements_num, errors.end(), doubleReverseCompare);
 	//iThreshold_ = errors[refinements_num];
 
 }
@@ -137,12 +138,12 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 	std::vector<std::pair<key_type, value_type> >::const_iterator iter;
 	for (iter = errorsVector.begin(); iter < errorsVector.begin() + refinements_num; iter++){
 		if (iter->second > functor->start() && iter->second >= threshold){
-			index_type index((*storage)[iter->first.first]);
+			index_pointer index((*storage)[iter->first.first]);
 			//Sets leaf property of index, which is refined to false
-			(*storage)[iter->first.first]->setLeaf(false);
+			index->setLeaf(false);
 			std::cout << "Refining grid point " << iter->first.first << " dim " << iter->first.second << " value "
 					<< iter->second << std::endl;
-			this->refineGridpoint1D(storage, index, iter->first.second);
+			this->refineGridpoint1D(storage, *index, iter->first.second);
 		}
 	}
 
@@ -190,6 +191,7 @@ void OnlinePredictiveRefinementDimensionOld::free_refine(GridStorage* storage,
 	refineGridpointsCollection(storage, functor, refinements_num, max_indices,
 			max_values);
 	refinementCollection_.clear();
+	storage->recalcLeafProperty();
 	delete[] max_values;
 	delete[] max_indices;
 

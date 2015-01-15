@@ -160,6 +160,8 @@ private:
 	size_t gridType;
 
 	size_t activeDim;
+
+	Grid* grid_;
 };
 
 } /* namespace base */

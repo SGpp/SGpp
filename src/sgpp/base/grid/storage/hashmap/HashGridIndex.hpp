@@ -245,7 +245,7 @@ namespace sg {
          *
          * @param d the dimension in which the ansatz function should be read
          */
-        int getLevel(size_t d) const {
+        level_type getLevel(size_t d) const {
           return level[d];
         }
 
@@ -255,7 +255,7 @@ namespace sg {
          *
          * @param d the dimension in which the ansatz function should be read
          */
-        int getIndex(size_t d) const {
+        index_type getIndex(size_t d) const {
           return index[d];
         }
 

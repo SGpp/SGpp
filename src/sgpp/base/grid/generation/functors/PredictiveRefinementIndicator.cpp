@@ -85,17 +85,23 @@ double PredictiveRefinementIndicator::basisFunctionEvalHelper(AbstractRefinement
 
 	switch (gridType) {
 		case 1:
+		{
 			// linear basis
 			LinearBasis<AbstractRefinement::level_t,AbstractRefinement::index_t> linBasis;
 			return linBasis.eval(level,index,value);
+		}
 		case 15:
+		{
 			// linear Basis with Boundaries
 			LinearBoundaryBasis<AbstractRefinement::level_t,AbstractRefinement::index_t> linBoundBasis;
 			return linBoundBasis.eval(level,index,value);
+		}
 		case 8:
+		{
 			// modified linear basis
 			ModifiedLinearBasis<AbstractRefinement::level_t,AbstractRefinement::index_t> modLinBasis;
 			return modLinBasis.eval(level,index,value);
+		}
 		default:
 			// not found.
 			return 0;
