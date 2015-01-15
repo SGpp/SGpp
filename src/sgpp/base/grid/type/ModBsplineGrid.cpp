@@ -18,21 +18,31 @@
 namespace sg {
   namespace base {
 
-    ModBsplineGrid::ModBsplineGrid(std::istream& istr) : Grid(istr), degree(1 << 16) {
+    ModBsplineGrid::ModBsplineGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
       istr >> degree;
     }
 
 
-    ModBsplineGrid::ModBsplineGrid(size_t dim, size_t degree) : degree(degree) {
+    ModBsplineGrid::ModBsplineGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
       this->storage = new GridStorage(dim);
     }
 
     ModBsplineGrid::~ModBsplineGrid() {
+    	if (basis_ != NULL){
+			delete basis_;
+		}
     }
 
     const char* ModBsplineGrid::getType() {
       return "modBspline";
     }
+
+    const SBasis& ModBsplineGrid::getBasis(){
+    	if (basis_ == NULL){
+			basis_ = new SModBsplineBase(degree);
+		}
+		return *basis_;
+	}
 
     size_t ModBsplineGrid::getDegree() {
       return this->degree;

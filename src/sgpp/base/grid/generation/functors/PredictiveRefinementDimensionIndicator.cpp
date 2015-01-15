@@ -11,6 +11,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <cmath>
 
 namespace sg {
 namespace base {
@@ -28,21 +29,15 @@ PredictiveRefinementDimensionIndicator::PredictiveRefinementDimensionIndicator(G
 	this->errorVector = errorVector;
 	this->refinementsNum = refinements_num;
 	this->threshold = threshold;
+	this->grid_ = grid;
 }
 
 double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::index_type* gridPoint)
 {
   //TODO make it configurable
   unsigned short int MIN_POINTS_SUPPORT = 0;
-  //calculate the floor and ceiling of the support on dimension of the grid point.#
-	DataVector floorMask(dataSet->getNcols());
-	DataVector ceilingMask(dataSet->getNcols());
-	buildGPSupportMask(gridPoint,&floorMask,&ceilingMask);
 
-	//level, index and evaulation of a gridPoint in dimension d
-	AbstractRefinement::level_t level = 0;
-	AbstractRefinement::index_t index = 0;
-	double valueInDim;
+
 
 	//the actuall value of the errorIndicator
 	double errorIndicator = 0.0;
@@ -54,17 +49,23 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 	//counter of contributions - for DEBUG purposes
 	size_t counter = 0;
 
+	SBasis& basis = const_cast<SBasis&>(grid_->getBasis());
 	//go through the whole dataset. -> if data point on the support of the grid point in all dim then calculate error Indicator.
+	#pragma omp parallel for schedule(static) reduction(+:errorIndicator,denominator,r22,r2phi,counter)
 	for(size_t row = 0; row < dataSet->getNrows(); ++row)
 	{
+		//level, index and evaulation of a gridPoint in dimension d
+		AbstractRefinement::level_t level = 0;
+		AbstractRefinement::index_t index = 0;
+		double valueInDim;
 		//if on the support of the grid point in all dim
-		if(isOnSupport(&floorMask,&ceilingMask,row))
-		{
+		//if(isOnSupport(&floorMask,&ceilingMask,row))
+		//{
 			//counter for DEBUG
 			//++counter;*****
 		  double funcval = 1.0;
 			//calculate error Indicator
-			for(size_t dim = 0; dim < gridPoint->dim(); ++dim)
+			for(size_t dim = 0; dim < gridPoint->dim() && funcval!= 0; ++dim)
 			{
 
 				level = gridPoint->getLevel(dim);
@@ -72,22 +73,26 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 
 				valueInDim = dataSet->get(row,dim);
 
-				funcval *=  basisFunctionEvalHelper(level,index,valueInDim);
+				funcval *=  std::max(0.0, basis.eval(level,
+        				index,
+        				valueInDim));
+
+						//basisFunctionEvalHelper(level,index,valueInDim);
 			}
 		  errorIndicator += funcval*errorVector->get(row)/**errorVector->get(row)*/;
 		  r22 += errorVector->get(row)*errorVector->get(row);
 		  r2phi += funcval * errorVector->get(row);
 		  denominator += funcval * funcval;
 		  counter++;
-		}
+		//}
 	}
 
 	if (denominator != 0 && counter >= MIN_POINTS_SUPPORT){
 	  // to match with OnlineRefDim, use this:
-	  return (errorIndicator * errorIndicator) / denominator;
+	  //return (errorIndicator * errorIndicator) / denominator;
 
-	  double a = (errorIndicator/denominator);
-	  return /*2*r22 - 2*a*r2phi + a*a*denominator*/ a*(2*r2phi - a*denominator);
+	  //double a = (errorIndicator/denominator);
+	  return r2phi/denominator /*2*r22 - 2*a*r2phi + a*a*denominator*/ /*a*(2*r2phi - a*denominator)*/;
 	  //return fabs(a);
 	}
 	else {
@@ -112,17 +117,23 @@ double PredictiveRefinementDimensionIndicator::basisFunctionEvalHelper(AbstractR
 
 	switch (gridType) {
 		case 1:
+		{
 			// linear basis
 			LinearBasis<AbstractRefinement::level_t,AbstractRefinement::index_t> linBasis;
 			return linBasis.eval(level,index,value);
+		}
 		case 15:
+		{
 			// linear Basis with Boundaries
 			LinearBoundaryBasis<AbstractRefinement::level_t,AbstractRefinement::index_t> linBoundBasis;
 			return linBoundBasis.eval(level,index,value);
+		}
 		case 8:
+		{
 			// modified linear basis
 			ModifiedLinearBasis<AbstractRefinement::level_t,AbstractRefinement::index_t> modLinBasis;
 			return modLinBasis.eval(level,index,value);
+		}
 		default:
 			// not found.
 			return 0;
@@ -191,11 +202,6 @@ bool PredictiveRefinementDimensionIndicator::isOnSupport(
 			return false;
 		}
 	}
-	DataVector vector(dataSet->getNcols());
-	dataSet->getRow(row,vector);
-
-	//Debug
-//	std::cout << vector.toString() << " is on support of " << floorMask->toString() << " & " << ceilingMask->toString() << std::endl;
 
 	return true;
 }

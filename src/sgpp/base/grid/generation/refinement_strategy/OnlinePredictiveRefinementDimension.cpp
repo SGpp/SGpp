@@ -9,16 +9,27 @@
 #include <list>
 #include <vector>
 #include <utility>
+#include <cmath>
 
 #include "OnlinePredictiveRefinementDimension.hpp"
 #include "base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
 #include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
+#include "parallel/operation/ParallelOpFactory.hpp"
 
 
 namespace sg
 {
 namespace base
 {
+
+bool refinementPairCompare(const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& firstEl,
+                           const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& secondEl)
+{
+    return firstEl.second > secondEl.second;
+}
+
+const sg::parallel::VectorizationType OnlinePredictiveRefinementDimension::vecType_ = sg::parallel::VectorizationType::X86SIMD;
+
 
 void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     GridStorage* storage, size_t refinements_num, refinement_map* result)
@@ -35,34 +46,22 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     size_t dim = storage->dim();
     size_t numData = trainDataset->getNrows();
 
-    Grid* predictiveGrid = Grid::createLinearGrid(dim);
-    GridGenerator* predictiveGridGenerator = predictiveGrid->createGridGenerator();
-    predictiveGridGenerator->regular(2);
+    //std::cout << "Dataset: " << trainDataset->toString() << std::endl;
 
-    GridStorage* predictiveGridStorage = predictiveGrid->getStorage();
-    size_t predictiveGridSize = predictiveGrid->getSize();
+    GridStorage* predictiveGridStorage = predictiveGrid_->getStorage();
+    size_t predictiveGridSize = predictiveGrid_->getSize();
 
-    OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid, trainDataset);
-
-    // Display points on predictive Grid
-
-    GridStorage::grid_map_iterator predictive_end_iter = predictiveGrid->getStorage()->end();
-    for (GridStorage::grid_map_iterator iter = predictiveGrid->getStorage()->begin();
-            iter != predictive_end_iter; iter++)
-    {
-        // std::cout << predictiveGrid->getStorage()->seq(iter->first) << ": " << iter->first->toString() << std::endl;
-    }
-
+    OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid_, trainDataset);
+//    sg::parallel::OperationMultipleEvalVectorized* eval =
+//    		sg::op_factory::createOperationMultipleEvalVectorized(*predictiveGrid_,
+//                vecType_, trainDataset);
 
     GridIndex* gridIndex;
-    GridStorage::grid_map_iterator end_iter = storage->end();
     for (GridStorage::grid_map_iterator iter = storage->begin();
-            iter != end_iter; iter++)
+            iter != storage->end(); iter++)
     {
 
         gridIndex = iter->first;
-
-        //std::cout << "Point: " << storage->seq(gridIndex) << " (" << gridIndex->toString() << ")" << std::endl;
 
         // Refinability
 
@@ -72,6 +71,7 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             if( !hasLeftChild(storage, gridIndex, k))
             {
                 refinable = true;
+                break;
             }
         }
         if (!refinable)
@@ -80,60 +80,80 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
         }
 
         // Bounding box = support of refinable point
-
-        // std::cout << "New bounding box:" << std::endl;
-
         DimensionBoundary* boundaries = new DimensionBoundary[dim];
 
+		//#pragma omp parallel for schedule(static)
         for (size_t k = 0; k < dim; k++ )
         {
-            // std::cout << "Dimension " << k << std::endl;
-
-            unsigned int index = gridIndex->getIndex(k);
-            unsigned int level = gridIndex->getLevel(k);
-            double intval = pow(2.0, -static_cast<double>(level));
+            double index = gridIndex->getIndex(k);
+            double level = gridIndex->getLevel(k);
+            double intval = pow(2.0, -level);
+            //std::cout << "level " << level << " intval " << intval << std::endl;
 
             DimensionBoundary boundary;
             boundary.leftBoundary = (index-1) * intval;
             boundary.rightBoundary = (index+1) * intval;
             boundaries[k] = boundary;
-
-            // std::cout << "left boundary: " << boundary.leftBoundary << std::endl;
-            // std::cout << "right boundary: " << boundary.rightBoundary << std::endl;
         }
 
         BoundingBox* bb = new BoundingBox(dim, boundaries);
-        predictiveGrid->setBoundingBox(*bb);
+        predictiveGrid_->setBoundingBox(*bb);
+
+        //std::cout << predictiveGrid_->getBoundingBox()->toString() << std::endl;
+
 
         // All numerators
+        // FIXME: should be initiated only once
         DataVector numerators(predictiveGridSize);
         eval->multTranspose(*errors, numerators);
-        //std::cout << "Numerators: " << numerators.toString() << std::endl;
-        //std::cout << "Errors: " << errors->toString() << std::endl;
-        numerators.sqr();
+        //numerators.sqr();
 
         // All denominators
+        // FIXME: should be initiated only once
         DataVector denominators(predictiveGridSize);
+        denominators.setAll(0.0);
 
+//        DataVector single(predictiveGridSize);
+//		single.setAll(0.0);
+        SBasis& basis = const_cast<SBasis&>(predictiveGrid_->getBasis());
+		#pragma omp parallel for schedule(static)
         for (size_t j = 0; j < predictiveGridSize; j++)
         {
-            DataVector single(predictiveGridSize);
-            single.setAll(0.0);
-            single.set(j, 1.0);
 
-            DataVector col(numData);
-            eval->mult(single, col);
+//            single.set(j, 1.0);
+//            DataVector  private(single)col(numData);
+//            eval->mult(single, col);
+//            col.sqr();
+//            denominators.set(j, col.sum());
+//            single.set(j, 0.0);
 
-            col.sqr();
-            denominators.set(j, col.sum());
+
+            GridIndex predGridIdx = predictiveGridStorage->get(j);
+            for (size_t point_idx = 0; point_idx < numData; point_idx++){
+            	double prod = 1.0;
+            	for (size_t d = 0; d < dim && prod != 0; d++){
+                	double transformedCoords = (trainDataset->get(point_idx, d) -
+                			boundaries[d].leftBoundary)/(boundaries[d].rightBoundary - boundaries[d].leftBoundary);
+            		prod *= std::max(0.0, basis.eval(predGridIdx.getLevel(d),
+            				predGridIdx.getIndex(d),
+            				transformedCoords));
+            	}
+            	denominators[j] += prod*prod;
+
+            }
+
+
         }
 
-        // Calculate the indicator value for all refinable dimensions
 
+        // Calculate the indicator value for all refinable dimensions
+        GridIndex childIndex(dim);
+        for(size_t j=0;j<dim;j++)
+		{
+			childIndex.set(j, 1, 1);
+		}
         for (size_t k = 0; k < dim; k++ )
         {
-            // std::cout << "Dimension: " << k << std::endl;
-
             // Is the current point refinable in the dimension k?
             if( hasLeftChild(storage, gridIndex, k) || hasRightChild(storage, gridIndex, k) )
             {
@@ -143,53 +163,28 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
             // Identify the index of the two grid points
             // and calculate their indicator value
 
-            GridIndex childIndex(dim);
             size_t childSeq;
+
             double value1 = 0;
             double value2 = 0;
 
             // Left Child
             childIndex.set(k, 2, 1);
 
-            // other dimensions
-            for(size_t j=0;j<dim;j++)
-            {
-                if (j != k)
-                {
-                    childIndex.set(j, 1, 1);
-                }
-            }
             childSeq = predictiveGridStorage->seq(&childIndex);
 
             if (denominators.get(childSeq) != 0)
             {
                 value1 = numerators.get(childSeq) / denominators.get(childSeq);
-                //std::cout << "Left Child: sequence: " << childSeq << std::endl;
-                //std::cout << "Left Child: numerator: " << numerators.get(childSeq) << std::endl;
-                //std::cout << "Left Child: denominators: " << denominators.get(childSeq) << std::endl;
             }
             else
             {
                 // No points or only boundary points
-                //std::cout << "Left Child: has no points" << std::endl;
                 value1 = 0;
             }
 
-            /*
-            std::cout << "Left Child: " << value1 << std::endl;
-            std::cout << numerators.get(childSeq) << std::endl;
-            std::cout << denominators.get(childSeq) << std::endl;
-			*/
-
             // Right Child
             childIndex.set(k, 2, 3);
-            for(size_t j=0;j<dim;j++)
-            {
-                if (j != k)
-                {
-                    childIndex.set(j, 1, 1);
-                }
-            }
             childSeq = predictiveGridStorage->seq(&childIndex);
 
             if (denominators.get(childSeq) != 0)
@@ -202,18 +197,12 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
                 value2 = 0;
             }
 
-            /*
-            std::cout << "Right Child: " << value2 << std::endl;
-            std::cout << numerators.get(childSeq) << std::endl;
-            std::cout << denominators.get(childSeq) << std::endl;
-			*/
-
             result->insert(std::pair<refinement_key, double>(
                                refinement_key(storage->seq(gridIndex),
                                               (unsigned int) k), value1 + value2)
                           );
 
-            //std::cout << "Point " << storage->seq(gridIndex) << " (dim: " << k << "): " << (value1 + value2) << std::endl;
+            childIndex.set(k, 1, 1);
         }
 
         delete bb;
@@ -221,59 +210,32 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
     }
 
-    // Output result
-    /*std::cout << "Result1: " << std::endl;
-    for(refinement_map::iterator it = result->begin(); it != result->end(); it++ )
-    {
-    	std::cout << "(" << it->first.first << ", " << it->first.second << "): " << it->second << std::endl;
-    }*/
-
     if(refinements_num != 0)
     {
-        typedef std::vector<std::pair<double, refinement_key> > TmpVec;
-        TmpVec v;
+        typedef std::vector<std::pair<key_type, value_type> > TmpVec;
+        TmpVec errorsVector;
 
-        for(refinement_map::iterator it = result->begin(); it != result->end(); it++ )
+        /*for(refinement_map::iterator it = result->begin(); it != result->end(); it++ )
         {
-            v.push_back(std::make_pair(it->second, it->first));
-        }
-
-        std::sort(v.begin(), v.end(), std::greater<std::pair<double, refinement_key> >());
-
-        refinement_map result2 = refinement_map();
-
-        size_t i = 0;
-        for(TmpVec::iterator it = v.begin(); it != v.end(); it++)
-        {
-            result2[it->second] = it->first;
-            i++;
-            if( i == refinements_num )
-            {
-                break;
-            }
-        }
-
-        *result = result2;
-
-        // Output result2
-        /*
-        std::cout << "Result2:" << std::endl;
-        for(refinement_map::iterator it = result2.begin(); it != result2.end(); it++ )
-        {
-        	std::cout << "(" << it->first.first << ", " << it->first.second << "): " << it->second << std::endl;
+            errorsVector.push_back(std::make_pair(it->first, it->second));
         }*/
+        std::copy(result->begin(),
+        		result->end(),
+        	       std::back_inserter<std::vector<std::pair<key_type, value_type> > >(errorsVector));
+
+        std::nth_element(errorsVector.begin(), errorsVector.begin()+refinements_num,  errorsVector.end(), refinementPairCompare);
+
+        //refinement_map result2 = refinement_map();
+        result->clear();
+
+        for(TmpVec::iterator it = errorsVector.begin(); it != errorsVector.begin()+std::min(refinements_num, errorsVector.size()); it++)
+        {
+            (*result)[it->first] = it->second;
+        }
     }
 
-    delete predictiveGrid;
-    delete predictiveGridGenerator;
     delete eval;
 
-}
-
-bool refinementPairCompare(const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& firstEl,
-                           const std::pair<OnlinePredictiveRefinementDimension::key_type, OnlinePredictiveRefinementDimension::value_type>& secondEl)
-{
-    return firstEl.second > secondEl.second;
 }
 
 
@@ -303,21 +265,18 @@ void OnlinePredictiveRefinementDimension::free_refine(GridStorage* storage,
     	unsigned int dim = it->first.second;
     	double val = it->second;
 
-    	if ( val < functor->getRefinementThreshold() ) {
+    	if ( val < functor->getRefinementThreshold() || val <= functor->start() ) {
     		continue;
     	}
 
-    	index_type index = storage->get(seq);
-    	index.setLeaf(false);
-
-    	// if does not work, try
-    	// (*storage)[max_index]->setLeaf(false);
+    	(*storage)[it->first.first]->setLeaf(false);
 
     	printf("Refine: (%d,%d) with value %2.10f\n", (int)seq, (int)dim, val);
     	fflush(stdout);
 
-    	this->refineGridpoint1D(storage, index, dim);
+    	this->refineGridpoint1D(storage, *(*storage)[it->first.first], dim);
     }
+    storage->recalcLeafProperty();
 }
 
 bool OnlinePredictiveRefinementDimension::hasLeftChild(GridStorage* storage, GridIndex* gridIndex, size_t dim)

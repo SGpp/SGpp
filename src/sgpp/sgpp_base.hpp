@@ -8,7 +8,7 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-
+#include "base/basis/Basis.hpp"
 #include "base/basis/linear/noboundary/LinearBasis.hpp"
 #include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"

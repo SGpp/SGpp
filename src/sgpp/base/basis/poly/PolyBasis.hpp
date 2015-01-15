@@ -12,6 +12,7 @@
 #include <vector>
 #include "base/exception/factory_exception.hpp"
 #include "base/datatypes/DataVector.hpp"
+#include "base/basis/Basis.hpp"
 
 namespace sg {
 
@@ -23,7 +24,7 @@ namespace sg {
      * @version $HEAD$
      */
     template<class LT, class IT>
-    class PolyBasis {
+    class PolyBasis: public Basis<LT, IT> {
       public:
         /**
          * Constructor
