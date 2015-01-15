@@ -111,6 +111,7 @@ vars.Add(BoolVariable("EIGEN", "Sets if Eigen should be used", False))
 vars.Add(BoolVariable("ARMADILLO", "Sets if Armadillo should be used", False))
 vars.Add(BoolVariable("GMMPP", "Sets if Gmm++ should be used", False))
 vars.Add('OPT', "Sets optimization on and off", False)
+vars.Add(BoolVariable('JENKINS_COMPILER', "Use fixed version compiler to better support jenkins", False))
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
@@ -234,22 +235,19 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-Wextra', '-ansi', '-pedantic',
-                         '-Wno-long-long', '-Werror', '-Wno-error=unused-parameter',
-                         '-Wno-deprecated', 
+    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
                          '-fno-strict-aliasing', '-O3', '-Wconversion',
                          '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
-    
-    # link linear system solver libraries with the resulting .so (needed for sg::opt)
-    env.Append(LINKFLAGS=["-Wl,--no-as-needed"])
-    
     if env['OMP']:
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
     else:
         # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
+        
+    if env['JENKINS_COMPILER']:
+        env.Replace(CXX = 'g++-4.8')
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
@@ -308,8 +306,6 @@ if env['PLATFORM'] != 'cygwin':
 
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
-
-
 
 # Decide what to compile
 #########################################################################

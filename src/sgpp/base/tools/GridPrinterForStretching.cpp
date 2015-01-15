@@ -26,10 +26,6 @@ namespace sg {
     }
 
     void GridPrinterForStretching::printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, size_t PointsPerDimension) {
-      (void)alpha;
-      (void)tFilename;
-      (void)GridArea;
-      (void)PointsPerDimension;
       throw new tool_exception("GridPrinterForStretching::printGridDomain : This printer does not support BoundingBox, use printGridDomainStretching instead!");
     }
 

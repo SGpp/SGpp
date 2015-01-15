@@ -248,7 +248,12 @@ class LearnerBuilder(object):
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
             self.__learner.specification.setBOperator(
-            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)), DataContainer.TRAIN_CATEGORY)
+            try:
+                self.__learner.specification.setBOperator(
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
+            except:
+                pass 
 
         return self.__learner
 
@@ -335,8 +340,8 @@ class LearnerBuilder(object):
         return self
     
     
-    def withTestingDataFromNumPyArray(self, points, values, name="train"):
-        return self.withTestingDataFromNumPyArray(self, points, values, "test")
+    def withTestingDataFromNumPyArray(self, points, values, name="test"):
+        return self.withTrainingDataFromNumPyArray(points, values, "test")
     
     
     ## 
@@ -662,8 +667,8 @@ class LearnerBuilder(object):
             # if method called is not a object method of this Descriptor, most probably it's a method of
             # LearnerBuilder so we try to call the method from our builder 
             if self.__specification.getCOperator() == None: #use laplace operator default
-                self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
-                self.__specification.setCOperatorType('laplace')
+                self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
+                self.__specification.setCOperatorType('identity')
             self.__builder.getLearner().setSpecification(self.__specification)
             return getattr(self.__builder, attr)
         
@@ -728,6 +733,12 @@ class LearnerBuilder(object):
             self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('identity')
             return self
+        
+        
+        def withVectorizationType(self, vecType):
+            self.__specification.setVectorizationType(vecType)
+            return self
+            
         
     
     ##

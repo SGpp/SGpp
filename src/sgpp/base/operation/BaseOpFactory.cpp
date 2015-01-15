@@ -200,7 +200,6 @@ namespace sg {
     }
 
     base::OperationMatrix* createOperationIdentity(base::Grid& grid) {
-      (void)grid;
       return new base::OperationIdentity();
     }
 

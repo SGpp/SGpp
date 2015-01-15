@@ -1,70 +1,55 @@
 /* ****************************************************************************
-* Copyright (C) 2014 Technische Universitaet Muenchen                         *
+* Copyright (C) 2009 Technische Universitaet Muenchen                         *
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Julian Valentin (julian.valentin@stud.mathematik.uni-stuttgart.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#ifndef SGPP_BASE_GRID_TYPE_LINEARTRAPEZOIDBOUNDARYGRID_HPP
-#define SGPP_BASE_GRID_TYPE_LINEARTRAPEZOIDBOUNDARYGRID_HPP
-
-#include <iostream>
+#ifndef LINEARTRAPEZOIDBOUNDARYGRID_HPP
+#define LINEARTRAPEZOIDBOUNDARYGRID_HPP
 
 #include "base/grid/Grid.hpp"
+
+#include <iostream>
 
 namespace sg {
   namespace base {
 
     /**
-     * Boundary grid with linear basis functions.
+     * grid with linear base functions with boundaries, pentagon cut
      */
     class LinearTrapezoidBoundaryGrid : public Grid {
+      protected:
+        LinearTrapezoidBoundaryGrid(std::istream& istr);
+
       public:
         /**
-         * Constructor.
+         * Constructor Linear Trapezoid Boundary Grid
          *
-         * @param dim       number of dimensions
+         * @param dim the dimension of the grid
          */
         LinearTrapezoidBoundaryGrid(size_t dim);
 
         /**
-         * Constructor.
+         * Constructor Linear Trapezoid Boundary Grid
          *
-         * @param BB        bounding box
+         * @param BB the BoundingBox of the grid
          */
         LinearTrapezoidBoundaryGrid(BoundingBox& BB);
 
         /**
-         * Destructor.
+         * Destructor
          */
         virtual ~LinearTrapezoidBoundaryGrid();
 
-        /**
-         * @return  identifying grid type string
-         */
         virtual const char* getType();
 
-        /**
-         * @return grid generator for this grid type
-         */
         virtual GridGenerator* createGridGenerator();
 
-        /**
-         * @param istr  input stream containing the serialization
-         * @return      pointer to newly generated deserialized grid
-         */
         static Grid* unserialize(std::istream& istr);
-
-      protected:
-        /**
-         * Deserialization constructor.
-         *
-         * @param istr  serialized grid
-         */
-        LinearTrapezoidBoundaryGrid(std::istream& istr);
     };
 
   }
 }
 
-#endif
+#endif /* LINEARTRAPEZOIDBOUNDARYGRID_HPP */

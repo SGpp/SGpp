@@ -43,7 +43,17 @@
 #endif
 
 #ifdef USEARBB
+#ifdef USE_MPI
+#error "MPI compilation is not support when compiling multiple evaluation for ArBB"
+#endif
 #include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp"
+#endif
+
+#ifdef USECUDA
+#ifdef USE_MPI
+#error "MPI compilation is not support when compiling multiple evaluation for CUDA"
+#endif
+#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPCUDALinear.hpp"
 #endif
 
 namespace sg {
@@ -90,6 +100,12 @@ namespace sg {
         }
 
 #endif
+#ifdef USECUDA
+        else if (vecType == parallel::CUDA) {
+          return new parallel::OperationMultipleEvalIterativeSPCUDALinear(grid.getStorage(), dataset);
+        }
+
+#endif
 #ifdef USEMIC
         else if (vecType == parallel::MIC) {
           return new parallel::OperationMultipleEvalIterativeSP<parallel::SPMICKernel<parallel::SPMICLinear> > (grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
@@ -127,6 +143,12 @@ namespace sg {
 #ifdef USEARBB
         else if (vecType == parallel::ArBB) {
           return new parallel::OperationMultipleEvalIterativeSPArBBLinear(grid.getStorage(), dataset);
+        }
+
+#endif
+#ifdef USECUDA
+        else if (vecType == parallel::CUDA) {
+          return new parallel::OperationMultipleEvalIterativeSPCUDALinear(grid.getStorage(), dataset);
         }
 
 #endif

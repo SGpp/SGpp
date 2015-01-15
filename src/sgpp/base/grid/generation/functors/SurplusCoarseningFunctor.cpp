@@ -17,7 +17,6 @@ namespace sg {
 
 
     double SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
-      (void)storage;
       return fabs(alpha->get(seq));
     }
 

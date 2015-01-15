@@ -83,7 +83,8 @@ namespace sg {
         // generate initial grid
         {
           tools::SmartPointer<base::GridGenerator> grid_gen(grid.createGridGenerator());
-          grid_gen->regular(3);
+	  // TODO: was changed for SGaA 2014 from 3 to 1
+          grid_gen->regular(1);
         }
 
         size_t current_N = grid_storage->size();

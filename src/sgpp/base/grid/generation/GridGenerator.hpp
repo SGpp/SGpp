@@ -42,6 +42,7 @@ namespace sg {
         /**
          * Creates a sparse grid with fully connected cliques
          *
+         * @param level Grid level
          * @param clique_size clique size
          */
         virtual void cliques(int level, size_t clique_size) = 0;
@@ -56,10 +57,7 @@ namespace sg {
         /**
          * Creates a grid which doesn't contain the fullgrids with li<l_user, for any li level_t
          * */
-        virtual void truncated(int level, size_t l_user) {
-          (void)level;
-          (void)l_user;
-        };
+        virtual void truncated(int level, size_t l_user) {};
 
         /**
          * Refines a grid according to the settings of the RefinementFunctor func.

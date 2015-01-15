@@ -1051,7 +1051,7 @@ namespace sg {
               } else {
                 level.set(i, current_dim, static_cast<double>(1 << curLevel));
                 index.set(i, current_dim, static_cast<double>(curIndex));
-                uint64_t intmask = 0x8000000000000000;
+                uint64_t intmask = 0x8000000000000000ULL;
                 mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
                 offset.set(i, current_dim, 1.0);
               }

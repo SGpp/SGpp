@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "SobolSampleGenerator.hpp"
-#include "SobolParameters.hpp"
 
 using namespace sg::base;
 using namespace std;
