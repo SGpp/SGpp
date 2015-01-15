@@ -131,10 +131,7 @@ The following publications address SG++:
 
 
 @section mainpage__lastmodifications Last modifications
-SVN_LOG
-attention: I (Julian Valentin) commented "dollar_sign"SVN_LOG"dollar_sign" out,
-because every doxygen run needed my SVN password to connect...
-So to reverse this, add a dollar sign before and after SVN_LOG three lines above.
+$SVN_LOG$
 
 
 @section mainpage__references References

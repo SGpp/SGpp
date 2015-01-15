@@ -74,6 +74,12 @@ namespace sg {
       else if (vecType == ArBB) {
         return 16;
       }
+#ifdef USECUDA
+      else if (vecType == CUDA) {
+        return 64;
+      }
+
+#endif
 
 #ifdef USEMIC
       else if (vecType == MIC) {

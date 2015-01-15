@@ -1161,6 +1161,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
         alpha[2] = 1.0
         
         c = testOP.test(alpha, data, classes)
+        print c
         self.failUnless(c > 0.0)
         
         alpha[0] = 0.0
@@ -1195,3 +1196,5 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
         eval = createOperationEval(factory)
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 0.8176285620)
+
+#unittest.main()

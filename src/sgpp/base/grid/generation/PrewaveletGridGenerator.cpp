@@ -263,8 +263,6 @@ namespace sg {
 
     void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor* func,
         int maxLevel) {
-      (void)func;
-      (void)maxLevel;
       if (maxLevel < 0) {
         throw generation_exception("Grid level value is negative");
       }
@@ -274,7 +272,6 @@ namespace sg {
 
     size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
       int maxLevel) {
-      (void)maxLevel;
       if (maxLevel < 0) {
         throw generation_exception("Grid level value is negative");
       }

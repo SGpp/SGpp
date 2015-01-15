@@ -116,7 +116,7 @@ namespace combigrid {
     protected:
       std::vector<std::vector<int> > levelVec_;
       std::vector<double> coef_;
-      static const int LEVELMAX = 128;
+      static const int LEVELMAX;
   };
 
 }

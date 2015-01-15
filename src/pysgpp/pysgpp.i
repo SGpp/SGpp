@@ -250,6 +250,7 @@ namespace std {
 %include "src/sgpp/parallel/operation/ParallelOpFactory.hpp"
 %include "src/sgpp/parallel/tools/TypesParallel.hpp"
 %include "src/sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+%include "src/sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 #endif
 
 #ifdef SG_MISC
@@ -518,3 +519,5 @@ const bool UMFPACK_ENABLED;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
+
+

@@ -5,7 +5,6 @@ namespace sg {
 
     void ConvertLinearToPrewavelet::operator()(DataVector& source, DataVector& result,
         grid_iterator& index, size_t dim) {
-      (void)source;
 
       // The Algorithm runs bottom-up, thus we need the maximal grid-depth
       // in the current dimension
