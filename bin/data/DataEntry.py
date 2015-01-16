@@ -21,7 +21,7 @@
 #############################################################################
 
 
-from bin.pysgpp import DataVector
+from pysgpp import DataVector
 from DataSpecification import DataSpecification
 
 

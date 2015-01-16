@@ -17,7 +17,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.ARFFAdapter import ARFFAdapter
-from bin.pysgpp import *
+from pysgpp import *
 from bin.learner.solver import CGSolver
 from bin.learner import Learner, LearnedKnowledge, TrainingSpecification, TrainingStopPolicy, Classifier
 from bin.learner.folding import SequentialFoldingPolicy, FoldingPolicy

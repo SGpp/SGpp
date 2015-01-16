@@ -1161,7 +1161,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
         alpha[2] = 1.0
         
         c = testOP.test(alpha, data, classes)
-        print c
+        #print c
         self.failUnless(c > 0.0)
         
         alpha[0] = 0.0

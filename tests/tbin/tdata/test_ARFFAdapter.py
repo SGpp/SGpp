@@ -16,7 +16,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.ARFFAdapter import ARFFAdapter
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 
 
 ##
