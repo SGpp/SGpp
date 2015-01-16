@@ -20,7 +20,3 @@ for sourceFile in srcs:
  
 cppUnitTests = env.Program(target = "cppUnitTests", source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde'])
 env.Install(TEST_DIR, cppUnitTests)
-
-Export('srcs')
-Export('objs')
-Export('dependencies')

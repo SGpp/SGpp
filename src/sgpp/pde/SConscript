@@ -71,13 +71,9 @@ objs = []
 for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
  
-lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs)
+lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase'])
 env.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows
 libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
 env.Install(BUILD_DIR, libStatic)
-
-Export('srcs')
-Export('objs')
-Export('dependencies')
