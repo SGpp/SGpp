@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-#include "base/test/TestSuite.hpp"
+#include "test/TestSuite.hpp"
 
 #include "datadriven/test/OperationMultipleEvalBaseTestSuite.hpp"
 #include "datadriven/test/OperationMultipleEvalStreamingTestSuite.hpp"

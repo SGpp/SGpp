@@ -7,11 +7,11 @@
 
 Import('env')
 Import('src_objs')
-Import('moduleList')
+Import('moduleDependencies')
 
 src_objs_combined = []
 
-for module in moduleList:
+for module in moduleDependencies:
     name = module.lower().split('sg_',1)[1]
     if env[module]:
         src_objs_combined += src_objs[name]

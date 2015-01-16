@@ -1,0 +1,43 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import('env')
+Import('BUILD_DIR')
+Import('moduleName')
+
+dependencies = ["base", "pde"]
+
+srcs = Split("""
+ode/AdamsBashforth.cpp
+ode/CrankNicolson.cpp
+ode/Euler.cpp
+ode/StepsizeControlBDF.cpp
+ode/StepsizeControlEJ.cpp
+ode/StepsizeControlH.cpp
+ode/StepsizeControl.cpp
+ode/StepsizeControlMC.cpp
+ode/VarTimestep.cpp
+sle/BiCGStab.cpp
+sle/BiCGStabSP.cpp
+sle/ConjugateGradients.cpp
+sle/ConjugateGradientsSP.cpp
+""")
+
+objs = []
+for sourceFile in srcs:
+    objs.append(env.SharedObject(sourceFile))
+    #objs.append(sourceFile)
+ 
+lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs)
+env.Install(BUILD_DIR, lib)
+# # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
+# # of the shared libaries on the static libraries on windows
+libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
+env.Install(BUILD_DIR, libStatic)
+
+Export('srcs')
+Export('objs')
+Export('dependencies')

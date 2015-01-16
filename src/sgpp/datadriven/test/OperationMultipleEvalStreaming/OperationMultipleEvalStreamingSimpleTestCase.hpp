@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "base/test/TestCase.hpp"
+#include "test/TestCase.hpp"
 #include "base/grid/Grid.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/datatypes/DataVector.hpp"
