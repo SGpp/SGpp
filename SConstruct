@@ -287,7 +287,6 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 Export('env')
   
 # compile selected modules
-moduleDependencies = {}
 all_objs = []
 all_srcs = []
 for name in modulesToBuildFolder:
@@ -299,32 +298,11 @@ for name in modulesToBuildFolder:
         print "Preparing to build module: ", name
         # SConscript('src/sgpp/SConscript' + name, variant_dir='#/tmp/build/', duplicate=0)
         env.SConscript('src/sgpp/' + name + '/SConscript', {'env': env, 'moduleName': name})
-    
-        Import('dependencies')
-        moduleDependencies['SG_' + name.upper()] = dependencies
-    
-        print 'Module SG_' + name.upper() + ' depends on:'
-        for dep in dependencies:
-            print '\t' + dep
-            if not dep in modulesToBuildFolder:
-                print "Error!"
-                print name + " depends on non-existent module " + dep
-                Exit(1)
-        Import('srcs')
-        Import('objs')
-        all_objs += objs
-        all_srcs += srcs
-        # src_objs[name] = objs
-        # src_files[name] = srcs
-     
-Export('moduleDependencies')
-Export('all_objs')
-Export('all_srcs')
-
-#   
+       
 # build python lib
 if env['SG_PYTHON']:
     libpysgpp = SConscript('src/pysgpp/SConscript')
+    Import('pysgppInstall')
 
 # build java lib
 if env['SG_JAVA']:
@@ -341,9 +319,9 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     testdep = env.SConscript('tests/SConscript')
     # execute after all installations (even where not necessary)
     if env['SG_JAVA']:
-        Depends(testdep, [jinst, pyinst])
+        Depends(testdep, [jinst, pysgppInstall])
     else:
-        Depends(testdep, [pyinst])
+        Depends(testdep, [pysgppInstall])
 else:
     print "Warning: Skipping python unit tests"
 

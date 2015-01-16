@@ -15,8 +15,8 @@ pysgpp.i
 """)
 
 Import('env')
-Import('all_objs')
-Import('all_srcs')
+# Import('all_objs')
+# Import('all_srcs')
 Import('BUILD_DIR')
 Import('PYSGPP_BUILD_DIR')
 # Import('moduleDependencies')
@@ -30,9 +30,6 @@ Import('PYSGPP_BUILD_DIR')
 
 
 py_env = env.Clone()
-
-print all_srcs
-print all_objs
 
 # remove compiler warnings caused by swig (as we cannot do anything against them, 
 # and as they confuse jenkins):
@@ -48,8 +45,7 @@ py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPD
 
 # The explicit ".so" suffix is required for OSX as otherwise ".dylib" is used in OSX. Python however requires ".so" on OSX as well. On all other plattforms ".so" actually is the default.
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid']) # 
-env.Install(PYSGPP_BUILD_DIR, pysgpp)
+pysgppInstall = env.Install(PYSGPP_BUILD_DIR, pysgpp)
 env.Install(PYSGPP_BUILD_DIR, "pysgpp.py")
 
-Export('pysgpp')
-Return('pysgpp')
+Export('pysgppInstall')
