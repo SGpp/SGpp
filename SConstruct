@@ -231,7 +231,7 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
+    env.Append(CPPFLAGS=['-Wall', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
                          '-fno-strict-aliasing', '-O3', '-Wconversion',
                          '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
@@ -247,7 +247,7 @@ if env['TARGETCPU'] == 'default':
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
-    env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', '-Wno-deprecated', '-wd1125',  
+    env.Append(CPPFLAGS = ['-Wall', '-Werror', '-Wno-deprecated', '-wd1125',  
                            '-fno-strict-aliasing', '-O3',
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
                            '-ansi-alias', '-fp-speculation=safe', 
@@ -410,8 +410,8 @@ if not env.GetOption('clean'):
         if float(compilerVersion) < 4.8:
             sys.stderr.write("Error: GCC compiler >=4.8 is required to support C++11. Abort!\n")
             Exit(0)
-    else:
-        env.Append(CPPFLAGS=['-std=c++11'])
+
+    env.Append(CPPFLAGS=['-std=c++11'])
 
 
     # check whether swig installed
