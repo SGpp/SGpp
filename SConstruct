@@ -574,8 +574,6 @@ if env['SG_PYTHON'] and swigAvail and pyAvail:
     libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
     pyinst = env.Install(env['OUTPUT_PATH'] + 'lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
     Depends(pyinst, libpysgpp)
-    pybin = env.Install(env['OUTPUT_PATH'] + 'bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
-    Depends(pybin, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['SG_JAVA']:

@@ -16,7 +16,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.folding import RandomFoldingPolicy
 from bin.data.DataContainer import DataContainer
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 
 
 ##

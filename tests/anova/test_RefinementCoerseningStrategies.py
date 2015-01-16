@@ -7,15 +7,15 @@ from operator import itemgetter
 from numpy import zeros
 from bin.learner.formatter.GridImageFormatter import GridImageFormatter
 from bin.learner.formatter.GridFormatter import GridFormatter
-from bin.pysgpp import DataMatrix, DataVector
+from pysgpp import DataMatrix, DataVector
 from bin.learner.solver.CGSolver import CGSolver
 import pickle
-from bin.pysgpp import DMSystemMatrix
+from pysgpp import DMSystemMatrix
 import numpy as np
 #from pylab import pcolor, colorbar, savefig, clf, get_cmap, close
 
 
-from bin.pysgpp import HashRefinementBoundaries, ANOVARefinement, Grid, \
+from pysgpp import HashRefinementBoundaries, ANOVARefinement, Grid, \
      createOperationMultipleEval, SurplusRefinementFunctor, SurplusCoarseningFunctor, \
      HashRefinement,SurplusVolumeRefinementFunctor, ANOVACoarseningFunctor
 from bin.learner.LearnerBuilder import LearnerBuilder

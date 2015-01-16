@@ -30,7 +30,7 @@ import re
 import gzip
 import csv
 from DataAdapter import DataAdapter
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 
 from DataContainer import DataContainer
 
