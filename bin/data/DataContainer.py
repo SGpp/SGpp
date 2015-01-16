@@ -23,7 +23,7 @@
 import numpy as np
 
 from DataSpecification import DataSpecification
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 from DataAdapter import DataAdapter
 from DataEntry import DataEntry
 import ARFFAdapter

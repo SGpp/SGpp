@@ -152,6 +152,7 @@ base::OperationMultipleEval *createOperationMultipleEval(base::Grid &grid, base:
         return createOperationMultipleEval(grid, dataset);
     }
 
+
     if (strcmp(grid.getType(), "linear") == 0) {
         switch (configuration.type) {
         case datadriven::OperationMultipleEvalType::DEFAULT:

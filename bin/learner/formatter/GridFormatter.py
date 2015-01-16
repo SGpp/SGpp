@@ -21,7 +21,7 @@
 #############################################################################
 
 
-from bin.pysgpp import *
+from pysgpp import *
 
 from bin.utils.GzipSerializer import GzipSerializer
 

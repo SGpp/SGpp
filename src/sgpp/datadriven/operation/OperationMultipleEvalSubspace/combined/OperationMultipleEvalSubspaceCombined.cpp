@@ -47,6 +47,7 @@ OperationMultipleEvalSubspaceCombined::~OperationMultipleEvalSubspaceCombined() 
 void OperationMultipleEvalSubspaceCombined::prepare() {
     this->allLevelsIndexMap.clear();
     this->allSubspaceNodes.clear();
+
     this->prepareSubspaceIterator();
 }
 

@@ -29,7 +29,7 @@ from bin.learner.TrainingSpecification import TrainingSpecification
 from bin.learner.solver.CGSolver import CGSolver
 from bin.learner.Types import BorderTypes
 
-from bin.pysgpp import *
+from pysgpp import *
 from bin.data.ARFFAdapter import ARFFAdapter
 from bin.data.CSVAdapter import CSVAdapter
 from bin.data.DataContainer import DataContainer

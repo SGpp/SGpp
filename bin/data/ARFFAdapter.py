@@ -29,7 +29,7 @@ from bin.data.DataSpecification import DataSpecification
 import re
 import gzip
 from DataAdapter import DataAdapter
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 
 from DataContainer import DataContainer
 

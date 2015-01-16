@@ -1,0 +1,40 @@
+# Copyright (C) 2013 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Alexander Heinecke (alexander.heinecke@mytum.de)
+
+Import('env')
+Import('BUILD_DIR')
+Import('moduleName')
+
+dependencies = ["base", "pde", "datadriven", "finance"]
+
+srcs = Split("""
+pde/algorithm/UpDownOneOpDimEnhanced.cpp
+
+pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.cpp
+pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.cpp
+pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.cpp
+
+pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.cpp
+pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.cpp
+pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.cpp
+
+operation/MiscOpFactory.cpp
+""")
+
+objs = []
+for sourceFile in srcs:
+    objs.append(env.SharedObject(sourceFile))
+
+lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs)
+env.Install(BUILD_DIR, lib)
+# # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
+# # of the shared libaries on the static libraries on windows
+libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
+env.Install(BUILD_DIR, libStatic)
+
+Export('srcs')
+Export('objs')
+Export('dependencies')

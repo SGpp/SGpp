@@ -1,0 +1,149 @@
+# Copyright (C) 2009 Technische Universitaet Muenchen
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+
+Import('env')
+Import('BUILD_DIR')
+Import('moduleName')
+
+dependencies = ["base", "pde"]
+
+srcs = Split("""
+algorithm/BlackScholesParabolicPDESolverSystem.cpp
+algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.cpp
+algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+algorithm/BlackScholesPATParabolicPDESolverSystem.cpp
+algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.cpp
+algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.cpp
+algorithm/HestonParabolicPDESolverSystemEuroAmer.cpp
+algorithm/HullWhiteParabolicPDESolverSystem.cpp
+algorithm/ModifiedBlackScholesParabolicPDESolverSystem.cpp
+application/BlackScholesHullWhiteSolver.cpp
+application/BlackScholesSolver.cpp
+application/HullWhiteSolver.cpp
+application/HestonSolver.cpp
+basis/linear/boundary/algorithm_sweep/DPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/DPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/PhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/SqrtXPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XdPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhidPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhidPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.cpp
+basis/linear/boundary/algorithm_sweep/XPhiPhiUpBBLinearBoundary.cpp
+basis/linear/boundary/operation/OperationLBLinearBoundary.cpp
+basis/linear/boundary/operation/OperationLDLinearBoundary.cpp
+basis/linear/boundary/operation/OperationLELinearBoundary.cpp
+basis/linear/boundary/operation/OperationLFLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonBLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonCLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonDLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonELinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonFLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonGLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonHLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonKLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonWLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonXLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonYLinearBoundary.cpp
+basis/linear/boundary/operation/OperationHestonZLinearBoundary.cpp
+basis/linear/boundary/operation/OperationDeltaLinearBoundary.cpp
+basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.cpp
+basis/linear/boundary/operation/OperationGammaLinearBoundary.cpp
+basis/linear/boundary/operation/OperationGammaLogLinearBoundary.cpp
+basis/linear/noboundary/algorithm_sweep/DPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/PhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/SqrtXPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XdPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XdPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhidPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhiPhiDownBBLinear.cpp
+basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLBLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLDLinear.cpp
+basis/linear/noboundary/operation/pde/OperationLELinear.cpp
+basis/linear/noboundary/operation/pde/OperationLFLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonBLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonCLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonDLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonELinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonFLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonGLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonHLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonKLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonWLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonXLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonYLinear.cpp
+basis/linear/noboundary/operation/pde/OperationHestonZLinear.cpp
+basis/linear/noboundary/operation/pde/OperationDeltaLinear.cpp
+basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.cpp
+basis/linear/noboundary/operation/pde/OperationGammaLinear.cpp
+basis/linear/noboundary/operation/pde/OperationGammaLogLinear.cpp
+tools/Hedging.cpp
+tools/VariableDiscountFactor.cpp
+application/BlackScholesSolverWithStretching.cpp
+basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/DPhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/PhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XdPhiPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.cpp
+basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/SqXdPhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiDownBBLinearStretched.cpp
+basis/linearstretched/noboundary/algorithm_sweep/XPhidPhiUpBBLinearStretched.cpp
+basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.cpp
+basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.cpp
+basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.cpp
+basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.cpp
+
+operation/FinanceOpFactory.cpp
+""")
+
+objs = []
+for sourceFile in srcs:
+    objs.append(env.SharedObject(sourceFile))
+
+lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs)
+env.Install(BUILD_DIR, lib)
+# # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
+# # of the shared libaries on the static libraries on windows
+libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
+env.Install(BUILD_DIR, libStatic)
+
+Export('srcs')
+Export('objs')
+Export('dependencies')

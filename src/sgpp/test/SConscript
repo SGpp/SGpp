@@ -1,0 +1,26 @@
+import os
+import fnmatch
+
+Import('env')
+Import('BUILD_DIR')
+Import('TEST_DIR')
+
+dependencies = []
+
+srcs = []
+for currentFolder, subdirNames, fileNames in os.walk("."):
+    if currentFolder.startswith("test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        srcs.append(os.path.join(currentFolder, fileName))
+
+objs = []
+for sourceFile in srcs:
+    objs.append(env.SharedObject(sourceFile))
+ 
+cppUnitTests = env.Program(target = "cppUnitTests", source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde'])
+env.Install(TEST_DIR, cppUnitTests)
+
+Export('srcs')
+Export('objs')
+Export('dependencies')

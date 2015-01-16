@@ -11,8 +11,8 @@
 #include <string>
 #include <iostream>
 
-#include "base/test/TestCase.hpp"
-#include "base/test/TestException.hpp"
+#include "test/TestCase.hpp"
+#include "test/TestException.hpp"
 
 namespace sg {
 namespace test {
