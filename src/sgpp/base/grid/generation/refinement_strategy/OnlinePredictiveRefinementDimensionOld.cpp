@@ -138,9 +138,11 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 	std::vector<std::pair<key_type, value_type> >::const_iterator iter;
 	for (iter = errorsVector.begin(); iter < errorsVector.begin() + refinements_num; iter++){
 		if (iter->second > functor->start() && iter->second >= threshold){
-			index_pointer index((*storage)[iter->first.first]);
+			index_pointer index(storage->get(iter->first.first));
 			//Sets leaf property of index, which is refined to false
-			index->setLeaf(false);
+			//index->setLeaf(false);
+			//(storage->get((storage->find(index))->second))->setLeaf(false)
+			storage->get(iter->first.first)->setLeaf(false);
 			std::cout << "Refining grid point " << iter->first.first << " dim " << iter->first.second << " value "
 					<< iter->second << std::endl;
 			this->refineGridpoint1D(storage, *index, iter->first.second);
