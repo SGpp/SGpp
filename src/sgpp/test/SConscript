@@ -17,4 +17,8 @@ for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
  
 cppUnitTests = env.Program(target = "cppUnitTests", source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde'])
+env.Depends(cppUnitTests, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+env.Depends(cppUnitTests, "#/" + BUILD_DIR.path + "/libsgppdatadriven.so")
+env.Depends(cppUnitTests, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
+env.Depends(cppUnitTests, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env.Install(TEST_DIR, cppUnitTests)
