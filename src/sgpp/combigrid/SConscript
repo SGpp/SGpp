@@ -14,35 +14,6 @@ Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
-dependencies = ["base"]
-
-# srcs = Split("""
-# basisfunction/CombiLinearBasisFunction.cpp
-# combigrid/SerialCombiGrid.cpp
-# combigrid/AdaptiveSerialCombiGrid.cpp
-# combigrid/AdaptiveSerialCombiGridVariableCoefficients.cpp
-# combischeme/CombiS_CT.cpp  
-# combischeme/CombiSchemeBasis.cpp  
-# combischeme/CombiTS_CT.cpp
-# combischeme/CombiArbitraryScheme.cpp
-# converter/CombiSGppConverter.cpp
-# domain/CombiDomain1D.cpp
-# domain/CombiGridDomain.cpp
-# domain/CombiUniformStretching.cpp
-# domain/CombiTanStretching.cpp
-# domain/CombiAtanSpecialStretching.cpp
-# multigridFG/multigrid/Multigrid.cpp
-# multigridFG/multigrid/MultigridFAS.cpp
-# multigridFG/multigrid/ProlongationRestriction.cpp
-# multigridFG/operators/PoissonOperator.cpp
-# multigridFG/operators/TikhonovOperator.cpp
-# multigridFG/utils/RunPoisson.cpp
-# multigridFG/utils/RunTikhonov.cpp
-# plotter/GridPlotter.cpp
-# utils/CombigridLevelVector.cpp
-# operation/OperationMatrixLTwoExplicitFullGrid.cpp
-# """)
-
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./test") or currentFolder.startswith("./tests") or currentFolder.startswith("./multigridFG/test"):
@@ -55,6 +26,7 @@ for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
 
 lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase'])
+env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows

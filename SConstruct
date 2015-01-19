@@ -99,8 +99,6 @@ if not env.GetOption('clean'):
 Export('env')
   
 # compile selected modules
-all_objs = []
-all_srcs = []
 for name in moduleFolders:
         print "Preparing to build module: ", name
         # SConscript('src/sgpp/SConscript' + name, variant_dir='#/tmp/build/', duplicate=0)
