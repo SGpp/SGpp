@@ -13,18 +13,13 @@ Import('moduleName')
 
 dependencies = ["base", "solver"]
 
-# if src are empty, the build script tried to traverse tmp/sg_$modulename/
-
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
-    #print "folder: ", currentFolder
-    #print "subdirNames: ", subdirNames
-    #print "fileNames: ", fileNames
-    if currentFolder.startswith("test"):
+    if currentFolder.startswith("./test"):
         continue
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
         srcs.append(os.path.join(currentFolder, fileName))
-
+        
 objs = []
 for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))

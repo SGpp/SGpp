@@ -15,19 +15,8 @@ pysgpp.i
 """)
 
 Import('env')
-# Import('all_objs')
-# Import('all_srcs')
 Import('BUILD_DIR')
 Import('PYSGPP_BUILD_DIR')
-# Import('moduleDependencies')
-
-# src_objs_combined = []
-# 
-# for module in moduleDependencies:
-#     name = module.lower().split('sg_',1)[1]
-#     if env[module]:
-#         src_objs_combined += src_objs[name]
-
 
 py_env = env.Clone()
 

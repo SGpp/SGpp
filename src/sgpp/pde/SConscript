@@ -4,68 +4,21 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
+import os
+import fnmatch
+
 Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
 dependencies = ["base"]
 
-srcs = Split("""
-algorithm/HeatEquationParabolicPDESolverSystem.cpp
-algorithm/HeatEquationParabolicPDESolverSystemParallelOMP.cpp
-algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.cpp
-algorithm/StdUpDown.cpp
-algorithm/UpDownOneOpDim.cpp
-algorithm/UpDownOneOpDimWithShadow.cpp
-algorithm/UpDownTwoOpDims.cpp
-algorithm/UpDownFourOpDims.cpp
-application/EllipticPDESolver.cpp
-application/HeatEquationSolver.cpp
-application/ParabolicPDESolver.cpp
-application/PDESolver.cpp
-application/PoissonEquationSolver.cpp
-basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.cpp
-basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.cpp
-basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.cpp
-basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.cpp
-basis/linear/boundary/operation/OperationLaplaceLinearBoundary.cpp
-basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.cpp
-basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.cpp
-basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.cpp
-basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.cpp
-basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.cpp
-basis/linear/noboundary/operation/OperationLaplaceLinear.cpp
-basis/linear/noboundary/operation/OperationLTwoDotProductLinear.cpp
-basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.cpp
-basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.cpp
-basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.cpp
-basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.cpp
-basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.cpp
-basis/modlinear/operation/OperationLaplaceModLinear.cpp
-operation/OperationEllipticPDESolverSystem.cpp
-operation/OperationEllipticPDESolverSystemDirichlet.cpp
-operation/OperationEllipticPDESolverSystemFreeBoundaries.cpp
-operation/OperationParabolicPDESolverSystem.cpp
-operation/OperationParabolicPDESolverSystemDirichlet.cpp
-operation/OperationParabolicPDESolverSystemFreeBoundaries.cpp
-application/HeatEquationSolverWithStretching.cpp
-basis/linearstretched/boundary/algorithm_sweep/PhiPhiDownBBLinearStretchedBoundary.cpp
-basis/linearstretched/boundary/algorithm_sweep/PhiPhiUpBBLinearStretchedBoundary.cpp
-basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.cpp
-basis/linearstretched/boundary/UpdPhidPhiBBIterativeLinearStretchedBoundary.cpp
-basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.cpp
-basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.cpp
-basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.cpp
-basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.cpp
-basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.cpp
-basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.cpp
-basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.cpp
-basis/prewavelet/operation/OperationLaplacePrewavelet.cpp
-basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
-basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.cpp
-basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
-operation/PdeOpFactory.cpp
-""")
+srcs = []
+for currentFolder, subdirNames, fileNames in os.walk("."):
+    if currentFolder.startswith("./test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:

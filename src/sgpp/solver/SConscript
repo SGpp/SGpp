@@ -4,27 +4,21 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
+import os
+import fnmatch
+
 Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
 dependencies = ["base", "pde"]
 
-srcs = Split("""
-ode/AdamsBashforth.cpp
-ode/CrankNicolson.cpp
-ode/Euler.cpp
-ode/StepsizeControlBDF.cpp
-ode/StepsizeControlEJ.cpp
-ode/StepsizeControlH.cpp
-ode/StepsizeControl.cpp
-ode/StepsizeControlMC.cpp
-ode/VarTimestep.cpp
-sle/BiCGStab.cpp
-sle/BiCGStabSP.cpp
-sle/ConjugateGradients.cpp
-sle/ConjugateGradientsSP.cpp
-""")
+srcs = []
+for currentFolder, subdirNames, fileNames in os.walk("."):
+    if currentFolder.startswith("./test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:
