@@ -3,7 +3,7 @@ import os
 
 import SconsConfigureExtend
 
-def doConfigure(env, moduleNames):
+def doConfigure(env):
     print "Checking programs and libraries: "
   
     config = env.Configure(custom_tests={ 'CheckExec' : SconsConfigureExtend.CheckExec,
@@ -170,12 +170,6 @@ def doConfigure(env, moduleNames):
         
     # setup the include base folder
     env.Append(CPPPATH=['#/src/sgpp'])
-    
-    # add C++ defines for all modules
-    cppdefines = []
-    for module in moduleNames:
-        cppdefines.append(module)
-    env.Append(CPPDEFINES=cppdefines)
     
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = SconsConfigureExtend.print_cmd_line
