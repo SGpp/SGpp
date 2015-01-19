@@ -36,7 +36,7 @@ vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (mu
 # define the target
 vars.Add('MARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
 vars.Add('TARGETCPU', "Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
-vars.Add('OPT', "Sets optimization on and off", False)
+vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', True))
@@ -93,7 +93,13 @@ Export('TEST_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    SconsConfigure.doConfigure(env, moduleNames)
+    SconsConfigure.doConfigure(env)
+
+# add C++ defines for all modules
+cppdefines = []
+for module in moduleNames:
+    cppdefines.append(module)
+env.Append(CPPDEFINES=cppdefines)
 
 # environement setup finished, export environment
 Export('env')
