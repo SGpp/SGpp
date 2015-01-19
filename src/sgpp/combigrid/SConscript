@@ -7,38 +7,48 @@
 #base/grid/combination/FullGridSet.cpp
 #base/grid/combination/LinearFullGrid.cpp
 
+import os
+import fnmatch
+
 Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
 dependencies = ["base"]
 
-srcs = Split("""
-basisfunction/CombiLinearBasisFunction.cpp
-combigrid/SerialCombiGrid.cpp
-combigrid/AdaptiveSerialCombiGrid.cpp
-combigrid/AdaptiveSerialCombiGridVariableCoefficients.cpp
-combischeme/CombiS_CT.cpp  
-combischeme/CombiSchemeBasis.cpp  
-combischeme/CombiTS_CT.cpp
-combischeme/CombiArbitraryScheme.cpp
-converter/CombiSGppConverter.cpp
-domain/CombiDomain1D.cpp
-domain/CombiGridDomain.cpp
-domain/CombiUniformStretching.cpp
-domain/CombiTanStretching.cpp
-domain/CombiAtanSpecialStretching.cpp
-multigridFG/multigrid/Multigrid.cpp
-multigridFG/multigrid/MultigridFAS.cpp
-multigridFG/multigrid/ProlongationRestriction.cpp
-multigridFG/operators/PoissonOperator.cpp
-multigridFG/operators/TikhonovOperator.cpp
-multigridFG/utils/RunPoisson.cpp
-multigridFG/utils/RunTikhonov.cpp
-plotter/GridPlotter.cpp
-utils/CombigridLevelVector.cpp
-operation/OperationMatrixLTwoExplicitFullGrid.cpp
-""")
+# srcs = Split("""
+# basisfunction/CombiLinearBasisFunction.cpp
+# combigrid/SerialCombiGrid.cpp
+# combigrid/AdaptiveSerialCombiGrid.cpp
+# combigrid/AdaptiveSerialCombiGridVariableCoefficients.cpp
+# combischeme/CombiS_CT.cpp  
+# combischeme/CombiSchemeBasis.cpp  
+# combischeme/CombiTS_CT.cpp
+# combischeme/CombiArbitraryScheme.cpp
+# converter/CombiSGppConverter.cpp
+# domain/CombiDomain1D.cpp
+# domain/CombiGridDomain.cpp
+# domain/CombiUniformStretching.cpp
+# domain/CombiTanStretching.cpp
+# domain/CombiAtanSpecialStretching.cpp
+# multigridFG/multigrid/Multigrid.cpp
+# multigridFG/multigrid/MultigridFAS.cpp
+# multigridFG/multigrid/ProlongationRestriction.cpp
+# multigridFG/operators/PoissonOperator.cpp
+# multigridFG/operators/TikhonovOperator.cpp
+# multigridFG/utils/RunPoisson.cpp
+# multigridFG/utils/RunTikhonov.cpp
+# plotter/GridPlotter.cpp
+# utils/CombigridLevelVector.cpp
+# operation/OperationMatrixLTwoExplicitFullGrid.cpp
+# """)
+
+srcs = []
+for currentFolder, subdirNames, fileNames in os.walk("."):
+    if currentFolder.startswith("./test") or currentFolder.startswith("./tests") or currentFolder.startswith("./multigridFG/test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:

@@ -4,25 +4,21 @@
 
 # author Alexander Heinecke (alexander.heinecke@mytum.de)
 
+import os
+import fnmatch
+
 Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
 dependencies = ["base", "pde", "datadriven", "finance"]
 
-srcs = Split("""
-pde/algorithm/UpDownOneOpDimEnhanced.cpp
-
-pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.cpp
-pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.cpp
-pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.cpp
-
-pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.cpp
-pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.cpp
-pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.cpp
-
-operation/MiscOpFactory.cpp
-""")
+srcs = []
+for currentFolder, subdirNames, fileNames in os.walk("."):
+    if currentFolder.startswith("./test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:
