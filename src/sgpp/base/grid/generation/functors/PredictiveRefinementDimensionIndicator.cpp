@@ -35,7 +35,7 @@ PredictiveRefinementDimensionIndicator::PredictiveRefinementDimensionIndicator(G
 double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::index_type* gridPoint)
 {
   //TODO make it configurable
-  unsigned short int MIN_POINTS_SUPPORT = 0;
+  unsigned short int MIN_POINTS_SUPPORT = 100;
 
 
 
@@ -91,8 +91,8 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 	  // to match with OnlineRefDim, use this:
 	  //return (errorIndicator * errorIndicator) / denominator;
 
-	  //double a = (errorIndicator/denominator);
-	  return r2phi/denominator /*2*r22 - 2*a*r2phi + a*a*denominator*/ /*a*(2*r2phi - a*denominator)*/;
+	  double a = (errorIndicator/denominator);
+	  return /*r2phi/denominator*/ /*2*r22 - 2*a*r2phi + a*a*denominator*/ a*(2*r2phi - a*denominator);
 	  //return fabs(a);
 	}
 	else {

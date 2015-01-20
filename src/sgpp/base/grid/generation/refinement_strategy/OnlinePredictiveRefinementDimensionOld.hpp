@@ -49,6 +49,10 @@ public:
 	virtual void collectRefinablePoints(GridStorage* storage,
 				RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
 				PredictiveRefinementDimensionIndicator::value_type* max_values);
+				
+	void setAlpha(DataVector* alpha){
+	    alpha_ = alpha;
+	}
 protected:
 	virtual void refineGridpointsCollection(GridStorage* storage,
 	    RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
@@ -61,6 +65,7 @@ private:
 	double iThreshold_;
 	std::map<key_type, value_type> refinementCollection_;
 	//virtual static bool refinementPairCompare(std::pair<key_type, value_type>& firstEl, std::pair<key_type, value_type>& secondEl);
+	DataVector* alpha_;
 
 
 
