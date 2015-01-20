@@ -83,8 +83,8 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			// reset current grid point in dimension d
 			index.set(d, source_level, source_index);
 
-			//printf("%2.10f\n", error);
-			//fflush(stdout);
+			// Heuristic!
+			//error *= std::fabs(alpha_->get(storage->seq(iter->first)));
 
 
 			if (error > functor->start()){
@@ -127,7 +127,7 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 	double threshold = functor->getRefinementThreshold();
 
 	std::vector< std::pair<key_type, value_type> > errorsVector;
-	std::cout << "refinement collection size " << refinementCollection_.size() << std::endl;
+	//std::cout << "refinement collection size " << refinementCollection_.size() << std::endl;
 	std::copy(refinementCollection_.begin(),
 	       refinementCollection_.end(),
 	       std::back_inserter<std::vector<std::pair<key_type, value_type> > >(errorsVector));
@@ -140,12 +140,14 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 		if (iter->second > functor->start() && iter->second >= threshold){
 			index_pointer index(storage->get(iter->first.first));
 			//Sets leaf property of index, which is refined to false
-			//index->setLeaf(false);
-			//(storage->get((storage->find(index))->second))->setLeaf(false)
-			storage->get(iter->first.first)->setLeaf(false);
+
+			//(storage->get((storage->find(index))->second))->setLeaf(false);
+			//storage->get(iter->first.first)->setLeaf(false);
 			std::cout << "Refining grid point " << iter->first.first << " dim " << iter->first.second << " value "
 					<< iter->second << std::endl;
-			this->refineGridpoint1D(storage, *index, iter->first.second);
+			index_type index_tmp = *index;
+			this->refineGridpoint1D(storage, index_tmp, iter->first.second);
+			index->setLeaf(false);
 		}
 	}
 
@@ -193,7 +195,7 @@ void OnlinePredictiveRefinementDimensionOld::free_refine(GridStorage* storage,
 	refineGridpointsCollection(storage, functor, refinements_num, max_indices,
 			max_values);
 	refinementCollection_.clear();
-	storage->recalcLeafProperty();
+	//storage->recalcLeafProperty();
 	delete[] max_values;
 	delete[] max_indices;
 
