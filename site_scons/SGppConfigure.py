@@ -1,26 +1,27 @@
 import distutils.sysconfig
 import os
 
-import SconsConfigureExtend
+import ConfigureExtend
+import Helper
 
 def doConfigure(env):
     print "Checking programs and libraries: "
   
-    config = env.Configure(custom_tests={ 'CheckExec' : SconsConfigureExtend.CheckExec,
-                                            'CheckJNI' : SconsConfigureExtend.CheckJNI,
-                                            'CheckFlag' : SconsConfigureExtend.CheckFlag })
+    config = env.Configure(custom_tests={ 'CheckExec' : ConfigureExtend.CheckExec,
+                                            'CheckJNI' : ConfigureExtend.CheckJNI,
+                                            'CheckFlag' : ConfigureExtend.CheckFlag })
 
       
     # check C++11 support    
     if not config.CheckFlag("-std=c++11"):
         sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-        Exit(0)
+        Exit(1)
     config.env.AppendUnique(CPPFLAGS = "-std=c++11")
     
     # check avx support    
     if not config.CheckFlag("-mavx"):
         sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort!\n")
-        Exit(0)
+        Exit(1)
     config.env.AppendUnique(CPPFLAGS = "-mavx")
 
     # check whether swig installed
@@ -35,20 +36,21 @@ def doConfigure(env):
         # check whether swig installed
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
-            Exit(0)
+            Exit(1)
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
         print "pythonpath: ", distutils.sysconfig.get_python_inc()
+                
         if not config.CheckCXXHeader('Python.h'):
             sys.stderr.write("Error: Python.h not found, but required for SG_PYTHON. Check path to Python include files: "
                          + distutils.sysconfig.get_python_inc() + "\n")
             sys.stderr.write("Hint: You might have to install package python-dev\n")
-            Exit(0)
+            Exit(1)
            
         if not config.CheckCXXHeader('pyconfig.h'):
             sys.stderr.write("Error: pyconfig.h not found, but required for SG_PYTHON. Check path to Python include files: "
                          + distutils.sysconfig.get_python_inc() + "\n")
             sys.stderr.write("Hint: You might have to install package python-dev\n")
-            Exit(0) 
+            Exit(1) 
             
         import numpy
         numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
@@ -56,7 +58,7 @@ def doConfigure(env):
         if not config.CheckCXXHeader(['Python.h', 'pyconfig.h', 'numpy/arrayobject.h']):
             print config.env['CPPPATH']
             sys.stderr.write('Error: Cannot find NumPy header files in: "' + str(numpy_path) + '", required for SG_PYTHON\n')
-            Exit(0)
+            Exit(1)
     else:
         print 'Warning: Python extension ("SG_PYTHON") not enabled, skipping python unit tests'
   
@@ -67,11 +69,11 @@ def doConfigure(env):
         # check whether javac installed
         if not config.CheckExec('javac'):
             sys.stderr.write("Error: javac cannot be found, but required by SG_JAVA. Check PATH environment variable!\n")
-            Exit(0)
+            Exit(1)
         # check whether javac installed
         if not config.CheckExec('java'):
             sys.stderr.write("Warning: java cannot be found, but required by SG_JAVA. Check PATH environment variable!\n")
-            Exit(0)
+            Exit(1)
       
         # check for JNI headers
         if os.environ.get('JNI_CPPINCLUDE'):
@@ -83,7 +85,7 @@ def doConfigure(env):
                                  + "Please set JAVA_HOME environment variable "
                                  + "with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h\n"
                                  + "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
-                Exit(0)
+                Exit(1)
     else:
         print "Info: Compiling without java support"
         
@@ -172,7 +174,7 @@ def doConfigure(env):
     env.Append(CPPPATH=['#/src/sgpp'])
     
     # detour compiler output
-    env['PRINT_CMD_LINE_FUNC'] = SconsConfigureExtend.print_cmd_line
+    env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line
   
     env = config.Finish()
 

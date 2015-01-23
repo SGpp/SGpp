@@ -14,16 +14,16 @@
 namespace sg {
 namespace test {
 
-class OperationMultipleEvalStreamingTestSuite : public TestSuite {
+class OperationMultipleEvalStreamingTestSuite: public TestSuite {
 public:
-	std::string getName() override {
-		return "OperationMultipleEvalStreamingTestSuite";
-	}
+  std::string getName() override {
+    return "OperationMultipleEvalStreamingTestSuite";
+  }
 
-	void runAllTests() override {
-		OperationMultipleEvalStreamingSimpleTestCase simple;
-		this->run(simple);
-	}
+  void runAllTests() override {
+    OperationMultipleEvalStreamingSimpleTestCase simple;
+    this->run(simple);
+  }
 
 };
 

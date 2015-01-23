@@ -26,9 +26,9 @@ int main(int argc, char **argv) {
     std::vector<sg::test::TestSuite *> testSuites = {
 //        new sg::test::OperationMultipleEvalBaseTestSuite(),
 //        new sg::test::OperationMultipleEvalStreamingTestSuite(),
-//        new sg::test::OperationMultipleEvalSubspaceTestSuite(),
+        new sg::test::OperationMultipleEvalSubspaceTestSuite(),
 //        new sg::test::LearnerLeastSquaresIdentityTestSuite(),
-        new sg::test::MetaLearnerTestSuite()
+//        new sg::test::MetaLearnerTestSuite()
     };
 
     std::cout << "OK" << std::endl;

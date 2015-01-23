@@ -22,90 +22,92 @@ namespace test {
 
 class MetaLearnerLearnReferenceTestCase: public TestCase {
 private:
-    std::vector<std::string> testFiles = { "tests/data/chess_5d_2000.arff", "tests/data/friedman_4d_2000.arff" };
+	std::vector<std::string> testFiles = { "tests/data/chess_5d_2000.arff", "tests/data/friedman_4d_2000.arff" };
+	//std::vector<std::string> testFiles = { "tests/data/twomoons.arff" };
+	//std::vector<std::string> testFiles = { "tests/data/friedman_4d_2000.arff" };
 
-    size_t dim;
-    size_t instances;
+	size_t dim;
+	size_t instances;
 
-    sg::base::DataVector *classesVector = nullptr;
-    sg::base::DataMatrix *trainingData = nullptr;
+	sg::base::DataVector *classesVector = nullptr;
+	sg::base::DataMatrix *trainingData = nullptr;
 
-    void readTrainingData(std::string datasetFileName) {
-        sg::datadriven::ARFFTools arffTools;
-        this->dim = arffTools.getDimension(datasetFileName);
-        this->instances = arffTools.getNumberInstances(datasetFileName);
+	void readTrainingData(std::string datasetFileName) {
+		sg::datadriven::ARFFTools arffTools;
+		this->dim = arffTools.getDimension(datasetFileName);
+		this->instances = arffTools.getNumberInstances(datasetFileName);
 
-        if (this->classesVector == nullptr) {
-            this->classesVector = new sg::base::DataVector(0);
-        }
-        classesVector->resize(instances);
+		if (this->classesVector == nullptr) {
+			this->classesVector = new sg::base::DataVector(0);
+		}
+		classesVector->resize(instances);
 
-        arffTools.readClasses(datasetFileName, *classesVector);
+		arffTools.readClasses(datasetFileName, *classesVector);
 
-        if (this->trainingData != nullptr) {
-            delete this->trainingData;
-        }
-        this->trainingData = new sg::base::DataMatrix(instances, dim);
-        arffTools.readTrainingData(datasetFileName, *this->trainingData);
-    }
+		if (this->trainingData != nullptr) {
+			delete this->trainingData;
+		}
+		this->trainingData = new sg::base::DataMatrix(instances, dim);
+		arffTools.readTrainingData(datasetFileName, *this->trainingData);
+	}
 public:
 
-    void run() override {
-        sg::datadriven::OperationMultipleEvalConfiguration configuration;
-        configuration.type = sg::datadriven::OperationMultipleEvalType::DEFAULT;
-        configuration.subType = sg::datadriven::OperationMultipleEvalSubType::DEFAULT;
-        testWithFiles(configuration);
-        configuration.type = sg::datadriven::OperationMultipleEvalType::STREAMING;
-        configuration.subType = sg::datadriven::OperationMultipleEvalSubType::DEFAULT;
-        testWithFiles(configuration);
+	void run() override {
+		sg::datadriven::OperationMultipleEvalConfiguration configuration;
+//		configuration.type = sg::datadriven::OperationMultipleEvalType::DEFAULT;
+//		configuration.subType = sg::datadriven::OperationMultipleEvalSubType::DEFAULT;
+//		testWithFiles(configuration);
+//        configuration.type = sg::datadriven::OperationMultipleEvalType::STREAMING;
+//        configuration.subType = sg::datadriven::OperationMultipleEvalSubType::DEFAULT;
+//        testWithFiles(configuration);
         configuration.type = sg::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
         configuration.subType = sg::datadriven::OperationMultipleEvalSubType::COMBINED;
         testWithFiles(configuration);
         configuration.type = sg::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
         configuration.subType = sg::datadriven::OperationMultipleEvalSubType::SIMPLE;
         testWithFiles(configuration);
-    }
+	}
 
-    void testWithFiles(sg::datadriven::OperationMultipleEvalConfiguration &configuration) {
+	void testWithFiles(sg::datadriven::OperationMultipleEvalConfiguration &configuration) {
 
-        sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-        sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-        sg::base::AdpativityConfiguration adaptivityConfiguration;
+		sg::solver::SLESolverConfiguration SLESolverConfigRefine;
+		sg::solver::SLESolverConfiguration SLESolverConfigFinal;
+		sg::base::AdpativityConfiguration adaptivityConfiguration;
 
-        // Set solver during refinement
-        SLESolverConfigRefine.eps_ = 0;
-        SLESolverConfigRefine.maxIterations_ = 20;
-        SLESolverConfigRefine.threshold_ = -1.0;
-        SLESolverConfigRefine.type_ = sg::solver::CG;
+		// Set solver during refinement
+		SLESolverConfigRefine.eps_ = 0;
+		SLESolverConfigRefine.maxIterations_ = 1000; // 20
+		SLESolverConfigRefine.threshold_ = -1.0;
+		SLESolverConfigRefine.type_ = sg::solver::CG;
 
-        // Set solver for final step
-        SLESolverConfigFinal.eps_ = 0;
-        SLESolverConfigFinal.maxIterations_ = 100;
-        SLESolverConfigFinal.threshold_ = -1.0;
-        SLESolverConfigFinal.type_ = sg::solver::CG;
+		// Set solver for final step
+		SLESolverConfigFinal.eps_ = 0;
+		SLESolverConfigFinal.maxIterations_ = 1000; // 100
+		SLESolverConfigFinal.threshold_ = -1.0;
+		SLESolverConfigFinal.type_ = sg::solver::CG;
 
-        // Set Adaptivity
-        adaptivityConfiguration.maxLevelType_ = false;
-        adaptivityConfiguration.noPoints_ = 80;
-        adaptivityConfiguration.numRefinements_ = 7;
-        adaptivityConfiguration.percent_ = 100.0;
-        adaptivityConfiguration.threshold_ = 0.0;
+		// Set Adaptivity
+		adaptivityConfiguration.maxLevelType_ = false;
+		adaptivityConfiguration.noPoints_ = 80;
+		adaptivityConfiguration.numRefinements_ = 4; // 7
+		adaptivityConfiguration.percent_ = 100.0;
+		adaptivityConfiguration.threshold_ = 0.0;
 
-        for (size_t i = 0; i < testFiles.size(); i++) {
-            std::string datasetFileName = this->testFiles[i];
+		for (size_t i = 0; i < testFiles.size(); i++) {
+			std::string datasetFileName = this->testFiles[i];
 
-            datadriven::MetaLearner metaLearner(SLESolverConfigRefine, SLESolverConfigFinal, adaptivityConfiguration, 2,
-                                                0.00001, true);
+			datadriven::MetaLearner metaLearner(SLESolverConfigRefine, SLESolverConfigFinal, adaptivityConfiguration, 2,
+					0.00001, false);
 
-            metaLearner.learnAndCompare(configuration, datasetFileName, 4, 0.00001);
-            //metaLearner.learnAndTest(configuration, datasetFileName, );
-        }
+			metaLearner.learnAndCompare(configuration, datasetFileName, 4, 0.00001);
+			//metaLearner.learnAndTest(configuration, datasetFileName, );
+		}
 
-    }
+	}
 
-    std::string getName() override {
-        return "MetaLearnerLearnReferenceTestCase";
-    }
+	std::string getName() override {
+		return "MetaLearnerLearnReferenceTestCase";
+	}
 
 };
 
