@@ -22,6 +22,7 @@ namespace test {
 class LearnerLeastSquaresIdentityFilesTestCase: public TestCase {
 private:
 	std::vector<std::string> testFiles = { "tests/data/chess_5d_2000.arff", "tests/data/friedman_4d_2000.arff" };
+
 	std::vector<double> mseEpisilons = { 0.2, 7000.0 };
 
 	size_t dim;

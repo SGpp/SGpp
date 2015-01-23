@@ -8,7 +8,7 @@ import glob
 import SCons
 import fnmatch
 import os
-import SconsConfigure
+import SGppConfigure
 
 from SConsHelper import *
 
@@ -93,7 +93,7 @@ Export('TEST_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    SconsConfigure.doConfigure(env)
+    SGppConfigure.doConfigure(env)
 
 # add C++ defines for all modules
 cppdefines = []

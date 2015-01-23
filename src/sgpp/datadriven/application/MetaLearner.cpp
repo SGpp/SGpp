@@ -87,7 +87,7 @@ void MetaLearner::learnReference(std::string fileName) {
     bool isRegression = true;
     LearnerLeastSquaresIdentity *referenceLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
     sg::datadriven::OperationMultipleEvalConfiguration operationConfiguration;
-    operationConfiguration.type = OperationMultipleEvalType::STREAMING;
+    operationConfiguration.type = OperationMultipleEvalType::DEFAULT;
     operationConfiguration.subType = OperationMultipleEvalSubType::DEFAULT;
     operationConfiguration.name = "STREAMING";
     referenceLearner->setImplementation(operationConfiguration);
