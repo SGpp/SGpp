@@ -9,7 +9,7 @@ import unittest, tools
 from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
-## Builds the training data vector
+# # Builds the training data vector
 # 
 # @param data a list of lists that contains the points a the training data set, coordinate-wise
 # @return a instance of a DataVector that stores the training data
@@ -58,7 +58,7 @@ def generateBBTMatrix(factory, training, verbose=False):
         alpha[i] = 1.0
         b.mult(alpha, temp)
         b.multTranspose(temp, erg)
-        #Sets the column in m
+        # Sets the column in m
         m.setColumn(i, erg)
         
     return m
@@ -122,7 +122,7 @@ def readDataVector(filename):
             else:
                 data.append([])
     
-    #read in the data stored in the ARFF file
+    # read in the data stored in the ARFF file
     for line in fin:
         sline = line.strip()
         if sline.startswith("%") or len(sline) == 0:
@@ -139,7 +139,7 @@ def readDataVector(filename):
     fin.close()
     return {"data":data, "classes":classes, "filename":filename}
 
-##
+# #
 # Compares, if two matrices are "almost" equal.
 # Has to handle the problem that the underlying grid was ordered
 # differently. Uses heuristics, e.g. whether the diagonal elements
@@ -157,11 +157,11 @@ def compareBBTMatrices(testCaseClass, m1, m2):
     # check diagonal
     values = []
     for i in range(n):
-        values.append(m1.get(i,i))
+        values.append(m1.get(i, i))
     values.sort()
     values_ref = []
     for i in range(n):
-        values_ref.append(m2.get(i,i))
+        values_ref.append(m2.get(i, i))
     values_ref.sort()
     for i in range(n):
         testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Diagonal %f != %f" % (values[i], values_ref[i]))
@@ -170,28 +170,28 @@ def compareBBTMatrices(testCaseClass, m1, m2):
     v = DataVector(n)
     values = []
     for i in range(n):
-        m1.getRow(i,v)
+        m1.getRow(i, v)
         values.append(v.sum())
     values.sort()
     values_ref = []
     for i in range(n):
-        m2.getRow(i,v)
+        m2.getRow(i, v)
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        #print values_ref[i], values[i]
+        # print values_ref[i], values[i]
         testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Row sum %f != %f" % (values[i], values_ref[i]))
 
     # check col sum
     v = DataVector(n)
     values = []
     for i in range(n):
-        m1.getColumn(i,v)
+        m1.getColumn(i, v)
         values.append(v.sum())
     values.sort()
     values_ref = []
     for i in range(n):
-        m2.getColumn(i,v)
+        m2.getColumn(i, v)
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
@@ -200,7 +200,7 @@ def compareBBTMatrices(testCaseClass, m1, m2):
 
 
 class TestOperationBBTModLinear(unittest.TestCase):
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
@@ -218,7 +218,7 @@ class TestOperationBBTModLinear(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
   
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
@@ -236,7 +236,7 @@ class TestOperationBBTModLinear(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
                 
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
@@ -254,7 +254,7 @@ class TestOperationBBTModLinear(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
   
         
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
@@ -273,7 +273,7 @@ class TestOperationBBTModLinear(unittest.TestCase):
              
 
 class TestOperationBBTLinear(unittest.TestCase):
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
@@ -291,7 +291,7 @@ class TestOperationBBTLinear(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
   
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
@@ -309,7 +309,7 @@ class TestOperationBBTLinear(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
                 
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
@@ -327,7 +327,7 @@ class TestOperationBBTLinear(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
   
         
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
@@ -346,7 +346,7 @@ class TestOperationBBTLinear(unittest.TestCase):
         
         
 class TestOperationBBTPrewavelet(unittest.TestCase):
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testPrewavelet1D_one(self):
         from pysgpp import Grid
@@ -423,8 +423,8 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
         
         alpha = DataVector(factory.getStorage().size())
         for i in xrange(factory.getStorage().size()):
-            alpha[i]=i+1
-        gen.refine(SurplusRefinementFunctor(alpha,1));
+            alpha[i] = i + 1
+        gen.refine(SurplusRefinementFunctor(alpha, 1));
 
         m = generateBBTMatrix(factory, training)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_prewavelet_dim_4_nopsgrid_17_adapt_float.dat.gz')
@@ -434,7 +434,7 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
              
 
 class TestOperationBBTLinearBoundary(unittest.TestCase):
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
@@ -452,7 +452,7 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
   
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
@@ -470,7 +470,7 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
                 
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
@@ -488,7 +488,7 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
   
         
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
@@ -507,7 +507,7 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         
 
 class TestOperationBBTLinearTrapezoidBoundary(unittest.TestCase):
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
@@ -525,7 +525,7 @@ class TestOperationBBTLinearTrapezoidBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
   
-    ##
+    # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
@@ -543,7 +543,7 @@ class TestOperationBBTLinearTrapezoidBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
 
                 
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
@@ -561,7 +561,7 @@ class TestOperationBBTLinearTrapezoidBoundary(unittest.TestCase):
         compareBBTMatrices(self, m, m_ref) 
   
         
-    ##
+    # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
@@ -580,6 +580,6 @@ class TestOperationBBTLinearTrapezoidBoundary(unittest.TestCase):
         
                                        
 # Run tests for this file if executed as application 
-if __name__=='__main__':
+if __name__ == '__main__':
     unittest.main()
 

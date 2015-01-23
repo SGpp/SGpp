@@ -28,8 +28,8 @@ namespace sg {
          * @param storage the grid's GirdStorage object
          * @param dataset the dataset the should be evaluated
          */
-        OperationMultipleEvalLinearBoundary(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-          this->storage = storage;
+        OperationMultipleEvalLinearBoundary(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+          this->storage = grid.getStorage();
         }
 
         /**

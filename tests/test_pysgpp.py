@@ -35,7 +35,7 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
                 unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
                 unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
-                unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
+                #unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
                 unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
                 unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
                 unittest.defaultTestLoader.loadTestsFromModule(test_OperationQuadrature),
@@ -47,7 +47,7 @@ if __name__ == '__main__':
                 unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
                 unittest.defaultTestLoader.suiteClass(learnertests.alltests),
                 unittest.defaultTestLoader.suiteClass(datatests.alltests),
-                unittest.defaultTestLoader.suiteClass(controllertests.alltests)
+                #unittest.defaultTestLoader.suiteClass(controllertests.alltests)
                 ])
         try:
             from pysgpp import AbstractCombiGrid
@@ -64,7 +64,7 @@ if __name__ == '__main__':
             pass
     
     
-        result = unittest.TextTestRunner().run(alltests)
+        result = unittest.TextTestRunner(verbosity=9).run(alltests)
         
         if not result.wasSuccessful():
             sys.exit(1)

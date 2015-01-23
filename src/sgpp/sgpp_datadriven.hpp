@@ -25,6 +25,11 @@
 
 #include "datadriven/tools/ARFFTools.hpp"
 
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
+#include "datadriven/operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
+#include "datadriven/operation/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
+#include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
+#include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp"
 
 #endif /* DATADRIVEN_HPP */

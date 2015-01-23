@@ -102,6 +102,11 @@ namespace sg {
       this->nrows = nrows;
     }
 
+    /**
+     * Adds unused rows to the DataMatrix, those can be used to add future data or for padding purposes.
+     *
+     * @param inc_rows number of (unused) rows to add
+     */
     void DataMatrix::addSize(size_t inc_rows) {
       // create new vector
       double* newdata = new double[(this->nrows + inc_rows) * this->ncols];

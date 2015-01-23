@@ -1,5 +1,5 @@
 #include "LearnerDensityBasedReg.hpp"
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
 #include "base/operation/BaseOpFactory.hpp"
 #include "pde/operation/PdeOpFactory.hpp"
 #include "datadriven/algorithm/DensitySystemMatrix.hpp"

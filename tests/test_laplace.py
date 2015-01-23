@@ -191,7 +191,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
         gen.regular(7)
         
         laplace = createOperationLaplace(factory)
-      
+
         
         alpha = DataVector(storage.size())
         result = DataVector(storage.size())
@@ -233,7 +233,6 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
         gen.regular(7)
         
         laplace = createOperationLaplaceEnhanced(factory)
-      
         
         alpha = DataVector(storage.size())
         result = DataVector(storage.size())
@@ -645,5 +644,5 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
         
 # Run tests for this file if executed as application 
 if __name__=='__main__':
-    unittest.main()
+    unittest.main(verbosity=9)
 

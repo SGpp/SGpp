@@ -35,14 +35,14 @@ namespace sg {
       AlgorithmDGEMV<SPrewaveletBase> op;
       PrewaveletBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, *(this->dataset_), result);
+      op.mult(storage, base, alpha, this->dataset, result);
     }
 
     void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source, DataVector& result) {
       AlgorithmDGEMV<SPrewaveletBase> op;
       PrewaveletBasis<unsigned int, unsigned int> base;
 
-      op.mult_transposed(storage, base, source, *(this->dataset_), result);
+      op.mult_transposed(storage, base, source, this->dataset, result);
     }
 
   }

@@ -6,7 +6,7 @@
 ## @author Alexander Heinecke (Alexander.Heinecke@mytum.de)####################################################################
 
 #correct the syspath, so python looks for packages in the root directory of SGpp
-from sys import path
+from sys import path, verbosity
 path.append(path[0] + '/..')
 
 
@@ -40,4 +40,4 @@ class TestClassifier(unittest.TestCase):
         self.fail("Not implemented")
 
 if __name__=="__main__":
-    unittest.main()    
+    unittest.main(verbosity=9)    

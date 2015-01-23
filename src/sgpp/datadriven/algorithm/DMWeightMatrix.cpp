@@ -19,7 +19,7 @@ namespace sg {
       this->lamb = lambda;
       this->data = &trainData;
       //this->B = SparseGrid.createOperationMultipleEval(this->data);
-      this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, this->data);
+      this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, *(this->data));
       this->weight = &w;
     }
 

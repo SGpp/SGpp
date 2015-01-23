@@ -25,7 +25,7 @@
 #undef aligned_malloc
 #undef aligned_free
 #define POSIX_MEMALIGN
-#define aligned_malloc(p, size, alignment) int success = posix_memalign(&p, SGPPMEMALIGNMENT, size);  
+#define aligned_malloc(p, size, alignment) int success = posix_memalign(&p, SGPPMEMALIGNMENT, size);
 #define aligned_free(addr) free(addr)
 #endif
 
@@ -34,37 +34,37 @@
  *
  * @param size size of object
  */
-void* operator new (size_t size)
-// to ensure compatibility wit C++11
-#if __cplusplus < 201103L
-throw (std::bad_alloc)
-#endif
-;
-
-/**
- * Overrides normal new[]
- *
- * @param size size of object
- */
-void* operator new[] (size_t size)
-// to ensure compatibility wit C++11
-#if __cplusplus < 201103L
-throw (std::bad_alloc)
-#endif
-;
-/**
- * Overrides normal delete
- *
- * @param p pointer to data to free
- */
-void operator delete (void* p) throw();
-
-/**
- * Overrides normal delete[]
- *
- * @param p pointer to data to free
- */
-void operator delete[] (void* p) throw();
+//void* operator new (size_t size)
+//// to ensure compatibility wit C++11
+//#if __cplusplus < 201103L
+//throw (std::bad_alloc)
+//#endif
+//;
+//
+///**
+// * Overrides normal new[]
+// *
+// * @param size size of object
+// */
+//void* operator new[] (size_t size)
+//// to ensure compatibility wit C++11
+//#if __cplusplus < 201103L
+//throw (std::bad_alloc)
+//#endif
+//;
+///**
+// * Overrides normal delete
+// *
+// * @param p pointer to data to free
+// */
+//void operator delete (void* p) throw();
+//
+///**
+// * Overrides normal delete[]
+// *
+// * @param p pointer to data to free
+// */
+//void operator delete[] (void* p) throw();
 
 #endif /* ALIGNEDMEMORY_HPP */
 

@@ -23,12 +23,15 @@ namespace sg {
      * Class that implements the virtual class sg::base::OperationMatrix for the
      * application of classification for the Systemmatrix
      */
-    class DMSystemMatrix : public sg::datadriven::DMSystemMatrixBase {
+    class DMSystemMatrix : public DMSystemMatrixBase {
       private:
         /// sg::base::OperationMatrix, the regularisation mehtod
         sg::base::OperationMatrix* C;
         /// OperationB for calculating the data matrix
+        //OperationMultiEval* B;
         sg::base::OperationMultipleEval* B;
+
+        sg::base::Grid &grid;
 
       public:
         /**
@@ -39,7 +42,7 @@ namespace sg {
          * @param C the regression functional
          * @param lambda the lambda, the regression parameter
          */
-        DMSystemMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda);
+        DMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda);
 
         /**
          * Std-Destructor

@@ -27,7 +27,7 @@ namespace sg {
          * @param degree the polynom's max. degree
          * @param dataset Dataset
          */
-        OperationMultipleEvalPoly(GridStorage* storage, size_t degree, DataMatrix* dataset) : OperationMultipleEval(dataset), base(degree) {
+        OperationMultipleEvalPoly(Grid &grid, size_t degree, DataMatrix &dataset) : OperationMultipleEval(grid, dataset), base(degree) {
           this->storage = storage;
         }
 
