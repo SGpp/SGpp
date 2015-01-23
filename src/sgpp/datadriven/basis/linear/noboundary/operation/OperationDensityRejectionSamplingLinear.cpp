@@ -7,7 +7,7 @@
 
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.hpp"
 #include "base/operation/BaseOpFactory.hpp"
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
 #ifdef _OPENMP
 #include <omp.h>
@@ -48,7 +48,7 @@ namespace sg {
         }
       }
 
-      base::OperationMultipleEval* opMultEval = op_factory::createOperationMultipleEval(*grid, tmp);
+      base::OperationMultipleEval* opMultEval = op_factory::createOperationMultipleEval(*grid, *(tmp));
       opMultEval->mult(*alpha, *tmpEval);
       maxValue = tmpEval->max();
       delete tmp;

@@ -7,7 +7,7 @@
 
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.hpp"
 #include "datadriven/operation/OperationDensityMarginalize.hpp"
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
 
 namespace sg {

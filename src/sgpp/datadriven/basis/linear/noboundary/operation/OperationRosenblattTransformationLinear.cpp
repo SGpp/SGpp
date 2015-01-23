@@ -8,7 +8,7 @@
 #include "datadriven/operation/OperationDensityConditional.hpp"
 #include "datadriven/operation/OperationDensityMargTo1D.hpp"
 #include "datadriven/operation/OperationDensitySampling1D.hpp"
-#include "datadriven/operation/DatadrivenOpFactory.hpp"
+#include "datadriven/DatadrivenOpFactory.hpp"
 #include "base/exception/operation_exception.hpp"
 
 #include <map>

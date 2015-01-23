@@ -180,7 +180,7 @@ namespace sg {
             fout.write((char*)(&ind), sizeof(ind));
           }
 
-          fout.write((char*) & (git->second), sizeof(git->second));
+          fout.write((const char*) & (git->second), sizeof(git->second));
         }
       }
 

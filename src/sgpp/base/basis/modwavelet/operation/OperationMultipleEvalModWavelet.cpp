@@ -19,14 +19,14 @@ namespace sg {
       AlgorithmDGEMV<SModWaveletBase> op;
       ModifiedWaveletBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, *(this->dataset_), result);
+      op.mult(storage, base, alpha, this->dataset, result);
     }
 
     void OperationMultipleEvalModWavelet::multTranspose(DataVector& source, DataVector& result) {
       AlgorithmDGEMV<SModWaveletBase> op;
       ModifiedWaveletBasis<unsigned int, unsigned int> base;
 
-      op.mult_transposed(storage, base, source, *(this->dataset_), result);
+      op.mult_transposed(storage, base, source, this->dataset, result);
     }
 
   }

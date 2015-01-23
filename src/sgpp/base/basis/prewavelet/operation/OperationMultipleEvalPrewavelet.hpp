@@ -26,8 +26,8 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param dataset Dataset
          */
-        OperationMultipleEvalPrewavelet(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-          this->storage = storage;
+        OperationMultipleEvalPrewavelet(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+          this->storage = grid.getStorage();
         }
 
         /**

@@ -1,6 +1,6 @@
 // new-joe-kuo-6.21201
-#ifndef SOBOL_PARAMETERS
-#define SOBOL_PARAMETERS \
+#ifndef SOBOL_PARAMETERSXXX
+#define SOBOL_PARAMETERSXXX \
 "d       s       a       m_i\n" \
 "2       1       0       1\n" \
 "3       2       1       1 3\n" \

@@ -8,7 +8,8 @@
 #ifndef GRIDDATABASE_HPP
 #define GRIDDATABASE_HPP
 
-#include "base/tools/hash_map_config.hpp"
+//#include "base/tools/hash_map_config.hpp"
+#include <unordered_map>
 
 #include "base/grid/Grid.hpp"
 #include "base/datatypes/DataVector.hpp"
@@ -30,9 +31,10 @@ namespace sg {
       private:
         typedef GridIndex index_type;
         typedef GridIndex* index_pointer;
+        /*
 #ifndef USETRONE
 #ifndef LARRABEENATIVE
-        typedef std::hash_map<index_pointer, double, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+        typedef std::hash_map<index_pointer, double, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
 #endif
 #ifdef LARRABEENATIVE
         typedef std::hash_map<index_pointer, double, LRBSGHasher<index_pointer> > grid_map;
@@ -41,6 +43,8 @@ namespace sg {
 #ifdef USETRONE
         typedef std::tr1::unordered_map<index_pointer, double, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
+*/
+        typedef std::unordered_map<index_pointer, double, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
 
         // the hash_map
         grid_map _map;

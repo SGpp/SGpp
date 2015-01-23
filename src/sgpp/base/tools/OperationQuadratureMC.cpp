@@ -33,7 +33,7 @@ namespace sg {
         }
       }
 
-      OperationMultipleEval* opEval = sg::op_factory::createOperationMultipleEval(*grid, &dm);
+      OperationMultipleEval* opEval = sg::op_factory::createOperationMultipleEval(*grid, dm);
       DataVector res = DataVector(mcPaths);
       opEval->mult(alpha, res);
       return res.sum() / static_cast<double>(mcPaths);

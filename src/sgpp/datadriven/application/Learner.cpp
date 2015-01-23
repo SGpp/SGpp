@@ -13,7 +13,6 @@
 #include "datadriven/algorithm/DMSystemMatrix.hpp"
 
 namespace sg {
-
   namespace datadriven {
 
     Learner::Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)

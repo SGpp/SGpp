@@ -23,7 +23,7 @@ namespace sg {
       this->lambda = lambda;
 
       this->A = sg::op_factory::createOperationLTwoDotProduct(grid);
-      this->B = sg::op_factory::createOperationMultipleEval(grid, this->data);
+      this->B = sg::op_factory::createOperationMultipleEval(grid, *(this->data));
       this->C = &C;
     }
 

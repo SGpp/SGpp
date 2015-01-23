@@ -25,8 +25,8 @@ namespace sg {
          * @param storage the grid's GridStorage object
          * @param dataset data
          */
-        OperationMultipleEvalModWavelet(GridStorage* storage, DataMatrix* dataset) : OperationMultipleEval(dataset) {
-          this->storage = storage;
+        OperationMultipleEvalModWavelet(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+          this->storage = grid.getStorage();
         }
 
         /**

@@ -12,8 +12,9 @@
 // %rename(GridDataBaseStr) sg::base::GridDataBase::GridDataBase(std::string);
 
 // SG_PARALLEL for using OperationMultEvalVectorized
-%rename(padDataset) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType);
-%rename(padDatasetSP) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType);
+//%rename(padDataset) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType);
+//%rename(padDatasetSP) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType);
+//%ignore sg::datadriven::AbstractOperationMultipleEvalSubspace::padDataset();
 
 %typemap(in) sg::parallel::VectorizationType& {
   int i = (int) PyInt_AsLong($input);
@@ -108,8 +109,13 @@ namespace std {
 
 // the Bad
 // really dirty
+%ignore sg::base::DataVectorSP::operator=;
+%ignore sg::base::DataVectorSP::operator[];
 %include "src/sgpp/base/datatypes/DataVectorSP.hpp"
+%ignore sg::base::DataMatrixSP::operator=;
+%ignore sg::base::DataMatrixSP::operator[];
 %include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
+
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
@@ -118,8 +124,11 @@ namespace std {
 
 // The Good, i.e. without any modifications
 %include "src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
+%include "src/sgpp/base/tools/hash_map_config.hpp"
+%ignore sg::base::HashGridIndex::operator=;
 %include "src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
 %include "src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
+%ignore sg::base::HashGridStorage::operator[];
 %include "src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "src/sgpp/base/grid/GridStorage.hpp"
 %include "src/sgpp/base/grid/common/BoundingBox.hpp"
@@ -177,11 +186,18 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+%include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
+%include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
+%include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
+%include "src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp"
 
-%include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 #endif
 
 #ifdef SG_PDE
+%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
+%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
+
 %include "src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
 
 %include "src/sgpp/pde/application/PDESolver.hpp"
@@ -192,8 +208,8 @@ namespace std {
 %include "src/sgpp/pde/application/EllipticPDESolver.hpp"
 %include "src/sgpp/pde/application/PoissonEquationSolver.hpp"
 
-%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
-%include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
+
+
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 %include "src/sgpp/pde/operation/PdeOpFactory.hpp"
 #endif
@@ -254,6 +270,7 @@ namespace std {
 //%include "FullGridSet.i"
 
 %include "src/sgpp/combigrid/utils/combigrid_ultils.hpp"
+%ignore combigrid::CombigridLevelVector::operator=;
 %include "src/sgpp/combigrid/utils/CombigridLevelVector.hpp"  
 %include "src/sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 %include "src/sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
