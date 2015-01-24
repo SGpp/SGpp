@@ -8,12 +8,14 @@
 #include "base/grid/type/LinearGridStencil.hpp"
 
 #include "base/grid/generation/StandardGridGenerator.hpp"
-
+#include "base/basis/linear/noboundary/LinearBasis.hpp"
 
 #include "base/exception/factory_exception.hpp"
 
 
 #include <iostream>
+#include <exception>
+
 
 namespace sg {
   namespace base {
@@ -36,6 +38,14 @@ namespace sg {
     const char* LinearGridStencil::getType() {
       return "linearstencil";
     }
+
+    const SBasis& LinearGridStencil::getBasis(){
+		throw new factory_exception("Not implemented");
+		// it should never get so far, code just for compilation reasons
+		// If there will be a meaningful basis, this following lines should be changed
+		static SLinearBase basis;
+		return basis;
+	}
 
     Grid* LinearGridStencil::unserialize(std::istream& istr) {
       return new LinearGridStencil(istr);

@@ -9,6 +9,7 @@
 #define MODBSPLINEGRID_HPP
 
 #include "base/grid/Grid.hpp"
+#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
 
 #include <iostream>
 
@@ -39,6 +40,8 @@ namespace sg {
 
         virtual const char* getType();
 
+        virtual const SBasis& getBasis();
+
         virtual GridGenerator* createGridGenerator();
 
         static Grid* unserialize(std::istream& istr);
@@ -49,6 +52,9 @@ namespace sg {
       protected:
         // degree of Bspline
         size_t degree;
+
+        const SModBsplineBase* basis_;
+
 
     };
 

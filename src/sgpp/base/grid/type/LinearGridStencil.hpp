@@ -11,6 +11,7 @@
 #include "base/grid/type/GridStencil.hpp"
 #include "base/grid/common/BoundingBox.hpp"
 
+
 #include <iostream>
 
 namespace sg {
@@ -44,6 +45,8 @@ namespace sg {
         virtual ~LinearGridStencil();
 
         virtual const char* getType();
+
+        virtual const SBasis& getBasis();
 
         virtual GridGenerator* createGridGenerator();
 

@@ -74,11 +74,13 @@ public:
 	virtual sg::base::Stretching* getStretching();
 
 	virtual const char* getType() = 0;	
+	virtual const SBasis& getBasis() = 0;
 	virtual void serialize(std::string& ostr);
 	void refine(sg::base::DataVector* vector, int num);
 	double eval(sg::base::DataVector& alpha, sg::base::DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
+	
 	
 };
 }

@@ -48,7 +48,8 @@ namespace sg {
          * @param x the d-dimensional vector with data points (row-wise)
          * @param result the result vector of the matrix vector multiplication
          */
-        void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result) {
+        void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source,
+        		DataMatrix& x, DataVector& result) {
           result.setAll(0.0);
           size_t source_size = source.getSize();
 
@@ -62,6 +63,7 @@ namespace sg {
 
             privateResult.setAll(0.0);
 
+
             #pragma omp for schedule(static)
 
             for (size_t i = 0; i < source_size; i++) {
@@ -74,7 +76,10 @@ namespace sg {
             {
               result.add(privateResult);
             }
+
           }
+
+
         }
 
         /**

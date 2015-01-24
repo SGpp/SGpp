@@ -7,6 +7,7 @@
 
 #include "base/grid/Grid.hpp"
 #include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
+#include "base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
 
 #include "base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
 
@@ -36,6 +37,11 @@ namespace sg {
     const char* LinearStretchedTrapezoidBoundaryGrid::getType() {
       return "linearStretchedTrapezoidBoundary";
     }
+
+    const SBasis& LinearStretchedTrapezoidBoundaryGrid::getBasis(){
+		static SLinearStretchedBoundaryBase basis;
+		return basis;
+	}
 
     Grid* LinearStretchedTrapezoidBoundaryGrid::unserialize(std::istream& istr) {
       return new LinearStretchedTrapezoidBoundaryGrid(istr);

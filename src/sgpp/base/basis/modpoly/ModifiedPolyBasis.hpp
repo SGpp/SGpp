@@ -13,6 +13,8 @@
 
 #include "base/exception/factory_exception.hpp"
 #include "base/datatypes/DataVector.hpp"
+#include "base/basis/Basis.hpp"
+
 
 namespace sg {
   namespace base {
@@ -23,7 +25,7 @@ namespace sg {
      * by Prof. Bungartz (http://www5.in.tum.de/wiki/index.php/Algorithmen_des_Wissenschaftlichen_Rechnens_II_-_Winter_08)
      */
     template<class LT, class IT>
-    class ModifiedPolyBasis {
+    class ModifiedPolyBasis: public Basis<LT, IT> {
       protected:
         /// Pointer to polynoms
         double* polynoms;
