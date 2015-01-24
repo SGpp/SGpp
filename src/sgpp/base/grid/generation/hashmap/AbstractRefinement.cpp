@@ -42,6 +42,10 @@ namespace sg {
       }
     }
 
+    void AbstractRefinement::refineGridpoint1D(GridStorage* storage, size_t seq, size_t d){
+      this->refineGridpoint1D(storage, *(storage->get(seq)), d);
+    }
+
 
     /*void AbstractRefinement::strategy_refine(GridStorage* storage,
             RefinementStrategy& refinement_strategy)

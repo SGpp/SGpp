@@ -46,7 +46,8 @@ class InfoToScreen(LearnerEventController, SolverEventController):
             print "delta: %g" % subject.getResiduum()
         elif status == LinearSolverEvents.COMPLETE:
             print "Solving Complete"
-            print "Number of iterations: %d (max. %d)" % (subject.getNumberIterations(), subject.getImax())
+            #print "Number of iterations: %d (max. %d)" % (subject.getNumberIterations(), subject.getImax())
+            print "Number of iterations: %d" % (subject.getNumberIterations())
             print "Final norm of residuum: %g" % subject.getResiduum()
             
             

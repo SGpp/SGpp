@@ -10,7 +10,6 @@ import distutils.sysconfig
 import glob
 import SCons
 
-
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 5)
 
@@ -214,11 +213,11 @@ env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
 # white spaces. As this whould produce compilation error, replace string 
 # with corresponding list of parameters
 opt_flags = Split(env['CPPFLAGS'])
-env['CPPFLAGS'] = [] 
+env['CPPFLAGS'] = []
 
 if env['TRONE']:
     env.Append(CPPDEFINES=['USETRONE'])
-    env.Append(CPPFLAGS=[''])
+    env.Append(CPPFLAGS=['-std=c++11'])
 
 if env['OPT']:
    env.Append(CPPFLAGS=['-O3'])
@@ -302,6 +301,7 @@ if env['PLATFORM'] != 'cygwin':
 
 # the optional CPPFLAGS at the end will override the previous flags
 env['CPPFLAGS'] = env['CPPFLAGS'] + opt_flags
+env.Append(CPPFLAGS=['-std=c++11'])
 
 # Decide what to compile
 #########################################################################
@@ -574,6 +574,8 @@ if env['SG_PYTHON'] and swigAvail and pyAvail:
     libpysgpp = SConscript('src/pysgpp/SConscript', variant_dir='tmp/build_pysgpp', duplicate=0)
     pyinst = env.Install(env['OUTPUT_PATH'] + 'lib/pysgpp', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
     Depends(pyinst, libpysgpp)
+    pybin = env.Install(env['OUTPUT_PATH'] + 'bin', [libpysgpp, 'tmp/build_pysgpp/pysgpp.py'])
+    Depends(pybin, libpysgpp)
     
 # build java lib
 if swigAvail and javaAvail and env['SG_JAVA']:
@@ -598,4 +600,3 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON'] and pyAvail and swigAvail:
         Depends(testdep, [pyinst])
 else:
     sys.stderr.write("WARNING!! Skipping unit tests!!\n\n\n")
-

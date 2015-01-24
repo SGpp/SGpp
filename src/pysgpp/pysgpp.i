@@ -27,6 +27,7 @@
 %include "std_vector.i"
 %include "std_pair.i"
 %include "std_complex.i"
+%include "std_map.i"
 
 %include "cpointer.i" 
 %include "typemaps.i"
@@ -73,7 +74,10 @@ namespace std {
 	%template(BoolVector) vector<bool>;
 	%template(DoubleVector) vector<double>;
 	%template(IndexValPair) pair<size_t, double>;
-	%template(IndexValVector) vector<pair<size_t, double> >;
+        %template(IndexValVector) vector<pair<size_t, double> >;
+        // For OnlinePredictiveRefinementDimension
+        %template(refinement_key) std::pair<size_t, unsigned int>;
+        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
 
 }
 
@@ -110,6 +114,8 @@ namespace std {
 // really dirty
 %include "src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "src/sgpp/base/datatypes/DataMatrixSP.hpp"
+%import "src/sgpp/base/basis/Basis.hpp"
+%template(SBasis) sg::base::Basis<unsigned int, unsigned int>;
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
@@ -125,14 +131,26 @@ namespace std {
 %include "src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "src/sgpp/base/grid/common/Stretching.hpp"
 %include "src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
-
 %include "src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
+%include "src/sgpp/base/grid/generation/hashmap/SubspaceCoarsening.hpp"
 %include "src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+%include "src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
+%include "src/sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 %include "src/sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
+//%include "src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
+//%include "src/sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
+//%include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
+%include "src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 %include "src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
@@ -142,6 +160,9 @@ namespace std {
 %include "src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp"
+%include "src/sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
@@ -320,5 +341,3 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
-
-

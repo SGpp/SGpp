@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include "base/grid/common/Stretching.hpp"
+#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 
 namespace sg {
   namespace base {
@@ -21,7 +22,7 @@ namespace sg {
      * @version $HEAD$
      */
     template<class LT, class IT>
-    class LinearStretchedBoundaryBasis {
+    class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
       public:
         /*  *
          * Evaluate a basis function.
