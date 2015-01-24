@@ -20,7 +20,7 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-from bin.pysgpp import DataVector
+from pysgpp import DataVector
 from bin.learner.formatter import GridFormatter
 import matplotlib.pyplot as plt 
 from numpy import zeros, sqrt, ceil, floor

@@ -22,7 +22,7 @@
 
 
 from Learner import Learner, LearnerEvents
-from bin.pysgpp import SurplusRefinementFunctor, createOperationTest
+from pysgpp import SurplusRefinementFunctor, createOperationTest
 
 
 ## The class implements the abstract methods from Learner and allows to accomplish

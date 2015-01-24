@@ -16,6 +16,8 @@ SRCDIR=./../../../src/sgpp
 ARBBINCLUDE = /opt/intel/arbb/1.0.0.030/include
 ARBBLIB = /opt/intel/arbb/1.0.0.030/lib/intel64
 # NVidia OpenCL
+CUDAINCLUDE = /usr/local/cuda/include
+CUDALIB = /usr/local/cuda/lib64
 OCLINCLUDE = /usr/local/cuda/include
 OCLLIB = /usr/lib64/
 #OCLINCLUDE = ${CUDATOOLKIT_HOME}/include
@@ -168,6 +170,10 @@ ifeq ($(EXT), AMDOCLGPU)
 CFLAGS:=$(CFLAGS) -I$(AMDOCLINCLUDE) -DUSEOCL -DUSEOCL_AMD -fopenmp
 LFLAGS:=$(LFLAGS) -L$(AMDOCLLIB) -lOpenCL -fopenmp
 endif
+ifeq ($(EXT), CUDA)
+CFLAGS:=$(CFLAGS) -I$(CUDAINCLUDE) -DUSECUDA -fopenmp
+LFLAGS:=$(LFLAGS) -L$(CUDALIB) -lcudart -fopenmp
+endif
 endif
 
 ifeq ($(CC),icpc)
@@ -228,6 +234,10 @@ ifeq ($(EXT), MIC_NATIVE)
 CFLAGS:=$(CFLAGS) -mmic -DUSEMIC -fma -sox -mP2OPT_hlo_enable_all_mem_refs_prefetch -mP2OPT_hlo_pref_loop_based_prefetch=F -fp-speculation=fast
 LFLAGS:=$(LFLAGS) -mmic
 LIB_OPTS:=-mmic
+endif
+ifeq ($(EXT), CUDA)
+CFLAGS:=$(CFLAGS) -I$(CUDAINCLUDE) -DUSECUDA -openmp
+LFLAGS:=$(LFLAGS) -L$(CUDALIB) -lcudart -openmp
 endif
 endif
 
@@ -504,7 +514,7 @@ endif
 
 CFLAGS:=$(CFLAGS) -DDEFAULT_RES_THRESHOLD=$(SLE_RES_THRESH)
 CFLAGS:=$(CFLAGS) -DTASKS_PARALLEL_UPDOWN=$(UPDOWN_PARADIMS)
-#CFLAGS:=$(CFLAGS) -DUSE_ENHANCED_UPDOWN
+CFLAGS:=$(CFLAGS) -DSG_PARALLEL
 
 ###################################################################
 # Builds a lib containing all SG Algorithms

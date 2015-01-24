@@ -34,6 +34,10 @@ namespace sg {
       gen.squareRoot(this->storage, static_cast<HashGenerator::level_t>(level));
     }
 
+    void SquareRootGridGenerator::cliques(int level, size_t clique_size) {
+		throw generation_exception("Method is not implemented");
+	}
+
     //void BoundaryGridGenerator::refine(RefinementFunctor* func)
     //{
     //  HashRefinementBoundaries refine;

@@ -46,7 +46,7 @@ namespace sg {
      *
      * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
      */
-    parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType& vecType, base::DataMatrix* dataset,
+    parallel::OperationMultipleEvalVectorized* createOperationMultipleEvalVectorized(base::Grid& grid, const parallel::VectorizationType vecType, base::DataMatrix* dataset,
         size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(),
         size_t datasetFrom = 0, size_t datasetTo = std::numeric_limits<size_t>::max());
 

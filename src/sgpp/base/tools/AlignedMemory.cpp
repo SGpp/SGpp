@@ -41,7 +41,8 @@ throw (std::bad_alloc)
   return p;
 }
 
-void* operator new[] (size_t size)// to ensure compatibility wit C++11
+void* operator new[] (size_t size)
+// to ensure compatibility wit C++11
 #if __cplusplus < 201103L
 throw (std::bad_alloc)
 #endif

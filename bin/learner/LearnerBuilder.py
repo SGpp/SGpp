@@ -29,7 +29,7 @@ from bin.learner.TrainingSpecification import TrainingSpecification
 from bin.learner.solver.CGSolver import CGSolver
 from bin.learner.Types import BorderTypes
 
-from bin.pysgpp import *
+from pysgpp import *
 from bin.data.ARFFAdapter import ARFFAdapter
 from bin.data.CSVAdapter import CSVAdapter
 from bin.data.DataContainer import DataContainer
@@ -248,7 +248,12 @@ class LearnerBuilder(object):
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
             self.__learner.specification.setBOperator(
-            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)), DataContainer.TRAIN_CATEGORY)
+            try:
+                self.__learner.specification.setBOperator(
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
+            except:
+                pass 
 
         return self.__learner
 
@@ -259,8 +264,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withSequentialFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.SEQUENTIAL)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.SEQUENTIAL)
+        return self.__foldingPolicyDescriptor
     
     
     ## 
@@ -269,8 +274,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withRandomFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.RANDOM)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.RANDOM)
+        return self.__foldingPolicyDescriptor
     
     
     ## 
@@ -279,8 +284,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withStratifiedFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
+        return self.__foldingPolicyDescriptor
     
     
     ## 
@@ -289,8 +294,8 @@ class LearnerBuilder(object):
     # @return: FoldingDescriptor
     ##
     def withFilesFoldingPolicy(self):
-        self.__foldingPolicyDescroptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
-        return self.__foldingPolicyDescroptor
+        self.__foldingPolicyDescriptor = LearnerBuilder.FoldingDescriptor(self, LearnerBuilder.FoldingDescriptor.STRATIFIED)
+        return self.__foldingPolicyDescriptor
 
     
     ## 
@@ -308,6 +313,8 @@ class LearnerBuilder(object):
             self.__learner.setDataContainer(dataContainer)        
         return self
     
+    
+
 
     ## 
     # Signals to use data from ARFF file for testing dataset
@@ -322,6 +329,19 @@ class LearnerBuilder(object):
         else:
             self.__learner.setDataContainer(dataContainer)
         return self
+    
+    
+    def withTrainingDataFromNumPyArray(self, points, values, name="train"):
+        dataContainer = DataContainer(points=points, values=values, name=name)
+        if self.__learner.dataContainer != None:
+            self.__learner.setDataContainer(self.__learner.dataContainer.combine(dataContainer))
+        else:
+            self.__learner.setDataContainer(dataContainer)        
+        return self
+    
+    
+    def withTestingDataFromNumPyArray(self, points, values, name="test"):
+        return self.withTrainingDataFromNumPyArray(points, values, "test")
     
     
     ## 
@@ -417,6 +437,7 @@ class LearnerBuilder(object):
             self.__level = None
             self.__file = None
             self.__border = None
+            self.__cliqueSize = None
             
         
         ## 
@@ -452,7 +473,10 @@ class LearnerBuilder(object):
                             grid = Grid.createLinearGrid(self.__dim)
                             
                 generator = grid.createGridGenerator()
-                generator.regular(self.__level)
+                if self.__cliqueSize == None:
+                    generator.regular(self.__level)
+                else:
+                    generator.cliques(self.__level, self.__cliqueSize)
             self.__builder.getLearner().setGrid(grid)
             return getattr(self.__builder, attr)
             
@@ -497,6 +521,21 @@ class LearnerBuilder(object):
         ##
         def fromFile(self, filename):
             self.__file = filename
+            return self
+        
+        
+        ##
+        # Creates a special kind of grid where every cliqueSize dimensions are 
+        # complitely interconnected (building a clique in a corresponding 
+        # graphical model), while the connection between cliques exist only over
+        # the level 1 functions
+        #
+        # @param cliqueSize the number of dimensions in a clique
+        # @return: GridDescriptor itself 
+        def withCliques(self, cliqueSize):
+            if self.__dim < cliqueSize:
+                raise Exception("Grid dimensionality should be not smaller than the clique size")
+            self.__cliqueSize = cliqueSize
             return self
         
         
@@ -628,8 +667,8 @@ class LearnerBuilder(object):
             # if method called is not a object method of this Descriptor, most probably it's a method of
             # LearnerBuilder so we try to call the method from our builder 
             if self.__specification.getCOperator() == None: #use laplace operator default
-                self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
-                self.__specification.setCOperatorType('laplace')
+                self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
+                self.__specification.setCOperatorType('identity')
             self.__builder.getLearner().setSpecification(self.__specification)
             return getattr(self.__builder, attr)
         
@@ -694,6 +733,12 @@ class LearnerBuilder(object):
             self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('identity')
             return self
+        
+        
+        def withVectorizationType(self, vecType):
+            self.__specification.setVectorizationType(vecType)
+            return self
+            
         
     
     ##
