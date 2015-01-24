@@ -5,7 +5,7 @@
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
 
 
-import os, sys
+import os, sys, subprocess
 import distutils.sysconfig
 import glob
 import SCons
@@ -106,6 +106,7 @@ vars.Add('TARGETCPU',"Sets the processor you are compiling for. 'default' means 
 vars.Add(BoolVariable('OMP', "Sets if OpenMP should be used; with gcc OpenMP 2 is used, with all icc configurations OpenMP 3 is used!", False))
 vars.Add(BoolVariable('TRONE', "Sets if the tr1/unordered_map should be uesed", False))
 vars.Add('OPT', "Sets optimization on and off", False)
+vars.Add(BoolVariable('JENKINS_COMPILER', "Use fixed version compiler to better support jenkins", False))
 
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
@@ -229,7 +230,7 @@ if env['TARGETCPU'] == 'default':
     # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
     #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2), 
     #     ensure you also compile with -fno-strict-aliasing"
-    env.Append(CPPFLAGS=['-Wall', '-ansi', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
+    env.Append(CPPFLAGS=['-Wall', '-pedantic', '-Wno-long-long', '-Werror', '-Wno-deprecated', 
                          '-fno-strict-aliasing', '-O3', '-Wconversion',
                          '-funroll-loops', '-mfpmath=sse', '-msse3', 
                          '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
@@ -239,10 +240,13 @@ if env['TARGETCPU'] == 'default':
     else:
         # do not stop for unknown pragmas (due to #pragma omp ... )
         env.AppendUnique(CPPFLAGS=['-Wno-unknown-pragmas'])
+        
+    if env['JENKINS_COMPILER']:
+        env.Replace(CXX = 'g++-4.8')
 
 elif env['TARGETCPU'] == 'ICC':
     print "Using icc"
-    env.Append(CPPFLAGS = ['-Wall', '-ansi', '-Werror', '-Wno-deprecated', '-wd1125',  
+    env.Append(CPPFLAGS = ['-Wall', '-Werror', '-Wno-deprecated', '-wd1125',  
                            '-fno-strict-aliasing', '-O3',
                            '-ip', '-ipo', '-funroll-loops', '-msse3',
                            '-ansi-alias', '-fp-speculation=safe', 
@@ -380,10 +384,35 @@ if not env.GetOption('clean'):
 
     config = env.Configure(custom_tests = { 'CheckExec' : CheckExec,
                                             'CheckJNI' : CheckJNI })
+    # print platform
+    print "Using platform", env['PLATFORM']
 
     # check scons
     EnsureSConsVersion(1, 0)
     print "Using SCons", SCons.__version__
+
+    # check for working C++
+    if not config.CheckCXX():
+        sys.stderr.write("Error: no working C++ compiler found. Abort!\n")
+        Exit(0)
+    else:
+        print "Using CXX", subprocess.check_output(env['CXX'].split()+ ["--version"]).split(os.linesep)[0]
+    
+    # check C++11 support
+    compiler = subprocess.check_output(env['CXX'].split()+ ["--version"]).lower()
+    if "intel" in compiler:
+        compilerVersion = ".".join(subprocess.check_output(env['CXX'].split() + ["-dumpversion"]).split('.')[0:2])
+        if float(compilerVersion) < 14.0:
+            sys.stderr.write("Error: Intel compiler >=14.0 is required to support C++11. Abort!\n")
+            Exit(0)
+    elif "gcc" in compiler:
+        compilerVersion = ".".join(subprocess.check_output(env['CXX'].split() + ["-dumpversion"]).split('.')[0:2])
+        if float(compilerVersion) < 4.8:
+            sys.stderr.write("Error: GCC compiler >=4.8 is required to support C++11. Abort!\n")
+            Exit(0)
+
+    env.Append(CPPFLAGS=['-std=c++11'])
+
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):

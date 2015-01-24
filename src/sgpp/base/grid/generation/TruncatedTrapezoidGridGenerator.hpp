@@ -35,6 +35,7 @@ namespace sg {
          * Is the same as the regular trapezoid grid
          * */
         virtual void regular(int level);
+        virtual void cliques(int level, size_t clique_size);
         virtual void full(int level) {};
         /**
          * Creates a super trapezoid boundary grid with given level and l_user

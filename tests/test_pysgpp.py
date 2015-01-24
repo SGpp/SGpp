@@ -64,7 +64,7 @@ if __name__ == '__main__':
             pass
     
     
-        unittest.TextTestRunner().run(alltests)
-
-
-    
+        result = unittest.TextTestRunner().run(alltests)
+        
+        if not result.wasSuccessful():
+            sys.exit(1)

@@ -21,7 +21,6 @@
 #############################################################################
 
 
-
 import types
 
 ## Collection of parameters, which specify the learning process.
@@ -34,8 +33,8 @@ class TrainingSpecification(object):
     __adaptThreshold = 0.0   #threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
     __cOperator = None      #C operator
     __bOperator = None      #B operator
-    __bOperatorTest = None
     __cOperatorType = None  #Type of the c operator as a string
+    __vecType = None
     
     ## Returns the type of the C operator
     # @return: the type of the C operator as a string
@@ -95,11 +94,10 @@ class TrainingSpecification(object):
     ## Setter for B operator
     #
     # @param value: OperationB
-    def setBOperator(self, value, name = 'train'):
-        if name == 'train':
-            self.__bOperator = value
-        elif name == 'test':
-            self.__bOperatorTest = value
+    # @param name: operator identifier
+    def setBOperator(self, value, name="train"):
+        if self.__bOperator == None: self.__bOperator = {}
+        self.__bOperator[name] = value
 
 
     ## Getter for Number of points to refine
@@ -132,12 +130,20 @@ class TrainingSpecification(object):
 
     ## Getter for B operator
     #
+    # @param name: operator identifier
     # @return: OperationB
-    def getBOperator(self, name = 'train'):
-        if name == 'train':
-            return self.__bOperator
-        elif name == 'test':
-            return self.__bOperatorTest
+    def getBOperator(self, name="train"):
+        if self.__bOperator != None:
+            return self.__bOperator[name]
+        else: return None
+        
+        
+    def getVectorizationType(self):
+        return self.__vecType
+    
+    
+    def setVectorizationType(self, vecType):
+        self.__vecType = vecType
     
     
     ## Calculates the number of points which should be refined
@@ -191,6 +197,8 @@ class TrainingSpecification(object):
             specification.__adaptRate = jsonObject['_TrainingSpecification__adaptRate']
         if jsonObject.has_key('_TrainingSpecification__adaptThreshold'):
             specification.__adaptThreshold = jsonObject['_TrainingSpecification__adaptThreshold']
+        if jsonObject.has_key('_TrainingSpecification__vecType'):
+            specification.__vecType = jsonObject['_TrainingSpecification__vecType']
         specification.__cOperator = None
         specification.__bOperator = None
         return specification

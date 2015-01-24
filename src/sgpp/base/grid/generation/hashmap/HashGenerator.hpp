@@ -62,6 +62,33 @@ namespace sg {
           this->regular_iter(storage, level);
         }
 
+
+
+        /**
+		 * Generates a regular sparse grid of level levels, without boundaries
+		 * where dimensions are splitted into a groups with only certain number
+		 * of dimensions completely connected in a clique
+		 *
+		 * @todo (blank) level should be of type level_t but swig doesnt want that
+		 *
+		 * @param storage Hashmap that stores the grid points
+		 * @param level Grid level (non-negative value)
+		 * @param clique_size number of dimensions in a clique
+		 */
+		void cliques(GridStorage* storage, level_t level, size_t clique_size) {
+		  if (storage->size() > 0) {
+			throw generation_exception("storage not empty");
+		  }
+
+		  if (storage->dim() < clique_size){
+			  throw generation_exception("clique size should be not greater than grid dimension");
+			}
+
+
+		  this->cliques_iter(storage, level, clique_size);
+		}
+
+
         /**
          * Generates a full grid of level @p level, without boundaries.
          *
@@ -269,6 +296,92 @@ namespace sg {
             }
           }
         }
+
+
+        void cliques_iter(GridStorage* storage, level_t n, size_t clique_size) {
+                  if (storage->dim() == 0)
+                    return;
+
+                  index_type idx_1d(storage->dim());
+
+                  for (size_t d = 0; d < storage->dim(); d++) {
+                    idx_1d.push(d, 1, 1, false);
+                  }
+
+                  // Generate 1D grid in first dimension
+                  for (level_t l = 1; l <= n; l++) {
+                    for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+                      if (l == n) {
+                        idx_1d.push(0, l, i, true);
+                      } else {
+                        idx_1d.push(0, l, i, false);
+                      }
+
+                      storage->insert(idx_1d);
+                    }
+                  }
+
+                  // Generate grid points in all other dimensions:
+                  // loop dim times over intermediate grid, take all grid points and modify them
+                  // in current dimension d
+                  for (size_t d = 1; d < storage->dim(); d++) {
+                    // current size
+                    size_t grid_size = storage->size();
+                    size_t clique_num = d/clique_size;
+
+                    // loop over all current grid points
+                    for (size_t g = 0; g < grid_size; g++) {
+                      bool first = true;
+                      bool skip = false;
+                      index_type idx(storage->get(g));
+
+                      // calculate current level-sum - 1
+                      level_t level_sum = idx.getLevelSum() - 1;
+
+                      for (size_t dt = 0; dt < clique_size*clique_num && dt < d; dt++){
+                    	  // if the level in dt dimension > 1, ignore the point and continue
+                    	  level_t lt;
+                    	  index_t it; // level and index in the particular dimension
+                    	  idx.get(dt, lt, it);
+                    	  if (lt > 1){
+                    		  skip = true;
+                    		  break;
+                    	  }
+                      }
+
+                      if (skip){ continue;}
+
+
+                      // add remaining level-index pairs in current dimension d
+                      for (level_t l = 1; l + level_sum <= n + storage->dim() - 1; l++) {
+                        for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+                          // first grid point is updated, all others inserted
+                          if (first == false) {
+                            // is leaf?
+                            if ((l + level_sum) == n + storage->dim() - 1) {
+                              idx.push(d, l, i, true);
+                            } else {
+                              idx.push(d, l, i, false);
+                            }
+
+                            storage->insert(idx);
+                          } else {
+                            // is leaf?
+                            if ((l + level_sum) == n + storage->dim() - 1) {
+                              idx.push(d, l, i, true);
+                            } else {
+                              idx.push(d, l, i, false);
+                            }
+
+                            storage->update(idx, g);
+                            first = false;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
 
         /**
          * Generate a regular sparse grid iteratively (much faster than recursively)

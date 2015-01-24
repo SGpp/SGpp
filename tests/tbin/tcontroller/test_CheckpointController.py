@@ -15,7 +15,7 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.pysgpp import Grid, DataVector
+from pysgpp import Grid, DataVector
 from bin.learner import LearnedKnowledge
 import bin.learner.LearnerBuilder as LearnerBuilder
 from bin.controller import InfoToScreen

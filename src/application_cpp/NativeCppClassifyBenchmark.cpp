@@ -97,6 +97,8 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 #endif
   } else if (vecType == sg::parallel::ArBB) {
     std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
+  } else if (vecType == sg::parallel::CUDA) {
+    std::cout << "Vectorized: NVIDIA CUDA" << std::endl << std::endl;
   } else if (vecType == sg::parallel::MIC) {
     std::cout << "Vectorized: Intel MIC Architecture" << std::endl << std::endl;
   } else if (vecType == sg::parallel::Hybrid_X86SIMD_MIC) {
@@ -385,6 +387,8 @@ int main(int argc, char* argv[]) {
       vecType = sg::parallel::Hybrid_X86SIMD_OpenCL;
     } else if  (vectorization == "ArBB") {
       vecType = sg::parallel::ArBB;
+    } else if  (vectorization == "CUDA") {
+      vecType = sg::parallel::CUDA;
     } else if  (vectorization == "MIC") {
       vecType = sg::parallel::MIC;
     } else if  (vectorization == "HYBRID_X86SIMD_MIC") {
