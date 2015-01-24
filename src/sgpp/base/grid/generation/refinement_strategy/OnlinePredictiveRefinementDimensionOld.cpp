@@ -35,7 +35,6 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			dynamic_cast<PredictiveRefinementDimensionIndicator*>(functor);
 
 	//size_t min_idx = 0;
-	std::vector<value_type> errors;
 
 	// max value equals min value
 	//PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
@@ -84,12 +83,9 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			index.set(d, source_level, source_index);
 
 			// Heuristic!
-			//error *= std::fabs(alpha_->get(storage->seq(iter->first)));
+			error *= std::fabs(alpha_->get(storage->seq(iter->first)));
 
 
-			if (error > functor->start()){
-				errors.push_back(error);
-			}
 
 			//if (error > iThreshold_) {
 				key_type key(storage->seq(iter->first), d);
@@ -102,11 +98,6 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			//}
 		}
 	}
-
-	// get new thershold for the next iteration
-	//std::nth_element(errors.begin(), errors.begin()+refinements_num, errors.end(), doubleReverseCompare);
-	//iThreshold_ = errors[refinements_num];
-
 }
 
 bool refinementPairCompare(const std::pair<OnlinePredictiveRefinementDimensionOld::key_type, OnlinePredictiveRefinementDimensionOld::value_type>& firstEl,
@@ -135,8 +126,10 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 	std::nth_element(errorsVector.begin(), errorsVector.begin()+refinements_num,
 			errorsVector.end(), refinementPairCompare);
 
+	PredictiveRefinementDimensionIndicator* predFunctor = dynamic_cast<PredictiveRefinementDimensionIndicator*>(functor);
+
 	std::vector<std::pair<key_type, value_type> >::const_iterator iter;
-	for (iter = errorsVector.begin(); iter < errorsVector.begin() + refinements_num; iter++){
+	for (iter = errorsVector.begin(); iter < errorsVector.begin() + refinements_num && iter <errorsVector.end(); iter++){
 		if (iter->second > functor->start() && iter->second >= threshold){
 			index_pointer index(storage->get(iter->first.first));
 			//Sets leaf property of index, which is refined to false
@@ -144,12 +137,31 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 			//(storage->get((storage->find(index))->second))->setLeaf(false);
 			//storage->get(iter->first.first)->setLeaf(false);
 			std::cout << "Refining grid point " << iter->first.first << " dim " << iter->first.second << " value "
-					<< iter->second << std::endl;
+					<< iter->second <<" ";
+
+			// output counter sum
+			index_type it = *index;
+			size_t d = iter->first.second;
+			index_type::level_type lvl = it.getLevel(d);
+			index_type::level_type idx = it.getIndex(d);
+			it.set(d, lvl+1, idx*2-1);
+			long unsigned int counter = 0;
+			if (predFunctor->countersMap.find(it) != predFunctor->countersMap.end()){
+			  counter += predFunctor->countersMap[it];
+		  }
+			it.set(d, lvl+1, idx*2+1);
+      if (predFunctor->countersMap.find(it) != predFunctor->countersMap.end()){
+			counter += predFunctor->countersMap[it];
+       }
+			std::cout << " points on support: " << counter << " map size " << predFunctor->countersMap.size() << std::endl;
+
 			index_type index_tmp = *index;
 			this->refineGridpoint1D(storage, index_tmp, iter->first.second);
 			index->setLeaf(false);
 		}
 	}
+
+	predFunctor->countersMap.clear();
 
 	/*for (size_t i = 0; i < refinements_num; i++) {
 		max_value = max_values[i];
