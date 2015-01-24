@@ -444,6 +444,51 @@ namespace sg {
           return *this;
         }
 
+
+        /**
+         * operator to compare to grid indices. Returns true if level and index
+         * vectors are identical
+         *
+         * @return  true if both level and index vectors are identical
+         */
+        bool operator==(const HashGridIndex<LT, IT>& rhs) const{
+          bool result = true;
+          for (size_t d = 0; d < DIM; d++) {
+              if (level[d] != rhs.level[d] ||
+                  index[d] != rhs.index[d]){
+                      result = false; break;
+              }
+          }
+          return result;
+        }
+
+        /**
+         * Relationship operator. This relationship is somewhat arbitrary but
+         * unique. It compares the levels dimension-wise. For equal levels it
+         * compares the indices.
+         *
+         * @return true if the object is smaller than the argument
+         */
+        bool operator<(const HashGridIndex<LT, IT>& rhs) const{
+          bool result = false;
+          for (size_t d = 0; d < DIM; d++) {
+            if (level[d] < rhs.level[d]){
+              result =  true; break;
+            }
+            else if (level[d] > rhs.level[d]){
+              result = false; break;
+            }
+            // levels are equal
+            else if (index[d] < rhs.index[d]){
+              result = true; break;
+            }
+            else if (index[d] > rhs.index[d]){
+              result = false; break;
+            }
+          }
+          return result;
+        }
+
         /**
          * Generates a string with level and index of the gridpoint.
            * The format is <tt>[l1, i1, l2, i2, ..., ld, id]</tt>.
