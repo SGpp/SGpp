@@ -15,7 +15,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
 from bin.data.DataContainer import DataContainer
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 
 
 ##
@@ -40,7 +40,7 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
         for i in xrange(self.size):
             points.set(i, 0, i)
             values[i] = -1 if i < self.size/2 else 1
-        self.dataContainer = DataContainer(points, values)
+        self.dataContainer = DataContainer(points=points, values=values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
     
     

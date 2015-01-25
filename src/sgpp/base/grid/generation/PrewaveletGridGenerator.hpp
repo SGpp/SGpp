@@ -75,6 +75,7 @@ namespace sg {
         virtual ~PrewaveletGridGenerator();
 
         virtual void regular(int level);
+        virtual void cliques(int level, size_t clique_size);
         virtual void full(int level);
         virtual void refine(RefinementFunctor* func);
         virtual size_t getNumberOfRefinablePoints();

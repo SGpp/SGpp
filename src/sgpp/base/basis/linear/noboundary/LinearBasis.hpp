@@ -11,6 +11,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "base/basis/Basis.hpp"
+
 namespace sg {
   namespace base {
 
@@ -18,7 +20,7 @@ namespace sg {
      * Piecewise linear basis functions.
      */
     template<class LT, class IT>
-    class LinearBasis {
+    class LinearBasis: public Basis<LT, IT> {
       public:
         /**
          * Evaluate a basis function.

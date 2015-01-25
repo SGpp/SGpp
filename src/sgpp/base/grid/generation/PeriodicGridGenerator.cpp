@@ -50,6 +50,15 @@ namespace sg {
       return 0;
     }
 
+    void PeriodicGridGenerator::cliques(int level, size_t clique_size) {
+      if (level < 0) {
+      throw generation_exception("Grid level value is negative");
+      }
+
+      HashGenerator gen;
+      gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
+    }
+
     void PeriodicGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha) {
       throw generation_exception("PeriodicGridGenerator::coarsen is not implemented");
     }

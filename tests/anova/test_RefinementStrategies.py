@@ -7,15 +7,15 @@ from operator import itemgetter
 from numpy import zeros
 from bin.learner.formatter.GridImageFormatter import GridImageFormatter
 from bin.learner.formatter.GridFormatter import GridFormatter
-from bin.pysgpp import DataMatrix, DataVector
+from pysgpp import DataMatrix, DataVector
 from bin.learner.solver.CGSolver import CGSolver
 import pickle
-from bin.pysgpp import DMSystemMatrix
+from pysgpp import DMSystemMatrix
 import numpy as np
 #from pylab import pcolor, colorbar, savefig, clf, get_cmap, close
 
 
-from bin.pysgpp import HashRefinementBoundaries, ANOVARefinement, Grid, \
+from pysgpp import HashRefinementBoundaries, ANOVARefinement, Grid, \
      createOperationMultipleEval, SurplusRefinementFunctor, SurplusCoarseningFunctor, \
      HashRefinement,SurplusVolumeRefinementFunctor
 from bin.learner.LearnerBuilder import LearnerBuilder
@@ -169,8 +169,8 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.updateResults(learner.alpha, learner.dataContainer)
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
-            print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
-            (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
+            print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" \
+                    % (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
             learner.iteration += 1
             if learner.iteration == 5: 
                 pass

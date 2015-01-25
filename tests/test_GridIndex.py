@@ -3,7 +3,7 @@
 # This file is part of the SG++ project. For conditions of distribution and   #
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
 ###############################################################################
-## @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)####################################################################
+## @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), pflueged@in.tum.de
 
 
 import unittest

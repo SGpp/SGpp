@@ -34,15 +34,24 @@
  *
  * @param size size of object
  */
-void* operator new (size_t size) throw (std::bad_alloc);
+void* operator new (size_t size)
+// to ensure compatibility wit C++11
+#if __cplusplus < 201103L
+throw (std::bad_alloc)
+#endif
+;
 
 /**
  * Overrides normal new[]
  *
  * @param size size of object
  */
-void* operator new[] (size_t size) throw (std::bad_alloc);
-
+void* operator new[] (size_t size)
+// to ensure compatibility wit C++11
+#if __cplusplus < 201103L
+throw (std::bad_alloc)
+#endif
+;
 /**
  * Overrides normal delete
  *
