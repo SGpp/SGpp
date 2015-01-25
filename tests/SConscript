@@ -8,14 +8,13 @@ Import('env pysgpp')
 
 test_env = env.Clone()
 # install prerequisites to tests directory
-ti = env.Install('#/tests/',
-                      [pysgpp, '#/tmp/build_pysgpp/pysgpp.py', '#/bin/tools.py'])
+ti = env.Install('#/tests/', ['#/bin/tools.py'])
 
 # run tests
-bld = Builder(action = "python $SOURCE")
-test_env.Append(BUILDERS = {'Test' : bld})
+bld = Builder(action = 'python $SOURCE')
+test_env.Append(BUILDERS = {'Test' : bld}, ENV = {'PYTHONPATH' : 'lib/pysgpp'})
 tests = test_env.Test('test_pysgpp.py')
-Requires(tests, ti)
+Requires(tests, [ti, pysgpp])
 AlwaysBuild(tests) 
 
 test_env.Alias('test', tests)

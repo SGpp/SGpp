@@ -289,7 +289,7 @@ namespace sg {
 				for(int j = 1; j < numberOfNeighbors+1; j++){
 					if(minimumPoint_->at(int(r[j][GridConfig.dim_])))
 						continue;
-					G.addEdge(i, int(r[j][GridConfig.dim_]));
+					G.addEdge(static_cast<int>(i), int(r[j][GridConfig.dim_]));
 					break;
 				}
 			}else{
@@ -399,7 +399,7 @@ namespace sg {
 
 		kdtreebuild(a, nx, ny, normtype, kdt);
 		deleteNeighbors();//delete neighbors_; //TODO
-		neighborsRows_ = testDataset.getNrows();
+		neighborsRows_ = static_cast<int>(testDataset.getNrows());
 		neighborsCols_ = n;
 		delete neighbors_;
 		neighbors_ = new int *[testDataset.getNrows()];
@@ -418,7 +418,7 @@ namespace sg {
 			}
 		}
 
-		saveArray(filename, testDataset.getNrows(),n, neighbors_);
+		saveArray(filename, static_cast<int>(testDataset.getNrows()),n, neighbors_);
 		if(isVerbose_)
 			std::cout << currentDateTime() << " Neighbors saved" << std::endl;
 	}
@@ -494,8 +494,8 @@ namespace sg {
 			dict[i] = 0;
 		}
 
-		for(int i = 0; i < components.getSize(); i++){
-			dict[int(components[i])]++;
+		for(size_t i = 0; i < components.getSize(); i++){
+			dict[static_cast<int>(components[i])]++;
 		}
 
 		int* sortedDict = new int[numberOfClusters+1];
@@ -509,9 +509,9 @@ namespace sg {
 		bool *aboveThreshold = new bool[trainDataset.getNrows()];
 		std::vector<int> *indexUnderThreshold = new std::vector<int>();
 
-		for(int i = 0;i < components.getSize();i++){
-			if(dict[int(components[i])] < threshold){
-				indexUnderThreshold->push_back(i);
+		for(size_t i = 0;i < components.getSize();i++){
+			if(dict[static_cast<int>(components[i])] < threshold){
+				indexUnderThreshold->push_back(static_cast<int>(i));
 			}
 			aboveThreshold[i] = dict[int(components[i])] >= threshold;
 		}

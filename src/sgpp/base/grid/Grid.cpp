@@ -209,6 +209,7 @@ namespace sg {
         delete evalOp;
         evalOp = NULL;
       }
+
     }
 
     GridStorage* Grid::getStorage() {

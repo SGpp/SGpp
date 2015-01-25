@@ -32,6 +32,9 @@
 #include "datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.hpp"
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.hpp"
 #include "datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformationLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformation1DLinear.hpp"
+#include "datadriven/basis/linear/noboundary/operation/OperationInverseRosenblattTransformationLinear.hpp"
 #include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
 
 namespace sg {
@@ -121,6 +124,26 @@ namespace sg {
         throw base::factory_exception("OperationDensityConditional is not implemented for this grid type.");
     }
 
+    datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(base::Grid& grid) {
+        if (strcmp(grid.getType(), "linear") == 0)
+          return new datadriven::OperationRosenblattTransformationLinear(&grid);
+        else
+          throw base::factory_exception("OperationRosenblattTransformation is not implemented for this grid type.");
+    }
+
+    datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid& grid) {
+        if (strcmp(grid.getType(), "linear") == 0)
+          return new datadriven::OperationRosenblattTransformation1DLinear(&grid);
+        else
+          throw base::factory_exception("OperationRosenblattTransformation1D is not implemented for this grid type.");
+    }
+
+    datadriven::OperationInverseRosenblattTransformation* createOperationInverseRosenblattTransformation(base::Grid& grid) {
+        if (strcmp(grid.getType(), "linear") == 0)
+          return new datadriven::OperationInverseRosenblattTransformationLinear(&grid);
+        else
+          throw base::factory_exception("OperationInverseRosenblattTransformation is not implemented for this grid type.");
+    }
   }
 }
 

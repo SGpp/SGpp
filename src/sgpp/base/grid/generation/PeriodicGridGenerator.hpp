@@ -34,6 +34,7 @@ namespace sg {
         virtual void regular(int level);
         virtual void full(int level);
         virtual void refine(RefinementFunctor* func);
+        virtual void cliques(int level, size_t clique_size);
         virtual size_t getNumberOfRefinablePoints();
 
         virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);

@@ -20,7 +20,7 @@ namespace sg {
      * @version $HEAD$
      */
     template<class LT, class IT>
-    class LinearPeriodicBasis {
+    class LinearPeriodicBasis: public Basis<LT, IT>  {
       public:
         /**
          * Evaluate a basis function.

@@ -29,7 +29,7 @@ from bin.data.DataSpecification import DataSpecification
 import re
 import gzip
 from DataAdapter import DataAdapter
-from bin.pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix
 
 from DataContainer import DataContainer
 
@@ -147,7 +147,7 @@ class ARFFAdapter(DataAdapter):
             dataMatrix.setRow(rowIndex, tempVector)
             valuesVector[rowIndex] = classes[rowIndex]
             
-        return DataContainer(dataMatrix, valuesVector, name, self.filename)
+        return DataContainer(points=dataMatrix, values=valuesVector, name=name, filename=self.filename)
 
 
     ## Loads attribute specification from file

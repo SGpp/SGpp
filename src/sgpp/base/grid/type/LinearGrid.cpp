@@ -7,6 +7,8 @@
 
 #include "base/grid/Grid.hpp"
 #include "base/grid/type/LinearGrid.hpp"
+#include "base/basis/linear/noboundary/LinearBasis.hpp"
+
 
 #include "base/grid/generation/StandardGridGenerator.hpp"
 
@@ -36,6 +38,11 @@ namespace sg {
 
     const char* LinearGrid::getType() {
       return "linear";
+    }
+
+    const SBasis& LinearGrid::getBasis(){
+    	static SLinearBase basis;
+    	return basis;
     }
 
     Grid* LinearGrid::unserialize(std::istream& istr) {

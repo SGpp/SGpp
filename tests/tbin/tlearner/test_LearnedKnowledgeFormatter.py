@@ -17,7 +17,7 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.formatter.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
 from bin.learner.LearnedKnowledge import LearnedKnowledge
-from bin.pysgpp import DataVector
+from pysgpp import DataVector
 
 
 ##

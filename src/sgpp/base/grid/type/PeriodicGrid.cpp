@@ -7,6 +7,7 @@
 
 #include "base/grid/Grid.hpp"
 #include "base/grid/type/PeriodicGrid.hpp"
+#include "base/basis/periodic/LinearPeriodicBasis.hpp"
 
 #include "base/grid/generation/PeriodicGridGenerator.hpp"
 
@@ -34,6 +35,11 @@ namespace sg {
 
     Grid* PeriodicGrid::unserialize(std::istream& istr) {
       return new PeriodicGrid(istr);
+    }
+
+    const SBasis& PeriodicGrid::getBasis(){
+      static SLinearPeriodicBasis basis;
+      return basis;
     }
 
     /**
