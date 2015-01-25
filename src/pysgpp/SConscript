@@ -12,6 +12,7 @@ pysgpp.i
 Import('env')
 Import('src_objs')
 Import('moduleList')
+Import('alglibobjects')
 
 src_objs_combined = []
 
@@ -32,9 +33,9 @@ elif env['PLATFORM']=='darwin':
     py_env['SHLIBSUFFIX'] = '.so'
 
 py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']], CPPPATH=['#/src/sgpp'])
-
+#py_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
 # The explicit ".so" suffix is required for OSX as otherwise ".dylib" is used in OSX. Python however requires ".so" on OSX as well. On all other plattforms ".so" actually is the default.
-pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs_combined+srcs, SHLIBPREFIX = '_')
+pysgpp = py_env.SharedLibrary(target="pysgpp", source = src_objs_combined+srcs+alglibobjects, SHLIBPREFIX = '_')
 
 Export('pysgpp')
 Return('pysgpp')

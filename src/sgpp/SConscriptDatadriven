@@ -21,6 +21,7 @@ datadriven/application/LearnerDensityBased.cpp
 datadriven/application/LearnerDensityBasedReg.cpp
 datadriven/application/LearnerSGD.cpp
 datadriven/application/LearnerOnlineSGD.cpp
+datadriven/application/LearnerDensityCluster.cpp
 datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.cpp
 datadriven/basis/linear/noboundary/operation/OperationTestLinear.cpp
 datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.cpp
@@ -40,6 +41,7 @@ datadriven/basis/poly/operation/OperationTestPoly.cpp
 datadriven/basis/prewavelet/operation/OperationTestPrewavelet.cpp
 datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.cpp
 datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.cpp
+
 
 datadriven/operation/OperationRegularizationDiagonal.cpp
 datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.cpp

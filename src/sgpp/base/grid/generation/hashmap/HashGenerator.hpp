@@ -167,6 +167,33 @@ namespace sg {
             this->boundaries_rec(storage, index, storage->dim() - 1, 0, level);
           }
         }
+
+
+        /**
+         * Generates a regular sparse grid of level levels with boundaries
+         *
+         * @todo (blank) level should be of type level_t but swig doesnt want that
+         *
+         * @param storage Hashmap, that stores the grid points
+         * @param level maximum level of the sparse grid (non-negative value)
+         */
+        void regularWithPeriodicBoundaries(GridStorage* storage, level_t level) {
+          if (storage->size() > 0) {
+            throw generation_exception("storage not empty");
+          }
+
+          index_type index(storage->dim());
+
+          if (level == 0) {
+            throw generation_exception("Grid generation with maximum level 0 is not supported");
+          } else {
+
+            this->regular_periodic_boundary_iter(storage, level);
+          }
+
+        }
+
+
         /**
          * Generates a regular square root grid of level level with boundaries
          *
@@ -471,6 +498,97 @@ namespace sg {
                   }
 
                   storage->insert(idx);
+                }
+              }
+            }
+          }
+        }
+
+
+        /**
+         * Generate a regular sparse grid iteratively (much faster than recursively)
+         * with periodic boundary.
+         *
+         * @param storage Pointer to storage object into which the grid points should be stored
+         * @param n Level of regular sparse grid
+         */
+        void regular_periodic_boundary_iter(GridStorage* storage, level_t n) {
+          if (storage->dim() == 0)
+            return;
+
+          index_type idx_1d(storage->dim());
+
+          for (size_t d = 0; d < storage->dim(); d++) {
+            idx_1d.push(d, 1, 1, false);
+          }
+
+          // Generate 1D grid in first dimension
+          for (level_t l = 1; l <= n; l++) {
+            // generate boundary basis functions
+            if (l == 1) {
+              idx_1d.push(0, 0, 0, false);
+              storage->insert(idx_1d);
+            }
+            for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+              if (l == n) {
+                idx_1d.push(0, l, i, true);
+              } else {
+                idx_1d.push(0, l, i, false);
+              }
+
+              storage->insert(idx_1d);
+            }
+          }
+
+          // Generate grid points in all other dimensions:
+          // loop dim times over intermediate grid, take all grid points and modify them
+          // in current dimension d
+          for (size_t d = 1; d < storage->dim(); d++) {
+            // current size
+            size_t grid_size = storage->size();
+
+            // loop over all current grid points
+            for (size_t g = 0; g < grid_size; g++) {
+              bool first = true;
+              index_type idx(storage->get(g));
+
+              // Calculate level-sum
+              level_t level_sum = idx.getLevelSum() - 1;
+              for (size_t sd = 0; sd < d; sd++) {
+                if (idx.getLevel(sd) == 0)
+                  level_sum += 1;
+              }
+
+
+
+              // add remaining level-index pairs in current dimension d
+              for (level_t l = 1; l + level_sum <= n + storage->dim() - 1; l++) {
+                if (l == 1) {
+                  idx.push(d, 0, 0, false);
+                  storage->insert(idx);
+                }
+                for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+                  // first grid point is updated, all others inserted
+                  if (first == false) {
+                    // is leaf?
+                    if ((l + level_sum) == n + storage->dim() - 1) {
+                      idx.push(d, l, i, true);
+                    } else {
+                      idx.push(d, l, i, false);
+                    }
+
+                    storage->insert(idx);
+                  } else {
+                    // is leaf?
+                    if ((l + level_sum) == n + storage->dim() - 1) {
+                      idx.push(d, l, i, true);
+                    } else {
+                      idx.push(d, l, i, false);
+                    }
+
+                    storage->update(idx, g);
+                    first = false;
+                  }
                 }
               }
             }

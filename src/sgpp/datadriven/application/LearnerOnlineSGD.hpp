@@ -19,6 +19,7 @@
 #include "sgpp_datadriven.hpp"
 #include "base/exception/application_exception.hpp"
 #include "base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
+#include "base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 #include "parallel/tools/TypesParallel.hpp"
 
 

@@ -515,11 +515,16 @@ else:
 Export('env')
 Export('moduleList')
 
+#Install alglib
+libalglib, alglibstatic  = SConscript('tools/SConscriptAlglib', variant_dir='tmp/build_alglib', duplicate=0)
+alglibinst = env.Install(env['OUTPUT_PATH'] + 'lib/alglib', [libalglib, alglibstatic])
+
 
 # Now compile
 #########################################################################
 lib_sgpp_targets = []
-src_objs = {}                
+src_objs = {}
+env.Append(CPPPATH=['#/tools'])                
 
 # compile libraries
 for name in modules:
@@ -545,7 +550,7 @@ for name in modules:
             if name == "combigrid":
                 libdependencies = ['sgppbasestatic']
             if name == "datadriven":
-                libdependencies = ['sgppbasestatic', 'sgppsolverstatic', 'sgppmiscstatic', 'sgpppdestatic']
+                libdependencies = ['sgppbasestatic', 'sgppsolverstatic', 'sgppmiscstatic', 'sgpppdestatic', libalglib]
             elif name == "parallel":
                 libdependencies = ['sgppdatadrivenstatic', 'sgppsolverstatic', 'sgppmiscstatic', 'sgppbasestatic']
             elif name == "pde":
@@ -587,6 +592,13 @@ if swigAvail and javaAvail and env['SG_JAVA']:
     jinst = env.Install(env['OUTPUT_PATH'] + 'lib/jsgpp', [libjsgpp])
     
 env.Install(env['OUTPUT_PATH'] + 'lib/sgpp', lib_sgpp_targets)
+
+
+    
+    
+
+
+
 
 # Unit tests
 #########################################################################
