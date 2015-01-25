@@ -60,6 +60,8 @@ pde/basis/prewavelet/operation/OperationLaplacePrewavelet.cpp
 pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.cpp
 pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.cpp
 pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.cpp
+pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.cpp
+pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.cpp
 pde/operation/PdeOpFactory.cpp
 """)
 

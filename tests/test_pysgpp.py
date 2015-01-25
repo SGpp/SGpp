@@ -23,6 +23,8 @@ import test_BT
 import test_GridFactory
 import test_DataVector
 
+import test_periodic
+
 import tbin.tlearner.testsuite as learnertests
 import tbin.tdata.testsuite as datatests
 import tbin.tcontroller.testsuite as controllertests
@@ -45,6 +47,7 @@ if __name__ == '__main__':
                 
                 unittest.defaultTestLoader.loadTestsFromModule(test_BT),
                 #unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
+                unittest.defaultTestLoader.loadTestsFromModule(test_periodic),
                 unittest.defaultTestLoader.suiteClass(learnertests.alltests),
                 unittest.defaultTestLoader.suiteClass(datatests.alltests),
                 unittest.defaultTestLoader.suiteClass(controllertests.alltests)

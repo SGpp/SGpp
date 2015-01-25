@@ -44,6 +44,8 @@ base/basis/modpoly/operation/OperationMultipleEvalModPoly.cpp
 base/basis/modwavelet/operation/OperationEvalModWavelet.cpp
 base/basis/modwavelet/operation/OperationHierarchisationModWavelet.cpp
 base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.cpp
+base/basis/periodic/operation/OperationEvalPeriodic.cpp
+base/basis/periodic/operation/OperationMultipleEvalPeriodic.cpp
 base/basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 base/basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
 base/basis/poly/operation/OperationEvalPoly.cpp
@@ -92,6 +94,7 @@ base/grid/generation/functors/ClassificationRefinementFunctor.cpp
 base/grid/generation/functors/PredictiveRefinementDimensionIndicator.cpp
 base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
+base/grid/generation/PeriodicGridGenerator.cpp
 base/grid/Grid.cpp
 base/grid/type/GridStencil.cpp
 base/grid/type/LinearBoundaryGrid.cpp
@@ -107,6 +110,7 @@ base/grid/type/PolyGrid.cpp
 base/grid/type/PrewaveletGrid.cpp
 base/grid/type/SquareRootGrid.cpp
 base/grid/type/TruncatedTrapezoidGrid.cpp
+base/grid/type/PeriodicGrid.cpp
 base/tools/EvalCuboidGenerator.cpp
 base/tools/GridPrinter.cpp
 base/tools/SGppStopwatch.cpp

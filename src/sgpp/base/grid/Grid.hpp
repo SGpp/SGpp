@@ -36,7 +36,8 @@ namespace sg {
       ModBspline,
       Prewavelet,
       SquareRoot,
-      TruncatedTrapezoid
+      TruncatedTrapezoid,
+      Periodic
     };
 
     /**
@@ -179,6 +180,13 @@ namespace sg {
          * @param dim the grid's dimension
          * */
         static Grid* createTruncatedTrapezoidGrid(size_t dim);
+
+        /**
+         * creates a periodic grid
+         *
+         * @param dim the grid's dimension
+         */
+        static Grid* createPeriodicGrid(size_t dim);
 
         /**
          * reads a grid out of a string

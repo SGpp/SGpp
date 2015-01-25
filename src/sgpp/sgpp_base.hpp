@@ -8,7 +8,7 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-#include "base/basis/Basis.hpp"
+
 #include "base/basis/linear/noboundary/LinearBasis.hpp"
 #include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
@@ -19,6 +19,9 @@
 #include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
 #include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
 #include "base/basis/prewavelet/PrewaveletBasis.hpp"
+#include "base/basis/periodic/operation/OperationEvalPeriodic.hpp"
+#include "base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp"
+#include "base/basis/periodic/LinearPeriodicBasis.hpp"
 #include "base/grid/GridStorage.hpp"
 #include "base/grid/GridDataBase.hpp"
 #include "base/tools/OperationQuadratureMC.hpp"
@@ -74,6 +77,8 @@
 #include "base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp"
 #include "base/grid/generation/functors/ClassificationRefinementFunctor.hpp"
 #include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
+#include "base/grid/generation/PeriodicGridGenerator.hpp"
+#include "base/grid/type/PeriodicGrid.hpp"
 #include "base/tools/GridPrinter.hpp"
 #include "base/tools/GridPrinterForStretching.hpp"
 #include "base/tools/SGppStopwatch.hpp"

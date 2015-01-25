@@ -166,7 +166,10 @@ namespace std {
 %include "src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 %include "src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+%include "src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "src/sgpp/base/grid/GridDataBase.hpp"
+
+%include "src/sgpp/base/grid/type/PeriodicGrid.hpp"
 
 %include "src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
@@ -188,6 +191,10 @@ namespace std {
 %include "src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
 %include "src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
+%include "src/sgpp/base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp"
+%include "src/sgpp/base/basis/periodic/operation/OperationEvalPeriodic.hpp"
+%include "src/sgpp/base/basis/periodic/LinearPeriodicBasis.hpp"
+
 // static factory methods
 %include "src/sgpp/base/operation/BaseOpFactory.hpp"
 
@@ -200,6 +207,8 @@ namespace std {
 %include "src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 
 %include "src/sgpp/datadriven/operation/DatadrivenOpFactory.hpp"
+%include "src/sgpp/datadriven/tools/TypesDatadriven.hpp"
+%include "src/sgpp/datadriven/application/LearnerDensityCluster.hpp"
 #endif
 
 #ifdef SG_PDE
@@ -217,6 +226,8 @@ namespace std {
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "src/sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 %include "src/sgpp/pde/operation/PdeOpFactory.hpp"
+%include "src/sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
+%include "src/sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
 #endif
 
 #ifdef SG_FINANCE
@@ -241,6 +252,7 @@ namespace std {
 %include "src/sgpp/solver/sle/BiCGStab.hpp"
 %include "src/sgpp/solver/ode/Euler.hpp"
 %include "src/sgpp/solver/ode/CrankNicolson.hpp"
+%include "src/sgpp/solver/TypesSolver.hpp"
 #endif
 
 #ifdef SG_MCM
