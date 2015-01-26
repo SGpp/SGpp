@@ -6,10 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
 
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinearOCL.hpp"
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinearOCL.hpp>
 
 #include <cmath>
 

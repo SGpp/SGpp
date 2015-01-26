@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/basis/poly/operation/OperationEvalPoly.hpp"
+#include <sgpp/base/basis/poly/operation/OperationEvalPoly.hpp>
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace base {

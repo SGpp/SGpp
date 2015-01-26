@@ -7,9 +7,9 @@
 #ifndef STEPSIZECONTROLEJ_HPP
 #define STEPSIZECONTROLEJ_HPP
 
-#include "base/application/ScreenOutput.hpp"
-#include "solver/ODESolver.hpp"
-#include "solver/ode/StepsizeControl.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/solver/ODESolver.hpp>
+#include <sgpp/solver/ode/StepsizeControl.hpp>
 
 namespace sg {
   namespace solver {

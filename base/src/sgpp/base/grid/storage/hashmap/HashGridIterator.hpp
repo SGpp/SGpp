@@ -8,13 +8,13 @@
 #ifndef HASHGRIDITERATOR_HPP
 #define HASHGRIDITERATOR_HPP
 
-#include "base/tools/hash_map_config.hpp"
+#include <sgpp/base/tools/hash_map_config.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
-#include "base/grid/storage/hashmap/HashGridIndex.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/storage/hashmap/SerializationVersion.hpp"
+#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <memory>
 #include <string>

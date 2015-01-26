@@ -9,8 +9,8 @@
 #ifndef OPERATIONQUADRATURELINEARBOUND_HPP
 #define OPERATIONQUADRATURELINEARBOUND_HPP
 
-#include "base/operation/OperationQuadrature.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/operation/OperationQuadrature.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace base {

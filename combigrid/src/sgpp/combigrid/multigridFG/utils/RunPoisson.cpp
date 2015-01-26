@@ -6,8 +6,8 @@
  */
 
 #include "RunPoisson.hpp"
-#include "combigrid/multigridFG/multigrid/Multigrid.hpp"
-#include "combigrid/multigridFG/multigrid/MultigridFAS.hpp"
+#include <sgpp/combigrid/multigridFG/multigrid/Multigrid.hpp>
+#include <sgpp/combigrid/multigridFG/multigrid/MultigridFAS.hpp>
 
 using namespace combigrid;
 

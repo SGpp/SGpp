@@ -7,8 +7,8 @@
 
 #include <limits>
 
-#include "base/grid/generation/hashmap/HashRefinementInconsistent.hpp"
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
 
 
 namespace sg {

@@ -11,10 +11,10 @@
 
 #include <limits>
 
-#include "base/grid/GridStorage.hpp"
-#include "base/operation/OperationMatrix.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp>
 
 namespace sg {
   namespace parallel {

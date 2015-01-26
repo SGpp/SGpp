@@ -5,8 +5,8 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/common/DirichletUpdateVector.hpp"
-#include "solver/ode/CrankNicolson.hpp"
+#include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
 
 namespace sg {
   namespace solver {

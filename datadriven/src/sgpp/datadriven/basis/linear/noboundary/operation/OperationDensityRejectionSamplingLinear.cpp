@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author A. Mo-Hellenbrand
 
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

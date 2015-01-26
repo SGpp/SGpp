@@ -11,8 +11,8 @@
 // MPI Support
 #ifdef USE_MPI
 
-#include "parallel/tools/MPI/MPICommunicator.hpp"
-#include "parallel/tools/MPI/GlobalMPIComm.hpp"
+#include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
+#include <sgpp/parallel/tools/MPI/GlobalMPIComm.hpp>
 
 #endif
 

@@ -9,9 +9,9 @@
 #define RUNTIKHONOV_HPP_
 
 #include "combigrid.hpp"
-#include "combigrid/utils/combigrid_ultils.hpp"
-#include "combigrid/combigrid/AbstractCombiGrid.hpp"
-#include "combigrid/domain/CombiGridDomain.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
+#include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
 namespace combigrid {
 

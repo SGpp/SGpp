@@ -8,9 +8,9 @@
 #ifndef BICGSTAB_HPP
 #define BICGSTAB_HPP
 
-#include "solver/SLESolver.hpp"
-#include "base/operation/OperationMatrix.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/solver/SLESolver.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
 

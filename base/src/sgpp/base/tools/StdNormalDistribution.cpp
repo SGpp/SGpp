@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/StdNormalDistribution.hpp"
+#include <sgpp/base/tools/StdNormalDistribution.hpp>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

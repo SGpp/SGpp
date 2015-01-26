@@ -9,20 +9,20 @@
 #define HEATEQUATIONSOLVERWITHSTRETCHING_HPP
 
 
-#include "pde/application/ParabolicPDESolver.hpp"
+#include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
-//#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
-//#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/common/BoundingBox.hpp"
+//#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
+//#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/common/BoundingBox.hpp>
 
-#include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/LinearStretchedGrid.hpp"
-#include "base/grid/common/Stretching.hpp"
+#include <sgpp/base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
 
-#include "base/tools/StdNormalDistribution.hpp"
+#include <sgpp/base/tools/StdNormalDistribution.hpp>
 
-#include "base/application/ScreenOutput.hpp"
-#include "base/tools/GridPrinterForStretching.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/base/tools/GridPrinterForStretching.hpp>
 
 #include <iostream>
 #include <string>

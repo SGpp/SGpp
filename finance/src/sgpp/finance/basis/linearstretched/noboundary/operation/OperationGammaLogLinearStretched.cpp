@@ -5,20 +5,20 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp"
+#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp>
 
-#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
-#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
+#include <sgpp/pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp>
+#include <sgpp/pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp>
 
-#include "finance/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.hpp"
-#include "finance/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.hpp"
+#include <sgpp/finance/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiDownBBLinearStretched.hpp>
+#include <sgpp/finance/basis/linearstretched/noboundary/algorithm_sweep/PhidPhiUpBBLinearStretched.hpp>
 
-#include "finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.hpp"
-#include "finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.hpp"
+#include <sgpp/finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiDownBBLinearStretched.hpp>
+#include <sgpp/finance/basis/linearstretched/noboundary/algorithm_sweep/DPhiPhiUpBBLinearStretched.hpp>
 
-#include "pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp"
+#include <sgpp/pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 #include <iostream>
 

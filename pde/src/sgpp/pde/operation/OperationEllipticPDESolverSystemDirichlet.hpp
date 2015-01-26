@@ -8,9 +8,9 @@
 #ifndef OPERATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP
 #define OPERATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP
 
-#include "pde/operation/OperationEllipticPDESolverSystem.hpp"
-#include "base/grid/common/DirichletUpdateVector.hpp"
-#include "base/grid/common/DirichletGridConverter.hpp"
+#include <sgpp/pde/operation/OperationEllipticPDESolverSystem.hpp>
+#include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
+#include <sgpp/base/grid/common/DirichletGridConverter.hpp>
 
 #include <string>
 

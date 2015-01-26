@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Kilian Roehner (roehner@tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 
 #include <cmath>
 
-#include "base/basis/modpoly/algorithm_sweep/DehierarchisationModPoly.hpp"
+#include <sgpp/base/basis/modpoly/algorithm_sweep/DehierarchisationModPoly.hpp>
 
 namespace sg {
 

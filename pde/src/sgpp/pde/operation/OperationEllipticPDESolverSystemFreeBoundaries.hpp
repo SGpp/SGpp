@@ -8,7 +8,7 @@
 #ifndef OPERATIONELLIPTICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 #define OPERATIONELLITPICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 
-#include "pde/operation/OperationEllipticPDESolverSystem.hpp"
+#include <sgpp/pde/operation/OperationEllipticPDESolverSystem.hpp>
 
 namespace sg {
   namespace pde {

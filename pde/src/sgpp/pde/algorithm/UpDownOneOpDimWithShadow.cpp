@@ -20,8 +20,8 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "pde/algorithm/UpDownOneOpDimWithShadow.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDimWithShadow.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 namespace sg {
   namespace pde {

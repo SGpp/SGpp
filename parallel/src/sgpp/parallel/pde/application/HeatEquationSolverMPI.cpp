@@ -5,19 +5,19 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
-#include "parallel/pde/application/HeatEquationSolverMPI.hpp"
-#include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
-#include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/solver/sle/ConjugateGradientsMPI.hpp>
+#include <sgpp/parallel/pde/application/HeatEquationSolverMPI.hpp>
+#include <sgpp/parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp>
+#include <sgpp/parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.hpp>
 
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/ode/Euler.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <sstream>
 #include <cstdlib>

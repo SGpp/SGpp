@@ -8,18 +8,18 @@
 #ifndef BASE_OP_FACTORY_HPP
 #define BASE_OP_FACTORY_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/operation/OperationQuadrature.hpp"
-#include "base/operation/OperationFirstMoment.hpp"
-#include "base/operation/OperationSecondMoment.hpp"
-#include "base/operation/OperationConvert.hpp"
-#include "base/operation/OperationIdentity.hpp"
-#include "base/operation/OperationMatrix.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/operation/OperationStencilHierarchisation.hpp"
+#include <sgpp/base/operation/OperationHierarchisation.hpp>
+#include <sgpp/base/operation/OperationQuadrature.hpp>
+#include <sgpp/base/operation/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/OperationSecondMoment.hpp>
+#include <sgpp/base/operation/OperationConvert.hpp>
+#include <sgpp/base/operation/OperationIdentity.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/OperationStencilHierarchisation.hpp>
 
 /*
  * This file contains factory methods for operations.

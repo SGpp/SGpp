@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
-#include "datadriven/application/Learner.hpp"
-#include "datadriven/algorithm/DMSystemMatrix.hpp"
+#include <sgpp/datadriven/application/Learner.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
 
 namespace sg {
   namespace datadriven {

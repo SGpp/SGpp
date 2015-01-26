@@ -8,9 +8,9 @@
 #ifndef HASHREFINEMENTINCONSISTENT_HPP
 #define HASHREFINEMENTINCONSISTENT_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
-#include "base/grid/generation/hashmap/HashRefinement.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 
 namespace sg {
 namespace base {

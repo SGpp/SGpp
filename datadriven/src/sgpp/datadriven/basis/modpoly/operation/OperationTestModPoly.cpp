@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "datadriven/basis/modpoly/operation/OperationTestModPoly.hpp"
+#include <sgpp/datadriven/basis/modpoly/operation/OperationTestModPoly.hpp>
 
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace datadriven {

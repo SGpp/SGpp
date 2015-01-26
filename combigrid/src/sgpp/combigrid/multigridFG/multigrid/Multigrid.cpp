@@ -6,7 +6,7 @@
 // @author Janos Benk (benk@in.tum.de)
 
 #include "Multigrid.hpp"
-#include "combigrid/multigridFG/multigrid/ProlongationRestriction.hpp"
+#include <sgpp/combigrid/multigridFG/multigrid/ProlongationRestriction.hpp>
 
 
 combigrid::Multigrid::Multigrid(combigrid::OperatorFG* op , FullGridD* fg , bool createHierarchy) {

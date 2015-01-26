@@ -6,13 +6,13 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPI.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 namespace sg {
   namespace parallel {

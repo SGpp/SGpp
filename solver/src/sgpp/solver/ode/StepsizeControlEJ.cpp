@@ -5,12 +5,12 @@
 **************************************************************************** */
 // @author Peter Hoffmann (peter.hoffmann@mytum.de)
 
-#include "base/grid/common/DirichletUpdateVector.hpp"
-#include "solver/ode/StepsizeControlEJ.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/tools/GridPrinter.hpp"
-#include "base/exception/solver_exception.hpp"
+#include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
+#include <sgpp/solver/ode/StepsizeControlEJ.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/tools/GridPrinter.hpp>
+#include <sgpp/base/exception/solver_exception.hpp>
 
 
 #include <iostream>

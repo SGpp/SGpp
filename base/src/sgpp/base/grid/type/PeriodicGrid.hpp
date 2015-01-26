@@ -8,7 +8,7 @@
 #ifndef PERIODICGRID_HPP
 #define PERIODICGRID_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
 

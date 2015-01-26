@@ -9,15 +9,15 @@
 #define COMBISGPPCONVERTER_HPP_
 
 // ---- the combi includes --------
-#include "combigrid/utils/combigrid_ultils.hpp"
-#include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/combigridkernel/CombiGridKernel.hpp"
-#include "combigrid/combigrid/AbstractCombiGrid.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
+#include <sgpp/combigrid/combigridkernel/CombiGridKernel.hpp>
+#include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
 
 // ---- the SGpp includes --------
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace combigrid {
 

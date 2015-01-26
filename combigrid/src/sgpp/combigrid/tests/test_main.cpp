@@ -6,13 +6,13 @@
 // @author Janos Benk (benk@in.tum.de)
 
 
-#include "combigrid/tests/TestFullGrid.hpp"
-#include "combigrid/tests/TestCombiGridKernel.hpp"
-#include "combigrid/tests/TestSerialCombiGrid.hpp"
-#include "combigrid/tests/TestSerialS_CTGrid.hpp"
-#include "combigrid/tests/TestSGppConverter.hpp"
-#include "combigrid/tests/TestStretching.hpp"
-#include "combigrid/tests/TestStretchingCombi.hpp"
+#include <sgpp/combigrid/tests/TestFullGrid.hpp>
+#include <sgpp/combigrid/tests/TestCombiGridKernel.hpp>
+#include <sgpp/combigrid/tests/TestSerialCombiGrid.hpp>
+#include <sgpp/combigrid/tests/TestSerialS_CTGrid.hpp>
+#include <sgpp/combigrid/tests/TestSGppConverter.hpp>
+#include <sgpp/combigrid/tests/TestStretching.hpp>
+#include <sgpp/combigrid/tests/TestStretchingCombi.hpp>
 
 
 int main(int argc, char** argv) {

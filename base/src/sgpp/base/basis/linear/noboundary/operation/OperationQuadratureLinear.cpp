@@ -6,7 +6,7 @@
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
 
-#include "base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp>
 
 
 namespace sg {

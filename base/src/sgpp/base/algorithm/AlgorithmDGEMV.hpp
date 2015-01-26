@@ -8,11 +8,11 @@
 #ifndef ALGORTIHMDGEMV_HPP
 #define ALGORTIHMDGEMV_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
 #include <vector>
 #include <utility>

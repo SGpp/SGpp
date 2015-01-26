@@ -8,13 +8,13 @@
 #ifndef DMSYSTEMMATRIX_HPP
 #define DMSYSTEMMATRIX_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 
 namespace sg {
   namespace datadriven {

@@ -5,8 +5,8 @@
 **************************************************************************** */
 // @author Janos Benk (benk@in.tum.de)
 
-#include "combigrid/multigridFG/test/TestTikhonov.hpp"
-#include "combigrid/multigridFG/test/TestPoisson.hpp"
+#include <sgpp/combigrid/multigridFG/test/TestTikhonov.hpp>
+#include <sgpp/combigrid/multigridFG/test/TestPoisson.hpp>
 
 
 int main(int argc, char** argv) {

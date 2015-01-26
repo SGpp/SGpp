@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#include "finance/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp>
 
 namespace sg {
   namespace finance {

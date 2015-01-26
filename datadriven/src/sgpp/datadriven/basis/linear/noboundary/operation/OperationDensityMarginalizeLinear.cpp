@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Benjamin Peherstorfer (pehersto@in.tum.de)
 
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace datadriven {

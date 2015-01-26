@@ -7,9 +7,9 @@
 #ifndef OPERATIONMULTIPLEEVALMODBSPLINE_HPP
 #define OPERATIONMULTIPLEEVALMODBSPLINE_HPP
 
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
 
 namespace sg {
 namespace base {

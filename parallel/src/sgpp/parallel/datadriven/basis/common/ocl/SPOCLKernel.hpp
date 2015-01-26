@@ -9,9 +9,9 @@
 #ifndef SPOCLKERNEL_HPP
 #define SPOCLKERNEL_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>

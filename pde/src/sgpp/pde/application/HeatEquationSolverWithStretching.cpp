@@ -1,12 +1,12 @@
-#include "pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
-#include "pde/application/HeatEquationSolverWithStretching.hpp"
-#include "pde/algorithm/HeatEquationParabolicPDESolverSystemParallelOMP.hpp"
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp>
+#include <sgpp/pde/application/HeatEquationSolverWithStretching.hpp>
+#include <sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelOMP.hpp>
+#include <sgpp/solver/ode/Euler.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 using namespace sg::base;
 using namespace sg::solver;

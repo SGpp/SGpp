@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/application/ParabolicPDESolver.hpp"
+#include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
 namespace sg {
   namespace pde {

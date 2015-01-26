@@ -6,9 +6,9 @@
 #ifndef OperationMatrixLTwoDotExplicitLinear_HPP_
 #define OperationMatrixLTwoDotExplicitLinear_HPP_
 
-#include "base/operation/OperationMatrix.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace pde {

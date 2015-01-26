@@ -8,14 +8,14 @@
 #ifndef OPERATIONLAPLACEPREWAVELET_HPP
 #define OPERATIONLAPLACEPREWAVELET_HPP
 
-#include "pde/algorithm/UpDownOneOpDimWithShadow.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDimWithShadow.hpp>
 
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include<iostream>
 

@@ -8,8 +8,8 @@
 #ifndef OPERATIONDENSITYMARGINALIZELINEAR_HPP
 #define OPERATIONDENSITYMARGINALIZELINEAR_HPP
 
-#include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationDensityMarginalize.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/operation/OperationDensityMarginalize.hpp>
 #include <cstring>
 
 namespace sg {

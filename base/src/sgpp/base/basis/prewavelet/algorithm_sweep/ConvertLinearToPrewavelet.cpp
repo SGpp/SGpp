@@ -1,4 +1,4 @@
-#include "base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp"
+#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
 
 namespace sg {
   namespace base {

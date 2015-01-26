@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@mytum.de)
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/modwavelet/operation/OperationEvalModWavelet.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/modwavelet/operation/OperationEvalModWavelet.hpp>
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
 
 

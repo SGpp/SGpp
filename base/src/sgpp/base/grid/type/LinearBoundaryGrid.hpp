@@ -8,7 +8,7 @@
 #ifndef LINEARBOUNDARYGRID_HPP
 #define LINEARBOUNDARYGRID_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
 

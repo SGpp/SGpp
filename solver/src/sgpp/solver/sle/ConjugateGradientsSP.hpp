@@ -8,10 +8,10 @@
 #ifndef CONJUGATEGRADIENTSSP_HPP
 #define CONJUGATEGRADIENTSSP_HPP
 
-#include "base/operation/OperationMatrixSP.hpp"
-#include "base/datatypes/DataVectorSP.hpp"
+#include <sgpp/base/operation/OperationMatrixSP.hpp>
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
 
-#include "solver/SLESolverSP.hpp"
+#include <sgpp/solver/SLESolverSP.hpp>
 
 #include <iostream>
 

@@ -8,9 +8,9 @@
 #ifndef HASHGENERATOR_HPP
 #define HASHGENERATOR_HPP
 
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <vector>
 #include <cmath>

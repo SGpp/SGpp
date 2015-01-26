@@ -5,10 +5,10 @@
 **************************************************************************** */
 // @author Florian Zipperle (florian.zipperle@tum.de)
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
-#include "base/basis/periodic/LinearPeriodicBasis.hpp"
-#include "base/basis/periodic/operation/OperationEvalPeriodic.hpp"
+#include <sgpp/base/basis/periodic/LinearPeriodicBasis.hpp>
+#include <sgpp/base/basis/periodic/operation/OperationEvalPeriodic.hpp>
 
 
 

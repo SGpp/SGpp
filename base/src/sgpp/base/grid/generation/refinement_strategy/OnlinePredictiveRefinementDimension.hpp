@@ -8,14 +8,14 @@
 #define ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
 
 #include "RefinementDecorator.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 #include <vector>
 #include <utility>
 #include "sgpp_base.hpp"
 //#include "sgpp_datadriven.hpp"
-#include "base/exception/application_exception.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 
 namespace sg {

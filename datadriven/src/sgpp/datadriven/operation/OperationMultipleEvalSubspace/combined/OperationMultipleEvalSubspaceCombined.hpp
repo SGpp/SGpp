@@ -8,7 +8,7 @@
 
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp"
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedSubspaceNode.hpp"
-#include "datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp"
+#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
 namespace sg {
 namespace datadriven {

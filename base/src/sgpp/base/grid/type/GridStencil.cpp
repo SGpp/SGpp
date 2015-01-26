@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Gerrit Buse (buse@in.tum.de)
 
-#include "base/grid/type/GridStencil.hpp"
+#include <sgpp/base/grid/type/GridStencil.hpp>
 
 namespace sg {
   namespace base {

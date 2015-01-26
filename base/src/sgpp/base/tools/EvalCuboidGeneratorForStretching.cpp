@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "base/tools/EvalCuboidGeneratorForStretching.hpp"
+#include <sgpp/base/tools/EvalCuboidGeneratorForStretching.hpp>
 
 namespace sg {
   namespace base {

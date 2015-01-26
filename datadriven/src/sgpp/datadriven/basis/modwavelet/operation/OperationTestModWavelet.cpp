@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "datadriven/basis/modwavelet/operation/OperationTestModWavelet.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/datadriven/basis/modwavelet/operation/OperationTestModWavelet.hpp>
 
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 
 namespace sg {

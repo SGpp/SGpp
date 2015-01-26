@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp>
 
 
 
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace base {

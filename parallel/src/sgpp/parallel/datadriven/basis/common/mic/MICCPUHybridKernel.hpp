@@ -19,10 +19,10 @@
 #ifdef _OPENMP
 #include <omp.h>
 
-#include "parallel/tools/DynamicTwoPartitionAutoTuning.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "parallel/datadriven/basis/common/mic/MICKernelImpl.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/tools/DynamicTwoPartitionAutoTuning.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernelImpl.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace parallel {

@@ -9,7 +9,7 @@
 #define COMBIARBITRARYSCHEME_HPP_
 
 #include "CombiSchemeBasis.hpp"
-#include "combigrid/utils/CombigridLevelVector.hpp"
+#include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
 namespace combigrid {
   /** Combischeme created with from an arbitrary active set of full grids. Missing

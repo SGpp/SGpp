@@ -9,12 +9,12 @@
 #ifndef BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROAMERVECTORIZEDMPI_HPP
 #define BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROAMERVECTORIZEDMPI_HPP
 
-#include "parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp"
-#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
+#include <sgpp/parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp>
+#include <sgpp/parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp>
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 namespace sg {
   namespace parallel {

@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
+#include <sgpp/base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp>
 
 namespace sg {
   namespace base {

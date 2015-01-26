@@ -1,4 +1,4 @@
-#include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
+#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 
 namespace sg {
 namespace datadriven {

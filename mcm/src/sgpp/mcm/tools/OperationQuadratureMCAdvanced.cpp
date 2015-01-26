@@ -7,20 +7,20 @@
 
 #include "OperationQuadratureMCAdvanced.hpp"
 
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "mcm/SampleGenerator.hpp"
-#include "mcm/NaiveSampleGenerator.hpp"
-#include "mcm/SobolSampleGenerator.hpp"
-#include "mcm/ScrambledSobolSampleGenerator.hpp"
-#include "mcm/LatinHypercubeSampleGenerator.hpp"
-#include "mcm/StratifiedSampleGenerator.hpp"
-#include "mcm/SSobolSampleGenerator.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/mcm/SampleGenerator.hpp>
+#include <sgpp/mcm/NaiveSampleGenerator.hpp>
+#include <sgpp/mcm/SobolSampleGenerator.hpp>
+#include <sgpp/mcm/ScrambledSobolSampleGenerator.hpp>
+#include <sgpp/mcm/LatinHypercubeSampleGenerator.hpp>
+#include <sgpp/mcm/StratifiedSampleGenerator.hpp>
+#include <sgpp/mcm/SSobolSampleGenerator.hpp>
 
 #include <cmath>
 #include <iostream>
-#include "mcm/Random.hpp"
+#include <sgpp/mcm/Random.hpp>
 
 namespace sg {
   namespace mcm {

@@ -10,7 +10,7 @@
 
 #include "sgpp_base.hpp"
 #include <limits>
-#include "base/exception/application_exception.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
 
 namespace sg {
   namespace base {

@@ -8,9 +8,9 @@
 #ifndef HIERARCHISATIONMODPOLY_HPP
 #define HIERARCHISATIONMODPOLY_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 
 namespace sg {
 

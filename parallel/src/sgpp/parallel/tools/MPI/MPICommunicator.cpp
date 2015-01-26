@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#include "parallel/tools/MPI/MPICommunicator.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace parallel {

@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/tools/ARFFTools.hpp"
-#include "base/exception/file_exception.hpp"
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/base/exception/file_exception.hpp>
 #include <fstream>
 #include <stdlib.h>
 #include <iostream>

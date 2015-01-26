@@ -7,7 +7,7 @@
 
 #ifndef TRUNCATEDTRAPEZOIDGRID_HPP_
 #define TRUNCATEDTRAPEZOIDGRID_HPP_
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
 

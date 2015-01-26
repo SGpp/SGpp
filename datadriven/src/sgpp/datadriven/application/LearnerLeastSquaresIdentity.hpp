@@ -7,9 +7,9 @@
 #ifndef LEARNERLEASTSQUARESIDENTITY_HPP
 #define LEARNERLEASTSQUARESIDENTITY_HPP
 
-#include "datadriven/application/LearnerBase.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "datadriven/operation/DatadrivenOperationCommon.hpp"
+#include <sgpp/datadriven/application/LearnerBase.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
 
 namespace sg {
 

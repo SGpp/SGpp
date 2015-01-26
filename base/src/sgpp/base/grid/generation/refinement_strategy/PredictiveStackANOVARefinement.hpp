@@ -9,11 +9,11 @@
 
 #include <stddef.h>
 #include <vector>
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
-#include "base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
-#include "base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
 namespace sg {
 namespace base {

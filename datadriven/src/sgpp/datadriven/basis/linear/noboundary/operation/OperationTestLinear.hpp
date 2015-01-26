@@ -8,8 +8,8 @@
 #ifndef OPERATIONTESTLINEAR_HPP
 #define OPERATIONTESTLINEAR_HPP
 
-#include "datadriven/operation/OperationTest.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/datadriven/operation/OperationTest.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace datadriven {

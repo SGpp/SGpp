@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Janos Benk (benk@in.tum.de)
 
-#include "combigrid/combischeme/CombiSchemeBasis.hpp"
+#include <sgpp/combigrid/combischeme/CombiSchemeBasis.hpp>
 
 using namespace std;
 

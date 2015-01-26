@@ -7,7 +7,7 @@
 
 #ifndef SQUAREROOTGRID_HPP_
 #define SQUAREROOTGRID_HPP_
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
 

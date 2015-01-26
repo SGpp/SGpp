@@ -8,9 +8,9 @@
 #ifndef HASHREFINEMENTBOUNDARIESMAXLEVEL_HPP
 #define HASHREFINEMENTBOUNDARIESMAXLEVEL_HPP
 
-#include "base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 
 namespace sg {
   namespace base {

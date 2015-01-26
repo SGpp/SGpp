@@ -8,7 +8,7 @@
 #ifndef OPERATIONLAPLACEMODLINEAR_HPP
 #define OPERATIONLAPLACEMODLINEAR_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 namespace sg {
   namespace pde {

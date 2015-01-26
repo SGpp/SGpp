@@ -4,22 +4,22 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de
-#include "datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformationLinear.hpp"
-#include "datadriven/operation/OperationDensityConditional.hpp"
-#include "datadriven/operation/OperationDensityMargTo1D.hpp"
-#include "datadriven/operation/OperationDensitySampling1D.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/operation/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <map>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 
-#include "base/exception/operation_exception.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>

@@ -8,10 +8,10 @@
 #ifndef LEARNERSGD_HPP
 #define LEARNERSGD_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "datadriven/application/Learner.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/datadriven/application/Learner.hpp>
 
 namespace sg {
 

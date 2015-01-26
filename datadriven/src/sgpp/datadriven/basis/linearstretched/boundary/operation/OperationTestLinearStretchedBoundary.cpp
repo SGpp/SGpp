@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
+#include <sgpp/datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp>
 
 
 namespace sg {

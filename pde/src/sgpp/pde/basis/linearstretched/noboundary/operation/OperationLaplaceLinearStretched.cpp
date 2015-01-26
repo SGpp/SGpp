@@ -6,14 +6,14 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 
-#include "pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
+#include <sgpp/pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp>
 
-#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp"
-#include "pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp"
+#include <sgpp/pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp>
+#include <sgpp/pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiUpBBLinearStretched.hpp>
 
-#include "pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp"
+#include <sgpp/pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

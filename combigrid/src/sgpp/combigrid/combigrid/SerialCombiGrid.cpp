@@ -7,7 +7,7 @@
 // @author Christoph Kowitz (kowitz@in.tum.de)
 
 
-#include "combigrid/combigrid/SerialCombiGrid.hpp"
+#include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
 
 using namespace std;
 

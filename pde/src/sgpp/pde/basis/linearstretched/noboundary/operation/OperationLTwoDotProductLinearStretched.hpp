@@ -9,7 +9,7 @@
 #ifndef OPERATIONLTWODOTPRODUCTLINEARSTRETCHED_HPP
 #define OPERATIONLTWODOTPRODUCTLINEARSTRETCHED_HPP
 
-#include "pde/algorithm/StdUpDown.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
 
 
 namespace sg {

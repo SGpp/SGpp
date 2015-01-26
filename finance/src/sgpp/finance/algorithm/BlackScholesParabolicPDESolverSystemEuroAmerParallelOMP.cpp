@@ -5,12 +5,12 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
-#include "pde/algorithm/StdUpDown.hpp"
-#include "pde/algorithm/UpDownOneOpDim.hpp"
-#include "pde/algorithm/UpDownTwoOpDims.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
+#include <sgpp/pde/algorithm/UpDownTwoOpDims.hpp>
 
 #ifdef _OPENMP
 #include "omp.h"

@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 
 namespace sg {
   namespace base {

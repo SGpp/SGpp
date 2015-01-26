@@ -7,7 +7,7 @@
 // @author Benjamin
 
 
-#include "base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp>
 
 
 namespace sg {

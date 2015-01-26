@@ -8,8 +8,8 @@
 #ifndef CRANKNICOLSON_HPP
 #define CRANKNICOLSON_HPP
 
-#include "base/application/ScreenOutput.hpp"
-#include "solver/ODESolver.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/solver/ODESolver.hpp>
 
 namespace sg {
   namespace solver {

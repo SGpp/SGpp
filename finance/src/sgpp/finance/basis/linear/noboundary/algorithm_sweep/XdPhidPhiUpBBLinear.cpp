@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#include "finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.hpp"
+#include <sgpp/finance/basis/linear/noboundary/algorithm_sweep/XdPhidPhiUpBBLinear.hpp>
 
 namespace sg {
   namespace finance {

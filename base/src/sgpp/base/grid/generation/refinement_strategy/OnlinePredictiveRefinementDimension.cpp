@@ -12,9 +12,9 @@
 #include <cmath>
 
 #include "OnlinePredictiveRefinementDimension.hpp"
-#include "base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
-#include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp>
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 
 namespace sg

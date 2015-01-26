@@ -19,7 +19,7 @@
 #include <vector>
 #include <time.h>
 #include <algorithm>
-#include "base/grid/common/BoundingBox.hpp"
+#include <sgpp/base/grid/common/BoundingBox.hpp>
 namespace sg {
   namespace base {
 

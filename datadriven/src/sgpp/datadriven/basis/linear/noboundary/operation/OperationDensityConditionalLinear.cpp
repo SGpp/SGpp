@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Benjamin Peherstorfer (pehersto@in.tum.de)
 
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sg {
   namespace datadriven {

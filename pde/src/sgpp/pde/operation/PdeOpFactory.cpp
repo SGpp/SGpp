@@ -5,29 +5,29 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <cstring>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/grid/type/PrewaveletGrid.hpp"
+#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
-#include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
-#include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
-#include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
-#include "pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp"
-#include "pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
-#include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
+#include <sgpp/pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp>
+#include <sgpp/pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp>
+#include <sgpp/pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp>
+#include <sgpp/pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp>
+#include <sgpp/pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp>
+#include <sgpp/pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp>
 
-#include "pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp"
-#include "pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.hpp"
-#include "pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp"
-#include "pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.hpp"
-#include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
-#include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
+#include <sgpp/pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp>
+#include <sgpp/pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.hpp>
+#include <sgpp/pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
+#include <sgpp/pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp>
+#include <sgpp/pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp>
+#include <sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp>
+#include <sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp>
 
 namespace sg {
 

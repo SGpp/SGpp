@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "datadriven/basis/modbspline/operation/OperationTestModBspline.hpp"
+#include <sgpp/datadriven/basis/modbspline/operation/OperationTestModBspline.hpp>
 
-#include "base/exception/operation_exception.hpp"
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace datadriven {

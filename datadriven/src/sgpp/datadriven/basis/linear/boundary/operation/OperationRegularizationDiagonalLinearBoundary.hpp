@@ -8,7 +8,7 @@
 #ifndef OPERATIONREGULARIZATIONDIAGONALLINEARBOUNDARY_HPP
 #define OPERATIONREGULARIZATIONDIAGONALLINEARBOUNDARY_HPP
 
-#include "datadriven/operation/OperationRegularizationDiagonal.hpp"
+#include <sgpp/datadriven/operation/OperationRegularizationDiagonal.hpp>
 
 namespace sg {
   namespace datadriven {

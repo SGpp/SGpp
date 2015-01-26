@@ -8,11 +8,11 @@
 #ifndef OPERATIONMULTIPLEEVALITERATIVESPARBBMODLINEAR_HPP
 #define OPERATIONMULTIPLEEVALITERATIVESPARBBMODLINEAR_HPP
 
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "parallel/datadriven/basis/common/ArBBKernels.hpp"
-#include "parallel/datadriven/basis/common/ArBBKernels2D.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ArBBKernels.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ArBBKernels2D.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 namespace sg {
   namespace parallel {

@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/AlgorithmDGEMV.hpp"
-#include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
-#include "base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
+#include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp>
 
 
 namespace sg {

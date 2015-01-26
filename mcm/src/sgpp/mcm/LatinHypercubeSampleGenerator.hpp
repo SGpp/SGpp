@@ -8,8 +8,8 @@
 #ifndef LATINHYPERCUBESAMPLEGENERATOR_HPP
 #define LATINHYPERCUBESAMPLEGENERATOR_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "mcm/SampleGenerator.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/mcm/SampleGenerator.hpp>
 
 #include <list>
 #include <vector>

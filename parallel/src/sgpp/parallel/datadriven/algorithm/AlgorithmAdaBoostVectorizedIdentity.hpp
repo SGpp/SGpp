@@ -10,9 +10,9 @@
 #ifndef ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP
 #define ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP
 
-#include "datadriven/algorithm/AlgorithmAdaBoostBase.hpp"
+#include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 namespace sg {
   namespace parallel {

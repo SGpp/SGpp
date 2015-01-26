@@ -8,11 +8,11 @@
 #ifndef BLACKSCHOLESSOLVERWITHSTRETCHING_HPP
 #define BLACKSCHOLESSOLVERWITHSTRETCHING_HPP
 
-#include "finance/application/BlackScholesSolver.hpp"
-#include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/LinearStretchedGrid.hpp"
-#include "base/grid/common/Stretching.hpp"
-#include "base/tools/GridPrinterForStretching.hpp"
+#include <sgpp/finance/application/BlackScholesSolver.hpp>
+#include <sgpp/base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
+#include <sgpp/base/tools/GridPrinterForStretching.hpp>
 
 namespace sg {
   namespace finance {

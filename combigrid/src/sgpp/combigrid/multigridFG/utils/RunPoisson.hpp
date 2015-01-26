@@ -9,10 +9,10 @@
 #define RunPoisson_HPP_
 
 #include "combigrid.hpp"
-#include "combigrid/utils/combigrid_ultils.hpp"
-#include "combigrid/combigrid/AbstractCombiGrid.hpp"
-#include "combigrid/domain/CombiGridDomain.hpp"
-#include "combigrid/multigridFG/operators/PoissonOperator.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
+#include <sgpp/combigrid/domain/CombiGridDomain.hpp>
+#include <sgpp/combigrid/multigridFG/operators/PoissonOperator.hpp>
 
 namespace combigrid {
 

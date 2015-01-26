@@ -6,7 +6,7 @@
 // @author Janos Benk (benk@in.tum.de)
 
 #include "OperationMatrixLTwoExplicitFullGrid.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/exception/data_exception.hpp>
 #include <vector>
 #include <cmath>
 namespace combigrid {

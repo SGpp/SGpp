@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
+#include <sgpp/pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp>
 
-#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
-#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp"
+#include <sgpp/pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp>
+#include <sgpp/pde/basis/linear/noboundary/algorithm_sweep/PhiPhiUpBBLinear.hpp>
 
-#include "pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
+#include <sgpp/pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
   namespace pde {

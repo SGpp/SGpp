@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Kilian Roehner (roehner@tum.de)
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cmath>
 
-#include "base/basis/poly/algorithm_sweep/DehierarchisationPoly.hpp"
+#include <sgpp/base/basis/poly/algorithm_sweep/DehierarchisationPoly.hpp>
 
 namespace sg {
 

@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/basis/modbspline/operation/OperationEvalModBspline.hpp"
+#include <sgpp/base/basis/modbspline/operation/OperationEvalModBspline.hpp>
 
-#include "base/exception/operation_exception.hpp"
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
 namespace sg {
   namespace base {

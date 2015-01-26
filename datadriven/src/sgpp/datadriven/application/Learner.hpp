@@ -8,7 +8,7 @@
 #ifndef LEARNER_HPP
 #define LEARNER_HPP
 
-#include "datadriven/application/LearnerBase.hpp"
+#include <sgpp/datadriven/application/LearnerBase.hpp>
 
 namespace sg {
 

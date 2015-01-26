@@ -8,9 +8,9 @@
 #ifndef COMBICOMBIGRIDKERNEL_HPP_
 #define COMBICOMBIGRIDKERNEL_HPP_
 
-#include "combigrid/combischeme/CombiSchemeBasis.hpp"
-#include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/utils/CombigridLevelVector.hpp"
+#include <sgpp/combigrid/combischeme/CombiSchemeBasis.hpp>
+#include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
+#include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
 namespace combigrid {
 

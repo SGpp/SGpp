@@ -11,8 +11,8 @@
 
 #include <CL/cl.h>
 #include <string>
-#include "parallel/datadriven/basis/common/KernelBase.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace parallel {

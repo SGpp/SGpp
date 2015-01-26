@@ -9,7 +9,7 @@
 #ifndef OPERATIONDELTALINEARSTRETCHED_HPP
 #define OPERATIONDELTALINEARSTRETCHED_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 namespace sg {
   namespace finance {

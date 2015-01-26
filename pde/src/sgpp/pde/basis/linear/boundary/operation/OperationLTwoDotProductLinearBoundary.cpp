@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp"
+#include <sgpp/pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp>
 
-#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
-#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
   namespace pde {

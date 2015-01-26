@@ -5,69 +5,69 @@
  ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "finance/operation/FinanceOpFactory.hpp"
+#include <sgpp/finance/operation/FinanceOpFactory.hpp>
 
 #include <cstring>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.hpp"
-#include "finance/basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.hpp"
-#include "finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.hpp>
+#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.hpp>
+#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.hpp"
-#include "finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp"
-#include "finance/basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.hpp>
+#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp>
+#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationLBLinear.hpp"
-#include "finance/basis/linear/boundary/operation/OperationLBLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLBLinear.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationLBLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationLELinear.hpp"
-#include "finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLELinear.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationLDLinear.hpp"
-#include "finance/basis/linear/boundary/operation/OperationLDLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLDLinear.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationLDLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationLFLinear.hpp"
-#include "finance/basis/linear/boundary/operation/OperationLFLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLFLinear.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationLFLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.hpp"
-#include "finance/basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.hpp"
-#include "finance/basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationDeltaLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.hpp>
+#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.hpp>
+#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationDeltaLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.hpp"
-#include "finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.hpp"
-#include "finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.hpp>
+#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.hpp>
+#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.hpp>
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonKLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp"
-#include "finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonKLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp>
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.hpp>
 
-#include "finance/basis/linear/boundary/operation/OperationHestonBLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonCLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonDLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonELinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonFLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonGLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonHLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonKLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonWLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonXLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.hpp"
-#include "finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonBLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonCLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonDLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonELinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonFLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonGLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonHLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonKLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonWLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonXLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.hpp>
+#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.hpp>
 
 
 namespace sg {

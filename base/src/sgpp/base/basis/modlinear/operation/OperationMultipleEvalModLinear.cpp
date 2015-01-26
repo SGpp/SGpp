@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/AlgorithmDGEMV.hpp"
+#include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
-#include "base/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp"
+#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp>
 
 
 

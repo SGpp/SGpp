@@ -8,9 +8,9 @@
 #define PREDICTIVEANOVAREFINEMENT_HPP_
 
 #include "PredictiveRefinement.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
-#include "base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp>
 
 namespace sg {
 namespace base {

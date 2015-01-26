@@ -9,12 +9,12 @@
 #include <fstream>
 #include <iostream>
 
-#include "datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformation1DLinear.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformation1DLinear.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 #include "OperationDensitySampling1DLinear.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
 namespace datadriven {

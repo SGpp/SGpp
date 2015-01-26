@@ -8,10 +8,10 @@
 #ifndef OPERATIONEVALMODPOLY_HPP
 #define OPERATIONEVALMODPOLY_HPP
 
-#include "base/operation/OperationEval.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace base {

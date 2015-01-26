@@ -8,7 +8,7 @@
 #ifndef OPERATIONDENSITYSAMPLING_HPP_
 #define OPERATIONDENSITYSAMPLING_HPP_
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace datadriven {

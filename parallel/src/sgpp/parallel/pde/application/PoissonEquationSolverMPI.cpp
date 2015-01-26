@@ -6,18 +6,18 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
-#include "parallel/pde/application/PoissonEquationSolverMPI.hpp"
-#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
-#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/solver/sle/ConjugateGradientsMPI.hpp>
+#include <sgpp/parallel/pde/application/PoissonEquationSolverMPI.hpp>
+#include <sgpp/parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp>
+#include <sgpp/parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp>
 
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <cstdlib>
 #include <sstream>

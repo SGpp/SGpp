@@ -7,7 +7,7 @@
 #include <cstdio>
 
 #include "LearnerLeastSquaresIdentity.hpp"
-#include "datadriven/operation/DatadrivenOperationCommon.hpp"
+#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
 
 using namespace sg::base;
 

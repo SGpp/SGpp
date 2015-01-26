@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Chao qi (qic@in.tum.de)  Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#include "finance/basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/boundary/algorithm_sweep/XPhiPhiDownBBLinearBoundary.hpp>
 
 namespace sg {
   namespace finance {

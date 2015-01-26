@@ -1,5 +1,5 @@
 #include "OCLPDEBound.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 using namespace sg::base;
 namespace sg {

@@ -4,10 +4,10 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "datadriven/algorithm/DMSystemMatrix.hpp"
-#include "base/exception/operation_exception.hpp"
-//#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+//#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sg {
 namespace datadriven {

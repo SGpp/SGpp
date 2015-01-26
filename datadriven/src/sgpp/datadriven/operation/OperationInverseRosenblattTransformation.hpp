@@ -7,7 +7,7 @@
 #ifndef OPERATIONINVERSEROSENBLATTTRANSFORMATION_HPP
 #define OPERATIONINVERSEROSENBLATTTRANSFORMATION_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
 namespace datadriven {

@@ -8,7 +8,7 @@
 #ifndef OPERATIONHESTONFLINEAR_HPP
 #define OPERATIONHESTONFLINEAR_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 namespace sg {
   namespace finance {

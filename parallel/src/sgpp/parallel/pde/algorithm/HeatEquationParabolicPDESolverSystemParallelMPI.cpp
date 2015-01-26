@@ -5,15 +5,15 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 
-#include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp"
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemParallelMPI.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
-#include "pde/algorithm/StdUpDown.hpp"
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 namespace sg {
   namespace parallel {

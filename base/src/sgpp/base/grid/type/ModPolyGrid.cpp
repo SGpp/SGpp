@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/ModPolyGrid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
 
-#include "base/grid/generation/StandardGridGenerator.hpp"
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 
 
 

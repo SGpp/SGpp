@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
 namespace datadriven {

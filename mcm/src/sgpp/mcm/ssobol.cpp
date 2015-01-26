@@ -147,7 +147,7 @@ void Ssobol::init(int dimen, int atmost, int iflag, int maxd, int *isok)
 			ssobol_vinit[i][j] = 0;
 		}
 	}
-#include "mcm/ssobol_poly.h"
+#include <sgpp/mcm/ssobol_poly.h>
 
 	/*     FIND NUMBER OF BITS IN ATMOST */
 

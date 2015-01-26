@@ -9,8 +9,8 @@
 #ifndef SPMICKERNELIMPL_HPP
 #define SPMICKERNELIMPL_HPP
 
-#include "parallel/tools/PartitioningTool.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace parallel {

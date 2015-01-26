@@ -3,11 +3,11 @@
 
 #include "LearnerOnlineSGD.hpp"
 
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
-#include "parallel/tools/TypesParallel.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
-#include "base/grid/generation/hashmap/HashRefinementInconsistent.hpp"
-#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
+#include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 
 namespace sg
 {

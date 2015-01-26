@@ -3,19 +3,19 @@
 #include <iostream>
 #include <string>
 
-#include <base/datatypes/DataVector.hpp>
-#include <base/datatypes/DataMatrix.hpp>
-#include <base/grid/Grid.hpp>
-#include <base/grid/GridStorage.hpp>
-#include <base/grid/generation/GridGenerator.hpp>
-#include <datadriven/tools/ARFFTools.hpp>
-#include <base/operation/OperationMultipleEval.hpp>
-#include "datadriven/tools/TypesDatadriven.hpp"
-#include "datadriven/application/LearnerLeastSquaresIdentity.hpp"
-#include <solver/SLESolver.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/tools/TypesDatadriven.hpp>
+#include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
+#include <sgpp/solver/SLESolver.hpp>
 
 #include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
-#include "datadriven/operation/DatadrivenOperationCommon.hpp"
+#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
 
 namespace sg {
 namespace datadriven {

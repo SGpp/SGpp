@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/GridDataBase.hpp"
+#include <sgpp/base/grid/GridDataBase.hpp>
 
-#include "base/exception/file_exception.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/exception/file_exception.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
 
 #include <string>
 #include <sstream>

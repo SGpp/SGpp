@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 namespace sg {
   namespace parallel {

@@ -8,8 +8,8 @@
 #ifndef MISC_OP_FACTORY_HPP
 #define MISC_OP_FACTORY_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
 /*
  * This file contains factory methods for operations.

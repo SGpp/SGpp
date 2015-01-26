@@ -6,14 +6,14 @@
 // @author Fabian Franzelin <franzeli@in.tum.de>,
 //         Benjamin Peherstorfer <pehersto@in.tum.de>
 
-#include "datadriven/algorithm/DensitySystemMatrix.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp"
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp>
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 namespace sg {
   namespace datadriven {

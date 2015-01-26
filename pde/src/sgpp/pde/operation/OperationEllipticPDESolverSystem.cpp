@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/operation/OperationEllipticPDESolverSystem.hpp"
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/pde/operation/OperationEllipticPDESolverSystem.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sg {
   namespace pde {

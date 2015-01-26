@@ -5,14 +5,14 @@
 **************************************************************************** */
 // @author Richard Röttger
 
-#include "base/grid/generation/PrewaveletGridGenerator.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
-#include "base/grid/generation/hashmap/HashCoarsening.hpp"
-#include "base/grid/generation/hashmap/HashRefinement.hpp"
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 #include <iostream>
 //

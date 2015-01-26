@@ -8,7 +8,7 @@
 #ifndef OPERATIONMATRIXSP_HPP
 #define OPERATIONMATRIXSP_HPP
 
-#include "base/datatypes/DataVectorSP.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
 
 namespace sg {
   namespace base {

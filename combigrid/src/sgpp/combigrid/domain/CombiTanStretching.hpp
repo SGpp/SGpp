@@ -8,7 +8,7 @@
 #ifndef COMBITANSTRETCHING_HPP_
 #define COMBITANSTRETCHING_HPP_
 
-#include "combigrid/domain/AbstractStretchingMaker.hpp"
+#include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
 
 namespace combigrid {
 

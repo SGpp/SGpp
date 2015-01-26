@@ -5,30 +5,30 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/grid/type/LinearGridStencil.hpp"
-#include "base/grid/type/ModLinearGridStencil.hpp"
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/type/LinearStretchedGrid.hpp"
-#include "base/grid/type/LinearBoundaryGrid.hpp"
-#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/ModLinearGrid.hpp"
-#include "base/grid/type/PolyGrid.hpp"
-#include "base/grid/type/ModPolyGrid.hpp"
-#include "base/grid/type/ModBsplineGrid.hpp"
-#include "base/grid/type/ModWaveletGrid.hpp"
-#include "base/grid/type/SquareRootGrid.hpp"
-#include "base/grid/type/TruncatedTrapezoidGrid.hpp"
-#include "base/grid/type/PrewaveletGrid.hpp"
-#include "base/grid/type/PeriodicGrid.hpp"
+#include <sgpp/base/grid/type/LinearGridStencil.hpp>
+#include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/SquareRootGrid.hpp>
+#include <sgpp/base/grid/type/TruncatedTrapezoidGrid.hpp>
+#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
+#include <sgpp/base/grid/type/PeriodicGrid.hpp>
 
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 
 namespace sg {

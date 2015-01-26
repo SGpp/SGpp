@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "solver/sle/BiCGStab.hpp"
+#include <sgpp/solver/sle/BiCGStab.hpp>
 #include <cmath>
 
 namespace sg {

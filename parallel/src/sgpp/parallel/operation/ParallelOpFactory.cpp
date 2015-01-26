@@ -9,60 +9,60 @@
 // @author Jacob Jepsen (jepsen@diku.dk)
 
 #ifdef USEMIC
-#include "parallel/datadriven/basis/common/mic/MICKernel.hpp"
-#include "parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/MICCPUHybridKernel.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
 #endif
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/MICLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/MICModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/MICLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/MICModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/MICModLinearMask.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
 #endif
 #endif
 
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 #include <cstring>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "parallel/datadriven/operation/OperationMultipleEvalIterative.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalIterative.hpp>
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/X86SimdLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/X86SimdModLinearMask.hpp>
 
-#include "parallel/datadriven/basis/common/CPUKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/CPUKernel.hpp>
 #ifdef USEOCL
-#include "parallel/datadriven/basis/common/ocl/OCLKernel.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLCPUHybridKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp>
 #endif
 
 #ifdef USEARBB
-#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp>
 #endif
 
 #ifdef USE_MPI
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.hpp"
-#include "parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.hpp"
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinear.hpp"
-#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundary.hpp"
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.hpp>
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.hpp>
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinear.hpp>
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundary.hpp>
 //combined operator
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.hpp"
-#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundary.hpp"
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.hpp>
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundary.hpp>
 #ifdef USEOCL
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinearOCL.hpp"
-#include "parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundaryOCL.hpp"
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinearOCL.hpp"
-#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundaryOCL.hpp"
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinearOCL.hpp>
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundaryOCL.hpp>
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinearOCL.hpp>
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLTwoDotProductVectorizedLinearBoundaryOCL.hpp>
 //combined operator
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinearOCL.hpp"
-#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.hpp"
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinearOCL.hpp>
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.hpp>
 #endif
 #endif
 

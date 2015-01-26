@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 namespace sg {
   namespace base {

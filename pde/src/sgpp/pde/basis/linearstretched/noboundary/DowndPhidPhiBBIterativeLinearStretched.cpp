@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de, Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 
-#include "pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp"
-#include "base/grid/common/Stretching.hpp"
+#include <sgpp/pde/basis/linearstretched/noboundary/DowndPhidPhiBBIterativeLinearStretched.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
 
 namespace sg {
   namespace pde {

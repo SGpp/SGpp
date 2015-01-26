@@ -5,19 +5,19 @@
 ******************************************************************************/
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
 #endif
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 #include <iostream>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
 #endif
 
 #ifdef USE_MPI
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 #endif
 
 #ifdef _OPENMP

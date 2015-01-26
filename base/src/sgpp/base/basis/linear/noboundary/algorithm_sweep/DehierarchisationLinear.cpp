@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp>
 
 namespace sg {
   namespace base {

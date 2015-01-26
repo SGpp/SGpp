@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/application/EllipticPDESolver.hpp"
+#include <sgpp/pde/application/EllipticPDESolver.hpp>
 
 namespace sg {
   namespace pde {

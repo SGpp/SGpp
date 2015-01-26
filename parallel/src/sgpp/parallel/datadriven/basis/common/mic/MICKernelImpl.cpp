@@ -18,7 +18,7 @@
 #pragma offload_attribute(pop)
 #endif
 
-#include "parallel/datadriven/basis/common/mic/MICKernelImpl.hpp"
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernelImpl.hpp>
 #include <offload.h>
 
 

@@ -6,7 +6,7 @@
 // @author Kilian Roehner (roehner@tum.de)
 
 
-#include "base/basis/poly/operation/OperationQuadraturePoly.hpp"
+#include <sgpp/base/basis/poly/operation/OperationQuadraturePoly.hpp>
 
 
 namespace sg {

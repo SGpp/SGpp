@@ -10,13 +10,13 @@
 
 #include <vector>
 
-#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #if defined(__SSE4_2__) || defined(__AVX__)
 #include <immintrin.h>

@@ -5,24 +5,24 @@
 **************************************************************************** */
 // @author Sam Maurus (MA thesis)
 
-#include "finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.hpp"
-#include "finance/application/HestonSolver.hpp"
-#include "finance/application/BlackScholesSolver.hpp"
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/ode/AdamsBashforth.hpp"
-#include "solver/ode/VarTimestep.hpp"
-#include "solver/ode/StepsizeControlH.hpp"
-#include "solver/ode/StepsizeControlBDF.hpp"
-#include "solver/ode/StepsizeControlEJ.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
+#include <sgpp/finance/algorithm/HestonParabolicPDESolverSystemEuroAmer.hpp>
+#include <sgpp/finance/application/HestonSolver.hpp>
+#include <sgpp/finance/application/BlackScholesSolver.hpp>
+#include <sgpp/solver/ode/Euler.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
+#include <sgpp/solver/ode/AdamsBashforth.hpp>
+#include <sgpp/solver/ode/VarTimestep.hpp>
+#include <sgpp/solver/ode/StepsizeControlH.hpp>
+#include <sgpp/solver/ode/StepsizeControlBDF.hpp>
+#include <sgpp/solver/ode/StepsizeControlEJ.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <cstdlib>
 #include <sstream>

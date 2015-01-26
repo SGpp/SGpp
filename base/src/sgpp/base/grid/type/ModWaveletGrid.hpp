@@ -8,7 +8,7 @@
 #ifndef MODWAVELETGRID_HPP
 #define MODWAVELETGRID_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
 

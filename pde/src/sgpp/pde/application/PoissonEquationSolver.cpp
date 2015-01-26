@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/application/PoissonEquationSolver.hpp"
-#include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/pde/application/PoissonEquationSolver.hpp>
+#include <sgpp/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include "stdlib.h"
 #include <sstream>
 #include <fstream>

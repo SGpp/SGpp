@@ -6,14 +6,14 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#include "parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.hpp"
-#include "base/exception/algorithm_exception.hpp"
-//#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-//#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "misc/operation/MiscOpFactory.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include <sgpp/parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+//#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+//#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/misc/operation/MiscOpFactory.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 #include <cmath>
 #include <cstring>
 

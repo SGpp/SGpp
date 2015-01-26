@@ -8,10 +8,10 @@
 #ifndef OPERATIONTESTMODBSPLINE_HPP
 #define OPERATIONTESTMODBSPLINE_HPP
 
-#include "datadriven/operation/OperationTest.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/datadriven/operation/OperationTest.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
 
 
 namespace sg {

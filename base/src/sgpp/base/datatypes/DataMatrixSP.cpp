@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 
 #include <sstream>
 #include <cmath>
@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#include "base/tools/AlignedMemory.hpp"
+#include <sgpp/base/tools/AlignedMemory.hpp>
 namespace sg {
   namespace base {
 

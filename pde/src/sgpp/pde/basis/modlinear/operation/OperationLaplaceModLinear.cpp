@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
+#include <sgpp/pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp>
 
-#include "pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp"
-#include "pde/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp"
-#include "pde/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp"
-#include "pde/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp"
+#include <sgpp/pde/basis/modlinear/algorithm_sweep/dPhidPhiDownModLinear.hpp>
+#include <sgpp/pde/basis/modlinear/algorithm_sweep/dPhidPhiUpModLinear.hpp>
+#include <sgpp/pde/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp>
+#include <sgpp/pde/basis/modlinear/algorithm_sweep/PhiPhiUpModLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
   namespace pde {

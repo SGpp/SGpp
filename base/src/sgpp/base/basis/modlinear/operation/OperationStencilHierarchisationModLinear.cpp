@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Gerrit Buse (buse@in.tum.de)
 
-#include "base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.hpp"
+#include <sgpp/base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.hpp>
+#include <sgpp/base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.hpp>
+#include <sgpp/base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

@@ -8,11 +8,11 @@
 #ifndef GRIDDATABASE_HPP
 #define GRIDDATABASE_HPP
 
-//#include "base/tools/hash_map_config.hpp"
+//#include <sgpp/base/tools/hash_map_config.hpp>
 #include <unordered_map>
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <string>
 

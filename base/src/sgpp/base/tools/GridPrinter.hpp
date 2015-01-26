@@ -7,9 +7,9 @@
 #ifndef GRIDPRINTER_HPP
 #define GRIDPRINTER_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <string>
 

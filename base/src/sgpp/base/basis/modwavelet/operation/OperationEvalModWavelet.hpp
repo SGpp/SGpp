@@ -8,8 +8,8 @@
 #ifndef OPERATIONEVALMODWAVELET_HPP
 #define OPERATIONEVALMODWAVELET_HPP
 
-#include "base/operation/OperationEval.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

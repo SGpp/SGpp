@@ -8,7 +8,7 @@
 #ifndef COMBITS_CT_HPP_
 #define COMBITS_CT_HPP_
 
-#include "combigrid/utils/combigrid_ultils.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include "CombiSchemeBasis.hpp"
 
 namespace combigrid {

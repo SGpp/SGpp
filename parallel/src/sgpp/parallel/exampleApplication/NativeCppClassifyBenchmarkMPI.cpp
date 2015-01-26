@@ -14,7 +14,7 @@
 #include "sgpp_base.hpp"
 #include "sgpp_parallel.hpp"
 #include "sgpp_datadriven.hpp"
-#include "datadriven/tools/DatasetGenerator.hpp"
+#include <sgpp/datadriven/tools/DatasetGenerator.hpp>
 
 #include <string>
 #include <iostream>

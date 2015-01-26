@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de) and Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "base/tools/GridPrinterForStretching.hpp"
-#include "base/exception/tool_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/tools/GridPrinterForStretching.hpp>
+#include <sgpp/base/exception/tool_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <fstream>
 #include <vector>

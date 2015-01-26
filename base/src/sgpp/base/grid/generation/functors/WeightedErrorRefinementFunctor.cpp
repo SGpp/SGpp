@@ -1,4 +1,4 @@
-#include "base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 
 namespace sg {
 namespace base {

@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "datadriven/operation/OperationRegularizationDiagonal.hpp"
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/datadriven/operation/OperationRegularizationDiagonal.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
 #include <algorithm>
 
 namespace sg {

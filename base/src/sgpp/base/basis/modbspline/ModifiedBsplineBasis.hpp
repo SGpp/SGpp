@@ -9,7 +9,7 @@
 #define MODIFIED_BSPLINE_BASE_HPP
 
 #include <cmath>
-#include "base/basis/Basis.hpp"
+#include <sgpp/base/basis/Basis.hpp>
 
 namespace sg {
   namespace base {

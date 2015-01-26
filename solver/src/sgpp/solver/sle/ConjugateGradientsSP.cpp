@@ -8,7 +8,7 @@
 #ifdef X86_MIC_SYMMETRIC
 #include <mpi.h>
 #endif
-#include "solver/sle/ConjugateGradientsSP.hpp"
+#include <sgpp/solver/sle/ConjugateGradientsSP.hpp>
 
 namespace sg {
   namespace solver {

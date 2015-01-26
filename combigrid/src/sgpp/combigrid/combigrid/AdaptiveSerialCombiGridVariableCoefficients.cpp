@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Christoph Kowitz (kowitz@in.tum.de)
 
-#include "combigrid/combigrid/AdaptiveSerialCombiGridVariableCoefficients.hpp"
+#include <sgpp/combigrid/combigrid/AdaptiveSerialCombiGridVariableCoefficients.hpp>
 /* namespace combigrid */
 
 void combigrid::AdaptiveSerialCombiGridVariableCoefficients::changeCoefficients(

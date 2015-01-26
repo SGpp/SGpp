@@ -8,8 +8,8 @@
 #define PREDICTIVEREFINEMENTDIMENSION_HPP_
 
 #include "RefinementDecorator.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 #include <vector>
 
 namespace sg {

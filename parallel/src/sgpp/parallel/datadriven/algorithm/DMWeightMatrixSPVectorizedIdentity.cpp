@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.hpp"
-#include "parallel/operation/SPParallelOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.hpp>
+#include <sgpp/parallel/operation/SPParallelOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace parallel {

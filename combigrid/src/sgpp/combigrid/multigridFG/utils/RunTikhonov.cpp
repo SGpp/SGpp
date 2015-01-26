@@ -8,8 +8,8 @@
 #include <stdlib.h>
 
 #include "RunTikhonov.hpp"
-#include "combigrid/multigridFG/operators/TikhonovOperator.hpp"
-#include "combigrid/multigridFG/multigrid/Multigrid.hpp"
+#include <sgpp/combigrid/multigridFG/operators/TikhonovOperator.hpp>
+#include <sgpp/combigrid/multigridFG/multigrid/Multigrid.hpp>
 
 using namespace combigrid;
 

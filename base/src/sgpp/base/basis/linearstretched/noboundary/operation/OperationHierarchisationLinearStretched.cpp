@@ -7,11 +7,11 @@
 
 
 
-#include "base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.hpp"
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.hpp"
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.hpp"
+#include <sgpp/base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

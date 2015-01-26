@@ -8,7 +8,7 @@
 #ifndef OPERATIONHESTONKLINEARBOUNDARY_HPP
 #define OPERATIONHESTONKLINEARBOUNDARY_HPP
 
-#include "pde/algorithm/UpDownFourOpDims.hpp"
+#include <sgpp/pde/algorithm/UpDownFourOpDims.hpp>
 
 namespace sg {
   namespace finance {

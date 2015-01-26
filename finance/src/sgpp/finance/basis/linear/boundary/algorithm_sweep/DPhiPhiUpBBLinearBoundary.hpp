@@ -8,10 +8,10 @@
 #ifndef DPHIPHIUPBBLINEARBOUNDARY_HPP
 #define DPHIPHIUPBBLINEARBOUNDARY_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "finance/basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp"
+#include <sgpp/finance/basis/linear/noboundary/algorithm_sweep/DPhiPhiUpBBLinear.hpp>
 
 namespace sg {
   namespace finance {

@@ -6,11 +6,11 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 
-#include "base/algorithm/AlgorithmEvaluation.hpp"
+#include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
 
-#include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
+#include <sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp>
 
-#include "base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp"
+#include <sgpp/base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp>
 
 
 namespace sg {

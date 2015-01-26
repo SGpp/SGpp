@@ -8,10 +8,10 @@
 #ifndef EVALCUBOIDGENERATORFORSTRETCHING_HPP
 #define EVALCUBOIDGENERATORFORSTRETCHING_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-//#include "base/grid/common/BoundingBox.hpp"
-#include "base/grid/common/Stretching.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+//#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
 #include <vector>
 
 namespace sg {

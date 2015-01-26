@@ -9,8 +9,8 @@
 #ifndef OPERATIONMULTIPLEEVALPREWAVELET_HPP
 #define OPERATIONMULTIPLEEVALPREWAVELET_HPP
 
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

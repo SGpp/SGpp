@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeArBBModLinear.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/OperationMultipleEvalIterativeArBBModLinear.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #define ARBB_ARRAY
 

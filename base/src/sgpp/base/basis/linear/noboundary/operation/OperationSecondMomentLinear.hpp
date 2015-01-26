@@ -9,8 +9,8 @@
 #ifndef OPERATIONSECONDMOMENTLINEAR_HPP
 #define OPERATIONSECONDMOMENTLINEAR_HPP
 
-#include "base/operation/OperationSecondMoment.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/operation/OperationSecondMoment.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace base {

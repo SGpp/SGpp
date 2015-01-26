@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#include "finance/tools/VariableDiscountFactor.hpp"
+#include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 
 namespace sg {
   namespace finance {

@@ -9,12 +9,12 @@
 #define HULLWHITESOLVER_HPP
 
 
-#include "pde/application/ParabolicPDESolver.hpp"
+#include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
-#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/common/BoundingBox.hpp"
-#include "base/application/ScreenOutput.hpp"
+#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/application/ScreenOutput.hpp>
 
 #include <iostream>
 #include <string>

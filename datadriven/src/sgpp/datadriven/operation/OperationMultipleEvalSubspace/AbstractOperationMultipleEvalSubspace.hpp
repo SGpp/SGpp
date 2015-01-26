@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../OperationMultipleEvalSubspace/CommonParameters.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "datadriven/tools/PartitioningTool.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/datadriven/tools/PartitioningTool.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
 
 namespace sg {
   namespace datadriven {

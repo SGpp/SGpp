@@ -7,14 +7,14 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifdef USEMIC
-#include "parallel/datadriven/basis/common/mic/SPMICKernel.hpp"
-#include "parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/mic/SPMICKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
 #endif
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPMICLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/SPMICLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinearMask.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
 #endif
@@ -22,34 +22,34 @@
 
 #include "DMSystemMatrixSPMPITypeFactory.hpp"
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp>
 
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp>
 
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOnesidedMPI.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityBigdataAllreduce.hpp"
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAsyncMPI.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityOnesidedMPI.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityAllreduce.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityBigdataAllreduce.hpp>
 
-#include "parallel/datadriven/basis/common/SPCPUKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/SPCPUKernel.hpp>
 #ifdef USEOCL
-#include "parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp"
-#include "parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp"
-#include "parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp>
 
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp>
 #endif
 
 #include <cstring>
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 
 namespace sg {
   namespace parallel {

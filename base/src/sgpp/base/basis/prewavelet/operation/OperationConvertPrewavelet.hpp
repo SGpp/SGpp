@@ -8,8 +8,8 @@
 #ifndef OPERATIONCONVERTPREWAVELET_HPP
 #define OPERATIONCONVERTPREWAVELET_HPP
 
-#include "base/operation/OperationConvert.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationConvert.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

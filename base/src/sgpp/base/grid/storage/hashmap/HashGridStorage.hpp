@@ -7,25 +7,25 @@
 #ifndef HASHGRIDSTORAGE_HPP
 #define HASHGRIDSTORAGE_HPP
 
-//#include "base/tools/hash_map_config.hpp"
+//#include <sgpp/base/tools/hash_map_config.hpp>
 
 #include <unordered_map>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
-#include "base/grid/storage/hashmap/HashGridIndex.hpp"
-#include "base/grid/storage/hashmap/HashGridIterator.hpp"
-#include "base/grid/storage/hashmap/SerializationVersion.hpp"
+#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
+#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
-#include "base/grid/common/BoundingBox.hpp"
-#include "base/grid/common/Stretching.hpp"
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
 
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
 #ifdef SG_PARALLEL
-#include "parallel/tools/TypesParallel.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #endif
 
 #include <memory>

@@ -20,14 +20,14 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.hpp"
-#include "base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp"
-#include "base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
+#include <sgpp/base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.hpp>
+#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
+#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp>
 
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 

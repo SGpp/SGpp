@@ -9,7 +9,7 @@
 #ifndef OPERATIONSECONDMOMENT_HPP
 #define OPERATIONSECONDMOMENT_HPP
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace base {

@@ -8,8 +8,8 @@
 #ifndef OPERATIONTEST_HPP
 #define OPERATIONTEST_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #ifdef _WIN32
 #pragma warning(disable: 4267)

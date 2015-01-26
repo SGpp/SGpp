@@ -5,17 +5,17 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include <sgpp/pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp>
 
-#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp"
-#include "pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp"
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp>
 
-#include "pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp"
-#include "pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
+#include <sgpp/pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
-#include "base/grid/common/BoundingBox.hpp"
+#include <sgpp/base/grid/common/BoundingBox.hpp>
 
 namespace sg {
   namespace pde {

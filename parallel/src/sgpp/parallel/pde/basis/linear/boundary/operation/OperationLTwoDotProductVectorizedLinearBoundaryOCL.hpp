@@ -9,11 +9,11 @@
 #ifndef OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP
 #define OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP
 
-#include "base/operation/OperationMatrix.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
-#include "parallel/pde/basis/common/OCLPDEKernels.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
 
 namespace sg {
   namespace parallel {

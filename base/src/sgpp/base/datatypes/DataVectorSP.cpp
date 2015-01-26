@@ -5,16 +5,16 @@
 ******************************************************************************/
 // @author  Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/exception/data_exception.hpp"
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <string.h>
 #include <sstream>
 #include <cmath>
 #include <algorithm>
 #include <cstring>
 #include <cstdlib>
-#include "base/tools/AlignedMemory.hpp"
+#include <sgpp/base/tools/AlignedMemory.hpp>
 namespace sg {
   namespace base {
 

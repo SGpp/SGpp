@@ -5,17 +5,17 @@
 ******************************************************************************/
 // @author Florian Zipperle (florian.zipperle@tum.de)
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 #include "LearnerDensityCluster.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "base/operation/OperationMatrix.hpp"
-#include "base/operation/OperationIdentity.hpp"
-#include "base/exception/data_exception.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/OperationIdentity.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
 #include <iostream>
 #include <algorithm>

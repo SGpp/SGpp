@@ -5,8 +5,8 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/GridStorage.hpp"
-#include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
 #include <cstring>
 
 namespace sg {

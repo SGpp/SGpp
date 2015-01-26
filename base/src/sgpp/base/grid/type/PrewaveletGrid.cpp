@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Ricard Roettger (roettger@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/PrewaveletGrid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
-#include "base/grid/generation/PrewaveletGridGenerator.hpp"
+#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/basis/prewavelet/PrewaveletBasis.hpp"
+#include <sgpp/base/basis/prewavelet/PrewaveletBasis.hpp>
 
 
 namespace sg {

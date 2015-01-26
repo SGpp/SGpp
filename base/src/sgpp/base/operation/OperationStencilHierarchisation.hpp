@@ -8,8 +8,8 @@
 #ifndef OPERATIONSTENCILHIERARCHISATION_HPP
 #define OPERATIONSTENCILHIERARCHISATION_HPP
 
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/operation/OperationHierarchisation.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <vector>
 
 namespace sg {

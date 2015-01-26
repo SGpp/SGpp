@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp"
+#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
 
 
 namespace sg {

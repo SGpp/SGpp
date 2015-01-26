@@ -10,7 +10,7 @@
 
 #include <string>
 #include <vector>
-#include "base/datatypes/DataVectorSP.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
 
 namespace sg {
   namespace base {

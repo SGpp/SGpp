@@ -10,7 +10,7 @@
 #ifndef ALGORITHMADABOOSTIDENTITY_HPP
 #define ALGORITHMADABOOSTIDENTITY_HPP
 
-#include "datadriven/algorithm/AlgorithmAdaBoostBase.hpp"
+#include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 
 namespace sg {
   namespace datadriven {

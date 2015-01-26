@@ -8,8 +8,8 @@
 #ifndef MODPOLYGRID_HPP
 #define MODPOLYGRID_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 
 
 #include <iostream>

@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/EvalCuboidGenerator.hpp"
+#include <sgpp/base/tools/EvalCuboidGenerator.hpp>
 
 namespace sg {
   namespace base {

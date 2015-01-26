@@ -8,15 +8,15 @@
 #ifndef LEARNERBASESP_HPP
 #define LEARNERBASESP_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
-#include "base/tools/PrecisionConverter.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
+#include <sgpp/base/tools/PrecisionConverter.hpp>
 
-#include "solver/SLESolverSP.hpp"
+#include <sgpp/solver/SLESolverSP.hpp>
 
-#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
-#include "datadriven/tools/TypesDatadriven.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBaseSP.hpp>
+#include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 
 namespace sg {
 

@@ -9,8 +9,8 @@
 #ifndef OPERATIONMULTIPLEEVALITERATIVESP_H
 #define OPERATIONMULTIPLEEVALITERATIVESP_H
 
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 namespace sg {
   namespace parallel {

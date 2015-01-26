@@ -9,7 +9,7 @@
 #ifndef OPERATIONLAPLACELINEARSTRETCHED_HPP
 #define OPERATIONLAPLACELINEARSTRETCHED_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 
 namespace sg {

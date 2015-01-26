@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <cmath>
 
 namespace sg {

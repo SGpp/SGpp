@@ -5,7 +5,7 @@
  ******************************************************************************/
 //@author Michael Lettrich (m.lettrich@mytum.de)
 #include "PredictiveRefinement.hpp"
-#include "base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp>
 
 
 namespace sg {

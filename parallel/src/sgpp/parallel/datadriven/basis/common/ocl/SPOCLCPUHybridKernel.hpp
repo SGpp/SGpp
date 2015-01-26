@@ -13,11 +13,11 @@
 #ifdef _OPENMP
 #include <omp.h>
 
-#include "base/grid/GridStorage.hpp"
-#include "parallel/tools/DynamicTwoPartitionAutoTuning.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/parallel/tools/DynamicTwoPartitionAutoTuning.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace parallel {

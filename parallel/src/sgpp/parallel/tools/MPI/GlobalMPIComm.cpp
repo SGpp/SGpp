@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/tools/MPI/MPICommunicator.hpp"
+#include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
 
 namespace sg {
   namespace parallel {

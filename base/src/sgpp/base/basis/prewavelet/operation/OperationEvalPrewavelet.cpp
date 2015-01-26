@@ -21,10 +21,10 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp>
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
 
 

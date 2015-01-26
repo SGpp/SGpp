@@ -6,10 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 #pragma once
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
 namespace base {

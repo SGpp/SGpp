@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.hpp"
+#include <sgpp/datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.hpp>
 
 
 namespace sg {

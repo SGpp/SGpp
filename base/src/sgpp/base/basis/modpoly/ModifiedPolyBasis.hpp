@@ -11,9 +11,9 @@
 #include <cmath>
 #include <vector>
 
-#include "base/exception/factory_exception.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/basis/Basis.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/basis/Basis.hpp>
 
 
 namespace sg {

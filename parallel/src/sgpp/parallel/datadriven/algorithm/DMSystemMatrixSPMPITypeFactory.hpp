@@ -9,9 +9,9 @@
 #ifndef DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP
 #define DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP
 
-#include "base/grid/Grid.hpp"
-#include "parallel/tools/TypesParallel.hpp"
-#include "datadriven/algorithm/DMSystemMatrixBaseSP.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBaseSP.hpp>
 
 namespace sg {
   namespace parallel {

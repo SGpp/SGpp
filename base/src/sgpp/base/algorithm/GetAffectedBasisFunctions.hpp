@@ -8,13 +8,13 @@
 #ifndef GETAFFECTEDBASISFUNCTIONS_HPP
 #define GETAFFECTEDBASISFUNCTIONS_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
-#include "base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
-#include "base/basis/prewavelet/PrewaveletBasis.hpp"
-#include "base/basis/periodic/LinearPeriodicBasis.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp>
+#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
+#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp>
+#include <sgpp/base/basis/prewavelet/PrewaveletBasis.hpp>
+#include <sgpp/base/basis/periodic/LinearPeriodicBasis.hpp>
 
 #include <vector>
 #include <utility>

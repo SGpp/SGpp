@@ -8,52 +8,52 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifdef USEMIC
-#include "parallel/datadriven/basis/common/mic/SPMICKernel.hpp"
-#include "parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/mic/SPMICKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/SPMICCPUHybridKernel.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(push, target(mic))
 #endif
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPMICLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/SPMICLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPMICModLinearMask.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
 #endif
 #endif
 
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 #include <cstring>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "parallel/datadriven/operation/OperationMultipleEvalIterativeSP.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalIterativeSP.hpp>
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/SPX86SimdModLinearMask.hpp>
 
-#include "parallel/datadriven/basis/common/SPCPUKernel.hpp"
+#include <sgpp/parallel/datadriven/basis/common/SPCPUKernel.hpp>
 #ifdef USEOCL
-#include "parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp"
-#include "parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp"
-#include "parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp"
-#include "parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp"
-#include "parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLCPUHybridKernel.hpp>
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/OCLLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinear.hpp>
+#include <sgpp/parallel/datadriven/basis/modlinear/operation/impl/OCLModLinearMask.hpp>
 #endif
 
 #ifdef USEARBB
 #ifdef USE_MPI
 #error "MPI compilation is not support when compiling multiple evaluation for ArBB"
 #endif
-#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPArBBLinear.hpp>
 #endif
 
 #ifdef USECUDA
 #ifdef USE_MPI
 #error "MPI compilation is not support when compiling multiple evaluation for CUDA"
 #endif
-#include "parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPCUDALinear.hpp"
+#include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeSPCUDALinear.hpp>
 #endif
 
 namespace sg {

@@ -5,12 +5,12 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <cmath>
 

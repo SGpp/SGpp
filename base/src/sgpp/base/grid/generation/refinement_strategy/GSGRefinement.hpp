@@ -8,8 +8,8 @@
 #define GSGREFINEMENT_HPP_
 
 #include "RefinementDecorator.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
 namespace sg {
 namespace base {

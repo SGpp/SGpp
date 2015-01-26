@@ -8,9 +8,9 @@
 #ifndef LEARNERVECTORIZEDIDENTITYSP_HPP
 #define LEARNERVECTORIZEDIDENTITYSP_HPP
 
-#include "datadriven/application/LearnerBaseSP.hpp"
+#include <sgpp/datadriven/application/LearnerBaseSP.hpp>
 
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 namespace sg {
 

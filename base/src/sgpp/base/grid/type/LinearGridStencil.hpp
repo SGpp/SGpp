@@ -8,8 +8,8 @@
 #ifndef LINEARGRIDSTENCIL_HPP
 #define LINEARGRIDSTENCIL_HPP
 
-#include "base/grid/type/GridStencil.hpp"
-#include "base/grid/common/BoundingBox.hpp"
+#include <sgpp/base/grid/type/GridStencil.hpp>
+#include <sgpp/base/grid/common/BoundingBox.hpp>
 
 
 #include <iostream>

@@ -8,7 +8,7 @@
 #ifndef COARSENINGFUNCTOR_HPP
 #define COARSENINGFUNCTOR_HPP
 
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

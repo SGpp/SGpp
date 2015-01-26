@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/application/ScreenOutput.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
 
 namespace sg {
   namespace base {

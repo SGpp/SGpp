@@ -7,10 +7,10 @@
 #ifndef HASHREFINEMENT_HPP
 #define HASHREFINEMENT_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <vector>
 #include <cmath>

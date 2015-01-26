@@ -8,7 +8,7 @@
 #ifndef REFINEMENTFUNCTOR_HPP
 #define REFINEMENTFUNCTOR_HPP
 
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

@@ -5,60 +5,60 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/grid/type/PolyGrid.hpp"
-#include "base/grid/type/ModPolyGrid.hpp"
-#include "base/grid/type/PrewaveletGrid.hpp"
-#include "base/grid/type/ModBsplineGrid.hpp"
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
+#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 
-#include "base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp"
-#include "base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.hpp"
-#include "base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp"
-#include "base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
-#include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.hpp"
-#include "base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp"
-#include "base/basis/poly/operation/OperationHierarchisationPoly.hpp"
-#include "base/basis/modpoly/operation/OperationHierarchisationModPoly.hpp"
-#include "base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.hpp"
-#include "base/basis/modbspline/operation/OperationHierarchisationModBspline.hpp"
-#include "base/basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationStencilHierarchisationModLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp>
+#include <sgpp/base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/operation/OperationHierarchisationLinearStretched.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp>
+#include <sgpp/base/basis/poly/operation/OperationHierarchisationPoly.hpp>
+#include <sgpp/base/basis/modpoly/operation/OperationHierarchisationModPoly.hpp>
+#include <sgpp/base/basis/prewavelet/operation/OperationHierarchisationPrewavelet.hpp>
+#include <sgpp/base/basis/modbspline/operation/OperationHierarchisationModBspline.hpp>
+#include <sgpp/base/basis/modwavelet/operation/OperationHierarchisationModWavelet.hpp>
 
-#include "base/operation/OperationQuadrature.hpp"
-#include "base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp"
-#include "base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp"
-#include "base/basis/linear/noboundary/operation/OperationSecondMomentLinear.hpp"
-#include "base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp"
-#include "base/basis/poly/operation/OperationQuadraturePoly.hpp"
+#include <sgpp/base/operation/OperationQuadrature.hpp>
+#include <sgpp/base/basis/linear/noboundary/operation/OperationQuadratureLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/operation/OperationSecondMomentLinear.hpp>
+#include <sgpp/base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp>
+#include <sgpp/base/basis/poly/operation/OperationQuadraturePoly.hpp>
 
-#include "base/basis/prewavelet/operation/OperationConvertPrewavelet.hpp"
+#include <sgpp/base/basis/prewavelet/operation/OperationConvertPrewavelet.hpp>
 
-#include "base/basis/linear/noboundary/operation/OperationEvalLinear.hpp"
-#include "base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp"
-#include "base/basis/modlinear/operation/OperationEvalModLinear.hpp"
-#include "base/basis/poly/operation/OperationEvalPoly.hpp"
-#include "base/basis/modpoly/operation/OperationEvalModPoly.hpp"
-#include "base/basis/modbspline/operation/OperationEvalModBspline.hpp"
-#include "base/basis/modwavelet/operation/OperationEvalModWavelet.hpp"
-#include "base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp"
-#include "base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp"
-#include "base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp"
-#include "base/basis/periodic/operation/OperationEvalPeriodic.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationEvalLinear.hpp>
+#include <sgpp/base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationEvalModLinear.hpp>
+#include <sgpp/base/basis/poly/operation/OperationEvalPoly.hpp>
+#include <sgpp/base/basis/modpoly/operation/OperationEvalModPoly.hpp>
+#include <sgpp/base/basis/modbspline/operation/OperationEvalModBspline.hpp>
+#include <sgpp/base/basis/modwavelet/operation/OperationEvalModWavelet.hpp>
+#include <sgpp/base/basis/prewavelet/operation/OperationEvalPrewavelet.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/operation/OperationEvalLinearStretchedBoundary.hpp>
+#include <sgpp/base/basis/periodic/operation/OperationEvalPeriodic.hpp>
 
-#include "base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
-#include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
-#include "base/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp"
-#include "base/basis/poly/operation/OperationMultipleEvalPoly.hpp"
-#include "base/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp"
-#include "base/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp"
-#include "base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp"
-#include "base/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp"
-#include "base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp"
-#include "base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp"
-#include "base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp>
+#include <sgpp/base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationMultipleEvalModLinear.hpp>
+#include <sgpp/base/basis/poly/operation/OperationMultipleEvalPoly.hpp>
+#include <sgpp/base/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp>
+#include <sgpp/base/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp>
+#include <sgpp/base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.hpp>
+#include <sgpp/base/basis/prewavelet/operation/OperationMultipleEvalPrewavelet.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/operation/OperationMultipleEvalLinearStretched.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp>
+#include <sgpp/base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp>
 
 #include <cstring>
 

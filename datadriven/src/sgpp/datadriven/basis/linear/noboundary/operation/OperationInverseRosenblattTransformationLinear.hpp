@@ -7,8 +7,8 @@
 #ifndef OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP
 #define OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP
 
-#include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationInverseRosenblattTransformation.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/operation/OperationInverseRosenblattTransformation.hpp>
 
 namespace sg {
 namespace datadriven {

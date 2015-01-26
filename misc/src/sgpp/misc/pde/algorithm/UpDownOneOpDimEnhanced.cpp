@@ -5,7 +5,7 @@
 ***************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp"
+#include <sgpp/misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
 
 namespace sg {
   namespace pde {

@@ -1,7 +1,7 @@
 #include "OperationMatrixLTwoDotExplicitLinearBoundary.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 
 namespace sg {
   namespace pde {

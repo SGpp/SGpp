@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <math.h>
 //#include <iostream>
 

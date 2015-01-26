@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp"
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <sstream>
 

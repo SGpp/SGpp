@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 
 namespace sg {
 namespace datadriven {

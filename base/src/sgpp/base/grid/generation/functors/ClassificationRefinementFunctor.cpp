@@ -1,4 +1,4 @@
-#include "base/grid/generation/functors/ClassificationRefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>
 
 namespace sg {
 namespace base {

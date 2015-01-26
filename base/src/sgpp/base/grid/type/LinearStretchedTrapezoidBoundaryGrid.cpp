@@ -5,13 +5,13 @@
  ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp"
-#include "base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp>
 
-#include "base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 
 #include <iostream>

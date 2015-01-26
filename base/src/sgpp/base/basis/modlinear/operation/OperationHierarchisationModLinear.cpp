@@ -6,12 +6,12 @@
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp"
-#include "base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationHierarchisationModLinear.hpp>
+#include <sgpp/base/basis/modlinear/algorithm_sweep/HierarchisationModLinear.hpp>
+#include <sgpp/base/basis/modlinear/algorithm_sweep/DehierarchisationModLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

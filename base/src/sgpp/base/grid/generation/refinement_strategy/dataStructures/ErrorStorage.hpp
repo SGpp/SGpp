@@ -7,10 +7,10 @@
 #ifndef ERRORSTORAGE_HPP_
 #define ERRORSTORAGE_HPP_
 
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.hpp"
-#include "base/grid/storage/hashmap/HashGridStorage.hpp"
-#include "base/grid/storage/hashmap/HashGridIterator.hpp"
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 
 #include <map>
 #include <vector>

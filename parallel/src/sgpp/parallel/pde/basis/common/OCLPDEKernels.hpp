@@ -22,11 +22,11 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/type/LinearStretchedGrid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <limits>
 
 namespace sg {

@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationHierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

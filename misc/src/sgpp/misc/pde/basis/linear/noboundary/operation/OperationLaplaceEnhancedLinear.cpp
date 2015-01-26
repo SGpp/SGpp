@@ -4,12 +4,12 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
+#include <sgpp/misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp>
 
-#include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp"
-#include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp"
+#include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp>
+#include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
 namespace pde {

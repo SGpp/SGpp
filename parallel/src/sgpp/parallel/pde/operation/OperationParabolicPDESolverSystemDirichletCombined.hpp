@@ -9,10 +9,10 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 
-#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
 
-#include "base/grid/common/DirichletUpdateVector.hpp"
-#include "base/grid/common/DirichletGridConverter.hpp"
+#include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
+#include <sgpp/base/grid/common/DirichletGridConverter.hpp>
 
 namespace sg {
   namespace parallel {

@@ -9,10 +9,10 @@
 #ifndef COMBIFULLGRID_HPP_
 #define COMBIFULLGRID_HPP_
 
-#include "combigrid/utils/combigrid_ultils.hpp"
-#include "combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
-#include "combigrid/basisfunction/CombiLinearBasisFunction.hpp"
-#include "combigrid/domain/CombiGridDomain.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp>
+#include <sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp>
+#include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
 namespace combigrid {
 

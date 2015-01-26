@@ -9,8 +9,8 @@
 #ifndef OPERATIONHIERARCHISATIONPREWAVELET_HPP
 #define OPERATIONHIERARCHISATIONPREWAVELET_HPP
 
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationHierarchisation.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

@@ -4,22 +4,22 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/ModLinearGrid.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/tools/PrecisionConverter.hpp"
-#include "base/tools/GridPrinter.hpp"
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/PrecisionConverter.hpp>
+#include <sgpp/base/tools/GridPrinter.hpp>
 
-#include "solver/sle/ConjugateGradientsSP.hpp"
-#include "solver/sle/BiCGStabSP.hpp"
+#include <sgpp/solver/sle/ConjugateGradientsSP.hpp>
+#include <sgpp/solver/sle/BiCGStabSP.hpp>
 
-#include "datadriven/application/LearnerBaseSP.hpp"
+#include <sgpp/datadriven/application/LearnerBaseSP.hpp>
 
 #include <iostream>
 

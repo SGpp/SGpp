@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/tools/Hedging.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/tools/EvalCuboidGenerator.hpp"
+#include <sgpp/finance/tools/Hedging.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/EvalCuboidGenerator.hpp>
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <sstream>
 #include <cmath>
