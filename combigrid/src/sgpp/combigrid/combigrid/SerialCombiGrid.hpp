@@ -6,8 +6,11 @@
 #ifndef SERIALCOMBIGRID_HPP_
 #define SERIALCOMBIGRID_HPP_
 
+
+#include <sgpp/globaldef.hpp>
 #include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
 #include <sgpp/combigrid/converter/CombiSGppConverter.hpp>
+
 
 namespace combigrid {
 
@@ -68,5 +71,6 @@ namespace combigrid {
       virtual void deCompose(SGPP::base::GridStorage* gridstorageSGpp , SGPP::base::DataVector* alpha) ;
   };
 }
+
 
 #endif /* SERIALCOMBIGRID_HPP_ */
