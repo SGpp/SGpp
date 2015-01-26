@@ -43,11 +43,11 @@ py_env.Install(PYSGPP_BUILD_DIR, "pysgpp.py")
 
 
 # run minimal test after compilation
-test_env = env.Clone()
 builder = Builder(action = "python $SOURCE")
-test_env.Append(BUILDERS = {'Test' : builder})
-tests = test_env.Test('importTest.py')
-Requires(tests, pysgppInstall)
-AlwaysBuild(tests) 
+env.Append(BUILDERS = {'SimpleTest' : builder})
+pysgppSimpleImportTest = env.SimpleTest('importTest.py')
+env.Requires(pysgppSimpleImportTest, pysgppInstall)
+env.AlwaysBuild(pysgppSimpleImportTest) 
 
 Export('pysgppInstall')
+Export('pysgppSimpleImportTest')
