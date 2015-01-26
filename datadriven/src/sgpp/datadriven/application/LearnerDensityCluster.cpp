@@ -223,6 +223,8 @@ namespace SGPP {
 			case SGPP::datadriven::Minima:
 				thresholdFunction = &LearnerDensityCluster::relativeThreshold;
 				break;
+			default:
+				break;
 		}
 
 		delete minimumPoint_;
