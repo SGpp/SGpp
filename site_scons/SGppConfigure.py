@@ -1,5 +1,6 @@
 import distutils.sysconfig
 import os
+import sys
 
 import SGppConfigureExtend
 import Helper
