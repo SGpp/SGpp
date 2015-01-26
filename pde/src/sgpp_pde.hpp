@@ -19,7 +19,7 @@
 #include "sgpp/pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
 #include "sgpp/pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
 #include "sgpp/pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
-#include "sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp""
+#include "sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 #include "sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
 #include "sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
 
