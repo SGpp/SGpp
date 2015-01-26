@@ -1,7 +1,7 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
-// sgpp.sparsegrids.org
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 #!/usr/bin/python
 
@@ -157,4 +157,3 @@ for i in xrange(X.getNrows()):
     fd.write(','.join([str(p[d]) for d in range(X.getNcols())])+"\n")
 if options.outfile:
     fd.close()
-

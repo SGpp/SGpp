@@ -1,7 +1,7 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
-// sgpp.sparsegrids.org
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 # 2 dim, 2 level, 5 num data points
 # (1, 0)
@@ -53,4 +53,3 @@ online.collectRefinablePoints(storage, 10, online_result)
 
 for k,v in online_result.iteritems():
     print k, v
-
