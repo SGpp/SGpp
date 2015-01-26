@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+//TODO remove meta header usage
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
 #include <sgpp/base/exception/application_exception.hpp>

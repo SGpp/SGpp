@@ -9,7 +9,12 @@
 #define PERSISTENTERRORREFINEMENTFUNCTOR_HPP
 
 #include <vector>
-#include "sgpp_base.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 namespace sg {
   namespace base {

@@ -21,12 +21,18 @@ print "Using SCons", SCons.__version__
 # languageWrapperList = ['SG_PYTHON', 'SG_JAVA']
 allLanguageWrapperList = ['SG_PYTHON']
 
+ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
+
 # find all modules
-moduleFolders = getModules()
+moduleFolders = getModules(ignoreFolders)
+languageSupport = ['pysgpp']
 
 moduleNames = []
 for name in moduleFolders:
     moduleNames.append('SG_' + name.upper())
+    
+print moduleFolders
+print moduleNames
 
 vars = Variables("custom.py")
 
@@ -47,6 +53,8 @@ vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log'
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
+env.Export('moduleNames')
+env.Export('moduleFolders')
 
 # Help Text
 Help("""---------------------------------------------------------------------
@@ -93,7 +101,7 @@ Export('TEST_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    SGppConfigure.doConfigure(env)
+    SGppConfigure.doConfigure(env, moduleFolders)
 
 # add C++ defines for all modules
 cppdefines = []

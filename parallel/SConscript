@@ -96,9 +96,8 @@ MICOnlyFiles = [
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./exampleApplication"):
-        continue
-    if currentFolder.startswith("./test"):
+    print currentFolder
+    if currentFolder.startswith("./src/sgpp/parallel/exampleApplication"):
         continue
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
         if fileName in MPIOnlyFiles:
@@ -111,7 +110,6 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
 
 objs = []
 for sourceFile in srcs:
-    print sourceFile
     objs.append(env_parallel.SharedObject(sourceFile))
 
 lib = env_parallel.SharedLibrary(target="sgpp" + moduleName, source=objs, LIBPATH=BUILD_DIR, LIBS=['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppsolver'])

@@ -8,7 +8,12 @@
 #ifndef WEIGHTEDERRORREFINEMENTFUNCTOR_HPP
 #define WEIGHTEDERRORREFINEMENTFUNCTOR_HPP
 
-#include "sgpp_base.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+
 #include <limits>
 #include <sgpp/base/exception/application_exception.hpp>
 

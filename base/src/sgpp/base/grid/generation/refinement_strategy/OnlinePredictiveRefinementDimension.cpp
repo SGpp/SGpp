@@ -14,6 +14,7 @@
 #include "OnlinePredictiveRefinementDimension.hpp"
 #include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
 #include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 

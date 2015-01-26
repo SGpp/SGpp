@@ -6,18 +6,23 @@ import shlex
 
 # get all files in a folder matching "SConscript*"
 # path has to end with "/"
-def getModules():
+def getModules(ignoreFolders):
     
 #     if path[-1] != '/':
 #         path += '/'
-    path = '#/'
+    #path = '#/'
+    path = ''
     suffix = '/SConscript'
     searchString = path + '*' + suffix
+    print searchString
     modulePaths = glob.glob(searchString)
     modules = []
     for modulePath in modulePaths:
+        print modulePath
         module = modulePath[:-len(suffix)]
-        module = module[len(path):]        
+        module = module[len(path):]
+        if module in ignoreFolders:
+            continue        
         modules.append(module)
     return modules
 
