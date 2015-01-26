@@ -3,13 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-###############################################################################
-# Copyright (C) 2009 Technische Universitaet Muenchen                         #
-# This file is part of the SG++ project. For conditions of distribution and   #
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
-###############################################################################
-## @author Valeriy Khakhutskyy (khakhutv@in.tum.de)####################################################################
-
 import unittest
 
 #correct the syspath, so python looks for packages in the root directory of SGpp

@@ -1,12 +1,7 @@
-#################################################################################
-# Copyright (C) 2009-2011 Technische Universitaet Muenchen                      #
-# This file is part of the SG++ project. For conditions of distribution and     #
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp            #
-#                                                                               #
-# author Alexander Heinecke (Alexander.Heinecke@mytum.de)                       #
-# modified by Sam Maurus (CSE Master's student) for application to the			# 
-# Heston model            														#
-#################################################################################
+# Copyright (C) 2008-today The SG++ Project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 SRCDIR = ./../../../src/application_cpp/
 BUILDDIR = ./

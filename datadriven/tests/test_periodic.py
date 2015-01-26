@@ -3,13 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-# Copyright (C) 2014 Technische Universitaet Muenchen                         #
-# This file is part of the SG++ project. For conditions of distribution and   #
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp          #
-###############################################################################
-# # @author Florian Zipperle (florian.zipperle@tum.de)
-
 
 import unittest
 import numpy as np

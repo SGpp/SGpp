@@ -1,8 +1,7 @@
-	# Copyright (C) 2009 Technische Universitaet Muenchen
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
-
-# author Joerg Blank (blankj@in.tum.de), Dirk Pflueger (Dirk.Pflueger@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 import os
 
