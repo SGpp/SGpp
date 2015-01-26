@@ -58,11 +58,15 @@ def doConfigure(env, moduleFolders):
             sys.stderr.write("Hint: You might have to install package python-dev\n")
             Exit(1) 
             
-        import numpy
-        numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
-        config.env.AppendUnique(CPPPATH = [numpy_path])
-        if not config.CheckCXXHeader(['Python.h', 'pyconfig.h', 'numpy/arrayobject.h']):
-            sys.stderr.write('Warning: Cannot find NumPy header files in: "' + str(numpy_path) + '", disabling unit tests\n')
+        try:
+            import numpy
+            numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
+            config.env.AppendUnique(CPPPATH = [numpy_path])
+            if not config.CheckCXXHeader(['Python.h', 'pyconfig.h', 'numpy/arrayobject.h']):
+                sys.stderr.write('Warning: Cannot find NumPy header files in: "' + str(numpy_path) + '", disabling unit tests\n')
+                env['NO_UNIT_TESTS'] = True
+        except:
+            sys.stderr.write('Warning: Numpy doesn\'t seem to be installed\n')
             env['NO_UNIT_TESTS'] = True
     else:
         print 'Warning: Python extension ("SG_PYTHON") not enabled, skipping python unit tests'
