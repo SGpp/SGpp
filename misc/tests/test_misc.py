@@ -7,29 +7,12 @@
 
 import unittest, sys, toolsKbhitCountdown
 
-import test_GridIndex
-import test_GridStorage
-import test_algorithms
-
-import test_hierarchisation
-import test_OperationQuadrature
-
-import test_GridFactory
-import test_DataVector
 
 if __name__ == '__main__': 
     sys.stdout.write("Running unit tests. ")
     if not toolsKbhitCountdown.countdown(3):
         
-        alltests = unittest.TestSuite([
-                unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
-                unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
-                unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
-                #unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
-                unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
-                unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
-                unittest.defaultTestLoader.loadTestsFromModule(test_OperationQuadrature)
-                ])    
+        alltests = unittest.TestSuite()    
         
         try:
             from pysgpp import createOperationLaplaceEnhanced
