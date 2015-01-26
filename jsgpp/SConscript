@@ -4,17 +4,20 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+import os
+
+# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+if os.path.exists("jsgpp_wrap.cc"):
+    os.remove("jsgpp_wrap.cc")
+
+srcs = Split("""
+jsgpp.i
+""")
 
 Import('env')
-Import('src_objs')
-Import('moduleDependencies')
-
-src_objs_combined = []
-
-for module in moduleDependencies:
-    name = module.lower().split('sg_',1)[1]
-    if env[module]:
-        src_objs_combined += src_objs[name]
+Import('BUILD_DIR')
+Import('JAVASGPP_BUILD_DIR')
+Import('moduleFolders')
 
 j_env = env.Clone()
 
@@ -22,11 +25,16 @@ j_env = env.Clone()
 # and as they confuse jenkins):
 j_env.AppendUnique(CPPFLAGS=['-w'])
 
-j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'])
+defines = ['-D'+c for c in j_env['CPPDEFINES']]
+swigIncludePaths = ['-I' + module + '/src/' for module in moduleFolders] + defines
+j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'] + swigIncludePaths)
 j_env.AppendUnique(CPPPATH=['#/src/sgpp'])
 j_env.AppendUnique(CPPFLAGS=['-fno-strict-aliasing'])
 
-jsgpp = j_env.SharedLibrary(target="jsgpp", source = ['jsgpp.i']+src_objs_combined, SHLIBPREFIX = 'lib')
+j_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
+
+jsgpp = j_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid', 'sgppparallel']) # 
+jsgppInstall = j_env.Install(JAVASGPP_BUILD_DIR, jsgpp)
 
 from glob import glob
 files = glob('*.java')

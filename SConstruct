@@ -19,7 +19,7 @@ EnsureSConsVersion(2, 0)
 print "Using SCons", SCons.__version__
 
 # languageWrapperList = ['SG_PYTHON', 'SG_JAVA']
-allLanguageWrapperList = ['SG_PYTHON']
+allLanguageWrapperList = ['SG_PYTHON', 'SG_JAVA']
 
 ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
 
