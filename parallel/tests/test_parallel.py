@@ -7,27 +7,15 @@
 
 import unittest, sys
 
-import test_GridIndex
-import test_GridStorage
-import test_algorithms
-
-import test_hierarchisation
-import test_OperationQuadrature
-
-import test_GridFactory
-import test_DataVector
+import test_BBT_SSE
+import test_BBT_AVX
 
 if __name__ == '__main__': 
     sys.stdout.write("Running unit tests. ")
         
     alltests = unittest.TestSuite([
-            unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
-            unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
-            unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
-            #unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
-            unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
-            unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
-            unittest.defaultTestLoader.loadTestsFromModule(test_OperationQuadrature)
+#                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_SSE),
+#                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX)
             ])    
 
     result = unittest.TextTestRunner(verbosity=9).run(alltests)

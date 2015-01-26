@@ -5,23 +5,22 @@
 ###############################################################################
 ## @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-import unittest, sys, toolsKbhitCountdown
+import unittest, sys
 
 
 if __name__ == '__main__': 
     sys.stdout.write("Running unit tests. ")
-    if not toolsKbhitCountdown.countdown(3):
         
-        alltests = unittest.TestSuite()    
-        
-        try:
-            from pysgpp import createOperationLaplaceEnhanced
-            import test_laplace
-            alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_laplace),)
-        except ImportError:
-            pass
+    alltests = unittest.TestSuite()    
     
-        result = unittest.TextTestRunner(verbosity=9).run(alltests)
-        
-        if not result.wasSuccessful():
-            sys.exit(1)
+    try:
+        from pysgpp import createOperationLaplaceEnhanced
+        import test_laplace
+        alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_laplace),)
+    except ImportError:
+        pass
+
+    result = unittest.TextTestRunner(verbosity=9).run(alltests)
+    
+    if not result.wasSuccessful():
+        sys.exit(1)
