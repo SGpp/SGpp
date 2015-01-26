@@ -1,6 +1,6 @@
-// Copyright (C) 2008-today The SG++ project
+// Copyright (C) 2008-today The SG++ Project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
@@ -1114,7 +1114,7 @@ namespace SGPP {
 
     void BlackScholesSolver::initScreen() {
       this->myScreen = new ScreenOutput();
-      this->myScreen->writeTitle("SGpp - Black Scholes Solver, 2.0.0", "TUM (C) 2009-2010, by Alexander Heinecke");
+      this->myScreen->writeTitle("SGpp - Black Scholes Solver, 2.0.0", "The SG++ Project (C) 2009-2010, by Alexander Heinecke");
       this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
     }
 
