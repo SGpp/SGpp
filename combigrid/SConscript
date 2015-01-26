@@ -2,11 +2,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
-# author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
-#base/grid/combination/FullGrid.cpp
-#base/grid/combination/FullGridSet.cpp
-#base/grid/combination/LinearFullGrid.cpp
-
 import os
 import fnmatch
 

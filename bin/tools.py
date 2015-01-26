@@ -3,14 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-#!/usr/bin/python
-# Copyright (C) 2009 Technische Universitaet Muenchen
-# This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
-
 ## @package tools
 # @ingroup bin
-# @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief A collection of helper functions.
 # @version $CURR$
 
