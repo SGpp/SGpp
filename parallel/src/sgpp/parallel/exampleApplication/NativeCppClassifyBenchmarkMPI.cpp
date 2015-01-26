@@ -14,6 +14,8 @@
 #include "sgpp_base.hpp"
 #include "sgpp_parallel.hpp"
 #include "sgpp_datadriven.hpp"
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/tools/DatasetGenerator.hpp>
 
 #include <string>
@@ -532,9 +534,11 @@ int main(int argc, char* argv[]) {
     SLESolverSPConfigFinal.threshold_ = -1.0f;
     SLESolverSPConfigFinal.type_ = SGPP::solver::CG;
 
-    SGPP::datadriven::ARFFTools ARFFTool;
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
+
+    SGPP::datadriven::Dataset dataset;
+    SGPP::datadriven::Dataset testdataset = SGPP::datadriven::ARFFTools::readARFF(tfileTest);
 
     size_t nDim;
     size_t nInstancesNo;
@@ -566,17 +570,16 @@ int main(int argc, char* argv[]) {
       std::cout << "Generating " << nInstancesNo << " datasets per node (for " << mpi_size << " nodes)." << std::endl;
 
     } else {
-      nDim = ARFFTool.getDimension(tfileTrain);
-      nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
+      SGPP::datadriven::ARFFTools::readARFFSize(tfileTrain, nInstancesNo, nDim);
     }
 
-    nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+    nInstancesTestNo = testdataset.getNumberInstances();
 
     // Define DP data
-    SGPP::base::DataMatrix data(nInstancesNo, nDim);
-    SGPP::base::DataVector classes(nInstancesNo);
-    SGPP::base::DataMatrix testdata(nInstancesTestNo, nDim);
-    SGPP::base::DataVector testclasses(nInstancesTestNo);
+    SGPP::base::DataMatrix data;
+    SGPP::base::DataVector classes;
+    SGPP::base::DataMatrix testdata = *testdataset.getTrainingData();
+    SGPP::base::DataVector testclasses = *testdataset.getClasses();
 
     // Define SP data
     SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);
@@ -590,12 +593,10 @@ int main(int argc, char* argv[]) {
       delete g;
     } else {
       // Read data from file
-      ARFFTool.readTrainingData(tfileTrain, data);
-      ARFFTool.readClasses(tfileTrain, classes);
+      dataset = SGPP::datadriven::ARFFTools::readARFF(tfileTrain);
+      data = *dataset.getTrainingData();
+      classes = *dataset.getClasses();
     }
-
-    ARFFTool.readTrainingData(tfileTest, testdata);
-    ARFFTool.readClasses(tfileTest, testclasses);
 
     SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);
     SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes, classesSP);
