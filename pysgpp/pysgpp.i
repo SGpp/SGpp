@@ -224,6 +224,7 @@ namespace std {
 
 %include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 %include "sgpp/datadriven/tools/TypesDatadriven.hpp"
+%include "sgpp/datadriven/application/LearnerBase.hpp"
 %include "sgpp/datadriven/application/LearnerDensityCluster.hpp"
 #endif
 
