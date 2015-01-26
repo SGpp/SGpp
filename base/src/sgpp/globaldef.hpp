@@ -24,17 +24,20 @@
 ///////////         PLEASE READ AGAIN AND UNDERSTAND!              /////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SGPP
-
+#ifndef USE_DOUBLE_PRECISION
 #define USE_DOUBLE_PRECISION 1
-#define SGPP sg
-
-#else
-
-#define USE_DOUBLE_PRECISION 0
-#define SGPP sgsp
-
 #endif
+
+#if USE_DOUBLE_PRECISION==1
+#define SGPP sg
+#else
+#define SGPP sgsp
+#endif
+
+
+
+
+
 
 namespace SGPP {
 
