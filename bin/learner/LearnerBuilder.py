@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-                                    #
-#############################################################################
-
-
 from bin.learner.LearnedKnowledge import LearnedKnowledge
 from bin.learner.Classifier import Classifier
 from bin.learner.TrainingStopPolicy import TrainingStopPolicy

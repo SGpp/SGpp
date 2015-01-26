@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-                                    #
-#############################################################################
-
-
 from bin.learner.solver.LinearSolver import LinearSolverEvents
 from bin.learner.Learner import LearnerEvents
 from bin.controller.LearnerEventController import LearnerEventController

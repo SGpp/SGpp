@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-                                    #
-#############################################################################
-
-
 ## Abstract class of Subscribers of LearnerEvents. The classes that wants to obtain
 # the progress notifications from Learner should implement this class. See @link
 # bin.learner.Learner.Learner documentation of Learner@endlink for details.
