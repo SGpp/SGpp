@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 import unittest
 
 #correct the syspath, so python looks for packages in the root directory of SGpp

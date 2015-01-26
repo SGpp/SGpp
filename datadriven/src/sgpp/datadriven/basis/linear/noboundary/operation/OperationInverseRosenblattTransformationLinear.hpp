@@ -1,9 +1,8 @@
-/* ****************************************************************************
- * Copyright (C) 2009 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 #ifndef OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP
 #define OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP
 
@@ -62,4 +61,3 @@ protected:
 }
 }
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP */
-

@@ -1,9 +1,7 @@
-/*
- * combigrid::RunPoisson.cpp
- *
- *  Created on: May 30, 2011
- *      Author: benk
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #include "RunPoisson.hpp"
 #include <sgpp/combigrid/multigridFG/multigrid/Multigrid.hpp>

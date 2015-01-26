@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 '''
 Python example for the combination technique. Be sure that the folder containing
 pysgpp.py can be found in the PYTHONPATH

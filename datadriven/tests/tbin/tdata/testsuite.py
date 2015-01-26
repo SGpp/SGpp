@@ -1,3 +1,7 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 import unittest
 
@@ -17,6 +21,5 @@ alltests = unittest.TestSuite((suite1, suite2, suite3))
 
 if __name__ == "__main__":
     unittest.main()
-
 
 

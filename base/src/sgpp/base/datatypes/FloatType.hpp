@@ -1,14 +1,11 @@
-/*
- * FloatType.hpp
- *
- *  Created on: Nov 27, 2014
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #ifdef SINGLE_PRECISION
 using float_t = float;
 #else
 using float_t = double;
 #endif
-
 

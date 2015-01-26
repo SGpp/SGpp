@@ -1,13 +1,7 @@
-/*
- * combi_classic.cpp
- *
- * Compile with:  g++  -O3 -I../src/sgpp/ -L/work/kowitz_home/eclipse_workspace/sgpp_current/lib/sgpp/ -o combi_classic combi_classic.cpp -lsgppbase -lsgppcombigrid
- *
- * dynamic linking might need to be adjusted via LD_LIBRARY_PATH
- *
- *  Created on: Oct 25, 2011
- *      Author: kowitz_local
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #include <iostream>
 #include "combigrid.hpp"
@@ -76,4 +70,3 @@ int main() {
 					<< std::endl;
 
 		}
-
