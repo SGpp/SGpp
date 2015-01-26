@@ -13,7 +13,7 @@ import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
 if pathlocal not in sys.path: sys.path.append(pathlocal)
-pathsgpp = os.path.abspath(pathname) + '/../../..'
+pathsgpp = os.path.abspath(pathname) + '/../../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.ARFFAdapter import ARFFAdapter
