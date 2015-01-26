@@ -49,6 +49,22 @@ namespace sg {
         DataVector(double* input, size_t size);
 
         /**
+		 * Create a new DataVector from a std::vector<double>.
+		 *
+		 * @param input std::vector<double> that contains the data
+		 * @param size number of elements
+		 */
+		DataVector(std::vector<double> input);
+
+		/**
+		 * Create a new DataVector from a std::vector<int>.
+		 *
+		 * @param input std::vector<double> that contains the data
+		 * @param size number of elements
+		 */
+		DataVector(std::vector<int> input);
+
+        /**
          * Constructor that constructs a DataVector from a DataVectorDefinition structure
          *
          * @param DataVectorDef reference to a DataVectorDefinition structure

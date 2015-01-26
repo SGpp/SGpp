@@ -863,13 +863,13 @@ class LearnerBuilder(object):
             if self.__level == None:
                 raise Exception("Folding level has to be defined")
             
-            if self.__type == FoldingDescriptor.SEQUENTIAL:
+            if self.__type == self.SEQUENTIAL:
                 self.__policy = SequentialFoldingPolicy(dataContainer, self.__level)
-            elif self.__type == FoldingDescriptor.RANDOM:
+            elif self.__type == self.RANDOM:
                 self.__policy = RandomFoldingPolicy(dataContainer, self.__level, self.__seed)
-            elif self.__type == FoldingDescriptor.STRATIFIED:
+            elif self.__type == self.STRATIFIED:
                 self.__policy = StratifiedFoldingPolicy(dataContainer, self.__level, self.__seed)
-            elif self.__type == FoldingDescriptor.FILES:
+            elif self.__type == self.FILES:
                 self.__policy = FilesFoldingPolicy(dataContainer, self.__level)
             else:
                 raise Exception("Folding type is not defined or is unproper")

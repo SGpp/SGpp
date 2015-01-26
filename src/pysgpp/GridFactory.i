@@ -21,6 +21,7 @@
 %newobject sg::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
 %newobject sg::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sg::base::Grid::createPrewaveletGrid(size_t dim);
+%newobject sg::base::Grid::createPeriodicGrid(size_t dim);
 
 %newobject sg::base::Grid::unserialize(std::string& istr);
 
@@ -38,6 +39,31 @@ namespace sg
 {
 namespace base
 {
+struct RegularGridConfiguration {
+      /// Grid Type, see enum
+      sg::base::GridType type_;
+      /// number of dimensions
+      size_t dim_;
+      /// number of levels
+      int level_;
+    };
+    
+typedef enum mail_ {
+    Linear = 0,
+    LinearStretched = 1,
+    LinearBoundary = 2,
+    LinearTrapezoidBoundary = 3,
+    LinearStretchedTrapezoidBoundary = 4,
+    ModLinear = 5,
+    Poly = 6,
+    ModPoly = 7,
+    ModWavelet = 8,
+    ModBspline = 9,
+    Prewavelet = 10,
+    SquareRoot = 11,
+    TruncatedTrapezoid = 12,
+    Periodic = 13
+} GridType;
 
 class Grid
 {
@@ -57,6 +83,7 @@ public:
 	static Grid* createPrewaveletGrid(size_t dim);
 	static Grid* createLinearGridStencil(size_t dim);
 	static Grid* createModLinearGridStencil(size_t dim);
+	static Grid* createPeriodicGrid(size_t dim);
 	
 	static Grid* unserialize(std::string& istr);
 	
@@ -74,11 +101,13 @@ public:
 	virtual sg::base::Stretching* getStretching();
 
 	virtual const char* getType() = 0;	
+	virtual const SBasis& getBasis() = 0;
 	virtual void serialize(std::string& ostr);
 	void refine(sg::base::DataVector* vector, int num);
 	double eval(sg::base::DataVector& alpha, sg::base::DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
+	
 	
 };
 }

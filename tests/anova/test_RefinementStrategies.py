@@ -169,8 +169,8 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.updateResults(learner.alpha, learner.dataContainer)
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
-            print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
-            (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
+            print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" \
+                    % (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
             learner.iteration += 1
             if learner.iteration == 5: 
                 pass

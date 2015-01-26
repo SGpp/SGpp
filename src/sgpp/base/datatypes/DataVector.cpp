@@ -45,6 +45,28 @@ namespace sg {
       memcpy(this->data, input, size * sizeof(double));
     }
 
+    DataVector::DataVector(std::vector<double> input) :
+	  unused(0), inc_elems(100) {
+	  this->size = input.size();
+	  // create new vector
+	  this->data = new double[input.size()];
+	  // copy data
+	  std::copy(input.begin(), input.end(), this->data);
+	}
+
+    DataVector::DataVector(std::vector<int> input) :
+	  unused(0), inc_elems(100) {
+	  this->size = input.size();
+	  // create new vector
+	  this->data = new double[input.size()];
+	  // copy data
+	  int in = 0;
+	  for(std::vector<int>::iterator it = input.begin(); it < input.end();it++){
+		data[in] = static_cast<double>(*it);
+		in++;
+	  }
+	}
+
     DataVector::DataVector(DataVectorDefinition& DataVectorDef) {
       setDataVectorDefinition(DataVectorDef);
     }
