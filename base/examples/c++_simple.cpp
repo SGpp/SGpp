@@ -19,13 +19,13 @@
 #include "pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
 
 using namespace std;
-using namespace sg;
-using namespace sg::base;
-using namespace sg::pde;
+using namespace SGPP;
+using namespace SGPP::base;
+using namespace SGPP::pde;
 
 // function to interpolate
 double f(double x0, double x1) {
-  return 16.0 * (x0-1)*x0 * (x1-1)*x1;
+  return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
 }
 
 int main() {
