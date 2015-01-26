@@ -1,7 +1,7 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
-// sgpp.sparsegrids.org
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 ###############################################################################
 # Copyright (C) 2009 Technische Universitaet Muenchen                         #
@@ -65,4 +65,3 @@ class TestQuadratureMC(unittest.TestCase):
 # Run tests for this file if executed as application 
 if __name__=='__main__':
     unittest.main()
-

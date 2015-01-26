@@ -1,7 +1,7 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
-// sgpp.sparsegrids.org
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 #!/usr/bin/python
 # Copyright (C) 2009 Technische Universitaet Muenchen
@@ -187,4 +187,3 @@ if __name__=='__main__':
         else:
     #        print "set terminal x11"
             print s
-
