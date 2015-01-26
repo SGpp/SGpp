@@ -8,15 +8,17 @@
 #include "sgpp_base.hpp"
 
 using namespace std;
-using namespace sg;
-using namespace sg::base;
+using namespace SGPP;
+using namespace SGPP::base;
 
 // function to interpolate
-double f(int dim, double *x, void *clientdata) {
+double f(int dim, double* x, void* clientdata) {
   double res = 1.0;
-  for (int i=0; i<dim; i++) {
-    res *= 4*x[i]*(1-x[i]);
+
+  for (int i = 0; i < dim; i++) {
+    res *= 4 * x[i] * (1 - x[i]);
   }
+
   return res;
 }
 
@@ -37,12 +39,14 @@ int main() {
   DataVector alpha(gridStorage->size());
   GridIndex* gp;
   double p[2];
-  for (int i=0; i < gridStorage->size(); i++) {
+
+  for (int i = 0; i < gridStorage->size(); i++) {
     gp = gridStorage->get(i);
     p[0] = gp->abs(0);
     p[1] = gp->abs(1);
     alpha[i] = f(2, p, NULL);
   }
+
   op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
   // direct quadrature

@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace sg {
+namespace SGPP {
   namespace datadriven {
 
     Dataset::Dataset() :
@@ -29,11 +29,11 @@ namespace sg {
       return dimension;
     }
 
-    sg::base::DataVector* Dataset::getClasses() {
+    SGPP::base::DataVector* Dataset::getClasses() {
       return &classes;
     }
 
-    sg::base::DataMatrix* Dataset::getTrainingData() {
+    SGPP::base::DataMatrix* Dataset::getTrainingData() {
       return &trainingData;
     }
 

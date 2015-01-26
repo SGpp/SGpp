@@ -18,41 +18,41 @@
 #include "datadriven/application/LearnerDensityCluster.hpp"
 
 using namespace std;
-using namespace sg;
-using namespace sg::base;
+using namespace SGPP;
+using namespace SGPP::base;
 
 
 
 int main() {
 
-	sg::datadriven::LearnerDensityCluster* clust = new sg::datadriven::LearnerDensityCluster(false);
+  SGPP::datadriven::LearnerDensityCluster* clust = new SGPP::datadriven::LearnerDensityCluster(false);
 
-	double raw_data[] = { 0.01,0,0.3, 0.7,0.2, 0.78,  0.6,0.82,  0.71,0.18,0.5};
-	DataMatrix data(raw_data, 10,1);
+  double raw_data[] = { 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5};
+  DataMatrix data(raw_data, 10, 1);
 
-	DataVector classes(14);
-	classes.setAll(0);
-	sg::base::RegularGridConfiguration gridConf;
-	gridConf.dim_ = 1;
-	gridConf.level_ = 4;
-	gridConf.type_ = sg::base::Periodic;
+  DataVector classes(14);
+  classes.setAll(0);
+  SGPP::base::RegularGridConfiguration gridConf;
+  gridConf.dim_ = 1;
+  gridConf.level_ = 4;
+  gridConf.type_ = SGPP::base::Periodic;
 
-	sg::solver::SLESolverConfiguration solvConf;
-	solvConf.eps_ = 0.0001;
-	solvConf.maxIterations_ = 100;
-	solvConf.threshold_ = -1.0;
-	solvConf.type_ = sg::solver::CG;
+  SGPP::solver::SLESolverConfiguration solvConf;
+  solvConf.eps_ = 0.0001;
+  solvConf.maxIterations_ = 100;
+  solvConf.threshold_ = -1.0;
+  solvConf.type_ = SGPP::solver::CG;
 
 
-	sg::datadriven::DensityBasedClusteringConfiguration clustConf;
-	clustConf.eps = 10;
-	clustConf.numberOfNeighbors = 4;
-	clustConf.thresholdType = sg::datadriven::Constant;
+  SGPP::datadriven::DensityBasedClusteringConfiguration clustConf;
+  clustConf.eps = 10;
+  clustConf.numberOfNeighbors = 4;
+  clustConf.thresholdType = SGPP::datadriven::Constant;
 
-	clust->setClusterConfiguration(clustConf);
-	clust->train(data,classes,gridConf,solvConf,0.01);
+  clust->setClusterConfiguration(clustConf);
+  clust->train(data, classes, gridConf, solvConf, 0.01);
 
-	DataVector res = clust->getClusterAssignments();
- 	delete clust;
- 	std::cout << res.toString() << std::endl;
+  DataVector res = clust->getClusterAssignments();
+  delete clust;
+  std::cout << res.toString() << std::endl;
 }
