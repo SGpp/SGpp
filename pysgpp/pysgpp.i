@@ -9,16 +9,20 @@
 %feature("docstring");
 
 // renaming overloaded functions
-// %rename(GridDataBaseStr) sg::base::GridDataBase::GridDataBase(std::string);
+// %rename(GridDataBaseStr) SGPP::base::GridDataBase::GridDataBase(std::string);
 
 // SG_PARALLEL for using OperationMultEvalVectorized
-//%rename(padDataset) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType);
-//%rename(padDatasetSP) sg::parallel::DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType);
-//%ignore sg::datadriven::AbstractOperationMultipleEvalSubspace::padDataset();
+//%rename(padDataset) SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix& dataset, VectorizationType& vecType);
+//%rename(padDatasetSP) SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP& dataset, VectorizationType vecType);
+//%ignore SGPP::datadriven::AbstractOperationMultipleEvalSubspace::padDataset();
 
-%typemap(in) sg::parallel::VectorizationType& {
+%{
+#define SGPP sg
+%}
+
+%typemap(in) SGPP::parallel::VectorizationType& {
   int i = (int) PyInt_AsLong($input);
-  sg::parallel::VectorizationType vecType = static_cast<sg::parallel::VectorizationType>(i);
+  SGPP::parallel::VectorizationType vecType = static_cast<SGPP::parallel::VectorizationType>(i);
   $1 = &vecType;
 }
 
@@ -44,14 +48,14 @@ import_array();
 %}
 //%apply (double** ARGOUTVIEW_ARRAY1, int *DIM1) {(double** vec, int* n)}
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
-//%apply int INPUT {sg::base::HashGenerator::level_t level};
+//%apply int INPUT {SGPP::base::HashGenerator::level_t level};
 
-%typemap(in) sg::base::HashGenerator::level_t level{
+%typemap(in) SGPP::base::HashGenerator::level_t level{
     if (PyInt_AsLong($input) < 0) {
            PyErr_SetString(PyExc_ValueError,"Expected a nonnegative value.");
            return NULL;
         }
-	$1 = static_cast<sg::base::HashGenerator::level_t>(PyInt_AsLong($input));
+	$1 = static_cast<SGPP::base::HashGenerator::level_t>(PyInt_AsLong($input));
 }
 
 %exception {
@@ -113,15 +117,15 @@ namespace std {
 
 // the Bad
 // really dirty
-%ignore sg::base::DataVectorSP::operator=;
-%ignore sg::base::DataVectorSP::operator[];
+%ignore SGPP::base::DataVectorSP::operator=;
+%ignore SGPP::base::DataVectorSP::operator[];
 %include "sgpp/base/datatypes/DataVectorSP.hpp"
-%ignore sg::base::DataMatrixSP::operator=;
-%ignore sg::base::DataMatrixSP::operator[];
+%ignore SGPP::base::DataMatrixSP::operator=;
+%ignore SGPP::base::DataMatrixSP::operator[];
 %include "sgpp/base/datatypes/DataMatrixSP.hpp"
 
 %import "sgpp/base/basis/Basis.hpp"
-%template(SBasis) sg::base::Basis<unsigned int, unsigned int>;
+%template(SBasis) SGPP::base::Basis<unsigned int, unsigned int>;
 
 %include "DataVector.i"
 %include "DataMatrix.i"
@@ -132,10 +136,10 @@ namespace std {
 // The Good, i.e. without any modifications
 %include "sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
 %include "sgpp/base/tools/hash_map_config.hpp"
-%ignore sg::base::HashGridIndex::operator=;
+%ignore SGPP::base::HashGridIndex::operator=;
 %include "sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
 %include "sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
-%ignore sg::base::HashGridStorage::operator[];
+%ignore SGPP::base::HashGridStorage::operator[];
 %include "sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "sgpp/base/grid/GridStorage.hpp"
 %include "sgpp/base/grid/common/BoundingBox.hpp"
@@ -339,8 +343,8 @@ namespace std {
 %template(CombiGridKernelD) combigrid::CombiGridKernel< double >;   
 //%template(ComplexVector) std::vector< complex<double> >;
 
-//%typemap(in) sg::base::HashGenerator::level_t {
-//  $1 = static_cast<sg::base::HashGenerator::level_t>(PyInt_AsLong($input));
+//%typemap(in) SGPP::base::HashGenerator::level_t {
+//  $1 = static_cast<SGPP::base::HashGenerator::level_t>(PyInt_AsLong($input));
 //}
 #endif
 
@@ -348,26 +352,26 @@ namespace std {
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-%template(GridIndex) sg::base::HashGridIndex<unsigned int, unsigned int>;
-%template(GridStorage) sg::base::HashGridStorage<sg::base::GridIndex>;
+%template(GridIndex) SGPP::base::HashGridIndex<unsigned int, unsigned int>;
+%template(GridStorage) SGPP::base::HashGridStorage<SGPP::base::GridIndex>;
 
-%template(SLinearBase) sg::base::LinearBasis<unsigned int, unsigned int>;
-%template(SLinearBoundaryBase) sg::base::LinearBoundaryBasis<unsigned int, unsigned int>;
-%template(SLinearStretchedBase) sg::base::LinearStretchedBasis<unsigned int, unsigned int>;
-%template(SLinearStretchedBoundaryBase) sg::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-%template(SModLinearBase) sg::base::ModifiedLinearBasis<unsigned int, unsigned int>;
-%template(SPolyBase) sg::base::PolyBasis<unsigned int, unsigned int>;
-%template(SModPolyBase) sg::base::ModifiedPolyBasis<unsigned int, unsigned int>;
-%template(SModWaveletBase) sg::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
-%template(SModBsplineBase) sg::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
-%template(SPrewaveletBase) sg::base::PrewaveletBasis<unsigned int, unsigned int>;
+%template(SLinearBase) SGPP::base::LinearBasis<unsigned int, unsigned int>;
+%template(SLinearBoundaryBase) SGPP::base::LinearBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearStretchedBase) SGPP::base::LinearStretchedBasis<unsigned int, unsigned int>;
+%template(SLinearStretchedBoundaryBase) SGPP::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
+%template(SModLinearBase) SGPP::base::ModifiedLinearBasis<unsigned int, unsigned int>;
+%template(SPolyBase) SGPP::base::PolyBasis<unsigned int, unsigned int>;
+%template(SModPolyBase) SGPP::base::ModifiedPolyBasis<unsigned int, unsigned int>;
+%template(SModWaveletBase) SGPP::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
+%template(SModBsplineBase) SGPP::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
+%template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 
-%template(SGetAffectedBasisFunctions) sg::base::GetAffectedBasisFunctions<sg::base::SLinearBase>;
-%template(SAlgorithmEvaluation) sg::base::AlgorithmEvaluation<sg::base::SLinearBase>;
-%template(SGetAffectedBasisFunctionsBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearBoundaryBase>;
-%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sg::base::GetAffectedBasisFunctions<sg::base::SLinearStretchedBoundaryBase>;
-%template(DimensionBoundaryVector) std::vector<sg::base::DimensionBoundary>;
-%template(Stretching1DVector) std::vector<sg::base::Stretching1D>;
+%template(SGetAffectedBasisFunctions) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBase>;
+%template(SAlgorithmEvaluation) SGPP::base::AlgorithmEvaluation<SGPP::base::SLinearBase>;
+%template(SGetAffectedBasisFunctionsBoundaries) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBoundaryBase>;
+%template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearStretchedBoundaryBase>;
+%template(DimensionBoundaryVector) std::vector<SGPP::base::DimensionBoundary>;
+%template(Stretching1DVector) std::vector<SGPP::base::Stretching1D>;

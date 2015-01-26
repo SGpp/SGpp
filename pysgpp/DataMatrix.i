@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-namespace sg
+namespace SGPP
 {
 namespace base
 {

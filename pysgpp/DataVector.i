@@ -18,7 +18,7 @@ void free_array(void* ptr, void* dv){
 			Py_DECREF(datavector);
 		}
 %}
-namespace sg
+namespace SGPP
 {
 namespace base
 {

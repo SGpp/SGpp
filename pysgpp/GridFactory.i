@@ -6,26 +6,26 @@
 // @author Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 
-%newobject sg::base::Grid::createLinearGrid(size_t dim);
-%newobject sg::base::Grid::createLinearStretchedGrid(size_t dim);
-%newobject sg::base::Grid::createLinearBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(sg::base::BoudingBox& BB);
-%newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(sg::base::Stretching& BB);
-%newobject sg::base::Grid::createModLinearGrid(size_t dim);
-%newobject sg::base::Grid::createPolyGrid(size_t dim, size_t degree);
-%newobject sg::base::Grid::createModPolyGrid(size_t dim, size_t degree);
-%newobject sg::base::Grid::createModWaveletGrid(size_t dim);
-%newobject sg::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
-%newobject sg::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
-%newobject sg::base::Grid::createSquareRootGrid(size_t dim);
-%newobject sg::base::Grid::createPrewaveletGrid(size_t dim);
-%newobject sg::base::Grid::createPeriodicGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearStretchedGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(SGPP::base::BoudingBox& BB);
+%newobject SGPP::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(SGPP::base::Stretching& BB);
+%newobject SGPP::base::Grid::createModLinearGrid(size_t dim);
+%newobject SGPP::base::Grid::createPolyGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createModPolyGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createModWaveletGrid(size_t dim);
+%newobject SGPP::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
+%newobject SGPP::base::Grid::createSquareRootGrid(size_t dim);
+%newobject SGPP::base::Grid::createPrewaveletGrid(size_t dim);
+%newobject SGPP::base::Grid::createPeriodicGrid(size_t dim);
 
-%newobject sg::base::Grid::unserialize(std::string& istr);
+%newobject SGPP::base::Grid::unserialize(std::string& istr);
 
-%newobject sg::base::Grid::createGridGenerator();
+%newobject SGPP::base::Grid::createGridGenerator();
 
 %include "stl.i"
 %include "typemaps.i"
@@ -34,14 +34,14 @@
 %apply std::string *INPUT { std::string& istr };
 
 
-using namespace sg;
-namespace sg
+using namespace SGPP;
+namespace SGPP
 {
 namespace base
 {
 struct RegularGridConfiguration {
       /// Grid Type, see enum
-      sg::base::GridType type_;
+      SGPP::base::GridType type_;
       /// number of dimensions
       size_t dim_;
       /// number of levels
@@ -95,16 +95,16 @@ public:
 	virtual ~Grid();
 
 public:	
-	virtual sg::base::GridGenerator* createGridGenerator() = 0;
-	virtual sg::base::GridStorage* getStorage();
-	virtual sg::base::BoundingBox* getBoundingBox();
-	virtual sg::base::Stretching* getStretching();
+	virtual SGPP::base::GridGenerator* createGridGenerator() = 0;
+	virtual SGPP::base::GridStorage* getStorage();
+	virtual SGPP::base::BoundingBox* getBoundingBox();
+	virtual SGPP::base::Stretching* getStretching();
 
 	virtual const char* getType() = 0;	
 	virtual const SBasis& getBasis() = 0;
 	virtual void serialize(std::string& ostr);
-	void refine(sg::base::DataVector* vector, int num);
-	double eval(sg::base::DataVector& alpha, sg::base::DataVector& point);
+	void refine(SGPP::base::DataVector* vector, int num);
+	double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
 	
@@ -114,13 +114,13 @@ public:
 }
 
 //these are just two new interfaces for consistency with Memento design pattern
-%extend sg::base::Grid{
-	sg::base::Grid* createMemento(){
+%extend SGPP::base::Grid{
+	SGPP::base::Grid* createMemento(){
 		return $self;
 	}
 	
-	static sg::base::Grid* setMemento(std::string& istr){
-		return sg::base::Grid::unserialize(istr);
+	static SGPP::base::Grid* setMemento(std::string& istr){
+		return SGPP::base::Grid::unserialize(istr);
 	}
 };
 
