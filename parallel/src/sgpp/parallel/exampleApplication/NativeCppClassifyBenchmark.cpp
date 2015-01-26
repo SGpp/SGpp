@@ -426,31 +426,27 @@ int main(int argc, char* argv[]) {
     SLESolverSPConfigFinal.threshold_ = -1.0f;
     SLESolverSPConfigFinal.type_ = SGPP::solver::CG;
 
-    SGPP::datadriven::ARFFTools ARFFTool;
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
 
-    size_t nDim = ARFFTool.getDimension(tfileTrain);
-    size_t nInstancesNo = ARFFTool.getNumberInstances(tfileTrain);
-    size_t nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
+    SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(tfileTrain);
+    SGPP::datadriven::Dataset testdataset = SGPP::datadriven::ARFFTools::readARFF(tfileTest);
+
+    size_t nDim = dataset.getDimension();
+    size_t nInstancesNo = dataset.getNumberInstances();
+    size_t nInstancesTestNo = testdataset.getNumberInstances();
 
     // Define DP data
-    SGPP::base::DataMatrix data(nInstancesNo, nDim);
-    SGPP::base::DataVector classes(nInstancesNo);
-    SGPP::base::DataMatrix testdata(nInstancesTestNo, nDim);
-    SGPP::base::DataVector testclasses(nInstancesTestNo);
+    SGPP::base::DataMatrix data = *dataset.getTrainingData();
+    SGPP::base::DataVector classes = *dataset.getClasses();
+    SGPP::base::DataMatrix testdata = *testdataset.getTrainingData();
+    SGPP::base::DataVector testclasses = *testdataset.getClasses();
 
     // Define SP data
     SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);
     SGPP::base::DataVectorSP classesSP(nInstancesNo);
     SGPP::base::DataMatrixSP testdataSP(nInstancesTestNo, nDim);
     SGPP::base::DataVectorSP testclassesSP(nInstancesTestNo);
-
-    // Read data from file
-    ARFFTool.readTrainingData(tfileTrain, data);
-    ARFFTool.readTrainingData(tfileTest, testdata);
-    ARFFTool.readClasses(tfileTrain, classes);
-    ARFFTool.readClasses(tfileTest, testclasses);
 
     SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);
     SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes, classesSP);

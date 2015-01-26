@@ -3,7 +3,7 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 **************************************************************************** */
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
+// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Julian Valentin (Julian.Valentin@ipvs.uni-stuttgart.de)
 
 #ifndef ARFFTOOLS_HPP
 #define ARFFTOOLS_HPP
@@ -13,14 +13,35 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/datadriven/tools/Dataset.hpp>
+
+#include <string>
 
 namespace SGPP {
   namespace datadriven {
 
     /**
-     * Class that provides functionality to read and write ARFF files
+     * Class that provides functionality to read ARFF files.
      */
     class ARFFTools {
+      public:
+        /**
+         * Reads an ARFF file.
+         *
+         * @param filename filename of the file to be read
+         * @return ARFF as Dataset
+         */
+        static Dataset readARFF(const std::string& filename);
+
+        /**
+         * Reads the size of an ARFF file.
+         *
+         * @param filename filename of the file to be read
+         * @param[out] numberInstances number of instances in the dataset
+         * @param[out] dimension number of dimensions in the dataset
+         */
+        static void readARFFSize(const std::string& filename, size_t& numberInstances, size_t& dimension);
+
       private:
         /**
          * stores the attribute info of one instance into a SGPP::base::DataMatrix
@@ -29,7 +50,7 @@ namespace SGPP {
          * @param destination SGPP::base::DataMatrix into which the instance is stored
          * @param instanceNo the number of the instance
          */
-        void writeNewElement(std::string& instance, SGPP::base::DataMatrix& destination, size_t instanceNo);
+        static void writeNewTrainingDataEntry(const std::string& arffLine, SGPP::base::DataMatrix& destination, size_t instanceNo);
 
         /**
          * stores the class info of one instance into a SGPP::base::DataVector
@@ -38,50 +59,7 @@ namespace SGPP {
          * @param destination SGPP::base::DataVector into which the instance is stored
          * @param instanceNo the number of the instance
          */
-        void writeNewClass(std::string& instance, SGPP::base::DataVector& destination, size_t instanceNo);
-
-      public:
-        /**
-         * STD-Constructor
-         */
-        ARFFTools();
-
-        /**
-         * STD-Destructor
-         */
-        ~ARFFTools();
-
-        /**
-         * Determine how many dimensions the dataset contains
-         *
-         * @param tfilename filename of the ARFF file
-         * @return number of dimensions in the dataset
-         */
-        size_t getDimension(std::string tfilename);
-
-        /**
-         * Determine how many instances the dataset contains
-         *
-         * @param tfilename filename of the ARFF file
-         * @return number of instances in the dataset
-         */
-        size_t getNumberInstances(std::string tfilename);
-
-        /**
-         * reads an ARFF file (except the last attribute) and writes its content into a SGPP::base::DataVector object
-         *
-         * @param tfilename the file's filename that should be opened
-         * @param destination reference to a SGPP::base::DataVector object into which the data should be stored
-         */
-        void readTrainingData(std::string tfilename, SGPP::base::DataMatrix& destination);
-
-        /**
-         * reads an ARFF file (only the last attribute) and writes its content into a SGPP::base::DataVector object
-         *
-         * @param tfilename the file's filename that should be opened
-         * @param destination reference to a SGPP::base::DataVector object into which the data should be stored
-         */
-        void readClasses(std::string tfilename, SGPP::base::DataVector& destination);
+        static void writeNewClass(const std::string& arffLine, SGPP::base::DataVector& destination, size_t instanceNo);
     };
 
   }
