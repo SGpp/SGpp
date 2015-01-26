@@ -143,12 +143,27 @@ if env['SG_JAVA']:
 #########################################################################
   
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    testdep = env.SConscript('tests/SConscript')
-    # execute after all installations (even where not necessary)
-    if env['SG_JAVA']:
-        Depends(testdep, [jinst, pysgppInstall])
-    else:
-        Depends(testdep, [pysgppInstall])
+    
+    env.Import('pysgppSimpleImportTest')
+    
+    # run tests
+    builder = Builder(action = "python $SOURCE.file", chdir=1)
+    env.Append(BUILDERS = {'Test' : builder})
+    pysgppTestTargets = []
+    for moduleFolder in moduleFolders:
+        if moduleFolder == "parallel" or moduleFolder == "finance" or moduleFolder == "pde" or moduleFolder == "solver":
+            # these modules don't currently have tests
+            continue
+        moduleTest = env.Test('#/' + moduleFolder + '/tests/test_' + moduleFolder + '.py')
+        env.Requires(moduleTest, pysgppInstall)
+        env.Depends(moduleTest, pysgppSimpleImportTest)
+        env.AlwaysBuild(moduleTest) 
+        pysgppTestTargets.append(moduleTest)
 else:
     print "Warning: Skipping python unit tests"
+    
+# not strictly necessary, used to enforce an order on the final steps of the building of the wrapper
+# used to execute the unittests at the very end
+if env['SG_PYTHON'] and env['SG_JAVA']:
+    env.Requires(pysgppInstall, jsgppInstall)
 
