@@ -22,7 +22,7 @@ print "Using SCons", SCons.__version__
 allLanguageWrapperList = ['SG_PYTHON']
 
 # find all modules
-moduleFolders = getModules('src/sgpp')
+moduleFolders = getModules()
 
 moduleNames = []
 for name in moduleFolders:
@@ -114,16 +114,16 @@ env.Append(CPPPATH=['#/tools'])
 for name in moduleFolders:
         print "Preparing to build module: ", name
         # SConscript('src/sgpp/SConscript' + name, variant_dir='#/tmp/build/', duplicate=0)
-        env.SConscript('src/sgpp/' + name + '/SConscript', {'env': env, 'moduleName': name})
+        env.SConscript('#/' + name + '/SConscript', {'env': env, 'moduleName': name})
        
 # build python lib
 if env['SG_PYTHON']:
-    SConscript('src/pysgpp/SConscript')
+    SConscript('#/pysgpp/SConscript')
     Import('pysgppInstall')
 
 # build java lib
 if env['SG_JAVA']:
-    libjsgpp = env.SConscript('src/jsgpp/SConscript',
+    libjsgpp = env.SConscript('#/jsgpp/SConscript',
                               variant_dir='tmp/build_jsgpp', duplicate=0)
     # install
     jinst = env.Install(env['OUTPUT_PATH'] + 'lib/jsgpp', [libjsgpp])
