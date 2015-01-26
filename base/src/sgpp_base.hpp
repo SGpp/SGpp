@@ -6,7 +6,6 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-
 #include "sgpp/base/basis/linear/noboundary/LinearBasis.hpp"
 #include "sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 #include "sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"

@@ -5,6 +5,8 @@
 
 #!/usr/bin/python
 
+import sys
+
 print "executing pysgpp import test (pysgpp/importTest.py)"
 print "trying to import python lib (pysgpp) ...",
 
@@ -13,6 +15,7 @@ try:
 except Exception as e:
     print "failed, error:"
     print str(e)
+    sys.exit(1)
 print "success"
 
 # import os

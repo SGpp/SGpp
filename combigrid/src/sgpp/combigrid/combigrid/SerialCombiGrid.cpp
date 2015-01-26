@@ -5,10 +5,6 @@
 
 #include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
 
-using namespace std;
-
-
-
 void combigrid::SerialCombiGrid::createFullGrids() {
   // iterate over each grid and create the all the full grid
   for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++) {
