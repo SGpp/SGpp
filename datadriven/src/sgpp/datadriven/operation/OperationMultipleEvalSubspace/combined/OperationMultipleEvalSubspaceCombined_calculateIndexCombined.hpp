@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 static inline void calculateIndexCombined(size_t dim, size_t nextIterationToRecalc,
 		const double * const (&dataTuplePtr)[4], std::vector<uint32_t> &hInversePtr, uint32_t *(&intermediates)[4],
 		double *(&evalIndexValues)[4],

@@ -1,9 +1,8 @@
-/* ****************************************************************************
-* Copyright (C) 2010 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Roman Karlstetter (karlstetter@mytum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H
 

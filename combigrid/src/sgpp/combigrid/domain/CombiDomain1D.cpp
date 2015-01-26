@@ -1,10 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
-// @author Christoph Kowitz (kowitz@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #include "CombiDomain1D.hpp"
 #include <vector>
@@ -170,4 +167,3 @@ void combigrid::Domain1D::getMeshWidth(int index , int level_in , double& h0 , d
     h1 = h0 = (max_ - min_) * ( 1 / (double)combigrid::powerOfTwo[level_in] );
   }
 }
-

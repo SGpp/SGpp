@@ -1,12 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
-// @author Alexander Heinecke (alexander.heinecke@mytum.de)
-// @author Roman Karlstetter (karlstetter@mytum.de)
-// @author Jacob Jepsen (jepsen@diku.dk)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #ifndef PARALLEL_OP_FACTORY_HPP
 #define PARALLEL_OP_FACTORY_HPP

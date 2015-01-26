@@ -1,9 +1,7 @@
-/*
- * OperationMultiEvalCPU_multTransposeImpl.cpp
- *
- *  Created on: Dec 4, 2014
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 

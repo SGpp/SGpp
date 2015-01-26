@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2014 Universitaet Stuttgart                                   *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Andreas Doerr, Marcel Schneider, Matthias Moegerle
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #ifndef HALTONSAMPLEGENERATOR_HPP
 #define HALTONSAMPLEGENERATOR_HPP

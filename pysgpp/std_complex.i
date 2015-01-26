@@ -1,4 +1,8 @@
-// -*- C++ -*- 
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 #ifndef SWIG_STD_COMPLEX_I_
 #define SWIG_STD_COMPLEX_I_
 
@@ -63,4 +67,3 @@ namespace std
 #endif // SWIG
 
 #endif //SWIG_STD_COMPLEX_I_
-

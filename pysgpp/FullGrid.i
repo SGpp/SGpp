@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 %rename(__getitem__) FullGrid::get(int index) const;
 %rename(__setitem__) FullGrid::set(int index,double val);
 %rename(__len__) FullGrid::getSize;

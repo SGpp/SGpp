@@ -1,9 +1,8 @@
-/*
- * OperationDensitySampling1DLinear.cpp
- *
- *  Created on: Dec 4, 2012
- *      Author: emily
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 #include <map>
 #include <cstdlib>
 #include <fstream>
@@ -127,4 +126,3 @@ namespace SGPP {
 
   }
 }
-

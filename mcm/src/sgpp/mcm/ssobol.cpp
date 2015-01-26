@@ -1,18 +1,7 @@
-// Copyright (C) 2013 - Michael Baudin
-//
-// This file must be used under the terms of the 
-// GNU Lesser General Public License license
-// http://www.gnu.org/copyleft/lesser.html
-
-// Description
-// Computes Scrambled Sobol sequence.
-// This is a C port of Algorithm 823.
-
-// Reference:
-// http://www.netlib.org/toms/823
-// ALGORITHM 823, COLLECTED ALGORITHMS FROM ACM.
-// TRANSACTIONS ON MATHEMATICAL SOFTWARE,
-// VOL. 29, NO. 2, June, 2003, P. 95--109.
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
 
 #include <cstdlib>
 #include <iostream>

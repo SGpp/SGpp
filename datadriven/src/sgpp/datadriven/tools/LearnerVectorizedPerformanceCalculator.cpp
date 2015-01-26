@@ -1,9 +1,8 @@
-/* ****************************************************************************
- * Copyright (C) 2012 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
 #include <cstring>

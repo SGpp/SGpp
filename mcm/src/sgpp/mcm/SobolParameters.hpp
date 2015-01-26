@@ -1,4 +1,8 @@
-// new-joe-kuo-6.21201
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at 
+// sgpp.sparsegrids.org
+
 #ifndef SOBOL_PARAMETERSXXX
 #define SOBOL_PARAMETERSXXX \
 "d       s       a       m_i\n" \
