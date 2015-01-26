@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-                                    #
-#############################################################################
-
-
 import math
 
 ## Abstract class for providing functionality for accomplishment of learning with cross-validation

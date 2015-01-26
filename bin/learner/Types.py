@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-                                    #
-#############################################################################
-
-
 
 
 ## Constants for types of grid borders

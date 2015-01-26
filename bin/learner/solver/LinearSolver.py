@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##############################################################################
-                                    #
-#############################################################################
-
-
 ## Abstract class for solution of system of linear equations. 
 #
 # The class defines the methods that have to be implemented in class of with 
