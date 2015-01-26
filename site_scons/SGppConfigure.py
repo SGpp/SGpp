@@ -57,9 +57,8 @@ def doConfigure(env, moduleFolders):
         numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
         config.env.AppendUnique(CPPPATH = [numpy_path])
         if not config.CheckCXXHeader(['Python.h', 'pyconfig.h', 'numpy/arrayobject.h']):
-            print config.env['CPPPATH']
-            sys.stderr.write('Error: Cannot find NumPy header files in: "' + str(numpy_path) + '", required for SG_PYTHON\n')
-            Exit(1)
+            sys.stderr.write('Warning: Cannot find NumPy header files in: "' + str(numpy_path) + '", disabling unit tests\n')
+            env['NO_UNIT_TESTS'] = True
     else:
         print 'Warning: Python extension ("SG_PYTHON") not enabled, skipping python unit tests'
   
