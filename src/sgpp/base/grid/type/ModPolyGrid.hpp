@@ -9,6 +9,8 @@
 #define MODPOLYGRID_HPP
 
 #include "base/grid/Grid.hpp"
+#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
+
 
 #include <iostream>
 
@@ -39,6 +41,8 @@ namespace sg {
         virtual const char* getType();
         virtual void serialize(std::ostream& ostr);
 
+        virtual const SBasis& getBasis();
+
         virtual GridGenerator* createGridGenerator();
 
         static Grid* unserialize(std::istream& istr);
@@ -47,6 +51,7 @@ namespace sg {
       protected:
         /// max. polynom's degree
         size_t degree;
+        const SModPolyBase* basis_;
     };
 
   }

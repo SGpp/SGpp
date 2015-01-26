@@ -9,6 +9,7 @@
 #define BOUNDINGBOX_HPP
 
 #include <cstddef>
+#include <string>
 
 namespace sg {
   namespace base {
@@ -143,6 +144,10 @@ namespace sg {
          * @return true if Dirichlet Boundary conditions, otherwise false
          */
         bool hasDirichletBoundaryRight(size_t dimension);
+
+        void toString(std::string& text);
+
+        std::string toString();
     };
 
   }

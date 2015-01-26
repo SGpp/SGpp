@@ -19,6 +19,9 @@
 #include "datadriven/application/Learner.hpp"
 #include "datadriven/application/LearnerDensityBased.hpp"
 #include "datadriven/application/LearnerDensityBasedReg.hpp"
+#include "datadriven/application/LearnerSGD.hpp"
+#include "datadriven/application/LearnerOnlineSGD.hpp"
+#include "datadriven/application/LearnerDensityCluster.hpp"
 
 #include "datadriven/operation/OperationRegularizationDiagonal.hpp"
 #include "datadriven/operation/OperationTest.hpp"
@@ -31,5 +34,8 @@
 #include "datadriven/DatadrivenOpFactory.hpp"
 #include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
 #include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp"
+
+#include "datadriven/tools/TypesDatadriven.hpp"
+
 
 #endif /* DATADRIVEN_HPP */

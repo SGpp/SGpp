@@ -25,9 +25,10 @@ for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
 
  
-lib = env.SharedLibrary(target ="sgpp" + moduleName, source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppsolver'])
+lib = env.SharedLibrary(target ="sgpp" + moduleName, source = objs, LIBPATH = [BUILD_DIR, '#/lib/alglib'], LIBS=['sgppbase', 'sgppsolver', 'libalglib'])
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
+env.Depends(lib, "#/lib/alglib" + "/libalglib.so")
 env.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows

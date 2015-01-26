@@ -31,7 +31,7 @@ elif env['PLATFORM']=='darwin':
 py_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
 
 py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + ['-D'+c for c in py_env['CPPDEFINES']], CPPPATH=['#/src/sgpp'])
-
+#py_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
 # The explicit ".so" suffix is required for OSX as otherwise ".dylib" is used in OSX. Python however requires ".so" on OSX as well. On all other plattforms ".so" actually is the default.
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid', 'sgppparallel']) # 
 pysgppInstall = env.Install(PYSGPP_BUILD_DIR, pysgpp)

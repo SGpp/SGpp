@@ -19,6 +19,9 @@
 //#include "base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp"
 //#include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
 
+#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
+
+
 #include <iostream>
 
 namespace sg {
@@ -42,6 +45,12 @@ namespace sg {
     const char* TruncatedTrapezoidGrid::getType() {
       return "TruncatedTrapezoid";
     }
+
+    const SBasis& TruncatedTrapezoidGrid::getBasis(){
+		static SLinearBoundaryBase basis;
+		return basis;
+	}
+
     Grid* TruncatedTrapezoidGrid::unserialize(std::istream& istr) {
       return new TruncatedTrapezoidGrid(istr);
     }

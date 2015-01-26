@@ -11,7 +11,7 @@
 
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
 import sys, re, time, fcntl, os, random, gzip, math
-from pysgpp import *
+from bin.pysgpp import *
 
 # constants
 ARFF = 1
