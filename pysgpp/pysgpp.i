@@ -135,11 +135,13 @@ namespace std {
 %include "sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
 %include "sgpp/base/tools/hash_map_config.hpp"
 %ignore SGPP::base::HashGridIndex::operator=;
+%ignore SGPP::base::HashGridIndex::HashGridIndex(const HashGridIndex<LT, IT>* o);
 %include "sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
 %include "sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %ignore SGPP::base::HashGridStorage::operator[];
 %include "sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "sgpp/base/grid/GridStorage.hpp"
+%ignore SGPP::base::BoundingBox::toString();
 %include "sgpp/base/grid/common/BoundingBox.hpp"
 %include "sgpp/base/grid/common/Stretching.hpp"
 %include "sgpp/base/grid/common/DirichletUpdateVector.hpp"
