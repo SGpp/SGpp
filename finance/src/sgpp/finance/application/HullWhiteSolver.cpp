@@ -1,6 +1,6 @@
-// Copyright (C) 2008-today The SG++ project
+// Copyright (C) 2008-today The SG++ Project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp>
@@ -219,7 +219,7 @@ namespace SGPP {
 
     void HullWhiteSolver::initScreen() {
       this->myScreen = new ScreenOutput();
-      this->myScreen->writeTitle("SGpp - Hull White Solver, 1.3.0", "TUM (C) 2009-2010, by Chao qi");
+      this->myScreen->writeTitle("SGpp - Hull White Solver, 1.3.0", "The SG++ Project (C) 2009-2010, by Chao qi");
       this->myScreen->writeStartSolve("One dimensional Hull White Solver");
     }
   }
