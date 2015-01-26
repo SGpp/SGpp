@@ -7,6 +7,8 @@
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 namespace sg {
   namespace datadriven {
 
