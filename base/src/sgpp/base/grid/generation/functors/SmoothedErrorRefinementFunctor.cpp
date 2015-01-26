@@ -69,8 +69,8 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 		return 0.0;
 	}
 
-	for (int i = 0; i < numErrors; i++) {
-		SmoothedErrors += errors[i] * (1.0 / numErrors);
+	for (unsigned int i = 0; i < numErrors; i++) {
+		SmoothedErrors += errors[i] * (1.0 / (double)numErrors);
 	}
 
 	return SmoothedErrors;
