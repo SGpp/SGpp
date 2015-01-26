@@ -12,8 +12,10 @@
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 #include <vector>
 #include <utility>
-#include "sgpp_base.hpp"
+
 //#include "sgpp_datadriven.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 

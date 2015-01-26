@@ -9,20 +9,20 @@
 #define PDE_HPP
 
 
-#include "pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
-#include "pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
-#include "pde/application/HeatEquationSolver.hpp"
-#include "pde/application/HeatEquationSolverWithStretching.hpp"
-#include "pde/application/PoissonEquationSolver.hpp"
-#include "pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
-#include "pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
-#include "pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
-#include "pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
-#include "pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp""
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
+#include "sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
+#include "sgpp/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp"
+#include "sgpp/pde/application/HeatEquationSolver.hpp"
+#include "sgpp/pde/application/HeatEquationSolverWithStretching.hpp"
+#include "sgpp/pde/application/PoissonEquationSolver.hpp"
+#include "sgpp/pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp"
+#include "sgpp/pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp"
+#include "sgpp/pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp"
+#include "sgpp/pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp"
+#include "sgpp/pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp"
+#include "sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp""
+#include "sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
+#include "sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
 
-#include "pde/operation/PdeOpFactory.hpp"
+#include "sgpp/pde/operation/PdeOpFactory.hpp"
 
 #endif /* PDE_HPP */

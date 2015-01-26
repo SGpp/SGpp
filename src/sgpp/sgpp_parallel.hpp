@@ -12,10 +12,10 @@
 #error "SGpp parallel module requires OpenMP support"
 #endif
 
-#include "parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
-#include "parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
+#include "sgpp/parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
+#include "sgpp/parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
 
-#include "parallel/operation/ParallelOpFactory.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
+#include "sgpp/parallel/operation/ParallelOpFactory.hpp"
+#include "sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 
 #endif /* PARALLEL_HPP */

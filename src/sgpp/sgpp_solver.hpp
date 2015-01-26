@@ -9,17 +9,17 @@
 #define SOLVER_HPP
 
 
-#include "solver/sle/ConjugateGradients.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/ode/AdamsBashforth.hpp"
-#include "solver/ode/VarTimestep.hpp"
-#include "solver/ode/StepsizeControl.hpp"
-#include "solver/ode/StepsizeControlEJ.hpp"
-#include "solver/ode/StepsizeControlH.hpp"
-#include "solver/ode/StepsizeControlMC.hpp"
-#include "solver/ode/StepsizeControlBDF.hpp"
-#include "solver/TypesSolver.hpp"
+#include "sgpp/solver/sle/ConjugateGradients.hpp"
+#include "sgpp/solver/sle/BiCGStab.hpp"
+#include "sgpp/solver/ode/Euler.hpp"
+#include "sgpp/solver/ode/CrankNicolson.hpp"
+#include "sgpp/solver/ode/AdamsBashforth.hpp"
+#include "sgpp/solver/ode/VarTimestep.hpp"
+#include "sgpp/solver/ode/StepsizeControl.hpp"
+#include "sgpp/solver/ode/StepsizeControlEJ.hpp"
+#include "sgpp/solver/ode/StepsizeControlH.hpp"
+#include "sgpp/solver/ode/StepsizeControlMC.hpp"
+#include "sgpp/solver/ode/StepsizeControlBDF.hpp"
+#include "sgpp/solver/TypesSolver.hpp"
 
 #endif /* SOLVER_HPP */

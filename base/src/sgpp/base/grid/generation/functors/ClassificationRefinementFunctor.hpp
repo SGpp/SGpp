@@ -2,7 +2,12 @@
 #define CLASSIFICATIONREFINEMENTFUNCTOR_HPP
 
 #include <iostream>
-#include "sgpp_base.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+
 
 /*
  * Indicator value = number of misclassified data points in the support of a basis function
