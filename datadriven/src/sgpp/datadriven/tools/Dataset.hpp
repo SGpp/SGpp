@@ -13,6 +13,8 @@
 
 #include <cstddef>
 
+#include <sgpp/globaldef.hpp>
+
 namespace SGPP {
   namespace datadriven {
 
