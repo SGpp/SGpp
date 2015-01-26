@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+/*************************************************************************
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
@@ -1249,7 +1250,7 @@ double chebyshevcalculate(const ae_int_t r, const ae_int_t n, const double x)
 }
 
 /*************************************************************************
-Summation of Chebyshev polynomials using Clenshaw’s recurrence formula.
+Summation of Chebyshev polynomials using Clenshaw s recurrence formula.
 
 This routine calculates
     c[0]*T0(x) + c[1]*T1(x) + ... + c[N]*TN(x)
@@ -2069,7 +2070,7 @@ double hermitecalculate(const ae_int_t n, const double x)
 }
 
 /*************************************************************************
-Summation of Hermite polynomials using Clenshaw’s recurrence formula.
+Summation of Hermite polynomials using Clenshaw s recurrence formula.
 
 This routine calculates
     c[0]*H0(x) + c[1]*H1(x) + ... + c[N]*HN(x)
@@ -2205,7 +2206,7 @@ double laguerrecalculate(const ae_int_t n, const double x)
 }
 
 /*************************************************************************
-Summation of Laguerre polynomials using Clenshaw’s recurrence formula.
+Summation of Laguerre polynomials using Clenshaw s recurrence formula.
 
 This routine calculates c[0]*L0(x) + c[1]*L1(x) + ... + c[N]*LN(x)
 
@@ -2284,7 +2285,7 @@ double legendrecalculate(const ae_int_t n, const double x)
 }
 
 /*************************************************************************
-Summation of Legendre polynomials using Clenshaw’s recurrence formula.
+Summation of Legendre polynomials using Clenshaw s recurrence formula.
 
 This routine calculates
     c[0]*P0(x) + c[1]*P1(x) + ... + c[N]*PN(x)
@@ -6703,7 +6704,7 @@ double chebyshevcalculate(ae_int_t r,
 
 
 /*************************************************************************
-Summation of Chebyshev polynomials using Clenshaw’s recurrence formula.
+Summation of Chebyshev polynomials using Clenshaw s recurrence formula.
 
 This routine calculates
     c[0]*T0(x) + c[1]*T1(x) + ... + c[N]*TN(x)
@@ -8343,7 +8344,7 @@ double hermitecalculate(ae_int_t n, double x, ae_state *_state)
 
 
 /*************************************************************************
-Summation of Hermite polynomials using Clenshaw’s recurrence formula.
+Summation of Hermite polynomials using Clenshaw s recurrence formula.
 
 This routine calculates
     c[0]*H0(x) + c[1]*H1(x) + ... + c[N]*HN(x)
@@ -8585,7 +8586,7 @@ double laguerrecalculate(ae_int_t n, double x, ae_state *_state)
 
 
 /*************************************************************************
-Summation of Laguerre polynomials using Clenshaw’s recurrence formula.
+Summation of Laguerre polynomials using Clenshaw s recurrence formula.
 
 This routine calculates c[0]*L0(x) + c[1]*L1(x) + ... + c[N]*LN(x)
 
@@ -8690,7 +8691,7 @@ double legendrecalculate(ae_int_t n, double x, ae_state *_state)
 
 
 /*************************************************************************
-Summation of Legendre polynomials using Clenshaw’s recurrence formula.
+Summation of Legendre polynomials using Clenshaw s recurrence formula.
 
 This routine calculates
     c[0]*P0(x) + c[1]*P1(x) + ... + c[N]*PN(x)

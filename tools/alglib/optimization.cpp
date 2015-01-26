@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+/*************************************************************************
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
@@ -3337,9 +3338,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isn t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isn t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -3386,9 +3387,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isn t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isn t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -3445,9 +3446,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isn t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isn t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -19100,9 +19101,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isn t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isn t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -19154,9 +19155,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isn t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isn t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
