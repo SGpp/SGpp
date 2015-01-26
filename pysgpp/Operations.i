@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-namespace sg
+namespace SGPP
 {
 //-     namespace base ------------------------------------------------
 namespace base
@@ -16,7 +16,7 @@ class RefinementFunctor
 public:
 	typedef double value_type;
 
-	virtual double operator()(sg::base::GridStorage* storage, size_t seq) = 0;
+	virtual double operator()(SGPP::base::GridStorage* storage, size_t seq) = 0;
 	virtual double start() = 0;	
 };
 
@@ -25,7 +25,7 @@ class CoarseningFunctor
 public:
 	typedef double value_type;
 
-	virtual double operator()(sg::base::GridStorage* storage, size_t seq) = 0;
+	virtual double operator()(SGPP::base::GridStorage* storage, size_t seq) = 0;
 	virtual double start() = 0;	
 };
 
@@ -36,46 +36,46 @@ public:
 	virtual void cliques(int level, size_t clique_size) = 0;
 	virtual void full(size_t level) = 0;
 	virtual void truncated(size_t level,size_t l_user) = 0;
-	virtual void refine(sg::base::RefinementFunctor* func) = 0;
-	virtual void coarsen(sg::base::CoarseningFunctor* func, sg::base::DataVector* alpha) = 0;
-	virtual void coarsenNFirstOnly(sg::base::CoarseningFunctor* func, sg::base::DataVector* alpha, size_t numFirstOnly) = 0;
+	virtual void refine(SGPP::base::RefinementFunctor* func) = 0;
+	virtual void coarsen(SGPP::base::CoarseningFunctor* func, SGPP::base::DataVector* alpha) = 0;
+	virtual void coarsenNFirstOnly(SGPP::base::CoarseningFunctor* func, SGPP::base::DataVector* alpha, size_t numFirstOnly) = 0;
 	virtual int getNumberOfRefinablePoints() = 0;
 	virtual int getNumberOfRemovablePoints() = 0;
-	virtual void refineMaxLevel(sg::base::RefinementFunctor* func, unsigned int maxLevel) = 0;
+	virtual void refineMaxLevel(SGPP::base::RefinementFunctor* func, unsigned int maxLevel) = 0;
 	virtual int getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel) = 0;
 };
 
 class OperationMultipleEval
 {
 public:
-	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
-	virtual void multTranspose(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
+	virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
+	virtual void multTranspose(SGPP::base::DataVector& source, SGPP::base::DataVector& result) = 0;
 };
 
 class OperationMatrix
 {
 public:
-	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 };
 
 class OperationConvert
 {
 public:
-	virtual void doConvertToLinear(sg::base::DataVector& alpha) = 0;
-	virtual void doConvertFromLinear(sg::base::DataVector& alpha) = 0;
+	virtual void doConvertToLinear(SGPP::base::DataVector& alpha) = 0;
+	virtual void doConvertFromLinear(SGPP::base::DataVector& alpha) = 0;
 };
 
 class OperationEval
 {
 public:
-	virtual double eval(sg::base::DataVector& alpha, sg::base::DataVector& point) = 0;
+	virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
 };
 
 class OperationHierarchisation
 {
 public:
-	virtual void doHierarchisation(sg::base::DataVector& node_values) = 0;
-	virtual void doDehierarchisation(sg::base::DataVector& alpha) = 0;
+	virtual void doHierarchisation(SGPP::base::DataVector& node_values) = 0;
+	virtual void doDehierarchisation(SGPP::base::DataVector& alpha) = 0;
 };
 }
 
@@ -83,7 +83,7 @@ namespace base {
 class OperationQuadrature
 {
 public:
-	virtual double doQuadrature(sg::base::DataVector& alpha) = 0;
+	virtual double doQuadrature(SGPP::base::DataVector& alpha) = 0;
 };
 
 }
@@ -92,20 +92,20 @@ public:
 #ifdef SG_DATADRIVEN
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {
-%nodefaultdtor sg::datadriven::OperationTest;
+%nodefaultdtor SGPP::datadriven::OperationTest;
 class OperationTest
 {
 public:
-  virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes) = 0;
-	virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues) = 0;
-	virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) = 0;
-	virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) = 0;
+  virtual double test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) = 0;
+	virtual double testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) = 0;
+	virtual double testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) = 0;
+	virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) = 0;
 };
 
 class OperationRegularizationDiagonal
 {
 public:
-	virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+	virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 	static const int HKMIX = 1;
 	static const int H0HKLAPLACE = 2;
 	static const int ISOTROPIC_PENALTY = 3;
@@ -137,8 +137,8 @@ namespace parallel {
 class OperationMultipleEvalVectorized
 {
 public:
-	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
-	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
+	virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
+	virtual double multTransposeVectorized(SGPP::base::DataVector& source, SGPP::base::DataVector& result) = 0;
 	virtual void rebuildLevelAndIndex() = 0;
 };
 

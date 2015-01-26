@@ -7,7 +7,7 @@
 
 %{
 
-namespace sg
+namespace SGPP
 {
 namespace base
 {
@@ -77,23 +77,23 @@ namespace base
    // note : PyObject *pyfunc is remapped with a typemap
    double doQuadratureFunc(PyObject *pyfunc) {
      double d;
-     d = self->doQuadratureFunc(sg::base::PythonCallBackFunc, (void *) pyfunc);
+     d = self->doQuadratureFunc(SGPP::base::PythonCallBackFunc, (void *) pyfunc);
      return d;
    }
-   double doQuadratureL2Error(PyObject *pyfunc, sg::base::DataVector& alpha) {
+   double doQuadratureL2Error(PyObject *pyfunc, SGPP::base::DataVector& alpha) {
      double d;
-     d = self->doQuadratureL2Error(sg::base::PythonCallBackFunc, (void *) pyfunc, alpha);
+     d = self->doQuadratureL2Error(SGPP::base::PythonCallBackFunc, (void *) pyfunc, alpha);
      return d;
    }
 }
 %enddef
 
 %include "sgpp/base/tools/OperationQuadratureMC.hpp"
-QUADRATURE_CALLBACK_EXTEND(sg::base::OperationQuadratureMC)
+QUADRATURE_CALLBACK_EXTEND(SGPP::base::OperationQuadratureMC)
 
 #ifdef SG_MCM
 %apply (long long int* IN_ARRAY1, int DIM1) {(long long int* n, int dim)};
 %include "src/sgpp/mcm/tools/OperationQuadratureMCAdvanced.hpp"
-QUADRATURE_CALLBACK_EXTEND(sg::mcm::OperationQuadratureMCAdvanced)
+QUADRATURE_CALLBACK_EXTEND(SGPP::mcm::OperationQuadratureMCAdvanced)
 #endif
 

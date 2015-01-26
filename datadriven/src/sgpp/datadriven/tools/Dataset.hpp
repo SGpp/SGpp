@@ -13,7 +13,7 @@
 
 #include <cstddef>
 
-namespace sg {
+namespace SGPP {
   namespace datadriven {
 
     class Dataset {
@@ -44,18 +44,18 @@ namespace sg {
         /**
          * @return classes data of the dataset
          */
-        sg::base::DataVector* getClasses();
+        SGPP::base::DataVector* getClasses();
 
         /**
          * @return training data of the dataset
          */
-        sg::base::DataMatrix* getTrainingData();
+        SGPP::base::DataMatrix* getTrainingData();
 
       protected:
         size_t numberInstances;
         size_t dimension;
-        sg::base::DataVector classes;
-        sg::base::DataMatrix trainingData;
+        SGPP::base::DataVector classes;
+        SGPP::base::DataMatrix trainingData;
     };
 
   }

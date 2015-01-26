@@ -4,17 +4,17 @@
 %rename(assign) FullGrid::operator=;
 %include "std_vector.i"
 
-%newobject sg::combigrid::FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel);
-%newobject sg::combigrid::FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel);
+%newobject SGPP::combigrid::FullGrid::createLinearFullGrid(size_t dim, vector<level_t> *inlevel);
+%newobject SGPP::combigrid::FullGrid::createLinearBoundaryFullGrid(size_t dim, vector<level_t> *inlevel);
 
 
 namespace std{
-	%template(leveltvector) vector<sg::combigrid::FullGrid::level_t>;
+	%template(leveltvector) vector<SGPP::combigrid::FullGrid::level_t>;
 }
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+namespace SGPP {
 namespace combigrid{
 class FullGrid{
 public:
