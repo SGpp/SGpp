@@ -16,7 +16,10 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
 namespace datadriven {
 
@@ -32,9 +35,9 @@ namespace datadriven {
 class LearnerBase {
 protected:
 	/// the grid's coefficients
-	sg::base::DataVector* alpha_;
+	SGPP::base::DataVector* alpha_;
 	/// sparse grid object
-	sg::base::Grid* grid_;
+	SGPP::base::Grid* grid_;
 	/// is verbose output enabled
 	bool isVerbose_;
 	/// is regression selected
@@ -81,7 +84,7 @@ protected:
 	 * @param numNeededIterations number of required iterations
 	 *
 	 */
-	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+	virtual void postProcessing(const SGPP::base::DataMatrix& trainDataset, const SGPP::solver::SLESolverType& solver,
 			const size_t numNeededIterations);
 
 	/**
@@ -89,7 +92,7 @@ protected:
 	 *
 	 * @param GridConfig structure which describes the regular start grid
 	 */
-	virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig);
+	virtual void InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig);
 
 	/**
 	 * abstract method that constructs the corresponding system of linear equations
@@ -98,7 +101,7 @@ protected:
 	 * @param trainDataset training dataset
 	 * @param lambda lambda regularization parameter
 	 */
-	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) = 0;
+	virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda) = 0;
 
 public:
 	/**
@@ -144,11 +147,11 @@ public:
 	 * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
 	 * @param lambda regularization parameter lambda
 	 */
-	virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-			const sg::base::RegularGridConfiguration& GridConfig,
-			const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-			const sg::solver::SLESolverConfiguration& SolverConfigFinal,
-			const sg::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt, const double lambda);
+	virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
+			const SGPP::base::RegularGridConfiguration& GridConfig,
+			const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+			const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+			const SGPP::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt, const double lambda);
 
 	/**
 	 * Learning a dataset with regular sparse grids
@@ -159,9 +162,9 @@ public:
 	 * @param SolverConfig configuration of the SLE solver
 	 * @param lamda regularization parameter lambda
 	 */
-	LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-			const sg::base::RegularGridConfiguration& GridConfig,
-			const sg::solver::SLESolverConfiguration& SolverConfig, const double lamda);
+	LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
+			const SGPP::base::RegularGridConfiguration& GridConfig,
+			const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lamda);
 
 	/**
 	 * executes a Regression test for a given dataset and returns the result
@@ -170,7 +173,7 @@ public:
 	 *
 	 * @return regression values of testDataset
 	 */
-	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
+	virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
 
 	/**
 	 * compute the accuracy for given testDataset. test is automatically called
@@ -185,7 +188,7 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(sg::base::DataMatrix& testDataset, const sg::base::DataVector& classesReference,
+	virtual double getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
 			const double threshold = 0.0);
 
 	/**
@@ -200,8 +203,8 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(const sg::base::DataVector& classesComputed,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual double getAccuracy(const SGPP::base::DataVector& classesComputed,
+			const SGPP::base::DataVector& classesReference, const double threshold = 0.0);
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -214,8 +217,8 @@ public:
 	 *
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
-	virtual ClassificatorQuality getCassificatorQuality(sg::base::DataMatrix& testDataset,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual ClassificatorQuality getCassificatorQuality(SGPP::base::DataMatrix& testDataset,
+			const SGPP::base::DataVector& classesReference, const double threshold = 0.0);
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -226,8 +229,8 @@ public:
 	 *
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
-	virtual ClassificatorQuality getCassificatorQuality(const sg::base::DataVector& classesComputed,
-			const sg::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual ClassificatorQuality getCassificatorQuality(const SGPP::base::DataVector& classesComputed,
+			const SGPP::base::DataVector& classesReference, const double threshold = 0.0);
 
 	/**
 	 * store the grid and its current coefficients into files for

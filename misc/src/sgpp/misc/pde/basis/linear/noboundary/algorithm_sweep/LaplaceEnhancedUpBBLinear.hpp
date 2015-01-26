@@ -16,7 +16,10 @@
 #include "immintrin.h"
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -28,12 +31,12 @@ namespace sg {
      */
     class LaplaceEnhancedUpBBLinear {
       protected:
-        typedef sg::base::GridStorage::grid_iterator grid_iterator;
+        typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
 
-        /// Pointer to sg::base::GridStorage object
-        sg::base::GridStorage* storage;
+        /// Pointer to SGPP::base::GridStorage object
+        SGPP::base::GridStorage* storage;
         /// Pointer to the bounding box Obejct
-        sg::base::BoundingBox* boundingBox;
+        SGPP::base::BoundingBox* boundingBox;
         /// algorithmic dimensions, operator is applied in this dimensions
         const std::vector<size_t> algoDims;
         /// number of algorithmic dimensions
@@ -57,9 +60,9 @@ namespace sg {
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        LaplaceEnhancedUpBBLinear(sg::base::GridStorage* storage);
+        LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -70,12 +73,12 @@ namespace sg {
          * This operations performs the calculation of up in the direction of dimension <i>dim</i>
          * on a grid with fix Dirichlet 0 boundary conditions
          *
-         * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-         * @param result sg::base::DataVector that contains the result of the up operation
+         * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+         * @param result SGPP::base::DataVector that contains the result of the up operation
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        virtual void operator()(sg::base::DataMatrix& source, sg::base::DataMatrix& result, grid_iterator& index, size_t dim);
+        virtual void operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim);
 
       protected:
 
@@ -192,7 +195,7 @@ namespace sg {
 
     // namespace detail
   }
-  // namespace sg
+  // namespace SGPP
 }
 
 #endif /* LAPLACEENHANCEDUPBBLINEAR_HPP */

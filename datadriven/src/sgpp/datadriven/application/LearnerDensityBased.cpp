@@ -9,11 +9,14 @@
 #include <sgpp/base/exception/data_exception.hpp>
 #include <limits>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace datadriven {
 
-    LearnerDensityBased::LearnerDensityBased(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression,
+    LearnerDensityBased::LearnerDensityBased(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression,
         const bool isVerbose) :
       LearnerBase(isRegression, isVerbose), CMode_(regularization) {
       this->withPrior = true;
@@ -37,13 +40,13 @@ namespace sg {
       alphaVec_.clear();
     }
 
-    sg::datadriven::DMSystemMatrixBase* LearnerDensityBased::createDMSystem(
-      sg::base::DataMatrix& trainDataset, double lambda) {
+    SGPP::datadriven::DMSystemMatrixBase* LearnerDensityBased::createDMSystem(
+      SGPP::base::DataMatrix& trainDataset, double lambda) {
       // Is not used
       return NULL;
     }
 
-    void LearnerDensityBased::InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig) {
+    void LearnerDensityBased::InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig) {
       if (this->nrClasses == 0) {
         throw base::application_exception("LearnerDensityBased::InitializeGrid: Number of classes not set!");
       }
@@ -60,46 +63,46 @@ namespace sg {
       }
 
       for (size_t i = 0; i < nrClasses; i++) {
-        if (GridConfig.type_ == sg::base::LinearTrapezoidBoundary) {
-          gridVec_.push_back(new sg::base::LinearTrapezoidBoundaryGrid(GridConfig.dim_));
-        } else if (GridConfig.type_ == sg::base::ModLinear) {
-          gridVec_.push_back(new sg::base::ModLinearGrid(GridConfig.dim_));
-        } else if (GridConfig.type_ == sg::base::Linear) {
-          gridVec_.push_back(new sg::base::LinearGrid(GridConfig.dim_));
+        if (GridConfig.type_ == SGPP::base::LinearTrapezoidBoundary) {
+          gridVec_.push_back(new SGPP::base::LinearTrapezoidBoundaryGrid(GridConfig.dim_));
+        } else if (GridConfig.type_ == SGPP::base::ModLinear) {
+          gridVec_.push_back(new SGPP::base::ModLinearGrid(GridConfig.dim_));
+        } else if (GridConfig.type_ == SGPP::base::Linear) {
+          gridVec_.push_back(new SGPP::base::LinearGrid(GridConfig.dim_));
         } else {
           gridVec_.push_back(NULL);
           throw base::application_exception("LearnerDensityBased::InitializeGrid: An unsupported grid type was chosen!");
         }
 
         // Generate regular Grid with LEVELS Levels
-        sg::base::GridGenerator* myGenerator = gridVec_[i]->createGridGenerator();
+        SGPP::base::GridGenerator* myGenerator = gridVec_[i]->createGridGenerator();
         myGenerator->regular(GridConfig.level_);
         delete myGenerator;
 
         // Create alpha
-        alphaVec_.push_back(sg::base::DataVector(gridVec_[i]->getSize()));
+        alphaVec_.push_back(SGPP::base::DataVector(gridVec_[i]->getSize()));
         alphaVec_[i].setAll(0.0);
       }
     }
 
-    // LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
-    //    sg::base::DataVector& classes,
-    //    const sg::base::RegularGridConfiguration& GridConfig,
-    //    const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-    //    const sg::solver::SLESolverConfiguration& SolverConfigFinal,
-    //    const sg::base::AdpativityConfiguration& AdaptConfig,
+    // LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
+    //    SGPP::base::DataVector& classes,
+    //    const SGPP::base::RegularGridConfiguration& GridConfig,
+    //    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+    //    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+    //    const SGPP::base::AdpativityConfiguration& AdaptConfig,
     //    const bool testAccDuringAdapt, const double lambda)
     // {
     //   return train(trainDataset, classes, GridConfig, SolverConfigRefine, SolverConfigFinal, AdaptConfig, testAccDuringAdapt, lambda, true);
     // }
 
 
-    LearnerTiming LearnerDensityBased::train(sg::base::DataMatrix& trainDataset,
-        sg::base::DataVector& classes,
-        const sg::base::RegularGridConfiguration& GridConfig,
-        const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-        const sg::solver::SLESolverConfiguration& SolverConfigFinal,
-        const sg::base::AdpativityConfiguration& AdaptConfig,
+    LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
+        SGPP::base::DataVector& classes,
+        const SGPP::base::RegularGridConfiguration& GridConfig,
+        const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+        const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+        const SGPP::base::AdpativityConfiguration& AdaptConfig,
         const bool testAccDuringAdapt, const double lambda) {
       LearnerTiming result;
 
@@ -123,13 +126,13 @@ namespace sg {
 
       double oldAcc = 0.0;
 
-      sg::solver::SLESolver* myCG;
+      SGPP::solver::SLESolver* myCG;
 
-      if (SolverConfigRefine.type_ == sg::solver::CG) {
-        myCG = new sg::solver::ConjugateGradients(
+      if (SolverConfigRefine.type_ == SGPP::solver::CG) {
+        myCG = new SGPP::solver::ConjugateGradients(
           SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-      } else if (SolverConfigRefine.type_ == sg::solver::BiCGSTAB) {
-        myCG = new sg::solver::BiCGStab(SolverConfigRefine.maxIterations_,
+      } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+        myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                         SolverConfigRefine.eps_);
       } else {
         throw base::application_exception(
@@ -142,7 +145,7 @@ namespace sg {
       if (isVerbose_)
         std::cout << "Starting Learning...." << std::endl;
 
-      sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+      SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
 
       int dim = (int)trainDataset.getNcols();
 
@@ -160,14 +163,14 @@ namespace sg {
       }
 
       //Create an empty matrix for every class:
-      std::vector<sg::base::DataMatrix> trainDataClasses;
+      std::vector<SGPP::base::DataMatrix> trainDataClasses;
       std::map<double, int> class_indeces; //Maps class numbers to indices
 
       std::map<double, int>::iterator it;
       int index = 0;
 
       for (it = entriesPerClass.begin(); it != entriesPerClass.end(); it++) {
-        sg::base::DataMatrix m(0/*(*it).second*/, dim);
+        SGPP::base::DataMatrix m(0/*(*it).second*/, dim);
         trainDataClasses.push_back(m);
         class_indeces[(*it).first] = index;
         index_to_class_.insert(std::pair<int, double>(index, (*it).first));
@@ -185,7 +188,7 @@ namespace sg {
       //Split the data into the different classes:
       for (unsigned int i = 0; i < trainDataset.getNrows(); i++) {
         double classLabel = classes[i];
-        sg::base::DataVector vec(dim);
+        SGPP::base::DataVector vec(dim);
         trainDataset.getRow(i, vec);
         trainDataClasses[class_indeces[classLabel]].appendRow(vec);
       }
@@ -217,8 +220,8 @@ namespace sg {
         // Do Refinements
         if (i > 0) {
           for (size_t ii = 0; ii < alphaVec_.size(); ii++) {
-            sg::base::SurplusRefinementFunctor* myRefineFunc =
-              new sg::base::SurplusRefinementFunctor(&alphaVec_[ii], AdaptConfig.noPoints_);
+            SGPP::base::SurplusRefinementFunctor* myRefineFunc =
+              new SGPP::base::SurplusRefinementFunctor(&alphaVec_[ii], AdaptConfig.noPoints_);
             gridVec_[ii]->createGridGenerator()->refine(myRefineFunc);
             delete myRefineFunc;
 
@@ -245,9 +248,9 @@ namespace sg {
 
         for (size_t ii = 0; ii < class_indeces.size(); ii++) {
           if (this->CMode_ == Laplace) {
-            CVec_.push_back(sg::op_factory::createOperationLaplace(*this->gridVec_[ii]));
+            CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]));
           } else if (this->CMode_ == Identity) {
-            CVec_.push_back(sg::op_factory::createOperationIdentity(*this->gridVec_[ii]));
+            CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]));
           } else {
             throw base::application_exception("LearnerDensityBased::train: Unknown regularization operator");
           }
@@ -255,9 +258,9 @@ namespace sg {
 
         //Solve the system for every class and store coefficients:
         for (size_t ii = 0; ii < trainDataClasses.size(); ii++) {
-          sg::datadriven::DensitySystemMatrix DMatrix(*gridVec_[ii], trainDataClasses[ii], *(CVec_[ii]), lambda);
-          sg::base::DataVector rhs(gridVec_[ii]->getStorage()->size());
-          sg::base::DataVector alpha(gridVec_[ii]->getStorage()->size());
+          SGPP::datadriven::DensitySystemMatrix DMatrix(*gridVec_[ii], trainDataClasses[ii], *(CVec_[ii]), lambda);
+          SGPP::base::DataVector rhs(gridVec_[ii]->getStorage()->size());
+          SGPP::base::DataVector alpha(gridVec_[ii]->getStorage()->size());
           alpha.setAll(0.0);
           DMatrix.generateb(rhs);
 
@@ -352,24 +355,24 @@ namespace sg {
       return result;
     }
 
-    sg::base::DataVector LearnerDensityBased::predict(
-      sg::base::DataMatrix& testDataset) {
+    SGPP::base::DataVector LearnerDensityBased::predict(
+      SGPP::base::DataMatrix& testDataset) {
       if (isTrained_) {
-        sg::base::DataVector result(testDataset.getNrows());
+        SGPP::base::DataVector result(testDataset.getNrows());
 
         for (unsigned int i = 0; i < testDataset.getNrows(); i++) {
-          sg::base::DataVector p(testDataset.getNcols());
+          SGPP::base::DataVector p(testDataset.getNcols());
           testDataset.getRow(i, p);
 
           //Compute maximum of all density functions:
-          std::vector<sg::base::DataVector>::iterator it;
+          std::vector<SGPP::base::DataVector>::iterator it;
           int max_index = -1;
           double max = std::numeric_limits<double>::min();
           int class_index = 0;
 
           for (it = alphaVec_.begin(); it != alphaVec_.end(); it++) {
-            sg::base::OperationEval* Eval = sg::op_factory::createOperationEval(*gridVec_[class_index]);
-            sg::base::DataVector alpha = *it;
+            SGPP::base::OperationEval* Eval = SGPP::op_factory::createOperationEval(*gridVec_[class_index]);
+            SGPP::base::DataVector alpha = *it;
             //posterior = likelihood*prior
             double res = Eval->eval(alpha, p) * this->prior[class_index];
 

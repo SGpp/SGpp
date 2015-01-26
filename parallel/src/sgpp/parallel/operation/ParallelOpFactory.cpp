@@ -66,7 +66,10 @@
 #endif
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace op_factory {
 
@@ -270,7 +273,7 @@ namespace sg {
       }
     }
 
-    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
+    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
           return new parallel::OperationLTwoDotLaplaceVectorizedLinear(grid.getStorage(), lambda);
@@ -348,7 +351,7 @@ namespace sg {
       }
     }
 
-    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
+    base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
       if (strcmp(grid.getType(), "linear") == 0) {
         if (vecType == parallel::X86SIMD) {
           return new parallel::OperationLaplaceVectorizedLinear(grid.getStorage(), lambda);

@@ -33,17 +33,17 @@ std::string ggridtype;
 std::string gdataFile;
 std::string gtestFile;
 bool gisRegression;
-sg::datadriven::ClassificatorQuality gTrainQual;
-sg::datadriven::ClassificatorQuality gTestQual;
-sg::datadriven::LearnerTiming gtimings;
+SGPP::datadriven::ClassificatorQuality gTrainQual;
+SGPP::datadriven::ClassificatorQuality gTestQual;
+SGPP::datadriven::LearnerTiming gtimings;
 double gtrainAcc;
 double gtestAcc;
-sg::solver::SLESolverConfiguration gSLEfinal;
-sg::base::AdpativityConfiguration gAdapConfig;
+SGPP::solver::SLESolverConfiguration gSLEfinal;
+SGPP::base::AdpativityConfiguration gAdapConfig;
 int gstart_level;
 double glambda;
 
-//void storeROCcurve(sg::base::DataMatrix& ROC_curve, std::string tFilename)
+//void storeROCcurve(SGPP::base::DataMatrix& ROC_curve, std::string tFilename)
 //{
 //  std::ofstream fileout;
 //
@@ -61,10 +61,10 @@ double glambda;
 //}
 
 void printSettings(std::string dataFile, std::string testFile, bool isRegression,
-                   const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-                   const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-                   const double lambda, const sg::parallel::VectorizationType vecType) {
-  if (sg::parallel::myGlobalMPIComm->getMyRank() != 0) {
+                   const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+                   const SGPP::solver::SLESolverConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
+                   const double lambda, const SGPP::parallel::VectorizationType vecType) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() != 0) {
     return;
   }
 
@@ -91,27 +91,27 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
     std::cout << "Precision: Double Precision (double)" << std::endl << std::endl;
   }
 
-  if (vecType == sg::parallel::X86SIMD) {
+  if (vecType == SGPP::parallel::X86SIMD) {
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: X86SIMD (SSE3)" << std::endl << std::endl;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
     std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
 #endif
-  } else if (vecType == sg::parallel::OpenCL) {
+  } else if (vecType == SGPP::parallel::OpenCL) {
     std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
-  } else if (vecType == sg::parallel::Hybrid_X86SIMD_OpenCL) {
+  } else if (vecType == SGPP::parallel::Hybrid_X86SIMD_OpenCL) {
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
     std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
 #endif
-  } else if (vecType == sg::parallel::ArBB) {
+  } else if (vecType == SGPP::parallel::ArBB) {
     std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
-  } else if (vecType == sg::parallel::MIC) {
+  } else if (vecType == SGPP::parallel::MIC) {
     std::cout << "Vectorized: Intel MIC Architecture" << std::endl << std::endl;
-  } else if (vecType == sg::parallel::Hybrid_X86SIMD_MIC) {
+  } else if (vecType == SGPP::parallel::Hybrid_X86SIMD_MIC) {
 #if defined(__SSE3__) && !defined(__AVX__)
     std::cout << "Vectorized: Hybrid, SSE3 and Intel MIC Architecture" << std::endl << std::endl;
 #endif
@@ -128,9 +128,9 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
     std::cout << "Mode: Classification" << std::endl << std::endl;
   }
 
-  if (GridConfig.type_ == sg::base::Linear) {
+  if (GridConfig.type_ == SGPP::base::Linear) {
     std::cout << "chosen gridtype: Linear" << std::endl << std::endl;
-  } else if (GridConfig.type_ == sg::base::LinearTrapezoidBoundary) {
+  } else if (GridConfig.type_ == SGPP::base::LinearTrapezoidBoundary) {
     std::cout << "chosen gridtype: LinearTrapezoidBoundary" << std::endl << std::endl;
   } else {
     const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
@@ -146,7 +146,7 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 }
 
 void printResults() {
-  if (sg::parallel::myGlobalMPIComm->getMyRank() != 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() != 0) {
     return;
   }
 
@@ -225,16 +225,16 @@ void printResults() {
             << gtrainAcc << ";" << gtestAcc << ";" << gtimings.timeComplete_ << ";" << gtimings.timeMultComplete_
             << ";" << gtimings.timeMultCompute_ << ";" << gtimings.timeMultTransComplete_ << ";" << gtimings.timeMultTransCompute_
             << ";" << gtimings.GFlop_ / gtimings.timeComplete_ << ";"
-            << gtimings.GByte_ / gtimings.timeComplete_ << ";" << gtimings.GFlop_ / (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_) << ";" << gtimings.GByte_ / (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_)  << ";" << sg::parallel::myGlobalMPIComm->getNumRanks()  << ";" << ompThreadCount  << std::endl << std::endl;
+            << gtimings.GByte_ / gtimings.timeComplete_ << ";" << gtimings.GFlop_ / (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_) << ";" << gtimings.GByte_ / (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_)  << ";" << SGPP::parallel::myGlobalMPIComm->getNumRanks()  << ";" << ompThreadCount  << std::endl << std::endl;
 }
 
-void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,
-                             sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-                             const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-                             const double lambda, const sg::parallel::VectorizationType vecType, const sg::parallel::MPIType mpiType) {
-  sg::datadriven::LearnerBase* myLearner;
+void adaptClassificationTest(SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataMatrix& testdata, SGPP::base::DataVector& testclasses, bool isRegression,
+                             SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+                             const SGPP::solver::SLESolverConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
+                             const double lambda, const SGPP::parallel::VectorizationType vecType, const SGPP::parallel::MPIType mpiType) {
+  SGPP::datadriven::LearnerBase* myLearner;
 
-  myLearner = new sg::parallel::LearnerVectorizedIdentity(vecType, mpiType, isRegression, true);
+  myLearner = new SGPP::parallel::LearnerVectorizedIdentity(vecType, mpiType, isRegression, true);
 
   // training
   gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,  SolverConfigFinal, AdaptConfig, false, lambda);
@@ -243,7 +243,7 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
   double time_gTrainQual = 0;
   double time_gTestQual = 0;
   double time_gTestAcc = 0;
-  sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+  SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
 
   // testing
   myStopwatch->start();
@@ -264,7 +264,7 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
     time_gTestQual = myStopwatch->stop();
   }
 
-  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
     std::cout << "Times for Testing: " << std::endl
               << "Train Acc:  " << time_gTrainAcc << " s" << std::endl
               << "Test  Acc:  " << time_gTestAcc << " s" << std::endl
@@ -280,19 +280,19 @@ void adaptClassificationTest(sg::base::DataMatrix& data, sg::base::DataVector& c
   printResults();
 }
 
-void adaptClassificationTestRecursive(sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataMatrix& testdata, sg::base::DataVector& testclasses, bool isRegression,
-                                      sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-                                      const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-                                      const double lambda, const sg::parallel::VectorizationType vecType) {
-  sg::datadriven::LearnerBase* myLearner;
-  sg::datadriven::LearnerRegularizationType C_type;
+void adaptClassificationTestRecursive(SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataMatrix& testdata, SGPP::base::DataVector& testclasses, bool isRegression,
+                                      SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+                                      const SGPP::solver::SLESolverConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
+                                      const double lambda, const SGPP::parallel::VectorizationType vecType) {
+  SGPP::datadriven::LearnerBase* myLearner;
+  SGPP::datadriven::LearnerRegularizationType C_type;
 
 #ifdef USE_REC_LAPLACE
-  C_type = sg::datadriven::Laplace;
+  C_type = SGPP::datadriven::Laplace;
 #else
-  C_type = sg::datadriven::Identity;
+  C_type = SGPP::datadriven::Identity;
 #endif
-  myLearner = new sg::datadriven::Learner(C_type, isRegression, true);
+  myLearner = new SGPP::datadriven::Learner(C_type, isRegression, true);
 
   // training
   gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,  SolverConfigFinal, AdaptConfig, false, lambda);
@@ -314,13 +314,13 @@ void adaptClassificationTestRecursive(sg::base::DataMatrix& data, sg::base::Data
   printResults();
 }
 
-void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVectorSP& classesSP, sg::base::DataMatrixSP& testdataSP, sg::base::DataVectorSP& testclassesSP, bool isRegression,
-                               sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverSPConfiguration& SolverConfigRefine,
-                               const sg::solver::SLESolverSPConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
-                               const float lambda, const sg::parallel::VectorizationType vecType, const sg::parallel::MPIType mpiType) {
-  sg::datadriven::LearnerBaseSP* myLearner;
+void adaptClassificationTestSP(SGPP::base::DataMatrixSP& dataSP, SGPP::base::DataVectorSP& classesSP, SGPP::base::DataMatrixSP& testdataSP, SGPP::base::DataVectorSP& testclassesSP, bool isRegression,
+                               SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
+                               const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
+                               const float lambda, const SGPP::parallel::VectorizationType vecType, const SGPP::parallel::MPIType mpiType) {
+  SGPP::datadriven::LearnerBaseSP* myLearner;
 
-  myLearner = new sg::parallel::LearnerVectorizedIdentitySP(vecType, mpiType, isRegression, true);
+  myLearner = new SGPP::parallel::LearnerVectorizedIdentitySP(vecType, mpiType, isRegression, true);
 
   // training
   gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,  SolverConfigFinal, AdaptConfig, false, lambda);
@@ -343,7 +343,7 @@ void adaptClassificationTestSP(sg::base::DataMatrixSP& dataSP, sg::base::DataVec
 }
 
 void printHelp() {
-  if (sg::parallel::myGlobalMPIComm->getMyRank() != 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() != 0) {
     return;
   }
 
@@ -372,7 +372,7 @@ void printHelp() {
 }
 
 void printHeader() {
-  if (sg::parallel::myGlobalMPIComm->getMyRank() != 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() != 0) {
     return;
   }
 
@@ -401,7 +401,7 @@ int main(int argc, char* argv[]) {
 
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
-  sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_size);
+  SGPP::parallel::myGlobalMPIComm = new SGPP::parallel::MPICommunicator(mpi_myid, mpi_size);
 
   std::streambuf* stdoutBuf = std::cout.rdbuf();
   std::ofstream dummy_out("/dev/null");
@@ -430,14 +430,14 @@ int main(int argc, char* argv[]) {
   int start_level = 0;
   size_t cg_max_learning = 0;
 
-  sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sg::solver::SLESolverSPConfiguration SLESolverSPConfigRefine;
-  sg::solver::SLESolverSPConfiguration SLESolverSPConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
-  sg::parallel::VectorizationType vecType;
-  sg::parallel::MPIType mpiType;
+  SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+  SGPP::solver::SLESolverSPConfiguration SLESolverSPConfigRefine;
+  SGPP::solver::SLESolverSPConfiguration SLESolverSPConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
+  SGPP::parallel::VectorizationType vecType;
+  SGPP::parallel::MPIType mpiType;
 
   bool regression;
 
@@ -471,36 +471,36 @@ int main(int argc, char* argv[]) {
     // Set Vectorization
     // Fallback
     if (vectorization == "X86SIMD") {
-      vecType = sg::parallel::X86SIMD;
+      vecType = SGPP::parallel::X86SIMD;
     } else if  (vectorization == "OCL") {
-      vecType = sg::parallel::OpenCL;
+      vecType = SGPP::parallel::OpenCL;
     } else if  (vectorization == "HYBRID_X86SIMD_OCL") {
-      vecType = sg::parallel::Hybrid_X86SIMD_OpenCL;
+      vecType = SGPP::parallel::Hybrid_X86SIMD_OpenCL;
     } else if  (vectorization == "ArBB") {
-      vecType = sg::parallel::ArBB;
+      vecType = SGPP::parallel::ArBB;
     } else if  (vectorization == "MIC") {
-      vecType = sg::parallel::MIC;
+      vecType = SGPP::parallel::MIC;
     } else if  (vectorization == "HYBRID_X86SIMD_MIC") {
-      vecType = sg::parallel::Hybrid_X86SIMD_MIC;
+      vecType = SGPP::parallel::Hybrid_X86SIMD_MIC;
     } else {
-      vecType = sg::parallel::X86SIMD;
+      vecType = SGPP::parallel::X86SIMD;
     }
 
     // set MPI Type
     if (mpiConfValue == "Alltoallv") {
-      mpiType = sg::parallel::MPIAlltoallv;
+      mpiType = SGPP::parallel::MPIAlltoallv;
     } else if (mpiConfValue == "Allreduce") {
-      mpiType = sg::parallel::MPIAllreduce;
+      mpiType = SGPP::parallel::MPIAllreduce;
     } else if (mpiConfValue == "Async") {
-      mpiType = sg::parallel::MPIAsync;
+      mpiType = SGPP::parallel::MPIAsync;
     } else if (mpiConfValue == "TrueAsync") {
-      mpiType = sg::parallel::MPITrueAsync;
+      mpiType = SGPP::parallel::MPITrueAsync;
     } else if (mpiConfValue == "Onesided") {
-      mpiType = sg::parallel::MPIOnesided;
+      mpiType = SGPP::parallel::MPIOnesided;
     } else if (mpiConfValue == "Bigdata") {
-      mpiType = sg::parallel::MPIBigdata;
+      mpiType = SGPP::parallel::MPIBigdata;
     } else {
-      mpiType = sg::parallel::MPINone;
+      mpiType = SGPP::parallel::MPINone;
     }
 
     // Set Adaptivity
@@ -514,25 +514,25 @@ int main(int argc, char* argv[]) {
     SLESolverConfigRefine.eps_ = cg_eps_learning;
     SLESolverConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = sg::solver::CG;
+    SLESolverConfigRefine.type_ = SGPP::solver::CG;
 
     SLESolverSPConfigRefine.eps_ = static_cast<float>(cg_eps_learning);
     SLESolverSPConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverSPConfigRefine.threshold_ = -1.0f;
-    SLESolverSPConfigRefine.type_ = sg::solver::CG;
+    SLESolverSPConfigRefine.type_ = SGPP::solver::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = cg_eps;
     SLESolverConfigFinal.maxIterations_ = cg_max;
     SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = sg::solver::CG;
+    SLESolverConfigFinal.type_ = SGPP::solver::CG;
 
     SLESolverSPConfigFinal.eps_ = static_cast<float>(cg_eps);
     SLESolverSPConfigFinal.maxIterations_ = cg_max;
     SLESolverSPConfigFinal.threshold_ = -1.0f;
-    SLESolverSPConfigFinal.type_ = sg::solver::CG;
+    SLESolverSPConfigFinal.type_ = SGPP::solver::CG;
 
-    sg::datadriven::ARFFTools ARFFTool;
+    SGPP::datadriven::ARFFTools ARFFTool;
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
 
@@ -540,18 +540,18 @@ int main(int argc, char* argv[]) {
     size_t nInstancesNo;
     size_t nInstancesTestNo;
 
-    sg::datadriven::DatasetGenerator* g = NULL;
+    SGPP::datadriven::DatasetGenerator* g = NULL;
 
-    if (mpiType == sg::parallel::MPIBigdata) {
+    if (mpiType == SGPP::parallel::MPIBigdata) {
       if (dataFile.find("friedman1") != std::string::npos) {
-        g = new sg::datadriven::Friedman1Generator();
+        g = new SGPP::datadriven::Friedman1Generator();
       } else if (dataFile.find("friedman2") != std::string::npos) {
-        g = new sg::datadriven::Friedman2Generator();
+        g = new SGPP::datadriven::Friedman2Generator();
       } else if (dataFile.find("friedman3") != std::string::npos) {
-        g = new sg::datadriven::Friedman3Generator();
+        g = new SGPP::datadriven::Friedman3Generator();
       } else {
         std::cout << "cannot generate dataset for " << dataFile << std::endl;
-        throw sg::base::operation_exception("cannot generate dataset");
+        throw SGPP::base::operation_exception("cannot generate dataset");
       }
 
       nDim = g->getDims();
@@ -573,19 +573,19 @@ int main(int argc, char* argv[]) {
     nInstancesTestNo = ARFFTool.getNumberInstances(tfileTest);
 
     // Define DP data
-    sg::base::DataMatrix data(nInstancesNo, nDim);
-    sg::base::DataVector classes(nInstancesNo);
-    sg::base::DataMatrix testdata(nInstancesTestNo, nDim);
-    sg::base::DataVector testclasses(nInstancesTestNo);
+    SGPP::base::DataMatrix data(nInstancesNo, nDim);
+    SGPP::base::DataVector classes(nInstancesNo);
+    SGPP::base::DataMatrix testdata(nInstancesTestNo, nDim);
+    SGPP::base::DataVector testclasses(nInstancesTestNo);
 
     // Define SP data
-    sg::base::DataMatrixSP dataSP(nInstancesNo, nDim);
-    sg::base::DataVectorSP classesSP(nInstancesNo);
-    sg::base::DataMatrixSP testdataSP(nInstancesTestNo, nDim);
-    sg::base::DataVectorSP testclassesSP(nInstancesTestNo);
+    SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);
+    SGPP::base::DataVectorSP classesSP(nInstancesNo);
+    SGPP::base::DataMatrixSP testdataSP(nInstancesTestNo, nDim);
+    SGPP::base::DataVectorSP testclassesSP(nInstancesTestNo);
 
 
-    if (mpiType == sg::parallel::MPIBigdata) {
+    if (mpiType == SGPP::parallel::MPIBigdata) {
       g->createData(mpi_myid, nInstancesNo, data, classes);
       delete g;
     } else {
@@ -597,21 +597,21 @@ int main(int argc, char* argv[]) {
     ARFFTool.readTrainingData(tfileTest, testdata);
     ARFFTool.readClasses(tfileTest, testclasses);
 
-    sg::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);
-    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes, classesSP);
-    sg::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(testdata, testdataSP);
-    sg::base::PrecisionConverter::convertDataVectorToDataVectorSP(testclasses, testclassesSP);
+    SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);
+    SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes, classesSP);
+    SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(testdata, testdataSP);
+    SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(testclasses, testclassesSP);
 
     // Set Grid-Information
     gridConfig.dim_ = nDim;
     ggridtype = gridtype;
 
     if (gridtype == "linearboundary") {
-      gridConfig.type_ = sg::base::LinearTrapezoidBoundary;
+      gridConfig.type_ = SGPP::base::LinearTrapezoidBoundary;
     } else if (gridtype == "modlinear") {
-      gridConfig.type_ = sg::base::ModLinear;
+      gridConfig.type_ = SGPP::base::ModLinear;
     } else if (gridtype == "linear") {
-      gridConfig.type_ = sg::base::Linear;
+      gridConfig.type_ = SGPP::base::Linear;
     } else {
       std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
       return -1;

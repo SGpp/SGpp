@@ -21,7 +21,10 @@
 #include <sstream>
 #include <exception>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     template<typename GIT>

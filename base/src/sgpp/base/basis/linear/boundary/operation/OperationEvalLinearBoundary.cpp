@@ -11,7 +11,10 @@
 #include <sgpp/base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationEvalLinearBoundary::eval(DataVector& alpha, std::vector<double>& point) {

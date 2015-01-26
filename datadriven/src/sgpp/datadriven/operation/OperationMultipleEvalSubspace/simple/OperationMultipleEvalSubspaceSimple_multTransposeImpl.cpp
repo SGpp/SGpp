@@ -1,10 +1,13 @@
 
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-void OperationMultipleEvalSubspaceSimple::multTransposeImpl(sg::base::DataVector &alpha, sg::base::DataVector &result,
+void OperationMultipleEvalSubspaceSimple::multTransposeImpl(SGPP::base::DataVector &alpha, SGPP::base::DataVector &result,
 //const size_t start_index_grid,
 //const size_t end_index_grid,
         const size_t start_index_data, const size_t end_index_data) {

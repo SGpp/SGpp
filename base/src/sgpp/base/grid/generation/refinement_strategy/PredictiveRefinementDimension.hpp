@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -55,5 +58,5 @@ protected:
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* PREDICTIVEREFINEMENTDIMENSION_HPP_ */

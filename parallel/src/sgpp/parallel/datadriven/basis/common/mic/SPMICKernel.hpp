@@ -31,7 +31,10 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename KernelImplementation>
     class SPMICKernel {
@@ -49,7 +52,7 @@ namespace sg {
             std::stringstream s;
             s << "For MIC symmetric execution: the chunksize of the MIC Kernel (" << KernelImplementation::getChunkDataPoints() << ") needs to be a multiple of the chunksize of the CPU Kernel (" << SPX86SimdKernelBase::getChunkDataPoints() << ")!" << std::endl;
             std::cerr << s.str() << std::endl;
-            throw sg::base::operation_exception(s.str().c_str());
+            throw SGPP::base::operation_exception(s.str().c_str());
           }
 
 #endif
@@ -82,13 +85,13 @@ namespace sg {
 
         static const KernelType kernelType = KernelImplementation::kernelType;
         static inline void mult(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& alpha,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& alpha,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -158,13 +161,13 @@ namespace sg {
 
 
         static inline void multTranspose(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& source,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& source,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,

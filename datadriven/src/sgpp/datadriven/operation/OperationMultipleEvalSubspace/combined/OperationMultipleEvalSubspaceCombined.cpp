@@ -1,9 +1,12 @@
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 OperationMultipleEvalSubspaceCombined::OperationMultipleEvalSubspaceCombined(Grid &grid, DataMatrix &dataset) :
@@ -59,7 +62,7 @@ void OperationMultipleEvalSubspaceCombined::setCoefficients(DataVector &surplusV
     base::level_t curLevel;
     base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
             level[d] = curLevel;
@@ -80,7 +83,7 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector &result) {
     base::level_t curLevel;
     base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
             level[d] = curLevel;
@@ -143,7 +146,7 @@ uint32_t OperationMultipleEvalSubspaceCombined::flattenLevel(size_t dim, size_t 
     return levelFlat;
 }
 
-DataMatrix *OperationMultipleEvalSubspaceCombined::padDataset(sg::base::DataMatrix &dataset) {
+DataMatrix *OperationMultipleEvalSubspaceCombined::padDataset(SGPP::base::DataMatrix &dataset) {
     size_t chunkSize = X86COMBINED_PARALLEL_DATA_POINTS;
 
     // Assure that data has a even number of instances -> padding might be needed
@@ -154,7 +157,7 @@ DataMatrix *OperationMultipleEvalSubspaceCombined::padDataset(sg::base::DataMatr
         return &dataset;
     }
 
-    sg::base::DataVector lastRow(dataset.getNcols());
+    SGPP::base::DataVector lastRow(dataset.getNcols());
     size_t oldSize = dataset.getNrows();
     dataset.getRow(dataset.getNrows() - 1, lastRow);
 

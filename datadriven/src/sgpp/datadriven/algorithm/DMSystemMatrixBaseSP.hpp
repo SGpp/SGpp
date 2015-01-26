@@ -13,17 +13,20 @@
 #include <sgpp/base/operation/OperationMatrixSP.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
-     * Abstract class that defines the virtual class sg::base::OperationMatrix for
+     * Abstract class that defines the virtual class SGPP::base::OperationMatrix for
      * classification and regression problems (single precision version)
      */
-    class DMSystemMatrixBaseSP : public sg::base::OperationMatrixSP {
+    class DMSystemMatrixBaseSP : public SGPP::base::OperationMatrixSP {
       protected:
         /// the dataset
-        sg::base::DataMatrixSP* dataset_;
+        SGPP::base::DataMatrixSP* dataset_;
         /// the lambda, the regularisation parameter
         float lambda_;
         /// time needed for Mult
@@ -35,7 +38,7 @@ namespace sg {
         /// time needed only for the computation of mult transposed, interesting on accelerator boards
         double computeTimeMultTrans_;
         /// Stopwatch needed to determine the durations of mult and mult transposed
-        sg::base::SGppStopwatch* myTimer_;
+        SGPP::base::SGppStopwatch* myTimer_;
 
       public:
         /**
@@ -44,14 +47,14 @@ namespace sg {
          * @param trainData matrix with training data
          * @param lambda the lambda, the regression parameter
          */
-        DMSystemMatrixBaseSP(sg::base::DataMatrixSP& trainData, float lambda);
+        DMSystemMatrixBaseSP(SGPP::base::DataMatrixSP& trainData, float lambda);
 
         /**
          * Std-Destructor
          */
         virtual ~DMSystemMatrixBaseSP();
 
-        virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) = 0;
+        virtual void mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) = 0;
 
         /**
          * Generates the right hand side of the classification equation
@@ -59,12 +62,12 @@ namespace sg {
          * @param classes the class information of the training data
          * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
          */
-        virtual void generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b) = 0;
+        virtual void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b) = 0;
 
         /**
          * forward declaration
          *
-         * rebuilds the sg::base::DataMatrix for Level and Index
+         * rebuilds the SGPP::base::DataMatrix for Level and Index
          * this routine is needed for supporting adaptiva grids
          * with vectorized high performance kernels
          */

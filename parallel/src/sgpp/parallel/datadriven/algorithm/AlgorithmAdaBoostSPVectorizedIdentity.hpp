@@ -12,7 +12,10 @@
 
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /*
@@ -25,12 +28,12 @@ namespace sg {
      *
      * Vectorized MultipleEvalulation Operations are used!
      */
-    class AlgorithmAdaBoostSPVectorizedIdentity : public sg::datadriven::AlgorithmAdaBoostBase {
+    class AlgorithmAdaBoostSPVectorizedIdentity : public SGPP::datadriven::AlgorithmAdaBoostBase {
       protected:
         /// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
         VectorizationType vecMode;
 
-        virtual void alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
+        virtual void alphaSolver(double& lambda, SGPP::base::DataVector& weight, SGPP::base::DataVector& alpha, bool final);
 
       public:
         /**
@@ -61,7 +64,7 @@ namespace sg {
          * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
          * @param mode the adaboost type to choose
          */
-        AlgorithmAdaBoostSPVectorizedIdentity(sg::base::Grid& SparseGrid, size_t gridType, int gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, VectorizationType vecMode, size_t mode);
+        AlgorithmAdaBoostSPVectorizedIdentity(SGPP::base::Grid& SparseGrid, size_t gridType, int gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, VectorizationType vecMode, size_t mode);
 
         /**
          * Std-Deconstructor

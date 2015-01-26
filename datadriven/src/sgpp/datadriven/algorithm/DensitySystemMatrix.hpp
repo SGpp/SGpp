@@ -15,7 +15,10 @@
 #include <sgpp/base/operation/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/OperationMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
@@ -23,19 +26,19 @@ namespace sg {
      * application of classification for the Systemmatrix by using a
      * density function
      */
-    class DensitySystemMatrix : public sg::base::OperationMatrix {
+    class DensitySystemMatrix : public SGPP::base::OperationMatrix {
       private:
         /// the lambda, the regularisation parameter
         double lambda;
         /// Operation A for calculating the data matrix
         /// (L2 Dot-Product of basis functions)
-        sg::base::OperationMatrix* A;
+        SGPP::base::OperationMatrix* A;
         /// OperationB for calculating the data matrix
-        sg::base::OperationMultipleEval* B;
+        SGPP::base::OperationMultipleEval* B;
         /// OperationMatrix, the regularisation method
-        sg::base::OperationMatrix* C;
+        SGPP::base::OperationMatrix* C;
         /// Training data
-        sg::base::DataMatrix* data;
+        SGPP::base::DataMatrix* data;
 
       public:
         /**
@@ -46,8 +49,8 @@ namespace sg {
          * @param C the regression functional
          * @param lambda the regression parameter
          */
-        DensitySystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData,
-                            sg::base::OperationMatrix& C, double lambda);
+        DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData,
+                            SGPP::base::OperationMatrix& C, double lambda);
 
         /**
          * Generates the left hand side of the classification equation
@@ -55,7 +58,7 @@ namespace sg {
          * @param alpha parameters for the sparse grid functions
          * @param result reference to the vector which will contain the result
          */
-        void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * Generates the right hand side of the classification equation
@@ -63,7 +66,7 @@ namespace sg {
          * @param b reference to the vector which will contain the result of the
          * matrix vector multiplication on the rhs
          */
-        void generateb(sg::base::DataVector& b);
+        void generateb(SGPP::base::DataVector& b);
 
         /**
          * Std-Destructor

@@ -1,9 +1,12 @@
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-void OperationMultipleEvalSubspaceSimple::multImpl(sg::base::DataVector &source, sg::base::DataVector &result, const size_t start_index_data, const size_t end_index_data) {
+void OperationMultipleEvalSubspaceSimple::multImpl(SGPP::base::DataVector &source, SGPP::base::DataVector &result, const size_t start_index_data, const size_t end_index_data) {
 
     size_t tid = omp_get_thread_num();
     if (tid == 0) {

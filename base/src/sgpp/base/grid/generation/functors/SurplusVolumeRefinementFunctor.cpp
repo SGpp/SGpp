@@ -8,7 +8,10 @@
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold) {

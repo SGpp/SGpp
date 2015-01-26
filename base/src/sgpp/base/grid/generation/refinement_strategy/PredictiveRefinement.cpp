@@ -8,7 +8,10 @@
 #include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
  void PredictiveRefinement::collectRefinablePoints(
@@ -90,4 +93,4 @@ namespace base {
 }
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

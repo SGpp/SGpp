@@ -12,7 +12,10 @@
 #include <sstream>
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename real_type>
     class OCLModLinearMask : public OCLKernelBase {
@@ -223,49 +226,49 @@ namespace sg {
         }
       public:
         static inline void multDefault(
-          sg::base::DataMatrix* level,
-          sg::base::DataMatrix* index,
-          sg::base::DataMatrix* mask,
-          sg::base::DataMatrix* offset,
-          sg::base::DataMatrix* dataset,
-          sg::base::DataVector& alpha,
-          sg::base::DataVector& result,
+          SGPP::base::DataMatrix* level,
+          SGPP::base::DataMatrix* index,
+          SGPP::base::DataMatrix* mask,
+          SGPP::base::DataMatrix* offset,
+          SGPP::base::DataMatrix* dataset,
+          SGPP::base::DataVector& alpha,
+          SGPP::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data);
         static inline void multDefault(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& alpha,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& alpha,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data);
         static inline void multTransposeDefault(
-          sg::base::DataMatrix* level,
-          sg::base::DataMatrix* index,
-          sg::base::DataMatrix* mask,
-          sg::base::DataMatrix* offset,
-          sg::base::DataMatrix* dataset,
-          sg::base::DataVector& source,
-          sg::base::DataVector& result,
+          SGPP::base::DataMatrix* level,
+          SGPP::base::DataMatrix* index,
+          SGPP::base::DataMatrix* mask,
+          SGPP::base::DataMatrix* offset,
+          SGPP::base::DataMatrix* dataset,
+          SGPP::base::DataVector& source,
+          SGPP::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data);
         static inline void multTransposeDefault(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& source,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& source,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -273,13 +276,13 @@ namespace sg {
     };
     template<>
     inline void OCLModLinearMask<double>::multDefault(
-      sg::base::DataMatrix* level,
-      sg::base::DataMatrix* index,
-      sg::base::DataMatrix* mask,
-      sg::base::DataMatrix* offset,
-      sg::base::DataMatrix* dataset,
-      sg::base::DataVector& alpha,
-      sg::base::DataVector& result,
+      SGPP::base::DataMatrix* level,
+      SGPP::base::DataMatrix* index,
+      SGPP::base::DataMatrix* mask,
+      SGPP::base::DataMatrix* offset,
+      SGPP::base::DataMatrix* dataset,
+      SGPP::base::DataVector& alpha,
+      SGPP::base::DataVector& result,
       const size_t start_index_grid,
       const size_t end_index_grid,
       const size_t start_index_data,
@@ -314,13 +317,13 @@ namespace sg {
 
     template<>
     inline void OCLModLinearMask<float>::multDefault(
-      sg::base::DataMatrixSP* level,
-      sg::base::DataMatrixSP* index,
-      sg::base::DataMatrixSP* mask,
-      sg::base::DataMatrixSP* offset,
-      sg::base::DataMatrixSP* dataset,
-      sg::base::DataVectorSP& alpha,
-      sg::base::DataVectorSP& result,
+      SGPP::base::DataMatrixSP* level,
+      SGPP::base::DataMatrixSP* index,
+      SGPP::base::DataMatrixSP* mask,
+      SGPP::base::DataMatrixSP* offset,
+      SGPP::base::DataMatrixSP* dataset,
+      SGPP::base::DataVectorSP& alpha,
+      SGPP::base::DataVectorSP& result,
       const size_t start_index_grid,
       const size_t end_index_grid,
       const size_t start_index_data,
@@ -355,13 +358,13 @@ namespace sg {
 
     template<>
     inline void OCLModLinearMask<double>::multTransposeDefault(
-      sg::base::DataMatrix* level,
-      sg::base::DataMatrix* index,
-      sg::base::DataMatrix* mask,
-      sg::base::DataMatrix* offset,
-      sg::base::DataMatrix* dataset,
-      sg::base::DataVector& source,
-      sg::base::DataVector& result,
+      SGPP::base::DataMatrix* level,
+      SGPP::base::DataMatrix* index,
+      SGPP::base::DataMatrix* mask,
+      SGPP::base::DataMatrix* offset,
+      SGPP::base::DataMatrix* dataset,
+      SGPP::base::DataVector& source,
+      SGPP::base::DataVector& result,
       const size_t start_index_grid,
       const size_t end_index_grid,
       const size_t start_index_data,
@@ -396,13 +399,13 @@ namespace sg {
 
     template<>
     inline void OCLModLinearMask<float>::multTransposeDefault(
-      sg::base::DataMatrixSP* level,
-      sg::base::DataMatrixSP* index,
-      sg::base::DataMatrixSP* mask, //unused for this specialization
-      sg::base::DataMatrixSP* offset, //unused for this specialization
-      sg::base::DataMatrixSP* dataset,
-      sg::base::DataVectorSP& source,
-      sg::base::DataVectorSP& result,
+      SGPP::base::DataMatrixSP* level,
+      SGPP::base::DataMatrixSP* index,
+      SGPP::base::DataMatrixSP* mask, //unused for this specialization
+      SGPP::base::DataMatrixSP* offset, //unused for this specialization
+      SGPP::base::DataMatrixSP* dataset,
+      SGPP::base::DataVectorSP& source,
+      SGPP::base::DataVectorSP& result,
       const size_t start_index_grid,
       const size_t end_index_grid,
       const size_t start_index_data,

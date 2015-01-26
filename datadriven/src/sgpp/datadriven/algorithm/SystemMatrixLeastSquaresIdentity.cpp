@@ -7,18 +7,21 @@
 
 using namespace std;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(sg::base::Grid& grid,
-        sg::base::DataMatrix& trainData, double lambda) :
+SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& grid,
+        SGPP::base::DataMatrix& trainData, double lambda) :
     DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0), grid(grid) {
 
-    this->dataset_ = new sg::base::DataMatrix(trainData);
+    this->dataset_ = new SGPP::base::DataMatrix(trainData);
     this->instances = this->dataset_->getNrows();
     //this->paddedInstances = PaddingAssistant::padDataset(*(this->dataset_));
-    //sg::datadriven::OperationMultipleEvalType type = sg::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
-    this->B = sg::op_factory::createOperationMultipleEval(grid, *(this->dataset_), this->implementationConfiguration);
+    //SGPP::datadriven::OperationMultipleEvalType type = SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
+    this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->dataset_), this->implementationConfiguration);
     // padded during Operator construction, fetch new size
     this->paddedInstances = this->dataset_->getNrows();
 }
@@ -28,8 +31,8 @@ SystemMatrixLeastSquaresIdentity::~SystemMatrixLeastSquaresIdentity() {
     delete this->dataset_;
 }
 
-void SystemMatrixLeastSquaresIdentity::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-    sg::base::DataVector temp(this->paddedInstances);
+void SystemMatrixLeastSquaresIdentity::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector temp(this->paddedInstances);
 
     // Operation B
     this->myTimer_->start();
@@ -44,8 +47,8 @@ void SystemMatrixLeastSquaresIdentity::mult(sg::base::DataVector& alpha, sg::bas
 
 }
 
-void SystemMatrixLeastSquaresIdentity::generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
-    sg::base::DataVector myClasses(classes);
+void SystemMatrixLeastSquaresIdentity::generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {
+    SGPP::base::DataVector myClasses(classes);
 
     this->myTimer_->start();
     this->B->multTranspose(myClasses, b);

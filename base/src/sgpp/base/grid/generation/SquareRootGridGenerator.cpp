@@ -16,7 +16,10 @@
 #include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     SquareRootGridGenerator::SquareRootGridGenerator(GridStorage* storage) : storage(storage) {

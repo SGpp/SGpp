@@ -12,7 +12,10 @@
 #include <sgpp/base/operation/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -25,12 +28,12 @@ namespace sg {
      * L: space discretization (L-Operator)
      * rhs: right hand side
      */
-    class OperationEllipticPDESolverSystem : public sg::base::OperationMatrix {
+    class OperationEllipticPDESolverSystem : public SGPP::base::OperationMatrix {
       protected:
         /// Pointer to the grid object
-        sg::base::Grid* BoundGrid;
+        SGPP::base::Grid* BoundGrid;
         /// the right hand side of the system
-        sg::base::DataVector* rhs;
+        SGPP::base::DataVector* rhs;
         /// Stores number of gridpoints, inner grid
         size_t numGridpointsInner;
         /// Stores number of gridpoints, complete grid
@@ -43,7 +46,7 @@ namespace sg {
          * @param SparseGrid the grid, for which the system should be solved
          * @param rhs the right hand side of the corresponding system
          */
-        OperationEllipticPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
+        OperationEllipticPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
 
         /**
          * Destructor
@@ -53,17 +56,17 @@ namespace sg {
         /**
          * Multiplicates a vector with the matrix \f$ L \f$
          *
-         * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
-         * @param result sg::base::DataVector into which the result of the space discretization operation is stored
+         * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
+         * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
          */
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * generates the right hand side of the system
          *
          * @return returns the rhs
          */
-        virtual sg::base::DataVector* generateRHS() = 0;
+        virtual SGPP::base::DataVector* generateRHS() = 0;
 
         /**
          * Returns the number of grid points for the complete grid

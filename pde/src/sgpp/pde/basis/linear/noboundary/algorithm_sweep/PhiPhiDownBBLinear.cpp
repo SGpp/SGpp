@@ -7,18 +7,21 @@
 
 #include <sgpp/pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
 
 
-    PhiPhiDownBBLinear::PhiPhiDownBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    PhiPhiDownBBLinear::PhiPhiDownBBLinear(SGPP::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
     }
 
     PhiPhiDownBBLinear::~PhiPhiDownBBLinear() {
     }
 
-    void PhiPhiDownBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void PhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       //std::cout << dim << std::endl;
       //std::cout << index.toString() << std::endl;
 
@@ -38,13 +41,13 @@ namespace sg {
       }
     }
 
-    void PhiPhiDownBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void PhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
       size_t seq = index.seq();
 
       double alpha_value = source[seq];
 
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 
@@ -74,13 +77,13 @@ namespace sg {
       }
     }
 
-    void PhiPhiDownBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t) {
+    void PhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t) {
       size_t seq = index.seq();
 
       double alpha_value = source[seq];
 
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 
@@ -112,5 +115,5 @@ namespace sg {
 
     // namespace detail
   }
-  // namespace sg
+  // namespace SGPP
 }

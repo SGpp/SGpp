@@ -12,7 +12,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace base {
 
@@ -77,6 +80,6 @@ namespace sg {
 
   } // namespace base
 
-} // namespace sg
+} // namespace SGPP
 
 #endif /* HIERARCHISATIONMODPOLY_HPP */

@@ -11,7 +11,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/OperationMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -19,7 +22,7 @@ namespace sg {
      * solving parabolic PDEs. It allows for applying both, the mass and stiffness
      * matrix in one mult-call.
      */
-    class OperationParabolicPDEMatrixCombined : public sg::base::OperationMatrix {
+    class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
       protected:
         /// storing the current timestep coefficient
         double TimestepCoeff;

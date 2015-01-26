@@ -1,9 +1,12 @@
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim, const double * const datasetPtr, sg::base::DataVector &alpha,
+void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim, const double * const datasetPtr, SGPP::base::DataVector &alpha,
         size_t dataIndexBase, size_t end_index_data, SubspaceNodeCombined &subspace, double *levelArrayContinuous,
         size_t validIndicesCount, size_t *validIndices, size_t *levelIndices,
         double *evalIndexValuesAll, uint32_t *intermediatesAll) {

@@ -13,13 +13,16 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
      * Explicit representation of the matrix \f$(\Phi_i,\Phi_j)_{L2}\f$ for a sparse grid
      */
-    class OperationMatrixLTwoDotExplicitPeriodic: public sg::base::OperationMatrix {
+    class OperationMatrixLTwoDotExplicitPeriodic: public SGPP::base::OperationMatrix {
       public:
         /**
          * Constructor that uses a external matrix pointer to construct the matrix,
@@ -27,13 +30,13 @@ namespace sg {
          * @param m pointer to datamatrix of size (number of grid point) x (number of grid points)
          * @param grid the sparse grid
          */
-    	OperationMatrixLTwoDotExplicitPeriodic(sg::base::DataMatrix* m, sg::base::Grid* grid);
+    	OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::DataMatrix* m, SGPP::base::Grid* grid);
         /**
          * Constructor that creates an own matrix
          *
          * @param grid the sparse grid
          */
-    	OperationMatrixLTwoDotExplicitPeriodic(sg::base::Grid* grid);
+    	OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::Grid* grid);
 
         /**
          * Destructor
@@ -46,20 +49,20 @@ namespace sg {
          * @param alpha DataVector that is multiplied to the matrix
          * @param result DataVector into which the result of multiplication is stored
          */
-        virtual void mult(sg::base::DataVector& alpha,
-                          sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha,
+                          SGPP::base::DataVector& result);
 
       private:
         /**
          * This method is used by both constructors to build the matrix
          */
-        void buildMatrix(sg::base::Grid* grid);
+        void buildMatrix(SGPP::base::Grid* grid);
 
-        sg::base::DataMatrix* m_;
+        SGPP::base::DataMatrix* m_;
         bool ownsMatrix_;
     };
 
   } /* namespace pde */
-} /* namespace sg */
+} /* namespace SGPP */
 
 #endif /* OPERATIONMATRIXLTWODOTEXPLICITPERIODIC_HPP */

@@ -13,7 +13,10 @@
 #include <random>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
       
     bool Random::is_seeded = false;

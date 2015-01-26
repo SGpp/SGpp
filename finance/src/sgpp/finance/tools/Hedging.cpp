@@ -15,13 +15,16 @@
 #include <sstream>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace finance {
 
-    Hedging::Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed) :
-      m_res(resolution), m_eps(eps), m_hedge_points(new sg::base::DataMatrix(1, hedge_area.getDimensions())), m_is_log_transformed(is_log_transformed) {
-      sg::base::EvalCuboidGenerator* myEval = new sg::base::EvalCuboidGenerator();
+    Hedging::Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed) :
+      m_res(resolution), m_eps(eps), m_hedge_points(new SGPP::base::DataMatrix(1, hedge_area.getDimensions())), m_is_log_transformed(is_log_transformed) {
+      SGPP::base::EvalCuboidGenerator* myEval = new SGPP::base::EvalCuboidGenerator();
       myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
       delete myEval;
     }
@@ -30,14 +33,14 @@ namespace sg {
       delete m_hedge_points;
     }
 
-    void Hedging::calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alpha, std::string file_extension) {
+    void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid, SGPP::base::DataVector alpha, std::string file_extension) {
       std::stringstream sfilename;
       sfilename << "hedging_" << file_extension << ".out";
 
       std::ofstream fileout;
       fileout.open(sfilename.str().c_str());
 
-      sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(sparse_grid);
+      SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(sparse_grid);
 
       // loop overall evaluation points
       for (size_t i = 0; i < m_hedge_points->getNrows(); i++) {

@@ -10,9 +10,12 @@
 #include <cmath>
 #include "Random.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
     
     StratifiedSampleGenerator::StratifiedSampleGenerator(size_t dimensions, long long int* strataPerDimension) : SampleGenerator(dimensions)
@@ -38,7 +41,7 @@ namespace sg {
       
     }
     
-    void StratifiedSampleGenerator::getSample(sg::base::DataVector& dv) {
+    void StratifiedSampleGenerator::getSample(SGPP::base::DataVector& dv) {
       
       // Check for correct dimension of the parameter vector
       if( dv.getSize() != dimensions ) return;

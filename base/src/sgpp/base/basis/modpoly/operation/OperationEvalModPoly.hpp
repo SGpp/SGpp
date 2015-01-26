@@ -13,7 +13,10 @@
 #include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -42,7 +45,7 @@ namespace sg {
         /// Pointer to GridStorage object
         GridStorage* storage;
         /// Mod Poly Basis object
-        sg::base::SModPolyBase base;
+        SGPP::base::SModPolyBase base;
     };
 
   }

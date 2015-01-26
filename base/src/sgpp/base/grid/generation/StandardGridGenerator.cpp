@@ -14,7 +14,10 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     StandardGridGenerator::StandardGridGenerator(GridStorage* storage) : storage(storage) {

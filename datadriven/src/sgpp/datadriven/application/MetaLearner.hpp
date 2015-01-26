@@ -17,13 +17,16 @@
 #include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
 #include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 class MetaLearner {
 private:
 
-    sg::datadriven::ARFFTools arffTools;
+    SGPP::datadriven::ARFFTools arffTools;
     size_t dim;
     size_t instances;
     size_t baseLevel;
@@ -36,10 +39,10 @@ private:
     LearnerBase *myLearner = nullptr;
     LearnerBase *referenceLearner = nullptr;
 
-    sg::base::RegularGridConfiguration gridConfig;
-    sg::solver::SLESolverConfiguration solverConfig;
-    sg::solver::SLESolverConfiguration solverFinalStep;
-    sg::base::AdpativityConfiguration adaptivityConfiguration;
+    SGPP::base::RegularGridConfiguration gridConfig;
+    SGPP::solver::SLESolverConfiguration solverConfig;
+    SGPP::solver::SLESolverConfiguration solverFinalStep;
+    SGPP::base::AdpativityConfiguration adaptivityConfiguration;
 
     LearnerTiming myTiming;
     LearnerTiming referenceTiming;
@@ -55,8 +58,8 @@ private:
 public:
     MetaLearner() = delete;
 
-    MetaLearner(sg::solver::SLESolverConfiguration solverConfig, sg::solver::SLESolverConfiguration solverFinalStep,
-                sg::base::AdpativityConfiguration adaptivityConfiguration, size_t baseLevel, double lambda, bool verbose =
+    MetaLearner(SGPP::solver::SLESolverConfiguration solverConfig, SGPP::solver::SLESolverConfiguration solverFinalStep,
+                SGPP::base::AdpativityConfiguration adaptivityConfiguration, size_t baseLevel, double lambda, bool verbose =
                     false);
 
     ~MetaLearner() {
@@ -69,33 +72,33 @@ public:
         }
     }
 
-    void learn(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, std::string datasetFileName);
+    void learn(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, std::string datasetFileName);
 
     void learnReference(std::string fileName);
 
     //learn and test against test dataset and measure hits/mse
-    void learnAndTest(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+    void learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                       std::string datasetFileName, std::string testFileName, bool isBinaryClassification);
 
     //learn and test against the streaming implementation
-    double learnAndCompare(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+    double learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                            std::string datasetFileName, size_t gridGranularity, double tolerance);
 
     void refinementAndOverallPerformance(
-        std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
+        std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
         std::vector<std::string> datasets, std::vector<std::string> experimentHeaders, std::string metaInformation,
         std::string fileName, bool referenceComparison = false);
 
-    void regularGridSpeedup(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+    void regularGridSpeedup(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                             std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances, std::string metaInformation,
                             std::string experimentName);
 
     void appendToPerformanceRun(std::string fileName, std::string changingRowName, std::string currentValues,
-                                std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
+                                std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
                                 std::vector<std::string> datasets, std::vector<std::string> datasetNames, std::string metaInformation,
                                 bool removeOld);
 
-    void testRegular(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
+    void testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
                      size_t level, size_t instances, double &duration, double &durationReference);
 };
 

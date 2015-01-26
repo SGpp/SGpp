@@ -11,25 +11,28 @@
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
-    double OperationTestModWavelet::test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes) {
+    double OperationTestModWavelet::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
       base::ModifiedWaveletBasis<unsigned int, unsigned int> base;
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestModWavelet::testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues) {
+    double OperationTestModWavelet::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
       base::ModifiedWaveletBasis<unsigned int, unsigned int> base;
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestModWavelet::testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers) {
+    double OperationTestModWavelet::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
       base::ModifiedWaveletBasis<unsigned int, unsigned int> base;
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
     }
 
-    void OperationTestModWavelet::calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) {
+    void OperationTestModWavelet::calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) {
       base::ModifiedWaveletBasis<unsigned int, unsigned int> base;
       test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
     }

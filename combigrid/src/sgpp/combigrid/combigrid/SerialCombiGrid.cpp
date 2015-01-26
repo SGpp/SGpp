@@ -72,14 +72,14 @@ void combigrid::SerialCombiGrid::eval( std::vector< std::vector<double> >& coord
   }
 }
 
-sg::base::GridStorage* combigrid::SerialCombiGrid::createSGppGridStorage() const {
-  sg::base::GridStorage* gridStoreSGpp = new sg::base::GridStorage( combikernel_->getDim() );
+SGPP::base::GridStorage* combigrid::SerialCombiGrid::createSGppGridStorage() const {
+  SGPP::base::GridStorage* gridStoreSGpp = new SGPP::base::GridStorage( combikernel_->getDim() );
   combigrid::CombiSGppConverter::createSGpp( gridStoreSGpp , combikernel_ );
   return gridStoreSGpp;
 }
 
-void combigrid::SerialCombiGrid::reCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha,
-    sg::base::DataVector* minAlpha , sg::base::DataVector* maxAlpha ) const {
+void combigrid::SerialCombiGrid::reCompose(SGPP::base::GridStorage* gridstorageSGpp , SGPP::base::DataVector* alpha,
+    SGPP::base::DataVector* minAlpha , SGPP::base::DataVector* maxAlpha ) const {
   // for each full grid call the converter
   if (minAlpha != NULL && maxAlpha != NULL) {
     // min and max will be computed
@@ -110,7 +110,7 @@ void combigrid::SerialCombiGrid::reCompose(sg::base::GridStorage* gridstorageSGp
   }
 }
 
-void combigrid::SerialCombiGrid::deCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha) {
+void combigrid::SerialCombiGrid::deCompose(SGPP::base::GridStorage* gridstorageSGpp , SGPP::base::DataVector* alpha) {
   for ( int i = 0 ; i < combikernel_->getNrFullGrids() ; i++) {
     FullGridD* fg = combikernel_->getFullGrid(i);
     combigrid::CombiSGppConverter::SGppToFullGrid( gridstorageSGpp , alpha , fg );

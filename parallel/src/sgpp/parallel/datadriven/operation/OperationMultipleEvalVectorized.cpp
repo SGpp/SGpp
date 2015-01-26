@@ -8,7 +8,10 @@
 
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     OperationMultipleEvalVectorized::OperationMultipleEvalVectorized(base::GridStorage* storage, base::DataMatrix* dataset) {
@@ -18,7 +21,7 @@ namespace sg {
       this->index_ = NULL;
       this->mask_ = NULL;
       this->offset_ = NULL;
-      this->myTimer_ = new sg::base::SGppStopwatch();
+      this->myTimer_ = new SGPP::base::SGppStopwatch();
     }
 
     OperationMultipleEvalVectorized::~OperationMultipleEvalVectorized() {

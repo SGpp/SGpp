@@ -29,7 +29,10 @@
 #endif
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     class OCLKernelImplBase {
       public:

@@ -8,7 +8,10 @@
 #include <vector>
 #include <list>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -175,4 +178,4 @@ namespace base {
 
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

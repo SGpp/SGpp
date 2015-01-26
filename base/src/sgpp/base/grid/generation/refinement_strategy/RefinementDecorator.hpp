@@ -13,7 +13,10 @@
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

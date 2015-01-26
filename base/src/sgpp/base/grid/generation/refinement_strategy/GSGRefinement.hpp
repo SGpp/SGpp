@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -44,5 +47,5 @@ protected:
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* GSGREFINEMENT_HPP_ */

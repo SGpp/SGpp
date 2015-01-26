@@ -7,17 +7,20 @@
 
 #include <sgpp/pde/algorithm/StdUpDown.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    StdUpDown::StdUpDown(sg::base::GridStorage* storage) : storage(storage), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
+    StdUpDown::StdUpDown(SGPP::base::GridStorage* storage) : storage(storage), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
     }
 
     StdUpDown::~StdUpDown() {
     }
 
-    void StdUpDown::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector beta(result.getSize());
+    void StdUpDown::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector beta(result.getSize());
       result.setAll(0.0);
       #pragma omp parallel
       {
@@ -29,8 +32,8 @@ namespace sg {
       result.add(beta);
     }
 
-    void StdUpDown::multParallelBuildingBlock(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector beta(result.getSize());
+    void StdUpDown::multParallelBuildingBlock(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector beta(result.getSize());
       result.setAll(0.0);
 
       this->updown(alpha, beta, this->numAlgoDims_ - 1);
@@ -38,16 +41,16 @@ namespace sg {
       result.add(beta);
     }
 
-    void StdUpDown::updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void StdUpDown::updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       size_t curNumAlgoDims = this->numAlgoDims_;
       size_t curMaxParallelDims = this->maxParallelDims_;
 
       //Unidirectional scheme
       if (dim > 0) {
         // Reordering ups and downs
-        sg::base::DataVector temp(alpha.getSize());
-        sg::base::DataVector result_temp(alpha.getSize());
-        sg::base::DataVector temp_two(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector result_temp(alpha.getSize());
+        SGPP::base::DataVector temp_two(alpha.getSize());
 
         #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp, result)
         {
@@ -67,7 +70,7 @@ namespace sg {
         result.add(result_temp);
       } else {
         // Terminates dimension recursion
-        sg::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
 
         #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, result)
         up(alpha, result, this->algoDims[dim]);

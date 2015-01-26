@@ -7,18 +7,21 @@
 
 #include <sgpp/finance/basis/linear/boundary/algorithm_sweep/XdPhiPhiDownBBLinearBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    XdPhiPhiDownBBLinearBoundary::XdPhiPhiDownBBLinearBoundary(sg::base::GridStorage* storage) : XdPhiPhiDownBBLinear(storage) {
+    XdPhiPhiDownBBLinearBoundary::XdPhiPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage) : XdPhiPhiDownBBLinear(storage) {
     }
 
     XdPhiPhiDownBBLinearBoundary::~XdPhiPhiDownBBLinearBoundary() {
     }
 
-    void XdPhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void XdPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       double q = this->boundingBox->getIntervalWidth(dim);
       double t = this->boundingBox->getIntervalOffset(dim);
 
@@ -108,5 +111,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

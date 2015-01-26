@@ -17,7 +17,10 @@
 #include <fstream>
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     GridDataBase::GridDataBase(size_t dim) : _map(), _dim(static_cast<int>(dim)) {}
@@ -101,7 +104,7 @@ namespace sg {
 
       if (ind == _map.end()) {
         std::cerr << gi->toString() << " not in database" << std::endl;
-        throw new sg::base::data_exception("GridDataBase::get : grid point not in database");
+        throw new SGPP::base::data_exception("GridDataBase::get : grid point not in database");
       }
 
       return ind->second;

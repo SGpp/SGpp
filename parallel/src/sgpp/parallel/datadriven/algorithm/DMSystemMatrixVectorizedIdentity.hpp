@@ -18,11 +18,14 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
-     * Class that implements the virtual class sg::base::OperationMatrix for the
+     * Class that implements the virtual class SGPP::base::OperationMatrix for the
      * application of classification for the Systemmatrix
      *
      * The Identity matrix is used as regularization operator.
@@ -30,7 +33,7 @@ namespace sg {
      * For the Operation B's mult and mutlTransposed functions
      * vectorized formulations are used.
      */
-    class DMSystemMatrixVectorizedIdentity : public sg::datadriven::DMSystemMatrixBase {
+    class DMSystemMatrixVectorizedIdentity : public SGPP::datadriven::DMSystemMatrixBase {
       private:
         /// vectorization mode
         VectorizationType vecMode_;
@@ -39,27 +42,27 @@ namespace sg {
         /// Number of patched and used training instances
         size_t numPatchedTrainingInstances_;
         /// OperationB for calculating the data matrix
-        sg::parallel::OperationMultipleEvalVectorized* B_;
+        SGPP::parallel::OperationMultipleEvalVectorized* B_;
 
       public:
         /**
          * Std-Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param trainData reference to sg::base::DataMatrix that contains the training data
+         * @param trainData reference to SGPP::base::DataMatrix that contains the training data
          * @param lambda the lambda, the regression parameter
          * @param vecMode vectorization mode
          */
-        DMSystemMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
+        DMSystemMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
 
         /**
          * Std-Destructor
          */
         virtual ~DMSystemMatrixVectorizedIdentity();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
+        virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 
         virtual void rebuildLevelAndIndex();
     };

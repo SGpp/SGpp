@@ -12,7 +12,10 @@
 
 #include <sgpp/base/basis/modpoly/algorithm_sweep/HierarchisationModPoly.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace base {
 
@@ -68,4 +71,4 @@ namespace sg {
 
   } // namespace base
 
-} // namespace sg
+} // namespace SGPP

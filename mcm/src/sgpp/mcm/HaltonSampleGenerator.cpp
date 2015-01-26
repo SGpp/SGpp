@@ -10,9 +10,12 @@
 #include <cmath>
 #include "Random.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
 
     HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions) : SampleGenerator(dimensions)
@@ -34,7 +37,7 @@ namespace sg {
       }
     }
 
-    void HaltonSampleGenerator::getSample(sg::base::DataVector& dv) {
+    void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
       
       for(size_t i = 0; i < dimensions; i++) {
 

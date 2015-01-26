@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -60,5 +63,5 @@ namespace sg {
     };
 
   } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* REFINEMENTANOVASTRATEGY_HPP_ */

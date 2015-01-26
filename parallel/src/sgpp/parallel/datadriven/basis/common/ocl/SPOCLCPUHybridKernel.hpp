@@ -19,15 +19,18 @@
 #include <sgpp/parallel/datadriven/basis/common/ocl/SPOCLKernelImpl.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     template<typename CPUImplementation, typename OCLBasisType>
     class SPOCLCPUHybridKernel {
       public:
         SPOCLCPUHybridKernel() {
-          tuningMult = new sg::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkDataPoints(), 10);;
-          tuningMultTrans = new sg::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkGridPoints(), 10);;
+          tuningMult = new SGPP::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkDataPoints(), 10);;
+          tuningMultTrans = new SGPP::parallel::DynamicTwoPartitionAutoTuning(1, m_oclkernel.getChunkGridPoints(), 10);;
           int num_threads = 1;
           #pragma omp parallel
           {
@@ -35,7 +38,7 @@ namespace sg {
           }
 
           if (num_threads == 1) {
-            throw sg::base::operation_exception("OpenCL Hybrid Kernel needs to be executed with at least two threads");
+            throw SGPP::base::operation_exception("OpenCL Hybrid Kernel needs to be executed with at least two threads");
           }
 
           cpu_times = new double[num_threads];
@@ -48,13 +51,13 @@ namespace sg {
 
         static const KernelType kernelType = CPUImplementation::kernelType;
         inline void mult(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& alpha,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& alpha,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -130,13 +133,13 @@ namespace sg {
         }
 
         inline void multTranspose(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& source,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& source,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -208,12 +211,12 @@ namespace sg {
       private:
         double* cpu_times;
         SPOCLKernelImpl<OCLBasisType> m_oclkernel;
-        sg::base::SGppStopwatch myTimer;
+        SGPP::base::SGppStopwatch myTimer;
 
         /// Autotuning object for mult routine
-        sg::parallel::TwoPartitionAutoTuning* tuningMult;
+        SGPP::parallel::TwoPartitionAutoTuning* tuningMult;
         /// Autotuning object for mult trans routine
-        sg::parallel::TwoPartitionAutoTuning* tuningMultTrans;
+        SGPP::parallel::TwoPartitionAutoTuning* tuningMultTrans;
     };
   }
 }

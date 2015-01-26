@@ -17,10 +17,13 @@
 #include <sstream>
 #include <fstream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    StepsizeControlMC::StepsizeControlMC(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen)
+    StepsizeControlMC::StepsizeControlMC(size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen)
       : VarTimestep("MPR", "CrNic", imax, timestepSize, eps, screen) {
       std::stringstream fnsstream;
       fnsstream << "Time_" << "SCMC" << eps << ".gnuplot";

@@ -9,7 +9,10 @@
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void RefinementDecorator::free_refine(GridStorage* storage, RefinementFunctor* functor) {

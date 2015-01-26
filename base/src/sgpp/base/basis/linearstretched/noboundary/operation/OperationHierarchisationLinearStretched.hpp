@@ -12,7 +12,10 @@
 #include <sgpp/base/operation/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

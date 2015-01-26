@@ -12,7 +12,10 @@
 
 #include <sgpp/solver/SLESolver.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 
@@ -46,8 +49,8 @@ namespace sg {
          *
          * @return a LearnerVectorizedPerformance struct containing the results
          */
-        static LearnerVectorizedPerformance getGFlopAndGByte(sg::base::Grid& Grid, size_t numInstances,
-            sg::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
+        static LearnerVectorizedPerformance getGFlopAndGByte(SGPP::base::Grid& Grid, size_t numInstances,
+            SGPP::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
     };
 
   }

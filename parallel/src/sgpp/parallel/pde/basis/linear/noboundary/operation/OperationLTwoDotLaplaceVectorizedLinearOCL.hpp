@@ -14,7 +14,10 @@
 #include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
 #include <sgpp/parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -24,13 +27,13 @@ namespace sg {
      */
     class OperationLTwoDotLaplaceVectorizedLinearOCL: public OperationParabolicPDEMatrixCombined {
       private:
-        sg::base::GridStorage* storage;
-        sg::base::DataMatrix* level_;
-        sg::base::DataMatrix* level_int_;
-        sg::base::DataMatrix* index_;
+        SGPP::base::GridStorage* storage;
+        SGPP::base::DataMatrix* level_;
+        SGPP::base::DataMatrix* level_int_;
+        SGPP::base::DataMatrix* index_;
         double* lcl_q;
         double* lcl_q_inv;
-        sg::base::DataVector* lambda;
+        SGPP::base::DataVector* lambda;
 
         OCLPDEKernels OCLPDEKernelsHandle ;
         size_t padding_size;
@@ -44,22 +47,22 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-        OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+        OperationLTwoDotLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda);
 
         /**
          * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationLTwoDotLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage);
+        OperationLTwoDotLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
          */
         virtual ~OperationLTwoDotLaplaceVectorizedLinearOCL();
 
-        virtual void mult(sg::base::DataVector& alpha,
-                          sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha,
+                          SGPP::base::DataVector& result);
 
     };
 

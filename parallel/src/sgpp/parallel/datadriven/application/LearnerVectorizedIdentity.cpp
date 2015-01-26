@@ -16,21 +16,24 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 
     LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression, const bool verbose)
-      : sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone) {
+      : SGPP::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone) {
     }
 
     LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool verbose)
-      : sg::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {
+      : SGPP::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {
     }
 
     LearnerVectorizedIdentity::LearnerVectorizedIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
         const VectorizationType vecType, const bool isRegression, const bool verbose)
-      : sg::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType) {
+      : SGPP::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType) {
       // @TODO implement
     }
 
@@ -39,20 +42,20 @@ namespace sg {
 
 
 
-    sg::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) {
+    SGPP::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda) {
       if (this->grid_ == NULL)
         return NULL;
 
 #ifndef USE_MPI
-      return new sg::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
+      return new SGPP::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda, this->vecType_);
 #else
-      return sg::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(*(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
+      return SGPP::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(*(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
 #endif
     }
 
 
 
-    void LearnerVectorizedIdentity::postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+    void LearnerVectorizedIdentity::postProcessing(const SGPP::base::DataMatrix& trainDataset, const SGPP::solver::SLESolverType& solver,
         const size_t numNeededIterations) {
       LearnerVectorizedPerformance currentPerf = LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(*this->grid_,
           trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
@@ -69,12 +72,12 @@ namespace sg {
       }
     }
 
-    sg::base::DataVector LearnerVectorizedIdentity::predict(sg::base::DataMatrix& testDataset) {
-      sg::base::DataMatrix tmpDataSet(testDataset);
+    SGPP::base::DataVector LearnerVectorizedIdentity::predict(SGPP::base::DataMatrix& testDataset) {
+      SGPP::base::DataMatrix tmpDataSet(testDataset);
       size_t originalSize = testDataset.getNrows();
-      size_t paddedSize = sg::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
+      size_t paddedSize = SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
 
-      sg::base::DataVector classesComputed(paddedSize);
+      SGPP::base::DataVector classesComputed(paddedSize);
 
       classesComputed.setAll(0.0);
 
@@ -82,7 +85,7 @@ namespace sg {
         tmpDataSet.transpose();
       }
 
-      sg::parallel::OperationMultipleEvalVectorized* MultEval = sg::op_factory::createOperationMultipleEvalVectorized(*grid_, vecType_, &tmpDataSet);
+      SGPP::parallel::OperationMultipleEvalVectorized* MultEval = SGPP::op_factory::createOperationMultipleEvalVectorized(*grid_, vecType_, &tmpDataSet);
       MultEval->multVectorized(*alpha_, classesComputed);
       delete MultEval;
 

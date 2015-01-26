@@ -9,9 +9,12 @@
 #include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
-    LaplaceUpPrewavelet::LaplaceUpPrewavelet(sg::base::GridStorage* storage) :
+    LaplaceUpPrewavelet::LaplaceUpPrewavelet(SGPP::base::GridStorage* storage) :
       storage(storage) {
     }
 
@@ -19,15 +22,15 @@ namespace sg {
     LaplaceUpPrewavelet::~LaplaceUpPrewavelet() {
     }
 
-    void LaplaceUpPrewavelet::operator()(sg::base::DataVector& source, sg::base::DataVector& result,
+    void LaplaceUpPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
                                          grid_iterator& index, size_t dim) {
 
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
-      sg::base::GridStorage::index_type::level_type l_old;
-      sg::base::GridStorage::index_type::index_type i_old;
-      sg::base::GridStorage::index_type::index_type last_index;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l_old;
+      SGPP::base::GridStorage::index_type::index_type i_old;
+      SGPP::base::GridStorage::index_type::index_type last_index;
       size_t _seq;
       size_t _seql1;
       size_t _seqr1;

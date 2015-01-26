@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
@@ -23,20 +26,20 @@ namespace sg {
      */
     class XPhidPhiDownBBLinearStretched {
       protected:
-        typedef sg::base::GridStorage::grid_iterator grid_iterator;
+        typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
 
-        /// Pointer to the sg::base::GridStorage Object
-        sg::base::GridStorage* storage;
+        /// Pointer to the SGPP::base::GridStorage Object
+        SGPP::base::GridStorage* storage;
         /// Pointer to the stretching Obejct
-        sg::base::Stretching* stretching;
+        SGPP::base::Stretching* stretching;
 
       public:
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        XPhidPhiDownBBLinearStretched(sg::base::GridStorage* storage);
+        XPhidPhiDownBBLinearStretched(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -47,32 +50,32 @@ namespace sg {
          * This operations performs the calculation of down in the direction of dimension <i>dim</i>
          * on a grid with fix Dirichlet 0 boundary condition
          *
-         * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-         * @param result sg::base::DataVector that contains the result of the down operation
+         * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+         * @param result SGPP::base::DataVector that contains the result of the down operation
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        virtual void operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim);
+        virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
 
       protected:
 
         /**
          * recursive function for the calculation of Down without Bounding Box support
          *
-         * @param source sg::base::DataVector that contains the coefficients of the ansatzfunction
-         * @param result sg::base::DataVector in which the result of the operation is stored
+         * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
+         * @param result SGPP::base::DataVector in which the result of the operation is stored
          * @param index reference to a griditerator object that is used navigate through the grid
          * @param dim the dimension in which the operation is executed
          * @param fl function value on the left boundary
          * @param fr function value on the right boundary
          */
-        void rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
+        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
 
     };
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 
 #endif /* XPHIDPHIDOWNBBLINEARSTRETCHED_HPP */

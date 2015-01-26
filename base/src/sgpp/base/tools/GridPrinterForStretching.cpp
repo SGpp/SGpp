@@ -15,7 +15,10 @@
 #include <string>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     GridPrinterForStretching::GridPrinterForStretching(Grid& SparseGrid) : GridPrinter(SparseGrid) {
@@ -40,7 +43,7 @@ namespace sg {
         } else {
           // Open filehandle
           fileout.open(tFilename.c_str());
-          OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
+          OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
 
           dimOne = GridArea.getBoundary(0);
           dimTwo = GridArea.getBoundary(1);
@@ -76,7 +79,7 @@ namespace sg {
         } else {
           // Open filehandle
           fileout.open(tFilename.c_str());
-          OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
+          OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
 
           if (myGrid->getStorage()->dim() == 1) {
             dimOne = myGrid->getStretching()->getBoundary(0);
@@ -131,7 +134,7 @@ namespace sg {
 
       // Do Dehierarchisation, is specified
       if (bSurplus == false) {
-        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
+        OperationHierarchisation* myHier = SGPP::op_factory::createOperationHierarchisation(*myGrid);
         myHier->doDehierarchisation(temp);
         delete myHier;
       }
@@ -162,7 +165,7 @@ namespace sg {
 
       // Do Dehierarchisation, is specified
       if (bSurplus == false) {
-        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
+        OperationHierarchisation* myHier = SGPP::op_factory::createOperationHierarchisation(*myGrid);
         myHier->doDehierarchisation(temp);
         delete myHier;
       }

@@ -10,7 +10,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/OperationTransformation1D.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 class OperationRosenblattTransformation1DLinear: public OperationTransformation1D {
 protected:

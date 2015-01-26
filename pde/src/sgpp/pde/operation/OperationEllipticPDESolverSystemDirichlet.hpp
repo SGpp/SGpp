@@ -14,7 +14,10 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -37,31 +40,31 @@ namespace sg {
     class OperationEllipticPDESolverSystemDirichlet : public OperationEllipticPDESolverSystem {
       protected:
         /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
-        sg::base::DataVector* alpha_inner;
+        SGPP::base::DataVector* alpha_inner;
         /// Routine to modify the boundaries/inner points of the grid
-        sg::base::DirichletUpdateVector* BoundaryUpdate;
+        SGPP::base::DirichletUpdateVector* BoundaryUpdate;
         /// Class that allows a simple conversion between a grid with and a without boundary points
-        sg::base::DirichletGridConverter* GridConverter;
+        SGPP::base::DirichletGridConverter* GridConverter;
         /// Pointer to the inner grid object
-        sg::base::Grid* InnerGrid;
+        SGPP::base::Grid* InnerGrid;
         /// rhs for the inner grid
-        sg::base::DataVector* rhs_inner;
+        SGPP::base::DataVector* rhs_inner;
 
         /**
          * applies the PDE's system matrix, on complete grid - with boundaries
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * applies the PDE's system matrix, on inner grid only
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
       public:
         /**
@@ -70,16 +73,16 @@ namespace sg {
          * @param SparseGrid the grid, for which the system should be solved
          * @param rhs the right hand side of the corresponding system
          */
-        OperationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
+        OperationEllipticPDESolverSystemDirichlet(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
 
         /**
          * Destructor
          */
         virtual ~OperationEllipticPDESolverSystemDirichlet();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual sg::base::DataVector* generateRHS();
+        virtual SGPP::base::DataVector* generateRHS();
 
         /**
          * gets a pointer to the sparse grids coefficients used in the CG method to solve
@@ -88,15 +91,15 @@ namespace sg {
          *
          * @return alpha vector for CG method
          */
-        virtual sg::base::DataVector* getGridCoefficientsForCG();
+        virtual SGPP::base::DataVector* getGridCoefficientsForCG();
 
         /**
          * Gets the solution for the complete grid
          *
-         * @param Solution sg::base::DataVector that must have a dimension equal to the bound's grid dimension, the result is written to Solution
+         * @param Solution SGPP::base::DataVector that must have a dimension equal to the bound's grid dimension, the result is written to Solution
          * @param SolutionInner Solution on the inner grid
          */
-        virtual void getSolutionBoundGrid(sg::base::DataVector& Solution, sg::base::DataVector& SolutionInner);
+        virtual void getSolutionBoundGrid(SGPP::base::DataVector& Solution, SGPP::base::DataVector& SolutionInner);
     };
   }
 }

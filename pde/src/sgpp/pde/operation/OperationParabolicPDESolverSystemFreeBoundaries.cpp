@@ -8,7 +8,10 @@
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     OperationParabolicPDESolverSystemFreeBoundaries::OperationParabolicPDESolverSystemFreeBoundaries() {
@@ -19,13 +22,13 @@ namespace sg {
     OperationParabolicPDESolverSystemFreeBoundaries::~OperationParabolicPDESolverSystemFreeBoundaries() {
     }
 
-    void OperationParabolicPDESolverSystemFreeBoundaries::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationParabolicPDESolverSystemFreeBoundaries::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       if (this->tOperationMode == "ExEul") {
         applyMassMatrix(alpha, result);
       } else if (this->tOperationMode == "ImEul") {
         result.setAll(0.0);
 
-        sg::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
 
         applyMassMatrix(alpha, temp);
         result.add(temp);
@@ -35,7 +38,7 @@ namespace sg {
       } else if (this->tOperationMode == "CrNic") {
         result.setAll(0.0);
 
-        sg::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
 
         applyMassMatrix(alpha, temp);
         result.add(temp);
@@ -51,7 +54,7 @@ namespace sg {
         double alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
         result.setAll(0.0);
 
-        sg::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
 
         applyMassMatrix(alpha, temp);
 
@@ -69,17 +72,17 @@ namespace sg {
         result.mult(alpha0);
 
       } else {
-        throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was specified!");
+        throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was specified!");
       }
     }
 
-    sg::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
-      sg::base::DataVector rhs_complete(this->alpha_complete->getSize());
+    SGPP::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
+      SGPP::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
       if (this->tOperationMode == "ExEul") {
         rhs_complete.setAll(0.0);
 
-        sg::base::DataVector temp(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp(this->alpha_complete->getSize());
 
         applyMassMatrix(*this->alpha_complete, temp);
         rhs_complete.add(temp);
@@ -93,7 +96,7 @@ namespace sg {
       } else if (this->tOperationMode == "CrNic") {
         rhs_complete.setAll(0.0);
 
-        sg::base::DataVector temp(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp(this->alpha_complete->getSize());
 
         applyMassMatrix(*this->alpha_complete, temp);
         rhs_complete.add(temp);
@@ -103,7 +106,7 @@ namespace sg {
       } else if (this->tOperationMode == "AdBas") {
         rhs_complete.setAll(0.0);
 
-        sg::base::DataVector temp(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp(this->alpha_complete->getSize());
 
         applyMassMatrix(*this->alpha_complete, temp);
         rhs_complete.add(temp);
@@ -112,7 +115,7 @@ namespace sg {
 
         temp.mult((2.0) + this->TimestepSize / this->TimestepSize_old);
 
-        sg::base::DataVector temp_old(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
         applyMassMatrix(*this->alpha_complete_old, temp_old);
         applyLOperator(*this->alpha_complete_old, temp_old);
         temp_old.mult(this->TimestepSize / this->TimestepSize_old);
@@ -122,7 +125,7 @@ namespace sg {
       } else if (this->tOperationMode == "BDF2") {
         rhs_complete.setAll(0.0);
 
-        sg::base::DataVector temp(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp(this->alpha_complete->getSize());
 
         applyMassMatrix(*this->alpha_complete, temp);
 
@@ -132,7 +135,7 @@ namespace sg {
         temp.mult(alpha1);
         rhs_complete.add(temp);
 
-        sg::base::DataVector temp_old(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
         applyMassMatrix(*this->alpha_complete_old, temp_old);
 
         double alpha2 = tDiff * tDiff / (1.0 + tDiff);
@@ -146,8 +149,8 @@ namespace sg {
         double alpha2 = -alpha0 * (tDiff * tDiff / (tDiff + 1.0));
 
 
-        sg::base::DataVector temp(this->alpha_complete->getSize());
-        sg::base::DataVector temp_old(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp(this->alpha_complete->getSize());
+        SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
 
         applyMassMatrix(*this->alpha_complete, temp);
         temp.mult(alpha1);
@@ -162,7 +165,7 @@ namespace sg {
 
         rhs_complete.add(temp);
       } else {
-        throw new sg::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
+        throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
       }
 
       // Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -172,12 +175,12 @@ namespace sg {
         delete this->rhs;
       }
 
-      this->rhs = new sg::base::DataVector(rhs_complete);
+      this->rhs = new SGPP::base::DataVector(rhs_complete);
 
       return this->rhs;
     }
 
-    sg::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::getGridCoefficientsForCG() {
+    SGPP::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::getGridCoefficientsForCG() {
       return this->alpha_complete;
     }
 

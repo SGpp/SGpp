@@ -1,6 +1,9 @@
 #include "OCLLTwoDotBound.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 
@@ -195,15 +198,15 @@ namespace sg {
     }
     using namespace oclpdekernels;
 
-    void OCLPDEKernels::RunOCLKernelLTwoDotBound(sg::base::DataVector& alpha,
-        sg::base::DataVector& result,
+    void OCLPDEKernels::RunOCLKernelLTwoDotBound(SGPP::base::DataVector& alpha,
+        SGPP::base::DataVector& result,
         REAL* lcl_q,
         REAL* ptrLevel,
         REAL* ptrIndex,
         REAL* ptrLevel_int,
         size_t argStorageSize,
         size_t argStorageDim,
-        sg::base::GridStorage* storage) {
+        SGPP::base::GridStorage* storage) {
       myStopwatch->start();
 
       if (isVeryFirstTime) {

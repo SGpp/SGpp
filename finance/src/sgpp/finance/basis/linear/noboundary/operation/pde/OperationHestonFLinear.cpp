@@ -15,43 +15,46 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    OperationHestonFLinear::OperationHestonFLinear(sg::base::GridStorage* storage, sg::base::DataVector& coef) : sg::pde::UpDownOneOpDim(storage, coef) {
+    OperationHestonFLinear::OperationHestonFLinear(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef) : SGPP::pde::UpDownOneOpDim(storage, coef) {
     }
 
     OperationHestonFLinear::~OperationHestonFLinear() {
     }
 
-    void OperationHestonFLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonFLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * phi
-      sg::pde::PhiPhiUpBBLinear func(this->storage);
-      sg::base::sweep<sg::pde::PhiPhiUpBBLinear> s(func, this->storage);
+      SGPP::pde::PhiPhiUpBBLinear func(this->storage);
+      SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinear> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationHestonFLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonFLinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * phi
-      sg::pde::PhiPhiDownBBLinear func(this->storage);
-      sg::base::sweep<sg::pde::PhiPhiDownBBLinear> s(func, this->storage);
+      SGPP::pde::PhiPhiDownBBLinear func(this->storage);
+      SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinear> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationHestonFLinear::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonFLinear::upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // dphi * phi
       DPhiPhiUpBBLinear func(this->storage);
-      sg::base::sweep<DPhiPhiUpBBLinear> s(func, this->storage);
+      SGPP::base::sweep<DPhiPhiUpBBLinear> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationHestonFLinear::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonFLinear::downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // dphi * phi
       DPhiPhiDownBBLinear func(this->storage);
-      sg::base::sweep<DPhiPhiDownBBLinear> s(func, this->storage);
+      SGPP::base::sweep<DPhiPhiDownBBLinear> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }

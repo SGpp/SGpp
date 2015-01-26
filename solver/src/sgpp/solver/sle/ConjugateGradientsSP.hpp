@@ -15,7 +15,10 @@
 
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     class ConjugateGradientsSP : public SLESolverSP {
@@ -34,14 +37,14 @@ namespace sg {
          * function that defines a solve method for an iterative solver. In contrast to the normal solve routine
          * this method operates on sinlge precision data.
          *
-         * @param SystemMatrix reference to an sg::base::OperationMatrix Object that implements the matrix vector multiplication
+         * @param SystemMatrix reference to an SGPP::base::OperationMatrix Object that implements the matrix vector multiplication
          * @param alpha the sparse grid's coefficients which have to be determined
          * @param b the right hand side of the system of linear equations
          * @param reuse identifies if the alphas, stored in alpha at calling time, should be reused
          * @param verbose prints information during execution of the solver
          * @param max_threshold additional abort criteria for solver
          */
-        void solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
+        void solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
 
         // Define functions for observer pattern in python
 

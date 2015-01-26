@@ -11,16 +11,19 @@
 
 #include <sgpp/parallel/solver/sle/ConjugateGradientsMPI.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon) : sg::solver::SLESolver(imax, epsilon) {
+    ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon) : SGPP::solver::SLESolver(imax, epsilon) {
     }
 
     ConjugateGradientsMPI::~ConjugateGradientsMPI() {
     }
 
-    void ConjugateGradientsMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
+    void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
       myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
       myGlobalMPIComm->broadcastGridCoefficientsFromRank0(b);
 
@@ -41,9 +44,9 @@ namespace sg {
       this->nIterations = 0;
 
       // define temporal vectors
-      sg::base::DataVector temp(alpha.getSize());
-      sg::base::DataVector q(alpha.getSize());
-      sg::base::DataVector r(b);
+      SGPP::base::DataVector temp(alpha.getSize());
+      SGPP::base::DataVector q(alpha.getSize());
+      SGPP::base::DataVector r(b);
 
       double delta_0 = 0.0;
       double delta_old = 0.0;
@@ -75,7 +78,7 @@ namespace sg {
 
       r.sub(temp);
 
-      sg::base::DataVector d(r);
+      SGPP::base::DataVector d(r);
 
       delta_old = 0.0;
       delta_new = r.dotProduct(r);
@@ -148,9 +151,9 @@ namespace sg {
       //  }
     }
 
-    void ConjugateGradientsMPI::waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha) {
+    void ConjugateGradientsMPI::waitForTask(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha) {
       char ctrl;
-      sg::base::DataVector result(alpha.getSize());
+      SGPP::base::DataVector result(alpha.getSize());
 
       do {
         myGlobalMPIComm->broadcastControlFromRank0(&ctrl);

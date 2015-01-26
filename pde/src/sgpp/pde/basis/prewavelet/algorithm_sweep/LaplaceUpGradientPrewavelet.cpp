@@ -9,23 +9,26 @@
 #include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(sg::base::GridStorage* storage) :
+    LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(SGPP::base::GridStorage* storage) :
       storage(storage) {
     }
 
     LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {
     }
 
-    void LaplaceUpGradientPrewavelet::operator()(sg::base::DataVector& source, sg::base::DataVector& result,
+    void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
         grid_iterator& index, size_t dim) {
-      sg::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
+      SGPP::base::GridStorage::index_type::index_type i;
 
-      sg::base::GridStorage::index_type::level_type l_old;
-      sg::base::GridStorage::index_type::index_type i_old;
+      SGPP::base::GridStorage::index_type::level_type l_old;
+      SGPP::base::GridStorage::index_type::index_type i_old;
 
       index.get(dim, l_old, i_old);
 

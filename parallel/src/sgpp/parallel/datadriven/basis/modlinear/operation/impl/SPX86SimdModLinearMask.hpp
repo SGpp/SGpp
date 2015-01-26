@@ -11,20 +11,23 @@
 
 #include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     class SPX86SimdModLinearMask : public SPX86SimdKernelBase {
       public:
         static const KernelType kernelType = Mask;
         static inline void multImpl(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& alpha,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& alpha,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -270,13 +273,13 @@ namespace sg {
         }
 
         static inline void multTransposeImpl(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& source,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& source,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,

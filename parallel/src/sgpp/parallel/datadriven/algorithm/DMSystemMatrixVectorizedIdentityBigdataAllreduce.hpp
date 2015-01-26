@@ -19,16 +19,19 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename KernelImplementation>
-    class DMSystemMatrixVectorizedIdentityBigdataAllreduce : public sg::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+    class DMSystemMatrixVectorizedIdentityBigdataAllreduce : public SGPP::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
       private:
         // size of complete dataset (this process handles this->numPatchedTrainingInstances_)
         size_t complete_data_size;
 
       public:
-        DMSystemMatrixVectorizedIdentityBigdataAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
+        DMSystemMatrixVectorizedIdentityBigdataAllreduce(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda, VectorizationType vecMode)
           : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
           complete_data_size = this->numPatchedTrainingInstances_ * myGlobalMPIComm->getNumRanks();
           rebuildLevelAndIndex();

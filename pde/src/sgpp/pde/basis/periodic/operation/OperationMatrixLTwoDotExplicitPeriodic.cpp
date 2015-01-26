@@ -13,29 +13,32 @@
 #include <vector>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-  	OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(sg::base::DataMatrix* m,
-        sg::base::Grid* grid) :
+  	OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::DataMatrix* m,
+        SGPP::base::Grid* grid) :
       ownsMatrix_(false) {
       m_ = m;
       buildMatrix(grid);
     }
 
-    OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(sg::base::Grid* grid) :
+    OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::Grid* grid) :
       ownsMatrix_(true) {
-      m_ = new sg::base::DataMatrix(grid->getStorage()->size(),
+      m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(),
                                     grid->getStorage()->size());
       buildMatrix(grid);
     }
 
-    void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(sg::base::Grid* grid) {
+    void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(SGPP::base::Grid* grid) {
       size_t gridSize = grid->getStorage()->size();
       size_t gridDim = grid->getStorage()->dim();
 
-      sg::base::DataMatrix level(gridSize, gridDim);
-      sg::base::DataMatrix index(gridSize, gridDim);
+      SGPP::base::DataMatrix level(gridSize, gridDim);
+      SGPP::base::DataMatrix index(gridSize, gridDim);
 
       grid->getStorage()->getLevelIndexArraysForEval(level, index);
 
@@ -117,14 +120,14 @@ namespace sg {
         delete m_;
     }
 
-    void OperationMatrixLTwoDotExplicitPeriodic::mult(sg::base::DataVector& alpha,
-        sg::base::DataVector& result) {
+    void OperationMatrixLTwoDotExplicitPeriodic::mult(SGPP::base::DataVector& alpha,
+        SGPP::base::DataVector& result) {
 
       size_t nrows = m_->getNrows();
       size_t ncols = m_->getNcols();
 
       if (alpha.getSize() != ncols || result.getSize() != nrows) {
-        throw sg::base::data_exception("Dimensions do not match!");
+        throw SGPP::base::data_exception("Dimensions do not match!");
       }
 
       double* data = m_->getPointer();
@@ -145,7 +148,7 @@ namespace sg {
     }
 
   } /* namespace pde */
-} /* namespace sg */
+} /* namespace SGPP */
 
 
 

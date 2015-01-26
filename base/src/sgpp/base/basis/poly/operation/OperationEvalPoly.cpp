@@ -10,7 +10,10 @@
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationEvalPoly::eval(DataVector& alpha, std::vector<double>& point) {

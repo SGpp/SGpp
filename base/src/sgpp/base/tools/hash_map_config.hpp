@@ -38,7 +38,10 @@ namespace std {
 */
 
 // forward declaration of hash function and hash comparison function
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
     template<class key>
     struct hash { };

@@ -20,7 +20,10 @@
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 class OnlinePredictiveRefinementDimension: public virtual RefinementDecorator {
@@ -79,10 +82,10 @@ private:
 	DataVector* errors;
 	Grid* predictiveGrid_;
 
-	static const sg::parallel::VectorizationType vecType_;
+	static const SGPP::parallel::VectorizationType vecType_;
 
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_ */

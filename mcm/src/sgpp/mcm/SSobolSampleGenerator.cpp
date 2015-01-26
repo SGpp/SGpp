@@ -7,15 +7,18 @@
 
 #include "SSobolSampleGenerator.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
       int SSobolSampleGenerator::isOk(){
           return this->ok;
       } 
 
-      void SSobolSampleGenerator::getSample(sg::base::DataVector& dv) {
+      void SSobolSampleGenerator::getSample(SGPP::base::DataVector& dv) {
           gen.next(dv.getPointer());
       }
     }

@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/OperationDensitySampling1D.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
     class OperationDensitySampling1DLinear : public OperationDensitySampling1D {
       protected:

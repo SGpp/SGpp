@@ -12,27 +12,30 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    OperationLFLinearBoundary::OperationLFLinearBoundary(sg::base::GridStorage* storage) : sg::pde::StdUpDown(storage) {
+    OperationLFLinearBoundary::OperationLFLinearBoundary(SGPP::base::GridStorage* storage) : SGPP::pde::StdUpDown(storage) {
     }
 
     OperationLFLinearBoundary::~OperationLFLinearBoundary() {
     }
 
-    void OperationLFLinearBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationLFLinearBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // X * dphi * phi
       XdPhiPhiUpBBLinearBoundary func(this->storage);
-      sg::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+      SGPP::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationLFLinearBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationLFLinearBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // X * dphi * phi
       XdPhiPhiDownBBLinearBoundary func(this->storage);
-      sg::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+      SGPP::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }

@@ -10,7 +10,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/mcm/SampleGenerator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace mcm {
 
 /**
@@ -194,7 +197,7 @@ public:
 	 *        @param dv Vector which in which results will be written
 	 *	     @return void.
 	 */
-	void getSample(sg::base::DataVector& sample);
+	void getSample(SGPP::base::DataVector& sample);
 
 private:
 

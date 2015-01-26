@@ -9,7 +9,10 @@
 #define INITIAL_SPEEDUP_PARTITION_2 20.0
 
 #include "DynamicTwoPartitionAutoTuning.hpp"
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     DynamicTwoPartitionAutoTuning::DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles) :

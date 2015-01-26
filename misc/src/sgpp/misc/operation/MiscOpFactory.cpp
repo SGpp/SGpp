@@ -12,7 +12,10 @@
 #include <sgpp/misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp>
 #include <sgpp/misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace op_factory {
     base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
@@ -26,7 +29,7 @@ namespace sg {
       }
     }
 
-    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, sg::base::DataVector& coef) {
+    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, SGPP::base::DataVector& coef) {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage(), coef);

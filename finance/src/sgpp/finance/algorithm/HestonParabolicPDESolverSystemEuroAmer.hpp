@@ -15,7 +15,10 @@
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
 #include <sgpp/finance/tools/Hedging.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -24,134 +27,134 @@ namespace sg {
      *
      * Here European or American Options with fix Dirichlet boundaries are solved.
      */
-    class HestonParabolicPDESolverSystemEuroAmer : public sg::pde::OperationParabolicPDESolverSystemDirichlet {
+    class HestonParabolicPDESolverSystemEuroAmer : public SGPP::pde::OperationParabolicPDESolverSystemDirichlet {
       protected:
 
         /// the riskfree interest rate
         double r;
 
         /// Operator on the boundary grid corresponding to the A operator in the thesis
-        sg::base::OperationMatrix* OpABound;
+        SGPP::base::OperationMatrix* OpABound;
 
         /// Operator on the inner grid corresponding to the A operator in the thesis
-        sg::base::OperationMatrix* OpAInner;
+        SGPP::base::OperationMatrix* OpAInner;
 
         /// Operator on the boundary grid corresponding to the B operator in the thesis
-        sg::base::OperationMatrix* OpBBound;
+        SGPP::base::OperationMatrix* OpBBound;
 
         /// Operator on the inner grid corresponding to the B operator in the thesis
-        sg::base::OperationMatrix* OpBInner;
+        SGPP::base::OperationMatrix* OpBInner;
 
         /// Operator on the boundary grid corresponding to the C operator in the thesis
-        sg::base::OperationMatrix* OpCBound;
+        SGPP::base::OperationMatrix* OpCBound;
 
         /// Operator on the inner grid corresponding to the C operator in the thesis
-        sg::base::OperationMatrix* OpCInner;
+        SGPP::base::OperationMatrix* OpCInner;
 
         /// Operator on the boundary grid corresponding to the D operator in the thesis
-        sg::base::OperationMatrix* OpDBound;
+        SGPP::base::OperationMatrix* OpDBound;
 
         /// Operator on the inner grid corresponding to the D operator in the thesis
-        sg::base::OperationMatrix* OpDInner;
+        SGPP::base::OperationMatrix* OpDInner;
 
         /// Operator on the boundary grid corresponding to the E operator in the thesis
-        sg::base::OperationMatrix* OpEBound;
+        SGPP::base::OperationMatrix* OpEBound;
 
         /// Operator on the inner grid corresponding to the E operator in the thesis
-        sg::base::OperationMatrix* OpEInner;
+        SGPP::base::OperationMatrix* OpEInner;
 
         /// Operator on the boundary grid corresponding to the F operator in the thesis
-        sg::base::OperationMatrix* OpFBound;
+        SGPP::base::OperationMatrix* OpFBound;
 
         /// Operator on the inner grid corresponding to the F operator in the thesis
-        sg::base::OperationMatrix* OpFInner;
+        SGPP::base::OperationMatrix* OpFInner;
 
         /// Operator on the boundary grid corresponding to the G operator in the thesis
-        sg::base::OperationMatrix* OpGBound;
+        SGPP::base::OperationMatrix* OpGBound;
 
         /// Operator on the inner grid corresponding to the G operator in the thesis
-        sg::base::OperationMatrix* OpGInner;
+        SGPP::base::OperationMatrix* OpGInner;
 
         /// Operator on the boundary grid corresponding to the H operator in the thesis
-        sg::base::OperationMatrix* OpHBound;
+        SGPP::base::OperationMatrix* OpHBound;
 
         /// Operator on the inner grid corresponding to the H operator in the thesis
-        sg::base::OperationMatrix* OpHInner;
+        SGPP::base::OperationMatrix* OpHInner;
 
         /// Operator on the boundary grid corresponding to the K operator in the thesis
-        sg::base::OperationMatrix* OpKBound;
+        SGPP::base::OperationMatrix* OpKBound;
 
         /// Operator on the inner grid corresponding to the K operator in the thesis
-        sg::base::OperationMatrix* OpKInner;
+        SGPP::base::OperationMatrix* OpKInner;
 
         /// Operator on the boundary grid corresponding to the X operator in the thesis
-        sg::base::OperationMatrix* OpXBound;
+        SGPP::base::OperationMatrix* OpXBound;
 
         /// Operator on the inner grid corresponding to the X operator in the thesis
-        sg::base::OperationMatrix* OpXInner;
+        SGPP::base::OperationMatrix* OpXInner;
 
         /// Operator on the boundary grid corresponding to the Y operator in the thesis
-        sg::base::OperationMatrix* OpYBound;
+        SGPP::base::OperationMatrix* OpYBound;
 
         /// Operator on the inner grid corresponding to the Y operator in the thesis
-        sg::base::OperationMatrix* OpYInner;
+        SGPP::base::OperationMatrix* OpYInner;
 
         /// Operator on the boundary grid corresponding to the W operator in the thesis
-        sg::base::OperationMatrix* OpWBound;
+        SGPP::base::OperationMatrix* OpWBound;
 
         /// Operator on the inner grid corresponding to the W operator in the thesis
-        sg::base::OperationMatrix* OpWInner;
+        SGPP::base::OperationMatrix* OpWInner;
 
         /// Operator on the boundary grid corresponding to the Z operator in the thesis
-        sg::base::OperationMatrix* OpZBound;
+        SGPP::base::OperationMatrix* OpZBound;
 
         /// Operator on the inner grid corresponding to the Z operator in the thesis
-        sg::base::OperationMatrix* OpZInner;
+        SGPP::base::OperationMatrix* OpZInner;
 
         /// Pointer to the vector containing the volatility of volatility values
-        sg::base::DataVector* volvols;
+        SGPP::base::DataVector* volvols;
 
         /// Pointer to the kappas
-        sg::base::DataVector* kappas;
+        SGPP::base::DataVector* kappas;
 
         /// Pointer to the thetas
-        sg::base::DataVector* thetas;
+        SGPP::base::DataVector* thetas;
 
         /// Pointer to the rhos
-        sg::base::DataMatrix* hMatrix;
+        SGPP::base::DataMatrix* hMatrix;
 
         /// Coefficient collection for the D operator. Only one custom up/down operator, so it's just a vector of coefficients.
-        sg::base::DataVector* dCoeff;
+        SGPP::base::DataVector* dCoeff;
 
         /// Coefficient collection for the E operator. Only one custom up/down operator, so it's just a vector of coefficients.
-        sg::base::DataVector* eCoeff;
+        SGPP::base::DataVector* eCoeff;
 
         /// Coefficient collection for the F operator. Only one custom up/down operator, so it's just a vector of coefficients.
-        sg::base::DataVector* fCoeff;
+        SGPP::base::DataVector* fCoeff;
 
         /// Coefficient collection for the G operator. Only one custom up/down operator, so it's just a vector of coefficients.
-        sg::base::DataVector* gCoeff;
+        SGPP::base::DataVector* gCoeff;
 
         /// Coefficient collection for the Z operator. Only one custom up/down operator, so it's just a vector of coefficients.
-        sg::base::DataVector* zCoeff;
+        SGPP::base::DataVector* zCoeff;
 
         /// Coefficient collection for the B operator. Two custom up/down operators, so it's a matrix of coefficients.
-        sg::base::DataMatrix* bCoeff;
+        SGPP::base::DataMatrix* bCoeff;
 
         /// Coefficient collection for the C operator. Two custom up/down operators, so it's a matrix of coefficients.
-        sg::base::DataMatrix* cCoeff;
+        SGPP::base::DataMatrix* cCoeff;
 
         /// Coefficient collection for the H operator. Two custom up/down operators, so it's a matrix of coefficients.
-        sg::base::DataMatrix* hCoeff;
+        SGPP::base::DataMatrix* hCoeff;
 
         /// Coefficient collection for the X operator. Two custom up/down operators, so it's a matrix of coefficients.
-        sg::base::DataMatrix* xCoeff;
+        SGPP::base::DataMatrix* xCoeff;
 
         /// Coefficient collection for the Y operator. Two custom up/down operators, so it's a matrix of coefficients.
-        sg::base::DataMatrix* yCoeff;
+        SGPP::base::DataMatrix* yCoeff;
 
         /// Coefficient collection for the W operator. Two custom up/down operators, so it's a matrix of coefficients.
-        sg::base::DataMatrix* wCoeff;
+        SGPP::base::DataMatrix* wCoeff;
 
         /// Up/down four op dims
         double**** kCoeff;
@@ -175,7 +178,7 @@ namespace sg {
         std::string refineMode;
 
         /// MaxLevel max. Level of refinement
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
 
         /// The algorithmic dimensions used in this system
         std::vector<size_t> HestonAlgoDims;
@@ -195,10 +198,10 @@ namespace sg {
         /// Store whether log coordinates are used
         bool b_log_transform;
 
-        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
-        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
-        virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
-        virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+        virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+        virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+        virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * Builds the coefficient object for the (non-log-transformed) D operator.
@@ -346,12 +349,12 @@ namespace sg {
          * @param refineMode mode of refinement
          * @param refineMaxLevel maximum sparse grid level above which no refinement is performed
          */
-        HestonParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& thetas, sg::base::DataVector& volvols,
-                                               sg::base::DataVector& kappas,
-                                               sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+        HestonParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& thetas, SGPP::base::DataVector& volvols,
+                                               SGPP::base::DataVector& kappas,
+                                               SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
                                                double dStrike, std::string option_type,
                                                bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                               int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
+                                               int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Destructor. Just does the usual...releases all allocated memory.

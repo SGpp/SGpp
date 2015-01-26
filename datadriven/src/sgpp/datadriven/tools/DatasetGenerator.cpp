@@ -14,7 +14,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     double DatasetGenerator::uniform(double a, double b) {

@@ -9,7 +9,10 @@
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     OperationRegularizationDiagonal::OperationRegularizationDiagonal(base::GridStorage* storage, int mode, double k) : mode(mode), k(k), size(storage->size()), storage(storage), diagonal(storage->size()) {

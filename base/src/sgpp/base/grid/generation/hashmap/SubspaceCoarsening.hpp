@@ -14,7 +14,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 /**
@@ -86,5 +89,5 @@ private:
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* SUBSPACECOARSENING_HPP_ */

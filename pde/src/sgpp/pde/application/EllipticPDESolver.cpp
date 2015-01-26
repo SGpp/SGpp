@@ -7,7 +7,10 @@
 
 #include <sgpp/pde/application/EllipticPDESolver.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     EllipticPDESolver::EllipticPDESolver() : PDESolver() {

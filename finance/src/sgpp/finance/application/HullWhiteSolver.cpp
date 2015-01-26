@@ -20,11 +20,14 @@
 #include <iomanip>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-using namespace sg::pde;
-using namespace sg::solver;
-using namespace sg::base;
+using namespace SGPP::pde;
+using namespace SGPP::solver;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     HullWhiteSolver::HullWhiteSolver() : ParabolicPDESolver() {
@@ -199,7 +202,7 @@ namespace sg {
           //delete dblFuncValues;
         }
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {

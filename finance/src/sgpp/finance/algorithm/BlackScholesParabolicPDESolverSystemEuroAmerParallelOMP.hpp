@@ -10,7 +10,10 @@
 
 #include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -26,13 +29,13 @@ namespace sg {
      */
     class BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP : public BlackScholesParabolicPDESolverSystemEuroAmer {
       protected:
-        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -58,11 +61,11 @@ namespace sg {
          * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
          * @param refineMaxLevel max. level for refinement during solving
          */
-        BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
-            sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+        BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma,
+            SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
             double dStrike, std::string option_type,
             bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-            int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
+            int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Std-Destructor
@@ -72,17 +75,17 @@ namespace sg {
         /**
          * Multiplicates a vector with the matrix, parallel
          *
-         * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
-         * @param result sg::base::DataVector into which the result of the space discretization operation is stored
+         * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
+         * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
          */
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * generates the right hand side of the system, parallel
          *
          * @return returns the rhs
          */
-        virtual sg::base::DataVector* generateRHS();
+        virtual SGPP::base::DataVector* generateRHS();
     };
 
   }

@@ -13,7 +13,10 @@
 
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     class ConjugateGradients : public SLESolver {
@@ -28,7 +31,7 @@ namespace sg {
          */
         virtual ~ConjugateGradients();
 
-        virtual void solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
 
         // Define functions for observer pattern in python
 

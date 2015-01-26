@@ -13,14 +13,17 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace datadriven {
 
-    class LearnerSGD: public sg::datadriven::Learner {
+    class LearnerSGD: public SGPP::datadriven::Learner {
 
       public:
-        LearnerSGD(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+        LearnerSGD(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
 		/*
 		 * Implements stochastic gradient descent.
@@ -33,9 +36,9 @@ namespace sg {
 		 * @param gamma step width
 		 * */
 		virtual void train(
-	            sg::base::DataMatrix& trainDataset, 
-	            sg::base::DataVector& classes, 
-				sg::base::RegularGridConfiguration& GridConfig, 
+	            SGPP::base::DataMatrix& trainDataset, 
+	            SGPP::base::DataVector& classes, 
+				SGPP::base::RegularGridConfiguration& GridConfig, 
 				size_t maxIterations,
 				double eps,
 				double lambda,
@@ -44,8 +47,8 @@ namespace sg {
 
 		virtual ~LearnerSGD();
 
-		sg::base::DataVector* getAlpha();
-		sg::base::Grid* getGrid();
+		SGPP::base::DataVector* getAlpha();
+		SGPP::base::Grid* getGrid();
 
       private:
 		int getRandom(int limit);

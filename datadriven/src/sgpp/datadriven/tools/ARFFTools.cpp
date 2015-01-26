@@ -12,7 +12,10 @@
 #include <iostream>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     ARFFTools::ARFFTools() {
@@ -38,7 +41,7 @@ namespace sg {
         myfile.close();
       } else {
         std::string msg = "Unable to open file: " + tfilename;
-        throw new sg::base::file_exception(msg.c_str());
+        throw new SGPP::base::file_exception(msg.c_str());
       }
 
       // the class is not regarded when getting the dimension
@@ -69,13 +72,13 @@ namespace sg {
         myfile.close();
       } else {
         std::string msg = "Unable to open file: " + tfilename;
-        throw new sg::base::file_exception(msg.c_str());
+        throw new SGPP::base::file_exception(msg.c_str());
       }
 
       return numInst;
     }
 
-    void ARFFTools::readTrainingData(std::string tfilename, sg::base::DataMatrix& destination) {
+    void ARFFTools::readTrainingData(std::string tfilename, SGPP::base::DataMatrix& destination) {
       std::string line;
       std::ifstream myfile (tfilename.c_str());
       bool data = false;
@@ -101,11 +104,11 @@ namespace sg {
         myfile.close();
       } else {
         std::string msg = "Unable to open file: " + tfilename;
-        throw new sg::base::file_exception(msg.c_str());
+        throw new SGPP::base::file_exception(msg.c_str());
       }
     }
 
-    void ARFFTools::readClasses(std::string tfilename, sg::base::DataVector& destination) {
+    void ARFFTools::readClasses(std::string tfilename, SGPP::base::DataVector& destination) {
       std::string line;
       std::ifstream myfile (tfilename.c_str());
       bool data = false;
@@ -131,11 +134,11 @@ namespace sg {
         myfile.close();
       } else {
         std::string msg = "Unable to open file: " + tfilename;
-        throw new sg::base::file_exception(msg.c_str());
+        throw new SGPP::base::file_exception(msg.c_str());
       }
     }
 
-    void ARFFTools::writeNewElement(std::string& instance, sg::base::DataMatrix& destination, size_t instanceNo) {
+    void ARFFTools::writeNewElement(std::string& instance, SGPP::base::DataMatrix& destination, size_t instanceNo) {
       size_t cur_pos = 0;
       size_t cur_find = 0;
       size_t dim = destination.getNcols();
@@ -151,19 +154,19 @@ namespace sg {
       }
     }
 
-    void ARFFTools::writeNewClass(std::string& instance, sg::base::DataVector& destination, size_t instanceNo) {
+    void ARFFTools::writeNewClass(std::string& instance, SGPP::base::DataVector& destination, size_t instanceNo) {
       size_t cur_pos = instance.find_last_of(",");
       std::string cur_value = instance.substr(cur_pos + 1);
       double dbl_cur_value = atof(cur_value.c_str());
       destination.set(instanceNo, dbl_cur_value);
     }
 
-    //void ARFFTools::writeAlpha(std::string tfilename, sg::base::DataVector& source)
+    //void ARFFTools::writeAlpha(std::string tfilename, SGPP::base::DataVector& source)
     //{
     //
     //}
 
-    //void ARFFTools::readAlpha(std::string tfilename, sg::base::DataVector& destination)
+    //void ARFFTools::readAlpha(std::string tfilename, SGPP::base::DataVector& destination)
     //{
     //
     //}

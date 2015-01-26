@@ -10,7 +10,10 @@
 
 #include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -52,9 +55,9 @@ namespace sg {
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        LaplaceEnhancedDownBBLinearBoundary(sg::base::GridStorage* storage);
+        LaplaceEnhancedDownBBLinearBoundary(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -65,17 +68,17 @@ namespace sg {
          * This operations performs the calculation of down in the direction of dimension <i>dim</i>
          * on a grid with Dirichlet 0 boundary conditions.
          *
-         * @param source sg::base::DataMatrix that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-         * @param result sg::base::DataMatrix that contains the result of the down operation
+         * @param source SGPP::base::DataMatrix that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+         * @param result SGPP::base::DataMatrix that contains the result of the down operation
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          */
-        virtual void operator()(sg::base::DataMatrix& source, sg::base::DataMatrix& result, grid_iterator& index, size_t dim);
+        virtual void operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim);
     };
 
     // namespace detail
   }
-  // namespace sg
+  // namespace SGPP
 }
 
 #endif /* LAPLACEENHANCEDDOWNBBLINEARBOUNDARY_HPP */

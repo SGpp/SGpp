@@ -1,6 +1,9 @@
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 void OperationMultipleEvalSubspaceCombined::uncachedMultTransposeInner(size_t dim, const double * const datasetPtr, size_t dataIndexBase,

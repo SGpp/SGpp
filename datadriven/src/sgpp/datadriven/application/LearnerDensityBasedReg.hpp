@@ -11,7 +11,10 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
@@ -29,7 +32,7 @@ namespace sg {
          * @param border offset for the normalization of the class data
          */
         LearnerDensityBasedReg(
-          sg::datadriven::LearnerRegularizationType& regularization,
+          SGPP::datadriven::LearnerRegularizationType& regularization,
           double border = 0.);
 
         /**
@@ -49,12 +52,12 @@ namespace sg {
          * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
          * @param lambda regularization parameter lambda
          */
-        virtual LearnerTiming train(sg::base::DataMatrix& trainDataset,
-                                    sg::base::DataVector& classes,
-                                    const sg::base::RegularGridConfiguration& GridConfig,
-                                    const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-                                    const sg::solver::SLESolverConfiguration& SolverConfigFinal,
-                                    const sg::base::AdpativityConfiguration& AdaptConfig,
+        virtual LearnerTiming train(SGPP::base::DataMatrix& trainDataset,
+                                    SGPP::base::DataVector& classes,
+                                    const SGPP::base::RegularGridConfiguration& GridConfig,
+                                    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+                                    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+                                    const SGPP::base::AdpativityConfiguration& AdaptConfig,
                                     bool testAccDuringAdapt, const double lambda);
 
         /**
@@ -64,7 +67,7 @@ namespace sg {
          *
          * @return regression values of testDataset
          */
-        virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
+        virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
 
         /**
          * simple dump of the one dimensional density function for a specific data point
@@ -74,14 +77,14 @@ namespace sg {
          * @param fileName filename to store the dump to
          * @param resolution resolution of function plot
          */
-        void dumpDensityAtPoint(sg::base::DataVector& point, std::string fileName,
+        void dumpDensityAtPoint(SGPP::base::DataVector& point, std::string fileName,
                                 unsigned int resolution);
 
       protected:
         /// regularization mode
-        sg::datadriven::LearnerRegularizationType CMode_;
+        SGPP::datadriven::LearnerRegularizationType CMode_;
         /// regularization operator
-        sg::base::OperationMatrix* C_;
+        SGPP::base::OperationMatrix* C_;
         /// maximum value (used for de-normalization)
         double maxValue_;
         /// minimum value (used for de-normalization)
@@ -92,11 +95,11 @@ namespace sg {
         /**
          * inherited from LearnerBase, but not used
          */
-        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(
-          sg::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
+          SGPP::base::DataMatrix& trainDataset, double lambda);
 
     };
 
   } /* namespace datadriven */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* LEARNERDENSITYBASEDREG_HPP_ */

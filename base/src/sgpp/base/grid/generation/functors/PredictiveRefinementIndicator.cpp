@@ -10,7 +10,10 @@
 #include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
 #include <map>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -204,4 +207,4 @@ void PredictiveRefinementIndicator::buildGPSupportMask(
 
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

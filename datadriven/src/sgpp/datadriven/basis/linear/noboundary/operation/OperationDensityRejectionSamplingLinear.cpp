@@ -14,7 +14,10 @@
 #endif
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
     void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples, size_t trial_max) {
 

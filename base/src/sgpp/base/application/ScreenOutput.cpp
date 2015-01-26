@@ -7,7 +7,10 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 #ifdef _WIN32

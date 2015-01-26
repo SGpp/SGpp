@@ -15,34 +15,37 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const bool isRegression, const bool verbose) :
-    sg::datadriven::LearnerBase(isRegression, verbose) {
+    SGPP::datadriven::LearnerBase(isRegression, verbose) {
 }
 
 LearnerLeastSquaresIdentity::LearnerLeastSquaresIdentity(const std::string tGridFilename,
         const std::string tAlphaFilename, const bool isRegression, const bool verbose) :
-    sg::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose) {
+    SGPP::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose) {
 }
 
 LearnerLeastSquaresIdentity::~LearnerLeastSquaresIdentity() {
 }
 
-sg::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSystem(sg::base::DataMatrix& trainDataset,
+SGPP::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSystem(SGPP::base::DataMatrix& trainDataset,
         double lambda) {
     if (this->grid_ == NULL)
         return NULL;
 
-    sg::datadriven::SystemMatrixLeastSquaresIdentity *systemMatrix = new sg::datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid_),
+    SGPP::datadriven::SystemMatrixLeastSquaresIdentity *systemMatrix = new SGPP::datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid_),
             trainDataset, lambda);
     systemMatrix->setImplementation(this->implementationConfiguration);
     return systemMatrix;
 }
 
-void LearnerLeastSquaresIdentity::postProcessing(const sg::base::DataMatrix& trainDataset,
-        const sg::solver::SLESolverType& solver, const size_t numNeededIterations) {
+void LearnerLeastSquaresIdentity::postProcessing(const SGPP::base::DataMatrix& trainDataset,
+        const SGPP::solver::SLESolverType& solver, const size_t numNeededIterations) {
     LearnerVectorizedPerformance currentPerf = LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(*this->grid_,
             trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
 
@@ -58,10 +61,10 @@ void LearnerLeastSquaresIdentity::postProcessing(const sg::base::DataMatrix& tra
     }
 }
 
-sg::base::DataVector LearnerLeastSquaresIdentity::predict(sg::base::DataMatrix& testDataset) {
-    sg::base::DataVector classesComputed(testDataset.getNrows());
+SGPP::base::DataVector LearnerLeastSquaresIdentity::predict(SGPP::base::DataMatrix& testDataset) {
+    SGPP::base::DataVector classesComputed(testDataset.getNrows());
 
-    sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
+    SGPP::base::OperationMultipleEval* MultEval = SGPP::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
             this->implementationConfiguration);
     MultEval->mult(*alpha_, classesComputed);
     delete MultEval;
@@ -69,21 +72,21 @@ sg::base::DataVector LearnerLeastSquaresIdentity::predict(sg::base::DataMatrix& 
     return classesComputed;
 }
 
-double LearnerLeastSquaresIdentity::testRegular(const sg::base::RegularGridConfiguration& GridConfig,
-        sg::base::DataMatrix& testDataset) {
+double LearnerLeastSquaresIdentity::testRegular(const SGPP::base::RegularGridConfiguration& GridConfig,
+        SGPP::base::DataMatrix& testDataset) {
 
     InitializeGrid(GridConfig);
 
-    sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
+    SGPP::base::OperationMultipleEval* MultEval = SGPP::op_factory::createOperationMultipleEval(*(this->grid_), testDataset,
             this->implementationConfiguration);
 
-    sg::base::DataVector classesComputed(testDataset.getNrows());
+    SGPP::base::DataVector classesComputed(testDataset.getNrows());
 
     classesComputed.setAll(0.0);
 
     execTime_ = 0.0;
 
-    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+    SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
     myStopwatch->start();
 
     //TODO could be wrong

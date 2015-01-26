@@ -17,7 +17,10 @@
 
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(istr) {

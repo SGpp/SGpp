@@ -10,8 +10,11 @@
 
 #include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDotProductLinear.hpp>
 
-using namespace sg::base;
-namespace sg {
+using namespace SGPP::base;
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     double OperationDotProductLinear::eval(base::DataVector& x1, base::DataVector& x2) {

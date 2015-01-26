@@ -23,11 +23,14 @@
 #include <sgpp/pde/algorithm/UpDownOneOpDimWithShadow.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(sg::base::GridStorage* storage,
-        sg::base::GridStorage* shadowStorage) {
+    UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(SGPP::base::GridStorage* storage,
+        SGPP::base::GridStorage* shadowStorage) {
       this->storage = storage;
       this->shadowStorage = shadowStorage;
     }
@@ -35,13 +38,13 @@ namespace sg {
     UpDownOneOpDimWithShadow::~UpDownOneOpDimWithShadow() {
     }
 
-    void UpDownOneOpDimWithShadow::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
 
       expandGrid();
 
       //Create new Datavectors for the grid including shadow points.
-      sg::base::DataVector alpha_temp(storage->size());
-      sg::base::DataVector result_temp(storage->size());
+      SGPP::base::DataVector alpha_temp(storage->size());
+      SGPP::base::DataVector result_temp(storage->size());
 
       alpha_temp.setAll(0.0);
       result_temp.setAll(0.0);
@@ -51,7 +54,7 @@ namespace sg {
         alpha_temp[i] = alpha[i];
       }
 
-      sg::base::DataVector beta(result_temp.getSize());
+      SGPP::base::DataVector beta(result_temp.getSize());
       beta.setAll(0.0);
 
       for (size_t i = 0; i < storage->dim(); i++) {
@@ -83,7 +86,7 @@ namespace sg {
       }
     }
 
-    void UpDownOneOpDimWithShadow::updown(sg::base::DataVector& alpha, sg::base::DataVector& result,
+    void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
                                           size_t dim, size_t op_dim) {
       if (dim == op_dim) {
         specialOP(alpha, result, dim, op_dim);
@@ -91,13 +94,13 @@ namespace sg {
         //Unidirectional scheme
         if (dim > 0) {
           // Reordering ups and downs
-          sg::base::DataVector temp(alpha.getSize());
+          SGPP::base::DataVector temp(alpha.getSize());
           temp.setAll(0.0);
           up(alpha, temp, dim);
           updown(temp, result, dim - 1, op_dim);
 
           // Same from the other direction:
-          sg::base::DataVector result_temp(alpha.getSize());
+          SGPP::base::DataVector result_temp(alpha.getSize());
           result_temp.setAll(0.0);
           updown(alpha, temp, dim - 1, op_dim);
           down(temp, result_temp, dim);
@@ -107,7 +110,7 @@ namespace sg {
           // Terminates dimension recursion
           up(alpha, result, dim);
 
-          sg::base::DataVector temp(alpha.getSize());
+          SGPP::base::DataVector temp(alpha.getSize());
           temp.setAll(0.0);
           down(alpha, temp, dim);
 
@@ -117,18 +120,18 @@ namespace sg {
       }
     }
 
-    void UpDownOneOpDimWithShadow::specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result,
+    void UpDownOneOpDimWithShadow::specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
         size_t dim, size_t op_dim) {
       //Unidirectional scheme
       if (dim > 0) {
         // Reordering ups and downs
-        sg::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
         temp.setAll(0.0);
         upOpDim(alpha, temp, dim);
         updown(temp, result, dim - 1, op_dim);
 
         // Same from the other direction:
-        sg::base::DataVector result_temp(alpha.getSize());
+        SGPP::base::DataVector result_temp(alpha.getSize());
         result_temp.setAll(0.0);
         updown(alpha, temp, dim - 1, op_dim);
         downOpDim(temp, result_temp, dim);
@@ -138,7 +141,7 @@ namespace sg {
         // Terminates dimension recursion
         upOpDim(alpha, result, dim);
 
-        sg::base::DataVector temp(alpha.getSize());
+        SGPP::base::DataVector temp(alpha.getSize());
         temp.setAll(0.0);
         downOpDim(alpha, temp, dim);
 

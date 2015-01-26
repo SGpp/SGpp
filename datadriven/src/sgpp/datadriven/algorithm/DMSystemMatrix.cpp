@@ -9,27 +9,30 @@
 //#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 //TODO where do I get the kernel from (who constructs the kernel?)
 
-DMSystemMatrix::DMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C,
+DMSystemMatrix::DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C,
 		double lambda) :
 		DMSystemMatrixBase(trainData, lambda), grid(grid) {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;
-	//this->B = sg::op_factory::createOperationMultiEval(grid);
-	this->B = sg::op_factory::createOperationMultipleEval(grid, *(this->dataset_));
+	//this->B = SGPP::op_factory::createOperationMultiEval(grid);
+	this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->dataset_));
 }
 
 DMSystemMatrix::~DMSystemMatrix() {
 	delete this->B;
 }
 
-void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+void DMSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
 	//temp variable may be resized during computation
-	sg::base::DataVector temp(this->dataset_->getNrows());
+	SGPP::base::DataVector temp(this->dataset_->getNrows());
 	size_t M = this->dataset_->getNrows();
 
 	// Operation B
@@ -38,8 +41,8 @@ void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& res
 
 //this->B->mult(alpha, temp);
 
-	base::OperationMultipleEval *op = sg::op_factory::createOperationMultipleEval(grid, *(this->dataset_));
-	sg::base::DataVector temp2(this->dataset_->getNrows());
+	base::OperationMultipleEval *op = SGPP::op_factory::createOperationMultipleEval(grid, *(this->dataset_));
+	SGPP::base::DataVector temp2(this->dataset_->getNrows());
 	//op->mult(*(this->dataset_), alpha, temp2);
 	op->mult(alpha, temp);
 
@@ -57,7 +60,7 @@ void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& res
 	 }*/
 
 //      this->B->multTranspose(temp, result);
-//      sg::base::DataVector result2(result);
+//      SGPP::base::DataVector result2(result);
 //      op->multTranspose(*(this->dataset_), temp, result2);
 //      if (result.getSize() != result2.getSize()) {
 //    	  std::cout << "ref: " << result.getSize() << " mine: " << result2.getSize() << std::endl;
@@ -73,16 +76,16 @@ void DMSystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& res
 
 	delete op;
 
-	sg::base::DataVector temptwo(alpha.getSize());
+	SGPP::base::DataVector temptwo(alpha.getSize());
 	this->C->mult(alpha, temptwo);
 	result.axpy(static_cast<double>(M) * this->lambda_, temptwo);
 }
 
-void DMSystemMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
+void DMSystemMatrix::generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {
 	//this->B->multTranspose((*this->dataset_), classes, b);
 	//this->B->multTranspose(classes, b);
 
-	base::OperationMultipleEval *op = sg::op_factory::createOperationMultipleEval(grid, *(this->dataset_));
+	base::OperationMultipleEval *op = SGPP::op_factory::createOperationMultipleEval(grid, *(this->dataset_));
 	op->multTranspose(classes, b);
 	delete op;
 }

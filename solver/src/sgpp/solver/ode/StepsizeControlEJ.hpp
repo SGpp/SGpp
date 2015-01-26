@@ -11,7 +11,10 @@
 #include <sgpp/solver/ODESolver.hpp>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     /**
@@ -25,14 +28,14 @@ namespace sg {
      */
     class StepsizeControlEJ : public StepsizeControl {
       private:
-        virtual void predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
-                               double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector& corr, sg::base::DataVector* rhs);
+        virtual void predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+                               double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
 
-        virtual void corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector* rhs);
+        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs);
 
         virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon);
 
-        virtual double norm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& dv1, sg::base::DataVector& dv2);
+        virtual double norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
         std::string _odesolver;
       public:
         /**
@@ -43,10 +46,10 @@ namespace sg {
          * @param timestepSize the size of one timestep
          * @param eps the epsilon for the stepsize control
          * @param sc
-         * @param screen possible pointer to a sg::base::ScreenOutput object
+         * @param screen possible pointer to a SGPP::base::ScreenOutput object
          * @param gamma used damping factor, default is 0.5
          */
-        StepsizeControlEJ(std::string odesolver, size_t nTimesteps, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen = NULL, double gamma = 0.5);
+        StepsizeControlEJ(std::string odesolver, size_t nTimesteps, double timestepSize, double eps, double sc, SGPP::base::ScreenOutput* screen = NULL, double gamma = 0.5);
 
         /**
          * Std-Destructor

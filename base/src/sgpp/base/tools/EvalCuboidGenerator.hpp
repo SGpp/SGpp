@@ -13,7 +13,10 @@
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

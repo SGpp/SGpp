@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -434,5 +437,5 @@ struct eqIndex<ErrorContainer<LT, IT>* > {
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* ErrorContainer_HPP_ */

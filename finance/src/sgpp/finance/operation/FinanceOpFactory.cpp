@@ -70,7 +70,10 @@
 #include <sgpp/finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace op_factory {
 

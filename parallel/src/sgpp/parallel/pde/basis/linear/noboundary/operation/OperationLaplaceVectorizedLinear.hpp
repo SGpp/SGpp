@@ -27,7 +27,10 @@
 #undef __AVX__
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -35,25 +38,25 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLaplaceVectorizedLinear: public sg::base::OperationMatrix {
+    class OperationLaplaceVectorizedLinear: public SGPP::base::OperationMatrix {
       private:
 
 
-        sg::base::GridStorage* storage;
-        sg::base::DataMatrix* level_;
-        sg::base::DataMatrix* level_int_;
-        sg::base::DataMatrix* index_;
-        sg::base::DataVector* lcl_q_;
-        sg::base::DataVector* lcl_q_inv_;
-        sg::base::DataVector* lambda_;
-        sg::base::DataVector* alpha_padded_;
-        sg::base::DataVector* constants_;
+        SGPP::base::GridStorage* storage;
+        SGPP::base::DataMatrix* level_;
+        SGPP::base::DataMatrix* level_int_;
+        SGPP::base::DataMatrix* index_;
+        SGPP::base::DataVector* lcl_q_;
+        SGPP::base::DataVector* lcl_q_inv_;
+        SGPP::base::DataVector* lambda_;
+        SGPP::base::DataVector* alpha_padded_;
+        SGPP::base::DataVector* constants_;
 
-        sg::base::DataVector** gradient_temp;
-        sg::base::DataVector** l2dot_temp;
+        SGPP::base::DataVector** gradient_temp;
+        SGPP::base::DataVector** l2dot_temp;
 
 #if defined(STORE_MATRIX)
-        sg::base::DataMatrix* operation_result_matrix_;
+        SGPP::base::DataMatrix* operation_result_matrix_;
         bool operation_result_generated_;
 #endif
 
@@ -77,7 +80,7 @@ namespace sg {
         double l2dot(size_t i, size_t j, size_t dim);
         double all_time;
         double all_iterations;
-        sg::base::SGppStopwatch stopWatch;
+        SGPP::base::SGppStopwatch stopWatch;
 
       public:
         /**
@@ -85,7 +88,7 @@ namespace sg {
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage);
+        OperationLaplaceVectorizedLinear(SGPP::base::GridStorage* storage);
 
         /**
          * Construtor of OperationLaplaceLinear
@@ -93,14 +96,14 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-        OperationLaplaceVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+        OperationLaplaceVectorizedLinear(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda);
 
         /**
          * Destructor
          */
         virtual ~OperationLaplaceVectorizedLinear();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         virtual void reset();
     };

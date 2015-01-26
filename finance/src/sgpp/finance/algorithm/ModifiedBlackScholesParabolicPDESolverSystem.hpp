@@ -14,7 +14,10 @@
 #include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
 #include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
     /**
      * This class implements the Modified ParabolicPDESolverSystem for the BlackScholes
@@ -23,9 +26,9 @@ namespace sg {
     class ModifiedBlackScholesParabolicPDESolverSystem  : public BlackScholesParabolicPDESolverSystem {
       protected:
 
-        sg::base::OperationMatrix* OpFBound;
+        SGPP::base::OperationMatrix* OpFBound;
 
-        virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -50,10 +53,10 @@ namespace sg {
          * @param refineMaxLevel max. level of refinement during solving
          * @param dim_HW of Hull-White (= where r value is taken)
          */
-        ModifiedBlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
-            sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+        ModifiedBlackScholesParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
+            SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
             bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-            int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel,
+            int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel,
             int dim_HW);
 
         /**
@@ -61,7 +64,7 @@ namespace sg {
         *
         * @param updateVector the vector that should be updated
         */
-        virtual void multiplyrBSHW(sg::base::DataVector& updateVector);
+        virtual void multiplyrBSHW(SGPP::base::DataVector& updateVector);
 
         /**
         * Std-Destructor

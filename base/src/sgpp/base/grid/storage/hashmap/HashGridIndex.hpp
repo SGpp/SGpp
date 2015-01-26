@@ -22,7 +22,10 @@
 #include <cmath>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

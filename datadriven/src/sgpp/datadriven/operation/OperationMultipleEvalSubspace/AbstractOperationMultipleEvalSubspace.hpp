@@ -7,7 +7,10 @@
 #include <sgpp/datadriven/tools/PartitioningTool.hpp>
 #include <sgpp/base/operation/OperationMultipleEval.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     class AbstractOperationMultipleEvalSubspace: public base::OperationMultipleEval {
@@ -29,10 +32,10 @@ namespace sg {
         virtual void multImpl(base::DataVector& alpha, base::DataVector& result, const size_t start_index_data,
                               const size_t end_index_data) = 0;
 
-        virtual void multTransposeImpl(sg::base::DataVector& source, sg::base::DataVector& result,
+        virtual void multTransposeImpl(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
                                        const size_t start_index_data, const size_t end_index_data) = 0;
 
-        void multTranspose(sg::base::DataVector& alpha, sg::base::DataVector& result) override {
+        void multTranspose(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override {
           if (!this->isPrepared) {
             this->prepare();
           }
@@ -61,7 +64,7 @@ namespace sg {
           this->duration = this->timer.stop();
         }
 
-        void mult(sg::base::DataVector& source, sg::base::DataVector& result) override {
+        void mult(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override {
 
           if (!this->isPrepared) {
             this->prepare();

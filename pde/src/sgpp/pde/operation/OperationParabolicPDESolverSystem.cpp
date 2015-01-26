@@ -9,7 +9,10 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem() {
@@ -21,11 +24,11 @@ namespace sg {
     OperationParabolicPDESolverSystem::~OperationParabolicPDESolverSystem() {
     }
 
-    sg::base::DataVector* OperationParabolicPDESolverSystem::getGridCoefficients() {
+    SGPP::base::DataVector* OperationParabolicPDESolverSystem::getGridCoefficients() {
       return this->alpha_complete;
     }
 
-    sg::base::Grid* OperationParabolicPDESolverSystem::getGrid() {
+    SGPP::base::Grid* OperationParabolicPDESolverSystem::getGrid() {
       return this->BoundGrid;
     }
 
@@ -45,7 +48,7 @@ namespace sg {
 
     void OperationParabolicPDESolverSystem::abortTimestep() {
       delete this->secondGridStorage;
-      this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+      this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
 
       if ((this->alpha_complete)->getSize() != (this->alpha_complete_tmp)->getSize()) {
         (this->alpha_complete)->resize((this->alpha_complete_tmp)->getSize());
@@ -56,7 +59,7 @@ namespace sg {
 
     void OperationParabolicPDESolverSystem::saveAlpha() {
       delete this->oldGridStorage;
-      this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+      this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
 
       if ((this->alpha_complete_old)->getSize() != (this->alpha_complete_tmp)->getSize())
         (this->alpha_complete_old)->resize((this->alpha_complete_tmp)->getSize());
@@ -77,22 +80,22 @@ namespace sg {
       return this->numSumGridpointsInner;
     }
 
-    void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(sg::base::DataVector& Values) {
+    void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(SGPP::base::DataVector& Values) {
       Values = *(this->alpha_complete);
-      sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*BoundGrid);
+      SGPP::base::OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*BoundGrid);
       myHierarchisation->doDehierarchisation(Values);
       delete myHierarchisation;
     }
 
-    sg::base::GridStorage* OperationParabolicPDESolverSystem::getGridStorage() {
+    SGPP::base::GridStorage* OperationParabolicPDESolverSystem::getGridStorage() {
       return (this->BoundGrid)->getStorage();
     }
 
-    sg::base::GridStorage* OperationParabolicPDESolverSystem::getOldGridStorage() {
+    SGPP::base::GridStorage* OperationParabolicPDESolverSystem::getOldGridStorage() {
       return oldGridStorage;
     }
 
-    sg::base::GridStorage* OperationParabolicPDESolverSystem::getSecondGridStorage() {
+    SGPP::base::GridStorage* OperationParabolicPDESolverSystem::getSecondGridStorage() {
       return secondGridStorage;
     }
 

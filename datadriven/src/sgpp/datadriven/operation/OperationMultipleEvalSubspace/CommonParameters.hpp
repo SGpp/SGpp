@@ -6,7 +6,10 @@
 //#include "X86Baseline.hpp"
 //#include "X86Vectorized.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace parallel {
 
 // list of kernels

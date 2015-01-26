@@ -7,18 +7,21 @@
 
 #include <sgpp/finance/basis/linearstretched/boundary/algorithm_sweep/XPhidPhiDownBBLinearStretchedBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    XPhidPhiDownBBLinearStretchedBoundary::XPhidPhiDownBBLinearStretchedBoundary(sg::base::GridStorage* storage) : XPhidPhiDownBBLinearStretched(storage) {
+    XPhidPhiDownBBLinearStretchedBoundary::XPhidPhiDownBBLinearStretchedBoundary(SGPP::base::GridStorage* storage) : XPhidPhiDownBBLinearStretched(storage) {
     }
 
     XPhidPhiDownBBLinearStretchedBoundary::~XPhidPhiDownBBLinearStretchedBoundary() {
     }
 
-    void XPhidPhiDownBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void XPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       double q = this->stretching->getIntervalWidth(dim);
       double t = this->stretching->getIntervalOffset(dim);
 
@@ -80,5 +83,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

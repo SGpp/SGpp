@@ -10,7 +10,10 @@
 
 #include <cstddef>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace solver {
 
@@ -23,14 +26,14 @@ namespace sg {
     };
 
     struct SLESolverConfiguration {
-      sg::solver::SLESolverType type_;
+      SGPP::solver::SLESolverType type_;
       double eps_;
       size_t maxIterations_;
       double threshold_;
     };
 
     struct SLESolverSPConfiguration {
-      sg::solver::SLESolverType type_;
+      SGPP::solver::SLESolverType type_;
       float eps_;
       size_t maxIterations_;
       float threshold_;

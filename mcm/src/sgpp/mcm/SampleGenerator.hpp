@@ -10,7 +10,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace mcm {
 
 /**
@@ -43,7 +46,7 @@ public:
 	 * @param sample provide a DataVector to store the generated sample.
 	 */
 
-	virtual void getSample(sg::base::DataVector& sample) {
+	virtual void getSample(SGPP::base::DataVector& sample) {
 	}
 	;
 
@@ -56,7 +59,7 @@ public:
 	 * @param samples provide a DataMatrix to hold the generated samples
 	 */
 
-	void getSamples(sg::base::DataMatrix& samples);
+	void getSamples(SGPP::base::DataMatrix& samples);
 
 	/**
 	 *

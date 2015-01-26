@@ -31,7 +31,10 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     Grid* Grid::createLinearGridStencil(size_t dim) {
@@ -265,7 +268,7 @@ namespace sg {
     OperationEval* Grid::evalOp(NULL);
 
     double Grid::eval(DataVector& alpha, DataVector& point) {
-      if (this->evalOp == NULL) this->evalOp = sg::op_factory::createOperationEval(*this);
+      if (this->evalOp == NULL) this->evalOp = SGPP::op_factory::createOperationEval(*this);
 
       return this->evalOp->eval(alpha, point);
     }

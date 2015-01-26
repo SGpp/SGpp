@@ -34,11 +34,14 @@
 #include <fstream>
 #include <iomanip>
 
-using namespace sg::pde;
-using namespace sg::solver;
-using namespace sg::base;
+using namespace SGPP::pde;
+using namespace SGPP::solver;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     BlackScholesSolver::BlackScholesSolver(bool useLogTransform, bool usePAT)
@@ -227,7 +230,7 @@ namespace sg {
       }
     }
 
-    void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel) {
+    void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel) {
       size_t nRefinements = 0;
 
       this->dStrike = strike;
@@ -299,16 +302,16 @@ namespace sg {
     }
 
     void BlackScholesSolver::setStochasticData(DataVector& mus, DataVector& sigmas, DataMatrix& rhos, double r) {
-      this->mus = new sg::base::DataVector(mus);
-      this->sigmas = new sg::base::DataVector(sigmas);
-      this->rhos = new sg::base::DataMatrix(rhos);
+      this->mus = new SGPP::base::DataVector(mus);
+      this->sigmas = new SGPP::base::DataVector(sigmas);
+      this->rhos = new SGPP::base::DataMatrix(rhos);
       this->r = r;
 
       // calculate eigenvalues, eigenvectors and mu_hat from stochastic data for PAT
       size_t mydim = this->mus->getSize();
-      this->eigval_covar = new sg::base::DataVector(mydim);
-      this->eigvec_covar = new sg::base::DataMatrix(mydim, mydim);
-      this->mu_hat = new sg::base::DataVector(mydim);
+      this->eigval_covar = new SGPP::base::DataVector(mydim);
+      this->eigvec_covar = new SGPP::base::DataMatrix(mydim, mydim);
+      this->mu_hat = new SGPP::base::DataVector(mydim);
 
       // 1d test case
       if (mydim == 1) {
@@ -1072,7 +1075,7 @@ namespace sg {
 
       if (hierarchized) {
         // hierarchize computed values
-        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHier = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHier->doHierarchisation(alpha_analytic);
 
         delete myHier;
@@ -1080,11 +1083,11 @@ namespace sg {
     }
 
 
-    void BlackScholesSolver::evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall) {
+    void BlackScholesSolver::evaluate1DAnalyticCuboid(SGPP::base::DataVector& AnalyticOptionPrices, SGPP::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall) {
       size_t n = EvaluationPoints.getNrows();
 
       if (AnalyticOptionPrices.getSize() != n) {
-        throw new sg::base::application_exception("PDESolver::evaluate1DAnalyticCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
+        throw new SGPP::base::application_exception("PDESolver::evaluate1DAnalyticCuboid : The size of the price vector doesn't match the size of the evaluation points' vector!");
       }
 
       for (size_t k = 0; k < n; k++) {
@@ -1117,7 +1120,7 @@ namespace sg {
       this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver");
     }
 
-    void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
+    void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
       this->useCoarsen = true;
       this->coarsenThreshold = coarsenThreshold;
       this->refineThreshold = refineThreshold;
@@ -1142,7 +1145,7 @@ namespace sg {
             std::ofstream file;
             file.open(tFilename.c_str());
 
-            OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
+            OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
 
             for (size_t i = 0; i < numTestpoints; i++) {
               std::vector<double> point;
@@ -1239,7 +1242,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -1285,7 +1288,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -1343,7 +1346,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -1351,7 +1354,7 @@ namespace sg {
       }
     }
 
-    double BlackScholesSolver::evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha) {
+    double BlackScholesSolver::evalOption(std::vector<double>& eval_point, SGPP::base::DataVector& alpha) {
       std::vector<double> trans_eval = eval_point;
 
       // apply needed coordinate transformations
@@ -1375,7 +1378,7 @@ namespace sg {
         }
       }
 
-      sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
+      SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
       double result = myEval->eval(alpha, trans_eval);
       delete myEval;
 
@@ -1387,8 +1390,8 @@ namespace sg {
       return result;
     }
 
-    void BlackScholesSolver::transformPoint(sg::base::DataVector& point) {
-      sg::base::DataVector tmp_point(point);
+    void BlackScholesSolver::transformPoint(SGPP::base::DataVector& point) {
+      SGPP::base::DataVector tmp_point(point);
 
       // apply needed coordinate transformations
       if (this->useLogTransform) {
@@ -1414,7 +1417,7 @@ namespace sg {
       point = tmp_point;
     }
 
-    void BlackScholesSolver::printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const {
+    void BlackScholesSolver::printSparseGridPAT(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const {
       DataVector temp(alpha);
       double tmp = 0.0;
       size_t dim = myGrid->getStorage()->dim();
@@ -1422,7 +1425,7 @@ namespace sg {
 
       // Do Dehierarchisation, is specified
       if (bSurplus == false) {
-        OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
+        OperationHierarchisation* myHier = SGPP::op_factory::createOperationHierarchisation(*myGrid);
         myHier->doDehierarchisation(temp);
         delete myHier;
       }

@@ -11,7 +11,10 @@
 
 #include <sgpp/base/basis/linearstretched/noboundary/algorithm_sweep/HierarchisationLinearStretched.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 
@@ -74,5 +77,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

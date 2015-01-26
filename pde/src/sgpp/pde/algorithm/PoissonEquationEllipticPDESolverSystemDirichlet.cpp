@@ -9,12 +9,15 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
-using namespace sg::op_factory;
+using namespace SGPP::op_factory;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
+    PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
       this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
       this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
     }
@@ -24,11 +27,11 @@ namespace sg {
       delete this->Laplace_Inner;
     }
 
-    void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       Laplace_Inner->mult(alpha, result);
     }
 
-    void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       Laplace_Complete->mult(alpha, result);
     }
 

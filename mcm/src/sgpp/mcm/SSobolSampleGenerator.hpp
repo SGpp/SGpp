@@ -14,7 +14,10 @@
 #include <sgpp/mcm/ssobol.h>
 #include "Random.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
 
     /**
@@ -64,7 +67,7 @@ namespace sg {
          *
          * @param sample DataVector storing the new generated sample vector.
          */
-        virtual void getSample(sg::base::DataVector& sample);
+        virtual void getSample(SGPP::base::DataVector& sample);
 
     };
 

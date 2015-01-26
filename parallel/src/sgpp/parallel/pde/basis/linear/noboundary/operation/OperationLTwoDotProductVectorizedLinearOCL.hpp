@@ -14,7 +14,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -22,13 +25,13 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLTwoDotProductVectorizedLinearOCL : public sg::base::OperationMatrix {
+    class OperationLTwoDotProductVectorizedLinearOCL : public SGPP::base::OperationMatrix {
 
       private:
-        sg::base::GridStorage* storage;
-        sg::base::DataMatrix* level_;
-        sg::base::DataMatrix* level_int_;
-        sg::base::DataMatrix* index_;
+        SGPP::base::GridStorage* storage;
+        SGPP::base::DataMatrix* level_;
+        SGPP::base::DataMatrix* level_int_;
+        SGPP::base::DataMatrix* index_;
         double* lcl_q;
         OCLPDEKernels OCLPDEKernelsHandle ;
 
@@ -36,9 +39,9 @@ namespace sg {
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        OperationLTwoDotProductVectorizedLinearOCL(sg::base::GridStorage* storage);
+        OperationLTwoDotProductVectorizedLinearOCL(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -46,7 +49,7 @@ namespace sg {
         virtual ~OperationLTwoDotProductVectorizedLinearOCL();
 
       protected:
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
 
     };

@@ -10,7 +10,10 @@
 #include <sgpp/base/basis/linear/noboundary/operation/OperationFirstMomentLinear.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationFirstMomentLinear::doQuadrature(DataVector& alpha) {

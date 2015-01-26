@@ -12,7 +12,10 @@
 /*
  * Indicator value = number of misclassified data points in the support of a basis function
  */
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     class ClassificationRefinementFunctor : public RefinementFunctor {

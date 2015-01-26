@@ -42,7 +42,10 @@
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
 namespace op_factory {
 
@@ -147,8 +150,8 @@ datadriven::OperationInverseRosenblattTransformation* createOperationInverseRose
 }
 
 base::OperationMultipleEval *createOperationMultipleEval(base::Grid &grid, base::DataMatrix &dataset,
-        sg::datadriven::OperationMultipleEvalConfiguration configuration) {
-    if (configuration.type == sg::datadriven::OperationMultipleEvalType::DEFAULT) {
+        SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+    if (configuration.type == SGPP::datadriven::OperationMultipleEvalType::DEFAULT) {
         return createOperationMultipleEval(grid, dataset);
     }
 
@@ -157,18 +160,18 @@ base::OperationMultipleEval *createOperationMultipleEval(base::Grid &grid, base:
         switch (configuration.type) {
         case datadriven::OperationMultipleEvalType::DEFAULT:
         case datadriven::OperationMultipleEvalType::STREAMING:
-            if (configuration.subType != sg::datadriven::OperationMultipleEvalSubType::DEFAULT) {
+            if (configuration.subType != SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
                 throw base::factory_exception("OperationMultiEval is not implemented for this implementation subtype.");
             }
             return new datadriven::OperationMultiEvalStreaming(grid, dataset);
             break;
         case datadriven::OperationMultipleEvalType::SUBSPACELINEAR:
             switch (configuration.subType) {
-            case sg::datadriven::OperationMultipleEvalSubType::DEFAULT:
-            case sg::datadriven::OperationMultipleEvalSubType::COMBINED:
+            case SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT:
+            case SGPP::datadriven::OperationMultipleEvalSubType::COMBINED:
                 return new datadriven::OperationMultipleEvalSubspaceCombined(grid, dataset);
                 break;
-            case sg::datadriven::OperationMultipleEvalSubType::SIMPLE:
+            case SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE:
                 return new datadriven::OperationMultipleEvalSubspaceSimple(grid, dataset);
                 break;
             default:

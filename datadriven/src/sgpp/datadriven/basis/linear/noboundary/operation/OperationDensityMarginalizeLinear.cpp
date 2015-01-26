@@ -8,7 +8,10 @@
 #include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim) {
@@ -21,14 +24,14 @@ namespace sg {
       base::GridStorage* gs = this->grid->getStorage();
 
       if (gs->dim() < 2)
-        throw sg::base::operation_exception("OperationDensityMarginalize is not possible for less than 2 dimensions");
+        throw SGPP::base::operation_exception("OperationDensityMarginalize is not possible for less than 2 dimensions");
 
       mg = base::Grid::createLinearGrid(gs->dim() - 1);
       base::GridStorage* mgs = mg->getStorage();
 
       //run through grid g and add points to mg
-      sg::base::GridIndex* gp;
-      sg::base::GridIndex mgp(mgs->dim());
+      SGPP::base::GridIndex* gp;
+      SGPP::base::GridIndex mgp(mgs->dim());
 
       for (unsigned int i = 0; i < gs->size(); i++) {
         gp = gs->get(i);
@@ -73,7 +76,7 @@ namespace sg {
         }
 
         if (!mgs->has_key(&mgp))
-          throw sg::base::operation_exception("Key not found! This should not happen! There is something seriously wrong!");
+          throw SGPP::base::operation_exception("Key not found! This should not happen! There is something seriously wrong!");
 
         //get index in alpha vector for current basis function
         mseqNr = mgs->seq(&mgp);

@@ -25,7 +25,10 @@
 #include <omp.h>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 void OperationRosenblattTransformationLinear::doTransformation(

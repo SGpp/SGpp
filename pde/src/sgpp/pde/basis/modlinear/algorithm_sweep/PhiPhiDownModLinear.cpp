@@ -7,28 +7,31 @@
 
 #include <sgpp/pde/basis/modlinear/algorithm_sweep/PhiPhiDownModLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
 
 
-    PhiPhiDownModLinear::PhiPhiDownModLinear(sg::base::GridStorage* storage) : storage(storage) {
+    PhiPhiDownModLinear::PhiPhiDownModLinear(SGPP::base::GridStorage* storage) : storage(storage) {
     }
 
     PhiPhiDownModLinear::~PhiPhiDownModLinear() {
     }
 
-    void PhiPhiDownModLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void PhiPhiDownModLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       rec(source, result, index, dim, 0.0, 0.0);
     }
 
-    void PhiPhiDownModLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void PhiPhiDownModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
       size_t seq = index.seq();
 
       double alpha_value = source[seq];
 
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 

@@ -7,13 +7,16 @@
 
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-DMSystemMatrixBase::DMSystemMatrixBase(sg::base::DataMatrix& trainData, double lambda)
+DMSystemMatrixBase::DMSystemMatrixBase(SGPP::base::DataMatrix& trainData, double lambda)
     : dataset_(&trainData), lambda_(lambda), completeTimeMult_(0.0), computeTimeMult_(0.0),
       completeTimeMultTrans_(0.0), computeTimeMultTrans_(0.0) {
-    myTimer_ = new sg::base::SGppStopwatch();
+    myTimer_ = new SGPP::base::SGppStopwatch();
 }
 
 DMSystemMatrixBase::~DMSystemMatrixBase() {

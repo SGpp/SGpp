@@ -12,7 +12,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 
@@ -76,7 +79,7 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 
 #endif /* DEHIERARCHISATIONMODPOLY_HPP */

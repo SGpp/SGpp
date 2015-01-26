@@ -8,10 +8,13 @@
 #include "OperationMatrixLTwoDotPeriodic.hpp"
 #include <sgpp/base/exception/data_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    OperationMatrixLTwoDotPeriodic::OperationMatrixLTwoDotPeriodic(sg::base::GridStorage* gridStorage) {
+    OperationMatrixLTwoDotPeriodic::OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage) {
       this->gridStorage = gridStorage;
     }
 
@@ -19,23 +22,23 @@ namespace sg {
       //TODO: FZ: delete gridStorage?
     }
 
-    void OperationMatrixLTwoDotPeriodic::mult(sg::base::DataVector& alpha, sg::base::DataVector& result){
+    void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result){
 	  size_t nrows = gridStorage->size();
 	  size_t ncols = gridStorage->size();
 
 	  if (alpha.getSize() != ncols || result.getSize() != nrows) {
-	    throw sg::base::data_exception("Dimensions do not match!");
+	    throw SGPP::base::data_exception("Dimensions do not match!");
 	  }
 
 	  size_t gridSize = gridStorage->size();
 	  size_t gridDim = gridStorage->dim();
 
-	  sg::base::DataMatrix level(gridSize, gridDim);
-	  sg::base::DataMatrix index(gridSize, gridDim);
+	  SGPP::base::DataMatrix level(gridSize, gridDim);
+	  SGPP::base::DataMatrix index(gridSize, gridDim);
 
 	  gridStorage->getLevelIndexArraysForEval(level, index);
 
-	  sg::base::DataVector row(nrows);
+	  SGPP::base::DataVector row(nrows);
 
 	  for (size_t i = 0; i < gridSize; i++) {
 		for (size_t j = 0; j < gridSize; j++) {

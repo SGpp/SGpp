@@ -24,7 +24,10 @@
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
 
-namespace sg
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP
 {
 
 namespace datadriven
@@ -58,37 +61,37 @@ struct LearnerOnlineSGDConfiguration
     std::string hashRefinementType;
 };
 
-class LearnerOnlineSGD: public sg::datadriven::Learner
+class LearnerOnlineSGD: public SGPP::datadriven::Learner
 {
 
 public:
-    LearnerOnlineSGD(sg::datadriven::LearnerRegularizationType& regularization,
+    LearnerOnlineSGD(SGPP::datadriven::LearnerRegularizationType& regularization,
                      const bool isRegression, const bool isVerbose = true);
 
 
 
-    virtual void train(sg::base::DataMatrix& mainTrainDataset_,
-                       sg::base::DataVector& mainClasses_,
+    virtual void train(SGPP::base::DataMatrix& mainTrainDataset_,
+                       SGPP::base::DataVector& mainClasses_,
 
-                       sg::base::DataMatrix& testTrainDataset_,
-                       sg::base::DataVector& testClasses_,
+                       SGPP::base::DataMatrix& testTrainDataset_,
+                       SGPP::base::DataVector& testClasses_,
 
-                       sg::base::RegularGridConfiguration& gridConfig,
-                       sg::datadriven::LearnerOnlineSGDConfiguration& config
+                       SGPP::base::RegularGridConfiguration& gridConfig,
+                       SGPP::datadriven::LearnerOnlineSGDConfiguration& config
                        );
 
     virtual ~LearnerOnlineSGD();
 protected:
-    static const sg::parallel::VectorizationType vecType_;
+    static const SGPP::parallel::VectorizationType vecType_;
 
 private:
-    sg::base::DataMatrix* mainTrainDataset;
-    sg::base::DataVector* mainClasses;
+    SGPP::base::DataMatrix* mainTrainDataset;
+    SGPP::base::DataVector* mainClasses;
 
-    sg::base::DataMatrix* testTrainDataset;
-    sg::base::DataVector* testClasses;
+    SGPP::base::DataMatrix* testTrainDataset;
+    SGPP::base::DataVector* testClasses;
 
-    sg::datadriven::LearnerOnlineSGDConfiguration config;
+    SGPP::datadriven::LearnerOnlineSGDConfiguration config;
 
     size_t SGDCurrentIndex;
     std::vector<size_t> SGDIndexOrder;
@@ -96,31 +99,31 @@ private:
     size_t numMainData;
     size_t numMainDim;
 
-    sg::base::HashRefinement* hash_refinement;
-    sg::base::OnlinePredictiveRefinementDimension* online_refinement;
-    sg::base::OnlinePredictiveRefinementDimensionOld* online_refinement_old;
+    SGPP::base::HashRefinement* hash_refinement;
+    SGPP::base::OnlinePredictiveRefinementDimension* online_refinement;
+    SGPP::base::OnlinePredictiveRefinementDimensionOld* online_refinement_old;
 
 
-    double getError(sg::base::DataMatrix* trainDataset,
-                    sg::base::DataVector* classes,
+    double getError(SGPP::base::DataMatrix* trainDataset,
+                    SGPP::base::DataVector* classes,
                     std::string errorType,
-                    sg::base::DataVector* error, bool useEvalVectorized);
+                    SGPP::base::DataVector* error, bool useEvalVectorized);
 
-    void pushMinibatch(sg::base::DataVector& x, double y);
+    void pushMinibatch(SGPP::base::DataVector& x, double y);
     void performSGDStep();
 
     /*
      * Other
      */
 
-    sg::base::DataVector* mainError;
+    SGPP::base::DataVector* mainError;
 
-    sg::base::DataMatrix* minibatchTrainDataset;
-    sg::base::DataVector* minibatchClasses;
-    sg::base::DataVector* minibatchError;
+    SGPP::base::DataMatrix* minibatchTrainDataset;
+    SGPP::base::DataVector* minibatchClasses;
+    SGPP::base::DataVector* minibatchError;
 
-    sg::base::DataVector* errorPerBasisFunction;
-    sg::base::DataVector* alphaAvg;
+    SGPP::base::DataVector* errorPerBasisFunction;
+    SGPP::base::DataVector* alphaAvg;
 
     std::list<double> smoothedErrorDeclineBuffer;
     double currentGamma;

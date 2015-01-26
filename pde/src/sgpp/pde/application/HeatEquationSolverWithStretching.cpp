@@ -8,10 +8,13 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-using namespace sg::base;
-using namespace sg::solver;
+using namespace SGPP::base;
+using namespace SGPP::solver;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     HeatEquationSolverWithStretching::HeatEquationSolverWithStretching() : ParabolicPDESolver() {
@@ -186,7 +189,7 @@ namespace sg {
 
         delete[] dblFuncValues;
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {

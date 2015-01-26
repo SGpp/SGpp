@@ -15,14 +15,17 @@
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
 #include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
      * This class implements the ParabolicPDESolverSystem for the HullWhite
      * Equation.
      */
-    class HullWhiteParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries {
+    class HullWhiteParabolicPDESolverSystem : public SGPP::pde::OperationParabolicPDESolverSystemFreeBoundaries {
       protected:
         /// theta
         double theta;
@@ -31,15 +34,15 @@ namespace sg {
         /// a
         double a;
         /// the B matrix Operation, on boundary grid
-        sg::base::OperationMatrix* OpBBound;
+        SGPP::base::OperationMatrix* OpBBound;
         /// the D matrix Operation, on boundary grid
-        sg::base::OperationMatrix* OpDBound;
+        SGPP::base::OperationMatrix* OpDBound;
         /// the E matrix Operation, on boundary grid
-        sg::base::OperationMatrix* OpEBound;
+        SGPP::base::OperationMatrix* OpEBound;
         /// the F matrix Operation, on boundary grid
-        sg::base::OperationMatrix* OpFBound;
+        SGPP::base::OperationMatrix* OpFBound;
         /// the LTwoDotProduct Operation (Mass Matrix A), on boundary grid
-        sg::base::OperationMatrix* OpLTwoBound;
+        SGPP::base::OperationMatrix* OpLTwoBound;
 
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
@@ -54,19 +57,19 @@ namespace sg {
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
         std::string refineMode;
         /// maxLevel max. Level of refinement
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
 
         /// vector storing algorithmic dimensions
         std::vector<size_t> HWalgoDims;
         /// Routine to modify the boundaries/inner points of the grid
-        sg::base::DirichletUpdateVector* BoundaryUpdate;
+        SGPP::base::DirichletUpdateVector* BoundaryUpdate;
 
         /// access to the variable discount factor
         VariableDiscountFactor* variableDiscountFactor;
 
-        virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrix(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -89,11 +92,11 @@ namespace sg {
          * @param refineMaxLevel max. refinement level
          * @param dim_HW dimension of Hull-White (dimension of risk-free rate)
          */
-        HullWhiteParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double sigma, double theta,
+        HullWhiteParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double sigma, double theta,
                                           double a, double TimestepSize, std::string OperationMode = "ExEul",
                                           bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
                                           int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
-                                          sg::base::GridIndex::level_type refineMaxLevel = 0, int dim_HW = 1);
+                                          SGPP::base::GridIndex::level_type refineMaxLevel = 0, int dim_HW = 1);
 
         /**
          * Std-Destructor

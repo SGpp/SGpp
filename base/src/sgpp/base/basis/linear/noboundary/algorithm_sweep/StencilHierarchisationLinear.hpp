@@ -12,7 +12,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/OperationStencilHierarchisation.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -81,7 +84,7 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 
 #endif /* STENCILHIERARCHISATIONLINEAR_HPP */

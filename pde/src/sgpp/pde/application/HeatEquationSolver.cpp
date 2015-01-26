@@ -18,10 +18,13 @@
 #include <sstream>
 #include <fstream>
 
-using namespace sg::solver;
-using namespace sg::base;
+using namespace SGPP::solver;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver() {
@@ -192,7 +195,7 @@ namespace sg {
 
         delete[] dblFuncValues;
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {

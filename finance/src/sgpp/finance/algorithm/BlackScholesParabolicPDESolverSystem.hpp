@@ -15,32 +15,35 @@
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
     /**
      * This class implements the ParabolicPDESolverSystem for the BlackScholes
      * Equation.
      */
-    class BlackScholesParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries {
+    class BlackScholesParabolicPDESolverSystem : public SGPP::pde::OperationParabolicPDESolverSystemFreeBoundaries {
       protected:
         /// the riskfree interest rate
         double r;
         /// the delta Operation, on boundary grid
-        sg::base::OperationMatrix* OpDeltaBound;
+        SGPP::base::OperationMatrix* OpDeltaBound;
         /// the Gamma Operation, on boundary grid
-        sg::base::OperationMatrix* OpGammaBound;
+        SGPP::base::OperationMatrix* OpGammaBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        sg::base::OperationMatrix* OpLTwoBound;
+        SGPP::base::OperationMatrix* OpLTwoBound;
         /// Pointer to the mus
-        sg::base::DataVector* mus;
+        SGPP::base::DataVector* mus;
         /// Pointer to the sigmas
-        sg::base::DataVector* sigmas;
+        SGPP::base::DataVector* sigmas;
         /// Pointer to the rhos;
-        sg::base::DataMatrix* rhos;
+        SGPP::base::DataMatrix* rhos;
         /// Pointer to the coefficients of operation Delta
-        sg::base::DataVector* deltaCoef;
+        SGPP::base::DataVector* deltaCoef;
         /// Pointer to the coefficients ot operation Gamma
-        sg::base::DataMatrix* gammaCoef;
+        SGPP::base::DataMatrix* gammaCoef;
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -54,11 +57,11 @@ namespace sg {
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
         std::string refineMode;
         /// maxLevel max. Level of refinement
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
         /// the algorithmic dimensions used in this system
         std::vector<size_t> BSalgoDims;
         /// Routine to modify the boundaries/inner points of the grid
-        sg::base::DirichletUpdateVector* BoundaryUpdate;
+        SGPP::base::DirichletUpdateVector* BoundaryUpdate;
         /// the strike of the current option
         double dStrike;
         /// the type of the current option
@@ -66,9 +69,9 @@ namespace sg {
         /// store whether log coordinates are used
         bool b_log_transform;
 
-        virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrix(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * Build the coefficients for the Gamma Operation, which
@@ -126,11 +129,11 @@ namespace sg {
          * @param dStrike the option's strike value
          * @param option_type type of option used here
          */
-        BlackScholesParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu, sg::base::DataVector& sigma,
-                                             sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+        BlackScholesParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma,
+                                             SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
                                              double dStrike, std::string option_type,
                                              bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                             int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
+                                             int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Std-Destructor

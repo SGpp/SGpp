@@ -1,10 +1,13 @@
 
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-void OperationMultipleEvalSubspaceCombined::multTransposeImpl(sg::base::DataVector &alpha, sg::base::DataVector &result, const size_t start_index_data,
+void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVector &alpha, SGPP::base::DataVector &result, const size_t start_index_data,
         const size_t end_index_data) {
 
     size_t tid = omp_get_thread_num();

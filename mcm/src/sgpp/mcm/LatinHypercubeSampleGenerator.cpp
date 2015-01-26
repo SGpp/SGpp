@@ -13,9 +13,12 @@
 #include <vector>
 #include "Random.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
     
     LatinHypercubeSampleGenerator::LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples) : SampleGenerator(dimensions) {
@@ -41,7 +44,7 @@ namespace sg {
       shuffleStrataSequence();
     }
     
-    void LatinHypercubeSampleGenerator::getSample(sg::base::DataVector& dv) {
+    void LatinHypercubeSampleGenerator::getSample(SGPP::base::DataVector& dv) {
       
       // compute random value inside the current stratum selected from the shuffled strata sequence
       for( size_t i = 0; i < dimensions; i++ ) {

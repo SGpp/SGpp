@@ -10,7 +10,10 @@
 
 #include <sgpp/pde/application/PDESolver.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -43,7 +46,7 @@ namespace sg {
          * @param epsilonCG the epsilon used in the CG
          * @param verbose enables verbose output during solving
          */
-        virtual void solvePDE(sg::base::DataVector& alpha, sg::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
+        virtual void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
     };
 
   }

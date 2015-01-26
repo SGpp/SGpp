@@ -6,7 +6,10 @@
 #endif
 #include "OCLPDEKernels.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 
@@ -66,14 +69,14 @@ namespace sg {
                            REAL* ptrIndex,
                            REAL* ptrLevel_int,
                            size_t localStorageSize,
-                           size_t localdim, sg::base::GridStorage* storage);
+                           size_t localdim, SGPP::base::GridStorage* storage);
 #ifdef USE_MPI
       extern int* MPIOffsetListInner;
       extern int* MPISizeListInner;
       /// Creates partitions of the work load along the j-direction for the operators on the inner grid.
       void SetUpMPIInner();
       /// Computes the sum of all subresults result on all processes.
-      void MPI_CombineResultInner(sg::base::DataVector& result);
+      void MPI_CombineResultInner(SGPP::base::DataVector& result);
 #endif
       /// Deallocates all data pertaining to the Laplace operator on the inner grid
       void CleanUpLaplaceInner();

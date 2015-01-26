@@ -12,7 +12,10 @@
 #include <sgpp/base/operation/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -25,18 +28,18 @@ namespace sg {
      * A: mass matrix
      * L: space discretization (L-Operator)
      */
-    class OperationParabolicPDESolverSystem : public sg::base::OperationMatrix {
+    class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
       protected:
         /// Pointer to the alphas (ansatzfunctions' coefficients)
-        sg::base::DataVector* alpha_complete;
+        SGPP::base::DataVector* alpha_complete;
         /// Pointer to the alphas from the last timestep, needed when using variable timestep sizes
-        sg::base::DataVector* alpha_complete_old;
+        SGPP::base::DataVector* alpha_complete_old;
         /// Pointer to temporary alphas, needed when using variable timestep sizes
-        sg::base::DataVector* alpha_complete_tmp;
+        SGPP::base::DataVector* alpha_complete_tmp;
         /// Pointer to the grid from the last iteration
-        sg::base::GridStorage* oldGridStorage;
+        SGPP::base::GridStorage* oldGridStorage;
         /// Pointer to the grid from the last aborted iteration
-        sg::base::GridStorage* secondGridStorage;
+        SGPP::base::GridStorage* secondGridStorage;
 
         /**
          *  specifies in which solver this matrix is used, valid values are:
@@ -50,9 +53,9 @@ namespace sg {
         /// the size of the last timestep
         double TimestepSize_old;
 
-        sg::base::DataVector* rhs;
+        SGPP::base::DataVector* rhs;
         /// Pointer to the grid object
-        sg::base::Grid* BoundGrid;
+        SGPP::base::Grid* BoundGrid;
         /// Stores number of average gridpoints, inner grid
         size_t numSumGridpointsInner;
         /// Stores number of average gridpoints, complete grid
@@ -75,17 +78,17 @@ namespace sg {
         /**
          * Multiplicates a vector with the matrix
          *
-         * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
-         * @param result sg::base::DataVector into which the result of the space discretization operation is stored
+         * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
+         * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
          */
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * generates the right hand side of the system
          *
          * @return returns the rhs
          */
-        virtual sg::base::DataVector* generateRHS() = 0;
+        virtual SGPP::base::DataVector* generateRHS() = 0;
 
         /**
          * performs some action that might be needed after a timestep has be finished in the ODE
@@ -106,7 +109,7 @@ namespace sg {
          *
          * @return returns a pointer to the underlying grid object
          */
-        sg::base::Grid* getGrid();
+        SGPP::base::Grid* getGrid();
 
         /**
          * gets a pointer to the sparse grids coefficients used in the CG method to solve
@@ -115,14 +118,14 @@ namespace sg {
          *
          * @return alpha vector for CG method
          */
-        virtual sg::base::DataVector* getGridCoefficientsForCG() = 0;
+        virtual SGPP::base::DataVector* getGridCoefficientsForCG() = 0;
 
         /**
          * gets a pointer to the sparse grids coefficients with evtl. boundaries
          *
          * @return alpha vector of complete grid
          */
-        sg::base::DataVector* getGridCoefficients();
+        SGPP::base::DataVector* getGridCoefficients();
 
         /**
          * defines the used ODE Solver for this instance, this is important because
@@ -172,17 +175,17 @@ namespace sg {
         void saveAlpha();
 
         /**
-         * stores the values of the (dehierarchized) grid in the sg::base::DataVector Values used by time step size control methods
+         * stores the values of the (dehierarchized) grid in the SGPP::base::DataVector Values used by time step size control methods
          *
-         * @param Values sg::base::DataVector in which the values will be stored
+         * @param Values SGPP::base::DataVector in which the values will be stored
          */
-        void getGridCoefficientsForSC(sg::base::DataVector& Values);
+        void getGridCoefficientsForSC(SGPP::base::DataVector& Values);
 
-        sg::base::GridStorage* getGridStorage();
+        SGPP::base::GridStorage* getGridStorage();
 
-        sg::base::GridStorage* getOldGridStorage();
+        SGPP::base::GridStorage* getOldGridStorage();
 
-        sg::base::GridStorage* getSecondGridStorage();
+        SGPP::base::GridStorage* getSecondGridStorage();
     };
 
   }

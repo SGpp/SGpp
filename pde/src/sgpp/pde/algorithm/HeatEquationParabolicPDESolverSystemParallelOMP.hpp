@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -24,21 +27,21 @@ namespace sg {
         /// the heat coefficient
         double a;
         /// the Laplace Operation (Stiffness Matrix), on boundary grid
-        sg::base::OperationMatrix* OpLaplaceBound;
+        SGPP::base::OperationMatrix* OpLaplaceBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        sg::base::OperationMatrix* OpMassBound;
+        SGPP::base::OperationMatrix* OpMassBound;
         /// the Laplace Operation (Stiffness Matrix), on inner grid
-        sg::base::OperationMatrix* OpLaplaceInner;
+        SGPP::base::OperationMatrix* OpLaplaceInner;
         /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
-        sg::base::OperationMatrix* OpMassInner;
+        SGPP::base::OperationMatrix* OpMassInner;
 
-        void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -51,7 +54,7 @@ namespace sg {
          * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
          *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
          */
-        HeatEquationParabolicPDESolverSystemParallelOMP(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+        HeatEquationParabolicPDESolverSystemParallelOMP(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
 
         /**
          * Std-Destructor
@@ -64,9 +67,9 @@ namespace sg {
 
         virtual void startTimestep();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual sg::base::DataVector* generateRHS();
+        virtual SGPP::base::DataVector* generateRHS();
     };
 
   }

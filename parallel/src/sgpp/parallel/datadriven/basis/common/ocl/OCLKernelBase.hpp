@@ -14,7 +14,10 @@
 #include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename T> struct getType {};
 
@@ -84,7 +87,7 @@ namespace sg {
 
           if (err != CL_SUCCESS) {
             std::cout << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
-            throw sg::base::operation_exception("OCL Error: Failed to create program!");
+            throw SGPP::base::operation_exception("OCL Error: Failed to create program!");
           }
 
           std::string build_opts;

@@ -2,7 +2,10 @@
 
 #include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 PersistentErrorRefinementFunctor::PersistentErrorRefinementFunctor(
@@ -36,10 +39,10 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 
 	DataVector phi_x(numData);
 
-	sg::base::DataVector singleAlpha(alpha->getSize());
+	SGPP::base::DataVector singleAlpha(alpha->getSize());
 	singleAlpha.setAll(0.0);
 	singleAlpha.set(seq, 1.0);
-	sg::op_factory::createOperationMultipleEval(*grid, *trainDataset)->mult(
+	SGPP::op_factory::createOperationMultipleEval(*grid, *trainDataset)->mult(
 			singleAlpha, phi_x);
 
 	if (phi_x.getNumberNonZero() < MIN_SUPPORT) {
@@ -51,7 +54,7 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 	size_t numCoeff = alpha->getSize();
 
 	if (accum == NULL) {
-		accum = new sg::base::DataVector(numCoeff);
+		accum = new SGPP::base::DataVector(numCoeff);
 		accum->setAll(start());
 	} else if (accum->getSize() != numCoeff) {
 		accum->resizeZero(numCoeff);

@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 
@@ -71,7 +74,7 @@ namespace sg {
 
     // namespace base
 
-  } // namespace sg
+  } // namespace SGPP
 }
 
 #endif /* HIERARCHISATIONMODLINEAR_HPP */

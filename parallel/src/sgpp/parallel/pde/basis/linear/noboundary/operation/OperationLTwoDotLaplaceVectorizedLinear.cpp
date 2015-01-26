@@ -59,10 +59,13 @@
 #define ROUND_UP(X, Y) (std::ceil((1.0 * X) / (Y)) * (Y))
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    OperationLTwoDotLaplaceVectorizedLinear::OperationLTwoDotLaplaceVectorizedLinear(sg::base::GridStorage* storage)
+    OperationLTwoDotLaplaceVectorizedLinear::OperationLTwoDotLaplaceVectorizedLinear(SGPP::base::GridStorage* storage)
       : storage(storage),
         level_(NULL),
         level_int_(NULL),
@@ -84,12 +87,12 @@ namespace sg {
       init_constants();
       init_grid_storage();
 
-      this->lambda_ = new sg::base::DataVector(storage->dim());
+      this->lambda_ = new SGPP::base::DataVector(storage->dim());
       this->lambda_->setAll(1.0);
     }
 
 
-    OperationLTwoDotLaplaceVectorizedLinear::OperationLTwoDotLaplaceVectorizedLinear(sg::base::GridStorage* storage, sg::base::DataVector& lambda)
+    OperationLTwoDotLaplaceVectorizedLinear::OperationLTwoDotLaplaceVectorizedLinear(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda)
       : storage(storage),
         level_(NULL),
         level_int_(NULL),
@@ -111,7 +114,7 @@ namespace sg {
       init_constants();
       init_grid_storage();
 
-      this->lambda_ = new sg::base::DataVector(lambda);
+      this->lambda_ = new SGPP::base::DataVector(lambda);
     }
 
     OperationLTwoDotLaplaceVectorizedLinear::~OperationLTwoDotLaplaceVectorizedLinear() {
@@ -155,7 +158,7 @@ namespace sg {
       all_iterations = 0.0;
 
 #if defined(__SSE4_2__) || defined(__MIC__)
-      this->constants_ = new sg::base::DataVector(0);
+      this->constants_ = new SGPP::base::DataVector(0);
 
       this->constants_->append(0);
       this->constants_->append(0.5);
@@ -179,36 +182,36 @@ namespace sg {
       if (this->level_)
         delete this->level_;
 
-      this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
 
       if (this->level_int_)
         delete this->level_int_;
 
-      this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
 
       if (this->index_)
         delete this->index_;
 
-      this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
 
       if (this->lcl_q_)
         delete this->lcl_q_;
 
-      lcl_q_ = new sg::base::DataVector(this->storage->dim());
+      lcl_q_ = new SGPP::base::DataVector(this->storage->dim());
       double* lcl_q_ptr_ = lcl_q_->getPointer();
 
       if (this->lcl_q_inv_)
         delete this->lcl_q_inv_;
 
-      lcl_q_inv_ = new sg::base::DataVector(this->storage->dim());
+      lcl_q_inv_ = new SGPP::base::DataVector(this->storage->dim());
       double* lcl_q_inv_ptr_ = lcl_q_inv_->getPointer();
 
 #if defined(__MIC__)
-      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::MIC, BLOCK_LENGTH);
-      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::MIC, BLOCK_LENGTH);
+      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), SGPP::parallel::MIC, BLOCK_LENGTH);
+      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), SGPP::parallel::MIC, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
-      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), sg::parallel::X86SIMD, BLOCK_LENGTH);
-      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), sg::parallel::X86SIMD, BLOCK_LENGTH);
+      storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_), *(this->index_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
+      storage->getLevelForIntegralTLBOptimized(*(this->level_int_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
 #else
       storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
       storage->getLevelForIntegral(*(this->level_int_));
@@ -223,7 +226,7 @@ namespace sg {
       if (this->alpha_padded_)
         delete this->alpha_padded_;
 
-      this->alpha_padded_ = new sg::base::DataVector(padded_size);
+      this->alpha_padded_ = new SGPP::base::DataVector(padded_size);
       this->alpha_padded_->setAll(0.0);
 
 
@@ -289,20 +292,20 @@ namespace sg {
           if (this->l2dot_temp)
             delete this->l2dot_temp;
 
-          this->gradient_temp = new sg::base::DataVector*[omp_get_num_threads()];
-          this->l2dot_temp = new sg::base::DataVector*[omp_get_num_threads()];
+          this->gradient_temp = new SGPP::base::DataVector*[omp_get_num_threads()];
+          this->l2dot_temp = new SGPP::base::DataVector*[omp_get_num_threads()];
         }
         #pragma omp barrier
 
         //std::cout << "OMP THREAD :" << omp_get_thread_num() << std::endl;
 
-        gradient_temp[omp_get_thread_num()] = new sg::base::DataVector(VECTOR_SIZE * this->storage->dim() * REG_BCOUNT);
-        l2dot_temp[omp_get_thread_num()] = new sg::base::DataVector(VECTOR_SIZE * this->storage->dim() * REG_BCOUNT);
+        gradient_temp[omp_get_thread_num()] = new SGPP::base::DataVector(VECTOR_SIZE * this->storage->dim() * REG_BCOUNT);
+        l2dot_temp[omp_get_thread_num()] = new SGPP::base::DataVector(VECTOR_SIZE * this->storage->dim() * REG_BCOUNT);
       }
 
       // fill q array
       for (size_t d = 0; d < this->storage->dim(); d++) {
-        sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+        SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
         lcl_q_ptr_[d] = boundingBox->getIntervalWidth(d);
         lcl_q_inv_ptr_[d] = 1.0 / boundingBox->getIntervalWidth(d);
       }
@@ -335,13 +338,13 @@ namespace sg {
         sprintf(exception_string, "OperationLTwoDotLaplaceVectorizedLinear::init : More memory (= %i GB) needed to store the operation matrix, Please set the SGPP_PDE_MATRIX_SIZE_GB environment variable!", (int) matrix_needed_size_gb);
 
         std::cerr << exception_string << std::endl;
-        throw new sg::base::operation_exception(exception_string);
+        throw new SGPP::base::operation_exception(exception_string);
       }
 
       if (operation_result_matrix_)
         delete operation_result_matrix_;
 
-      operation_result_matrix_ = new sg::base::DataMatrix(result_matrix_rows, result_matrix_cols);
+      operation_result_matrix_ = new SGPP::base::DataMatrix(result_matrix_rows, result_matrix_cols);
       operation_result_generated_ = false;
 
 
@@ -350,7 +353,7 @@ namespace sg {
         size_t padded_size = this->operation_result_matrix_->getNcols();
         size_t thr_start;
         size_t thr_end;
-        sg::parallel::PartitioningTool::getOpenMPPartitionSegment(0, result_matrix_rows, &thr_start, &thr_end);
+        SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(0, result_matrix_rows, &thr_start, &thr_end);
 
         for (size_t i = thr_start; i < thr_end; i++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i) * operation_result_matrix_->getNcols();
@@ -448,7 +451,7 @@ namespace sg {
       return (res_one * (lid == ljd) + res_two * (lid != ljd)) * *(lcl_q_->getPointer() + dim);
     }
 
-    void OperationLTwoDotLaplaceVectorizedLinear::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLTwoDotLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       stopWatch.start();
@@ -506,7 +509,7 @@ namespace sg {
 
           size_t thr_start;
           size_t thr_end;
-          sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+          SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t i = thr_start; i < thr_end; i++) {
 
@@ -742,7 +745,7 @@ namespace sg {
 
           size_t thr_start;
           size_t thr_end;
-          sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+          SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t i = thr_start; i < thr_end; i++) {
             __m256d mm_result = _mm256_setzero_pd();
@@ -996,7 +999,7 @@ namespace sg {
 
           size_t thr_start;
           size_t thr_end;
-          sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+          SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t i = thr_start; i < thr_end; i++) {
             __m128d mm_result = _mm_setzero_pd();
@@ -1218,7 +1221,7 @@ namespace sg {
 
           size_t thr_start;
           size_t thr_end;
-          sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+          SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
           for (size_t i = thr_start; i < thr_end; i++) {
             double LTwoDotLaplaceRes = 0.0;
@@ -1271,7 +1274,7 @@ namespace sg {
       {
         size_t thr_start;
         size_t thr_end;
-        sg::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
+        SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end, &thr_start, &thr_end);
 
         for (size_t i = thr_start; i < thr_end; i++) {
           double* operation_result_dest_ptr = operation_result_matrix_->getPointer() + (i - process_i_start) * operation_result_matrix_->getNcols();

@@ -11,7 +11,10 @@
 #include <sgpp/datadriven/operation/OperationTest.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
@@ -24,21 +27,21 @@ namespace sg {
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationTestLinear(sg::base::GridStorage* storage) : storage(storage) {}
+        OperationTestLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
 
         /**
          * Destructor
          */
         virtual ~OperationTestLinear() {}
 
-        virtual double test(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes);
-        virtual double testMSE(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& refValues);
-        virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
-        virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
+        virtual double test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes);
+        virtual double testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues);
+        virtual double testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers);
+        virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve);
 
       protected:
         /// Pointer to the grid's GridStorage object
-        sg::base::GridStorage* storage;
+        SGPP::base::GridStorage* storage;
     };
 
   }

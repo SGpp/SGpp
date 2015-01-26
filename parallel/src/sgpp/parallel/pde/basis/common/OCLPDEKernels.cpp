@@ -1,7 +1,10 @@
 #include "OCLPDEKernels.hpp"
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 

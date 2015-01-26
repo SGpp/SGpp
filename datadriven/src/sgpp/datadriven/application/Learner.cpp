@@ -12,14 +12,17 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
-    Learner::Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
+    Learner::Learner(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool verbose)
       : LearnerBase(isRegression, verbose), CMode_(regularization), C_(NULL) {
     }
 
-    Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization,
+    Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename, SGPP::datadriven::LearnerRegularizationType& regularization,
                      const bool isRegression, const bool verbose)
       : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose), CMode_(regularization), C_(NULL) {
     }
@@ -29,7 +32,7 @@ namespace sg {
         delete C_;
     }
 
-    sg::datadriven::DMSystemMatrixBase* Learner::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda) {
+    SGPP::datadriven::DMSystemMatrixBase* Learner::createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda) {
       if (this->grid_ == NULL)
         return NULL;
 
@@ -38,14 +41,14 @@ namespace sg {
         delete C_;
 
       if (this->CMode_ == Laplace) {
-        C_ = sg::op_factory::createOperationLaplace(*this->grid_);
+        C_ = SGPP::op_factory::createOperationLaplace(*this->grid_);
       } else if (this->CMode_ == Identity) {
-        C_ = sg::op_factory::createOperationIdentity(*this->grid_);
+        C_ = SGPP::op_factory::createOperationIdentity(*this->grid_);
       } else {
         // should not happen
       }
 
-      return new sg::datadriven::DMSystemMatrix(*(this->grid_), trainDataset, *C_, lambda);
+      return new SGPP::datadriven::DMSystemMatrix(*(this->grid_), trainDataset, *C_, lambda);
     }
 
   }

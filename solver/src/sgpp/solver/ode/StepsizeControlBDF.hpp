@@ -13,7 +13,10 @@
 #include <sgpp/solver/ODESolver.hpp>
 #include "VarTimestep.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     /**
@@ -37,9 +40,9 @@ namespace sg {
          * @param nTimesteps number of maximum executed iterations
          * @param timestepSize the size of one timestep
          * @param eps the epsilon for the step size control
-         * @param screen possible pointer to a sg::base::ScreenOutput object
+         * @param screen possible pointer to a SGPP::base::ScreenOutput object
          */
-        StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL);
+        StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, SGPP::base::ScreenOutput* screen = NULL);
 
         /**
          * Std-Destructor

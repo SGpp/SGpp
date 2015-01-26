@@ -18,19 +18,22 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename KernelImplementation>
-    class DMSystemMatrixSPVectorizedIdentityAllreduce : public sg::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
+    class DMSystemMatrixSPVectorizedIdentityAllreduce : public SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
       private:
         // which part of the dataset this process handles, it always handles the complete grid
         size_t data_size;
         size_t data_offset;
 
       public:
-        DMSystemMatrixSPVectorizedIdentityAllreduce(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+        DMSystemMatrixSPVectorizedIdentityAllreduce(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
           : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
-          sg::parallel::PartitioningTool::getMPIPartitionSegment(this->numPatchedTrainingInstances_, &data_size, &data_offset, sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
+          SGPP::parallel::PartitioningTool::getMPIPartitionSegment(this->numPatchedTrainingInstances_, &data_size, &data_offset, SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
           rebuildLevelAndIndex();
         }
 

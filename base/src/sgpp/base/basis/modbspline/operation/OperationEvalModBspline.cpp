@@ -10,7 +10,10 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationEvalModBspline::eval(DataVector& alpha, std::vector<double>& point) {

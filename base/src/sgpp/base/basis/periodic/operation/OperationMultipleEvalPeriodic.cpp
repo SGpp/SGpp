@@ -12,7 +12,10 @@
 
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void OperationMultipleEvalPeriodic::mult(DataVector& alpha, DataVector& result) {

@@ -13,9 +13,12 @@
 #include <sstream>
 #include <stdlib.h>
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
     static int leftIdx[2047] = { -2, -2, 0, -2, 1, 0, 2, -2, 3, 1, 4, 0, 5, 2, 6, -2, 7, 3, 8, 1, 9, 4, 10, 0, 11, 5, 12, 2, 13, 6, 14, -2,
                                  15, 7, 16, 3, 17, 8, 18, 1, 19, 9, 20, 4, 21, 10, 22, 0, 23, 11, 24, 5, 25, 12, 26, 2, 27, 13, 28, 6, 29, 14, 30, -2, 31, 15, 32,

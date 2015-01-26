@@ -11,32 +11,35 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
     class DatasetGenerator {
       public:
         virtual ~DatasetGenerator();
         virtual double uniform(double a, double b);
         virtual double normal(double mean, double stddev);
-        virtual void createData(size_t offset, size_t size, sg::base::DataMatrix& trainingData, sg::base::DataVector& classes) = 0;
+        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trainingData, SGPP::base::DataVector& classes) = 0;
         virtual size_t getDims() = 0;
     };
 
     class Friedman1Generator : public DatasetGenerator {
       public:
-        virtual void createData(size_t offset, size_t size, sg::base::DataMatrix& trData, sg::base::DataVector& classes);
+        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trData, SGPP::base::DataVector& classes);
         virtual size_t getDims();
     };
 
     class Friedman2Generator : public DatasetGenerator {
       public:
-        virtual void createData(size_t offset, size_t size, sg::base::DataMatrix& trData, sg::base::DataVector& classes);
+        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trData, SGPP::base::DataVector& classes);
         virtual size_t getDims();
     };
 
     class Friedman3Generator : public DatasetGenerator {
       public:
-        virtual void createData(size_t offset, size_t size, sg::base::DataMatrix& trData, sg::base::DataVector& classes);
+        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trData, SGPP::base::DataVector& classes);
         virtual size_t getDims();
     };
 

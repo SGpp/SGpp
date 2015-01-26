@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     template<typename KernelImplementation>
@@ -20,13 +23,13 @@ namespace sg {
       public:
         static const KernelType kernelType = KernelImplementation::kernelType;
         static inline void mult(
-          sg::base::DataMatrix* level,
-          sg::base::DataMatrix* index,
-          sg::base::DataMatrix* mask,
-          sg::base::DataMatrix* offset,
-          sg::base::DataMatrix* dataset,
-          sg::base::DataVector& alpha,
-          sg::base::DataVector& result,
+          SGPP::base::DataMatrix* level,
+          SGPP::base::DataMatrix* index,
+          SGPP::base::DataMatrix* mask,
+          SGPP::base::DataMatrix* offset,
+          SGPP::base::DataMatrix* dataset,
+          SGPP::base::DataVector& alpha,
+          SGPP::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -40,13 +43,13 @@ namespace sg {
                                          start_index_grid, end_index_grid, start, end);
         }
         static inline void multTranspose(
-          sg::base::DataMatrix* level,
-          sg::base::DataMatrix* index,
-          sg::base::DataMatrix* mask,
-          sg::base::DataMatrix* offset,
-          sg::base::DataMatrix* dataset,
-          sg::base::DataVector& source,
-          sg::base::DataVector& result,
+          SGPP::base::DataMatrix* level,
+          SGPP::base::DataMatrix* index,
+          SGPP::base::DataMatrix* mask,
+          SGPP::base::DataMatrix* offset,
+          SGPP::base::DataMatrix* dataset,
+          SGPP::base::DataVector& source,
+          SGPP::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,

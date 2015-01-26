@@ -14,10 +14,13 @@
 
 #include "ScrambledSobolSampleGenerator.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 using namespace std;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace mcm {
 
 ScrambledSobolSampleGenerator::ScrambledSobolSampleGenerator(
@@ -72,7 +75,7 @@ size_t poly_scrambled[] = { 1, 3, 7, 11, 13, 19, 25, 37, 59, 47, 61, 55, 41, 67,
 		97, 91, 109, 103, 115, 131, 193, 137, 145, 143, 241, 157, 185, 167, 229,
 		171, 213, 191, 253, 203, 211, 239, 247, 285, 369, 299 };
 double recipd_scrambled;
-sg::base::DataMatrix* v_scrambled;
+SGPP::base::DataMatrix* v_scrambled;
 
 void ScrambledSobolSampleGenerator::getSample(DataVector& dv) {
 
@@ -87,12 +90,12 @@ void ScrambledSobolSampleGenerator::getSample(DataVector& dv) {
 		//
 		//    Initialize (part of) V.
 		//
-		v_scrambled = new sg::base::DataMatrix((size_t) dim_max_scrambled,
+		v_scrambled = new SGPP::base::DataMatrix((size_t) dim_max_scrambled,
 				log_max_scrambled);
 
 		for (size_t i = 0; i < dim_max_scrambled; i++) {
 			for (size_t j = 0; j < log_max_scrambled; j++) {
-				v_scrambled->sg::base::DataMatrix::set(i, j, 0);
+				v_scrambled->SGPP::base::DataMatrix::set(i, j, 0);
 			}
 		}
 

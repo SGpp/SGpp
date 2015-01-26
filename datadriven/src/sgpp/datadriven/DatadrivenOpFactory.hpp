@@ -27,7 +27,10 @@
  * This file contains factory methods for operations.
  */
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace op_factory {
 /**
  * Factory method, returning an OperationTest for the grid at hand.
@@ -131,7 +134,7 @@ datadriven::OperationInverseRosenblattTransformation* createOperationInverseRose
 datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid &grid);
 
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid &grid, base::DataMatrix &dataset,
-		sg::datadriven::OperationMultipleEvalConfiguration configuration);
+		SGPP::datadriven::OperationMultipleEvalConfiguration configuration);
 
 }
 }

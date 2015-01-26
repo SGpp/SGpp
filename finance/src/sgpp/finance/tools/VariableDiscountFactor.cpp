@@ -7,16 +7,19 @@
 
 #include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    VariableDiscountFactor::VariableDiscountFactor(sg::base::GridStorage* storage, int dim_r): myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r) {
+    VariableDiscountFactor::VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r): myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r) {
     }
 
     VariableDiscountFactor::~VariableDiscountFactor() {
     }
 
-    void VariableDiscountFactor::getDiscountFactor(sg::base::DataVector& factor, double T) {
+    void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, double T) {
       double tmp;
 
       for (size_t i = 0; i < storage->size(); i++) {

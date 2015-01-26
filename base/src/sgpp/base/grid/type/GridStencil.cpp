@@ -7,7 +7,10 @@
 
 #include <sgpp/base/grid/type/GridStencil.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     GridStencil::GridStencil(std::istream& istr)

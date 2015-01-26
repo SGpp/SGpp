@@ -24,11 +24,14 @@
 #include <omp.h>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
-     * Class that implements the virtual class sg::base::OperationMatrix for the
+     * Class that implements the virtual class SGPP::base::OperationMatrix for the
      * application of classification for the Systemmatrix
      *
      * The Identity matrix is used as regularization operator.
@@ -37,27 +40,27 @@ namespace sg {
      * vectorized formulations are used.
      */
     template<typename KernelImplementation>
-    class DMSystemMatrixSPVectorizedIdentityAsyncMPI : public sg::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
+    class DMSystemMatrixSPVectorizedIdentityAsyncMPI : public SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
       public:
         /**
          * Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param trainData reference to sg::base::DataMatrix that contains the training data
+         * @param trainData reference to SGPP::base::DataMatrix that contains the training data
          * @param lambda the lambda, the regression parameter
          * @param vecMode vectorization mode
          */
-        DMSystemMatrixSPVectorizedIdentityAsyncMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+        DMSystemMatrixSPVectorizedIdentityAsyncMPI(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
           : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda, vecMode) {
-          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
 
           /* calculate distribution of data */
           _chunkCountPerProcData = 2;
           _mpi_data_sizes = new int[_chunkCountPerProcData * mpi_size];
           _mpi_data_offsets = new int[_chunkCountPerProcData * mpi_size];
-          PartitioningTool::calcMPIChunkedDistribution(this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, sg::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
+          PartitioningTool::calcMPIChunkedDistribution(this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
 
-          if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+          if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
             std::cout << "Max size per chunk Data: " << _mpi_data_sizes[0] << std::endl;
           }
 
@@ -79,18 +82,18 @@ namespace sg {
           delete[] this->_mpi_data_offsets;
         }
 
-        virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
+        virtual void mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
 #ifdef X86_MIC_SYMMETRIC
           myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
 #endif
-          sg::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
+          SGPP::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
           result.setAll(0.0f);
           temp.setAll(0.0f);
           float* ptrResult = result.getPointer();
           float* ptrTemp = temp.getPointer();
 
-          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+          size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
 
           size_t totalChunkCountGrid = _chunkCountPerProcGrid * mpi_size;
           size_t totalChunkCountData = _chunkCountPerProcData * mpi_size;
@@ -103,7 +106,7 @@ namespace sg {
             tagsData[i] = (int)(i * 2 + 2);
           }
 
-          sg::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrTemp, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, tagsData, dataRecvReqs);
+          SGPP::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrTemp, _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets, tagsData, dataRecvReqs);
 
           /* setup MPI_Requests, tags and post receives for grid */
           MPI_Request* gridRecvReqs = new MPI_Request[totalChunkCountGrid]; //allocating a little more than necessary, otherwise complicated index computations needed
@@ -113,7 +116,7 @@ namespace sg {
             tagsGrid[i] = (int)(i * 2 + 3);
           }
 
-          sg::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrResult, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, gridRecvReqs);
+          SGPP::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrResult, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid, gridRecvReqs);
           MPI_Request* dataSendReqs = new MPI_Request[totalChunkCountData];
           MPI_Request* gridSendReqs = new MPI_Request[totalChunkCountGrid];
 
@@ -215,14 +218,14 @@ namespace sg {
           delete[] tagsGrid;
         } //end mult
 
-        virtual void generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b) {
-          size_t mpi_size = sg::parallel::myGlobalMPIComm->getNumRanks();
-          size_t mpi_myrank = sg::parallel::myGlobalMPIComm->getMyRank();
+        virtual void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b) {
+          size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+          size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
 
           float* ptrB = b.getPointer();
           b.setAll(0.0f);
 
-          sg::base::DataVectorSP myClasses(classes);
+          SGPP::base::DataVectorSP myClasses(classes);
 
           // Apply padding
           if (this->numPatchedTrainingInstances_ != myClasses.getSize()) {
@@ -237,7 +240,7 @@ namespace sg {
             tags[i] = (int)(i + 1);
           }
 
-          sg::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tags, gridRecvReqs);
+          SGPP::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, tags, gridRecvReqs);
           MPI_Request* gridSendReqs = new MPI_Request[totalChunkCount];
           this->myTimer_->start();
           #pragma omp parallel

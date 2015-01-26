@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/OperationDensitySampling.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**

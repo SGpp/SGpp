@@ -10,7 +10,10 @@
 
 #include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -25,15 +28,15 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationDeltaLogLinearStretched: public sg::pde::UpDownOneOpDim {
+    class OperationDeltaLogLinearStretched: public SGPP::pde::UpDownOneOpDim {
       public:
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
-         * @param coef reference to a sg::base::DataVector object that contains the bilinear form's constant coefficients
+         * @param storage the grid's SGPP::base::GridStorage object
+         * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients
          */
-        OperationDeltaLogLinearStretched(sg::base::GridStorage* storage, sg::base::DataVector& coef);
+        OperationDeltaLogLinearStretched(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef);
 
         /**
          * Destructor
@@ -50,7 +53,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -61,7 +64,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * down-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -71,7 +74,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * up-Gradient step in dimension <i>dim</i> applies the x dphi phi operation
@@ -81,7 +84,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that up-Gradient is applied
          */
-        virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
     };
 
   }

@@ -15,7 +15,10 @@
 #pragma warning(disable: 4267)
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

@@ -40,7 +40,10 @@ using namespace alglib;
 #include <time.h>
 #include <limits>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace datadriven {
 
@@ -94,8 +97,8 @@ namespace sg {
      * @param SolverConfig configuration of the SLE solver
      * @param lamda regularization parameter lambda
      */
-    LearnerTiming LearnerDensityCluster::train(sg::base::DataMatrix& testDataset,  sg::base::DataVector& classes,
-					  const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
+    LearnerTiming LearnerDensityCluster::train(SGPP::base::DataMatrix& testDataset,  SGPP::base::DataVector& classes,
+					  const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
 					  const double lambda){
 
 		LearnerTiming result;
@@ -115,16 +118,16 @@ namespace sg {
     	return result;
     }
 
-    void LearnerDensityCluster::calculateGridValues(sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig,
-        			const sg::solver::SLESolverConfiguration& SolverConfig, const double lambda){
-    	if(GridConfig.type_ == sg::base::Periodic){
-			grid_ = sg::base::Grid::createPeriodicGrid(GridConfig.dim_);
+    void LearnerDensityCluster::calculateGridValues(SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig,
+        			const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lambda){
+    	if(GridConfig.type_ == SGPP::base::Periodic){
+			grid_ = SGPP::base::Grid::createPeriodicGrid(GridConfig.dim_);
 			grid_->createGridGenerator()->regular(GridConfig.level_);
-		}else if(GridConfig.type_ == sg::base::Linear){
-			grid_ = sg::base::Grid::createLinearGrid(GridConfig.dim_);
+		}else if(GridConfig.type_ == SGPP::base::Linear){
+			grid_ = SGPP::base::Grid::createLinearGrid(GridConfig.dim_);
 			grid_->createGridGenerator()->regular(GridConfig.level_);
-		}else if(GridConfig.type_ == sg::base::LinearBoundary){
-			grid_ = sg::base::Grid::createLinearBoundaryGrid(GridConfig.dim_);
+		}else if(GridConfig.type_ == SGPP::base::LinearBoundary){
+			grid_ = SGPP::base::Grid::createLinearBoundaryGrid(GridConfig.dim_);
 			grid_->createGridGenerator()->regular(GridConfig.level_);
 		}else{
 			throw base::data_exception ("Not supported grid.");
@@ -140,21 +143,21 @@ namespace sg {
 		if(isVerbose_)
 			std::cout << currentDateTime() <<  " Start clustering"  << std::endl;
 
-		sg::solver::SLESolver* myCG;
-		myCG = new sg::solver::ConjugateGradients(SolverConfig.maxIterations_, SolverConfig.eps_);
+		SGPP::solver::SLESolver* myCG;
+		myCG = new SGPP::solver::ConjugateGradients(SolverConfig.maxIterations_, SolverConfig.eps_);
 
 
-		sg::base::OperationIdentity C_;
-		sg::datadriven::DensitySystemMatrix DMatrix(*grid_, testDataset, C_, lambda);
+		SGPP::base::OperationIdentity C_;
+		SGPP::datadriven::DensitySystemMatrix DMatrix(*grid_, testDataset, C_, lambda);
 
-		sg::base::DataVector rhs(grid_->getStorage()->size());
+		SGPP::base::DataVector rhs(grid_->getStorage()->size());
 		DMatrix.generateb(rhs);
 
 		if(isVerbose_)
 			std::cout  << currentDateTime() << " System of linear equations created" << std::endl;
 
 		delete alpha_;
-		alpha_ = new sg::base::DataVector(grid_->getStorage()->size());
+		alpha_ = new SGPP::base::DataVector(grid_->getStorage()->size());
 		alpha_->setAll(0);
 		myCG->solve(DMatrix, *alpha_, rhs, false, isVerbose_, -1.0);
 
@@ -162,9 +165,9 @@ namespace sg {
 			std::cout << currentDateTime() << " Equation solved" << std::endl;
 
 		delete gridVals_;
-		gridVals_ = new sg::base::DataVector(testDataset.getNrows());
+		gridVals_ = new SGPP::base::DataVector(testDataset.getNrows());
 
-		sg::base::OperationMultipleEval* MultEval = sg::op_factory::createOperationMultipleEval(*grid_, testDataset);
+		SGPP::base::OperationMultipleEval* MultEval = SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset);
 		MultEval->mult(*alpha_, *gridVals_);
 
 		if(isVerbose_)
@@ -178,7 +181,7 @@ namespace sg {
       return firstElem.second > secondElem.second;
     }
 
-    void LearnerDensityCluster::cluster(sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig){
+    void LearnerDensityCluster::cluster(SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig){
     	ae_int_t nx = GridConfig.dim_;
 		ae_int_t ny = 2;
 		ae_int_t normtype = 3;
@@ -190,7 +193,7 @@ namespace sg {
     	if(neighbors_ == NULL){
     		double *points = new double[(GridConfig.dim_ + 2) * testDataset.getNrows()];
 			for(size_t i = 0; i < testDataset.getNrows();i++){
-				sg::base::DataVector point(GridConfig.dim_);
+				SGPP::base::DataVector point(GridConfig.dim_);
 				testDataset.getRow(i,point);
 				points[(GridConfig.dim_+2)*(i+1)-2] = double(i);
 				points[(GridConfig.dim_+2)*(i+1)-1] = (*gridVals_)[i];
@@ -205,19 +208,19 @@ namespace sg {
     	}
 		Graph G(int(testDataset.getNrows()));
 
-		bool (LearnerDensityCluster::*thresholdFunction)(sg::base::DataMatrix& testDataset, int, int);
+		bool (LearnerDensityCluster::*thresholdFunction)(SGPP::base::DataMatrix& testDataset, int, int);
 		thresholdFunction = &LearnerDensityCluster::constantThreshold;
 		switch(thresholdType){
-			case sg::datadriven::Constant:
+			case SGPP::datadriven::Constant:
 				thresholdFunction = &LearnerDensityCluster::constantThreshold;
 				break;
-			case sg::datadriven::Relative:
+			case SGPP::datadriven::Relative:
 				thresholdFunction = &LearnerDensityCluster::relativeThreshold;
 				break;
-			case sg::datadriven::Difference:
+			case SGPP::datadriven::Difference:
 				thresholdFunction = &LearnerDensityCluster::differenceThreshold;
 				break;
-			case sg::datadriven::Minima:
+			case SGPP::datadriven::Minima:
 				thresholdFunction = &LearnerDensityCluster::relativeThreshold;
 				break;
 		}
@@ -225,10 +228,10 @@ namespace sg {
 		delete minimumPoint_;
 		minimumPoint_ = new std::vector<bool>(testDataset.getNrows());
 
-		if(thresholdType==sg::datadriven::Minima){
+		if(thresholdType==SGPP::datadriven::Minima){
 			for(size_t i = 0; i < testDataset.getNrows();i++){
 				if(neighbors_ == NULL){
-					sg::base::DataVector point(GridConfig.dim_);
+					SGPP::base::DataVector point(GridConfig.dim_);
 					testDataset.getRow(i,point);
 
 					x.setcontent(GridConfig.dim_, point.getPointer());
@@ -267,7 +270,7 @@ namespace sg {
 
 		for(size_t i = 0; i < testDataset.getNrows();i++){
 			if(neighbors_ == NULL){
-				sg::base::DataVector point(GridConfig.dim_);
+				SGPP::base::DataVector point(GridConfig.dim_);
 				testDataset.getRow(i,point);
 
 				x.setcontent(GridConfig.dim_, point.getPointer());
@@ -285,7 +288,7 @@ namespace sg {
 				delete [] neighbors;
 				neighbors = NULL;
 			}
-			if(thresholdType==sg::datadriven::Minima && minimumPoint_->at(i)){
+			if(thresholdType==SGPP::datadriven::Minima && minimumPoint_->at(i)){
 				for(int j = 1; j < numberOfNeighbors+1; j++){
 					if(minimumPoint_->at(int(r[j][GridConfig.dim_])))
 						continue;
@@ -297,7 +300,7 @@ namespace sg {
 				int numberOfAddedEdges = 0;
 				// check the threshold
 				for(int j = 1; j < numberOfNeighbors+1; j++){
-					if(thresholdType==sg::datadriven::Minima && minimumPoint_->at(int(r[j][GridConfig.dim_])))
+					if(thresholdType==SGPP::datadriven::Minima && minimumPoint_->at(int(r[j][GridConfig.dim_])))
 						break;
 					if((*this.*thresholdFunction)(testDataset,int(i), int(r[j][GridConfig.dim_]))){
 						G.addEdge(int(r[0][GridConfig.dim_]), int(r[j][GridConfig.dim_]));
@@ -322,37 +325,37 @@ namespace sg {
 
 
 		delete clusterAssignments_;
-		clusterAssignments_ = new sg::base::DataVector(component);
+		clusterAssignments_ = new SGPP::base::DataVector(component);
     }
 
 
-    bool LearnerDensityCluster::constantThreshold(sg::base::DataMatrix& testDataset, int i, int j){
+    bool LearnerDensityCluster::constantThreshold(SGPP::base::DataMatrix& testDataset, int i, int j){
     	return (gridVals_->get(i) >= eps || gridVals_->get(j) >= eps);
     }
-	bool LearnerDensityCluster::relativeThreshold(sg::base::DataMatrix& testDataset, int i, int j){
+	bool LearnerDensityCluster::relativeThreshold(SGPP::base::DataMatrix& testDataset, int i, int j){
 		return (std::abs(std::min(gridVals_->get(i),gridVals_->get(j)))/std::abs(std::max(gridVals_->get(i),gridVals_->get(j))) >= eps);
 	}
-	bool LearnerDensityCluster::differenceThreshold(sg::base::DataMatrix& testDataset, int i, int j){
+	bool LearnerDensityCluster::differenceThreshold(SGPP::base::DataMatrix& testDataset, int i, int j){
 		return (std::abs(gridVals_->get(i)-gridVals_->get(j)) <= eps);
 	}
 
-    sg::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(sg::base::DataMatrix& trainDataset, double lambda){
+    SGPP::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda){
     	throw base::factory_exception("createDMSystem is not implemented yet.");
     }
 
-    sg::base::DataVector LearnerDensityCluster::getClusterAssignments(){
+    SGPP::base::DataVector LearnerDensityCluster::getClusterAssignments(){
     	return *clusterAssignments_;
     }
 
-    void LearnerDensityCluster::setClusterConfiguration(const sg::datadriven::DensityBasedClusteringConfiguration& ClusterConfig){
+    void LearnerDensityCluster::setClusterConfiguration(const SGPP::datadriven::DensityBasedClusteringConfiguration& ClusterConfig){
     	eps = ClusterConfig.eps;
     	numberOfNeighbors = ClusterConfig.numberOfNeighbors;
     	thresholdType = ClusterConfig.thresholdType;
     	threshold = ClusterConfig.threshold;
     }
 
-    void LearnerDensityCluster::precalculateGridValues(const char * filename, sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig,
-    		const sg::solver::SLESolverConfiguration& SolverConfig, const double lambda){
+    void LearnerDensityCluster::precalculateGridValues(const char * filename, SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig,
+    		const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lambda){
     	delete gridVals_;
     	gridVals_ = NULL;
     	calculateGridValues(testDataset, GridConfig, SolverConfig, lambda);
@@ -367,17 +370,17 @@ namespace sg {
     	double * data = loadArray(filename, &len);
     	delete gridVals_;
     	gridVals_ = NULL;
-    	gridVals_ = new sg::base::DataVector(data, len);
+    	gridVals_ = new SGPP::base::DataVector(data, len);
     	if(isVerbose_)
     	    std::cout << currentDateTime() << " Grid values loaded" << std::endl;
     	delete [] data;
     	data =  NULL;
     }
 
-    void LearnerDensityCluster::precalculateNeighbors(const char * filename, sg::base::DataMatrix& testDataset, int n){
+    void LearnerDensityCluster::precalculateNeighbors(const char * filename, SGPP::base::DataMatrix& testDataset, int n){
     	double *points = new double[(testDataset.getNcols() + 2) * testDataset.getNrows()];
 		for(size_t i = 0; i < testDataset.getNrows();i++){
-			sg::base::DataVector point(testDataset.getNcols());
+			SGPP::base::DataVector point(testDataset.getNcols());
 			testDataset.getRow(i,point);
 			points[(testDataset.getNcols()+2)*(i+1)-2] = double(i);
 			//points[(testDataset.getNcols()+2)*(i+1)-1] = (*gridVals_)[i];
@@ -405,7 +408,7 @@ namespace sg {
 		neighbors_ = new int *[testDataset.getNrows()];
 
 		for(size_t i = 0; i < testDataset.getNrows();i++){
-			sg::base::DataVector point(testDataset.getNcols());
+			SGPP::base::DataVector point(testDataset.getNcols());
 			testDataset.getRow(i,point);
 
 			x.setcontent(testDataset.getNcols(), point.getPointer());
@@ -482,8 +485,8 @@ namespace sg {
 		return data;
     }
 
-    sg::base::DataVector LearnerDensityCluster::postprocessing(sg::base::DataMatrix& trainDataset,sg::base::DataVector components, int n){
-		//sg::base::DataVector components = getClusterAssignments();
+    SGPP::base::DataVector LearnerDensityCluster::postprocessing(SGPP::base::DataMatrix& trainDataset,SGPP::base::DataVector components, int n){
+		//SGPP::base::DataVector components = getClusterAssignments();
 		int numberOfClusters = int(components.max());
 
 		if(n == 0 ||  n > numberOfClusters+1)
@@ -516,11 +519,11 @@ namespace sg {
 			aboveThreshold[i] = dict[int(components[i])] >= threshold;
 		}
 
-		sg::base::DataVector newComponents(components);
+		SGPP::base::DataVector newComponents(components);
 
 
 		for(size_t i = 0; i < indexUnderThreshold->size();i++){
-			sg::base::DataVector point(trainDataset.getNcols());
+			SGPP::base::DataVector point(trainDataset.getNcols());
 			trainDataset.getRow(indexUnderThreshold->at(i),point);
 
 

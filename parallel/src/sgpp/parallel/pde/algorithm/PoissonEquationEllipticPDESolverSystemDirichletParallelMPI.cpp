@@ -14,12 +14,15 @@
 #include <sgpp/pde/algorithm/StdUpDown.hpp>
 #include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
-using namespace sg::op_factory;
+using namespace SGPP::op_factory;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : sg::pde::OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
+    PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs) : SGPP::pde::OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
       this->Laplace_Complete = createOperationLaplace(*this->BoundGrid);
       this->Laplace_Inner = createOperationLaplace(*this->InnerGrid);
     }
@@ -29,7 +32,7 @@ namespace sg {
       delete this->Laplace_Inner;
     }
 
-    void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       #pragma omp parallel shared(alpha, result)
@@ -44,10 +47,10 @@ namespace sg {
             if (i % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
               #pragma omp task firstprivate(i) shared(alpha, result, algoDims)
               {
-                sg::base::DataVector myResult(result.getSize());
+                SGPP::base::DataVector myResult(result.getSize());
 
                 /// @todo (heinecke) discuss methods in order to avoid this cast
-                ((sg::pde::UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+                ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
                 #pragma omp critical
                 {
@@ -63,7 +66,7 @@ namespace sg {
 
     }
 
-    void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       #pragma omp parallel shared(alpha, result)
@@ -79,10 +82,10 @@ namespace sg {
               #pragma omp task firstprivate(i) shared(alpha, result, algoDims)
               {
 
-                sg::base::DataVector myResult(result.getSize());
+                SGPP::base::DataVector myResult(result.getSize());
 
                 /// @todo (heinecke) discuss methods in order to avoid this cast
-                ((sg::pde::UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+                ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
                 #pragma omp critical
                 {
@@ -97,7 +100,7 @@ namespace sg {
       }
     }
 
-    void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       // distribute the current grid coefficients
       //myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
@@ -108,10 +111,10 @@ namespace sg {
       myGlobalMPIComm->reduceGridCoefficients(result);
     }
 
-    sg::base::DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS() {
+    SGPP::base::DataVector* PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS() {
       if (this->InnerGrid != NULL) {
-        sg::base::DataVector alpha_tmp_complete(*(this->rhs));
-        sg::base::DataVector rhs_tmp_complete(*(this->rhs));
+        SGPP::base::DataVector alpha_tmp_complete(*(this->rhs));
+        SGPP::base::DataVector rhs_tmp_complete(*(this->rhs));
 
         this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
         // distribute the current grid coefficients
@@ -126,7 +129,7 @@ namespace sg {
         this->rhs_inner->mult(-1.0);
       } else {
         myGlobalMPIComm->Abort();
-        throw new sg::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
+        throw new SGPP::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
       }
 
       return this->rhs_inner;

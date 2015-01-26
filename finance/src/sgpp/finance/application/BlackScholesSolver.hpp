@@ -31,7 +31,10 @@
 #include <cmath>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
@@ -44,20 +47,20 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class BlackScholesSolver : public sg::pde::ParabolicPDESolver {
+    class BlackScholesSolver : public SGPP::pde::ParabolicPDESolver {
       protected:
         /// vector that contains the assets' weight
-        sg::base::DataVector* mus;
+        SGPP::base::DataVector* mus;
         /// vector that contains the standard deviations
-        sg::base::DataVector* sigmas;
+        SGPP::base::DataVector* sigmas;
         /// Matrix that contains the correlations
-        sg::base::DataMatrix* rhos;
+        SGPP::base::DataMatrix* rhos;
         /// the riskfree rate
         double r;
         /// stores if the stochastic asset data was passed to the solver
         bool bStochasticDataAlloc;
         /// screen object used in this solver
-        sg::base::ScreenOutput* myScreen;
+        SGPP::base::ScreenOutput* myScreen;
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// Threshold used to decide if a grid point should be deleted
@@ -75,25 +78,25 @@ namespace sg {
         /// identifies if the Black Scholes Equation should be solved by using a principal axis transformation
         bool usePAT;
         /// max. level for refinement during solving
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
         /// variable to store needed solving iterations
         size_t nNeededIterations;
         /// variable to store the solving time
         double dNeededTime;
-        /// variable to store start grid size (Inner sg::base::Grid)
+        /// variable to store start grid size (Inner SGPP::base::Grid)
         size_t staInnerGridSize;
-        /// variable to store final grid size (Inner sg::base::Grid)
+        /// variable to store final grid size (Inner SGPP::base::Grid)
         size_t finInnerGridSize;
-        /// variable to store average grid size (Inner sg::base::Grid)
+        /// variable to store average grid size (Inner SGPP::base::Grid)
         size_t avgInnerGridSize;
         /// Type of the Option to solve
         std::string tBoundaryType;
         /// Eigenvectors of the co-variance matrix
-        sg::base::DataMatrix* eigvec_covar;
+        SGPP::base::DataMatrix* eigvec_covar;
         /// Eigenvalues of the co-variance matrix
-        sg::base::DataVector* eigval_covar;
+        SGPP::base::DataVector* eigval_covar;
         /// mu hat, tanslation coefficient needed if PAT is used
-        sg::base::DataVector* mu_hat;
+        SGPP::base::DataVector* mu_hat;
         /// stores the current time until which the option has been solved
         double current_time;
         /// stores the strike of the current option
@@ -119,7 +122,7 @@ namespace sg {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initCartesianGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -129,7 +132,7 @@ namespace sg {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initLogTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initLogTransformedGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -139,7 +142,7 @@ namespace sg {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initPATTransformedGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initPATTransformedGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
 
         /**
          * This function calculates for every grid point the value
@@ -152,7 +155,7 @@ namespace sg {
          * @param norm_mu the expected values of the normal distribution for every grid dimension
          * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
          */
-        virtual void getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+        virtual void getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
 
       public:
         /**
@@ -168,7 +171,7 @@ namespace sg {
          */
         virtual ~BlackScholesSolver();
 
-        virtual void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
+        virtual void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
         /**
          * This function tries to refine the grid such that
@@ -179,12 +182,12 @@ namespace sg {
          *
          * Only on Cartesian grids!
          *
-         * @param alpha reference to a sg::base::DataVector object that contains the gird ansatzfunction's coefficients
+         * @param alpha reference to a SGPP::base::DataVector object that contains the gird ansatzfunction's coefficients
          * @param strike containing the option's strike
          * @param payoffType the type of payoff Function used ONLY supported: avgM
          * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
          */
-        virtual void refineInitialGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
+        virtual void refineInitialGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
 
         /**
          * This function tries to refine the grid such that
@@ -196,47 +199,47 @@ namespace sg {
          *
          * Only on Cartesian grids!
          *
-         * @param alpha reference to a sg::base::DataVector object that contains the gird ansatzfunction's coefficients
+         * @param alpha reference to a SGPP::base::DataVector object that contains the gird ansatzfunction's coefficients
          * @param strike containing the option's strike
          * @param payoffType the type of payoff Function used ONLY supported: avgM
          * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
          * @param maxLevel maximum level of refinement
          */
-        virtual void refineInitialGridWithPayoffToMaxLevel(sg::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel);
+        virtual void refineInitialGridWithPayoffToMaxLevel(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel);
 
         /**
          * In order to solve the multi dimensional Black Scholes Equation you have to provided
          * some statistical data about the underlying (assets' weight, standard deviation
          * and the correlation between them). This function allows you to set this data.
          *
-         * @param mus a sg::base::DataVector that contains the underlyings' weight
-         * @param sigmas a sg::base::DataVector that contains the underlyings' standard deviations
-         * @param rhos a sg::base::DataMatrix that contains the correlations between the underlyings
+         * @param mus a SGPP::base::DataVector that contains the underlyings' weight
+         * @param sigmas a SGPP::base::DataVector that contains the underlyings' standard deviations
+         * @param rhos a SGPP::base::DataMatrix that contains the correlations between the underlyings
          * @param r the riskfree rate used in the market model
          */
-        virtual void setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r);
+        virtual void setStochasticData(SGPP::base::DataVector& mus, SGPP::base::DataVector& sigmas, SGPP::base::DataMatrix& rhos, double r);
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
-        void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, void* myODESolverV = NULL, std::string Solver = "ImEul");
+        void solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, void* myODESolverV = NULL, std::string Solver = "ImEul");
 
-        void solveSC(std::string Solver, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        void solveSC(std::string Solver, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
-        void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        void solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
-        void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        void solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
-        void solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        void solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
-        void solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        void solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
-        void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        void solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
-        //void solveSCMC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false);
+        //void solveSCMC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false);
 
         /**
          * evaluates the analytic solution of the 1D Black Scholes equation
@@ -285,21 +288,21 @@ namespace sg {
          *  @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          *  @param hierarchized flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
          */
-        virtual void getAnalyticAlpha1D(sg::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
+        virtual void getAnalyticAlpha1D(SGPP::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
 
         /**
          * Evaluates the analytic solution of the 1d Black Scholes equation
          * on different points specified in EvaluationPoints and stores the result into FunctionValues.
          *
-         * @param AnalyticOptionPrices sg::base::DataVector into the which the result of function's evaluation is stored
-         * @param EvaluationPoints sg::base::DataMatrix that contains the points at which the sparse grid's function is evaluated
+         * @param AnalyticOptionPrices SGPP::base::DataVector into the which the result of function's evaluation is stored
+         * @param EvaluationPoints SGPP::base::DataMatrix that contains the points at which the sparse grid's function is evaluated
          * @param strike the strike price of the Option
          * @param vola volatility
          * @param r risk-free rate
          * @param t time to maturity
          * @param isCall set this to true to calculate call, false calculates put
          */
-        void evaluate1DAnalyticCuboid(sg::base::DataVector& AnalyticOptionPrices, sg::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall);
+        void evaluate1DAnalyticCuboid(SGPP::base::DataVector& AnalyticOptionPrices, SGPP::base::DataMatrix& EvaluationPoints, double strike, double vola, double r, double t, bool isCall);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -308,7 +311,7 @@ namespace sg {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
 
 
 
@@ -345,7 +348,7 @@ namespace sg {
          *  @param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
          *  @param refineThreshold Threshold needed to determine if a grid point should be refined
          */
-        virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+        virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
         /**
          * prints the 2D interpolation error at money into a file. This file is plotable via gnuplot. A bounding
@@ -358,7 +361,7 @@ namespace sg {
          * @param numTestpoints Number of equal distribute testpoints at money
          * @param strike the option's strike
          */
-        virtual void printPayoffInterpolationError2D(sg::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+        virtual void printPayoffInterpolationError2D(SGPP::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
 
         /**
          * Evaluates the current option value
@@ -369,7 +372,7 @@ namespace sg {
          *
          * @return the option price at the given point
          */
-        virtual double evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha);
+        virtual double evalOption(std::vector<double>& eval_point, SGPP::base::DataVector& alpha);
 
         /**
          * This method transforms a point given
@@ -378,7 +381,7 @@ namespace sg {
          *
          * @param point point given in Cartision coordinates that should be transformed
          */
-        virtual void transformPoint(sg::base::DataVector& point);
+        virtual void transformPoint(SGPP::base::DataVector& point);
 
         /**
          * Resets the current solving time.
@@ -389,7 +392,7 @@ namespace sg {
         virtual void resetSolveTime();
 
         /**
-         * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
+         * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value
          * or their hierarchical surplus
          *
          * This function is available for all dimensions
@@ -398,7 +401,7 @@ namespace sg {
          * @param tfilename absoulte path to the file the grid is written into
          * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
          */
-        void printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
+        void printSparseGridPAT(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
         /**
          * gets the number of gridpoints at money
@@ -455,7 +458,7 @@ namespace sg {
          * @param tFilename file into which the rhs is written
          * @param timestepsize the size of the timesteps
          */
-        void storeInnerRHS(sg::base::DataVector& alpha, std::string tFilename, double timestepsize);
+        void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename, double timestepsize);
 
         /**
          * Routine to export the solution of the inner system which
@@ -468,7 +471,7 @@ namespace sg {
          * @param epsilonCG the epsilon used in the C
          * @param tFilename file into which the rhs is written
          */
-        void storeInnerSolution(sg::base::DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
+        void storeInnerSolution(SGPP::base::DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
     };
 
   }

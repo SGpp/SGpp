@@ -14,7 +14,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -25,16 +28,16 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class UpDownOneOpDimWithShadow: public sg::base::OperationMatrix {
+    class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
       public:
 
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          * @param shadowStorage shadow storage
          */
-        UpDownOneOpDimWithShadow(sg::base::GridStorage* storage, sg::base::GridStorage* shadowStorage);
+        UpDownOneOpDimWithShadow(SGPP::base::GridStorage* storage, SGPP::base::GridStorage* shadowStorage);
 
         /**
          * Destructor
@@ -42,14 +45,14 @@ namespace sg {
         virtual ~UpDownOneOpDimWithShadow();
 
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       protected:
-        typedef sg::base::GridStorage::grid_iterator grid_iterator;
+        typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
 
         /// Pointer to the grid's storage object
-        sg::base::GridStorage* storage;
-        sg::base::GridStorage* shadowStorage;
+        SGPP::base::GridStorage* storage;
+        SGPP::base::GridStorage* shadowStorage;
 
         /**
          * Recursive procedure for updown().
@@ -59,7 +62,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        void updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim);
+        void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim);
 
         /**
          * This functions adds all grid points of the shadow storage into the actual grid.
@@ -80,7 +83,7 @@ namespace sg {
          * @param dim the current dimension in the recursion
          * @param op_dim the dimension in that a special operation is applied
          */
-        virtual void specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim);
+        virtual void specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim);
 
 
         /**
@@ -90,7 +93,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * std 1D down operation
@@ -99,7 +102,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * special 1D down operation that is only executed in one direction
@@ -108,7 +111,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * special 1D up operation that is only executed in one direction
@@ -117,7 +120,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that up-Gradient is applied
          */
-        virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
     };
 
   }

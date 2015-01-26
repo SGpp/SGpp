@@ -15,7 +15,10 @@
 
 #include <map>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -45,7 +48,7 @@ namespace sg {
      */
     struct RegularGridConfiguration {
       /// Grid Type, see enum
-      sg::base::GridType type_;
+      SGPP::base::GridType type_;
       /// number of dimensions
       size_t dim_;
       /// number of levels

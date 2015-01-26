@@ -17,7 +17,10 @@
 #include <omp.h>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     template<typename OCLBasisType>
@@ -25,13 +28,13 @@ namespace sg {
       public:
         static const KernelType kernelType = OCLBasisType::kernelType;
         inline void mult(
-          sg::base::DataMatrix* level,
-          sg::base::DataMatrix* index,
-          sg::base::DataMatrix* mask,
-          sg::base::DataMatrix* offset,
-          sg::base::DataMatrix* dataset,
-          sg::base::DataVector& alpha,
-          sg::base::DataVector& result,
+          SGPP::base::DataMatrix* level,
+          SGPP::base::DataMatrix* index,
+          SGPP::base::DataMatrix* mask,
+          SGPP::base::DataMatrix* offset,
+          SGPP::base::DataMatrix* dataset,
+          SGPP::base::DataVector& alpha,
+          SGPP::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -45,13 +48,13 @@ namespace sg {
         }
 
         inline void multTranspose(
-          sg::base::DataMatrix* level,
-          sg::base::DataMatrix* index,
-          sg::base::DataMatrix* mask, //unused for this specialization
-          sg::base::DataMatrix* offset, //unused for this specialization
-          sg::base::DataMatrix* dataset,
-          sg::base::DataVector& source,
-          sg::base::DataVector& result,
+          SGPP::base::DataMatrix* level,
+          SGPP::base::DataMatrix* index,
+          SGPP::base::DataMatrix* mask, //unused for this specialization
+          SGPP::base::DataMatrix* offset, //unused for this specialization
+          SGPP::base::DataMatrix* dataset,
+          SGPP::base::DataVector& source,
+          SGPP::base::DataVector& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,

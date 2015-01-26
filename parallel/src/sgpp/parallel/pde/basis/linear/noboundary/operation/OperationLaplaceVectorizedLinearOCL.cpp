@@ -11,15 +11,18 @@
 
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinearOCL.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
-      this->lambda = new sg::base::DataVector(lambda);
+    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda) : storage(storage) {
+      this->lambda = new SGPP::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
-      this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
       lcl_q = new double[this->storage->dim()];
       lcl_q_inv = new double[this->storage->dim()];
 
@@ -27,13 +30,13 @@ namespace sg {
       storage->getLevelForIntegral(*(this->level_int_));
     }
 
-    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage) : storage(storage) {
       this->lambda = new base::DataVector(storage->dim());
       this->lambda->setAll(1.0);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
-      this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
       lcl_q = new double[this->storage->dim()];
       lcl_q_inv = new double[this->storage->dim()];
 
@@ -51,12 +54,12 @@ namespace sg {
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLaplaceVectorizedLinearOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       // fill q array
       for (size_t d = 0; d < this->storage->dim(); d++) {
-        sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+        SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
         lcl_q[d] = boundingBox->getIntervalWidth(d);
         lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
       }

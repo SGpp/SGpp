@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/mcm/SampleGenerator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace mcm {
 
 /**
@@ -24,7 +27,7 @@ typedef double (*FUNC)(int, double*, void*);
  * using various Monte Carlo Methods (Advanced).
  */
 
-class OperationQuadratureMCAdvanced: public sg::base::OperationQuadrature {
+class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
 
 public:
 
@@ -35,7 +38,7 @@ public:
 	 * @param grid Reference to the grid object
 	 * @param numberOfSamples Number of Monte Carlo samples
 	 */
-	OperationQuadratureMCAdvanced(sg::base::Grid& grid, int numberOfSamples);
+	OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, int numberOfSamples);
 
 	/**
 	 * @brief Constructor of OperationQuadratureMCAdvanced, specifying dimensions
@@ -54,7 +57,7 @@ public:
 	 *
 	 * @param alpha Coefficient vector for current grid
 	 */
-	virtual double doQuadrature(sg::base::DataVector& alpha);
+	virtual double doQuadrature(SGPP::base::DataVector& alpha);
 
 	/**
 	 * @brief Quadrature of an arbitrary function using
@@ -76,7 +79,7 @@ public:
 	 * @param alpha Coefficient vector for current grid
 	 */
 	double doQuadratureL2Error(FUNC func, void* clientdata,
-			sg::base::DataVector& alpha);
+			SGPP::base::DataVector& alpha);
 
 	/**
 	 * @brief Initialize SampleGenerator for NaiveMC
@@ -126,14 +129,14 @@ public:
 
 protected:
 	// Pointer to the grid object
-	sg::base::Grid* grid;
+	SGPP::base::Grid* grid;
 	// Number of MC samples
 	size_t numberOfSamples;
 	// number of dimensions (same as in Grid, if given)
 	size_t dimensions;
 
 	//SampleGenerator Instance 
-	sg::mcm::SampleGenerator* myGenerator;
+	SGPP::mcm::SampleGenerator* myGenerator;
 
 };
 

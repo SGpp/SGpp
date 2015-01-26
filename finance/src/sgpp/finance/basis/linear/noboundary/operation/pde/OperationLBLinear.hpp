@@ -10,7 +10,10 @@
 
 #include <sgpp/pde/algorithm/StdUpDown.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -18,14 +21,14 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLBLinear: public sg::pde::StdUpDown {
+    class OperationLBLinear: public SGPP::pde::StdUpDown {
       public:
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        OperationLBLinear(sg::base::GridStorage* storage);
+        OperationLBLinear(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -42,7 +45,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),d\phi_j(x))\f$.
@@ -53,7 +56,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
     };
 
   }

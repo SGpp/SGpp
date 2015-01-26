@@ -7,18 +7,21 @@
 
 #include <sgpp/finance/basis/linear/noboundary/algorithm_sweep/XdPhiPhiUpBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    XdPhiPhiUpBBLinear::XdPhiPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    XdPhiPhiUpBBLinear::XdPhiPhiUpBBLinear(SGPP::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
     }
 
     XdPhiPhiUpBBLinear::~XdPhiPhiUpBBLinear() {
     }
 
-    void XdPhiPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void XdPhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       double q = boundingBox->getIntervalWidth(dim);
       double t = boundingBox->getIntervalOffset(dim);
 
@@ -39,15 +42,15 @@ namespace sg {
       }
     }
 
-    void XdPhiPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+    void XdPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
       double fml = 0.0;
       double fmr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -81,15 +84,15 @@ namespace sg {
       fr = (fm / 2.0) + ((alpha_value * (((-1.0) * (hhalf * i_dbl)) - hhalf)) + fr);
     }
 
-    void XdPhiPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
+    void XdPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
       double fml = 0.0;
       double fmr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -125,6 +128,6 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 

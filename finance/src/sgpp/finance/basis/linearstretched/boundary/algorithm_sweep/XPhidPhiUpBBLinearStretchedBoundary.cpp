@@ -7,18 +7,21 @@
 
 #include <sgpp/finance/basis/linearstretched/boundary/algorithm_sweep/XPhidPhiUpBBLinearStretchedBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    XPhidPhiUpBBLinearStretchedBoundary::XPhidPhiUpBBLinearStretchedBoundary(sg::base::GridStorage* storage) : XPhidPhiUpBBLinearStretched(storage) {
+    XPhidPhiUpBBLinearStretchedBoundary::XPhidPhiUpBBLinearStretchedBoundary(SGPP::base::GridStorage* storage) : XPhidPhiUpBBLinearStretched(storage) {
     }
 
     XPhidPhiUpBBLinearStretchedBoundary::~XPhidPhiUpBBLinearStretchedBoundary() {
     }
 
-    /*void XPhidPhiUpBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim)
+    /*void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim)
     {
       double q = this->stretching->getIntervalWidth(dim);
       double t = this->stretching->getIntervalOffset(dim);
@@ -82,7 +85,7 @@ namespace sg {
     }*/
 
 
-    void XPhidPhiUpBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       double q = this->stretching->getIntervalWidth(dim);
       double t = this->stretching->getIntervalOffset(dim);
 
@@ -136,5 +139,5 @@ namespace sg {
     }
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

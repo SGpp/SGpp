@@ -13,7 +13,10 @@
 
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL)  {

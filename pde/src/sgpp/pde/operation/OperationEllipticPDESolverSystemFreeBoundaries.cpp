@@ -8,20 +8,23 @@
 #include <sgpp/pde/operation/OperationEllipticPDESolverSystemFreeBoundaries.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
+    OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
     }
 
     OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries() {
     }
 
-    void OperationEllipticPDESolverSystemFreeBoundaries::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationEllipticPDESolverSystemFreeBoundaries::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       applyLOperator(alpha, result);
     }
 
-    sg::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
+    SGPP::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
       return this->rhs;
     }
 

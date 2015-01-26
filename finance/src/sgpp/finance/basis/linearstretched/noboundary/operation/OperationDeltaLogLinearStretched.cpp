@@ -15,43 +15,46 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    OperationDeltaLogLinearStretched::OperationDeltaLogLinearStretched(sg::base::GridStorage* storage, sg::base::DataVector& coef) : sg::pde::UpDownOneOpDim(storage, coef) {
+    OperationDeltaLogLinearStretched::OperationDeltaLogLinearStretched(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef) : SGPP::pde::UpDownOneOpDim(storage, coef) {
     }
 
     OperationDeltaLogLinearStretched::~OperationDeltaLogLinearStretched() {
     }
 
-    void OperationDeltaLogLinearStretched::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationDeltaLogLinearStretched::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * phi
-      sg::pde::PhiPhiUpBBLinearStretched func(this->storage);
-      sg::base::sweep<sg::pde::PhiPhiUpBBLinearStretched> s(func, this->storage);
+      SGPP::pde::PhiPhiUpBBLinearStretched func(this->storage);
+      SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearStretched> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationDeltaLogLinearStretched::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationDeltaLogLinearStretched::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * phi
-      sg::pde::PhiPhiDownBBLinearStretched func(this->storage);
-      sg::base::sweep<sg::pde::PhiPhiDownBBLinearStretched> s(func, this->storage);
+      SGPP::pde::PhiPhiDownBBLinearStretched func(this->storage);
+      SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearStretched> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationDeltaLogLinearStretched::upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationDeltaLogLinearStretched::upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // dphi * phi
       DPhiPhiUpBBLinearStretched func(this->storage);
-      sg::base::sweep<DPhiPhiUpBBLinearStretched> s(func, this->storage);
+      SGPP::base::sweep<DPhiPhiUpBBLinearStretched> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationDeltaLogLinearStretched::downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationDeltaLogLinearStretched::downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // dphi * phi
       DPhiPhiDownBBLinearStretched func(this->storage);
-      sg::base::sweep<DPhiPhiDownBBLinearStretched> s(func, this->storage);
+      SGPP::base::sweep<DPhiPhiDownBBLinearStretched> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }

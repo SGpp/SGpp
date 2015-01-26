@@ -11,26 +11,29 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
-    AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, sg::base::HashGenerator::level_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode) {
+    AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode) {
       if (refine && (gridType != 1 && gridType != 2 && gridType != 3)) {
-        throw new sg::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
       }
 
       if (refine && (percentOfAda >= 1.0 || percentOfAda <= 0.0)) {
-        throw new sg::base::operation_exception("AlgorithmAdaBoostBase : Only number between 0 and 1 is the supported percent to Adaptive!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase : Only number between 0 and 1 is the supported percent to Adaptive!");
       }
 
       if (refineMode != 1 && refineMode != 2) {
-        throw new sg::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
       }
 
-      sg::base::GridStorage* gridStorage = SparseGrid.getStorage();
+      SGPP::base::GridStorage* gridStorage = SparseGrid.getStorage();
       this->grid = &SparseGrid;
       this->type = gridType;
       this->gridPoint = gridStorage->size();
-      this->level = static_cast<sg::base::HashGenerator::level_t>(gridLevel);
+      this->level = static_cast<SGPP::base::HashGenerator::level_t>(gridLevel);
       this->lamb = lambda;
       this->data = &trainData;
       this->classes = &trainDataClass;
@@ -58,8 +61,8 @@ namespace sg {
       this->refineTimes = refineNum;
       this->numOfAda = numberOfAda;
       this->perOfAda = percentOfAda;
-      this->maxGridPoint = new sg::base::DataVector(NUM);
-      this->sumGridPoint = new sg::base::DataVector(NUM);
+      this->maxGridPoint = new SGPP::base::DataVector(NUM);
+      this->sumGridPoint = new SGPP::base::DataVector(NUM);
       this->boostMode = mode;
     }
 
@@ -67,20 +70,20 @@ namespace sg {
 
     }
 
-    void AlgorithmAdaBoostBase::doDiscreteAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest) {
-      sg::base::DataVector weight(this->numData);
+    void AlgorithmAdaBoostBase::doDiscreteAdaBoost(SGPP::base::DataVector& hypoWeight, SGPP::base::DataVector& weightError, SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& decision, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest) {
+      SGPP::base::DataVector weight(this->numData);
       weight.setAll(1.0 / double(this->numData));
-      sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
+      SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
-      sg::base::DataVector p_train(this->dim);
+      SGPP::base::DataVector p_train(this->dim);
       // to store certain train data point
-      sg::base::DataVector p_test(this->dim);
+      SGPP::base::DataVector p_test(this->dim);
       // create vector to store the hypothesis of the training data according to certain alpha vector(base learner)
-      sg::base::DataVector newclasses(this->numData);
+      SGPP::base::DataVector newclasses(this->numData);
       // create vector to store the identity of comparing hypothesis of training data with class of
-      sg::base::DataVector identity(this->numData);
+      SGPP::base::DataVector identity(this->numData);
 
-      sg::base::DataVector tmpweight(this->numData);
+      SGPP::base::DataVector tmpweight(this->numData);
 
       for (size_t count = 0; count < this->numBaseLearners; count++) {
         (this->actualBaseLearners)++;
@@ -89,8 +92,8 @@ namespace sg {
         std::cout << std::endl;
 
         // create coefficient vector
-        sg::base::DataVector alpha_train(this->gridPoint);
-        sg::base::DataVector alpha_learn(this->gridPoint);
+        SGPP::base::DataVector alpha_train(this->gridPoint);
+        SGPP::base::DataVector alpha_learn(this->gridPoint);
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
@@ -116,7 +119,7 @@ namespace sg {
 
         if (this->refinement) {
           doRefinement(alpha_train, weight, count + 1);
-          opEval = sg::op_factory::createOperationEval(*this->grid);
+          opEval = SGPP::op_factory::createOperationEval(*this->grid);
           alpha_learn.resizeZero(alpha_train.getSize());
         }
 
@@ -126,7 +129,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < this->numData; i++) {
-          sg::base::DataVector p_train_private(this->dim);
+          SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
           double value_train = opEval->eval(alpha_train, p_train_private);
           newclasses.set(i, hValue(value_train));
@@ -219,7 +222,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < numData; i++) {
-          sg::base::DataVector p_train_private(this->dim);
+          SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
           double value_train = opEval->eval(alpha_learn, p_train_private);
 
@@ -237,7 +240,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < testData.getNrows(); i++) {
-          sg::base::DataVector p_test_private(this->dim);
+          SGPP::base::DataVector p_test_private(this->dim);
           testData.getRow(i, p_test_private);
           double value_test = opEval->eval(alpha_learn, p_test_private);
 
@@ -267,7 +270,7 @@ namespace sg {
         double normalizer = tmpweight.sum();
 
         // get new weights vector
-        // sg::base::DataVector tmpweighthelp(this->numData);
+        // SGPP::base::DataVector tmpweighthelp(this->numData);
 
         // tmpweighthelp = tmpweight;
         tmpweight.mult(1.0 / normalizer);
@@ -280,24 +283,24 @@ namespace sg {
         if (count < this->numBaseLearners - 1 && this->refinement) {
           //reset the grid to the regular grid
           if (this->type == 1) {
-            this->grid = sg::base::Grid::createLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
-            this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular ModLinearGrid" << std::endl;
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
           }
 
-          sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+          SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
           gridGen->regular(this->level);
           std::cout << std::endl;
           delete gridGen;
@@ -307,16 +310,16 @@ namespace sg {
       delete opEval;
     }
 
-    void AlgorithmAdaBoostBase::doRealAdaBoost(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest) {
-      sg::base::DataVector weight(this->numData);
+    void AlgorithmAdaBoostBase::doRealAdaBoost(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest) {
+      SGPP::base::DataVector weight(this->numData);
       weight.setAll(1.0 / double(this->numData));
-      sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
+      SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
-      sg::base::DataVector p_train(this->dim);
+      SGPP::base::DataVector p_train(this->dim);
       // to store certain train data point
-      sg::base::DataVector p_test(this->dim);
+      SGPP::base::DataVector p_test(this->dim);
 
-      sg::base::DataVector tmpweight(this->numData);
+      SGPP::base::DataVector tmpweight(this->numData);
 
       for (size_t count = 0; count < this->numBaseLearners; count++) {
         (this->actualBaseLearners)++;
@@ -325,8 +328,8 @@ namespace sg {
         std::cout << std::endl;
 
         // create coefficient vector
-        sg::base::DataVector alpha_train(this->gridPoint);
-        sg::base::DataVector alpha_learn(this->gridPoint);
+        SGPP::base::DataVector alpha_train(this->gridPoint);
+        SGPP::base::DataVector alpha_learn(this->gridPoint);
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
@@ -352,7 +355,7 @@ namespace sg {
 
         if (this->refinement) {
           doRefinement(alpha_train, weight, count + 1);
-          opEval = sg::op_factory::createOperationEval(*this->grid);
+          opEval = SGPP::op_factory::createOperationEval(*this->grid);
           alpha_learn.resizeZero(alpha_train.getSize());
         }
 
@@ -364,7 +367,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < numData; i++) {
-          sg::base::DataVector p_train_private(this->dim);
+          SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
           double value_train = opEval->eval(alpha_learn, p_train_private);
           double helper = weight.get(i) * exp(-this->classes->get(i) * value_train);
@@ -390,7 +393,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < testData.getNrows(); i++) {
-          sg::base::DataVector p_test_private(this->dim);
+          SGPP::base::DataVector p_test_private(this->dim);
           testData.getRow(i, p_test_private);
           double value_test = opEval->eval(alpha_learn, p_test_private);
 
@@ -407,24 +410,24 @@ namespace sg {
         if (count < this->numBaseLearners - 1 && this->refinement) {
           //reset the grid to the regular grid
           if (this->type == 1) {
-            this->grid = sg::base::Grid::createLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
-            this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular ModLinearGrid" << std::endl;
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
           }
 
-          sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+          SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
           gridGen->regular(this->level);
           std::cout << std::endl;
           delete gridGen;
@@ -434,32 +437,32 @@ namespace sg {
       delete opEval;
     }
 
-    void AlgorithmAdaBoostBase::doAdaBoostR2(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, std::string lossFucType) {
+    void AlgorithmAdaBoostBase::doAdaBoostR2(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, std::string lossFucType) {
       if (lossFucType != "linear" && lossFucType != "square" && lossFucType != "exponential") {
-        throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : An unknown loss function type was specified!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : An unknown loss function type was specified!");
       }
 
-      sg::base::DataVector weight(this->numData);
+      SGPP::base::DataVector weight(this->numData);
       weight.setAll(1.0 / double(this->numData));
-      sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
+      SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
-      sg::base::DataVector p_train(this->dim);
+      SGPP::base::DataVector p_train(this->dim);
       // to store certain train data point
-      sg::base::DataVector p_test(this->dim);
-      sg::base::DataVector tmpweight(this->numData);
+      SGPP::base::DataVector p_test(this->dim);
+      SGPP::base::DataVector tmpweight(this->numData);
 
       // to store the loss
-      sg::base::DataVector loss(this->numData);
+      SGPP::base::DataVector loss(this->numData);
       // to store the loss function value
-      sg::base::DataVector lossFuc(this->numData);
+      SGPP::base::DataVector lossFuc(this->numData);
       // to store the prediction training values
-      sg::base::DataVector value_train(this->numData);
+      SGPP::base::DataVector value_train(this->numData);
       // to store the prediction testing values
-      sg::base::DataVector value_test(testData.getNrows());
+      SGPP::base::DataVector value_test(testData.getNrows());
       double maxloss;
       double meanloss;
-      sg::base::DataVector beta(this->numBaseLearners); //[0,1]
-      sg::base::DataVector logBetaSumR(this->numBaseLearners); //[0,1]
+      SGPP::base::DataVector beta(this->numBaseLearners); //[0,1]
+      SGPP::base::DataVector logBetaSumR(this->numBaseLearners); //[0,1]
 
       for (size_t count = 0; count < this->numBaseLearners; count++) {
         (this->actualBaseLearners)++;
@@ -468,8 +471,8 @@ namespace sg {
         std::cout << std::endl;
 
         // create coefficient vector
-        sg::base::DataVector alpha_train(this->gridPoint);
-        sg::base::DataVector alpha_learn(this->gridPoint);
+        SGPP::base::DataVector alpha_train(this->gridPoint);
+        SGPP::base::DataVector alpha_learn(this->gridPoint);
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
@@ -495,7 +498,7 @@ namespace sg {
 
         if (this->refinement) {
           doRefinement(alpha_train, weight, count + 1);
-          opEval = sg::op_factory::createOperationEval(*this->grid);
+          opEval = SGPP::op_factory::createOperationEval(*this->grid);
           alpha_learn.resizeZero(alpha_train.getSize());
         }
 
@@ -507,7 +510,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < numData; i++) {
-          sg::base::DataVector p_train_private(this->dim);
+          SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
           value_train.set(i, opEval->eval(alpha_learn, p_train_private));
           loss.set(i, this->classes->get(i) - value_train.get(i));
@@ -530,7 +533,7 @@ namespace sg {
           for (size_t i = 0; i < numData; i++)
             lossFuc.set(i, 1 - exp(loss.get(i)));
         } else
-          throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : An unknown loss function type was specified!");
+          throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : An unknown loss function type was specified!");
 
         meanloss = lossFuc.dotProduct(weight);
 
@@ -543,7 +546,7 @@ namespace sg {
 
         beta.set(count, meanloss / (1 - meanloss));
 
-        sg::base::DataVector TrValueHelper(this->numData);
+        SGPP::base::DataVector TrValueHelper(this->numData);
         double loghelp = log(1 / beta.get(count));
 
         if (count == 0) {
@@ -576,12 +579,12 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < testData.getNrows(); i++) {
-          sg::base::DataVector p_test_private(this->dim);
+          SGPP::base::DataVector p_test_private(this->dim);
           testData.getRow(i, p_test_private);
           value_test.set(i, opEval->eval(alpha_learn, p_test_private));
         }
 
-        sg::base::DataVector TeValueHelper(testData.getNrows());
+        SGPP::base::DataVector TeValueHelper(testData.getNrows());
 
         if (count == 0) {
           algorithmValueTest.setColumn(count, value_test);
@@ -598,24 +601,24 @@ namespace sg {
         if (count < this->numBaseLearners - 1 && this->refinement) {
           //reset the grid to the regular grid
           if (this->type == 1) {
-            this->grid = sg::base::Grid::createLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
-            this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular ModLinearGrid" << std::endl;
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
           }
 
-          sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+          SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
           gridGen->regular(this->level);
           std::cout << std::endl;
           delete gridGen;
@@ -625,33 +628,33 @@ namespace sg {
       delete opEval;
     }
 
-    void AlgorithmAdaBoostBase::doAdaBoostRT(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType) {
+    void AlgorithmAdaBoostBase::doAdaBoostRT(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType) {
       if (Tvalue >= 1 || Tvalue <= 0) {
-        throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : the Tvalue must lie between 0 and 1!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : the Tvalue must lie between 0 and 1!");
       }
 
       if (powerType != "linear" && powerType != "square" && powerType != "cubic") {
-        throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
       }
 
-      sg::base::DataVector weight(this->numData);
+      SGPP::base::DataVector weight(this->numData);
       weight.setAll(1.0 / double(this->numData));
-      sg::base::OperationEval* opEval = sg::op_factory::createOperationEval(*this->grid);
+      SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
-      sg::base::DataVector p_train(this->dim);
+      SGPP::base::DataVector p_train(this->dim);
       // to store certain train data point
-      sg::base::DataVector p_test(this->dim);
-      sg::base::DataVector tmpweight(this->numData);
+      SGPP::base::DataVector p_test(this->dim);
+      SGPP::base::DataVector tmpweight(this->numData);
 
       // to store the absolute relative error
-      sg::base::DataVector ARE(this->numData);
+      SGPP::base::DataVector ARE(this->numData);
       // to store the prediction training values
-      sg::base::DataVector value_train(this->numData);
+      SGPP::base::DataVector value_train(this->numData);
       // to store the prediction testing values
-      sg::base::DataVector value_test(testData.getNrows());
+      SGPP::base::DataVector value_test(testData.getNrows());
 
-      sg::base::DataVector beta(this->numBaseLearners);
-      sg::base::DataVector logBetaSumR(this->numBaseLearners);
+      SGPP::base::DataVector beta(this->numBaseLearners);
+      SGPP::base::DataVector logBetaSumR(this->numBaseLearners);
       double errorRate;
 
       for (size_t count = 0; count < this->numBaseLearners; count++) {
@@ -661,8 +664,8 @@ namespace sg {
         std::cout << std::endl;
 
         // create coefficient vector
-        sg::base::DataVector alpha_train(this->gridPoint);
-        sg::base::DataVector alpha_learn(this->gridPoint);
+        SGPP::base::DataVector alpha_train(this->gridPoint);
+        SGPP::base::DataVector alpha_learn(this->gridPoint);
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
@@ -688,7 +691,7 @@ namespace sg {
 
         if (this->refinement) {
           doRefinement(alpha_train, weight, count + 1);
-          opEval = sg::op_factory::createOperationEval(*this->grid);
+          opEval = SGPP::op_factory::createOperationEval(*this->grid);
           alpha_learn.resizeZero(alpha_train.getSize());
         }
 
@@ -701,7 +704,7 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < numData; i++) {
-          sg::base::DataVector p_train_private(this->dim);
+          SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
           value_train.set(i, opEval->eval(alpha_learn, p_train_private));
           ARE.set(i, std::abs((this->classes->get(i) - value_train.get(i)) / this->classes->get(i)));
@@ -717,9 +720,9 @@ namespace sg {
         else if (powerType == "cubic")
           beta.set(count, errorRate * errorRate * errorRate);
         else
-          throw new sg::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
+          throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
 
-        sg::base::DataVector TrValueHelper(this->numData);
+        SGPP::base::DataVector TrValueHelper(this->numData);
         double loghelp = log(1 / beta.get(count));
 
         if (count == 0) {
@@ -755,12 +758,12 @@ namespace sg {
         #pragma omp parallel for schedule(static)
 
         for (size_t i = 0; i < testData.getNrows(); i++) {
-          sg::base::DataVector p_test_private(this->dim);
+          SGPP::base::DataVector p_test_private(this->dim);
           testData.getRow(i, p_test_private);
           value_test.set(i, opEval->eval(alpha_learn, p_test_private));
         }
 
-        sg::base::DataVector TeValueHelper(testData.getNrows());
+        SGPP::base::DataVector TeValueHelper(testData.getNrows());
 
         if (count == 0) {
           algorithmValueTest.setColumn(count, value_test);
@@ -777,24 +780,24 @@ namespace sg {
         if (count < this->numBaseLearners - 1 && this->refinement) {
           //reset the grid to the regular grid
           if (this->type == 1) {
-            this->grid = sg::base::Grid::createLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = sg::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
-            this->grid = sg::base::Grid::createModLinearGrid(this->dim);
+            this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
             std::cout << "Reset to the regular ModLinearGrid" << std::endl;
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
           }
 
-          sg::base::GridGenerator* gridGen = this->grid->createGridGenerator();
+          SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
           gridGen->regular(this->level);
           std::cout << std::endl;
           delete gridGen;
@@ -804,14 +807,14 @@ namespace sg {
       delete opEval;
     }
 
-    void AlgorithmAdaBoostBase::eval(sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest) {
-      sg::base::DataMatrix weightsMatrix(this->numData, this->numBaseLearners);
+    void AlgorithmAdaBoostBase::eval(SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest) {
+      SGPP::base::DataMatrix weightsMatrix(this->numData, this->numBaseLearners);
       weightsMatrix.setAll(0.0);
 
       if (this->boostMode == 1) {
-        sg::base::DataVector theHypoWeight(this->numBaseLearners);
-        sg::base::DataVector theWeightError(this->numBaseLearners);
-        sg::base::DataMatrix decisionMatrix(this->numData, this->numBaseLearners);
+        SGPP::base::DataVector theHypoWeight(this->numBaseLearners);
+        SGPP::base::DataVector theWeightError(this->numBaseLearners);
+        SGPP::base::DataMatrix decisionMatrix(this->numData, this->numBaseLearners);
         theHypoWeight.setAll(0.0);
         theWeightError.setAll(0.0);
         decisionMatrix.setAll(0.0);
@@ -819,11 +822,11 @@ namespace sg {
       } else if (this->boostMode == 2)
         doRealAdaBoost(weightsMatrix, testData, algorithmValueTrain, algorithmValueTest);
       else {
-        throw new sg::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 for the boost mode(1 = Discrete Adaboost, 2 = Real Adaboost)!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 for the boost mode(1 = Discrete Adaboost, 2 = Real Adaboost)!");
       }
     }
 
-    void AlgorithmAdaBoostBase::classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClassTrain, sg::base::DataVector& algorithmClassTest, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest) {
+    void AlgorithmAdaBoostBase::classif(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& algorithmClassTrain, SGPP::base::DataVector& algorithmClassTest, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest) {
       eval(testData, algorithmValueTrain, algorithmValueTest);
 
       for (size_t i = 0; i < this->numData; i++) {
@@ -835,14 +838,14 @@ namespace sg {
       }
     }
 
-    void AlgorithmAdaBoostBase::getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test) {
+    void AlgorithmAdaBoostBase::getAccuracy(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test) {
       /* get the accuracy */
       size_t right_test = 0;
       size_t right_train = 0;
-      sg::base::DataVector classTrain(this->numData);
-      sg::base::DataVector classTest(testDataClass.getSize());
-      sg::base::DataMatrix valueTrain(this->numData, this->numBaseLearners);
-      sg::base::DataMatrix valueTest(testDataClass.getSize(), this->numBaseLearners);
+      SGPP::base::DataVector classTrain(this->numData);
+      SGPP::base::DataVector classTest(testDataClass.getSize());
+      SGPP::base::DataMatrix valueTrain(this->numData, this->numBaseLearners);
+      SGPP::base::DataMatrix valueTest(testDataClass.getSize(), this->numBaseLearners);
       classif(testData, classTrain, classTest, valueTrain, valueTest);
 
       // for training data
@@ -862,7 +865,7 @@ namespace sg {
       *accuracy_test = double(right_test) / double(classTest.getSize());
     }
 
-    void AlgorithmAdaBoostBase::getROC(sg::base::DataMatrix& validationData, sg::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore) {
+    void AlgorithmAdaBoostBase::getROC(SGPP::base::DataMatrix& validationData, SGPP::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore) {
       size_t truePos = 0;
       size_t predictPos = 0;
       size_t trueNeg = 0;
@@ -870,10 +873,10 @@ namespace sg {
       size_t actualPos = 0;
       size_t actualNeg = 0;
 
-      sg::base::DataVector classTrain(this->numData);
-      sg::base::DataVector classValidation(validationDataClass.getSize());
-      sg::base::DataMatrix valueTrain(this->numData, this->numBaseLearners);
-      sg::base::DataMatrix valueValidation(validationDataClass.getSize(), this->numBaseLearners);
+      SGPP::base::DataVector classTrain(this->numData);
+      SGPP::base::DataVector classValidation(validationDataClass.getSize());
+      SGPP::base::DataMatrix valueTrain(this->numData, this->numBaseLearners);
+      SGPP::base::DataMatrix valueValidation(validationDataClass.getSize(), this->numBaseLearners);
       classif(validationData, classTrain, classValidation, valueTrain, valueValidation);
 
       // for validation data
@@ -903,7 +906,7 @@ namespace sg {
       *fOneScore = 2 * (*precision) * (*recall) / ((*precision) + (*recall));
     }
 
-    void AlgorithmAdaBoostBase::getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner) {
+    void AlgorithmAdaBoostBase::getAccuracyBL(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner) {
       size_t right_test = 0;
       size_t right_train = 0;
 
@@ -924,12 +927,12 @@ namespace sg {
       *accuracy_test = double(right_test) / double(testDataClass.getSize());
     }
 
-    void AlgorithmAdaBoostBase::doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner) {
+    void AlgorithmAdaBoostBase::doRefinement(SGPP::base::DataVector& alpha_ada, SGPP::base::DataVector& weight_ada, size_t curBaseLearner) {
       bool final_ada = false;
 
       for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++) {
 
-        sg::base::GridGenerator* myGenerator = this->grid->createGridGenerator();
+        SGPP::base::GridGenerator* myGenerator = this->grid->createGridGenerator();
         size_t refineNumber;
 
         if (this->refineMode == 1) {
@@ -946,15 +949,15 @@ namespace sg {
         }
         // should not happen because this exception should have been thrown some lines upwards!
         else {
-          throw new sg::base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
+          throw new SGPP::base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported refine mode(1 : use grid point number, 2: use grid point percentage)!");
         }
 
-        sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
+        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
         myGenerator->refine(myRefineFunc);
         delete myRefineFunc;
         delete myGenerator;
 
-        sg::base::GridStorage* gridStorage_ada = this->grid->getStorage();
+        SGPP::base::GridStorage* gridStorage_ada = this->grid->getStorage();
         size_t gridPts = gridStorage_ada->size();
 
         std::cout << std::endl;

@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

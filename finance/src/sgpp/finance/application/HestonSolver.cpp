@@ -32,16 +32,19 @@
 #include <complex>
 #include <limits>
 
-using namespace sg::pde;
-using namespace sg::solver;
-using namespace sg::base;
+using namespace SGPP::pde;
+using namespace SGPP::solver;
+using namespace SGPP::base;
 using namespace std;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
@@ -179,7 +182,7 @@ namespace sg {
       }
     }
 
-    void HestonSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, sg::base::GridIndex::level_type maxLevel) {
+    void HestonSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel) {
       size_t nRefinements = 0;
 
       this->dStrike = strike;
@@ -251,10 +254,10 @@ namespace sg {
     }
 
     void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_arg, DataVector& volvols_arg, DataMatrix& hMatrix_arg, double r) {
-      this->thetas = new sg::base::DataVector(thetas_arg);
-      this->kappas = new sg::base::DataVector(kappas_arg);
-      this->volvols = new sg::base::DataVector(volvols_arg);
-      this->hMatrix = new sg::base::DataMatrix(hMatrix_arg);
+      this->thetas = new SGPP::base::DataVector(thetas_arg);
+      this->kappas = new SGPP::base::DataVector(kappas_arg);
+      this->volvols = new SGPP::base::DataVector(volvols_arg);
+      this->hMatrix = new SGPP::base::DataMatrix(hMatrix_arg);
       this->r = r;
 
       bStochasticDataAlloc = true;
@@ -352,11 +355,11 @@ namespace sg {
       }
     }
 
-    void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       throw new application_exception("This scheme is not implemented for the Heston solver!");
     }
 
-    void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       throw new application_exception("This scheme is not implemented for the Heston solver!");
     }
 
@@ -378,7 +381,7 @@ namespace sg {
       this->myScreen->writeStartSolve("Multidimensional Heston Solver");
     }
 
-    void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
+    void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
       this->useCoarsen = true;
       this->coarsenThreshold = coarsenThreshold;
       this->refineThreshold = refineThreshold;
@@ -549,7 +552,7 @@ namespace sg {
         size_t numNonZeroInner = 0;
 
         for (size_t i = 0; i < numTotalGridPoints; i++) {
-          sg::base::GridIndex* curPoint = (*myGridStorage)[i];
+          SGPP::base::GridIndex* curPoint = (*myGridStorage)[i];
 
           if (curPoint->isInnerPoint() && alpha.get(i) != 0)
             numNonZeroInner++;
@@ -558,7 +561,7 @@ namespace sg {
         int k = 0;
         k++;
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -686,7 +689,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -694,7 +697,7 @@ namespace sg {
       }
     }
 
-    double HestonSolver::evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha) {
+    double HestonSolver::evalOption(std::vector<double>& eval_point, SGPP::base::DataVector& alpha) {
       std::vector<double> trans_eval = eval_point;
 
       // apply needed coordinate transformations
@@ -704,15 +707,15 @@ namespace sg {
         }
       }
 
-      sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
+      SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
       double result = myEval->eval(alpha, trans_eval);
       delete myEval;
 
       return result;
     }
 
-    void HestonSolver::transformPoint(sg::base::DataVector& point) {
-      sg::base::DataVector tmp_point(point);
+    void HestonSolver::transformPoint(SGPP::base::DataVector& point) {
+      SGPP::base::DataVector tmp_point(point);
 
       // apply needed coordinate transformations
       if (this->useLogTransform) {
@@ -831,7 +834,7 @@ namespace sg {
         delete dblFuncValues;
       }
 
-      OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+      OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
       myHierarchisation->doHierarchisation(alpha);
       delete myHierarchisation;
     }
@@ -863,7 +866,7 @@ namespace sg {
         delete dblFuncValues;
       }
 
-      OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+      OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
       myHierarchisation->doHierarchisation(alpha);
       delete myHierarchisation;
     }
@@ -876,7 +879,7 @@ namespace sg {
       int levels1d = this->levels;
 
       // Build a new 1d grid for stock price
-      DimensionBoundary* boundaries1d = new sg::base::DimensionBoundary[dim1d];
+      DimensionBoundary* boundaries1d = new SGPP::base::DimensionBoundary[dim1d];
 
       boundaries1d[0].leftBoundary = this->myBoundingBox->getBoundary(0).leftBoundary;
       boundaries1d[0].rightBoundary = this->myBoundingBox->getBoundary(0).rightBoundary;
@@ -890,8 +893,8 @@ namespace sg {
       GridGenerator* myGenerator = grid1d->createGridGenerator();
       myGenerator->regular(levels1d);
 
-      sg::base::DataVector* alphaHeston = new sg::base::DataVector(grid1d->getSize());
-      sg::base::DataVector* alphaBS = new sg::base::DataVector(grid1d->getSize());
+      SGPP::base::DataVector* alphaHeston = new SGPP::base::DataVector(grid1d->getSize());
+      SGPP::base::DataVector* alphaBS = new SGPP::base::DataVector(grid1d->getSize());
 
       EvaluateHestonExact1d(*alphaHeston, grid1d, boundingBox1d, maturity, v);
       EvaluateBsExact1d(*alphaBS, grid1d, boundingBox1d, maturity, 0.259);
@@ -930,7 +933,7 @@ namespace sg {
         delete dblFuncValues;
       }
 
-      OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*grid1d);
+      OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*grid1d);
       myHierarchisation->doHierarchisation(alpha);
       delete myHierarchisation;
     }
@@ -938,7 +941,7 @@ namespace sg {
     void HestonSolver::EvaluateBsExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double sigma) {
       double tmp;
 
-      sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver(false);
+      SGPP::finance::BlackScholesSolver* myBSSolver = new SGPP::finance::BlackScholesSolver(false);
 
       for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
         std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
@@ -951,7 +954,7 @@ namespace sg {
         delete dblFuncValues;
       }
 
-      OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*grid1d);
+      OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*grid1d);
       myHierarchisation->doHierarchisation(alpha);
       delete myHierarchisation;
       delete myBSSolver;
@@ -977,8 +980,8 @@ namespace sg {
       return EvaluateHestonPriceExactPut(S, v, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
     }
 
-    void HestonSolver::GetBsExactSolution(sg::base::DataVector& alphaBS, double maturity) {
-      sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver(false);
+    void HestonSolver::GetBsExactSolution(SGPP::base::DataVector& alphaBS, double maturity) {
+      SGPP::finance::BlackScholesSolver* myBSSolver = new SGPP::finance::BlackScholesSolver(false);
 
       double S, v;
 
@@ -994,12 +997,12 @@ namespace sg {
           alphaBS[i] = myBSSolver->getAnalyticSolution1D(S, true, maturity, sqrt(v), this->r, this->dStrike);
       }
 
-      OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+      OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
       myHierarchisation->doHierarchisation(alphaBS);
       delete myHierarchisation;
     }
 
-    void HestonSolver::CompareHestonBsExact(sg::base::DataVector& alpha, double maturity) {
+    void HestonSolver::CompareHestonBsExact(SGPP::base::DataVector& alpha, double maturity) {
       DataVector* alphaHeston = new DataVector(getNumberGridPoints());
       DataVector* alphaBS = new DataVector(getNumberGridPoints());
 
@@ -1012,7 +1015,7 @@ namespace sg {
       }
     }
 
-    void HestonSolver::CompareHestonNumericToBsExact(sg::base::DataVector& alphaHestonNumeric, sg::base::DataVector& alphaBS, sg::base::DataVector& error, double maturity) {
+    void HestonSolver::CompareHestonNumericToBsExact(SGPP::base::DataVector& alphaHestonNumeric, SGPP::base::DataVector& alphaBS, SGPP::base::DataVector& error, double maturity) {
       GetBsExactSolution(alphaBS, maturity);
 
       // Find the difference (heston - BS)
@@ -1102,13 +1105,13 @@ namespace sg {
                                  tol_epsunit, xi, theta, kappa, rho, r, T, K, S, v, type);
     }
 
-    void HestonSolver::CompareHestonSolutionToExact(sg::base::DataVector* solution, sg::base::DataVector* exact, std::string filename, size_t PointsPerDimension) {
+    void HestonSolver::CompareHestonSolutionToExact(SGPP::base::DataVector* solution, SGPP::base::DataVector* exact, std::string filename, size_t PointsPerDimension) {
       DimensionBoundary dimOne;
       DimensionBoundary dimTwo;
       std::ofstream fileout;
 
       fileout.open(filename.c_str());
-      OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
+      OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
 
 
       if (myGrid->getStorage()->dim() == 2) {
@@ -1140,7 +1143,7 @@ namespace sg {
     }
 
     double HestonSolver::EvalSinglePoint1Asset(double s, double v, DataVector& alphaVec) {
-      OperationEval* myEval = sg::op_factory::createOperationEval(*myGrid);
+      OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
       std::vector<double> point;
       point.push_back(s);
       point.push_back(v);

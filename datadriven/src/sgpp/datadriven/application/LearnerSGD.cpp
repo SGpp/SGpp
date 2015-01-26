@@ -3,23 +3,26 @@
 #include <cmath>
 
  
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace datadriven {
 
-    LearnerSGD::LearnerSGD(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose) : Learner(regularization, isRegression, isVerbose) {
+    LearnerSGD::LearnerSGD(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose) : Learner(regularization, isRegression, isVerbose) {
     }
 
 	void LearnerSGD::train(
-			sg::base::DataMatrix& trainDataset, 
-			sg::base::DataVector& classes, 
-			sg::base::RegularGridConfiguration& GridConfig, 
+			SGPP::base::DataMatrix& trainDataset, 
+			SGPP::base::DataVector& classes, 
+			SGPP::base::RegularGridConfiguration& GridConfig, 
 		    size_t maxIterations,	
 			double eps,
             double lambda,
 			double gamma
 			) {
-		using namespace sg::base;
+		using namespace SGPP::base;
 
 		// Initialize Grid
 		InitializeGrid(GridConfig);
@@ -101,12 +104,12 @@ namespace sg {
 		return r;
 	}
 
-	sg::base::DataVector* LearnerSGD::getAlpha()
+	SGPP::base::DataVector* LearnerSGD::getAlpha()
 	{
 		return alpha_;
 	}
 
-	sg::base::Grid* LearnerSGD::getGrid()
+	SGPP::base::Grid* LearnerSGD::getGrid()
 	{
 		return grid_;
 	}
