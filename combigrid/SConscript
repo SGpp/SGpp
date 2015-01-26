@@ -16,10 +16,11 @@ Import('moduleName')
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src/sgpp/combigrid/test") or currentFolder.startswith("./src/sgpp/combigrid/tests") or currentFolder.startswith("./src/sgpp/combigrid/multigridFG/test"):
-        continue
-    for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        srcs.append(os.path.join(currentFolder, fileName))
+    if currentFolder.startswith("./src"):
+        if currentFolder.startswith("./src/sgpp/combigrid/test") or    currentFolder.startswith("./src/sgpp/combigrid/tests") or currentFolder.startswith  ("./src/sgpp/combigrid/multigridFG/test"):
+            continue
+        for fileName in fnmatch.filter(fileNames, '*.cpp'):
+            srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:

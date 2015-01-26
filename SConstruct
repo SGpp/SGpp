@@ -27,6 +27,8 @@ ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
 moduleFolders = getModules(ignoreFolders)
 languageSupport = ['pysgpp']
 
+prepareDoxyfile(moduleFolders)
+
 moduleNames = []
 for name in moduleFolders:
     moduleNames.append('SG_' + name.upper())

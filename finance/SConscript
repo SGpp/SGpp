@@ -15,10 +15,9 @@ dependencies = ["base", "pde"]
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./test"):
-        continue
-    for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        srcs.append(os.path.join(currentFolder, fileName))
+    if currentFolder.startswith("./src"):
+        for fileName in fnmatch.filter(fileNames, '*.cpp'):
+            srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:

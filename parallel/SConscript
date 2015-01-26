@@ -99,14 +99,15 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
     print currentFolder
     if currentFolder.startswith("./src/sgpp/parallel/exampleApplication"):
         continue
-    for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        if fileName in MPIOnlyFiles:
-            continue
-        if fileName in OCLOnlyFiles:
-            continue
-        if fileName in ArBBOnlyFiles:
-            continue
-        srcs.append(os.path.join(currentFolder, fileName))
+    if currentFolder.startswith("./src"):
+        for fileName in fnmatch.filter(fileNames, '*.cpp'):
+            if fileName in MPIOnlyFiles:
+                continue
+            if fileName in OCLOnlyFiles:
+                continue
+            if fileName in ArBBOnlyFiles:
+                continue
+            srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:
