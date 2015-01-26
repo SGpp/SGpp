@@ -150,6 +150,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     builder = Builder(action = "python $SOURCE.file", chdir=1)
     env.Append(BUILDERS = {'Test' : builder})
     pysgppTestTargets = []
+    dependency = None
     for moduleFolder in moduleFolders:
         if moduleFolder == "parallel" or moduleFolder == "finance" or moduleFolder == "pde" or moduleFolder == "solver":
             # these modules don't currently have tests
@@ -158,6 +159,12 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
         env.Requires(moduleTest, pysgppInstall)
         env.Depends(moduleTest, pysgppSimpleImportTest)
         env.AlwaysBuild(moduleTest) 
+        if dependency == None:
+            dependency = moduleTest
+        else:
+            env.Depends(moduleTest, dependency)
+            dependency = moduleTest
+            
         pysgppTestTargets.append(moduleTest)
 else:
     print "Warning: Skipping python unit tests"
