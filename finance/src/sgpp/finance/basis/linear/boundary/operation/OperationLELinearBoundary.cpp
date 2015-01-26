@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Chao qi(qic@in.tum.de)
 
-#include "finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp"
+#include <sgpp/finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp>
 
 
-#include "pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp"
-#include "pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
+#include <sgpp/pde/basis/linear/boundary/operation/DowndPhidPhiBBIterativeLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp>
 
 
 namespace sg {

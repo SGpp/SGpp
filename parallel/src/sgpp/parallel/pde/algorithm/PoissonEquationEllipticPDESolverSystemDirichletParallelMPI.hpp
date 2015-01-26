@@ -8,7 +8,7 @@
 #ifndef POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 
-#include "pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp"
+#include <sgpp/pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp>
 
 namespace sg {
   namespace parallel {

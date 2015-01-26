@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/ModLinearGrid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
-#include "base/grid/generation/StandardGridGenerator.hpp"
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
+#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
 
 
 

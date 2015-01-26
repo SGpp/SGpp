@@ -8,9 +8,9 @@
 #ifndef OPERATIONIDENTITY_HPP
 #define OPERATIONIDENTITY_HPP
 
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace base {

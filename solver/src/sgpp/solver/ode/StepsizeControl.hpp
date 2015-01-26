@@ -8,9 +8,9 @@
 #ifndef STEPSIZECONTROL_HPP
 #define STEPSIZECONTROL_HPP
 
-#include "base/application/ScreenOutput.hpp"
-#include "solver/ODESolver.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/solver/ODESolver.hpp>
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
 #include <string>
 //
 namespace sg {

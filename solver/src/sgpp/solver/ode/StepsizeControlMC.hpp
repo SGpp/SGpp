@@ -8,8 +8,8 @@
 #ifndef STEPSIZECONTROLMC_HPP
 #define STEPSIZECONTROLMC_HPP
 
-#include "base/application/ScreenOutput.hpp"
-#include "solver/ode/StepsizeControl.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/solver/ode/StepsizeControl.hpp>
 #include <string>
 #include "VarTimestep.hpp"
 

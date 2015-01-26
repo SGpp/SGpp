@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "parallel/datadriven/algorithm/AlgorithmAdaBoostSPVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.hpp"
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
-#include "solver/sle/ConjugateGradientsSP.hpp"
+#include <sgpp/parallel/datadriven/algorithm/AlgorithmAdaBoostSPVectorizedIdentity.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMWeightMatrixSPVectorizedIdentity.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/solver/sle/ConjugateGradientsSP.hpp>
 
-#include "base/exception/operation_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/tools/PrecisionConverter.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/PrecisionConverter.hpp>
 
 namespace sg {
   namespace parallel {

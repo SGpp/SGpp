@@ -11,8 +11,8 @@
 
 #include <cmath>
 #include <algorithm>
-#include "base/grid/common/Stretching.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
+#include <sgpp/base/grid/common/Stretching.hpp>
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
 
 namespace sg {
   namespace base {

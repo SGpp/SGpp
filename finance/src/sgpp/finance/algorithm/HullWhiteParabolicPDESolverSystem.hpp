@@ -8,12 +8,12 @@
 #ifndef HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP
 #define HULLWHITEPARABOLICPDESOLVERSYSTEM_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/common/DirichletUpdateVector.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
-#include "finance/tools/VariableDiscountFactor.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
+#include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 
 namespace sg {
   namespace finance {

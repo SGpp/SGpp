@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/basis/modbspline/operation/OperationHierarchisationModBspline.hpp"
+#include <sgpp/base/basis/modbspline/operation/OperationHierarchisationModBspline.hpp>
 
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace base {

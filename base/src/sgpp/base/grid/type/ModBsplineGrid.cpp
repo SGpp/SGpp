@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/ModBsplineGrid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 
-#include "base/grid/generation/StandardGridGenerator.hpp"
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 
 #include <iostream>

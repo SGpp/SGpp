@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#include "finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiDownBBLinearBoundary.hpp"
-#include "base/exception/application_exception.hpp"
+#include <sgpp/finance/basis/linear/boundary/algorithm_sweep/XdPhidPhiDownBBLinearBoundary.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 namespace sg {
   namespace finance {

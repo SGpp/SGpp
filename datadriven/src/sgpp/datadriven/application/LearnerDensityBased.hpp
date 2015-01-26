@@ -6,11 +6,11 @@
 #ifndef LEARNERDENSITYBASED_HPP_
 #define LEARNERDENSITYBASED_HPP_
 
-#include "datadriven/application/LearnerBase.hpp"
-#include "datadriven/application/Learner.hpp"
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/ModLinearGrid.hpp"
+#include <sgpp/datadriven/application/LearnerBase.hpp>
+#include <sgpp/datadriven/application/Learner.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
 namespace sg {
 

@@ -8,7 +8,7 @@
 #ifndef PARABOLICPDESOLVER_HPP
 #define PARABOLICPDESOLVER_HPP
 
-#include "pde/application/PDESolver.hpp"
+#include <sgpp/pde/application/PDESolver.hpp>
 
 namespace sg {
   namespace pde {

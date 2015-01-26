@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Janos Benk (benk@in.tum.de)
 
-#include "combigrid/combischeme/CombiS_CT.hpp"
+#include <sgpp/combigrid/combischeme/CombiS_CT.hpp>
 
 
 using namespace std;

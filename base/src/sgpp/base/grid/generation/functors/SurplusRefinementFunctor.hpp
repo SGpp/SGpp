@@ -9,9 +9,9 @@
 #define SURPLUSREFINEMENTFUNCTOR_HPP
 
 #include <iostream>
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

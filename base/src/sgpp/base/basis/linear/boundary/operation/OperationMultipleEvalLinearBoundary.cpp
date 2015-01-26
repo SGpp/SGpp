@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/AlgorithmDGEMV.hpp"
+#include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
 
-#include "base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp"
+#include <sgpp/base/basis/linear/boundary/operation/OperationMultipleEvalLinearBoundary.hpp>
 
 
 namespace sg {

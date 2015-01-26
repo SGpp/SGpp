@@ -8,8 +8,8 @@
 #ifndef STRATIFIEDSAMPLEGENERATOR_HPP
 #define STRATIFIEDSAMPLEGENERATOR_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "mcm/SampleGenerator.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/mcm/SampleGenerator.hpp>
 
 namespace sg {
   namespace mcm {

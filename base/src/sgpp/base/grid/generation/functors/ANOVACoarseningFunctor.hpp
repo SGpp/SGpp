@@ -8,7 +8,7 @@
 #ifndef ANOVACOARSENINGFUNCTOR_HPP_
 #define ANOVACOARSENINGFUNCTOR_HPP_
 
-#include "base/grid/generation/functors/CoarseningFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 
 
 namespace sg {

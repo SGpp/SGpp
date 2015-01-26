@@ -9,10 +9,10 @@
 #ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAROCL_HPP
 #define OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAROCL_HPP
 
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
-#include "parallel/pde/basis/common/OCLPDEKernels.hpp"
-#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
+#include <sgpp/parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp>
 
 namespace sg {
   namespace parallel {

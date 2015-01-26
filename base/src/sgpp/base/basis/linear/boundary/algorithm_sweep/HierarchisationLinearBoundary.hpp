@@ -8,10 +8,10 @@
 #ifndef HIERARCHISATIONLINEARBOUNDARY_HPP
 #define HIERARCHISATIONLINEARBOUNDARY_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp>
 
 namespace sg {
   namespace base {

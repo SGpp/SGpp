@@ -8,11 +8,11 @@
 #ifndef PDESOLVER_HPP
 #define PDESOLVER_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/common/BoundingBox.hpp"
-#include "base/grid/common/Stretching.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/tools/GridPrinter.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/tools/GridPrinter.hpp>
 
 #include <vector>
 //

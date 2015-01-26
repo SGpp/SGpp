@@ -10,20 +10,20 @@
 #ifndef ALGORITHMADABOOSTBASE_HPP
 #define ALGORITHMADABOOSTBASE_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/base/operation/OperationHierarchisation.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
-#include "datadriven/algorithm/DMWeightMatrix.hpp"
+#include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 
 #include <math.h>
 #include <string>

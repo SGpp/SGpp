@@ -4,8 +4,8 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), David Pfander (David.Pfander@ipvs.uni-stuttgart.de)
-#include "base/grid/GridStorage.hpp"
-#include "datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
 #include <cstring>
 
 namespace sg {

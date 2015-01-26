@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/tools/OperationQuadratureMC.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/tools/OperationQuadratureMC.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>

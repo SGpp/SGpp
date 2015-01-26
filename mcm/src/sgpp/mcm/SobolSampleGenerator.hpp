@@ -7,8 +7,8 @@
 #ifndef SOBOLSAMPLEGENERATOR_H_
 #define SOBOLSAMPLEGENERATOR_H_
 
-#include "base/datatypes/DataVector.hpp"
-#include "mcm/SampleGenerator.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/mcm/SampleGenerator.hpp>
 
 namespace sg {
 namespace mcm {

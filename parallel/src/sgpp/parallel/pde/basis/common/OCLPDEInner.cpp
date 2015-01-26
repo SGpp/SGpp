@@ -1,9 +1,9 @@
 #include "OCLPDEInner.hpp"
 
 #ifdef USE_MPI
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/tools/MPI/MPICommunicator.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
 #endif
 
 namespace sg {

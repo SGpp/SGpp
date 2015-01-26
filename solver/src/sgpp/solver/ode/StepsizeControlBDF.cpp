@@ -5,8 +5,8 @@
 **************************************************************************** */
 // @author Peter Hoffmann (peter.hoffmann@mytum.de)
 
-#include "base/grid/common/DirichletUpdateVector.hpp"
-#include "solver/ode/StepsizeControlBDF.hpp"
+#include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
+#include <sgpp/solver/ode/StepsizeControlBDF.hpp>
 
 #include <iostream>
 #include <string>

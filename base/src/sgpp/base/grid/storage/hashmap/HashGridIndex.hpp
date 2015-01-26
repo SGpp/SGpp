@@ -9,11 +9,11 @@
 #ifndef HASHGRIDINDEX_HPP
 #define HASHGRIDINDEX_HPP
 
-#include "base/tools/hash_map_config.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/tools/hash_map_config.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "base/grid/common/BoundingBox.hpp"
-#include "base/grid/common/Stretching.hpp"
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
 
 #include <iostream>
 #include <sstream>

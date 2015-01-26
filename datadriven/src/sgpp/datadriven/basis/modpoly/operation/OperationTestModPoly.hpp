@@ -8,12 +8,12 @@
 #ifndef OPERATIONTESTMODPOLY_HPP
 #define OPERATIONTESTMODPOLY_HPP
 
-#include "datadriven/operation/OperationTest.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/datadriven/operation/OperationTest.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace datadriven {

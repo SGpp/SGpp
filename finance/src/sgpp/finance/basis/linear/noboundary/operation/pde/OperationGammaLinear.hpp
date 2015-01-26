@@ -8,7 +8,7 @@
 #ifndef OPERATIONGAMMALINEAR_HPP
 #define OPERATIONGAMMALINEAR_HPP
 
-#include "pde/algorithm/UpDownTwoOpDims.hpp"
+#include <sgpp/pde/algorithm/UpDownTwoOpDims.hpp>
 
 namespace sg {
   namespace finance {

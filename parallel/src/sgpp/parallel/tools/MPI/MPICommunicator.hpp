@@ -17,9 +17,9 @@
 
 #include <string>
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 //#define ENABLE_DEBUG_MPI
 #ifdef ENABLE_DEBUG_MPI

@@ -17,10 +17,10 @@
 
 #include "sgpp_base.hpp"
 #include "sgpp_datadriven.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
-#include "base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 
 namespace sg

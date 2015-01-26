@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "base/grid/common/DirichletGridConverter.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/type/LinearStretchedGrid.hpp"
+#include <sgpp/base/grid/common/DirichletGridConverter.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <cstring>
 

@@ -8,7 +8,7 @@
 #ifndef KERNELMACROS_HPP
 #define KERNELMACROS_HPP
 
-#include "parallel/datadriven/basis/common/KernelBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
 
 #if defined(__SSE3__) || defined(__AVX__)
 #include <immintrin.h>

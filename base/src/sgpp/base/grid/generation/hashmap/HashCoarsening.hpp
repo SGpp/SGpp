@@ -8,12 +8,12 @@
 #ifndef HASHCOARSENING_HPP
 #define HASHCOARSENING_HPP
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/functors/CoarseningFunctor.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <vector>
 #include <list>

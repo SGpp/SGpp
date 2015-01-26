@@ -16,19 +16,19 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)
 #endif
 
-#include "base/grid/GridStorage.hpp"
-#include "parallel/datadriven/basis/common/mic/MICKernelBase.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernelBase.hpp>
 
-#include "parallel/datadriven/basis/common/mic/SPMICKernelImpl.hpp"
+#include <sgpp/parallel/datadriven/basis/common/mic/SPMICKernelImpl.hpp>
 
 #ifdef X86_MIC_SYMMETRIC
-#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 #endif
 
 namespace sg {

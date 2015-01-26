@@ -1,6 +1,6 @@
 #include <limits>
 
-#include "base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
 
 namespace sg {
 namespace base {

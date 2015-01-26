@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
 
-#include "base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp"
+#include <sgpp/base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp>
 
 
 namespace sg {

@@ -6,10 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "datadriven/basis/linear/noboundary/operation/OperationTestLinear.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationTestLinear.hpp>
 
 
 namespace sg {

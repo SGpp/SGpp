@@ -8,10 +8,10 @@
 #ifndef PRECISIONCONVERTER_HPP
 #define PRECISIONCONVERTER_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
 
 namespace sg {

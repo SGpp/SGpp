@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/AlignedMemory.hpp"
+#include <sgpp/base/tools/AlignedMemory.hpp>
 
 void* operator new (size_t size)
 // to ensure compatibility wit C++11

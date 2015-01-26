@@ -6,9 +6,9 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 
-#include "base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <vector>
 #include <cmath>

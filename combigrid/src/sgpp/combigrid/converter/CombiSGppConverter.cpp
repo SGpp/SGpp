@@ -6,7 +6,7 @@
 // @author Janos Benk (benk@in.tum.de)
 
 
-#include "combigrid/converter/CombiSGppConverter.hpp"
+#include <sgpp/combigrid/converter/CombiSGppConverter.hpp>
 
 using namespace std;
 

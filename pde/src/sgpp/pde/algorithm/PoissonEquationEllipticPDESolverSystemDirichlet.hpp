@@ -8,7 +8,7 @@
 #ifndef POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP
 
-#include "pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp"
+#include <sgpp/pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp>
 
 namespace sg {
   namespace pde {

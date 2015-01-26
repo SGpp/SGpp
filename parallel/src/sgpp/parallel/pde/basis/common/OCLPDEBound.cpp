@@ -1,8 +1,8 @@
 #include "OCLPDEBound.hpp"
 
 #ifdef USE_MPI
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 #endif
 
 namespace sg {

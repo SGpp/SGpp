@@ -8,11 +8,11 @@
 #ifndef BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
 #define BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
-#include "finance/tools/Hedging.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
+#include <sgpp/finance/tools/Hedging.hpp>
 
 //#define HEDGE
 #define HEDGE_EPS 0.05

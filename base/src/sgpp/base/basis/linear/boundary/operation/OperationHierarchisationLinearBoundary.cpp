@@ -21,11 +21,11 @@
 /*****************************************************************************/
 
 
-#include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp"
-#include "base/basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp"
+#include <sgpp/base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp>
+#include <sgpp/base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp>
+#include <sgpp/base/basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

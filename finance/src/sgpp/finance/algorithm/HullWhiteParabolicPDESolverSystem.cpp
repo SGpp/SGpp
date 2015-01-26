@@ -5,13 +5,13 @@
 **************************************************************************** */
 // @author Chao qi (qic@in.tum.de), Stefanie Schraufstetter (schraufs@in.tum.de)
 
-#include "finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/grid/Grid.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "finance/operation/FinanceOpFactory.hpp"
+#include <sgpp/finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/finance/operation/FinanceOpFactory.hpp>
 
 #include <cmath>
 

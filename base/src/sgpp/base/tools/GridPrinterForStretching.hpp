@@ -8,7 +8,7 @@
 #ifndef GRIDPRINTERFORSTRETCHING_HPP
 #define GRIDPRINTERFORSTRETCHING_HPP
 
-#include "base/tools/GridPrinter.hpp"
+#include <sgpp/base/tools/GridPrinter.hpp>
 
 #include <string>
 

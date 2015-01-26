@@ -6,9 +6,9 @@
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
 
-#include "datadriven/algorithm/DMWeightMatrix.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sg {
   namespace datadriven {

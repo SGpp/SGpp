@@ -9,8 +9,8 @@
 #ifndef DIRICHLETGRIDCONVERTER_HPP
 #define DIRICHLETGRIDCONVERTER_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace base {

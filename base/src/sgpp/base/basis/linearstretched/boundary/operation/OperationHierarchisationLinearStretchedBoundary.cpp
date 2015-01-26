@@ -22,11 +22,11 @@
 /*****************************************************************************/
 
 
-#include "base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp"
-#include "base/basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.hpp"
-#include "base/basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.hpp"
+#include <sgpp/base/basis/linearstretched/boundary/operation/OperationHierarchisationLinearStretchedBoundary.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/algorithm_sweep/HierarchisationLinearStretchedBoundary.hpp>
+#include <sgpp/base/basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

@@ -9,12 +9,12 @@
 
 #include <utility>
 
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include "RefinementFunctor.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 
 namespace sg {

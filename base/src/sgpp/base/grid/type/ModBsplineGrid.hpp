@@ -8,8 +8,8 @@
 #ifndef MODBSPLINEGRID_HPP
 #define MODBSPLINEGRID_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
 
 #include <iostream>
 

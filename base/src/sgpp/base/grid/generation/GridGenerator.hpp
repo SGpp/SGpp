@@ -8,10 +8,10 @@
 #ifndef GRIDGENERATOR_HPP
 #define GRIDGENERATOR_HPP
 
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
-#include "base/grid/generation/functors/CoarseningFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace base {

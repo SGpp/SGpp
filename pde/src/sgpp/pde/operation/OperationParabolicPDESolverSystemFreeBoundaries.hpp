@@ -8,7 +8,7 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 
-#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
 
 namespace sg {
   namespace pde {

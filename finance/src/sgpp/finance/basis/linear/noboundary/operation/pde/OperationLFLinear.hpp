@@ -8,7 +8,7 @@
 #ifndef OPERATIONLFLINEAR_HPP
 #define OPERATIONLFLINEAR_HPP
 
-#include "pde/algorithm/StdUpDown.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
 
 namespace sg {
   namespace finance {

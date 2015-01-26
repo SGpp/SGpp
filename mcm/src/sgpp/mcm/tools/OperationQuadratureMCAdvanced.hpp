@@ -7,9 +7,9 @@
 #ifndef OPERATIONQUADRATUREMCADVANCED_HPP
 #define OPERATIONQUADRATUREMCADVANCED_HPP
 
-#include "base/operation/OperationQuadrature.hpp"
-#include "base/grid/Grid.hpp"
-#include "mcm/SampleGenerator.hpp"
+#include <sgpp/base/operation/OperationQuadrature.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/mcm/SampleGenerator.hpp>
 
 namespace sg {
 namespace mcm {

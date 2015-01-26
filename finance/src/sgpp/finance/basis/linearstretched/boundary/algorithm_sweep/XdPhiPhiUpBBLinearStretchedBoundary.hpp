@@ -8,10 +8,10 @@
 #ifndef XDPHIPHIUPBBLINEARSTRETCHEDBOUNDARY_HPP
 #define XDPHIPHIUPBBLINEARSTRETCHEDBOUNDARY_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "finance/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.hpp"
+#include <sgpp/finance/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.hpp>
 
 namespace sg {
   namespace finance {

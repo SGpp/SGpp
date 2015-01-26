@@ -8,8 +8,8 @@
 #ifndef OPERATIONSTENCILHIERARCHISATIONMODLINEAR_HPP
 #define OPERATIONSTENCILHIERARCHISATIONMODLINEAR_HPP
 
-#include "base/operation/OperationStencilHierarchisation.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <vector>
 
 namespace sg {

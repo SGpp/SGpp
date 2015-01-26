@@ -6,17 +6,17 @@
 // @author Chao qi (qic@in.tum.de)
 
 
-#include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
-#include "finance/application/BlackScholesSolver.hpp"
-#include "finance/application/BlackScholesHullWhiteSolver.hpp"
-#include "finance/application/HullWhiteSolver.hpp"
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/application/BlackScholesSolver.hpp>
+#include <sgpp/finance/application/BlackScholesHullWhiteSolver.hpp>
+#include <sgpp/finance/application/HullWhiteSolver.hpp>
+#include <sgpp/solver/ode/Euler.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <cstdlib>
 #include <sstream>
 #include <cmath>

@@ -5,9 +5,9 @@
  ******************************************************************************/
 // @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 
 #include <sstream>
 #include <cmath>
@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#include "base/tools/AlignedMemory.hpp"
+#include <sgpp/base/tools/AlignedMemory.hpp>
 
 namespace sg {
   namespace base {

@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Christoph Kowitz (kowitz@in.tum.de)
 
-#include "combigrid/combigrid/AdaptiveSerialCombiGrid.hpp"
+#include <sgpp/combigrid/combigrid/AdaptiveSerialCombiGrid.hpp>
 
 std::vector<int> combigrid::AdaptiveSerialCombiGrid::addToCombiScheme(
   std::vector<int> level) {

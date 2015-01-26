@@ -8,7 +8,7 @@
 #ifndef ABSTRACTSTRETCHINGMAKER_HPP_
 #define ABSTRACTSTRETCHINGMAKER_HPP_
 
-#include "combigrid/utils/combigrid_ultils.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 
 namespace combigrid {
   /** class to create stretching in 1D*/

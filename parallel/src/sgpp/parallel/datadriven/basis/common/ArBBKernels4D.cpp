@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/datadriven/basis/common/ArBBKernels4D.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ArBBKernels4D.hpp>
 
 #include <cmath>
 #include <algorithm>

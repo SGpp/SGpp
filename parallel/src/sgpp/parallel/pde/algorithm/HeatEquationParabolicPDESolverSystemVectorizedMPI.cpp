@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
+#include <sgpp/parallel/pde/algorithm/HeatEquationParabolicPDESolverSystemVectorizedMPI.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <cstring>
 

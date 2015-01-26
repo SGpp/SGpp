@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Gerrit Buse (buse@in.tum.de)
 
-#include "base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.hpp>
 
 namespace sg {
   namespace base {

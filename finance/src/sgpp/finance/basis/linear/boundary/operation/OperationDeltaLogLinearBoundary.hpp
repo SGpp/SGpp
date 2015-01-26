@@ -8,7 +8,7 @@
 #ifndef OPERATIONDELTALOGLINEARBOUNDARY_HPP
 #define OPERATIONDELTALOGLINEARBOUNDARY_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 namespace sg {
   namespace finance {

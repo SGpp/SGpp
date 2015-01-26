@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de
 
-#include "pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp"
-#include "base/grid/common/BoundingBox.hpp"
+#include <sgpp/pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp>
+#include <sgpp/base/grid/common/BoundingBox.hpp>
 
 namespace sg {
   namespace pde {

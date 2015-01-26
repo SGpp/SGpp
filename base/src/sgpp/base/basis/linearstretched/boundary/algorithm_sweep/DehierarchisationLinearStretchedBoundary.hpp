@@ -8,10 +8,10 @@
 #ifndef DEHIERARCHISATIONLINEARSTRETCHEDBOUNDARY_HPP
 #define DEHIERARCHISATIONLINEARSTRETCHEDBOUNDARY_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "base/basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.hpp"
+#include <sgpp/base/basis/linearstretched/noboundary/algorithm_sweep/DehierarchisationLinearStretched.hpp>
 
 namespace sg {
   namespace base {

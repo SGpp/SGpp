@@ -6,11 +6,11 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp>
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
+#include <sgpp/datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp>
 
 
 namespace sg {

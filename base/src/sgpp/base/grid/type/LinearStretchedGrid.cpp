@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pfueged@in.tum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/LinearStretchedGrid.hpp"
-#include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
+#include <sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp>
 
-#include "base/grid/generation/StandardGridGenerator.hpp"
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 
 #include <iostream>

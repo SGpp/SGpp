@@ -6,7 +6,7 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
 
 namespace sg {
   namespace parallel {

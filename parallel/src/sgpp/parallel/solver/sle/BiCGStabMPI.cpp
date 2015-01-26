@@ -6,10 +6,10 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
 #ifdef USE_MPI
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 #endif
 
-#include "parallel/solver/sle/BiCGStabMPI.hpp"
+#include <sgpp/parallel/solver/sle/BiCGStabMPI.hpp>
 #include <cmath>
 
 namespace sg {

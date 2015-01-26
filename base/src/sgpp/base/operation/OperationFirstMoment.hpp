@@ -9,7 +9,7 @@
 #ifndef OPERATIONFIRSTMOMENT_HPP
 #define OPERATIONFIRSTMOMENT_HPP
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace base {

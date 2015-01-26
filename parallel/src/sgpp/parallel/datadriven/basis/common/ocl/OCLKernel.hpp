@@ -9,9 +9,9 @@
 #ifndef OCLKERNEL_HPP
 #define OCLKERNEL_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImpl.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>

@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "base/algorithm/AlgorithmDGEMV.hpp"
+#include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include "base/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp"
+#include <sgpp/base/basis/modbspline/operation/OperationMultipleEvalModBspline.hpp>
 
 
 

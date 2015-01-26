@@ -8,8 +8,8 @@
 #ifndef OPERATIONMATRIXLTWODOTPERIODIC_HPP
 #define OPERATIONMATRIXLTWODOTPERIODIC_HPP
 
-#include "base/operation/OperationMatrix.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace pde {

@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 using namespace sg::op_factory;
 

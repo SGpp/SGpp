@@ -9,8 +9,8 @@
 #ifndef CPUKERNEL_HPP
 #define CPUKERNEL_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 namespace sg {
   namespace parallel {

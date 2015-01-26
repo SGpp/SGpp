@@ -8,8 +8,8 @@
 #ifndef OPERATIONDENSITYCONDITIONALLINEAR_HPP
 #define OPERATIONDENSITYCONDITIONALLINEAR_HPP
 
-#include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationDensityConditional.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/operation/OperationDensityConditional.hpp>
 #include <cstring>
 
 namespace sg {

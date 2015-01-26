@@ -6,9 +6,9 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
 
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
 
-#include "datadriven/basis/linear/noboundary/operation/OperationDotProductLinear.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDotProductLinear.hpp>
 
 using namespace sg::base;
 namespace sg {

@@ -8,7 +8,7 @@
 #ifndef OPERATIONDENSITYMARGINALIZE_HPP
 #define OPERATIONDENSITYMARGINALIZE_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 #include <cstring>
 
 namespace sg {

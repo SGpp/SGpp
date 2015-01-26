@@ -11,7 +11,7 @@
 #include <cmath>
 #include <algorithm>
 
-#include "base/basis/Basis.hpp"
+#include <sgpp/base/basis/Basis.hpp>
 
 namespace sg {
   namespace base {

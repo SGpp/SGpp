@@ -9,8 +9,8 @@
 #define LINEARSTRETCHEDBOUNDARYBASE_HPP
 
 #include <cmath>
-#include "base/grid/common/Stretching.hpp"
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
+#include <sgpp/base/grid/common/Stretching.hpp>
+#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
 
 namespace sg {
   namespace base {

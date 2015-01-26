@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/GridPrinter.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/exception/tool_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/tools/GridPrinter.hpp>
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/exception/tool_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <fstream>
 #include <vector>

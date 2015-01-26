@@ -8,8 +8,8 @@
 #ifndef ADAPTIVESERIALCOMBIGRIDVARIABLECOEFFICIENTS_HPP_
 #define ADAPTIVESERIALCOMBIGRIDVARIABLECOEFFICIENTS_HPP_
 
-#include "combigrid/combigrid/SerialCombiGrid.hpp"
-#include "combigrid/utils/combigrid_ultils.hpp"
+#include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 
 namespace combigrid {
 

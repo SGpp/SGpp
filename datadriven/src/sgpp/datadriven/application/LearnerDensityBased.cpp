@@ -1,12 +1,12 @@
 #include "LearnerDensityBased.hpp"
-#include "base/exception/application_exception.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "datadriven/algorithm/DensitySystemMatrix.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 #include <limits>
 
 namespace sg {

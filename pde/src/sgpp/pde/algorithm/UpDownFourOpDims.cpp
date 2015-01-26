@@ -5,7 +5,7 @@
  ******************************************************************************/
 // @author Sam Maurus (MA thesis)
 
-#include "pde/algorithm/UpDownFourOpDims.hpp"
+#include <sgpp/pde/algorithm/UpDownFourOpDims.hpp>
 
 namespace sg {
   namespace pde {

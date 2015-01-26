@@ -4,43 +4,43 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de), Dirk Pflueger (pflueged@in.tum.de)
-#include "datadriven/DatadrivenOpFactory.hpp"
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <cstring>
 
-#include "datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "base/grid/type/PolyGrid.hpp"
-#include "base/grid/type/ModPolyGrid.hpp"
-#include "base/grid/type/PrewaveletGrid.hpp"
-#include "base/grid/type/ModBsplineGrid.hpp"
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
+#include <sgpp/base/grid/type/PrewaveletGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 
-#include "datadriven/basis/linear/noboundary/operation/OperationTestLinear.hpp"
-#include "datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.hpp"
-#include "datadriven/basis/modbspline/operation/OperationTestModBspline.hpp"
-#include "datadriven/basis/modlinear/operation/OperationTestModLinear.hpp"
-#include "datadriven/basis/poly/operation/OperationTestPoly.hpp"
-#include "datadriven/basis/modpoly/operation/OperationTestModPoly.hpp"
-#include "datadriven/basis/modwavelet/operation/OperationTestModWavelet.hpp"
-#include "datadriven/basis/prewavelet/operation/OperationTestPrewavelet.hpp"
-#include "datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp"
-#include "datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformationLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformation1DLinear.hpp"
-#include "datadriven/basis/linear/noboundary/operation/OperationInverseRosenblattTransformationLinear.hpp"
-#include "datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationTestLinear.hpp>
+#include <sgpp/datadriven/basis/linear/boundary/operation/OperationTestLinearBoundary.hpp>
+#include <sgpp/datadriven/basis/modbspline/operation/OperationTestModBspline.hpp>
+#include <sgpp/datadriven/basis/modlinear/operation/OperationTestModLinear.hpp>
+#include <sgpp/datadriven/basis/poly/operation/OperationTestPoly.hpp>
+#include <sgpp/datadriven/basis/modpoly/operation/OperationTestModPoly.hpp>
+#include <sgpp/datadriven/basis/modwavelet/operation/OperationTestModWavelet.hpp>
+#include <sgpp/datadriven/basis/prewavelet/operation/OperationTestPrewavelet.hpp>
+#include <sgpp/datadriven/basis/linearstretched/boundary/operation/OperationTestLinearStretchedBoundary.hpp>
+#include <sgpp/datadriven/basis/linearstretched/noboundary/operation/OperationTestLinearStretched.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityMarginalizeLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensitySampling1DLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityRejectionSamplingLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityConditionalLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationRosenblattTransformation1DLinear.hpp>
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationInverseRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/basis/linear/boundary/operation/OperationRegularizationDiagonalLinearBoundary.hpp>
 
-#include "datadriven/operation/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
-#include "datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp"
+#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
+#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sg {
 

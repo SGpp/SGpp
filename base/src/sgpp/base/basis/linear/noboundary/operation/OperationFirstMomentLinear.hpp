@@ -9,8 +9,8 @@
 #ifndef OPERATIONFIRSTMOMENTLINEAR_HPP
 #define OPERATIONFIRSTMOMENTLINEAR_HPP
 
-#include "base/operation/OperationFirstMoment.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/operation/OperationFirstMoment.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace base {

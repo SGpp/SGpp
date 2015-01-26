@@ -9,7 +9,7 @@
 #ifndef OPERATIONCONVERT_HPP
 #define OPERATIONCONVERT_HPP
 
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #ifdef _WIN32
 #pragma warning(disable: 4267)

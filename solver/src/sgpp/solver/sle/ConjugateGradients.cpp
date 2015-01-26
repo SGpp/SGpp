@@ -8,7 +8,7 @@
 #ifdef X86_MIC_SYMMETRIC
 #include <mpi.h>
 #endif
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 #include <cstdio>
 

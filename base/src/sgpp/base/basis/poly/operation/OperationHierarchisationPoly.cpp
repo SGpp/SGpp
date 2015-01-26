@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/poly/operation/OperationHierarchisationPoly.hpp"
+#include <sgpp/base/basis/poly/operation/OperationHierarchisationPoly.hpp>
 
-#include "base/basis/poly/algorithm_sweep/HierarchisationPoly.hpp"
-#include "base/basis/poly/algorithm_sweep/DehierarchisationPoly.hpp"
+#include <sgpp/base/basis/poly/algorithm_sweep/HierarchisationPoly.hpp>
+#include <sgpp/base/basis/poly/algorithm_sweep/DehierarchisationPoly.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
   namespace base {

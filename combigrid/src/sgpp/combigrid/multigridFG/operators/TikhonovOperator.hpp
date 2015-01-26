@@ -9,7 +9,7 @@
 #define TIKHONOVOPERATOR_HPP_
 
 #include "combigrid.hpp"
-#include "combigrid/multigridFG/interface/OperatorFG.hpp"
+#include <sgpp/combigrid/multigridFG/interface/OperatorFG.hpp>
 
 namespace combigrid {
 

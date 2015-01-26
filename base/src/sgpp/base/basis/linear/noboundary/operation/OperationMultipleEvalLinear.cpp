@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/AlgorithmMultipleEvaluation.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
-#include "base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp"
+#include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
+#include <sgpp/base/basis/linear/noboundary/operation/OperationMultipleEvalLinear.hpp>
 
 
 namespace sg {

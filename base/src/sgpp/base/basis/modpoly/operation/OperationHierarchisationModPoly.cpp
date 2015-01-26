@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/modpoly/operation/OperationHierarchisationModPoly.hpp"
-#include "base/basis/modpoly/algorithm_sweep/HierarchisationModPoly.hpp"
-#include "base/basis/modpoly/algorithm_sweep/DehierarchisationModPoly.hpp"
+#include <sgpp/base/basis/modpoly/operation/OperationHierarchisationModPoly.hpp>
+#include <sgpp/base/basis/modpoly/algorithm_sweep/HierarchisationModPoly.hpp>
+#include <sgpp/base/basis/modpoly/algorithm_sweep/DehierarchisationModPoly.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
   namespace base {

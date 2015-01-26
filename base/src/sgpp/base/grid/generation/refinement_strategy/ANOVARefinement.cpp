@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de)
 
-#include "base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 
 //using namespace std;
 

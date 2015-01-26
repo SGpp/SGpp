@@ -4,16 +4,16 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "datadriven/application/LearnerLeastSquaresIdentity.hpp"
+#include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 
 #include "../algorithm/SystemMatrixLeastSquaresIdentity.hpp"
-#include "datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
-//#include "datadriven/DatadrivenOpFactory.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
+#include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
+//#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 //TODO how do I construct the operation here (type/subtype)
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 namespace sg {
 namespace datadriven {

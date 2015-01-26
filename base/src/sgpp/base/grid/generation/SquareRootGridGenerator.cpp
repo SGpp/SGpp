@@ -11,10 +11,10 @@
 ******************************************************************************/
 
 
-#include "base/grid/generation/BoundaryGridGenerator.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/SquareRootGridGenerator.hpp"
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 namespace sg {
   namespace base {

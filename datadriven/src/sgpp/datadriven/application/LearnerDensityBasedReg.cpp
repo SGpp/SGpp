@@ -1,14 +1,14 @@
 #include "LearnerDensityBasedReg.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "datadriven/algorithm/DensitySystemMatrix.hpp"
-#include "base/exception/application_exception.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/tools/GridPrinter.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/GridPrinter.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 namespace sg {
   namespace datadriven {

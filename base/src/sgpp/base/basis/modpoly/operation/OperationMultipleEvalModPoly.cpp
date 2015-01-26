@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/AlgorithmDGEMV.hpp"
+#include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "base/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/modpoly/operation/OperationMultipleEvalModPoly.hpp>
 
 
 

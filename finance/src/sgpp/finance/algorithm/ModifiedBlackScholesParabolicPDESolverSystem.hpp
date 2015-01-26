@@ -8,11 +8,11 @@
 #ifndef MODIFIEDBLACKSCHOLESPARABOLICPDESOLVERSYSTEM_HPP
 #define MODIFIEDBLACKSCHOLESPARABOLICPDESOLVERSYSTEM_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/tools/VariableDiscountFactor.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 
 namespace sg {
   namespace finance {

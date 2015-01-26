@@ -5,28 +5,28 @@
 **************************************************************************** */
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
-#include "finance/algorithm/BlackScholesPATParabolicPDESolverSystem.hpp"
-#include "finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp"
-#include "finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
-#include "finance/application/BlackScholesSolver.hpp"
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/ode/AdamsBashforth.hpp"
-#include "solver/ode/VarTimestep.hpp"
-#include "solver/ode/StepsizeControlH.hpp"
-#include "solver/ode/StepsizeControlBDF.hpp"
-#include "solver/ode/StepsizeControlEJ.hpp"
-#include "solver/sle/BiCGStab.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp>
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp>
+#include <sgpp/finance/algorithm/BlackScholesPATParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmer.hpp>
+#include <sgpp/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP.hpp>
+#include <sgpp/finance/application/BlackScholesSolver.hpp>
+#include <sgpp/solver/ode/Euler.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
+#include <sgpp/solver/ode/AdamsBashforth.hpp>
+#include <sgpp/solver/ode/VarTimestep.hpp>
+#include <sgpp/solver/ode/StepsizeControlH.hpp>
+#include <sgpp/solver/ode/StepsizeControlBDF.hpp>
+#include <sgpp/solver/ode/StepsizeControlEJ.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <cstdlib>
 #include <sstream>

@@ -8,10 +8,10 @@
 #ifndef LEARNERDENSITYCLUSTER_HPP
 #define LEARNERDENSITYCLUSTER_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "datadriven/application/LearnerBase.hpp"
-#include "datadriven/tools/TypesDatadriven.hpp"
-#include "datadriven/algorithm/DensitySystemMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/application/LearnerBase.hpp>
+#include <sgpp/datadriven/tools/TypesDatadriven.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <vector>
 
 namespace sg {

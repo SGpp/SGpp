@@ -8,10 +8,10 @@
 #ifndef OPERATIONHIERARCHISATIONPOLY_HPP
 #define OPERATIONHIERARCHISATIONPOLY_HPP
 
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/basis/poly/PolyBasis.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/operation/OperationHierarchisation.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/basis/poly/PolyBasis.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sg {
   namespace base {

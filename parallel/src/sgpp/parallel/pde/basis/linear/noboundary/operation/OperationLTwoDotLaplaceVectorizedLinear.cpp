@@ -11,18 +11,18 @@
 
 #include <omp.h>
 
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
 
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
-#include "parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.hpp"
+#include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinear.hpp>
 
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/tools/TypesParallel.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <cmath>
 

@@ -6,7 +6,7 @@
 // @author Jörg Blank (blankj@in.tum.de)
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp"
+#include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp>
 
 
 namespace sg {

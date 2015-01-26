@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/algorithm/StdUpDown.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
 
 namespace sg {
   namespace pde {

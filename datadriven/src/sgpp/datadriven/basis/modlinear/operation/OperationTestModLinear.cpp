@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "datadriven/basis/modlinear/operation/OperationTestModLinear.hpp"
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
+#include <sgpp/datadriven/basis/modlinear/operation/OperationTestModLinear.hpp>
+#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
 
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 
 namespace sg {

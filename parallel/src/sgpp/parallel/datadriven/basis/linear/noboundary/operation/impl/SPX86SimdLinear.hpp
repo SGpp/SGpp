@@ -9,7 +9,7 @@
 #ifndef SPX86SIMDLINEAR_HPP
 #define SPX86SIMDLINEAR_HPP
 
-#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 
 namespace sg {
   namespace parallel {

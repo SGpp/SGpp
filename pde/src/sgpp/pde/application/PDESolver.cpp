@@ -4,13 +4,13 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "pde/application/PDESolver.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/tools/StdNormalDistribution.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/pde/application/PDESolver.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/StdNormalDistribution.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <sstream>
 #include <iostream>

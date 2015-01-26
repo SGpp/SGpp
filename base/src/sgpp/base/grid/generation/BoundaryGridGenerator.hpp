@@ -8,8 +8,8 @@
 #ifndef BOUNDARYGRIDGENERATOR_HPP
 #define BOUNDARYGRIDGENERATOR_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 namespace sg {
   namespace base {

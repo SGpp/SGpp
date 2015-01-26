@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de)
 
-#include "base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp>
 #include <algorithm>
 #include <vector>
 

@@ -3,15 +3,15 @@
 
 #include <string>
 
-#include <base/datatypes/DataVector.hpp>
-#include <base/grid/Grid.hpp>
-#include <datadriven/algorithm/DMSystemMatrixBase.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
 
-#include "base/operation/OperationMultipleEval.hpp"
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
 
-#include "datadriven/operation/DatadrivenOperationCommon.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
+#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 //#include "AbstractOperationMultipleEval.hpp"
 

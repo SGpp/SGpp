@@ -9,7 +9,7 @@
 #ifndef SPX86SIMDMODLINEARMASK_HPP
 #define SPX86SIMDMODLINEARMASK_HPP
 
-#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 
 namespace sg {
   namespace parallel {

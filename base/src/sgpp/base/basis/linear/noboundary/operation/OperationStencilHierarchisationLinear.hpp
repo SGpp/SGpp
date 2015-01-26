@@ -8,8 +8,8 @@
 #ifndef OPERATIONSTENCILHIERARCHISATIONLINEAR_HPP
 #define OPERATIONSTENCILHIERARCHISATIONLINEAR_HPP
 
-#include "base/operation/OperationStencilHierarchisation.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 #include <vector>
 

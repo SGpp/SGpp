@@ -2,9 +2,9 @@
 
 #include <omp.h>
 
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/tools/SGppStopwatch.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
 namespace datadriven {

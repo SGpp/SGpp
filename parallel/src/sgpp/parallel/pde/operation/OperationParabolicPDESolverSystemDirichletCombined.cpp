@@ -6,8 +6,8 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#include "parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp"
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 namespace sg {
   namespace parallel {

@@ -8,14 +8,14 @@
 #ifndef DMWEIGHTMATRIXSPVECTORIZEDIDENTITY_HPP
 #define DMWEIGHTMATRIXSPVECTORIZEDIDENTITY_HPP
 
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/operation/OperationMatrixSP.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/OperationMatrixSP.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 #include <string>
 

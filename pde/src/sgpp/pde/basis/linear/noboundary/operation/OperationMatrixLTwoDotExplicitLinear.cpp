@@ -1,6 +1,6 @@
 #include "OperationMatrixLTwoDotExplicitLinear.hpp"
-#include "base/exception/data_exception.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <string.h>
 #include <math.h>
 #include <vector>

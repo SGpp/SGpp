@@ -8,10 +8,10 @@
 #ifndef SSOBOLGENERATOR_HPP
 #define SSOBOLGENERATOR_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "mcm/SampleGenerator.hpp"
-#include "mcm/ssobol.h"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/mcm/SampleGenerator.hpp>
+#include <sgpp/mcm/ssobol.h>
 #include "Random.hpp"
 
 namespace sg {

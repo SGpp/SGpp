@@ -8,7 +8,7 @@
 #ifndef OPERATIONLBLINEARBOUNDARY_HPP
 #define OPERATIONLBLINEARBOUNDARY_HPP
 
-#include "pde/algorithm/StdUpDown.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
 
 namespace sg {
   namespace finance {

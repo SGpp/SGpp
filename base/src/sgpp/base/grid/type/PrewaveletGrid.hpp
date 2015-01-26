@@ -7,7 +7,7 @@
 #ifndef PREWAVELETGRID_HPP
 #define PREWAVELETGRID_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace base {

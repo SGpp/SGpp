@@ -5,9 +5,9 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Peter Hoffmann (peter.hoffmann@mytum.de)
 
-#include "pde/operation/OperationParabolicPDESolverSystem.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sg {
   namespace pde {

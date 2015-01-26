@@ -9,10 +9,10 @@
 #ifndef DMWEIGHTMATRIX_HPP
 #define DMWEIGHTMATRIX_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/operation/OperationMultipleEval.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
 namespace sg {
   namespace datadriven {

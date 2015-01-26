@@ -5,16 +5,16 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 
-#include "parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "pde/algorithm/StdUpDown.hpp"
-#include "pde/algorithm/UpDownOneOpDim.hpp"
-#include "pde/algorithm/UpDownTwoOpDims.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
+#include <sgpp/pde/algorithm/UpDownTwoOpDims.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #ifdef _OPENMP
 #include "omp.h"

@@ -8,10 +8,10 @@
 #ifndef DMVECTORIZATIONPADDINGASSISTANT_HPP
 #define DMVECTORIZATIONPADDINGASSISTANT_HPP
 
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 namespace sg {
 

@@ -8,8 +8,8 @@
 #ifndef SERIALCOMBIGRID_HPP_
 #define SERIALCOMBIGRID_HPP_
 
-#include "combigrid/combigrid/AbstractCombiGrid.hpp"
-#include "combigrid/converter/CombiSGppConverter.hpp"
+#include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
+#include <sgpp/combigrid/converter/CombiSGppConverter.hpp>
 
 namespace combigrid {
 

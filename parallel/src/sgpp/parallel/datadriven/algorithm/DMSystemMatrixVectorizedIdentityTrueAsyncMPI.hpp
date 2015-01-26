@@ -8,15 +8,15 @@
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H
 
 
-#include "parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp"
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/grid/Grid.hpp"
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentityMPIBase.hpp>
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #include <strstream>
 

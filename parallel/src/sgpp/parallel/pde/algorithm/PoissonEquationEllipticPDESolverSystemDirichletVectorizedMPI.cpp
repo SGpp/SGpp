@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/operation/ParallelOpFactory.hpp"
-#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp"
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
+#include <sgpp/parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp>
 
-#include "base/exception/algorithm_exception.hpp"
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <cstring>
 

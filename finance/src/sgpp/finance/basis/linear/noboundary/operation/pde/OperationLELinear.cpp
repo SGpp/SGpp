@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Chao qi(qic@in.tum.de)
 
-#include "finance/basis/linear/noboundary/operation/pde/OperationLELinear.hpp"
+#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLELinear.hpp>
 
 //#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
 //#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
-#include "pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp"
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp>
+#include <sgpp/base/algorithm/sweep.hpp>
 
 namespace sg {
   namespace finance {

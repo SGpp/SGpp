@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp"
-#include "pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp"
-#include "pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp"
-#include "pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp"
+#include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp>
+#include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp>
+#include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceUpPrewavelet.hpp>
+#include <sgpp/pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp>
 
 namespace sg {
   namespace pde {

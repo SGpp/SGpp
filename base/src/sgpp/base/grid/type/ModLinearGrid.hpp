@@ -8,7 +8,7 @@
 #ifndef MODLINEARGRID_HPP
 #define MODLINEARGRID_HPP
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
 

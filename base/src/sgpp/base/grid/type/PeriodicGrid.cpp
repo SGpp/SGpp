@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Florian Zipperle (florian.zipperle@tum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/PeriodicGrid.hpp"
-#include "base/basis/periodic/LinearPeriodicBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/PeriodicGrid.hpp>
+#include <sgpp/base/basis/periodic/LinearPeriodicBasis.hpp>
 
-#include "base/grid/generation/PeriodicGridGenerator.hpp"
+#include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 
 #include <iostream>

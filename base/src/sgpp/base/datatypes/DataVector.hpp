@@ -11,7 +11,7 @@
 
 #include <string>
 #include <vector>
-#include "base/datatypes/DataVectorDefinition.hpp"
+#include <sgpp/base/datatypes/DataVectorDefinition.hpp>
 
 namespace sg {
   namespace base {

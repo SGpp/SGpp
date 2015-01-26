@@ -8,9 +8,9 @@
 #ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP
 #define HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
 
 namespace sg {
   namespace parallel {

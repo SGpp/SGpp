@@ -10,8 +10,8 @@
 #define OCLLINEAR_HPP
 
 #include <sstream>
-#include "parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace parallel {

@@ -4,10 +4,10 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 
-#include "base/grid/generation/TruncatedTrapezoidGridGenerator.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/generation/TruncatedTrapezoidGridGenerator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 namespace sg {
   namespace base {

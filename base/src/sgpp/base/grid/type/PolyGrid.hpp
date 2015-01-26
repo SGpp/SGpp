@@ -8,8 +8,8 @@
 #ifndef POLYGRID_HPP
 #define POLYGRID_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/basis/poly/PolyBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/basis/poly/PolyBasis.hpp>
 
 #include <iostream>
 

@@ -8,10 +8,10 @@
 #ifndef PHIPHIDOWNBBLINEARBOUNDARY_HPP
 #define PHIPHIDOWNBBLINEARBOUNDARY_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp"
+#include <sgpp/pde/basis/linear/noboundary/algorithm_sweep/PhiPhiDownBBLinear.hpp>
 
 namespace sg {
   namespace pde {

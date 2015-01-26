@@ -5,15 +5,15 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp"
-#include "parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include <sgpp/parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPI.hpp>
+#include <sgpp/parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #ifdef USE_MPI
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.hpp"
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.hpp>
 #endif
-#include "parallel/operation/SPParallelOpFactory.hpp"
+#include <sgpp/parallel/operation/SPParallelOpFactory.hpp>
 
 namespace sg {
 

@@ -5,22 +5,22 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/solver/sle/BiCGStabMPI.hpp"
-#include "parallel/solver/sle/ConjugateGradientsMPI.hpp"
-#include "parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
-#include "parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.hpp"
-#include "parallel/finance/application/BlackScholesSolverMPI.hpp"
-#include "parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/solver/sle/BiCGStabMPI.hpp>
+#include <sgpp/parallel/solver/sle/ConjugateGradientsMPI.hpp>
+#include <sgpp/parallel/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.hpp>
+#include <sgpp/parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.hpp>
+#include <sgpp/parallel/finance/application/BlackScholesSolverMPI.hpp>
+#include <sgpp/parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.hpp>
 
-#include "solver/ode/Euler.hpp"
-#include "solver/ode/CrankNicolson.hpp"
-#include "solver/sle/ConjugateGradients.hpp"
+#include <sgpp/solver/ode/Euler.hpp>
+#include <sgpp/solver/ode/CrankNicolson.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include "base/grid/Grid.hpp"
-#include "base/exception/application_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "base/tools/StdNormalDistribution.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/StdNormalDistribution.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>

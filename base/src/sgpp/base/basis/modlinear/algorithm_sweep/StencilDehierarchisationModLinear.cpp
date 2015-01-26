@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.hpp"
+#include <sgpp/base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.hpp>
 
 namespace sg {
   namespace base {

@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/algorithm/GetAffectedBasisFunctions.hpp"
+#include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
-#include "base/basis/modlinear/operation/OperationEvalModLinear.hpp"
+#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/modlinear/operation/OperationEvalModLinear.hpp>
 
 
 

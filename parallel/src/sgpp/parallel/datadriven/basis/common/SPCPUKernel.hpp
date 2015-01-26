@@ -9,8 +9,8 @@
 #ifndef SPCPUKERNEL_HPP
 #define SPCPUKERNEL_HPP
 
-#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 namespace sg {
   namespace parallel {

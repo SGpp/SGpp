@@ -14,7 +14,7 @@
 #include <immintrin.h>
 #endif
 
-#include "parallel/datadriven/basis/common/mic/MICKernelBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernelBase.hpp>
 
 namespace sg {
   namespace parallel {

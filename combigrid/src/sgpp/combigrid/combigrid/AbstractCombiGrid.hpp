@@ -8,15 +8,15 @@
 #ifndef ABSTRACTCOMBIGRID_HPP_
 #define ABSTRACTCOMBIGRID_HPP_
 
-#include "combigrid/utils/combigrid_ultils.hpp"
-#include "combigrid/fullgrid/CombiFullGrid.hpp"
-#include "combigrid/combigridkernel/CombiGridKernel.hpp"
-#include "combigrid/combischeme/CombiSchemeBasis.hpp"
-#include "combigrid/domain/CombiGridDomain.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
+#include <sgpp/combigrid/combigridkernel/CombiGridKernel.hpp>
+#include <sgpp/combigrid/combischeme/CombiSchemeBasis.hpp>
+#include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
 // ------ SGpp includes -------------
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace combigrid {
 

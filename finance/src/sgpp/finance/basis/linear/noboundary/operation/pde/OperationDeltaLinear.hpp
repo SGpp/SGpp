@@ -8,7 +8,7 @@
 #ifndef OPERATIONDELTALINEAR_HPP
 #define OPERATIONDELTALINEAR_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 namespace sg {
   namespace finance {

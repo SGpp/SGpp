@@ -10,7 +10,7 @@
 #define OCLMODLINEAR_HPP
 
 #include <sstream>
-#include "parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelBase.hpp>
 
 namespace sg {
   namespace parallel {

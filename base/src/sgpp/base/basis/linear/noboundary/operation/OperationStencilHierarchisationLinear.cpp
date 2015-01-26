@@ -5,11 +5,11 @@
 ******************************************************************************/
 // @author Gerrit Buse (buse@in.tum.de)
 
-#include "base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/StencilHierarchisationLinear.hpp"
-#include "base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.hpp"
+#include <sgpp/base/basis/linear/noboundary/operation/OperationStencilHierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/StencilHierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/StencilDehierarchisationLinear.hpp>
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 namespace sg {

@@ -6,9 +6,9 @@
 // @author Zhongwen Song (songz@in.tum.de)
 // @author Benjamin (pehersto@in.tum.de)
 
-#include "parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
-#include "parallel/operation/ParallelOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp>
+#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace parallel {

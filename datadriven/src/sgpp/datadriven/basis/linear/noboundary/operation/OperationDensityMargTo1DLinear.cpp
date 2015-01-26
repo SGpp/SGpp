@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author A. Mo-Hellenbrand
 
-#include "datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.hpp"
-#include "datadriven/operation/OperationDensityMarginalize.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensityMargTo1DLinear.hpp>
+#include <sgpp/datadriven/operation/OperationDensityMarginalize.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sg {
   namespace datadriven {

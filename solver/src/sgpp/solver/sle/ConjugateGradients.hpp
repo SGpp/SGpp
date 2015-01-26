@@ -8,8 +8,8 @@
 #ifndef CONJUGATEGRADIENTS_HPP
 #define CONJUGATEGRADIENTS_HPP
 
-#include "solver/SLESolver.hpp"
-#include "base/datatypes/DataVector.hpp"
+#include <sgpp/solver/SLESolver.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
 

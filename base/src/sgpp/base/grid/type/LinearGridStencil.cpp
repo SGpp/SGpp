@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/type/LinearGridStencil.hpp"
+#include <sgpp/base/grid/type/LinearGridStencil.hpp>
 
-#include "base/grid/generation/StandardGridGenerator.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 
 #include <iostream>

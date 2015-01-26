@@ -8,8 +8,8 @@
 #ifndef OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP
 #define OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP
 
-#include "base/operation/OperationHierarchisation.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/operation/OperationHierarchisation.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 namespace sg {
   namespace base {

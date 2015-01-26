@@ -20,12 +20,12 @@
 /* or see <http://www.gnu.org/licenses/>.                                    */
 /*****************************************************************************/
 
-#include "base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp"
-#include "base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp"
-#include "base/basis/prewavelet/operation/OperationConvertPrewavelet.hpp"
+#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
+#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
+#include <sgpp/base/basis/prewavelet/operation/OperationConvertPrewavelet.hpp>
 
 
-#include "base/algorithm/sweep.hpp"
+#include <sgpp/base/algorithm/sweep.hpp>
 
 
 

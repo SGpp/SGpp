@@ -6,12 +6,12 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 // @author Jacob Jepsen (jepsen@diku.dk)
 
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 
-#include "parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.hpp"
+#include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.hpp>
 
 #include <cmath>
 #include <assert.h>

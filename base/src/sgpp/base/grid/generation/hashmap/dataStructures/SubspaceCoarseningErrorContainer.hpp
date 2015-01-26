@@ -8,7 +8,7 @@
 #define SUBSPACECOARSENINGERRORCONTAINER_HPP_
 
 #include <map>
-#include "base/grid/generation/hashmap/HashCoarsening.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 
 namespace sg {
 namespace base {

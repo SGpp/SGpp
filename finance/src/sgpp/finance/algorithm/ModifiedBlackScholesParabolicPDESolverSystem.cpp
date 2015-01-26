@@ -5,13 +5,13 @@
 **************************************************************************** */
 // @author Chao qi (qic@in.tum.de)
 
-#include "finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
-#include "finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "finance/tools/VariableDiscountFactor.hpp"
-#include "finance/operation/FinanceOpFactory.hpp"
+#include <sgpp/finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/finance/tools/VariableDiscountFactor.hpp>
+#include <sgpp/finance/operation/FinanceOpFactory.hpp>
 
 #include <cmath>
 

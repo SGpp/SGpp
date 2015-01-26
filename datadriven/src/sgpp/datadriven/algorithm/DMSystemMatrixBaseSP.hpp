@@ -8,10 +8,10 @@
 #ifndef DMSYSTEMMATRIXSPBASE_HPP
 #define DMSYSTEMMATRIXSPBASE_HPP
 
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
-#include "base/operation/OperationMatrixSP.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
+#include <sgpp/base/operation/OperationMatrixSP.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 namespace sg {
   namespace datadriven {

@@ -5,15 +5,15 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/LinearBoundaryGrid.hpp"
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
 
-#include "base/grid/generation/BoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
-#include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
+#include <sgpp/base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp>
 
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
 
 #include <iostream>

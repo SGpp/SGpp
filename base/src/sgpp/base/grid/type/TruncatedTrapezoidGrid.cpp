@@ -12,14 +12,14 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/type/TruncatedTrapezoidGrid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/TruncatedTrapezoidGrid.hpp>
 
-#include "base/grid/generation/TruncatedTrapezoidGridGenerator.hpp"
-//#include "base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp"
-//#include "base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp"
+#include <sgpp/base/grid/generation/TruncatedTrapezoidGridGenerator.hpp>
+//#include <sgpp/base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp>
+//#include <sgpp/base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp>
 
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
+#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
 
 
 #include <iostream>

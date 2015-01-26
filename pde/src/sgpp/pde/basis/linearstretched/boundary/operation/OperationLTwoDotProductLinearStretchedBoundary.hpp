@@ -8,7 +8,7 @@
 #ifndef OPERATIONLTWODOTPRODUCTLINEARSTRETCHEDBOUNDARY_HPP
 #define OPERATIONLTWODOTPRODUCTLINEARSTRETCHEDBOUNDARY_HPP
 
-#include "pde/algorithm/StdUpDown.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
 
 
 namespace sg {

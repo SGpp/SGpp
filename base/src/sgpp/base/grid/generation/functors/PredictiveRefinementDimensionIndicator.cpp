@@ -5,9 +5,9 @@
  ******************************************************************************/
 //@author Michael Lettrich (m.lettrich@mytum.de)
 #include "PredictiveRefinementDimensionIndicator.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
+#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
+#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
 #include <map>
 #include <string>
 #include <utility>

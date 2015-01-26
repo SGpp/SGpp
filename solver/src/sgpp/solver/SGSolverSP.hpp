@@ -8,7 +8,7 @@
 #ifndef SGSOLVERSP_HPP
 #define SGSOLVERSP_HPP
 
-#include "solver/TypesSolver.hpp"
+#include <sgpp/solver/TypesSolver.hpp>
 
 #include <cstddef>
 

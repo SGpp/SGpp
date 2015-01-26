@@ -9,7 +9,7 @@
 #ifndef OPERATIONGAMMALINEARSTRETCHED_HPP
 #define OPERATIONGAMMALINEARSTRETCHED_HPP
 
-#include "pde/algorithm/UpDownTwoOpDims.hpp"
+#include <sgpp/pde/algorithm/UpDownTwoOpDims.hpp>
 
 
 namespace sg {

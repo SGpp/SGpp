@@ -8,8 +8,8 @@
 #ifndef COMBICOMBISCHEMEBASIS_HPP_
 #define COMBICOMBISCHEMEBASIS_HPP_
 
-#include "combigrid/utils/combigrid_ultils.hpp"
-//#include "combigrid/combigridkernel/CombiGridKernel.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+//#include <sgpp/combigrid/combigridkernel/CombiGridKernel.hpp>
 
 namespace combigrid {
 

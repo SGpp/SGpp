@@ -8,7 +8,7 @@
 #ifndef OPERATIONDENSITYMARGTO1D_HPP_
 #define OPERATIONDENSITYMARGTO1D_HPP_
 
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace datadriven {

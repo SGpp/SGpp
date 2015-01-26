@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
-#include "datadriven/DatadrivenOpFactory.hpp"
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include "SystemMatrixLeastSquaresIdentity.hpp"
 
 using namespace std;

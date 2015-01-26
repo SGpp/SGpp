@@ -8,7 +8,7 @@
 #ifndef OPERATIONLAPLACEENHANCEDLINEAR_HPP
 #define OPERATIONLAPLACEENHANCEDLINEAR_HPP
 
-#include "misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp"
+#include <sgpp/misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
 
 namespace sg {
   namespace pde {

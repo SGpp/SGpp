@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/tools/PrecisionConverter.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/tools/PrecisionConverter.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 
 namespace sg {
   namespace base {

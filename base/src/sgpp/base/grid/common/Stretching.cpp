@@ -6,8 +6,8 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
-#include "base/grid/common/Stretching.hpp"
-#include "base/exception/application_exception.hpp"
+#include <sgpp/base/grid/common/Stretching.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <fstream>
 #include <iostream>
 #include <sstream>

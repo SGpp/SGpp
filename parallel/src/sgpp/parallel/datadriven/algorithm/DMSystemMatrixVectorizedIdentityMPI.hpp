@@ -9,13 +9,13 @@
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYMPI_HPP
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYMPI_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #include <string>
 

@@ -10,11 +10,11 @@
 #ifndef SP_PARALLEL_OP_FACTORY_HPP
 #define SP_PARALLEL_OP_FACTORY_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataMatrixSP.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
-#include "parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 /*
  * This file contains factory methods for operations.

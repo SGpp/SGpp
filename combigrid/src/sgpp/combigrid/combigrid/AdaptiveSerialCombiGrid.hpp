@@ -8,7 +8,7 @@
 #ifndef ADAPTIVESERIALCOMBIGRID_HPP_
 #define ADAPTIVESERIALCOMBIGRID_HPP_
 
-#include "combigrid/combigrid/SerialCombiGrid.hpp"
+#include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
 
 
 namespace combigrid {

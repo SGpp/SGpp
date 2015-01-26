@@ -9,8 +9,8 @@
 #define COMBILINEARBASISFUNCTION_HPP_
 
 
-#include "combigrid/utils/combigrid_ultils.hpp"
-#include "combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
+#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp>
 
 namespace combigrid {
 

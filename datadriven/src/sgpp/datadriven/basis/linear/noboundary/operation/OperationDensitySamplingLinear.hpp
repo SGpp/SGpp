@@ -8,8 +8,8 @@
 #ifndef OPERATIONDENSITYSAMPLINGLINEAR_HPP
 #define OPERATIONDENSITYSAMPLINGLINEAR_HPP
 
-#include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationDensitySampling.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/operation/OperationDensitySampling.hpp>
 
 namespace sg {
   namespace datadriven {

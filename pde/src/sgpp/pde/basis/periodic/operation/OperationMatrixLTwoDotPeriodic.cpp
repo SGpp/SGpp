@@ -6,7 +6,7 @@
 // @author Florian Zipperle (florian.zipperle@tum.de)
 
 #include "OperationMatrixLTwoDotPeriodic.hpp"
-#include "base/exception/data_exception.hpp"
+#include <sgpp/base/exception/data_exception.hpp>
 
 namespace sg {
   namespace pde {

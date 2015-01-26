@@ -7,10 +7,10 @@
 #ifndef ErrorContainer_HPP_
 #define ErrorContainer_HPP_
 
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
-#include "base/grid/storage/hashmap/HashGridIndex.hpp"
-#include "base/grid/storage/hashmap/HashGridStorage.hpp"
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
 namespace sg {
 namespace base {

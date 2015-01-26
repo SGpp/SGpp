@@ -8,9 +8,9 @@
 #ifndef HASHREFINEMENTABSTRACT_HPP
 #define HASHREFINEMENTABSTRACT_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/functors/RefinementFunctor.hpp"
-//#include "base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+//#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 
 namespace sg {
   namespace base {

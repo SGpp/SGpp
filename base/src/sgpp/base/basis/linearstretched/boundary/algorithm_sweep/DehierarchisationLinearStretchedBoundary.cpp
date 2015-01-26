@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "base/basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.hpp"
+#include <sgpp/base/basis/linearstretched/boundary/algorithm_sweep/DehierarchisationLinearStretchedBoundary.hpp>
 
 namespace sg {
   namespace base {

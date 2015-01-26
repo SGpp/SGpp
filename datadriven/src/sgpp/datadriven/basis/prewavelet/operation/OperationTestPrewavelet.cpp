@@ -5,10 +5,10 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "datadriven/algorithm/test_dataset.hpp"
+#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
-#include "datadriven/basis/prewavelet/operation/OperationTestPrewavelet.hpp"
+#include <sgpp/datadriven/basis/prewavelet/operation/OperationTestPrewavelet.hpp>
 
 
 

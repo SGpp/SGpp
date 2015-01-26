@@ -5,8 +5,8 @@
 ******************************************************************************/
 // @author Valeriy Khakhutskyy (khakhutv@in.tum.de)
 
-#include "base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 
 
 namespace sg {

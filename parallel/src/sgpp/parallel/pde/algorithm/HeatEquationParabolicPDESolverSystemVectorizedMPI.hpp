@@ -8,11 +8,11 @@
 #ifndef HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP
 #define HEATEQUATIONPARABOLICPDESOLVERSYSTEMVECTORIZEDMPI_HPP
 
-#include "parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp"
-#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
+#include <sgpp/parallel/pde/operation/OperationParabolicPDESolverSystemDirichletCombined.hpp>
+#include <sgpp/parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp>
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 namespace sg {
   namespace parallel {

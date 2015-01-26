@@ -8,7 +8,7 @@
 #ifndef LAPLACEENHANCEDDOWNBBLINEARBOUNDARY_HPP
 #define LAPLACEENHANCEDDOWNBBLINEARBOUNDARY_HPP
 
-#include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp"
+#include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp>
 
 namespace sg {
   namespace pde {

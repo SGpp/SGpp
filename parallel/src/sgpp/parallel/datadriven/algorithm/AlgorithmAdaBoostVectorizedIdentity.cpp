@@ -7,10 +7,10 @@
 // @author Benjamin (pehersto@in.tum.de)
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
-#include "parallel/datadriven/algorithm/AlgorithmAdaBoostVectorizedIdentity.hpp"
-#include "parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/parallel/datadriven/algorithm/AlgorithmAdaBoostVectorizedIdentity.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMWeightMatrixVectorizedIdentity.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 
 namespace sg {
   namespace parallel {

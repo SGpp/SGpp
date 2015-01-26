@@ -14,9 +14,9 @@
 
 #include <string.h>
 
-#include "parallel/datadriven/basis/common/KernelBase.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
+#include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 namespace sg {
   namespace parallel {

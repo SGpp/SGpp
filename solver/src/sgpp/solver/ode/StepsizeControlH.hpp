@@ -8,8 +8,8 @@
 #ifndef STEPSIZECONTROLH_HPP
 #define STEPSIZECONTROLH_HPP
 
-#include "base/application/ScreenOutput.hpp"
-#include "solver/ODESolver.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/solver/ODESolver.hpp>
 #include <string>
 #include "StepsizeControl.hpp"
 

@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/datadriven/basis/common/mic/MICKernelBase.hpp"
-#include "parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp"
-#include "parallel/datadriven/basis/common/X86SimdKernelBase.hpp"
-#include "parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp"
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/datadriven/basis/common/mic/MICKernelBase.hpp>
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
+#include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
+#include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 namespace sg {
 
   namespace parallel {

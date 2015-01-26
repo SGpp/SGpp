@@ -8,8 +8,8 @@
 #ifndef LINEARSTRETCHEDGRID_HPP
 #define LINEARSTRETCHEDGRID_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/grid/common/Stretching.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
 
 #include <iostream>
 

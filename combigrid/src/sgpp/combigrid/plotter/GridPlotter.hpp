@@ -8,7 +8,7 @@
 #ifndef GRIDPLOTTER_HPP_
 #define GRIDPLOTTER_HPP_
 
-#include "combigrid/combigrid/AbstractCombiGrid.hpp"
+#include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
 
 namespace combigrid {
 

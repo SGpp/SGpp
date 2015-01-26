@@ -8,10 +8,10 @@
 #ifndef SLESOLVERSP_HPP
 #define SLESOLVERSP_HPP
 
-#include "base/datatypes/DataVectorSP.hpp"
-#include "base/operation/OperationMatrixSP.hpp"
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
+#include <sgpp/base/operation/OperationMatrixSP.hpp>
 
-#include "solver/SGSolverSP.hpp"
+#include <sgpp/solver/SGSolverSP.hpp>
 
 #ifndef DEFAULT_RES_THRESHOLD
 #define DEFAULT_RES_THRESHOLD -1.0

@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Dirk Pflueger (pflueged@in.tum.de), Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 namespace sg {
   namespace base {

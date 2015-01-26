@@ -9,11 +9,11 @@
 #ifndef KERNELBASE_HPP
 #define KERNELBASE_HPP
 
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
 
 //#define CHECK_KERNEL_CALLS
 #ifdef CHECK_KERNEL_CALLS
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
 // helper macros
 #define ASSERT_EQUAL(arg1, arg2) { \

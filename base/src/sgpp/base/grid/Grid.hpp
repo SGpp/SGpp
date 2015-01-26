@@ -9,9 +9,9 @@
 #define GRID_HPP
 
 
-#include "base/operation/OperationEval.hpp"
-#include "base/basis/Basis.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
+#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/basis/Basis.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <map>
 

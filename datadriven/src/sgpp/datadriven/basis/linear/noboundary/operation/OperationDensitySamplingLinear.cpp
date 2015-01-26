@@ -5,12 +5,12 @@
 ******************************************************************************/
 // @author A. Mo-Hellenbrand
 
-#include "datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.hpp"
-#include "datadriven/operation/OperationDensityConditional.hpp"
-#include "datadriven/operation/OperationDensityMargTo1D.hpp"
-#include "datadriven/operation/OperationDensitySampling1D.hpp"
-#include "datadriven/DatadrivenOpFactory.hpp"
-#include "base/exception/operation_exception.hpp"
+#include <sgpp/datadriven/basis/linear/noboundary/operation/OperationDensitySamplingLinear.hpp>
+#include <sgpp/datadriven/operation/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

@@ -8,12 +8,12 @@
 #ifndef OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAR_HPP
 #define OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAR_HPP
 
-#include "parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
+#include <sgpp/parallel/pde/operation/OperationParabolicPDEMatrixCombined.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #if defined(__SSE4_2__) || defined(__AVX__)
 #include <immintrin.h>

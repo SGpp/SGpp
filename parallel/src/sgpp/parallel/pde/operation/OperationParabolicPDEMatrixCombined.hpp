@@ -8,8 +8,8 @@
 #ifndef OPERATIONPARABOLICPDEMATRIXCOMBINED_HPP
 #define OPERATIONPARABOLICPDEMATRIXCOMBINED_HPP
 
-#include "base/datatypes/DataVector.hpp"
-#include "base/operation/OperationMatrix.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/OperationMatrix.hpp>
 
 namespace sg {
   namespace parallel {

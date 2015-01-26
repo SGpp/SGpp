@@ -7,7 +7,7 @@
 // @author Benjamin (pehersto@in.tum.de)
 
 
-#include "base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp"
+#include <sgpp/base/basis/linear/boundary/operation/OperationQuadratureLinearBoundary.hpp>
 
 
 namespace sg {

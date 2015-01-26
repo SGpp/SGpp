@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "base/grid/generation/StandardGridGenerator.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/exception/generation_exception.hpp"
+#include <sgpp/base/exception/generation_exception.hpp>
 
-#include "base/grid/generation/hashmap/HashCoarsening.hpp"
-#include "base/grid/generation/hashmap/HashRefinement.hpp"
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 namespace sg {
   namespace base {

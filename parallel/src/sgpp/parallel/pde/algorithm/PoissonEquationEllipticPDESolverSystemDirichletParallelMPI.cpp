@@ -5,14 +5,14 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
-#include "parallel/tools/MPI/SGppMPITools.hpp"
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
 
-#include "parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp"
-#include "base/exception/algorithm_exception.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
+#include <sgpp/parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletParallelMPI.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
-#include "pde/algorithm/StdUpDown.hpp"
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/StdUpDown.hpp>
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 using namespace sg::op_factory;
 

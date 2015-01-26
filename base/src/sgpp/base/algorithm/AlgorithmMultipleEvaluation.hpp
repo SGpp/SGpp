@@ -8,12 +8,12 @@
 #ifndef ALGORITHMMULTIPLEEVALUATION_HPP
 #define ALGORTIHMMULTIPLEEVALUATION_HPP
 
-#include "base/grid/GridStorage.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
-#include "base/algorithm/AlgorithmEvaluation.hpp"
-#include "base/algorithm/AlgorithmEvaluationTransposed.hpp"
+#include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
+#include <sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp>
 
 #include <vector>
 #include <utility>

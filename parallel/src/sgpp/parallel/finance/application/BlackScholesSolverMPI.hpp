@@ -9,20 +9,20 @@
 #define BLACKSCHOLESSOLVERMPI_HPP
 
 
-#include "pde/application/ParabolicPDESolver.hpp"
+#include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
-#include "base/grid/type/LinearTrapezoidBoundaryGrid.hpp"
-#include "base/grid/type/LinearGrid.hpp"
-#include "base/grid/common/BoundingBox.hpp"
-#include "solver/ODESolver.hpp"
+#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/solver/ODESolver.hpp>
 
-#include "base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 
-#include "base/tools/StdNormalDistribution.hpp"
+#include <sgpp/base/tools/StdNormalDistribution.hpp>
 
-#include "base/application/ScreenOutput.hpp"
-#include "base/tools/SGppStopwatch.hpp"
+#include <sgpp/base/application/ScreenOutput.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 
 #include <iostream>
 #include <string>

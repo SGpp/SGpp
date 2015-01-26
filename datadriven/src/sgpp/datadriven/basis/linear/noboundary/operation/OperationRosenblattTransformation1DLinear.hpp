@@ -7,8 +7,8 @@
 #ifndef OPERATIONROSENBLATTTRANSFORMATION1DLINEAR_HPP
 #define OPERATIONROSENBLATTTRANSFORMATION1DLINEAR_HPP
 
-#include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationTransformation1D.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/operation/OperationTransformation1D.hpp>
 
 namespace sg {
 namespace datadriven {

@@ -1,4 +1,4 @@
-#include "datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
+#include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 
 namespace sg {
 namespace datadriven {

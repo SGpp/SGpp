@@ -7,7 +7,7 @@
 // @author Roman Karlstetter (karlstetter@mytum.de)
 
 #ifdef USEOCL
-#include "parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp"
+#include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
 
 namespace sg {
   namespace parallel {

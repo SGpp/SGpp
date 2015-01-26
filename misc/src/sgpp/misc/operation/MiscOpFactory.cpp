@@ -6,11 +6,11 @@
 // @author Alexander Heinecke (alexander.heinecke@mytum.de)
 
 #include <cstring>
-#include "base/exception/factory_exception.hpp"
+#include <sgpp/base/exception/factory_exception.hpp>
 
-#include "misc/operation/MiscOpFactory.hpp"
-#include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
-#include "misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp"
+#include <sgpp/misc/operation/MiscOpFactory.hpp>
+#include <sgpp/misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp>
+#include <sgpp/misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp>
 
 namespace sg {
 

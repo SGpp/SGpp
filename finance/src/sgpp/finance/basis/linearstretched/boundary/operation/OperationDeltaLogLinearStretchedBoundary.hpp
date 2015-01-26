@@ -8,7 +8,7 @@
 #ifndef OPERATIONDELTALOGLINEARSTRETCHEDBOUNDARY_HPP
 #define OPERATIONDELTALOGLINEARSTRETCHEDBOUNDARY_HPP
 
-#include "pde/algorithm/UpDownOneOpDim.hpp"
+#include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 
 namespace sg {

@@ -7,9 +7,9 @@
 #ifndef GRIDSTORAGE_HPP
 #define GRIDSTORAGE_HPP
 
-#include "base/grid/storage/hashmap/HashGridIndex.hpp"
-#include "base/grid/storage/hashmap/HashGridStorage.hpp"
-#include "base/grid/storage/hashmap/HashGridIterator.hpp"
+#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 
 namespace sg {
 namespace base {

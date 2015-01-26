@@ -8,8 +8,8 @@
 #ifndef REFINEMENTANOVASTRATEGY_HPP_
 #define REFINEMENTANOVASTRATEGY_HPP_
 
-#include "base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
-#include "base/grid/generation/hashmap/AbstractRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 
 namespace sg {
   namespace base {

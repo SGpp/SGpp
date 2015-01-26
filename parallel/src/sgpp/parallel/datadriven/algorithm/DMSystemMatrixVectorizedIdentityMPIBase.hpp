@@ -9,15 +9,15 @@
 #ifndef DMSYSTEMMATRIXVECTORIZEDIDENTITYMPIBASE_HPP
 #define DMSYSTEMMATRIXVECTORIZEDIDENTITYMPIBASE_HPP
 
-#include "datadriven/algorithm/DMSystemMatrixBase.hpp"
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/exception/operation_exception.hpp"
-#include "base/grid/Grid.hpp"
-#include "parallel/tools/TypesParallel.hpp"
-#include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp>
 
 
 namespace sg {

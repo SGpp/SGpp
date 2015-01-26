@@ -5,7 +5,7 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
-#include "base/grid/common/BoundingBox.hpp"
+#include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sstream>
 
 namespace sg {

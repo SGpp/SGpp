@@ -8,12 +8,12 @@
 #ifndef HESTONPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
 #define HESTONPARABOLICPDESOLVERSYSTEMEUROAMER_HPP
 
-#include "base/grid/Grid.hpp"
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
-#include "finance/tools/Hedging.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
+#include <sgpp/finance/tools/Hedging.hpp>
 
 namespace sg {
   namespace finance {

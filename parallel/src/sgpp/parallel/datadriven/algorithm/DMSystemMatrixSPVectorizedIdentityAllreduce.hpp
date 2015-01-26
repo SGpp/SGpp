@@ -9,14 +9,14 @@
 #ifndef DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H
 #define DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H
 
-#include "base/exception/operation_exception.hpp"
-#include "base/grid/Grid.hpp"
-#include "parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPIBase.hpp"
-#include "parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp"
-#include "parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp"
-#include "parallel/tools/MPI/SGppMPITools.hpp"
-#include "parallel/tools/PartitioningTool.hpp"
-#include "parallel/tools/TypesParallel.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentityMPIBase.hpp>
+#include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
+#include <sgpp/parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp>
+#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
+#include <sgpp/parallel/tools/PartitioningTool.hpp>
+#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 namespace sg {
   namespace parallel {

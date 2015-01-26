@@ -1,4 +1,4 @@
-#include "base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include "LearnerSGD.hpp"
 #include <cmath>
 

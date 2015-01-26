@@ -8,8 +8,8 @@
 #ifndef OPERATIONDENSITYMARGTO1DLINEAR_HPP
 #define OPERATIONDENSITYMARGTO1DLINEAR_HPP
 
-#include "base/grid/Grid.hpp"
-#include "datadriven/operation/OperationDensityMargTo1D.hpp"
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/operation/OperationDensityMargTo1D.hpp>
 #include <cstring>
 
 namespace sg {

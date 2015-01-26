@@ -5,13 +5,13 @@
 ******************************************************************************/
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de), Dirk Pflueger (pflueged@in.tum.de)
 
-#include "base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp"
-#include "base/grid/GridStorage.hpp"
+#include <sgpp/base/grid/generation/StretchedTrapezoidBoundaryGridGenerator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp"
-#include "base/grid/generation/hashmap/HashCoarsening.hpp"
-#include "base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
-#include "base/grid/generation/hashmap/HashGenerator.hpp"
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 namespace sg {
   namespace base {

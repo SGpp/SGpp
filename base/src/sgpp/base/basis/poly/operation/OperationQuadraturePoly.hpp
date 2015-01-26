@@ -8,9 +8,9 @@
 #ifndef OPERATIONQUADRATUREPOLY_HPP
 #define OPERATIONQUADRATUREPOLY_HPP
 
-#include "base/operation/OperationQuadrature.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/basis/poly/PolyBasis.hpp"
+#include <sgpp/base/operation/OperationQuadrature.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/basis/poly/PolyBasis.hpp>
 
 namespace sg {
   namespace base {
