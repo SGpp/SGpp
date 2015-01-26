@@ -4,7 +4,7 @@ import sys, os, re, optparse, random, math
 sys.path.append("../../bin/")
 import tools
 
-from bin.pysgpp import *
+from pysgpp import *
 
 # parse args
 parser = optparse.OptionParser()

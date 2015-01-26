@@ -1,7 +1,7 @@
 import unittest
 import math
 import random
-from bin.pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
+from pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
 
 class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 

@@ -1,7 +1,7 @@
 import unittest
 import math
 import random
-from bin.pysgpp import Grid, DataVector, DataMatrix, WeightedErrorRefinementFunctor
+from pysgpp import Grid, DataVector, DataMatrix, WeightedErrorRefinementFunctor
 
 class TestWeightedRefinementOperator(unittest.TestCase):
 

@@ -1,7 +1,7 @@
 import unittest
 import math
 import random
-from bin.pysgpp import Grid, DataVector, DataMatrix, DimensionBoundary, BoundingBox, createOperationMultipleEval
+from pysgpp import Grid, DataVector, DataMatrix, DimensionBoundary, BoundingBox, createOperationMultipleEval
 
 class TestAlgorithmMultipleEval(unittest.TestCase):
 
