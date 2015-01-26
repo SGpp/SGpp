@@ -3,14 +3,14 @@ import os
 import sys
 import subprocess
 import shlex
-from matplotlib.compat.subprocess import CalledProcessError
 
 # get all files in a folder matching "SConscript*"
 # path has to end with "/"
-def getModules(path):
-    if path[-1] != '/':
-        path += '/'
+def getModules():
     
+#     if path[-1] != '/':
+#         path += '/'
+    path = '#/'
     suffix = '/SConscript'
     searchString = path + '*' + suffix
     modulePaths = glob.glob(searchString)
