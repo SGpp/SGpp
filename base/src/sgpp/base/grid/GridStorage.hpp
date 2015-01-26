@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 typedef unsigned int level_t;

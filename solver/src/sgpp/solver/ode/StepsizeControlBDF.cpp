@@ -14,10 +14,13 @@
 #include <fstream>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, sg::base::ScreenOutput* screen)
+    StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps, SGPP::base::ScreenOutput* screen)
       : VarTimestep("AdBas", "BDF2", nTimesteps, timestepSize, eps, screen) {
       std::stringstream fnsstream;
       fnsstream << "Time_" << "SCBDF" << this->myEps << ".gnuplot";

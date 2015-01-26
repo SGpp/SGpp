@@ -12,7 +12,10 @@
 
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationEvalPeriodic::eval(DataVector& alpha, std::vector<double>& point) {

@@ -16,10 +16,13 @@
 #include <sstream>
 #include <fstream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    StepsizeControlH::StepsizeControlH(std::string odesolver, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen, double gamma)
+    StepsizeControlH::StepsizeControlH(std::string odesolver, size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen, double gamma)
       : StepsizeControl(imax, timestepSize, eps, 1.0, screen, gamma), _odesolver(odesolver) {
       this->residuum = 0.0;
       this->myEps = eps;
@@ -31,8 +34,8 @@ namespace sg {
     StepsizeControlH::~StepsizeControlH() {
     }
 
-    void StepsizeControlH::predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
-                                     double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector& corr, sg::base::DataVector* rhs) {
+    void StepsizeControlH::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+                                     double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       System.setODESolver(_odesolver);
       System.setTimestepSize(tmp_timestepsize);
 
@@ -50,7 +53,7 @@ namespace sg {
       System.abortTimestep();
     }
 
-    void StepsizeControlH::corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector* rhs) {
+    void StepsizeControlH::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       System.setODESolver(_odesolver);
       System.setTimestepSize(tmp_timestepsize / 2.0);
 

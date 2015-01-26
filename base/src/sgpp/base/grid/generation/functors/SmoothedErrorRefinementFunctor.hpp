@@ -14,7 +14,10 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

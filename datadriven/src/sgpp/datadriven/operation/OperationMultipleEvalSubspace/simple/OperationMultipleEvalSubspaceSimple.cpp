@@ -1,7 +1,10 @@
 #include <limits>
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 namespace x86simple {
 
@@ -102,7 +105,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
 
     //calculate the maxLevel first
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
             if (curLevel > maxLevel) {
@@ -113,7 +116,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
 
     //create map of subspaces -> now we know which subspaces actually exist in the grid
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
 
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
@@ -322,7 +325,7 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(base::DataVector &surp
     base::level_t curLevel;
     base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
             level[d] = curLevel;
@@ -343,7 +346,7 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector &result) {
     base::level_t curLevel;
     base::index_t curIndex;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
             level[d] = curLevel;

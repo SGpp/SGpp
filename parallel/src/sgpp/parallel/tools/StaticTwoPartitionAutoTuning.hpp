@@ -10,7 +10,10 @@
 #define STATICTWOPARTITIONAUTOTUNING_HPP
 
 #include "TwoPartitionAutoTuning.hpp"
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
 

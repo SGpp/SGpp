@@ -5,7 +5,10 @@
 #endif
 #include "OCLPDEKernels.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 
@@ -72,14 +75,14 @@ namespace sg {
                            REAL* ptrIndex,
                            REAL* ptrLevel_int,
                            size_t localStorageSize,
-                           size_t localdim, sg::base::GridStorage* storage);
+                           size_t localdim, SGPP::base::GridStorage* storage);
 #ifdef USE_MPI
       extern int* MPIOffsetListBound;
       extern int* MPISizeListBound;
       /// Creates partitions of the work load along the j-direction for the operators on the boundary grid.
       void SetUpMPIBound();
       /// Computes the sum of all subresults result on all processes. Then it distributes results for the inner grid back into the complete grid containing the boundary
-      void MPI_ShareResultAllReduceBound(sg::base::DataVector& result);
+      void MPI_ShareResultAllReduceBound(SGPP::base::DataVector& result);
 #endif
       /// Deallocates all data pertaining to the Laplace operator on the boundary grid
       void CleanUpLaplaceBound();

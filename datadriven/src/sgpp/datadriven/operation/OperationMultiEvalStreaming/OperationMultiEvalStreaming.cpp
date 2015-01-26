@@ -1,6 +1,9 @@
 #include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 #undef __SSE3__
@@ -8,7 +11,7 @@ namespace datadriven {
 
 OperationMultiEvalStreaming::OperationMultiEvalStreaming(base::Grid &grid,
         base::DataMatrix &dataset) :
-    OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer_(sg::base::SGppStopwatch()), duration(-1.0) {
+    OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer_(SGPP::base::SGppStopwatch()), duration(-1.0) {
     this->storage = grid.getStorage();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
@@ -28,12 +31,12 @@ void OperationMultiEvalStreaming::getPartitionSegment(size_t start, size_t end, 
 
     // check for valid input
     if (blockSize == 0) {
-        throw sg::base::operation_exception("blockSize must not be zero!");
+        throw SGPP::base::operation_exception("blockSize must not be zero!");
     }
 
     if (totalSize % blockSize != 0) {
         //std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
-        throw sg::base::operation_exception(
+        throw SGPP::base::operation_exception(
             "totalSize must be divisible by blockSize without remainder, but it is not!");
     }
 
@@ -69,7 +72,7 @@ size_t OperationMultiEvalStreaming::getChunkDataPoints() {
     return 24; // must be divisible by 24
 }
 
-void OperationMultiEvalStreaming::mult(sg::base::DataVector &alpha, sg::base::DataVector &result) {
+void OperationMultiEvalStreaming::mult(SGPP::base::DataVector &alpha, SGPP::base::DataVector &result) {
     this->myTimer_.start();
 
     this->recalculateLevelAndIndex();
@@ -91,8 +94,8 @@ void OperationMultiEvalStreaming::mult(sg::base::DataVector &alpha, sg::base::Da
     this->duration = this->myTimer_.stop();
 }
 
-void OperationMultiEvalStreaming::multTranspose(sg::base::DataVector &source,
-        sg::base::DataVector &result) {
+void OperationMultiEvalStreaming::multTranspose(SGPP::base::DataVector &source,
+        SGPP::base::DataVector &result) {
     this->myTimer_.start();
     this->recalculateLevelAndIndex();
 
@@ -127,13 +130,13 @@ void OperationMultiEvalStreaming::recalculateLevelAndIndex() {
     if (this->index_ != nullptr)
         delete this->index_;
 
-    this->level_ = new sg::base::DataMatrix(this->storage->size(), this->storage->dim());
-    this->index_ = new sg::base::DataMatrix(this->storage->size(), this->storage->dim());
+    this->level_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
+    this->index_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
 
     this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
-size_t OperationMultiEvalStreaming::padDataset(sg::base::DataMatrix &dataset) {
+size_t OperationMultiEvalStreaming::padDataset(SGPP::base::DataMatrix &dataset) {
 
     size_t vecWidth = 24;
 
@@ -142,7 +145,7 @@ size_t OperationMultiEvalStreaming::padDataset(sg::base::DataMatrix &dataset) {
     size_t loopCount = vecWidth - remainder;
 
     if (loopCount != vecWidth) {
-        sg::base::DataVector lastRow(dataset.getNcols());
+        SGPP::base::DataVector lastRow(dataset.getNcols());
         size_t oldSize = dataset.getNrows();
         dataset.getRow(dataset.getNrows() - 1, lastRow);
         dataset.resize(dataset.getNrows() + loopCount);

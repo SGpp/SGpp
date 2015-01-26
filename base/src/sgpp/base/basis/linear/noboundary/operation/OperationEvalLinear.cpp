@@ -12,7 +12,10 @@
 #include <sgpp/base/basis/linear/noboundary/operation/OperationEvalLinear.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point) {

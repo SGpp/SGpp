@@ -9,7 +9,10 @@
 #ifdef USEOCL
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     unsigned int get_ocl_local_size() {

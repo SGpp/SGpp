@@ -30,7 +30,10 @@
 #include <fstream>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -47,9 +50,9 @@ namespace sg {
         /// the heat coefficient
         double a;
         /// screen object used in this solver
-        sg::base::ScreenOutput* myScreen;
+        SGPP::base::ScreenOutput* myScreen;
         ////BoundingBox replacement
-        sg::base::Stretching* myStretching;
+        SGPP::base::Stretching* myStretching;
 
       public:
         /**
@@ -62,15 +65,15 @@ namespace sg {
          */
         virtual ~HeatEquationSolverWithStretching();
 
-        void constructGrid(sg::base::Stretching& myStretching, int level);
+        void constructGrid(SGPP::base::Stretching& myStretching, int level);
 
-        void constructGrid(sg::base::BoundingBox& myStretching, int level);
+        void constructGrid(SGPP::base::BoundingBox& myStretching, int level);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * This method sets the heat coefficient of the regarded material
@@ -85,7 +88,7 @@ namespace sg {
          * alpha reference to the coefficients vector
          * heat the value of the heat in the middle of the domain
          */
-        //  void initGridWithSingleHeat(sg::base::DataVector& alpha, double heat);
+        //  void initGridWithSingleHeat(SGPP::base::DataVector& alpha, double heat);
 
         /**
          * Inits the grid in the middle the domain with an smooth heat distribution that the
@@ -96,7 +99,7 @@ namespace sg {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeat(sg::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
 
         /**
          * Inits the grid with a constant heat
@@ -104,7 +107,7 @@ namespace sg {
          * alpha reference to the coefficients vector
          * constHeat the temperature of the constant heat
          */
-        //  void initGridWithConstantHeat(sg::base::DataVector& alpha, double constHeat);
+        //  void initGridWithConstantHeat(SGPP::base::DataVector& alpha, double constHeat);
 
         /**
          * Inits the screen object
@@ -121,12 +124,12 @@ namespace sg {
          * @param PointesPerDimension the distance between evaluation points
          * @param tfilename absolute path to file into which the grid's evaluation is written
          */
-        void printGrid(sg::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+        void printGrid(SGPP::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
 
         /**
          This function is a placeholder, is not used.
          */
-        void printGridDomain(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::BoundingBox& GridArea, std::string tfilename) const;
+        void printGridDomain(SGPP::base::DataVector& alpha, double PointesPerDimension, SGPP::base::BoundingBox& GridArea, std::string tfilename) const;
 
         /**
          * This is some kind of debug functionality. It writes a file,
@@ -139,10 +142,10 @@ namespace sg {
          * @param GridArea the area in which the function should be plotted
          * @param tfilename absolute path to file into which the grid's evaluation is written
          */
-        void printGridDomainStretching(sg::base::DataVector& alpha, double PointesPerDimension, sg::base::Stretching& GridArea, std::string tfilename) const;
+        void printGridDomainStretching(SGPP::base::DataVector& alpha, double PointesPerDimension, SGPP::base::Stretching& GridArea, std::string tfilename) const;
 
         /**
-         * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
+         * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value
          * or their hierarchical surplus
          *
          * This function is available for all dimensions
@@ -151,10 +154,10 @@ namespace sg {
          * @param tfilename absoulte path to the file the grid is written into
          * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
          */
-        void printSparseGrid(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
+        void printSparseGrid(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
         /**
-         * Prints the sg::base::Grid Points of the Sparse sg::base::Grid either with their node basis value
+         * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value
          * or their hierarchical surplus
          *
          * This function is available for all dimensions.
@@ -166,7 +169,7 @@ namespace sg {
          * @param tfilename absoulte path to the file the grid is written into
          * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
          */
-        void printSparseGridExpTransform(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
+        void printSparseGridExpTransform(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
     };
 

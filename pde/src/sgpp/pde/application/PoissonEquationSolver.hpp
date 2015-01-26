@@ -25,7 +25,10 @@
 #include <fstream>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -40,7 +43,7 @@ namespace sg {
     class PoissonEquationSolver : public EllipticPDESolver {
       private:
         /// screen object used in this solver
-        sg::base::ScreenOutput* myScreen;
+        SGPP::base::ScreenOutput* myScreen;
 
       public:
         /**
@@ -53,9 +56,9 @@ namespace sg {
          */
         virtual ~PoissonEquationSolver();
 
-        void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
+        void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
-        void solvePDE(sg::base::DataVector& alpha, sg::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false);
+        void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false);
 
         /**
          * Inits the grid with a smooth heat distribution (based on
@@ -69,7 +72,7 @@ namespace sg {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeat(sg::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
 
         /**
          * Inits the grid with a smooth heat distribution (based on
@@ -84,7 +87,7 @@ namespace sg {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeatFullDomain(sg::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
 
         /**
          * Inits the grid with a heat distribution based on
@@ -96,7 +99,7 @@ namespace sg {
          * @param alpha reference to the coefficient's vector
          * @param factor a constant factor used to enlarge the exp-functions input parameter
          */
-        void initGridWithExpHeat(sg::base::DataVector& alpha, double factor = 1.0);
+        void initGridWithExpHeat(SGPP::base::DataVector& alpha, double factor = 1.0);
 
         /**
          * Inits the grid with a heat distribution based on
@@ -108,7 +111,7 @@ namespace sg {
          * @param alpha reference to the coefficient's vector
          * @param factor a constant factor used to enlarge the exp-functions input parameter
          */
-        void initGridWithExpHeatFullDomain(sg::base::DataVector& alpha, double factor = 1.0);
+        void initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha, double factor = 1.0);
 
         /**
          * Routine to export the RHS of the inner system which has to be
@@ -117,7 +120,7 @@ namespace sg {
          * @param alpha the start solution
          * @param tFilename file into which the rhs is written
          */
-        void storeInnerRHS(sg::base::DataVector& alpha, std::string tFilename);
+        void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename);
 
         /**
          * Routine to export the solution of the inner system which
@@ -128,7 +131,7 @@ namespace sg {
          * @param epsilonCG the epsilon used in the C
          * @param tFilename file into which the rhs is written
          */
-        void storeInnerSolution(sg::base::DataVector& alpha, size_t maxCGIterations, double epsilonCG, std::string tFilename);
+        void storeInnerSolution(SGPP::base::DataVector& alpha, size_t maxCGIterations, double epsilonCG, std::string tFilename);
 
         /**
          * Inits the screen object

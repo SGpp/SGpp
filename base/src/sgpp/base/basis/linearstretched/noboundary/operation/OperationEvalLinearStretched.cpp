@@ -13,7 +13,10 @@
 #include <sgpp/base/basis/linearstretched/noboundary/operation/OperationEvalLinearStretched.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationEvalLinearStretched::eval(DataVector& alpha, std::vector<double>& point) {

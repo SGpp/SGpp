@@ -16,7 +16,10 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -31,19 +34,19 @@ namespace sg {
     class OperationMultipleEvalVectorized {
       protected:
         /// Pointer to the grid's gridstorage object
-        sg::base::GridStorage* storage_;
+        SGPP::base::GridStorage* storage_;
         /// Pointer to the dataset that should be evaluated on the grid
-        sg::base::DataMatrix* dataset_;
+        SGPP::base::DataMatrix* dataset_;
         /// Member to store the sparse grid's levels for better vectorization
-        sg::base::DataMatrix* level_;
+        SGPP::base::DataMatrix* level_;
         /// Member to store the sparse grid's indices for better vectorization
-        sg::base::DataMatrix* index_;
+        SGPP::base::DataMatrix* index_;
         /// Member to store for masks per grid point for better vectorization of modlinear operations
-        sg::base::DataMatrix* mask_;
+        SGPP::base::DataMatrix* mask_;
         /// Member to store offsets per grid point for better vecotrization of modlinear operations
-        sg::base::DataMatrix* offset_;
+        SGPP::base::DataMatrix* offset_;
         /// Timer object to handle time measurements
-        sg::base::SGppStopwatch* myTimer_;
+        SGPP::base::SGppStopwatch* myTimer_;
 
         /// @todo add boundaries to constructor of this class
         size_t m_gridFrom;
@@ -58,7 +61,7 @@ namespace sg {
          * @param storage GridStorage object used in this operation
          * @param dataset data set that should be evaluated on the sparse grid
          */
-        OperationMultipleEvalVectorized(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+        OperationMultipleEvalVectorized(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix* dataset);
 
         /**
          * Destructor
@@ -78,7 +81,7 @@ namespace sg {
          * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
          * @param result the result vector of the matrix vector multiplication
          */
-        virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * Multiplication of @f$B@f$ with vector @f$\alpha@f$
@@ -91,7 +94,7 @@ namespace sg {
          * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
          * @param result the result vector of the matrix vector multiplication
          */
-        virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
+        virtual double multTransposeVectorized(SGPP::base::DataVector& source, SGPP::base::DataVector& result) = 0;
 
         /**
          * rebuilds the DataMatrix for Level and Index in Derivatives

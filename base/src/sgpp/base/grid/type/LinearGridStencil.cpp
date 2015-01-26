@@ -17,7 +17,10 @@
 #include <exception>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {

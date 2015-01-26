@@ -14,7 +14,10 @@
 #include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
@@ -39,8 +42,8 @@ namespace sg {
 
         virtual double test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
         virtual double testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues);
-        virtual double testWithCharacteristicNumber(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& charaNumbers);
-        virtual void calculateROCcurve(sg::base::DataVector& alpha, sg::base::DataMatrix& data, sg::base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve);
+        virtual double testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers);
+        virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve);
 
       protected:
         /// Pointer to base::GridStorage object

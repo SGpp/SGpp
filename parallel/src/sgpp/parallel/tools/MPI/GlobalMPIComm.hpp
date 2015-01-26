@@ -10,7 +10,10 @@
 
 // MPI Support
 #ifdef USE_MPI
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     // @todo MPI (heinecke) Hack, remove if possible
     extern MPICommunicator* myGlobalMPIComm;

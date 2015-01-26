@@ -15,16 +15,19 @@
 #include <cmath>
 #include <assert.h>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage, sg::base::DataVector& lambda) : storage(storage) {
+    OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda) : storage(storage) {
 
-      this->lambda = new sg::base::DataVector(lambda);
+      this->lambda = new SGPP::base::DataVector(lambda);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
-      this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
       lcl_q = new double[this->storage->dim()];
       lcl_q_inv = new double[this->storage->dim()];
       storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
@@ -32,15 +35,15 @@ namespace sg {
 
     }
 
-    OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage) : storage(storage) {
+    OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage) : storage(storage) {
 
 
       this->lambda = new base::DataVector(storage->dim());
       this->lambda->setAll(1.0);
       this->OCLPDEKernelsHandle = OCLPDEKernels();
-      this->level_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->level_int_ = new sg::base::DataMatrix(storage->size(), storage->dim());
-      this->index_ = new sg::base::DataMatrix(storage->size(), storage->dim());
+      this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+      this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
       lcl_q = new double[this->storage->dim()];
       lcl_q_inv = new double[this->storage->dim()];
       storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
@@ -59,7 +62,7 @@ namespace sg {
       this->OCLPDEKernelsHandle.CleanUpGPU();
     }
 
-    void OperationLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       this->OCLPDEKernelsHandle.RunOCLKernelLaplaceBound(alpha, result, lcl_q, lcl_q_inv,
@@ -74,13 +77,13 @@ namespace sg {
 
     }
 
-    void OperationLaplaceVectorizedLinearBoundaryOCL::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
       bool dirichlet = true;
 
       // fill q array
       for (size_t d = 0; d < this->storage->dim(); d++) {
-        sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+        SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
         lcl_q[d] = boundingBox->getIntervalWidth(d);
         lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
         dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);
@@ -90,7 +93,7 @@ namespace sg {
       if (dirichlet) {
         mult_dirichlet(alpha, result);
       } else {
-        throw new sg::base::operation_exception("OperationLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+        throw new SGPP::base::operation_exception("OperationLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
       }
     }
   }

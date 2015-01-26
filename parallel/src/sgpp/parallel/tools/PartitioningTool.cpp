@@ -24,7 +24,10 @@
 #include "omp.h"
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     PartitioningTool::PartitioningTool() {
@@ -44,12 +47,12 @@ namespace sg {
 
       // check for valid input
       if (blockSize == 0 ) {
-        throw sg::base::operation_exception("blockSize must not be zero!");
+        throw SGPP::base::operation_exception("blockSize must not be zero!");
       }
 
       if (totalSize % blockSize != 0 ) {
         //std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
-        throw sg::base::operation_exception("totalSize must be divisible by blockSize without remainder, but it is not!");
+        throw SGPP::base::operation_exception("totalSize must be divisible by blockSize without remainder, but it is not!");
       }
 
       // do all further calculations with complete blocks
@@ -101,8 +104,8 @@ namespace sg {
       size_t myRank = 0;
       size_t numRanks = 1;
 
-      myRank = sg::parallel::myGlobalMPIComm->getMyRank();
-      numRanks = sg::parallel::myGlobalMPIComm->getNumRanks();
+      myRank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+      numRanks = SGPP::parallel::myGlobalMPIComm->getNumRanks();
 
       getPartitionSegment(start, end, numRanks, myRank, segmentStart, segmentEnd, blocksize);
     }

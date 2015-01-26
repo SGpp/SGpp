@@ -22,11 +22,14 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-using namespace sg::pde;
-using namespace sg::solver;
-using namespace sg::base;
+using namespace SGPP::pde;
+using namespace SGPP::solver;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform) : ParabolicPDESolver() {
@@ -221,7 +224,7 @@ namespace sg {
       this->myScreen->writeStartSolve("combine Black Scholes and Hull White Solver");
     }
 
-    void BlackScholesHullWhiteSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
+    void BlackScholesHullWhiteSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
       this->useCoarsen = true;
       this->coarsenThreshold = coarsenThreshold;
       this->refineThreshold = refineThreshold;
@@ -311,7 +314,7 @@ namespace sg {
 
         delete[] dblFuncValues;
 
-        OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {

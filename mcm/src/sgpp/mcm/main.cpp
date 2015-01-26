@@ -1,8 +1,8 @@
 #include "sgpp_mcm.hpp"
 #include <iostream>
 
-using namespace sg::base;
-using namespace sg::mcm;
+using namespace SGPP::base;
+using namespace SGPP::mcm;
 
     int main(void){
       size_t dim = 1;

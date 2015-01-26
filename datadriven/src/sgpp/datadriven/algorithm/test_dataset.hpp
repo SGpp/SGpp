@@ -17,7 +17,10 @@
 #include <utility>
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
@@ -212,7 +215,7 @@ namespace sg {
      * @param ROC_curve DataMatrix into which the ROC curve is stored
      */
     template<class BASIS>
-    void test_calculateROCcurve( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, sg::base::DataVector& thresholds, sg::base::DataMatrix& ROC_curve) {
+    void test_calculateROCcurve( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) {
       size_t num_points = thresholds.getSize();
 
       if (ROC_curve.getNrows() != num_points) {

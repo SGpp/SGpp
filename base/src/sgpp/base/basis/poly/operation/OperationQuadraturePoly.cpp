@@ -9,7 +9,10 @@
 #include <sgpp/base/basis/poly/operation/OperationQuadraturePoly.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     double OperationQuadraturePoly::doQuadrature(DataVector& alpha) {

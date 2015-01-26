@@ -8,24 +8,27 @@
 
 #include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceDownGradientPrewavelet.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    LaplaceDownGradientPrewavelet::LaplaceDownGradientPrewavelet(sg::base::GridStorage* storage) :
+    LaplaceDownGradientPrewavelet::LaplaceDownGradientPrewavelet(SGPP::base::GridStorage* storage) :
       storage(storage) {
     }
 
     LaplaceDownGradientPrewavelet::~LaplaceDownGradientPrewavelet() {
     }
 
-    void LaplaceDownGradientPrewavelet::operator()(sg::base::DataVector& source, sg::base::DataVector& result,
+    void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
         grid_iterator& index, size_t dim) {
 
       size_t _seql2, _seql1, _seq, _seqr1, _seqr2 = 0;
       double _vall2, _vall1, _val, _valr1, _valr2 = 0;
 
-      sg::base::GridStorage::index_type::level_type l, l_old, max_level;
-      sg::base::GridStorage::index_type::index_type i, i_old;
+      SGPP::base::GridStorage::index_type::level_type l, l_old, max_level;
+      SGPP::base::GridStorage::index_type::index_type i, i_old;
 
       double h;
 
@@ -100,7 +103,7 @@ namespace sg {
           _seqr2 = index.seq();
           _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
 
-          temp_current[0] = 2.4 * h * _vall2// sg::base::Grid-point
+          temp_current[0] = 2.4 * h * _vall2// SGPP::base::Grid-point
                             + 0.8 * h * _vall1; //right neighbor
 
           temp_current[1] = temp_old[0]//
@@ -109,7 +112,7 @@ namespace sg {
                             - 0.1 * h * _valr1; //right-right neighbor
 
           for (i = 2; (int)i < (1 << l) - 3; i++) {
-            if (i % 2 == 0) { //On sg::base::Grid-Points
+            if (i % 2 == 0) { //On SGPP::base::Grid-Points
               if ((int)i == (1 << l) - 4) {
                 temp_current[i] = 3.2 * h * _valr1 //current grid point
                                   + 0.8 * h * (_vall1 + _valr2); //neighbors left and right
@@ -141,7 +144,7 @@ namespace sg {
                                        - 0.1 * h * _vall1; //left-left neighbor
 
           temp_current[(1 << l) - 2] = 2.4 * h * _valr2 + 0.8 * h
-                                       * _valr1; //On sg::base::Grid-point
+                                       * _valr1; //On SGPP::base::Grid-point
 
 
         }

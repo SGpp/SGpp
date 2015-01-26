@@ -9,14 +9,17 @@
 #include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     MPICommunicator::MPICommunicator(int myid, int ranks) : myid_(myid), ranks_(ranks) { }
 
     MPICommunicator::~MPICommunicator() { }
 
-    void MPICommunicator::broadcastGridCoefficientsFromRank0(sg::base::DataVector& alpha) {
+    void MPICommunicator::broadcastGridCoefficientsFromRank0(SGPP::base::DataVector& alpha) {
       MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
 
@@ -24,7 +27,7 @@ namespace sg {
       MPI_Bcast((void*)alpha.getPointer(), (int)alpha.getSize(), MPI_FLOAT, 0, MPI_COMM_WORLD);
     }
 
-    void MPICommunicator::reduceGridCoefficientsOnRank0(sg::base::DataVector& alpha) {
+    void MPICommunicator::reduceGridCoefficientsOnRank0(SGPP::base::DataVector& alpha) {
       if (myid_ == 0) {
         MPI_Reduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
       } else {
@@ -32,7 +35,7 @@ namespace sg {
       }
     }
 
-    void MPICommunicator::reduceGridCoefficients(sg::base::DataVector& alpha) {
+    void MPICommunicator::reduceGridCoefficients(SGPP::base::DataVector& alpha) {
       MPI_Allreduce(MPI_IN_PLACE, (void*)alpha.getPointer(), (int)alpha.getSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     }
 
@@ -107,7 +110,7 @@ namespace sg {
       int mySendSize = distributionSizes[myRank];
       int mySendOffset = distributionOffsets[myRank];
 
-      sg::base::DataVector tmp(alpha.getSize());
+      SGPP::base::DataVector tmp(alpha.getSize());
       double* sendbuf = alpha.getPointer();
       MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_DOUBLE,
                      tmp.getPointer(), distributionSizes, distributionOffsets,
@@ -120,7 +123,7 @@ namespace sg {
       int mySendSize = distributionSizes[myRank];
       int mySendOffset = distributionOffsets[myRank];
 
-      sg::base::DataVectorSP tmp(alpha.getSize());
+      SGPP::base::DataVectorSP tmp(alpha.getSize());
       float* sendbuf = alpha.getPointer();
       MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_FLOAT,
                      tmp.getPointer(), distributionSizes, distributionOffsets,
@@ -207,7 +210,7 @@ namespace sg {
     void MPICommunicator::waitForAllRequests(size_t size, MPI_Request* reqs) {
       if (MPI_Waitall((int)(size), reqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
         std::cout << "communication error in waitall" << std::endl;
-        throw sg::base::operation_exception("Communication Error");
+        throw SGPP::base::operation_exception("Communication Error");
       }
     }
 
@@ -218,7 +221,7 @@ namespace sg {
     void MPICommunicator::allreduceSum(base::DataVector& source, base::DataVector& result) {
       if (source.getSize() != result.getSize()) {
         std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
-        throw sg::base::operation_exception("DataVector sizes do not match in allreduce!");
+        throw SGPP::base::operation_exception("DataVector sizes do not match in allreduce!");
       }
 
       MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
@@ -227,7 +230,7 @@ namespace sg {
     void MPICommunicator::allreduceSumSP(base::DataVectorSP& source, base::DataVectorSP& result) {
       if (source.getSize() != result.getSize()) {
         std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
-        throw sg::base::operation_exception("DataVector sizes do not match in allreduce!");
+        throw SGPP::base::operation_exception("DataVector sizes do not match in allreduce!");
       }
 
       MPI_Allreduce(source.getPointer(), result.getPointer(), (int)(source.getSize()), MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);

@@ -10,7 +10,10 @@
 #include <map>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -69,5 +72,5 @@ public:
 typedef std::map<GridStorage::index_type,SubspaceCoarseningErrorContainer,compareLevels> SubspaceCoarseningErrorStorage;
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* SUBSPACECOARSENINGERRORCONTAINER_HPP_ */

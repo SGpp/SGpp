@@ -10,11 +10,14 @@
 
 #include <sgpp/pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
-     * This class uses sg::pde::OperationEllipticPDESolverSystemDirichlet
+     * This class uses SGPP::pde::OperationEllipticPDESolverSystemDirichlet
      * to define a solver system for the Poission Equation.
      *
      * For the mult-routine only the Laplace-Operator is required
@@ -22,14 +25,14 @@ namespace sg {
      * There is a parallelization over all operators, required
      * to solve the poisson equation.
      */
-    class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public sg::pde::OperationEllipticPDESolverSystemDirichlet {
+    class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
       protected:
-        sg::base::OperationMatrix* Laplace_Inner;
-        sg::base::OperationMatrix* Laplace_Complete;
+        SGPP::base::OperationMatrix* Laplace_Inner;
+        SGPP::base::OperationMatrix* Laplace_Complete;
 
-        void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -38,16 +41,16 @@ namespace sg {
          * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
          * @param rhs the right hand side for solving the elliptic PDE
          */
-        PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
+        PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
 
         /**
          * Destructor
          */
         virtual ~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI();
 
-        void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        sg::base::DataVector* generateRHS();
+        SGPP::base::DataVector* generateRHS();
     };
 
   }

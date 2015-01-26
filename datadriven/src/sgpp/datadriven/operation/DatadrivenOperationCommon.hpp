@@ -2,7 +2,10 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 enum class OperationMultipleEvalType {DEFAULT, STREAMING, SUBSPACELINEAR};

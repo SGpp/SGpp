@@ -12,7 +12,10 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace micsp {
 #ifdef __INTEL_OFFLOAD
@@ -32,9 +35,9 @@ namespace sg {
       extern bool multicard_multtrans_fast;
       extern float** tempgrid;
 
-      void uploadGrid(sg::base::DataMatrixSP* level, sg::base::DataMatrixSP* index, sg::base::DataMatrixSP* mask, sg::base::DataMatrixSP* offset);
+      void uploadGrid(SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index, SGPP::base::DataMatrixSP* mask, SGPP::base::DataMatrixSP* offset);
 
-      void uploadData(sg::base::DataMatrixSP* data);
+      void uploadData(SGPP::base::DataMatrixSP* data);
 
       void deleteGrid();
 

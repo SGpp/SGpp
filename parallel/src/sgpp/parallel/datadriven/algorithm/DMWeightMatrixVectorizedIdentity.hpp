@@ -19,11 +19,14 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
-     * Class that implements the virtual class sg::base::OperationMatrix for the
+     * Class that implements the virtual class SGPP::base::OperationMatrix for the
      * application of classification for the Systemmatrix with weight
      *
      * The Identity matrix is used as regularization operator.
@@ -32,16 +35,16 @@ namespace sg {
      * vectorized formulations in SSE, AVX, OpenCL or Intel Array Building Blocks
      * are used.
      */
-    class DMWeightMatrixVectorizedIdentity : public sg::base::OperationMatrix {
+    class DMWeightMatrixVectorizedIdentity : public SGPP::base::OperationMatrix {
       private:
         /// the lambda, the regularisation parameter
         double lamb;
         /// OperationB for calculating the data matrix
-        sg::parallel::OperationMultipleEvalVectorized* B;
+        SGPP::parallel::OperationMultipleEvalVectorized* B;
         /// Pointer to the data vector
-        sg::base::DataMatrix* data;
+        SGPP::base::DataMatrix* data;
         /// Pointer to the weight vector
-        sg::base::DataVector* weight;
+        SGPP::base::DataVector* weight;
         /// Number of orignal training instances
         size_t numTrainingInstances;
         /// Number of patched and used training instances
@@ -60,26 +63,26 @@ namespace sg {
         /// time needed only for the computation of mult transposed, interesting on accelerator boards
         double computeTimeMultTrans;
         /// Stopwatch needed to determine the durations of mult and mult transposed
-        sg::base::SGppStopwatch* myTimer;
+        SGPP::base::SGppStopwatch* myTimer;
 
       public:
         /**
          * Std-Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param trainData reference to sg::base::DataMatrix that contains the training data
+         * @param trainData reference to SGPP::base::DataMatrix that contains the training data
          * @param lambda the lambda, the regression parameter
          * @param w the weights to the training data
          * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
          */
-        DMWeightMatrixVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, double lambda, sg::base::DataVector& w, VectorizationType vecMode);
+        DMWeightMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda, SGPP::base::DataVector& w, VectorizationType vecMode);
 
         /**
          * Std-Destructor
          */
         virtual ~DMWeightMatrixVectorizedIdentity();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * Generates the right hand side of the classification equation
@@ -87,10 +90,10 @@ namespace sg {
          * @param classes the class information of the training data
          * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
          */
-        void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
+        void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 
         /**
-         * rebuilds the sg::base::DataMatrix for Level and Index
+         * rebuilds the SGPP::base::DataMatrix for Level and Index
          */
         void rebuildLevelAndIndex();
 

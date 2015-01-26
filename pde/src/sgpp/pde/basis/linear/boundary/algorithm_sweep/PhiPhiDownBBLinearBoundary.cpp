@@ -7,16 +7,19 @@
 
 #include <sgpp/pde/basis/linear/boundary/algorithm_sweep/PhiPhiDownBBLinearBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    PhiPhiDownBBLinearBoundary::PhiPhiDownBBLinearBoundary(sg::base::GridStorage* storage) : PhiPhiDownBBLinear(storage) {
+    PhiPhiDownBBLinearBoundary::PhiPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage) : PhiPhiDownBBLinear(storage) {
     }
 
     PhiPhiDownBBLinearBoundary::~PhiPhiDownBBLinearBoundary() {
     }
 
-    void PhiPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void PhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       //std::cout << dim << std::endl;
       //std::cout << index.toString() << std::endl;
 
@@ -111,5 +114,5 @@ namespace sg {
 
     // namespace detail
   }
-  // namespace sg
+  // namespace SGPP
 }

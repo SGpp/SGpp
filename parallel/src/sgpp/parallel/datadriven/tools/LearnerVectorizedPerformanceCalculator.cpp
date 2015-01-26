@@ -9,12 +9,15 @@
 #include <sgpp/parallel/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
 #include <cstring>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 
-    LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(sg::base::Grid& Grid,
-        size_t numInstances, sg::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype) {
+    LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& Grid,
+        size_t numInstances, SGPP::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype) {
       LearnerVectorizedPerformance result;
 
       result.GByte_ = 0.0;
@@ -25,11 +28,11 @@ namespace sg {
 
       if (strcmp(Grid.getType(), "modlinear") == 0) {
         for (size_t g = 0; g < Grid.getSize(); g++) {
-          sg::base::GridIndex* curPoint = Grid.getStorage()->get(g);
+          SGPP::base::GridIndex* curPoint = Grid.getStorage()->get(g);
 
           for (size_t h = 0; h < nDim; h++) {
-            sg::base::GridStorage::index_type::level_type level;
-            sg::base::GridStorage::index_type::index_type index;
+            SGPP::base::GridStorage::index_type::level_type level;
+            SGPP::base::GridStorage::index_type::index_type index;
 
             curPoint->get(h, level, index);
 
@@ -37,7 +40,7 @@ namespace sg {
             } else if (index == 1) {
               result.GFlop_ += 1e-9 * 8.0 * static_cast<double>(numIterations) * static_cast<double>(numInstances);
               result.GByte_ += 1e-9 * 4.0 * static_cast<double>(numIterations) * static_cast<double>(sizeDatatype) * static_cast<double>(numInstances);
-            } else if (index == static_cast<sg::base::GridStorage::index_type::index_type>((1 << static_cast<sg::base::GridStorage::index_type::index_type>(level)) - 1)) {
+            } else if (index == static_cast<SGPP::base::GridStorage::index_type::index_type>((1 << static_cast<SGPP::base::GridStorage::index_type::index_type>(level)) - 1)) {
               result.GFlop_ += 1e-9 * 10.0 * static_cast<double>(numIterations) * static_cast<double>(numInstances);
               result.GByte_ += 1e-9 * 6.0 * static_cast<double>(numIterations) * static_cast<double>(sizeDatatype) * static_cast<double>(numInstances);
             } else {
@@ -70,7 +73,7 @@ namespace sg {
                          * ((static_cast<double>(nGridsize) * static_cast<double>(numInstances) * static_cast<double>(sizeDatatype)));
       }
 
-      if (solver == sg::solver::BiCGSTAB) {
+      if (solver == SGPP::solver::BiCGSTAB) {
         result.GFlop_ = result.GFlop_ * 2.0;
         result.GByte_ = result.GByte_ * 2.0;
       }

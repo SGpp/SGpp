@@ -6,9 +6,12 @@
 // @author Andreas Doerr, Marcel Schneider, Matthias Moegerle
 #include "SampleGenerator.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace mcm {
 
 void SampleGenerator::getSamples(DataMatrix& samples) {

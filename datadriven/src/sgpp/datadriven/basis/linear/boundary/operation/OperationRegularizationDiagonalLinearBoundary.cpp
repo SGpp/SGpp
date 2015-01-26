@@ -10,7 +10,10 @@
 #include <math.h>
 //#include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     OperationRegularizationDiagonalLinearBoundary::OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, double k)

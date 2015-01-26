@@ -12,7 +12,10 @@
 #include <sgpp/base/algorithm/sweep.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void OperationStencilHierarchisationModLinear::doHierarchisation(DataVector& node_values) {

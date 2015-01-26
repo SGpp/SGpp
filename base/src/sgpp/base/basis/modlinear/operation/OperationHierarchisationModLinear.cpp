@@ -14,7 +14,10 @@
 #include <sgpp/base/algorithm/sweep.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
     /**
      * Implements the hierarchisation on a sprase grid with mod linear base functions

@@ -13,7 +13,10 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -25,22 +28,22 @@ namespace sg {
      * In addition a principal axis transformation is performed in order
      * to reduce the computational effort.
      */
-    class BlackScholesPATParabolicPDESolverSystemEuroAmer : public sg::pde::OperationParabolicPDESolverSystemDirichlet {
+    class BlackScholesPATParabolicPDESolverSystemEuroAmer : public SGPP::pde::OperationParabolicPDESolverSystemDirichlet {
       protected:
         /// the Laplace Operation, on boundary grid
-        sg::base::OperationMatrix* OpLaplaceBound;
+        SGPP::base::OperationMatrix* OpLaplaceBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        sg::base::OperationMatrix* OpLTwoBound;
+        SGPP::base::OperationMatrix* OpLTwoBound;
         /// the Laplace Operation, on Inner grid
-        sg::base::OperationMatrix* OpLaplaceInner;
+        SGPP::base::OperationMatrix* OpLaplaceInner;
         /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-        sg::base::OperationMatrix* OpLTwoInner;
+        SGPP::base::OperationMatrix* OpLTwoInner;
         /// Pointer to the lambda (coefficients of the needed Laplace operator)
-        sg::base::DataVector* lambda;
+        SGPP::base::DataVector* lambda;
         /// Eigenvectors of the covariance matrix
-        sg::base::DataMatrix* eigenvecs;
+        SGPP::base::DataMatrix* eigenvecs;
         /// Pointer to the mu_hat (transformed drifts and correlation, needed for constraint of American options)
-        sg::base::DataVector* mu_hat;
+        SGPP::base::DataVector* mu_hat;
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -54,7 +57,7 @@ namespace sg {
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
         std::string refineMode;
         /// maxLevel max. Level of refinement
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
         /// the algorithmic dimensions used in this system
         std::vector<size_t> BSalgoDims;
         /// store number of executed timesteps
@@ -66,13 +69,13 @@ namespace sg {
         /// teh riskfree rate
         double r;
 
-        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -97,11 +100,11 @@ namespace sg {
          * @param refineMode refineMode during solving Black Scholes Equation: classic or maxLevel
          * @param refineMaxLevel max. level of refinement during solving
          */
-        BlackScholesPATParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-            sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
+        BlackScholesPATParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
+            SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
             double dStrike, std::string option_type, double r,
             bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-            int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
+            int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Std-Destructor

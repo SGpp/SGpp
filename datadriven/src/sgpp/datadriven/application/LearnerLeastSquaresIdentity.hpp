@@ -11,7 +11,10 @@
 #include <sgpp/base/operation/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
 namespace datadriven {
 
@@ -22,18 +25,18 @@ namespace datadriven {
  * Furthermore this Learner provides support for several
  * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
-class LearnerLeastSquaresIdentity: public sg::datadriven::LearnerBase {
+class LearnerLeastSquaresIdentity: public SGPP::datadriven::LearnerBase {
 private:
 	std::vector<std::pair<size_t, double> > ExecTimeOnStep;
 
-	sg::base::OperationMultipleEval *kernel = nullptr;
+	SGPP::base::OperationMultipleEval *kernel = nullptr;
 
-	sg::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
+	SGPP::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 protected:
 
-	virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+	virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
 
-	virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+	virtual void postProcessing(const SGPP::base::DataMatrix& trainDataset, const SGPP::solver::SLESolverType& solver,
 			const size_t numNeededIterations);
 
 public:
@@ -63,13 +66,13 @@ public:
 	 */
 	virtual ~LearnerLeastSquaresIdentity();
 
-	virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
+	virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
 
-	double testRegular(const sg::base::RegularGridConfiguration& GridConfig, sg::base::DataMatrix& testDataset);
+	double testRegular(const SGPP::base::RegularGridConfiguration& GridConfig, SGPP::base::DataMatrix& testDataset);
 
 	std::vector<std::pair<size_t, double> > getRefinementExecTimes();
 
-	void setImplementation(sg::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
+	void setImplementation(SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
 		this->implementationConfiguration = operationConfiguration;
 	}
 };

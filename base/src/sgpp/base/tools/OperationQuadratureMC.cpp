@@ -13,7 +13,10 @@
 #include <cstdlib>
 #include <ctime>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 
@@ -33,7 +36,7 @@ namespace sg {
         }
       }
 
-      OperationMultipleEval* opEval = sg::op_factory::createOperationMultipleEval(*grid, dm);
+      OperationMultipleEval* opEval = SGPP::op_factory::createOperationMultipleEval(*grid, dm);
       DataVector res = DataVector(mcPaths);
       opEval->mult(alpha, res);
       return res.sum() / static_cast<double>(mcPaths);
@@ -63,8 +66,8 @@ namespace sg {
       double x;
       double* p = new double[dim];
 
-      sg::base::DataVector point(dim);
-      OperationEval* opEval = sg::op_factory::createOperationEval(*grid);
+      SGPP::base::DataVector point(dim);
+      OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
       // create number of paths (uniformly drawn from [0,1]^d)
       double res = 0;
 

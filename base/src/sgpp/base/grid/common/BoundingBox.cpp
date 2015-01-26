@@ -8,7 +8,10 @@
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sstream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     BoundingBox::BoundingBox(size_t dim) {

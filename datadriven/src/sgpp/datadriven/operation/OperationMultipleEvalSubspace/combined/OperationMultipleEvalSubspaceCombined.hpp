@@ -10,13 +10,16 @@
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedSubspaceNode.hpp"
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 class OperationMultipleEvalSubspaceCombined: public AbstractOperationMultipleEvalSubspace {
 private:
 
-    sg::base::DataMatrix *paddedDataset;
+    SGPP::base::DataMatrix *paddedDataset;
 
     //size_t subspaceSize = -1;
 
@@ -31,7 +34,7 @@ private:
     uint32_t subspaceCount = -1;
 
     /// Pointer to the grid's gridstorage object
-    //sg::base::GridStorage* storage = nullptr;
+    //SGPP::base::GridStorage* storage = nullptr;
     uint32_t totalRegularGridPoints = -1;
 
 #ifdef X86COMBINED_WRITE_STATS
@@ -42,7 +45,7 @@ private:
 
     void prepareSubspaceIterator();
 
-    void listMultInner(size_t dim, const double * const datasetPtr, sg::base::DataVector &alpha, size_t dataIndexBase,
+    void listMultInner(size_t dim, const double * const datasetPtr, SGPP::base::DataVector &alpha, size_t dataIndexBase,
                        size_t end_index_data, SubspaceNodeCombined &subspace, double *levelArrayContinuous,
                        size_t validIndicesCount, size_t *validIndices, size_t *levelIndices,
                        //size_t *nextIterationToRecalcReferences, size_t nextIterationToRecalc,
@@ -54,9 +57,9 @@ private:
                                     //size_t *nextIterationToRecalcReferences,
                                     double *componentResults, double *evalIndexValuesAll, uint32_t *intermediatesAll);
 
-    void setCoefficients(sg::base::DataVector &surplusVector);
+    void setCoefficients(SGPP::base::DataVector &surplusVector);
 
-    void unflatten(sg::base::DataVector &result);
+    void unflatten(SGPP::base::DataVector &result);
 
     static uint32_t flattenIndex(size_t dim, std::vector<uint32_t> &maxIndices, std::vector<uint32_t> &index);
 
@@ -72,19 +75,19 @@ public:
 
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp"
 
-    OperationMultipleEvalSubspaceCombined(sg::base::Grid &grid, sg::base::DataMatrix &dataset);
+    OperationMultipleEvalSubspaceCombined(SGPP::base::Grid &grid, SGPP::base::DataMatrix &dataset);
 
     ~OperationMultipleEvalSubspaceCombined();
 
     void prepare() override;
 
-    void multTransposeImpl(sg::base::DataVector &alpha, sg::base::DataVector &result, const size_t start_index_data,
+    void multTransposeImpl(SGPP::base::DataVector &alpha, SGPP::base::DataVector &result, const size_t start_index_data,
                            const size_t end_index_data) override;
 
-    void multImpl(sg::base::DataVector &source, sg::base::DataVector &result, const size_t start_index_data,
+    void multImpl(SGPP::base::DataVector &source, SGPP::base::DataVector &result, const size_t start_index_data,
                   const size_t end_index_data) override;
 
-    sg::base::DataMatrix *padDataset(sg::base::DataMatrix &dataset);
+    SGPP::base::DataMatrix *padDataset(SGPP::base::DataMatrix &dataset);
 
     size_t getAlignment() override;
 

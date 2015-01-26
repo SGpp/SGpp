@@ -11,7 +11,10 @@
 #include <sgpp/base/operation/OperationMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -19,14 +22,14 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationMatrixLTwoDotPeriodic: public sg::base::OperationMatrix {
+    class OperationMatrixLTwoDotPeriodic: public SGPP::base::OperationMatrix {
       public:
         /**
          * Constructor
          *
          * @param gird a referenz to the grid
          */
-    	OperationMatrixLTwoDotPeriodic(sg::base::GridStorage* gridStorage);
+    	OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
 
         /**
          * Destructor
@@ -39,11 +42,11 @@ namespace sg {
 		 * @param alpha DataVector that is multiplied to the matrix
 		 * @param result DataVector into which the result of multiplication is stored
 		 */
-		virtual void mult(sg::base::DataVector& alpha,
-						  sg::base::DataVector& result);
+		virtual void mult(SGPP::base::DataVector& alpha,
+						  SGPP::base::DataVector& result);
       protected:
 
-		sg::base::GridStorage* gridStorage;
+		SGPP::base::GridStorage* gridStorage;
     };
 
   }

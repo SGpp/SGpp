@@ -9,16 +9,19 @@
 
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : sg::solver::SLESolverSP(imax, epsilon) {
+    BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : SGPP::solver::SLESolverSP(imax, epsilon) {
     }
 
     BiCGStabSP::~BiCGStabSP() {
     }
 
-    void BiCGStabSP::solve(sg::base::OperationMatrixSP& SystemMatrix, sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
+    void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
       this->nIterations = 1;
       float epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -28,7 +31,7 @@ namespace sg {
       }
 
       //Calculate r0
-      sg::base::DataVectorSP r(alpha.getSize());
+      SGPP::base::DataVectorSP r(alpha.getSize());
       SystemMatrix.mult(alpha, r);
       r.sub(b);
 
@@ -40,9 +43,9 @@ namespace sg {
       }
 
       //Choose r0 as r
-      sg::base::DataVectorSP rZero(r);
+      SGPP::base::DataVectorSP rZero(r);
       // Set p as r0
-      sg::base::DataVectorSP p(rZero);
+      SGPP::base::DataVectorSP p(rZero);
 
       float rho = rZero.dotProduct(r);
       float rho_new = 0.0f;
@@ -51,9 +54,9 @@ namespace sg {
       float omega = 0.0f;
       float beta = 0.0f;
 
-      sg::base::DataVectorSP s(alpha.getSize());
-      sg::base::DataVectorSP v(alpha.getSize());
-      sg::base::DataVectorSP w(alpha.getSize());
+      SGPP::base::DataVectorSP s(alpha.getSize());
+      SGPP::base::DataVectorSP v(alpha.getSize());
+      SGPP::base::DataVectorSP w(alpha.getSize());
 
       s.setAll(0.0);
       v.setAll(0.0);

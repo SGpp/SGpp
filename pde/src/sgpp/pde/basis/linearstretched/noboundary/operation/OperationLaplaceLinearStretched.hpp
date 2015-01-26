@@ -12,7 +12,10 @@
 #include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -27,7 +30,7 @@ namespace sg {
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationLaplaceLinearStretched(sg::base::GridStorage* storage);
+        OperationLaplaceLinearStretched(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -35,15 +38,15 @@ namespace sg {
         virtual ~OperationLaplaceLinearStretched();
 
       protected:
-        virtual void specialOP(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t gradient_dim);
+        virtual void specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t gradient_dim);
 
-        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-        virtual void downOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-        virtual void upOpDim(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
     };
 
   }

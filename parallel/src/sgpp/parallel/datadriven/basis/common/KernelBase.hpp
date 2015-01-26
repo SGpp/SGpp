@@ -20,25 +20,25 @@
   if ( (arg1) != (arg2) ) {\
     std::cerr << #arg1 << " and " << #arg2 << " are not equal: " << arg1 << " != " << arg2 \
     << " (file:" << __FILE__ << ", line:" << __LINE__ << ")" << std::endl; \
-    throw sg::base::operation_exception("values " #arg1 " and " #arg2 " are not equal");\
+    throw SGPP::base::operation_exception("values " #arg1 " and " #arg2 " are not equal");\
   }\
 }
 #define ASSERT_ALIGNMENT(arg, alignment) {\
   if( ( (arg)%(alignment) ) != 0 ) {\
     std::cout << #arg << "(" << arg << ") not aligned to " << #alignment << "(" << alignment << ") (file:" << __FILE__ << ", line:" << __LINE__ << ")" << std::endl; \
-    throw sg::base::operation_exception("argument " #arg " not aligned!");\
+    throw SGPP::base::operation_exception("argument " #arg " not aligned!");\
   }\
 }
 #define ASSERT_GEQ_THAN(arg1, arg2) {\
   if( (arg1) < (arg2) ){\
     std::cout << #arg1 << "(" << arg1 << ") is smaller than " << #arg2 << "(" << arg2 << ") (file:" << __FILE__ << ", line:" << __LINE__ << ")" << std::endl; \
-    throw sg::base::operation_exception(#arg1 " is smaller than " #arg2);\
+    throw SGPP::base::operation_exception(#arg1 " is smaller than " #arg2);\
   }\
 }
 #define ASSERT_LEQ_THAN(arg1, arg2) {\
   if( (arg1) > (arg2) ){\
     std::cout << #arg1 << "(" << arg1 << ") is greater than " << #arg2 << "(" << arg2 << ") (file:" << __FILE__ << ", line:" << __LINE__ << ")" << std::endl; \
-    throw sg::base::operation_exception(#arg1 " is greater than " #arg2);\
+    throw SGPP::base::operation_exception(#arg1 " is greater than " #arg2);\
   }\
 }
 
@@ -77,7 +77,10 @@
 #define CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, s_grid, e_grid, s_data, e_data)
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     enum KernelType {
       Standard,

@@ -12,7 +12,10 @@
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     template<typename KernelImplementation>
@@ -21,7 +24,7 @@ namespace sg {
         /**
          * Constructor of OperationMultipleEvalIterativeSPX86Simd
          *
-         * Within the constructor sg::base::DataMatrixSP Level and sg::base::DataMatrixSP Index are set up.
+         * Within the constructor SGPP::base::DataMatrixSP Level and SGPP::base::DataMatrixSP Index are set up.
          * If the grid changes during your calculations and you don't want to create
          * a new instance of this class, you have to call rebuildLevelAndIndex before
          * doing any further mult or multTranspose calls.
@@ -44,7 +47,7 @@ namespace sg {
           rebuildLevelAndIndex(m_gridFrom, m_gridTo);
         }
 
-        virtual double multVectorized(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
+        virtual double multVectorized(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
           myTimer_->start();
           result.setAll(0.0f);
 
@@ -66,7 +69,7 @@ namespace sg {
           return myTimer_->stop();
         }
 
-        virtual double multTransposeVectorized(sg::base::DataVectorSP& source, sg::base::DataVectorSP& result) {
+        virtual double multTransposeVectorized(SGPP::base::DataVectorSP& source, SGPP::base::DataVectorSP& result) {
           myTimer_->start();
           result.setAll(0.0);
 

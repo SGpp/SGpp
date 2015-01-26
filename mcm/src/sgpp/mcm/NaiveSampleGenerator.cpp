@@ -9,12 +9,15 @@
 
 #include "Random.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
 
-      void NaiveSampleGenerator::getSample(sg::base::DataVector& dv) {
+      void NaiveSampleGenerator::getSample(SGPP::base::DataVector& dv) {
         // generate random sample with dimensionality corresponding to the 
         // size of the given datavector (in 0 to 1)
 	for(size_t i = 0; i < dv.getSize(); i++)

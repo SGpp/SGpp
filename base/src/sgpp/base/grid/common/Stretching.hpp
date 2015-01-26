@@ -20,7 +20,10 @@
 #include <time.h>
 #include <algorithm>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     struct Stretching1D {

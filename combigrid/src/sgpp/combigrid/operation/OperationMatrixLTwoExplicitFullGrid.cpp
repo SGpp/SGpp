@@ -11,7 +11,7 @@
 #include <cmath>
 namespace combigrid {
 
-  OperationMatrixLTwoExplicitFullGrid::OperationMatrixLTwoExplicitFullGrid(sg::base::DataMatrix* m,
+  OperationMatrixLTwoExplicitFullGrid::OperationMatrixLTwoExplicitFullGrid(SGPP::base::DataMatrix* m,
       combigrid::FullGrid<double>* grid) :
     ownsMatrix_(false) {
     m_ = m;
@@ -21,7 +21,7 @@ namespace combigrid {
   OperationMatrixLTwoExplicitFullGrid::OperationMatrixLTwoExplicitFullGrid(
     combigrid::FullGrid<double>* grid) :
     ownsMatrix_(true) {
-    m_ = new sg::base::DataMatrix(grid->getNrElements(), grid->getNrElements());
+    m_ = new SGPP::base::DataMatrix(grid->getNrElements(), grid->getNrElements());
     buildMatrix(grid);
   }
 
@@ -68,14 +68,14 @@ namespace combigrid {
     }
   }
 
-  void OperationMatrixLTwoExplicitFullGrid::mult(sg::base::DataVector& alpha,
-      sg::base::DataVector& result) {
+  void OperationMatrixLTwoExplicitFullGrid::mult(SGPP::base::DataVector& alpha,
+      SGPP::base::DataVector& result) {
 
     unsigned int nrows( static_cast<unsigned int>( m_->getNrows() ) );
     unsigned int ncols( static_cast<unsigned int>( m_->getNcols() ) );
 
     if (alpha.getSize() != ncols || result.getSize() != nrows) {
-      throw sg::base::data_exception("Dimensions do not match!");
+      throw SGPP::base::data_exception("Dimensions do not match!");
     }
 
     double* data = m_->getPointer();

@@ -14,7 +14,10 @@
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -24,18 +27,18 @@ namespace sg {
      * calculation effort for higher dimensional cases.
      *
      */
-    class BlackScholesPATParabolicPDESolverSystem : public sg::pde::OperationParabolicPDESolverSystemFreeBoundaries {
+    class BlackScholesPATParabolicPDESolverSystem : public SGPP::pde::OperationParabolicPDESolverSystemFreeBoundaries {
       protected:
         /// the Laplace Operation, on boundary grid
-        sg::base::OperationMatrix* OpLaplaceBound;
+        SGPP::base::OperationMatrix* OpLaplaceBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        sg::base::OperationMatrix* OpLTwoBound;
+        SGPP::base::OperationMatrix* OpLTwoBound;
         /// Eigenvalues of the covariance matrix
-        sg::base::DataVector* lambda;
+        SGPP::base::DataVector* lambda;
         /// Eigenvectors of the covariance matrix
-        sg::base::DataMatrix* eigenvecs;
+        SGPP::base::DataMatrix* eigenvecs;
         /// Pointer to the mu_hat (transformed drifts and correlation, needed for constraint of American options)
-        sg::base::DataVector* mu_hat;
+        SGPP::base::DataVector* mu_hat;
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -49,15 +52,15 @@ namespace sg {
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
         std::string refineMode;
         /// maxLevel max. Level of refinement
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
         /// the algorithmic dimensions used in this system
         std::vector<size_t> BSalgoDims;
         /// Routine to modify the boundaries/inner points of the grid
-        sg::base::DirichletUpdateVector* BoundaryUpdate;
+        SGPP::base::DirichletUpdateVector* BoundaryUpdate;
 
-        virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrix(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrix(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
@@ -81,11 +84,11 @@ namespace sg {
          * @param dStrike the option's strike value
          * @param option_type type of option used here
          */
-        BlackScholesPATParabolicPDESolverSystem(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& lambda,
-                                                sg::base::DataMatrix& eigenvecs, sg::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
+        BlackScholesPATParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
+                                                SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
                                                 double dStrike, std::string option_type,
                                                 bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                                int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", sg::base::GridIndex::level_type refineMaxLevel = 0);
+                                                int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Std-Destructor

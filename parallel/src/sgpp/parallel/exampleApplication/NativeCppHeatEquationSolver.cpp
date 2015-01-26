@@ -41,7 +41,7 @@
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
+int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
   std::fstream file;
   double cur_coord;
 
@@ -76,7 +76,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
   i = 0;
 
   while (!file.eof()) {
-    sg::base::DataVector line(dim);
+    SGPP::base::DataVector line(dim);
     line.setAll(0.0);
 
     for (size_t d = 0; d < dim; d++) {
@@ -100,7 +100,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readCuboidValues(sg::base::DataVector& values, std::string tFile) {
+int readCuboidValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
   double cur_value;
 
@@ -145,7 +145,7 @@ int readCuboidValues(sg::base::DataVector& values, std::string tFile) {
  *
  * @return error code
  */
-int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
+int writeDataMatrix(SGPP::base::DataMatrix& data, std::string tFile) {
   std::ofstream file;
   file.open(tFile.c_str());
 
@@ -176,7 +176,7 @@ int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
  *
  * @return error code
  */
-int writeDataVector(sg::base::DataVector& data, std::string tFile) {
+int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
   std::ofstream file;
   file.open(tFile.c_str());
 
@@ -200,7 +200,7 @@ int writeDataVector(sg::base::DataVector& data, std::string tFile) {
  * after creating a screen.
  */
 void writeHelp() {
-  sg::pde::HeatEquationSolver* myHESolver = new sg::pde::HeatEquationSolver();
+  SGPP::pde::HeatEquationSolver* myHESolver = new SGPP::pde::HeatEquationSolver();
 
   myHESolver->initScreen();
 
@@ -290,12 +290,12 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
                       double cg_eps, size_t cg_its) {
   size_t timesteps = (size_t)(T / dt);
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
-  sg::base::DataMatrix EvalPoints(1, dim);
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
+  SGPP::base::DataMatrix EvalPoints(1, dim);
   std::string tFileEvalCuboid = "EvalPointsHeatEquation.data";
   std::string tFileEvalCuboidValues = "EvalValuesHeatEquation.data";
   size_t evalPoints = NUMEVALPOINTS;
-  std::vector<sg::base::DataVector> results;
+  std::vector<SGPP::base::DataVector> results;
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -305,11 +305,11 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
     myBoundaries[i].bDirichletRight = true;
   }
 
-  sg::pde::HeatEquationSolver* myHESolver = new sg::pde::HeatEquationSolver();
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::pde::HeatEquationSolver* myHESolver = new SGPP::pde::HeatEquationSolver();
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
 
-  sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+  SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
 
   // init Screen Object
   myHESolver->initScreen();
@@ -326,7 +326,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
     }
 
     // init the basis functions' coefficient vector (start solution)
-    sg::base::DataVector* alpha = new sg::base::DataVector(myHESolver->getNumberGridPoints());
+    SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myHESolver->getNumberGridPoints());
 
     if (initFunc == "smooth") {
       myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);
@@ -362,7 +362,7 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
     // Calculate Norms
     // Evaluate Cuboid
-    sg::base::DataVector PoisEvals(EvalPoints.getNrows());
+    SGPP::base::DataVector PoisEvals(EvalPoints.getNrows());
     myHESolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
     results.push_back(PoisEvals);
 
@@ -390,8 +390,8 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
       // Calculate relative errors and some norms
       for (size_t j = 0; j < l - start_level; j++) {
-        sg::base::DataVector maxLevel(results[l - start_level]);
-        sg::base::DataVector relError(results[j]);
+        SGPP::base::DataVector maxLevel(results[l - start_level]);
+        SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
 
@@ -498,12 +498,12 @@ void testHeatEquation(size_t dim, size_t start_level, size_t end_level, double b
 
 void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, double bound_left, double bound_right,
                          std::string initFunc, double cg_eps, size_t cg_its) {
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
-  sg::base::DataMatrix EvalPoints(1, dim);
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
+  SGPP::base::DataMatrix EvalPoints(1, dim);
   std::string tFileEvalCuboid = "EvalPointsPoisson.data";
   std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
   size_t evalPoints = NUMEVALPOINTS;
-  std::vector<sg::base::DataVector> results;
+  std::vector<SGPP::base::DataVector> results;
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -513,11 +513,11 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
     myBoundaries[i].bDirichletRight = true;
   }
 
-  sg::pde::PoissonEquationSolver* myPoisSolver = new sg::pde::PoissonEquationSolver();
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::pde::PoissonEquationSolver* myPoisSolver = new SGPP::pde::PoissonEquationSolver();
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
 
-  sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+  SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
 
   // init Screen Object
   myPoisSolver->initScreen();
@@ -534,7 +534,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
     }
 
     // init the basis functions' coefficient vector (start solution)
-    sg::base::DataVector* alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
+    SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myPoisSolver->getNumberGridPoints());
 
     if (initFunc == "smooth") {
       myPoisSolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);
@@ -563,7 +563,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
     // Calculate Norms
     // Evaluate Cuboid
-    sg::base::DataVector PoisEvals(EvalPoints.getNrows());
+    SGPP::base::DataVector PoisEvals(EvalPoints.getNrows());
     myPoisSolver->evaluateCuboid(*alpha, PoisEvals, EvalPoints);
     results.push_back(PoisEvals);
 
@@ -591,8 +591,8 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
       // Calculate relative errors and some norms
       for (size_t j = 0; j < l - start_level; j++) {
-        sg::base::DataVector maxLevel(results[l - start_level]);
-        sg::base::DataVector relError(results[j]);
+        SGPP::base::DataVector maxLevel(results[l - start_level]);
+        SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
 
@@ -677,7 +677,7 @@ void testPoissonEquation(size_t dim, size_t start_level, size_t end_level, doubl
 
 void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine, size_t max_ref_level, size_t num_refines, double refine_thres, double bound_left, double bound_right,
                               std::string initFunc, double cg_eps, size_t cg_its) {
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
   std::string tFileEvalCuboid = "EvalPointsPoisson.data";
   std::string tFileEvalCuboidValues = "EvalValuesPoisson.data";
 
@@ -689,17 +689,17 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
     myBoundaries[i].bDirichletRight = true;
   }
 
-  sg::pde::PoissonEquationSolver* myPoisSolver = new sg::pde::PoissonEquationSolver();
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::pde::PoissonEquationSolver* myPoisSolver = new SGPP::pde::PoissonEquationSolver();
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
-  sg::base::DataVector* alpha = NULL;
+  SGPP::base::DataVector* alpha = NULL;
 
   // read Evaluation cuboid
-  sg::base::DataMatrix EvalCuboid(1, dim);
+  SGPP::base::DataMatrix EvalCuboid(1, dim);
   int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
   // read reference values for evaluation cuboid
-  sg::base::DataVector EvalCuboidValues(1);
+  SGPP::base::DataVector EvalCuboidValues(1);
   int retCuboidValues = readCuboidValues(EvalCuboidValues, tFileEvalCuboidValues);
 
   // init Screen Object
@@ -709,7 +709,7 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
   myPoisSolver->constructGrid(*myBoundingBox, (int)start_level);
 
   // init the basis functions' coefficient vector (start solution)
-  alpha = new sg::base::DataVector(myPoisSolver->getNumberGridPoints());
+  alpha = new SGPP::base::DataVector(myPoisSolver->getNumberGridPoints());
 
   if (initFunc == "smooth") {
     std::cout << "Starting Grid size: " << myPoisSolver->getNumberGridPoints() << std::endl;
@@ -782,10 +782,10 @@ void testPoissonEquationAdapt(size_t dim, size_t start_level, std::string refine
   if (retCuboid == 0 && retCuboidValues == 0) {
     std::cout << "Calculating relative errors..." << std::endl;
     // Evaluate Cuboid
-    sg::base::DataVector curVals(EvalCuboid.getNrows());
+    SGPP::base::DataVector curVals(EvalCuboid.getNrows());
     myPoisSolver->evaluateCuboid(*alpha, curVals, EvalCuboid);
 
-    sg::base::DataVector relError(curVals);
+    SGPP::base::DataVector relError(curVals);
 
     // calculate relative error
     relError.sub(EvalCuboidValues);

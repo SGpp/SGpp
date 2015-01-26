@@ -28,10 +28,13 @@
 #include <fstream>
 #include <iomanip>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, bool usePAT) : sg::pde::ParabolicPDESolver() {
+    BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, bool usePAT) : SGPP::pde::ParabolicPDESolver() {
 
       this->bStochasticDataAlloc = false;
       this->bGridConstructed = false;
@@ -70,7 +73,7 @@ namespace sg {
       }
     }
 
-    void BlackScholesSolverMPI::getGridNormalDistribution(sg::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma) {
+    void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma) {
       if (this->bGridConstructed) {
         double value;
         base::StdNormalDistribution myNormDistr;
@@ -115,13 +118,13 @@ namespace sg {
       }
     }
 
-    void BlackScholesSolverMPI::constructGrid(sg::base::BoundingBox& BoundingBox, int level) {
+    void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox, int level) {
       this->dim = BoundingBox.getDimensions();
       this->levels = level;
 
       this->myGrid = new base::LinearTrapezoidBoundaryGrid(BoundingBox);
 
-      sg::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+      SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
       myGenerator->regular(this->levels);
       delete myGenerator;
 
@@ -135,17 +138,17 @@ namespace sg {
       this->bGridConstructed = true;
     }
 
-    void BlackScholesSolverMPI::setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r) {
-      this->mus = new sg::base::DataVector(mus);
-      this->sigmas = new sg::base::DataVector(sigmas);
-      this->rhos = new sg::base::DataMatrix(rhos);
+    void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus, SGPP::base::DataVector& sigmas, SGPP::base::DataMatrix& rhos, double r) {
+      this->mus = new SGPP::base::DataVector(mus);
+      this->sigmas = new SGPP::base::DataVector(sigmas);
+      this->rhos = new SGPP::base::DataMatrix(rhos);
       this->r = r;
 
       // calculate eigenvalues, eigenvectors and mu_hat from stochastic data for PAT
       size_t mydim = this->mus->getSize();
-      this->eigval_covar = new sg::base::DataVector(mydim);
-      this->eigvec_covar = new sg::base::DataMatrix(mydim, mydim);
-      this->mu_hat = new sg::base::DataVector(mydim);
+      this->eigval_covar = new SGPP::base::DataVector(mydim);
+      this->eigvec_covar = new SGPP::base::DataMatrix(mydim, mydim);
+      this->mu_hat = new SGPP::base::DataVector(mydim);
 
       // 1d test case
       if (mydim == 1) {
@@ -451,11 +454,11 @@ namespace sg {
       bStochasticDataAlloc = true;
     }
 
-    void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this setting!");
     }
 
-    void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed && this->bStochasticDataAlloc) {
         solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
         solver::SLESolver* myCG;
@@ -463,7 +466,7 @@ namespace sg {
 
         if (this->usePAT == false) {
           myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
+          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           // read env variable, which solver type should be selected
           char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -480,7 +483,7 @@ namespace sg {
             }
           } else {
             myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-            myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
+            myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
           }
         }
 
@@ -525,14 +528,14 @@ namespace sg {
       }
     }
 
-    void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul) {
+    void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul) {
       if (this->bGridConstructed && this->bStochasticDataAlloc) {
         solver::SLESolver* myCG;
         pde::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
         if (this->usePAT == false) {
           myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
+          myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
         } else {
           // read env variable, which solver type should be selected
           char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -549,7 +552,7 @@ namespace sg {
             }
           } else {
             myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-            myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<sg::base::GridIndex::level_type>(this->refineMaxLevel));
+            myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat, timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
           }
         }
 
@@ -620,27 +623,27 @@ namespace sg {
     }
 
 
-    void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose) {
+    void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose) {
       throw new base::application_exception("BlackScholesSolverMPI::solveAdamsBashforth : An unsupported ODE Solver type has been chosen!");
     }
 
-    void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose) {
+    void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose) {
       throw new base::application_exception("BlackScholesSolverMPI::solveSCAC : An unsupported ODE Solver type has been chosen!");
     }
 
-    void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose) {
+    void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose) {
       throw new base::application_exception("BlackScholesSolverMPI::solveSCH : An unsupported ODE Solver type has been chosen!");
     }
 
-    void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose) {
+    void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose) {
       throw new base::application_exception("BlackScholesSolverMPI::solveSCBDF : An unsupported ODE Solver type has been chosen!");
     }
 
-    void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose) {
+    void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose) {
       throw new base::application_exception("BlackScholesSolverMPI::solveSCEJ : An unsupported ODE Solver type has been chosen!");
     }
 
-    void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose, void* myODESolverV, std::string Solver) {
+    void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, void* myODESolverV, std::string Solver) {
       throw new base::application_exception("BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
     }
 
@@ -648,7 +651,7 @@ namespace sg {
       this->payoffType = payoffType;
     }
 
-    void BlackScholesSolverMPI::initGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType) {
+    void BlackScholesSolverMPI::initGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType) {
       this->dStrike = strike;
       this->payoffType = payoffType;
 
@@ -703,7 +706,7 @@ namespace sg {
       this->numCoarsenPoints = numCoarsenPoints;
     }
 
-    void BlackScholesSolverMPI::initCartesianGridWithPayoff(sg::base::DataVector& alpha, double strike, std::string payoffType) {
+    void BlackScholesSolverMPI::initCartesianGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType) {
       double tmp;
 
       if (this->bGridConstructed) {
@@ -741,7 +744,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        base::OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -787,7 +790,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        base::OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -845,7 +848,7 @@ namespace sg {
           delete[] dblFuncValues;
         }
 
-        base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->myGrid);
+        base::OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
         myHierarchisation->doHierarchisation(alpha);
         delete myHierarchisation;
       } else {
@@ -853,7 +856,7 @@ namespace sg {
       }
     }
 
-    double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point, sg::base::DataVector& alpha) {
+    double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point, SGPP::base::DataVector& alpha) {
       std::vector<double> trans_eval = eval_point;
 
       // apply needed coordinate transformations
@@ -877,7 +880,7 @@ namespace sg {
         }
       }
 
-      sg::base::OperationEval* myEval = sg::op_factory::createOperationEval(*this->myGrid);
+      SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
       double result = myEval->eval(alpha, trans_eval);
       delete myEval;
 
@@ -890,8 +893,8 @@ namespace sg {
       return result;
     }
 
-    void BlackScholesSolverMPI::transformPoint(sg::base::DataVector& point) {
-      sg::base::DataVector tmp_point(point);
+    void BlackScholesSolverMPI::transformPoint(SGPP::base::DataVector& point) {
+      SGPP::base::DataVector tmp_point(point);
 
       // apply needed coordinate transformations
       if (this->useLogTransform) {
@@ -917,7 +920,7 @@ namespace sg {
       point = tmp_point;
     }
 
-    void BlackScholesSolverMPI::printSparseGridPAT(sg::base::DataVector& alpha, std::string tfilename, bool bSurplus) const {
+    void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const {
       base::DataVector temp(alpha);
       double tmp = 0.0;
       size_t dim = myGrid->getStorage()->dim();
@@ -925,7 +928,7 @@ namespace sg {
 
       // Do Dehierarchisation, is specified
       if (bSurplus == false) {
-        base::OperationHierarchisation* myHier = sg::op_factory::createOperationHierarchisation(*myGrid);
+        base::OperationHierarchisation* myHier = SGPP::op_factory::createOperationHierarchisation(*myGrid);
         myHier->doDehierarchisation(temp);
         delete myHier;
       }

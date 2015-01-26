@@ -7,16 +7,19 @@
 
 #include <sgpp/misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    LaplaceEnhancedDownBBLinearBoundary::LaplaceEnhancedDownBBLinearBoundary(sg::base::GridStorage* storage) : LaplaceEnhancedDownBBLinear(storage) {
+    LaplaceEnhancedDownBBLinearBoundary::LaplaceEnhancedDownBBLinearBoundary(SGPP::base::GridStorage* storage) : LaplaceEnhancedDownBBLinear(storage) {
     }
 
     LaplaceEnhancedDownBBLinearBoundary::~LaplaceEnhancedDownBBLinearBoundary() {
     }
 
-    void LaplaceEnhancedDownBBLinearBoundary::operator()(sg::base::DataMatrix& source, sg::base::DataMatrix& result, grid_iterator& index, size_t dim) {
+    void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
       q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
       t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
       double q_reci = 1.0 / q_;
@@ -258,5 +261,5 @@ namespace sg {
 
     // namespace pde
   }
-  // namespace sg
+  // namespace SGPP
 }

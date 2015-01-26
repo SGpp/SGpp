@@ -1,6 +1,9 @@
 #include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void ConvertLinearToPrewavelet::operator()(DataVector& source, DataVector& result,

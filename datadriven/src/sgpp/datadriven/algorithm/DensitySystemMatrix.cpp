@@ -15,19 +15,22 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
-    DensitySystemMatrix::DensitySystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda) {
+    DensitySystemMatrix::DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda) {
       this->data = &trainData;
       this->lambda = lambda;
 
-      this->A = sg::op_factory::createOperationLTwoDotProduct(grid);
-      this->B = sg::op_factory::createOperationMultipleEval(grid, *(this->data));
+      this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid);
+      this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data));
       this->C = &C;
     }
 
-    void DensitySystemMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void DensitySystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       // A * alpha
@@ -43,8 +46,8 @@ namespace sg {
 
 
     // Matrix-Multiplikation verwenden
-    void DensitySystemMatrix::generateb(sg::base::DataVector& rhs) {
-      sg::base::DataVector y(this->data->getNrows());
+    void DensitySystemMatrix::generateb(SGPP::base::DataVector& rhs) {
+      SGPP::base::DataVector y(this->data->getNrows());
       y.setAll(1.0);
       // Bt * 1
       this->B->multTranspose(y, rhs);

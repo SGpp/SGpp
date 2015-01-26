@@ -10,7 +10,10 @@
 
 #include <sgpp/pde/operation/OperationEllipticPDESolverSystem.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -32,9 +35,9 @@ namespace sg {
          * applies the PDE's system matrix, on complete grid - with boundaries
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyLOperator(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
       public:
         /**
@@ -43,16 +46,16 @@ namespace sg {
          * @param SparseGrid the grid, for which the system should be solved
          * @param rhs the right hand side of the corresponding system
          */
-        OperationEllipticPDESolverSystemFreeBoundaries(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs);
+        OperationEllipticPDESolverSystemFreeBoundaries(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
 
         /**
          * Destructor
          */
         virtual ~OperationEllipticPDESolverSystemFreeBoundaries();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual sg::base::DataVector* generateRHS();
+        virtual SGPP::base::DataVector* generateRHS();
     };
 
   }

@@ -8,7 +8,10 @@
 #ifndef TYPESPARALLEL_HPP
 #define TYPESPARALLEL_HPP
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 

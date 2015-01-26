@@ -10,7 +10,10 @@
 
 #include <sgpp/pde/algorithm/UpDownFourOpDims.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -20,15 +23,15 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationHestonKLinear : public sg::pde::UpDownFourOpDims {
+    class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
       public:
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          * @param coef vector that contains the constant coefficients of this operation
          */
-        OperationHestonKLinear(sg::base::GridStorage* storage, double**** * coef);
+        OperationHestonKLinear(SGPP::base::GridStorage* storage, double**** * coef);
 
         /**
          * Destructor
@@ -46,7 +49,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -57,7 +60,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -67,7 +70,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -77,7 +80,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * down-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -87,7 +90,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * up-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -97,7 +100,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -107,7 +110,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -117,7 +120,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * down-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -127,7 +130,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * up-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -137,7 +140,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -146,7 +149,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -155,7 +158,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -164,7 +167,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -173,7 +176,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -182,7 +185,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -191,7 +194,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -200,7 +203,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -209,7 +212,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -218,7 +221,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -227,7 +230,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -236,7 +239,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -245,7 +248,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -254,7 +257,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -263,7 +266,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -272,7 +275,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -281,7 +284,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -290,7 +293,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -299,7 +302,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -308,7 +311,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -317,7 +320,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -326,7 +329,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
         /**
          * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
@@ -335,7 +338,7 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim);
+        void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
     };
 

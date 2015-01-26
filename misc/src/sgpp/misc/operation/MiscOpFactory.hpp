@@ -14,7 +14,10 @@
 /*
  * This file contains factory methods for operations.
  */
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace op_factory {
     /**
@@ -38,7 +41,7 @@ namespace sg {
      * @param coef Coefficient vector for OperationLaplace
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
-    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, sg::base::DataVector& coef);
+    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, SGPP::base::DataVector& coef);
   }
 
 }

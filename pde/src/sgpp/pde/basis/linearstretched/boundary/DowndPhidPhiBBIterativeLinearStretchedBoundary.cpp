@@ -8,19 +8,22 @@
 #include <sgpp/pde/basis/linearstretched/boundary/DowndPhidPhiBBIterativeLinearStretchedBoundary.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(sg::base::GridStorage* storage) : storage(storage) {
+    DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(SGPP::base::GridStorage* storage) : storage(storage) {
     }
 
     DowndPhidPhiBBIterativeLinearStretchedBoundary::~DowndPhidPhiBBIterativeLinearStretchedBoundary() {
     }
 
-    void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
 
       // Bounding Box handling
-      sg::base::Stretching* stretching = this->storage->getStretching();
+      SGPP::base::Stretching* stretching = this->storage->getStretching();
       double q = stretching->getIntervalWidth(dim);
       double Qqout = 1.0 / q;
 
@@ -30,8 +33,8 @@ namespace sg {
       if (q != 1.0) {
         // traverse all basis function by sequence number
         for (size_t i = 0; i < storage->size(); i++) {
-          sg::base::GridStorage::index_type::level_type level;
-          sg::base::GridStorage::index_type::index_type index;
+          SGPP::base::GridStorage::index_type::level_type level;
+          SGPP::base::GridStorage::index_type::index_type index;
           (*storage)[i]->get(dim, level, index);
 
           if (level == 0) {
@@ -42,7 +45,7 @@ namespace sg {
 
                 // down
                 if (index == 0) {
-                  sg::base::GridIndex index_one = (*storage)[i];
+                  SGPP::base::GridIndex index_one = (*storage)[i];
                   index_one.set(dim, 0, 1);
 
                   if (!stretching->hasDirichletBoundaryRight(dim)) {
@@ -67,8 +70,8 @@ namespace sg {
       } else {
         // traverse all basis function by sequence number
         for (size_t i = 0; i < storage->size(); i++) {
-          sg::base::GridStorage::index_type::level_type level;
-          sg::base::GridStorage::index_type::index_type index;
+          SGPP::base::GridStorage::index_type::level_type level;
+          SGPP::base::GridStorage::index_type::index_type index;
           (*storage)[i]->get(dim, level, index);
 
           if (level == 0) {
@@ -79,7 +82,7 @@ namespace sg {
 
                 // down
                 if (index == 0) {
-                  sg::base::GridIndex index_one = (*storage)[i];
+                  SGPP::base::GridIndex index_one = (*storage)[i];
                   index_one.set(dim, 0, 1);
 
                   if (!stretching->hasDirichletBoundaryRight(dim)) {

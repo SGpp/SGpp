@@ -27,8 +27,8 @@
 // Resolution (num points per dimension) of the created gnuplots
 #define PLOT_RESOLUTION 40
 
-using namespace sg;
-using namespace sg::pde;
+using namespace SGPP;
+using namespace SGPP::pde;
 using namespace std;
 
 double alphaDone;
@@ -44,7 +44,7 @@ size_t numGridPoints;
  * after creating a screen.
  */
 void writeHelp() {
-  sg::finance::HestonSolver* myHestonSolver = new sg::finance::HestonSolver();
+  SGPP::finance::HestonSolver* myHestonSolver = new SGPP::finance::HestonSolver();
 
   myHestonSolver->initScreen();
 
@@ -129,7 +129,7 @@ void writeHelp() {
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& xi, sg::base::DataVector& theta, sg::base::DataVector& kappa, sg::base::DataMatrix& hMatrix) {
+int readStochasticData(std::string tFile, size_t numAssets, SGPP::base::DataVector& xi, SGPP::base::DataVector& theta, SGPP::base::DataVector& kappa, SGPP::base::DataMatrix& hMatrix) {
   // For the Heston model we need the following stochastic process data
   // xi: each xi value represents the volatility of the volatility (also called volatility of the variance) for a particular asset. For d assets we have a vector of size d here.
   // theta: each theta value represents the long-run variance for a particular asset. For M assets we have a vector of size M here.
@@ -230,7 +230,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numDims, sg::base::DimensionBoundary* BoundaryArray) {
+int readBoudingBoxData(std::string tFile, size_t numDims, SGPP::base::DimensionBoundary* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -304,10 +304,10 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
   double CGepsilon = CGeps;
   //  double maxStock = 0.0;
 
-  sg::base::DataVector theta(numberOfAssets);
-  sg::base::DataVector xi(numberOfAssets);
-  sg::base::DataVector kappa(numberOfAssets);
-  sg::base::DataMatrix hMatrix(pdeDim, pdeDim);
+  SGPP::base::DataVector theta(numberOfAssets);
+  SGPP::base::DataVector xi(numberOfAssets);
+  SGPP::base::DataVector kappa(numberOfAssets);
+  SGPP::base::DataMatrix hMatrix(pdeDim, pdeDim);
 
   double r = riskfree;
 
@@ -316,18 +316,18 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
   }
 
   // We have boundary data for each dimension in the PDE
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[pdeDim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[pdeDim];
 
   if (readBoudingBoxData(fileBound, pdeDim, myBoundaries) != 0) {
     return;
   }
 
-  sg::finance::HestonSolver* myHestonSolver;
+  SGPP::finance::HestonSolver* myHestonSolver;
 
   if (coordsType == "log") {
-    myHestonSolver = new sg::finance::HestonSolver(true);
+    myHestonSolver = new SGPP::finance::HestonSolver(true);
   } else if (coordsType == "cart") {
-    myHestonSolver = new sg::finance::HestonSolver(false);
+    myHestonSolver = new SGPP::finance::HestonSolver(false);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
@@ -335,7 +335,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
     writeHelp();
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(pdeDim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(pdeDim, myBoundaries);
   delete[] myBoundaries;
 
   // init Screen Object
@@ -355,7 +355,7 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
   //    myHestonSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
 
   // init the basis functions' coefficient vector
-  sg::base::DataVector* alpha = new sg::base::DataVector(myHestonSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myHestonSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
   std::cout << "Initial Grid size: " << myHestonSolver->getNumberGridPoints() << std::endl;

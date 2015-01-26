@@ -12,7 +12,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 
@@ -67,7 +70,7 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 
 #endif /* CONVERTPREWAVELETTOLINEAR_HPP */

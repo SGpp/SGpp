@@ -42,7 +42,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssests, sg::base::DataVector& mu, sg::base::DataVector& sigma, sg::base::DataMatrix& rho) {
+int readStochasticData(std::string tFile, size_t numAssests, SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho) {
   std::fstream file;
   double cur_mu;
   double cur_sigma;
@@ -81,7 +81,7 @@ int readStochasticData(std::string tFile, size_t numAssests, sg::base::DataVecto
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::DimensionBoundary* BoundaryArray) {
+int readBoudingBoxData(std::string tFile, size_t numAssests, SGPP::base::DimensionBoundary* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -117,7 +117,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests, sg::base::Dimension
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
+int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
   std::fstream file;
   double cur_coord;
 
@@ -152,7 +152,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
   i = 0;
 
   while (!file.eof()) {
-    sg::base::DataVector line(dim);
+    SGPP::base::DataVector line(dim);
     line.setAll(0.0);
 
     for (size_t d = 0; d < dim; d++) {
@@ -176,7 +176,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(sg::base::DataVector& values, std::string tFile) {
+int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
   double cur_value;
 
@@ -253,16 +253,16 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   double stepsize_general = dt;
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigmabs(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigmabs(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
 
   if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0) {
     return;
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -270,15 +270,15 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
 
   //std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
   //std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-  sg::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
+  SGPP::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 
   if (isLogSolve == true) {
-    myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(true);
+    myBSHWSolver = new SGPP::finance::BlackScholesHullWhiteSolver(true);
   } else {
-    myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(false);
+    myBSHWSolver = new SGPP::finance::BlackScholesHullWhiteSolver(false);
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   //delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
   // init Screen Object
@@ -294,7 +294,7 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   myBSHWSolver->constructGrid(*myBoundingBox, level);
 
   // init the basis functions' coefficient vector
-  sg::base::DataVector* alpha = new sg::base::DataVector(myBSHWSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSHWSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
   std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
@@ -312,14 +312,14 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      sg::base::DimensionBoundary* myAreaBoundaries = new sg::base::DimensionBoundary[dim];
+      SGPP::base::DimensionBoundary* myAreaBoundaries = new SGPP::base::DimensionBoundary[dim];
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
         myAreaBoundaries[i].rightBoundary = 1.1;
       }
 
-      sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
+      SGPP::base::BoundingBox* myGridArea = new SGPP::base::BoundingBox(dim, myAreaBoundaries);
 
       myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.level_" + level_string.str() + ".gnuplot");
 
@@ -349,7 +349,7 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
     double t_local = 0.0;
 
 
-    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+    SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
     myStopwatch->start();
 
     for (int i = 0; i < T / dt_outerCall; i++) {
@@ -475,15 +475,15 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
   double stepsize_general = dt;
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigmabs(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigmabs(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
   if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0) {
     return;
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
@@ -491,15 +491,15 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
 
   //std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
   //std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
-  sg::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
+  SGPP::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 
   if (isLogSolve == true) {
-    myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(true);
+    myBSHWSolver = new SGPP::finance::BlackScholesHullWhiteSolver(true);
   } else {
-    myBSHWSolver = new sg::finance::BlackScholesHullWhiteSolver(false);
+    myBSHWSolver = new SGPP::finance::BlackScholesHullWhiteSolver(false);
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   //delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
   // init Screen Object
@@ -514,7 +514,7 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
   }
 
   // init the basis functions' coefficient vector
-  sg::base::DataVector* alpha = new sg::base::DataVector(myBSHWSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSHWSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
   std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
@@ -529,11 +529,11 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
 
   // estimate refine sigma from evaluation cuboid
   // read Evaluation cuboid
-  sg::base::DataMatrix EvalCuboid(1, dim);
+  SGPP::base::DataMatrix EvalCuboid(1, dim);
   int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
   // read reference values for evaluation cuboid
-  sg::base::DataVector EvalCuboidValues(1);
+  SGPP::base::DataVector EvalCuboidValues(1);
   int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
 
   if (EvalCuboid.getNrows() != EvalCuboidValues.getSize()) {
@@ -613,14 +613,14 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      sg::base::DimensionBoundary* myAreaBoundaries = new sg::base::DimensionBoundary[dim];
+      SGPP::base::DimensionBoundary* myAreaBoundaries = new SGPP::base::DimensionBoundary[dim];
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
         myAreaBoundaries[i].rightBoundary = 1.1;
       }
 
-      sg::base::BoundingBox* myGridArea = new sg::base::BoundingBox(dim, myAreaBoundaries);
+      SGPP::base::BoundingBox* myGridArea = new SGPP::base::BoundingBox(dim, myAreaBoundaries);
 
       myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.adaptive.gnuplot");
 
@@ -650,7 +650,7 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
     double dt_outerCall = stepsize_general * static_cast<double>(timesteps_innerCall);
     double t_local = 0.0;
 
-    sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+    SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
     myStopwatch->start();
 
     for (int i = 0; i < T / dt_outerCall; i++) {

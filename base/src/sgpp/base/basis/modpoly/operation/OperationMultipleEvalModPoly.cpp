@@ -12,7 +12,10 @@
 
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result) {

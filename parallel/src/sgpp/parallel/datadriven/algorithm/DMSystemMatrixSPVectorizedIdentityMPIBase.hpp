@@ -20,33 +20,36 @@
 #include <sgpp/parallel/datadriven/tools/LevelIndexMaskOffsetHelper.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename KernelImplementation>
-    class DMSystemMatrixSPVectorizedIdentityMPIBase : public sg::datadriven::DMSystemMatrixBaseSP {
+    class DMSystemMatrixSPVectorizedIdentityMPIBase : public SGPP::datadriven::DMSystemMatrixBaseSP {
       protected:
         VectorizationType vecMode_;
         size_t numTrainingInstances_;
         size_t numPatchedTrainingInstances_;
 
         /// Pointer to the grid's gridstorage object
-        sg::base::GridStorage* storage_;
+        SGPP::base::GridStorage* storage_;
         /// Member to store the sparse grid's levels for better vectorization
-        sg::base::DataMatrixSP* level_;
+        SGPP::base::DataMatrixSP* level_;
         /// Member to store the sparse grid's indices for better vectorization
-        sg::base::DataMatrixSP* index_;
+        SGPP::base::DataMatrixSP* index_;
         /// Member to store for masks per grid point for better vectorization of modlinear operations
-        sg::base::DataMatrixSP* mask_;
+        SGPP::base::DataMatrixSP* mask_;
         /// Member to store offsets per grid point for better vecotrization of modlinear operations
-        sg::base::DataMatrixSP* offset_;
+        SGPP::base::DataMatrixSP* offset_;
 
         KernelImplementation kernel_;
 
         /// only allocate temporary arrays once
-        sg::base::DataVectorSP* tempData;
-        sg::base::DataVectorSP* result_tmp;
+        SGPP::base::DataVectorSP* tempData;
+        SGPP::base::DataVectorSP* result_tmp;
       public:
-        DMSystemMatrixSPVectorizedIdentityMPIBase(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+        DMSystemMatrixSPVectorizedIdentityMPIBase(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
           : DMSystemMatrixBaseSP(trainData, lambda),
             vecMode_(vecMode),
             numTrainingInstances_(0),
@@ -63,20 +66,20 @@ namespace sg {
               this->vecMode_ != OpenCL &&
               this->vecMode_ != ArBB &&
               this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
-            throw sg::base::operation_exception("DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
+            throw SGPP::base::operation_exception("DMSystemMatrixVectorizedIdentityAllreduce : un-supported vector extension!");
           }
 
-          this->dataset_ = new sg::base::DataMatrixSP(trainData);
+          this->dataset_ = new SGPP::base::DataMatrixSP(trainData);
           this->numTrainingInstances_ = this->dataset_->getNrows();
-          this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+          this->numPatchedTrainingInstances_ = SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
           std::cout << "Padding Dataset to " << numPatchedTrainingInstances_ << " Instances. " << std::endl;
-          this->tempData = new sg::base::DataVectorSP(this->numPatchedTrainingInstances_);
+          this->tempData = new SGPP::base::DataVectorSP(this->numPatchedTrainingInstances_);
 
           if (this->vecMode_ != ArBB) {
             this->dataset_->transpose();
           }
 
-          this->result_tmp = new sg::base::DataVectorSP(storage_->size());
+          this->result_tmp = new SGPP::base::DataVectorSP(storage_->size());
         }
 
         virtual ~DMSystemMatrixSPVectorizedIdentityMPIBase() {
@@ -104,7 +107,7 @@ namespace sg {
             delete this->result_tmp;
           }
 
-          this->result_tmp = new sg::base::DataVectorSP(storage_->size());
+          this->result_tmp = new SGPP::base::DataVectorSP(storage_->size());
           kernel_.resetKernel();
         }
         friend struct LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType, DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> >;

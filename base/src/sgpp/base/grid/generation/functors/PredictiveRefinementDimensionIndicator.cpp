@@ -13,7 +13,10 @@
 #include <utility>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 
@@ -234,4 +237,4 @@ void PredictiveRefinementDimensionIndicator::buildGPSupportMask(
 
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

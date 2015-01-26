@@ -18,7 +18,10 @@
 
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     DataVector::DataVector(size_t size) :
@@ -87,7 +90,7 @@ namespace sg {
 
     void DataVector::restructure(std::vector<size_t>& remainingIndex) {
       if (remainingIndex.size() > this->size) {
-        throw sg::base::algorithm_exception("more indices than entries!");
+        throw SGPP::base::algorithm_exception("more indices than entries!");
       }
 
       double* newdata = new double[remainingIndex.size()];
@@ -218,7 +221,7 @@ namespace sg {
       }
 
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVector::add : Dimensions do not match");
         //        delete[] data;
         //        size = vec.size;
@@ -231,7 +234,7 @@ namespace sg {
 
     void DataVector::add(DataVector& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVector::add : Dimensions do not match");
       }
 
@@ -242,7 +245,7 @@ namespace sg {
 
     void DataVector::sub(const DataVector& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVector::sub : Dimensions do not match");
       }
 
@@ -253,7 +256,7 @@ namespace sg {
 
     void DataVector::componentwise_mult(DataVector& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVector::componentwise_mult : Dimensions do not match");
       }
 
@@ -264,7 +267,7 @@ namespace sg {
 
     void DataVector::componentwise_div(DataVector& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVector::componentwise_div : Dimensions do not match");
       }
 

@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 /**

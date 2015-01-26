@@ -14,7 +14,10 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace finance {
 
@@ -33,7 +36,7 @@ namespace sg {
         /// epsilon used for calculating finite differences
         double m_eps;
         /// Points at which delta and gamma should be calculated, in Cartesian coordinates
-        sg::base::DataMatrix* m_hedge_points;
+        SGPP::base::DataMatrix* m_hedge_points;
         /// is hedging used with log-transformed grids
         bool m_is_log_transformed;
 
@@ -46,7 +49,7 @@ namespace sg {
          * @param eps epsilon used for calculating finite differences
          * @param is_log_transformed set to true if hedging is used with log-transformed grids
          */
-        Hedging(sg::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed);
+        Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed);
 
         /**
          * Destructor
@@ -61,7 +64,7 @@ namespace sg {
          * @param alpha the sparse grid's coefficients
          * @param file_extension some file extension (e.g. numbering) in order to distinguish different outputs that are written
          */
-        void calc_hedging(sg::base::Grid& sparse_grid, sg::base::DataVector alpha, std::string file_extension);
+        void calc_hedging(SGPP::base::Grid& sparse_grid, SGPP::base::DataVector alpha, std::string file_extension);
     };
 
   }

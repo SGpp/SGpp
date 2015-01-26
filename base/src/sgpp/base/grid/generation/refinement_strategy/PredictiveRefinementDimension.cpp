@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
  void PredictiveRefinementDimension::collectRefinablePoints(
@@ -154,4 +157,4 @@ size_t PredictiveRefinementDimension::getIndexOfMin(PredictiveRefinementDimensio
 
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

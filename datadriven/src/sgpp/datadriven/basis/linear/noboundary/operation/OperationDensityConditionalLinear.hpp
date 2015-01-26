@@ -12,7 +12,10 @@
 #include <sgpp/datadriven/operation/OperationDensityConditional.hpp>
 #include <cstring>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**

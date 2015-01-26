@@ -11,7 +11,10 @@
 #include <vector>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage, RefinementFunctor* functor, unsigned int maxLevel) {

@@ -31,7 +31,10 @@
 #include <iostream>
 #include <cstdlib>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /*
@@ -50,25 +53,25 @@ namespace sg {
         /// the size of the grid
         size_t numData;
         /// Pointer to the data matrix
-        sg::base::DataMatrix* data;
+        SGPP::base::DataMatrix* data;
         /// DataSet Dimension
         size_t dim;
         /// Pointer to the class(real value in regression) of the data vector
-        sg::base::DataVector* classes;
+        SGPP::base::DataVector* classes;
         /// Number of base learner for Adaboosting
         size_t numBaseLearners;
         /// the grid
-        sg::base::Grid* grid;
+        SGPP::base::Grid* grid;
         /// type of grid possible value are 1, 2 or 3(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid);
         size_t type;
         /// Number of grid points
         size_t gridPoint;
         /// Number of the maximum grid points used in the algorithm
-        sg::base::DataVector* maxGridPoint;
+        SGPP::base::DataVector* maxGridPoint;
         /// Number of the sum grid points used in the algorithm
-        sg::base::DataVector* sumGridPoint;
+        SGPP::base::DataVector* sumGridPoint;
         /// grid level
-        sg::base::HashGenerator::level_t level;
+        SGPP::base::HashGenerator::level_t level;
         /// Parameter for CG solver(during the refinement)
         size_t imax;
         /// Parameter for CG solver(during the refinement)
@@ -112,7 +115,7 @@ namespace sg {
         * @param alpha output the coefficients of the sparse grid's basis functions
         * @param final judgement the final step of this base learner
         */
-        virtual void alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final) = 0;
+        virtual void alphaSolver(double& lambda, SGPP::base::DataVector& weight, SGPP::base::DataVector& alpha, bool final) = 0;
 
       public:
 
@@ -143,7 +146,7 @@ namespace sg {
         * @param percentOfAda the percentage of Grid points to refine
         * @param mode the adaboost type to choose
          */
-        AlgorithmAdaBoostBase(sg::base::Grid& SparseGrid, size_t gridType, sg::base::HashGenerator::level_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode);
+        AlgorithmAdaBoostBase(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode);
 
 
         /**
@@ -162,7 +165,7 @@ namespace sg {
         * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
         * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
          */
-        void doDiscreteAdaBoost(sg::base::DataVector& hypoWeight, sg::base::DataVector& weightError, sg::base::DataMatrix& weights, sg::base::DataMatrix& decision, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+        void doDiscreteAdaBoost(SGPP::base::DataVector& hypoWeight, SGPP::base::DataVector& weightError, SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& decision, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest);
 
         /**
          * Performs the Real Adaboost
@@ -172,7 +175,7 @@ namespace sg {
         * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
         * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
          */
-        void doRealAdaBoost(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+        void doRealAdaBoost(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest);
 
         /**
          * Performs the Adaboost.R2(a regression algorithm)
@@ -183,7 +186,7 @@ namespace sg {
         * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
         * @param lossFucType the loss function type(linear, square or exponential)
          */
-        void doAdaBoostR2(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, std::string lossFucType);
+        void doAdaBoostR2(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, std::string lossFucType);
 
         /**
          * Performs the Adaboost.RT(a regression algorithm)
@@ -195,7 +198,7 @@ namespace sg {
         * @param Tvalue the threshold to demarcate the prediction correctness(only from 0 to 1)
         * @param powerType the error rate power coefficient(linear, square or cubic)
          */
-        void doAdaBoostRT(sg::base::DataMatrix& weights, sg::base::DataMatrix& testData, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType);
+        void doAdaBoostRT(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType);
 
         /**
          * Performs a real value calculate for the testing dataset
@@ -204,7 +207,7 @@ namespace sg {
         * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
         * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
          */
-        void eval(sg::base::DataMatrix& testData,  sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+        void eval(SGPP::base::DataMatrix& testData,  SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest);
 
         /**
          * Performs a classify for the testing dataset according to the baselearners get from the algorithm
@@ -215,7 +218,7 @@ namespace sg {
         * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
         * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
          */
-        void classif(sg::base::DataMatrix& testData, sg::base::DataVector& algorithmClassTrain, sg::base::DataVector& algorithmClassTest, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest);
+        void classif(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& algorithmClassTrain, SGPP::base::DataVector& algorithmClassTest, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest);
 
         /**
          * Performs an accuracy evaluation for the testing dataset
@@ -225,7 +228,7 @@ namespace sg {
          * @param accuracy_train reference to the accuracy for the training dataset
         * @param accuracy_test reference to the accuracy for the testing dataset
          */
-        void getAccuracy(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test);
+        void getAccuracy(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test);
 
         /**
          * Performs an evaluation to get ROC related parameter
@@ -239,7 +242,7 @@ namespace sg {
         * @param recall reference to the recall for the validation dataset
         * @param fOneScore reference to the specificity for the validation dataset
          */
-        void getROC(sg::base::DataMatrix& validationData, sg::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore);
+        void getROC(SGPP::base::DataMatrix& validationData, SGPP::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore);
 
         /**
          * Performs an accuracy evaluation for the testing dataset with a specified number of base learner
@@ -252,7 +255,7 @@ namespace sg {
         * @param accuracy_test reference to the accuracy for the testing dataset
         * @param yourBaseLearner the number of base learner specified
          */
-        void getAccuracyBL(sg::base::DataMatrix& testData, sg::base::DataVector& testDataClass, sg::base::DataMatrix& algorithmValueTrain, sg::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner);
+        void getAccuracyBL(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner);
 
         /**
          * Performs refinement of grid to get an adaptive grid
@@ -261,7 +264,7 @@ namespace sg {
         * @param weight_ada the weights of examples
         * @param curBaseLearner the current base learner
         */
-        void doRefinement(sg::base::DataVector& alpha_ada, sg::base::DataVector& weight_ada, size_t curBaseLearner);
+        void doRefinement(SGPP::base::DataVector& alpha_ada, SGPP::base::DataVector& weight_ada, size_t curBaseLearner);
 
         /**
              * Get the actual base learners after doing adaboosting

@@ -15,7 +15,10 @@
 
 #include <arbb.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     size_t global_dims;

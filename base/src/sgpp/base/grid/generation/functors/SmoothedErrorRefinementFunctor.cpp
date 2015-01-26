@@ -7,7 +7,10 @@
 #include <sgpp/base/grid/generation/functors/SmoothedErrorRefinementFunctor.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 SmoothedErrorRefinementFunctor::SmoothedErrorRefinementFunctor(
@@ -44,7 +47,7 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 		trainDataset->getRow(i, row);
 
 		// check if this particular training data is in the support
-		double tmp = sg::op_factory::createOperationEval(*grid)->eval(unit,
+		double tmp = SGPP::op_factory::createOperationEval(*grid)->eval(unit,
 				row);
 		if (tmp == 0) {
 			continue;
@@ -54,7 +57,7 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 		// calculate error and add it to
 		// the vector
 		double err = classes->get(i)
-				- sg::op_factory::createOperationEval(*grid)->eval(*alpha, row);
+				- SGPP::op_factory::createOperationEval(*grid)->eval(*alpha, row);
 		errors.push_back(err);
 	}
 

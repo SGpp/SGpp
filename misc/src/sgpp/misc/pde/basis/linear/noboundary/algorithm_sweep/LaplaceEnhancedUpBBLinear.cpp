@@ -7,10 +7,13 @@
 
 #include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    LaplaceEnhancedUpBBLinear::LaplaceEnhancedUpBBLinear(sg::base::GridStorage* storage) :
+    LaplaceEnhancedUpBBLinear::LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage* storage) :
       storage(storage), boundingBox(storage->getBoundingBox()),
       algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()),
       ptr_source_(NULL), ptr_result_(NULL),
@@ -24,7 +27,7 @@ namespace sg {
     LaplaceEnhancedUpBBLinear::~LaplaceEnhancedUpBBLinear() {
     }
 
-    void LaplaceEnhancedUpBBLinear::operator()(sg::base::DataMatrix& source, sg::base::DataMatrix& result, grid_iterator& index, size_t dim) {
+    void LaplaceEnhancedUpBBLinear::operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
       q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
       t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
 
@@ -111,8 +114,8 @@ namespace sg {
       double fmr = 0.0;
       fl = fr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -164,8 +167,8 @@ namespace sg {
       fl = fr = fl2 = fr2 = 0.0;
 #endif
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -230,8 +233,8 @@ namespace sg {
       double fmr = 0.0;
       fl = fr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -271,8 +274,8 @@ namespace sg {
       double fmr = 0.0;
       fl = fr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -335,8 +338,8 @@ namespace sg {
       double fmr = 0.0;
       fl = fr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -377,8 +380,8 @@ namespace sg {
       double fmr2 = 0.0;
       fl = fr = fl2 = fr2 = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -423,8 +426,8 @@ namespace sg {
       double fmr = 0.0;
       fl = fr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -464,8 +467,8 @@ namespace sg {
       double fmr = 0.0;
       fl = fr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(cur_algo_dim_);
@@ -523,5 +526,5 @@ namespace sg {
 
     // namespace pde
   }
-  // namespace sg
+  // namespace SGPP
 }

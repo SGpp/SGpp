@@ -12,19 +12,22 @@
 #include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace datadriven {
 
 
-    class LearnerDensityBased: public sg::datadriven::LearnerBase {
+    class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
       protected:
         //Mapping from class index to class number:
         std::map<int, double> index_to_class_;
         //Stores the coefficients for every class
-        std::vector<sg::base::DataVector> alphaVec_;
+        std::vector<SGPP::base::DataVector> alphaVec_;
         /// regularization mode
-        sg::datadriven::LearnerRegularizationType CMode_;
+        SGPP::datadriven::LearnerRegularizationType CMode_;
         //with prior
         bool withPrior;
         //number of classes
@@ -32,11 +35,11 @@ namespace sg {
         // prior of data
         std::vector<double> prior;
         // vectors of grids
-        std::vector<sg::base::Grid*> gridVec_;
+        std::vector<SGPP::base::Grid*> gridVec_;
         // vector of regterms
-        std::vector<sg::base::OperationMatrix*> CVec_;
+        std::vector<SGPP::base::OperationMatrix*> CVec_;
       public:
-        LearnerDensityBased(sg::datadriven::LearnerRegularizationType&, const bool isRegression, const bool isVerbose = true);
+        LearnerDensityBased(SGPP::datadriven::LearnerRegularizationType&, const bool isRegression, const bool isVerbose = true);
         virtual ~LearnerDensityBased();
 
         /**
@@ -44,7 +47,7 @@ namespace sg {
          *
          * @param GridConfig grid config
          */
-        virtual void InitializeGrid(const sg::base::RegularGridConfiguration& GridConfig);
+        virtual void InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig);
 
         /**
          * Learning a dataset with spatially adaptive sparse grids
@@ -58,15 +61,15 @@ namespace sg {
          * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
          * @param lambda regularization parameter lambda
          */
-        virtual LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-                                    const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-                                    const sg::solver::SLESolverConfiguration& SolverConfigFinal, const sg::base::AdpativityConfiguration& AdaptConfig,
+        virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
+                                    const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+                                    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
                                     bool testAccDuringAdapt, const double lambda);
 
 
-        virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
+        virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
         /// construct system matrix
-        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
 
         /**
          * Returns the execution time

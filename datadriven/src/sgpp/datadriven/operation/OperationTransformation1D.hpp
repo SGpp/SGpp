@@ -10,7 +10,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <cstring>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 /**

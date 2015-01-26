@@ -24,7 +24,10 @@
  * This file contains factory methods for operations.
  */
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace op_factory {
 
@@ -74,7 +77,7 @@ namespace sg {
      * @param vecType selected vectorization
      * @return Pointer to the new OperationMatrix object for the Grid grid
      */
-    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sg::base::DataVector& lambda, const parallel::VectorizationType& vecType);
+    parallel::OperationParabolicPDEMatrixCombined* createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector& lambda, const parallel::VectorizationType& vecType);
 
     /**
      * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for the grid at hand.

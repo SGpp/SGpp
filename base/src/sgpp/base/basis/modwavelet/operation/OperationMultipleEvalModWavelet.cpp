@@ -12,7 +12,10 @@
 
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void OperationMultipleEvalModWavelet::mult(DataVector& alpha, DataVector& result) {

@@ -11,7 +11,10 @@
 #include <sgpp/base/operation/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -36,7 +39,7 @@ namespace sg {
          *
          * @todo (pflueged) extend to error computation / arbitrary functions
          */
-        OperationQuadratureMC(sg::base::Grid& grid, int mcPaths);
+        OperationQuadratureMC(SGPP::base::Grid& grid, int mcPaths);
 
         virtual ~OperationQuadratureMC() {}
 
@@ -45,7 +48,7 @@ namespace sg {
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual double doQuadrature(sg::base::DataVector& alpha);
+        virtual double doQuadrature(SGPP::base::DataVector& alpha);
 
         /**
          * Quadrature of an arbitrary function using
@@ -66,11 +69,11 @@ namespace sg {
          * @param clientdata Optional data to pass to FUNC
          * @param alpha Coefficient vector for current grid
          */
-        double doQuadratureL2Error(FUNC func, void* clientdata, sg::base::DataVector& alpha);
+        double doQuadratureL2Error(FUNC func, void* clientdata, SGPP::base::DataVector& alpha);
 
       protected:
         // Pointer to the grid object
-        sg::base::Grid* grid;
+        SGPP::base::Grid* grid;
         // Number of MC paths
         size_t mcPaths;
     };

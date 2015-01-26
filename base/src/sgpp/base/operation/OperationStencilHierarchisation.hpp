@@ -12,7 +12,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

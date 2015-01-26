@@ -11,7 +11,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/mcm/SampleGenerator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
     
     /**
@@ -197,7 +200,7 @@ namespace sg {
     *        @param dv Vector which in which results will be written
     *	     @return void.
     */
-     void getSample(sg::base::DataVector& sample);
+     void getSample(SGPP::base::DataVector& sample);
       
    
     private:
@@ -213,7 +216,7 @@ namespace sg {
       * 
       * @return Scrambled DataVector
       */
-      void scramble (sg::base::DataVector& value);   
+      void scramble (SGPP::base::DataVector& value);   
                  
       // seed skip the first x samples in sobols' sequence
       size_t seed;	

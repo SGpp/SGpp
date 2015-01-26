@@ -9,7 +9,10 @@
 #include "StaticTwoPartitionAutoTuning.hpp"
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     StaticTwoPartitionAutoTuning::StaticTwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider, size_t OutputFreq):

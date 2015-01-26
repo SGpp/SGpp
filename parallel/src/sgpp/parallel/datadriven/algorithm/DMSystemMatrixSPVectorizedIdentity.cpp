@@ -11,26 +11,29 @@
 #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPVectorizedIdentity.hpp>
 #include <sgpp/parallel/operation/SPParallelOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
-    DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
+    DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode)
       :  DMSystemMatrixBaseSP(trainData, lambda), vecMode_(vecMode), numTrainingInstances_(0), numPatchedTrainingInstances_(0) {
       // handle unsupported vector extensions
       if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL && this->vecMode_ != CUDA) {
-        throw sg::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
+        throw SGPP::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
       }
 
       // create the operations needed in ApplyMatrix
-      this->dataset_ = new sg::base::DataMatrixSP(trainData);
+      this->dataset_ = new SGPP::base::DataMatrixSP(trainData);
       this->numTrainingInstances_ = this->dataset_->getNrows();
-      this->numPatchedTrainingInstances_ = sg::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
+      this->numPatchedTrainingInstances_ = SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
       if (this->vecMode_ != ArBB) {
         this->dataset_->transpose();
       }
 
-      this->B_ = sg::op_factory::createOperationMultipleEvalVectorizedSP(SparseGrid, this->vecMode_, this->dataset_);
+      this->B_ = SGPP::op_factory::createOperationMultipleEvalVectorizedSP(SparseGrid, this->vecMode_, this->dataset_);
     }
 
     DMSystemMatrixSPVectorizedIdentity::~DMSystemMatrixSPVectorizedIdentity() {
@@ -38,8 +41,8 @@ namespace sg {
       delete this->dataset_;
     }
 
-    void DMSystemMatrixSPVectorizedIdentity::mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result) {
-      sg::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
+    void DMSystemMatrixSPVectorizedIdentity::mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
+      SGPP::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
 
       // Operation B
       this->myTimer_->start();
@@ -60,8 +63,8 @@ namespace sg {
       result.axpy(static_cast<float>(this->numTrainingInstances_)*this->lambda_, alpha);
     }
 
-    void DMSystemMatrixSPVectorizedIdentity::generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b) {
-      sg::base::DataVectorSP myClasses(classes);
+    void DMSystemMatrixSPVectorizedIdentity::generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b) {
+      SGPP::base::DataVectorSP myClasses(classes);
 
       // Apply padding
       if (this->numPatchedTrainingInstances_ != myClasses.getSize()) {

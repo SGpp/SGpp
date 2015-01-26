@@ -7,7 +7,10 @@
 
 #include <sgpp/base/tools/EvalCuboidGeneratorForStretching.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     EvalCuboidGeneratorForStretching::EvalCuboidGeneratorForStretching() {

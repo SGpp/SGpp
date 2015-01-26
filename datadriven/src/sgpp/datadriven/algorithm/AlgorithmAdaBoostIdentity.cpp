@@ -11,26 +11,29 @@
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
-    AlgorithmAdaBoostIdentity::AlgorithmAdaBoostIdentity(sg::base::Grid& SparseGrid, size_t gridType, sg::base::HashGenerator::level_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode) : AlgorithmAdaBoostBase(SparseGrid, gridType, gridLevel, trainData, trainDataClass, NUM, lambda, IMAX, eps, IMAX_final, eps_final, firstLabel, secondLabel, threshold, maxLambda, minLambda, searchNum, refine, refineMode, refineNum, numberOfAda, percentOfAda, mode) {
+    AlgorithmAdaBoostIdentity::AlgorithmAdaBoostIdentity(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode) : AlgorithmAdaBoostBase(SparseGrid, gridType, gridLevel, trainData, trainDataClass, NUM, lambda, IMAX, eps, IMAX_final, eps_final, firstLabel, secondLabel, threshold, maxLambda, minLambda, searchNum, refine, refineMode, refineNum, numberOfAda, percentOfAda, mode) {
     }
 
     AlgorithmAdaBoostIdentity::~AlgorithmAdaBoostIdentity() {
     }
 
-    void AlgorithmAdaBoostIdentity::alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final) {
-      sg::base::OperationMatrix* C = sg::op_factory::createOperationIdentity(*this->grid);
-      sg::datadriven::DMWeightMatrix WMatrix(*this->grid, *this->data, *C, lambda, weight);
-      sg::base::DataVector rhs(alpha.getSize());
+    void AlgorithmAdaBoostIdentity::alphaSolver(double& lambda, SGPP::base::DataVector& weight, SGPP::base::DataVector& alpha, bool final) {
+      SGPP::base::OperationMatrix* C = SGPP::op_factory::createOperationIdentity(*this->grid);
+      SGPP::datadriven::DMWeightMatrix WMatrix(*this->grid, *this->data, *C, lambda, weight);
+      SGPP::base::DataVector rhs(alpha.getSize());
       WMatrix.generateb(*this->classes, rhs);
 
       if (final) {
-        sg::solver::ConjugateGradients myCG(this->imax_final, this->epsilon_final);
+        SGPP::solver::ConjugateGradients myCG(this->imax_final, this->epsilon_final);
         myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
       } else {
-        sg::solver::ConjugateGradients myCG(this->imax, this->epsilon);
+        SGPP::solver::ConjugateGradients myCG(this->imax, this->epsilon);
         myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
       }
 

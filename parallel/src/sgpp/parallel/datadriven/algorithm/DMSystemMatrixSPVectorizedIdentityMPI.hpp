@@ -19,11 +19,14 @@
 
 #include <string>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
-     * Class that implements the virtual class sg::base::OperationMatrix for the
+     * Class that implements the virtual class SGPP::base::OperationMatrix for the
      * application of classification for the Systemmatrix
      *
      * The Identity matrix is used as regularization operator.
@@ -31,7 +34,7 @@ namespace sg {
      * For the Operation B's mult and mutlTransposed functions
      * vectorized formulations are used.
      */
-    class DMSystemMatrixSPVectorizedIdentityMPI : public sg::datadriven::DMSystemMatrixBaseSP {
+    class DMSystemMatrixSPVectorizedIdentityMPI : public SGPP::datadriven::DMSystemMatrixBaseSP {
       private:
         /// vectorization mode
         VectorizationType vecMode_;
@@ -40,7 +43,7 @@ namespace sg {
         /// Number of patched and used training instances
         size_t numPatchedTrainingInstances_;
         /// OperationB for calculating the data matrix
-        sg::parallel::OperationMultipleEvalVectorizedSP* B_;
+        SGPP::parallel::OperationMultipleEvalVectorizedSP* B_;
 
         double waitting_time;
       public:
@@ -48,20 +51,20 @@ namespace sg {
          * Std-Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param trainData reference to sg::base::DataMatrix that contains the training data
+         * @param trainData reference to SGPP::base::DataMatrix that contains the training data
          * @param lambda the lambda, the regression parameter
          * @param vecMode vectorization mode
          */
-        DMSystemMatrixSPVectorizedIdentityMPI(sg::base::Grid& SparseGrid, sg::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode);
+        DMSystemMatrixSPVectorizedIdentityMPI(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode);
 
         /**
          * Std-Destructor
          */
         virtual ~DMSystemMatrixSPVectorizedIdentityMPI();
 
-        virtual void mult(sg::base::DataVectorSP& alpha, sg::base::DataVectorSP& result);
+        virtual void mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result);
 
-        virtual void generateb(sg::base::DataVectorSP& classes, sg::base::DataVectorSP& b);
+        virtual void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b);
 
         virtual void rebuildLevelAndIndex();
 
@@ -71,7 +74,7 @@ namespace sg {
         int* _mpi_grid_offsets;
 
         /// reference to grid. needed to get new grid size after it changes
-        sg::base::Grid& m_grid;
+        SGPP::base::Grid& m_grid;
 
         /// how to distribute dataset
         int* _mpi_data_sizes;

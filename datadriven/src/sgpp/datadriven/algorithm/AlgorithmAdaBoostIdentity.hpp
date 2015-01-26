@@ -12,7 +12,10 @@
 
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /*
@@ -30,7 +33,7 @@ namespace sg {
         * @param alpha output the coefficients of the sparse grid's basis functions
         * @param final judgement the final step of this base learner
         */
-        virtual void alphaSolver(double& lambda, sg::base::DataVector& weight, sg::base::DataVector& alpha, bool final);
+        virtual void alphaSolver(double& lambda, SGPP::base::DataVector& weight, SGPP::base::DataVector& alpha, bool final);
 
       public:
 
@@ -61,7 +64,7 @@ namespace sg {
         * @param percentOfAda the percentage of Grid points to refine
         * @param mode the adaboost type to choose
          */
-        AlgorithmAdaBoostIdentity(sg::base::Grid& SparseGrid, size_t gridType, sg::base::HashGenerator::level_t gridLevel, sg::base::DataMatrix& trainData, sg::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode);
+        AlgorithmAdaBoostIdentity(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode);
 
         /**
          * Std-Deconstructor

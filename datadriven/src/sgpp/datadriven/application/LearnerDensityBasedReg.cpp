@@ -10,11 +10,14 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     LearnerDensityBasedReg::LearnerDensityBasedReg(
-      sg::datadriven::LearnerRegularizationType& regularization,
+      SGPP::datadriven::LearnerRegularizationType& regularization,
       double border) :
       LearnerBase(true), CMode_(regularization), C_(NULL), maxValue_(0.), minValue_(
         0.), border_(border) {
@@ -26,18 +29,18 @@ namespace sg {
         delete C_;
     }
 
-    sg::datadriven::DMSystemMatrixBase* LearnerDensityBasedReg::createDMSystem(
-      sg::base::DataMatrix& trainDataset, double lambda) {
+    SGPP::datadriven::DMSystemMatrixBase* LearnerDensityBasedReg::createDMSystem(
+      SGPP::base::DataMatrix& trainDataset, double lambda) {
       // Is not used
       return NULL;
     }
 
-    LearnerTiming LearnerDensityBasedReg::train(sg::base::DataMatrix& trainDataset,
-        sg::base::DataVector& classes,
-        const sg::base::RegularGridConfiguration& GridConfig,
-        const sg::solver::SLESolverConfiguration& SolverConfigRefine,
-        const sg::solver::SLESolverConfiguration& SolverConfigFinal,
-        const sg::base::AdpativityConfiguration& AdaptConfig,
+    LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix& trainDataset,
+        SGPP::base::DataVector& classes,
+        const SGPP::base::RegularGridConfiguration& GridConfig,
+        const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+        const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+        const SGPP::base::AdpativityConfiguration& AdaptConfig,
         bool testAccDuringAdapt, const double lambda) {
       LearnerTiming result;
 
@@ -64,29 +67,29 @@ namespace sg {
 
       double oldAcc = 0.0;
 
-      sg::solver::SLESolver* myCG;
+      SGPP::solver::SLESolver* myCG;
 
-      if (SolverConfigRefine.type_ == sg::solver::CG) {
-        myCG = new sg::solver::ConjugateGradients(
+      if (SolverConfigRefine.type_ == SGPP::solver::CG) {
+        myCG = new SGPP::solver::ConjugateGradients(
           SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-      } else if (SolverConfigRefine.type_ == sg::solver::BiCGSTAB) {
-        myCG = new sg::solver::BiCGStab(SolverConfigRefine.maxIterations_,
+      } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+        myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                         SolverConfigRefine.eps_);
       } else {
         throw base::application_exception(
           "LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
       }
 
-      sg::base::SGppStopwatch* myStopwatch = new sg::base::SGppStopwatch();
+      SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
 
       if (isVerbose_)
         std::cout << "Starting Learning...." << std::endl;
 
       //Normalize "class" vector and append it to the train data matrix to create a m x (n+1) matrix for estimation of Pr[x, t]:
-      sg::base::DataVector classes_copy(classes);
+      SGPP::base::DataVector classes_copy(classes);
       classes_copy.minmax(&minValue_, &maxValue_);
       classes_copy.normalize(border_);
-      sg::base::DataMatrix densityMatrix(m, dim + 1);
+      SGPP::base::DataMatrix densityMatrix(m, dim + 1);
       double* densityData = densityMatrix.getPointer();
       double* trainData = trainDataset.getPointer();
       double* classesData = classes_copy.getPointer();
@@ -104,7 +107,7 @@ namespace sg {
       }
 
       //Adjust grid configuration to the higher dimension:
-      sg::base::RegularGridConfiguration config_adap;
+      SGPP::base::RegularGridConfiguration config_adap;
       config_adap.dim_ = GridConfig.dim_ + 1;
       config_adap.level_ = GridConfig.level_;
       config_adap.type_ = GridConfig.type_;
@@ -133,8 +136,8 @@ namespace sg {
 
         // Do Refinements
         if (i > 0) {
-          sg::base::SurplusRefinementFunctor* myRefineFunc =
-            new sg::base::SurplusRefinementFunctor(alpha_,
+          SGPP::base::SurplusRefinementFunctor* myRefineFunc =
+            new SGPP::base::SurplusRefinementFunctor(alpha_,
                 AdaptConfig.noPoints_);
           grid_->createGridGenerator()->refine(myRefineFunc);
           delete myRefineFunc;
@@ -157,16 +160,16 @@ namespace sg {
           delete C_;
 
         if (this->CMode_ == Laplace) {
-          C_ = sg::op_factory::createOperationLaplace(*grid_);
+          C_ = SGPP::op_factory::createOperationLaplace(*grid_);
         } else if (this->CMode_ == Identity) {
-          C_ = sg::op_factory::createOperationIdentity(*grid_);
+          C_ = SGPP::op_factory::createOperationIdentity(*grid_);
         } else {
           // should not happen
         }
 
-        sg::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_,
+        SGPP::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_,
             lambda);
-        sg::base::DataVector rhs(grid_->getStorage()->size());
+        SGPP::base::DataVector rhs(grid_->getStorage()->size());
         DMatrix.generateb(rhs);
 
         if (i == AdaptConfig.numRefinements_) {
@@ -228,30 +231,30 @@ namespace sg {
       return result;
     }
 
-    sg::base::DataVector LearnerDensityBasedReg::predict(
-      sg::base::DataMatrix& testDataset) {
-      sg::base::DataVector res(testDataset.getNrows());
+    SGPP::base::DataVector LearnerDensityBasedReg::predict(
+      SGPP::base::DataMatrix& testDataset) {
+      SGPP::base::DataVector res(testDataset.getNrows());
 
       double delta = (maxValue_ - minValue_) / (1 - 2 * border_);
 
       size_t dim = testDataset.getNcols();
       size_t m = testDataset.getNrows();
-      sg::base::DataVector point(dim);
+      SGPP::base::DataVector point(dim);
 
       for (size_t i = 0; i < m; i++) {
         testDataset.getRow(i, point);
 
-        sg::base::Grid* tempGrid = grid_;
-        sg::base::Grid* lastGrid = NULL;
-        sg::base::DataVector* lastAlpha = alpha_;
+        SGPP::base::Grid* tempGrid = grid_;
+        SGPP::base::Grid* lastGrid = NULL;
+        SGPP::base::DataVector* lastAlpha = alpha_;
 
         //Conditionalize for all dimensions, but the last one:
         for (size_t j = 0; j < dim; j++) {
           OperationDensityConditional* cond =
-            sg::op_factory::createOperationDensityConditional(
+            SGPP::op_factory::createOperationDensityConditional(
               *tempGrid);
 
-          sg::base::DataVector* tempAlpha = new sg::base::DataVector(1);
+          SGPP::base::DataVector* tempAlpha = new SGPP::base::DataVector(1);
           cond->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0,
                               point.get(j));
 
@@ -267,8 +270,8 @@ namespace sg {
         }
 
         //Compute conditional expectation:
-        sg::base::OperationFirstMoment* fm =
-          sg::op_factory::createOperationFirstMoment(*lastGrid);
+        SGPP::base::OperationFirstMoment* fm =
+          SGPP::op_factory::createOperationFirstMoment(*lastGrid);
 
         double value_normalized = fm->doQuadrature(*lastAlpha);
 
@@ -282,20 +285,20 @@ namespace sg {
       return res;
     }
 
-    void LearnerDensityBasedReg::dumpDensityAtPoint(sg::base::DataVector& point,
+    void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
         std::string fileName, unsigned int resolution) {
 
       size_t dim = point.getSize();
-      sg::base::Grid* tempGrid = grid_;
-      sg::base::Grid* lastGrid = NULL;
-      sg::base::DataVector* lastAlpha = alpha_;
+      SGPP::base::Grid* tempGrid = grid_;
+      SGPP::base::Grid* lastGrid = NULL;
+      SGPP::base::DataVector* lastAlpha = alpha_;
 
       //Conditionalize for all dimensions, but the last one:
       for (size_t j = 0; j < dim; j++) {
         OperationDensityConditional* cond =
-          sg::op_factory::createOperationDensityConditional(*tempGrid);
+          SGPP::op_factory::createOperationDensityConditional(*tempGrid);
 
-        sg::base::DataVector* tempAlpha = new sg::base::DataVector(1);
+        SGPP::base::DataVector* tempAlpha = new SGPP::base::DataVector(1);
         cond->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
         delete cond;
@@ -309,9 +312,9 @@ namespace sg {
         lastAlpha = tempAlpha;
       }
 
-      sg::base::GridPrinter myPlotter(*lastGrid);
+      SGPP::base::GridPrinter myPlotter(*lastGrid);
       myPlotter.printGrid(*lastAlpha, fileName, resolution);
     }
 
   } /* namespace datadriven */
-} /* namespace sg */
+} /* namespace SGPP */

@@ -16,7 +16,10 @@
 
 #include <sgpp/parallel/datadriven/basis/common/mic/MICKernelBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     /**
      * @brief The MICLinear class

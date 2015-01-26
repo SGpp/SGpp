@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -22,9 +25,9 @@ namespace sg {
 
       private:
         /// bounding box of the grid
-        sg::base::BoundingBox* myBoundingBox;
-        /// sg::base::Grid Storage object
-        sg::base::GridStorage* storage;
+        SGPP::base::BoundingBox* myBoundingBox;
+        /// SGPP::base::Grid Storage object
+        SGPP::base::GridStorage* storage;
         /// dimension of the risk-free rate (HW axis)
         int dim_r;
 
@@ -35,7 +38,7 @@ namespace sg {
          * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
          * @param dim_r dimension of the risk-free rate (HW axis)
          */
-        VariableDiscountFactor(sg::base::GridStorage* storage, int dim_r);
+        VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r);
 
         /**
          * Std-Destructor
@@ -46,7 +49,7 @@ namespace sg {
          *@param factor the vector that should be calculated to multiply with another vector
          *@param T timestepsize
          */
-        void getDiscountFactor(sg::base::DataVector& factor, double T);
+        void getDiscountFactor(SGPP::base::DataVector& factor, double T);
 
     };
 

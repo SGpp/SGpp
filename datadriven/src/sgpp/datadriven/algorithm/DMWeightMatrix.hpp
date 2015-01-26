@@ -14,44 +14,47 @@
 #include <sgpp/base/operation/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/OperationMatrix.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     /**
      * Class that implements the virtual class OperationMatrix for the
      * application of classification for the Systemmatrix with weight
      */
-    class DMWeightMatrix : public sg::base::OperationMatrix {
+    class DMWeightMatrix : public SGPP::base::OperationMatrix {
       private:
         /// the lambda, the regularisation parameter
         double lamb;
-        /// sg::base::OperationMatrix, the regularisation mehtod
-        sg::base::OperationMatrix* C;
+        /// SGPP::base::OperationMatrix, the regularisation mehtod
+        SGPP::base::OperationMatrix* C;
         /// OperationB for calculating the data matrix
-        sg::base::OperationMultipleEval* B;
+        SGPP::base::OperationMultipleEval* B;
         /// Pointer to the data vector
-        sg::base::DataMatrix* data;
+        SGPP::base::DataMatrix* data;
         /// Pointer to the weight vector
-        sg::base::DataVector* weight;
+        SGPP::base::DataVector* weight;
 
       public:
         /**
          * Std-Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param trainData reference to sg::base::DataVector that contains the training data
+         * @param trainData reference to SGPP::base::DataVector that contains the training data
          * @param C the regression functional
          * @param lambda the lambda, the regression parameter
          * @param w the weights to the training data
          */
-        DMWeightMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda, sg::base::DataVector& w);
+        DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda, SGPP::base::DataVector& w);
 
         /**
          * Std-Destructor
          */
         virtual ~DMWeightMatrix();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * Generates the right hand side of the classification equation
@@ -59,7 +62,7 @@ namespace sg {
          * @param classes the class information of the training data
          * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
          */
-        void generateb(sg::base::DataVector& classes, sg::base::DataVector& b);
+        void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
     };
 
   }

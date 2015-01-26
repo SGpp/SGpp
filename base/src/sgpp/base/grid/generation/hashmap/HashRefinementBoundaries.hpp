@@ -13,7 +13,10 @@
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

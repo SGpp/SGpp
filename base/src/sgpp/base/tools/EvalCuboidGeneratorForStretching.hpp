@@ -14,7 +14,10 @@
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

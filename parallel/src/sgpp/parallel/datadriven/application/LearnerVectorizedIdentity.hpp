@@ -12,7 +12,10 @@
 
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 
@@ -23,16 +26,16 @@ namespace sg {
      * Furthermore this Learner provides support for several
      * vectorization approaches covering GPUs, CPUs and coprocessors.
      */
-    class LearnerVectorizedIdentity : public sg::datadriven::LearnerBase {
+    class LearnerVectorizedIdentity : public SGPP::datadriven::LearnerBase {
       protected:
         /// vectorization selector
         VectorizationType vecType_;
 
         MPIType mpiType_;
 
-        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
 
-        virtual void postProcessing(const sg::base::DataMatrix& trainDataset, const sg::solver::SLESolverType& solver,
+        virtual void postProcessing(const SGPP::base::DataMatrix& trainDataset, const SGPP::solver::SLESolverType& solver,
                                     const size_t numNeededIterations);
 
       public:
@@ -63,7 +66,7 @@ namespace sg {
          */
         virtual ~LearnerVectorizedIdentity();
 
-        virtual sg::base::DataVector predict(sg::base::DataMatrix& testDataset);
+        virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
     };
 
   }

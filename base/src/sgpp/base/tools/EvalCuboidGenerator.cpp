@@ -7,7 +7,10 @@
 
 #include <sgpp/base/tools/EvalCuboidGenerator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     EvalCuboidGenerator::EvalCuboidGenerator() {

@@ -8,18 +8,21 @@
 #include <sgpp/pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(sg::base::GridStorage* storage) : storage(storage) {
+    DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(SGPP::base::GridStorage* storage) : storage(storage) {
     }
 
     DowndPhidPhiBBIterativeLinear::~DowndPhidPhiBBIterativeLinear() {
     }
 
-    void DowndPhidPhiBBIterativeLinear::operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void DowndPhidPhiBBIterativeLinear::operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // Bounding Box handling
-      sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+      SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
       double q = boundingBox->getIntervalWidth(dim);
       double Qqout = 1.0 / q;
 
@@ -29,8 +32,8 @@ namespace sg {
       if (q != 1.0) {
         // traverse all basis function by sequence number
         for (size_t i = 0; i < storage->size(); i++) {
-          sg::base::GridStorage::index_type::level_type level;
-          sg::base::GridStorage::index_type::index_type index;
+          SGPP::base::GridStorage::index_type::level_type level;
+          SGPP::base::GridStorage::index_type::index_type index;
           (*storage)[i]->get(dim, level, index);
           //only affects the diagonal of the stiffness matrix
           result[i] = alpha[i] * (Qqout * (static_cast<double>(1 << (level + 1))));
@@ -38,8 +41,8 @@ namespace sg {
       } else {
         // traverse all basis function by sequence number
         for (size_t i = 0; i < storage->size(); i++) {
-          sg::base::GridStorage::index_type::level_type level;
-          sg::base::GridStorage::index_type::index_type index;
+          SGPP::base::GridStorage::index_type::level_type level;
+          SGPP::base::GridStorage::index_type::index_type index;
           (*storage)[i]->get(dim, level, index);
           //only affects the diagonal of the stiffness matrix
           result[i] = alpha[i] * static_cast<double>(1 << (level + 1));

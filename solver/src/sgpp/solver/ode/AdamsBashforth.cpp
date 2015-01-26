@@ -15,10 +15,13 @@
 #include <string>
 #include <sstream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen) {
+    AdamsBashforth::AdamsBashforth(size_t imax, double timestepSize, SGPP::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), myScreen(screen) {
       this->residuum = 0.0;
 
     }
@@ -26,9 +29,9 @@ namespace sg {
     AdamsBashforth::~AdamsBashforth() {
     }
 
-    void AdamsBashforth::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
+    void AdamsBashforth::solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
       size_t allIter = 0;
-      sg::base::DataVector* rhs;
+      SGPP::base::DataVector* rhs;
 
       for (size_t i = 0; i < this->nMaxIterations; i++) {
         if (i > 0)

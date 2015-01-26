@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 /**
@@ -88,5 +91,5 @@ protected:
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 #endif /* PREDICTIVEANOVAREFINEMENT_HPP_ */

@@ -14,7 +14,10 @@
 #include <list>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace mcm {
     
     /**
@@ -43,7 +46,7 @@ namespace sg {
          * @param sample DataVector storing the new generated sample vector.
          */
 
-        void getSample(sg::base::DataVector& sample);
+        void getSample(SGPP::base::DataVector& sample);
         
       private:
 

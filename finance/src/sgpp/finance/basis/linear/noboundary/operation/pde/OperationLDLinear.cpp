@@ -12,27 +12,30 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    OperationLDLinear::OperationLDLinear(sg::base::GridStorage* storage) : sg::pde::StdUpDown(storage) {
+    OperationLDLinear::OperationLDLinear(SGPP::base::GridStorage* storage) : SGPP::pde::StdUpDown(storage) {
     }
 
     OperationLDLinear::~OperationLDLinear() {
     }
 
-    void OperationLDLinear::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationLDLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // X * phi * phi
       XPhiPhiUpBBLinear func(this->storage);
-      sg::base::sweep<XPhiPhiUpBBLinear> s(func, this->storage);
+      SGPP::base::sweep<XPhiPhiUpBBLinear> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }
 
-    void OperationLDLinear::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationLDLinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // X * phi * phi
       XPhiPhiDownBBLinear func(this->storage);
-      sg::base::sweep<XPhiPhiDownBBLinear> s(func, this->storage);
+      SGPP::base::sweep<XPhiPhiDownBBLinear> s(func, this->storage);
 
       s.sweep1D(alpha, result, dim);
     }

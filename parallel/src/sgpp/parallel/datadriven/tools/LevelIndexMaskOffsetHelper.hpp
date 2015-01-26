@@ -11,7 +11,10 @@
 #include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     // comment is true for both DP and SP
     // use constructor to do actual work, in code where we use this, it looks like a
@@ -54,8 +57,8 @@ namespace sg {
         if (op->index_ != NULL)
           delete op->index_;
 
-        op->level_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-        op->index_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
+        op->level_ = new SGPP::base::DataMatrix(op->storage_->size(), op->storage_->dim());
+        op->index_ = new SGPP::base::DataMatrix(op->storage_->size(), op->storage_->dim());
 
         op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
       }
@@ -73,10 +76,10 @@ namespace sg {
         if (op->offset_ != NULL)
           delete op->offset_;
 
-        op->level_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-        op->index_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-        op->mask_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
-        op->offset_ = new sg::base::DataMatrix(op->storage_->size(), op->storage_->dim());
+        op->level_ = new SGPP::base::DataMatrix(op->storage_->size(), op->storage_->dim());
+        op->index_ = new SGPP::base::DataMatrix(op->storage_->size(), op->storage_->dim());
+        op->mask_ = new SGPP::base::DataMatrix(op->storage_->size(), op->storage_->dim());
+        op->offset_ = new SGPP::base::DataMatrix(op->storage_->size(), op->storage_->dim());
 
         op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_), *(op->offset_));
       }
@@ -105,8 +108,8 @@ namespace sg {
         if (op->index_ != NULL)
           delete op->index_;
 
-        op->level_ = new sg::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
-        op->index_ = new sg::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
+        op->level_ = new SGPP::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
+        op->index_ = new SGPP::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
 
         op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
       }
@@ -124,10 +127,10 @@ namespace sg {
         if (op->offset_ != NULL)
           delete op->offset_;
 
-        op->level_ = new sg::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
-        op->index_ = new sg::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
-        op->mask_ = new sg::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
-        op->offset_ = new sg::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
+        op->level_ = new SGPP::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
+        op->index_ = new SGPP::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
+        op->mask_ = new SGPP::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
+        op->offset_ = new SGPP::base::DataMatrixSP(op->storage_->size(), op->storage_->dim());
 
         op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_), *(op->offset_));
       }

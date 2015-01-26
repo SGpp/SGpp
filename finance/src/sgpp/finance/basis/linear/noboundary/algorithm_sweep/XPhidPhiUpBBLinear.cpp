@@ -7,18 +7,21 @@
 
 #include <sgpp/finance/basis/linear/noboundary/algorithm_sweep/XPhidPhiUpBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(sg::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+    XPhidPhiUpBBLinear::XPhidPhiUpBBLinear(SGPP::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
     }
 
     XPhidPhiUpBBLinear::~XPhidPhiUpBBLinear() {
     }
 
-    void XPhidPhiUpBBLinear::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void XPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       double q = boundingBox->getIntervalWidth(dim);
       double t = boundingBox->getIntervalOffset(dim);
 
@@ -39,15 +42,15 @@ namespace sg {
       }
     }
 
-    void XPhidPhiUpBBLinear::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+    void XPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
       double fml = 0.0;
       double fmr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -80,15 +83,15 @@ namespace sg {
       fr = (fm / 2.0) + ((alpha_value * helper) + fr);
     }
 
-    void XPhidPhiUpBBLinear::recBB(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
+    void XPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
       double fml = 0.0;
       double fmr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -123,5 +126,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

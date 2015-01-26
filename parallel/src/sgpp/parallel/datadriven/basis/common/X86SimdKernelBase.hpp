@@ -11,7 +11,10 @@
 
 #include "CommonX86SimdKernelBase.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     class X86SimdKernelBase {

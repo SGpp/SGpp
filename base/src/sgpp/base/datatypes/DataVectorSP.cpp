@@ -15,7 +15,10 @@
 #include <cstring>
 #include <cstdlib>
 #include <sgpp/base/tools/AlignedMemory.hpp>
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     DataVectorSP::DataVectorSP(size_t size) :
@@ -44,7 +47,7 @@ namespace sg {
 
     void DataVectorSP::restructure(std::vector<size_t>& remainingIndex) {
       if (remainingIndex.size() > this->size) {
-        throw sg::base::algorithm_exception("more indices than entries!");
+        throw SGPP::base::algorithm_exception("more indices than entries!");
       }
 
       float* newdata = new float[remainingIndex.size()];
@@ -154,7 +157,7 @@ namespace sg {
       }
 
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVectorSP::add : Dimensions do not match");
       }
 
@@ -164,7 +167,7 @@ namespace sg {
 
     void DataVectorSP::add(DataVectorSP& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVectorSP::add : Dimensions do not match");
       }
 
@@ -175,7 +178,7 @@ namespace sg {
 
     void DataVectorSP::sub(const DataVectorSP& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVectorSP::sub : Dimensions do not match");
       }
 
@@ -186,7 +189,7 @@ namespace sg {
 
     void DataVectorSP::componentwise_mult(DataVectorSP& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVectorSP::componentwise_mult : Dimensions do not match");
       }
 
@@ -197,7 +200,7 @@ namespace sg {
 
     void DataVectorSP::componentwise_div(DataVectorSP& vec) {
       if (size != vec.size) {
-        throw new sg::base::data_exception(
+        throw new SGPP::base::data_exception(
           "DataVectorSP::componentwise_div : Dimensions do not match");
       }
 

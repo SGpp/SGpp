@@ -18,7 +18,10 @@
 #include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 
-namespace sg
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP
 {
 namespace base
 {
@@ -29,14 +32,14 @@ bool refinementPairCompare(const std::pair<OnlinePredictiveRefinementDimension::
     return firstEl.second > secondEl.second;
 }
 
-const sg::parallel::VectorizationType OnlinePredictiveRefinementDimension::vecType_ = sg::parallel::VectorizationType::X86SIMD;
+const SGPP::parallel::VectorizationType OnlinePredictiveRefinementDimension::vecType_ = SGPP::parallel::VectorizationType::X86SIMD;
 
 
 void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     GridStorage* storage, size_t refinements_num, refinement_map* result)
 {
 
-    using namespace sg::base;
+    using namespace SGPP::base;
 
     if (trainDataset == NULL || errors == NULL)
     {
@@ -52,9 +55,9 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
     GridStorage* predictiveGridStorage = predictiveGrid_->getStorage();
     size_t predictiveGridSize = predictiveGrid_->getSize();
 
-    OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*predictiveGrid_, *trainDataset);
-//    sg::parallel::OperationMultipleEvalVectorized* eval =
-//    		sg::op_factory::createOperationMultipleEvalVectorized(*predictiveGrid_,
+    OperationMultipleEval* eval = SGPP::op_factory::createOperationMultipleEval(*predictiveGrid_, *trainDataset);
+//    SGPP::parallel::OperationMultipleEvalVectorized* eval =
+//    		SGPP::op_factory::createOperationMultipleEvalVectorized(*predictiveGrid_,
 //                vecType_, trainDataset);
 
     GridIndex* gridIndex;
@@ -328,4 +331,4 @@ double OnlinePredictiveRefinementDimension::basisFunctionEvalHelper(unsigned int
 
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

@@ -1,7 +1,10 @@
 #ifndef BASIS_HPP
 #define BASIS_HPP
 
-namespace sg{
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP{
 namespace base {
 
 	template<class LT, class IT>

@@ -14,41 +14,44 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
      * This class implements the ParabolicPDESolverSystem for the
      * Heat Equation using vectorized and iterative operators
      */
-    class HeatEquationParabolicPDESolverSystemVectorizedMPI : public sg::parallel::OperationParabolicPDESolverSystemDirichletCombined {
+    class HeatEquationParabolicPDESolverSystemVectorizedMPI : public SGPP::parallel::OperationParabolicPDESolverSystemDirichletCombined {
       private:
         /// the heat coefficient
         double a;
         /// the Laplace Operation, on boundary grid
-        sg::base::OperationMatrix* OpLaplaceBound;
+        SGPP::base::OperationMatrix* OpLaplaceBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        sg::base::OperationMatrix* OpLTwoBound;
+        SGPP::base::OperationMatrix* OpLTwoBound;
         /// the Laplace Operation, on Inner grid
-        sg::base::OperationMatrix* OpLaplaceInner;
+        SGPP::base::OperationMatrix* OpLaplaceInner;
         /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-        sg::base::OperationMatrix* OpLTwoInner;
+        SGPP::base::OperationMatrix* OpLTwoInner;
         /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Inner grid
-        sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
+        SGPP::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
         /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Bound grid
-        sg::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
+        SGPP::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
 
-        virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual void applyMassMatrixLOperatorBound(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void applyMassMatrixLOperatorBound(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         virtual void setTimestepCoefficientInner(double timestep_coefficient);
 
@@ -65,7 +68,7 @@ namespace sg {
          * @param OperationMode specifies in which solver this matrix is used, valid values are:
          *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
          */
-        HeatEquationParabolicPDESolverSystemVectorizedMPI(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ImEul");
+        HeatEquationParabolicPDESolverSystemVectorizedMPI(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ImEul");
 
         /**
          * Std-Destructor

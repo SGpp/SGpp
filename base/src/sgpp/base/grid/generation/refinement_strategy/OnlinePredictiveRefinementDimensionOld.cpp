@@ -16,7 +16,10 @@
 
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 bool doubleReverseCompare(const double firstEl, const double secondEl){
@@ -227,4 +230,4 @@ size_t OnlinePredictiveRefinementDimensionOld::getIndexOfMin(
 }
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

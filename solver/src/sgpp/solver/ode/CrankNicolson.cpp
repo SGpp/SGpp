@@ -8,19 +8,22 @@
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/solver/ode/CrankNicolson.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, sg::base::ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen) {
+    CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize, SGPP::base::ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize), myScreen(screen) {
       this->residuum = 0.0;
     }
 
     CrankNicolson::~CrankNicolson() {
     }
 
-    void CrankNicolson::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
+    void CrankNicolson::solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
       size_t allIter = 0;
-      sg::base::DataVector* rhs = NULL;
+      SGPP::base::DataVector* rhs = NULL;
 
       for (size_t i = 0; i < this->nMaxIterations; i++) {
         // generate right hand side

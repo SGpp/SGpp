@@ -10,16 +10,19 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
-    DMWeightMatrix::DMWeightMatrix(sg::base::Grid& SparseGrid, sg::base::DataMatrix& trainData, sg::base::OperationMatrix& C, double lambda, sg::base::DataVector& w) {
+    DMWeightMatrix::DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda, SGPP::base::DataVector& w) {
       // create the operations needed in ApplyMatrix
       this->C = &C;
       this->lamb = lambda;
       this->data = &trainData;
       //this->B = SparseGrid.createOperationMultipleEval(this->data);
-      this->B = sg::op_factory::createOperationMultipleEval(SparseGrid, *(this->data));
+      this->B = SGPP::op_factory::createOperationMultipleEval(SparseGrid, *(this->data));
       this->weight = &w;
     }
 
@@ -28,8 +31,8 @@ namespace sg {
     }
 
 
-    void DMWeightMatrix::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp((*data).getNrows());
+    void DMWeightMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector temp((*data).getNrows());
       //size_t M = (*data).getNrows();
       //// Operation B
       this->B->mult(alpha, temp);
@@ -37,13 +40,13 @@ namespace sg {
 
       this->B->multTranspose(temp, result);
 
-      sg::base::DataVector temptwo(alpha.getSize());
+      SGPP::base::DataVector temptwo(alpha.getSize());
       this->C->mult(alpha, temptwo);
       result.axpy(this->lamb, temptwo);
     }
 
-    void DMWeightMatrix::generateb(sg::base::DataVector& classes, sg::base::DataVector& b) {
-      sg::base::DataVector myClassesWithWeights(classes);
+    void DMWeightMatrix::generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {
+      SGPP::base::DataVector myClassesWithWeights(classes);
       myClassesWithWeights.componentwise_mult(*weight);
       this->B->multTranspose(myClassesWithWeights, b);
     }

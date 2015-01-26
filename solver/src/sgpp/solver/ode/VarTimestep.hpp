@@ -13,7 +13,10 @@
 #include <sgpp/solver/ode/StepsizeControl.hpp>
 #include <string>
 //
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     /**
@@ -24,9 +27,9 @@ namespace sg {
      */
     class VarTimestep : public StepsizeControl {
       protected:
-        void predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
-                       double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector& corr, sg::base::DataVector* rhs);
-        void corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector* rhs);
+        void predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+                       double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
+        void corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs);
 
         virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon);
 
@@ -43,10 +46,10 @@ namespace sg {
          * @param imax number of maximum executed iterations
          * @param timestepSize the size of one timestep
          * @param eps the epsilon for the step size control
-         * @param screen possible pointer to a sg::base::ScreenOutput object
+         * @param screen possible pointer to a SGPP::base::ScreenOutput object
          * @param gamma damping factor
          */
-        VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL, double gamma = -1);
+        VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen = NULL, double gamma = -1);
 
         /**
          * Std-Destructor

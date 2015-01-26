@@ -1,8 +1,11 @@
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
 /*
@@ -36,7 +39,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
 
     //calculate the maxLevel first - required for level vector flattening
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);
             if (curLevel > this->maxLevel) {
@@ -50,7 +53,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
     //also find out how many grid points the largest subspace contains
     this->maxGridPointsOnLevel = 0;
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
-        sg::base::GridIndex *point = this->storage->get(gridIndex);
+        SGPP::base::GridIndex *point = this->storage->get(gridIndex);
 
         for (size_t d = 0; d < this->dim; d++) {
             point->get(d, curLevel, curIndex);

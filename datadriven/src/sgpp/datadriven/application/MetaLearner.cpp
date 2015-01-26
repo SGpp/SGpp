@@ -9,13 +9,16 @@
 #include "LearnerLeastSquaresIdentity.hpp"
 #include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
 
-using namespace sg::base;
+using namespace SGPP::base;
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-MetaLearner::MetaLearner(sg::solver::SLESolverConfiguration solverConfig,
-                         sg::solver::SLESolverConfiguration solverFinalStep, sg::base::AdpativityConfiguration adaptivityConfiguration,
+MetaLearner::MetaLearner(SGPP::solver::SLESolverConfiguration solverConfig,
+                         SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConfiguration adaptivityConfiguration,
                          size_t baseLevel, double lambda, bool verbose) {
     this->csvSep = "& ";
     this->solverConfig = solverConfig;
@@ -28,7 +31,7 @@ MetaLearner::MetaLearner(sg::solver::SLESolverConfiguration solverConfig,
     this->dim = 0;
 }
 
-void MetaLearner::learn(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                         std::string datasetFileName) {
 
     this->dim = arffTools.getDimension(datasetFileName);
@@ -39,7 +42,7 @@ void MetaLearner::learn(sg::datadriven::OperationMultipleEvalConfiguration &oper
 
     // Set grid config
     this->gridConfig.dim_ = this->dim;
-    this->gridConfig.type_ = sg::base::Linear;
+    this->gridConfig.type_ = SGPP::base::Linear;
     this->gridConfig.level_ = static_cast<int>(this->baseLevel);
 
     DataVector classesVector(instances);
@@ -74,7 +77,7 @@ void MetaLearner::learnReference(std::string fileName) {
 
     // Set grid config
     this->gridConfig.dim_ = this->dim;
-    this->gridConfig.type_ = sg::base::Linear;
+    this->gridConfig.type_ = SGPP::base::Linear;
     this->gridConfig.level_ = static_cast<int>(this->baseLevel);
 
     DataVector classesVector(instances);
@@ -86,7 +89,7 @@ void MetaLearner::learnReference(std::string fileName) {
     // treat everything as if it were a regression, as classification is not fully supported by Learner
     bool isRegression = true;
     LearnerLeastSquaresIdentity *referenceLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
-    sg::datadriven::OperationMultipleEvalConfiguration operationConfiguration;
+    SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration;
     operationConfiguration.type = OperationMultipleEvalType::DEFAULT;
     operationConfiguration.subType = OperationMultipleEvalSubType::DEFAULT;
     operationConfiguration.name = "STREAMING";
@@ -105,7 +108,7 @@ void MetaLearner::learnReference(std::string fileName) {
 }
 
 //learn and test against test dataset and measure hits/mse
-void MetaLearner::learnAndTest(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                                std::string datasetFileName, std::string testFileName, bool isBinaryClassification) {
 
     //always to this first
@@ -164,7 +167,7 @@ void MetaLearner::learnAndTest(sg::datadriven::OperationMultipleEvalConfiguratio
 }
 
 //learn and test against the streaming implemenation
-double MetaLearner::learnAndCompare(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+double MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                                     std::string datasetFileName, size_t gridGranularity, double tolerance) {
     //always do this first
     this->learn(operationConfiguration, datasetFileName);
@@ -283,10 +286,10 @@ void MetaLearner::writeRefinementResults(std::string fileName, std::string fileH
 }
 
 void MetaLearner::refinementAndOverallPerformance(
-    std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
+    std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
     std::vector<std::string> datasets, std::vector<std::string> experimentHeaders, std::string metaInformation,
     std::string experimentName, bool referenceComparison) {
-    for (sg::datadriven::OperationMultipleEvalConfiguration * operationConfiguration : operationConfigurations) {
+    for (SGPP::datadriven::OperationMultipleEvalConfiguration * operationConfiguration : operationConfigurations) {
         std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > refinementDetails;
         std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > refinementDetailsReference;
 
@@ -338,7 +341,7 @@ void MetaLearner::refinementAndOverallPerformance(
     }
 }
 
-void MetaLearner::regularGridSpeedup(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
+void MetaLearner::regularGridSpeedup(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration,
                                      std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances, std::string metaInformation,
                                      std::string experimentName) {
 
@@ -373,7 +376,7 @@ void MetaLearner::regularGridSpeedup(sg::datadriven::OperationMultipleEvalConfig
 }
 
 void MetaLearner::appendToPerformanceRun(std::string fileName, std::string changingRowName, std::string currentValues,
-        std::vector<sg::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
+        std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration *> operationConfigurations,
         std::vector<std::string> datasets, std::vector<std::string> datasetNames, std::string metaInformation,
         bool removeOld) {
 
@@ -397,7 +400,7 @@ void MetaLearner::appendToPerformanceRun(std::string fileName, std::string chang
         myFile.open(fileName, std::ios::out | std::ios::app);
         myFile << "# " << metaInformation << std::endl;
         myFile << changingRowName;
-        for (sg::datadriven::OperationMultipleEvalConfiguration *operationConfiguration : operationConfigurations) {
+        for (SGPP::datadriven::OperationMultipleEvalConfiguration *operationConfiguration : operationConfigurations) {
             for (std::string datasetName : datasetNames) {
                 myFile << csvSep << operationConfiguration->name << "/" << datasetName;
             }
@@ -410,7 +413,7 @@ void MetaLearner::appendToPerformanceRun(std::string fileName, std::string chang
     myFile.open(fileName, std::ios::out | std::ios::app);
     std::cout << "filename: " << fileName << std::endl;
     myFile << currentValues;
-    for (sg::datadriven::OperationMultipleEvalConfiguration *operationConfiguration : operationConfigurations) {
+    for (SGPP::datadriven::OperationMultipleEvalConfiguration *operationConfiguration : operationConfigurations) {
         for (std::string dataset : datasets) {
             this->learn(*operationConfiguration, dataset);
             myFile << csvSep << this->myTiming.timeComplete_;
@@ -425,7 +428,7 @@ double fRand(double fMin, double fMax) {
     return fMin + f * (fMax - fMin);
 }
 
-void MetaLearner::testRegular(sg::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
+void MetaLearner::testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration &operationConfiguration, size_t dim,
                               size_t level, size_t instances, double &duration, double &durationReference) {
 
     srand(static_cast<unsigned int>(time(NULL)));
@@ -433,7 +436,7 @@ void MetaLearner::testRegular(sg::datadriven::OperationMultipleEvalConfiguration
 
     // Set grid config
     this->gridConfig.dim_ = dim;
-    this->gridConfig.type_ = sg::base::Linear;
+    this->gridConfig.type_ = SGPP::base::Linear;
     this->gridConfig.level_ = static_cast<int>(level);
 
     DataMatrix testTrainingData(instances, dim);
@@ -451,7 +454,7 @@ void MetaLearner::testRegular(sg::datadriven::OperationMultipleEvalConfiguration
 
     LearnerLeastSquaresIdentity *learnerReference = new LearnerLeastSquaresIdentity(isRegression,
             this->verbose);
-    sg::datadriven::OperationMultipleEvalConfiguration referenceOperationConfiguration;
+    SGPP::datadriven::OperationMultipleEvalConfiguration referenceOperationConfiguration;
     referenceOperationConfiguration.type = OperationMultipleEvalType::STREAMING;
     referenceOperationConfiguration.subType = OperationMultipleEvalSubType::DEFAULT;
     referenceOperationConfiguration.name = "STREAMING";

@@ -9,17 +9,20 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
 #include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 
-namespace sg
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP
 {
 
 namespace datadriven
 {
 
-const sg::parallel::VectorizationType LearnerOnlineSGD::vecType_ = sg::parallel::VectorizationType::X86SIMD;
+const SGPP::parallel::VectorizationType LearnerOnlineSGD::vecType_ = SGPP::parallel::VectorizationType::X86SIMD;
 
 
 LearnerOnlineSGD::LearnerOnlineSGD(
-    sg::datadriven::LearnerRegularizationType& regularization,
+    SGPP::datadriven::LearnerRegularizationType& regularization,
     const bool isRegression, const bool isVerbose) :
         Learner(regularization, isRegression, isVerbose),
         mainTrainDataset(NULL), mainClasses(NULL),
@@ -37,19 +40,19 @@ LearnerOnlineSGD::LearnerOnlineSGD(
 
 {}
 
-void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
-                             sg::base::DataVector& mainClasses_,
-                             sg::base::DataMatrix& testTrainDataset_,
-                             sg::base::DataVector& testClasses_,
-                             sg::base::RegularGridConfiguration& gridConfig,
-                             sg::datadriven::LearnerOnlineSGDConfiguration& config_
+void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
+                             SGPP::base::DataVector& mainClasses_,
+                             SGPP::base::DataMatrix& testTrainDataset_,
+                             SGPP::base::DataVector& testClasses_,
+                             SGPP::base::RegularGridConfiguration& gridConfig,
+                             SGPP::datadriven::LearnerOnlineSGDConfiguration& config_
                             )
 {
     /*
      * Initialization
      */
 
-    using namespace sg::base;
+    using namespace SGPP::base;
 
     if (alpha_ != NULL)
         delete alpha_;
@@ -90,7 +93,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
 
     // resize train dataset for vectorization (padding)
     size_t oldSize = mainTrainDataset_.getNrows();
-    double chunkSize = static_cast<double>(sg::parallel::X86SimdKernelBase::getChunkDataPoints());
+    double chunkSize = static_cast<double>(SGPP::parallel::X86SimdKernelBase::getChunkDataPoints());
     size_t newSize = static_cast<size_t>(std::ceil(static_cast<double>(mainTrainDataset_.getNrows()) / chunkSize) * chunkSize);
     mainTrainDataset_.resize(newSize);
     mainClasses_.resize(newSize);
@@ -133,7 +136,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     mainError = new DataVector(numMainData);
     mainError->setAll(0.0);
 
-    minibatchTrainDataset = new sg::base::DataMatrix(0, numMainDim);
+    minibatchTrainDataset = new SGPP::base::DataMatrix(0, numMainDim);
     minibatchTrainDataset->addSize(config.minibatchSize);
     minibatchTrainDataset->setAll(0.0);
 
@@ -273,7 +276,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
             throw base::application_exception("Online predictive refinement decorator supports only the corresponding ONLINE_PREDICTIVE_DIMENSION indicator");
         }
         HashRefinementInconsistent* hashRef = new HashRefinementInconsistent();
-        online_refinement = new sg::base::OnlinePredictiveRefinementDimension(hashRef, mainTrainDataset_.getNcols());
+        online_refinement = new SGPP::base::OnlinePredictiveRefinementDimension(hashRef, mainTrainDataset_.getNcols());
         online_refinement->setTrainDataset(minibatchTrainDataset);
         online_refinement->setErrors(minibatchError);
     }
@@ -285,7 +288,7 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
             throw base::application_exception("Online predictive refinement decorator supports only the corresponding ONLINE_PREDICTIVE_DIMENSION indicator");
         }
         HashRefinementInconsistent* hashRef = new HashRefinementInconsistent();
-        online_refinement_old = new sg::base::OnlinePredictiveRefinementDimensionOld(hashRef);
+        online_refinement_old = new SGPP::base::OnlinePredictiveRefinementDimensionOld(hashRef);
     }
 
     if (config.hashRefinementType == "HASH_REFINEMENT")
@@ -409,9 +412,9 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
                 getError(&mainTrainDatasetT, mainClasses, config.errorType, mainError, true);
                 mainError->sqr();
                 */
-                OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, *mainTrainDataset);
+                OperationMultipleEval* eval = SGPP::op_factory::createOperationMultipleEval(*grid_, *mainTrainDataset);
                 eval->mult(*mainError, *errorPerBasisFunction);
-                //sg::parallel::OperationMultipleEvalVectorized* eval = sg::op_factory::createOperationMultipleEvalVectorized(*grid_,
+                //SGPP::parallel::OperationMultipleEvalVectorized* eval = SGPP::op_factory::createOperationMultipleEvalVectorized(*grid_,
                 //        vecType_, &mainTrainDatasetT);
                 //eval->multTransposeVectorized(*mainError, *errorPerBasisFunction);
                 delete eval;
@@ -508,18 +511,18 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     std::cout << "Error before CG (MSE): " <<
     getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
 
-    sg::solver::ConjugateGradients *cg = new sg::solver::ConjugateGradients(
+    SGPP::solver::ConjugateGradients *cg = new SGPP::solver::ConjugateGradients(
                                              config.CG_max, config.CG_eps);
 
-    //    sg::base::OperationMatrix *C_ = sg::op_factory::createOperationIdentity(
+    //    SGPP::base::OperationMatrix *C_ = SGPP::op_factory::createOperationIdentity(
     //                                        *this->grid_);
-    //    sg::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
+    //    SGPP::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
     //                                          config.lambda);
 
-    sg::parallel::DMSystemMatrixVectorizedIdentity matrix(*grid_, *mainTrainDataset,
+    SGPP::parallel::DMSystemMatrixVectorizedIdentity matrix(*grid_, *mainTrainDataset,
             config.lambda, vecType_);
 
-    sg::base::DataVector b(alpha_->getSize());
+    SGPP::base::DataVector b(alpha_->getSize());
     matrix.generateb(*mainClasses, b);
 
     cg->solve(matrix, *alpha_, b, true, false);
@@ -558,10 +561,10 @@ void LearnerOnlineSGD::train(sg::base::DataMatrix& mainTrainDataset_,
     delete functor;
 }
 
-double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
-                                  sg::base::DataVector* classes, std::string errorType, sg::base::DataVector* error, bool useEvalVectorized)
+double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
+                                  SGPP::base::DataVector* classes, std::string errorType, SGPP::base::DataVector* error, bool useEvalVectorized)
 {
-    using namespace sg::base;
+    using namespace SGPP::base;
 
     size_t numData;
 
@@ -583,8 +586,8 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 
     if( useEvalVectorized )
     {
-        sg::parallel::OperationMultipleEvalVectorized* eval =
-        		sg::op_factory::createOperationMultipleEvalVectorized(*grid_,
+        SGPP::parallel::OperationMultipleEvalVectorized* eval =
+        		SGPP::op_factory::createOperationMultipleEvalVectorized(*grid_,
                 vecType_, trainDataset);
         eval->multVectorized(*alphaAvg, result);
 
@@ -592,7 +595,7 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
     }
     else
     {
-        OperationMultipleEval* eval = sg::op_factory::createOperationMultipleEval(*grid_, *trainDataset);
+        OperationMultipleEval* eval = SGPP::op_factory::createOperationMultipleEval(*grid_, *trainDataset);
         eval->mult(*alphaAvg, result);
 
         delete eval;
@@ -640,7 +643,7 @@ double LearnerOnlineSGD::getError(sg::base::DataMatrix* trainDataset,
 
 void LearnerOnlineSGD::performSGDStep()
 {
-    using namespace sg::base;
+    using namespace SGPP::base;
 
     // Get x and y pair
     DataVector x(numMainDim);
@@ -671,7 +674,7 @@ void LearnerOnlineSGD::performSGDStep()
     singleAlpha[0] = 1.0;
 
     DataMatrix dm(x.getPointer(), 1, x.getSize());
-    OperationMultipleEval *multEval = sg::op_factory::createOperationMultipleEval(*grid_, dm);
+    OperationMultipleEval *multEval = SGPP::op_factory::createOperationMultipleEval(*grid_, dm);
     multEval->multTranspose(singleAlpha, delta);
     delete multEval;
 
@@ -706,7 +709,7 @@ void LearnerOnlineSGD::performSGDStep()
 }*/
 }
 
-void LearnerOnlineSGD::pushMinibatch(sg::base::DataVector& x, double y)
+void LearnerOnlineSGD::pushMinibatch(SGPP::base::DataVector& x, double y)
 {
     static size_t next_idx = 0;
     if (minibatchTrainDataset->getUnused() > 0)

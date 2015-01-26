@@ -8,7 +8,10 @@
 #include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     ConvertPrewaveletToLinear::ConvertPrewaveletToLinear(GridStorage* storage) :
@@ -148,5 +151,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

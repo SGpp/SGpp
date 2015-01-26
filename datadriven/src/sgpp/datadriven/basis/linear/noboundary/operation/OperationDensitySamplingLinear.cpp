@@ -15,7 +15,10 @@
 #include <omp.h>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 
     void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples) {

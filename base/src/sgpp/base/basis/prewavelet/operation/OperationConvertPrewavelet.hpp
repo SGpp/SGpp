@@ -11,7 +11,10 @@
 #include <sgpp/base/operation/OperationConvert.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -25,7 +28,7 @@ namespace sg {
            * An adaptive grid with prewavelet ansatz functions requires for operations
          * using the up-down algorithm shadow points. These shadow points a needed just
          * for data transport, thus they do not have an influence on the final function.
-         * Please refer to sg::pde::UpDownOneOpDimWithShadow for more information.
+         * Please refer to SGPP::pde::UpDownOneOpDimWithShadow for more information.
          *
            * @param storage Pointer to the grid's gridstorage obejct
          * @param shadowstorage shadow points (see detailed description)

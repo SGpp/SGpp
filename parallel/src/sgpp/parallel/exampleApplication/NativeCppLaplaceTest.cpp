@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   grid_selection.assign(argv[7]);
   lmb = atoi(argv[8]);
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -58,11 +58,11 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
 
   // Generate lambda for test if needed
-  sg::base::DataVector lambda(dim);
+  SGPP::base::DataVector lambda(dim);
 
   if (lmb == 1) {
     for (size_t d = 0; d < dim; d++)
@@ -72,36 +72,36 @@ int main(int argc, char* argv[]) {
   }
 
   // Test inner grid
-  sg::base::Grid* myGrid;
+  SGPP::base::Grid* myGrid;
 
   if (grid_selection == "I") {
-    myGrid = new sg::base::LinearGrid(*myBoundingBox);
+    myGrid = new SGPP::base::LinearGrid(*myBoundingBox);
   } else if (grid_selection == "B") {
-    myGrid = new sg::base::LinearTrapezoidBoundaryGrid(*myBoundingBox);
+    myGrid = new SGPP::base::LinearTrapezoidBoundaryGrid(*myBoundingBox);
   } else {
     std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]" << std::endl << std::endl;
     exit(-1);
   }
 
-  sg::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
+  SGPP::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
   myGenerator->regular(level);
   delete myGenerator;
 
-  sg::base::GridStorage* myGridStorage = myGrid->getStorage();
+  SGPP::base::GridStorage* myGridStorage = myGrid->getStorage();
   size_t gridsize = myGridStorage->size();
-  sg::base::DataVector* alpha = new sg::base::DataVector(gridsize);
-  sg::base::DataVector* result_updown = new sg::base::DataVector(gridsize);
-  sg::base::DataVector* result_vector = new sg::base::DataVector(gridsize);
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(gridsize);
+  SGPP::base::DataVector* result_updown = new SGPP::base::DataVector(gridsize);
+  SGPP::base::DataVector* result_vector = new SGPP::base::DataVector(gridsize);
 
-  sg::base::OperationMatrix* updown;
-  sg::base::OperationMatrix* vect;
+  SGPP::base::OperationMatrix* updown;
+  SGPP::base::OperationMatrix* vect;
 
   if (lmb == 1) {
-    updown = sg::op_factory::createOperationLaplace(*myGrid, lambda);
-    vect = sg::op_factory::createOperationLaplaceVectorized(*myGrid, lambda);
+    updown = SGPP::op_factory::createOperationLaplace(*myGrid, lambda);
+    vect = SGPP::op_factory::createOperationLaplaceVectorized(*myGrid, lambda);
   } else {
-    updown = sg::op_factory::createOperationLaplace(*myGrid);
-    vect = sg::op_factory::createOperationLaplaceVectorized(*myGrid);
+    updown = SGPP::op_factory::createOperationLaplace(*myGrid);
+    vect = SGPP::op_factory::createOperationLaplaceVectorized(*myGrid);
   }
 
   std::cout << std::endl;
@@ -125,8 +125,8 @@ int main(int argc, char* argv[]) {
 
   if (test == "M") {
     alpha->setAll(0.0);
-    sg::base::DataMatrix* matrix_updown = new sg::base::DataMatrix(gridsize, gridsize);
-    sg::base::DataMatrix* matrix_vector = new sg::base::DataMatrix(gridsize, gridsize);
+    SGPP::base::DataMatrix* matrix_updown = new SGPP::base::DataMatrix(gridsize, gridsize);
+    SGPP::base::DataMatrix* matrix_vector = new SGPP::base::DataMatrix(gridsize, gridsize);
 
     for (size_t i = 0; i < gridsize; i++) {
       alpha->set(i, 1.0);

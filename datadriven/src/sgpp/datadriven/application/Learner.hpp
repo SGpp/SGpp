@@ -10,7 +10,10 @@
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace datadriven {
 
@@ -26,12 +29,12 @@ namespace sg {
     class Learner : public LearnerBase {
       protected:
         /// regularization mode
-        sg::datadriven::LearnerRegularizationType CMode_;
+        SGPP::datadriven::LearnerRegularizationType CMode_;
         /// regularization operator
-        sg::base::OperationMatrix* C_;
+        SGPP::base::OperationMatrix* C_;
 
         /// construct system matrix
-        virtual sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
 
       public:
         /**
@@ -41,7 +44,7 @@ namespace sg {
          * @param isRegression flag for regression
          * @param isVerbose flag for verbose output
          */
-        Learner(sg::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+        Learner(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
         /**
          * Constructor
@@ -52,7 +55,7 @@ namespace sg {
          * @param isRegression set to true if a regression task should be executed
          * @param isVerbose set to true in order to allow console output
          */
-        Learner(const std::string tGridFilename, const std::string tAlphaFilename, sg::datadriven::LearnerRegularizationType& regularization,
+        Learner(const std::string tGridFilename, const std::string tAlphaFilename, SGPP::datadriven::LearnerRegularizationType& regularization,
                 const bool isRegression, const bool isVerbose = true);
 
         /**

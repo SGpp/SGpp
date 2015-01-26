@@ -26,7 +26,10 @@
 #include <cmath>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
     /**
@@ -38,20 +41,20 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class BlackScholesHullWhiteSolver : public sg::pde::ParabolicPDESolver {
+    class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
       private:
         /// vector that contains the assets' weight
-        sg::base::DataVector* mus;
+        SGPP::base::DataVector* mus;
         /// vector that contains the standard deviations
-        sg::base::DataVector* sigmas;
+        SGPP::base::DataVector* sigmas;
         /// Matrix that contains the correlations
-        sg::base::DataMatrix* rhos;
+        SGPP::base::DataMatrix* rhos;
         /// the riskfree rate
         double r;
         /// stores if the stochastic asset data was passed to the solver
         bool bStochasticDataAlloc;
         /// screen object used in this solver
-        sg::base::ScreenOutput* myScreen;
+        SGPP::base::ScreenOutput* myScreen;
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// Threshold used to decide if a grid point should be deleted
@@ -67,16 +70,16 @@ namespace sg {
         /// identifies if the Black Scholes Equation should be solved on a log-transformed grid
         bool useLogTransform;
         /// max. level for refinement during solving
-        sg::base::GridIndex::level_type refineMaxLevel;
+        SGPP::base::GridIndex::level_type refineMaxLevel;
         /// variable to store needed solving iterations
         size_t nNeededIterations;
         /// variable to store the solving time
         double dNeededTime;
-        /// variable to store start grid size (Inner sg::base::Grid)
+        /// variable to store start grid size (Inner SGPP::base::Grid)
         size_t staInnerGridSize;
-        /// variable to store final grid size (Inner sg::base::Grid)
+        /// variable to store final grid size (Inner SGPP::base::Grid)
         size_t finInnerGridSize;
-        /// variable to store average grid size (Inner sg::base::Grid)
+        /// variable to store average grid size (Inner SGPP::base::Grid)
         size_t avgInnerGridSize;
         /// Percent how many of the removable points should be tested for deletion
         double coarsenPercent;
@@ -103,22 +106,22 @@ namespace sg {
          */
         virtual ~BlackScholesHullWhiteSolver();
 
-        void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
+        void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
         /**
          * In order to combine the Black Scholes Equation with the Hull White Equation you have to provided
          * some statistical data about the underlying (assets' weight, standard deviation
          * and the correlation between them). This function allows you to set this data for Black-Scholes.
          *
-         * @param mus a sg::base::DataVector that contains the underlyings' weight
-         * @param sigmas a sg::base::DataVector that contains the underlyings' standard deviations
-         * @param rhos a sg::base::DataMatrix that contains the correlations between the underlyings
+         * @param mus a SGPP::base::DataVector that contains the underlyings' weight
+         * @param sigmas a SGPP::base::DataVector that contains the underlyings' standard deviations
+         * @param rhos a SGPP::base::DataMatrix that contains the correlations between the underlyings
          * @param r the riskfree rate used in the market model
          * @param theta the theta of HullWhite PDE
          * @param sigma the sigma of HullWhite PDE (vola)
          * @param a the a of HullWhite PDE (mean reversion rate)
          */
-        void setStochasticData(sg::base::DataVector& mus, sg::base::DataVector& sigmas, sg::base::DataMatrix& rhos, double r, double theta, double sigma, double a);
+        void setStochasticData(SGPP::base::DataVector& mus, SGPP::base::DataVector& sigmas, SGPP::base::DataMatrix& rhos, double r, double theta, double sigma, double a);
 
         /**
          *  defines the dimension of the stoch. processes (BS and HW). default is BS:0, HW:1
@@ -128,11 +131,11 @@ namespace sg {
          */
         void setProcessDimensions(int dim_BS, int dim_HW);
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, sg::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -143,7 +146,7 @@ namespace sg {
          * @param a is the mean reversion rate
          * @param sigma is the volatility
          */
-        void initGridWithPayoffBSHW(sg::base::DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
+        void initGridWithPayoffBSHW(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
 
         /**
          * Inits the screen object
@@ -178,7 +181,7 @@ namespace sg {
          *  @param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
          *  @param refineThreshold Threshold needed to determine if a grid point should be refined
          */
-        void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, sg::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+        void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
 
         /**
          * gets the number of gridpoints at the money

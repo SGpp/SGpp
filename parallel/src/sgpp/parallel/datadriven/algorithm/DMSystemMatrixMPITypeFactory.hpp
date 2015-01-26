@@ -13,16 +13,19 @@
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     class DMSystemMatrixMPITypeFactory {
       private:
         template<typename Kernel>
-        static sg::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+        static SGPP::datadriven::DMSystemMatrixBase* createDMSystemMatrixMPIType(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
 
       public:
-        static sg::datadriven::DMSystemMatrixBase* getDMSystemMatrix(sg::base::Grid& grid, sg::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
+        static SGPP::datadriven::DMSystemMatrixBase* getDMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainDataset, double lambda, VectorizationType vecType, MPIType mpiType);
     };
 
   }

@@ -113,7 +113,7 @@ namespace combigrid {
        * @return the created grid storage for the SGpp grid
        *
        * */
-      virtual sg::base::GridStorage* createSGppGridStorage() const = 0;
+      virtual SGPP::base::GridStorage* createSGppGridStorage() const = 0;
 
       /** in this step the full grid values will be projected to the sparse grid space
        * @param gridstorageSGpp SGpp grid storage
@@ -122,14 +122,14 @@ namespace combigrid {
        * @param maxAlpha the maximum of all points, if this argument is set
        *
        * */
-      virtual void reCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha,
-                             sg::base::DataVector* minAlpha = NULL , sg::base::DataVector* maxAlpha = NULL) const = 0;
+      virtual void reCompose(SGPP::base::GridStorage* gridstorageSGpp , SGPP::base::DataVector* alpha,
+                             SGPP::base::DataVector* minAlpha = NULL , SGPP::base::DataVector* maxAlpha = NULL) const = 0;
 
       /** takes the SGpp sparse grid space and projects to the combi grid
        * @param gridstorageSGpp SGpp grid storage
        * @param alpha the coefficient vector with which the combi grid values will be set
        */
-      virtual void deCompose(sg::base::GridStorage* gridstorageSGpp , sg::base::DataVector* alpha) = 0;
+      virtual void deCompose(SGPP::base::GridStorage* gridstorageSGpp , SGPP::base::DataVector* alpha) = 0;
 
       /** return the combi scheme */
       inline const CombiSchemeBasis* getCombiScheme() const {

@@ -11,7 +11,10 @@
 #include <sgpp/base/basis/linearstretched/boundary/operation/OperationMultipleEvalLinearStretchedBoundary.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha, DataVector& result) {

@@ -7,19 +7,22 @@
 
 #include <sgpp/finance/basis/linearstretched/boundary/algorithm_sweep/DPhiPhiDownBBLinearStretchedBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(sg::base::GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage) {
+    DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(SGPP::base::GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage) {
     }
 
     DPhiPhiDownBBLinearStretchedBoundary::~DPhiPhiDownBBLinearStretchedBoundary() {
     }
 
 
-    void DPhiPhiDownBBLinearStretchedBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void DPhiPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       // get boundary values
       double left_boundary;
       double right_boundary;
@@ -74,5 +77,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

@@ -14,7 +14,10 @@
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
 	/**
 	 * enum to select different threshold function
@@ -35,18 +38,18 @@ namespace sg {
 	  /// Epsilon
 	  double eps;
 	  /// Method that is used to remove edges from the graph
-	  sg::datadriven::ThresholdType thresholdType;
+	  SGPP::datadriven::ThresholdType thresholdType;
 	  /// Threshold value
 	  double threshold;
     };
 
 
-    class LearnerDensityCluster: public sg::datadriven::LearnerBase {
+    class LearnerDensityCluster: public SGPP::datadriven::LearnerBase {
       protected:
     	/// contains the clustering result
-    	sg::base::DataVector* clusterAssignments_ = NULL;
+    	SGPP::base::DataVector* clusterAssignments_ = NULL;
     	/// contains the evaluated grid values for the data points
-    	sg::base::DataVector* gridVals_ = NULL;
+    	SGPP::base::DataVector* gridVals_ = NULL;
     	/// contains the calculated nearest neighbors
     	int ** neighbors_ = NULL;
 
@@ -60,7 +63,7 @@ namespace sg {
     	/// how many neighbors should taken into consideration
     	int numberOfNeighbors = 5;
     	/// specify the threshold function
-    	sg::datadriven::ThresholdType thresholdType = sg::datadriven::Constant;
+    	SGPP::datadriven::ThresholdType thresholdType = SGPP::datadriven::Constant;
 
     	/// it is used to save whether a point is a minimum point or not
     	std::vector<bool> * minimumPoint_ = NULL;
@@ -73,8 +76,8 @@ namespace sg {
     	 * @param SolverConfig the solver configuration
     	 * @param lambda the regularization parameter
     	 */
-    	void calculateGridValues(sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig,
-    			const sg::solver::SLESolverConfiguration& SolverConfig, const double lambda);
+    	void calculateGridValues(SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig,
+    			const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lambda);
 
     	/**
     	 * save a double array
@@ -122,7 +125,7 @@ namespace sg {
     	 * @param j the index of the second point
     	 * @return boolean whether the points should be connected or not
     	 */
-    	bool constantThreshold(sg::base::DataMatrix& testDataset, int i, int j);
+    	bool constantThreshold(SGPP::base::DataMatrix& testDataset, int i, int j);
 
     	/**
     	 * relative threshold function (f_t2)
@@ -132,7 +135,7 @@ namespace sg {
     	 * @param j the index of the second point
     	 * @return boolean whether the points should be connected or no
     	 */
-    	bool relativeThreshold(sg::base::DataMatrix& testDataset, int i, int j);
+    	bool relativeThreshold(SGPP::base::DataMatrix& testDataset, int i, int j);
 
     	/**
 		 * difference threshold function (f_t2)
@@ -142,7 +145,7 @@ namespace sg {
 		 * @param j the index of the second point
 		 * @return boolean whether the points should be connected or no
 		 */
-    	bool differenceThreshold(sg::base::DataMatrix& testDataset, int i, int j);
+    	bool differenceThreshold(SGPP::base::DataMatrix& testDataset, int i, int j);
 
     	/**
     	 * delete the neighbors in neighbors_
@@ -186,8 +189,8 @@ namespace sg {
     	 * @param lambda the regularization parameter
     	 * @return TODO: empty
     	 */
-    	sg::datadriven::LearnerTiming train(sg::base::DataMatrix& testDataset, sg::base::DataVector& classes,
-    						  const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
+    	SGPP::datadriven::LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
+    						  const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
     						  const double lambda);
 
     	/**
@@ -196,14 +199,14 @@ namespace sg {
     	 * @param lambda
     	 * @return
     	 */
-    	sg::datadriven::DMSystemMatrixBase* createDMSystem(sg::base::DataMatrix& testDataset, double lambda);
+    	SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& testDataset, double lambda);
 
     	/**
     	 * Gets the last clustering result
     	 *
     	 * @return clustering result
     	 */
-    	sg::base::DataVector getClusterAssignments();
+    	SGPP::base::DataVector getClusterAssignments();
 
     	/**
     	 * Precalculates the grid value for each point and stores the information a file.
@@ -214,7 +217,7 @@ namespace sg {
     	 * @param SolverConfig the solver configuration
     	 * @param lamda the regularization parameter
     	 */
-    	void precalculateGridValues(const char * filename, sg::base::DataMatrix& testDataset, const sg::base::RegularGridConfiguration& GridConfig, const sg::solver::SLESolverConfiguration& SolverConfig,
+    	void precalculateGridValues(const char * filename, SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
 				  const double lamda);
 
     	/**
@@ -228,14 +231,14 @@ namespace sg {
     	 * @param trainDataset the data
     	 * @param GridConfig the grid configuration
     	 */
-    	void cluster(sg::base::DataMatrix& trainDataset, const sg::base::RegularGridConfiguration& GridConfig);
+    	void cluster(SGPP::base::DataMatrix& trainDataset, const SGPP::base::RegularGridConfiguration& GridConfig);
 
     	/**
     	 * Set the cluster configuration
     	 *
     	 * @param ClusterConfig the cluster configuration
     	 */
-    	void setClusterConfiguration(const sg::datadriven::DensityBasedClusteringConfiguration& ClusterConfig);
+    	void setClusterConfiguration(const SGPP::datadriven::DensityBasedClusteringConfiguration& ClusterConfig);
 
     	/**
     	 * Do a simple classification with the clustering result.The n biggest clusters form the classes.
@@ -245,7 +248,7 @@ namespace sg {
     	 * @param threshold
     	 * @return
     	 */
-    	sg::base::DataVector postprocessing(sg::base::DataMatrix& trainDataset,sg::base::DataVector maxSize, int threshold);
+    	SGPP::base::DataVector postprocessing(SGPP::base::DataMatrix& trainDataset,SGPP::base::DataVector maxSize, int threshold);
 
     	/**
     	 * Prcalculates the n nearest neighbors and store the information in a file
@@ -253,7 +256,7 @@ namespace sg {
     	 * @param testDataset the data
     	 * @param n n nearest neighbors
     	 */
-    	void precalculateNeighbors(const char * filename, sg::base::DataMatrix& testDataset, int n);
+    	void precalculateNeighbors(const char * filename, SGPP::base::DataMatrix& testDataset, int n);
 
     	/**
     	 * Loads the precalculated neighbors

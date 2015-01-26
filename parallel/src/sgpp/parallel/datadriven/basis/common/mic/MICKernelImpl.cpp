@@ -22,7 +22,10 @@
 #include <offload.h>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace mic {
       double* ptrLevel = NULL;
@@ -84,7 +87,7 @@ namespace sg {
 
       bool multicard_multtrans_fast = init_multicard_multtrans_fast();
 
-      void uploadGrid(sg::base::DataMatrix* level, sg::base::DataMatrix* index, sg::base::DataMatrix* mask, sg::base::DataMatrix* offset) {
+      void uploadGrid(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset) {
         size_t storageSize = level->getNrows();
         size_t dims = level->getNcols();
 
@@ -148,7 +151,7 @@ namespace sg {
 #endif
       }
 
-      void uploadData(sg::base::DataMatrix* data) {
+      void uploadData(SGPP::base::DataMatrix* data) {
         ptrData = data->getPointer();
         size_t datasize = data->getNcols();
         size_t dims = data->getNrows();

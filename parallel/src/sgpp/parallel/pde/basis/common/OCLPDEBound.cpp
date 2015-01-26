@@ -5,7 +5,10 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 
@@ -67,12 +70,12 @@ namespace sg {
       int* MPIOffsetListBound;
       int* MPISizeListBound;
 #endif
-      void boundarytransposer(REAL* sink, REAL* source, size_t dim1, size_t dim2, sg::base::GridStorage* storage) {
+      void boundarytransposer(REAL* sink, REAL* source, size_t dim1, size_t dim2, SGPP::base::GridStorage* storage) {
 
         unsigned k = 0;
 
         for (unsigned i = 0; i < dim2; i++) {
-          sg::base::GridIndex* curPoint = (*storage)[i];
+          SGPP::base::GridIndex* curPoint = (*storage)[i];
 
           if (curPoint->isInnerPoint()) {
             for (unsigned j = 0; j < dim1; j++) {
@@ -201,7 +204,7 @@ namespace sg {
                            REAL* ptrIndex,
                            REAL* ptrLevel_int,
                            size_t localStorageSize,
-                           size_t localdim, sg::base::GridStorage* storage) {
+                           size_t localdim, SGPP::base::GridStorage* storage) {
         padding_size = num_devices * LSIZE;
         storageSizeBound = localStorageSize;
         size_t pad = padding_size - (storageSizeBound % padding_size);
@@ -264,7 +267,7 @@ namespace sg {
         unsigned num = 0;
 
         for (unsigned i = 0; i < storage->size(); i++) {
-          sg::base::GridIndex* curPoint = (*storage)[i];
+          SGPP::base::GridIndex* curPoint = (*storage)[i];
 
           if (curPoint->isInnerPoint()) {
             offsetBound[num] = i;
@@ -439,7 +442,7 @@ namespace sg {
         size_t minimum_size  = num_devices * LSIZE;
         size_t data_size = storageSizePaddedBound;
 
-        sg::parallel::PartitioningTool::calcDistribution(data_size, nproz, MPISizeListBound, MPIOffsetListBound, minimum_size);
+        SGPP::parallel::PartitioningTool::calcDistribution(data_size, nproz, MPISizeListBound, MPIOffsetListBound, minimum_size);
 
         if (myrank == 0) {
           std::cout << "nproz " << nproz << std::endl;
@@ -457,7 +460,7 @@ namespace sg {
 
       }
 
-      void MPI_ShareResultAllReduceBound(sg::base::DataVector& result) {
+      void MPI_ShareResultAllReduceBound(SGPP::base::DataVector& result) {
         REAL* ptrResult = result.getPointer();
         MPI_Allreduce(MPI_IN_PLACE , ptrResultBound,
                       (int)(storageInnerSizeBound),

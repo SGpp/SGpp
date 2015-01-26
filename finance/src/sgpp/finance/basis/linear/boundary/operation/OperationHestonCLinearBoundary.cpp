@@ -23,16 +23,19 @@
 
 #include <iostream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    OperationHestonCLinearBoundary::OperationHestonCLinearBoundary(sg::base::GridStorage* storage, sg::base::DataMatrix& coef) : sg::pde::UpDownTwoOpDims(storage, coef) {
+    OperationHestonCLinearBoundary::OperationHestonCLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& coef) : SGPP::pde::UpDownTwoOpDims(storage, coef) {
     }
 
     OperationHestonCLinearBoundary::~OperationHestonCLinearBoundary() {
     }
 
-    void OperationHestonCLinearBoundary::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationHestonCLinearBoundary::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       result.setAll(0.0);
 
       #pragma omp parallel
@@ -44,7 +47,7 @@ namespace sg {
               // no symmetry in the operator
               #pragma omp task firstprivate(i, j) shared(alpha, result)
               {
-                sg::base::DataVector beta(result.getSize());
+                SGPP::base::DataVector beta(result.getSize());
 
                 if (this->coefs != NULL) {
                   if (this->coefs->get(i, j) != 0.0) {
@@ -72,58 +75,58 @@ namespace sg {
       }
     }
 
-    void OperationHestonCLinearBoundary::up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * phi
-      sg::pde::PhiPhiUpBBLinearBoundary func(this->storage);
-      sg::base::sweep<sg::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+      SGPP::pde::PhiPhiUpBBLinearBoundary func(this->storage);
+      SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationHestonCLinearBoundary::down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * phi
-      sg::pde::PhiPhiDownBBLinearBoundary func(this->storage);
-      sg::base::sweep<sg::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+      SGPP::pde::PhiPhiDownBBLinearBoundary func(this->storage);
+      SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationHestonCLinearBoundary::upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * dphi
       PhidPhiUpBBLinearBoundary func(this->storage);
-      sg::base::sweep<PhidPhiUpBBLinearBoundary> s(func, this->storage);
+      SGPP::base::sweep<PhidPhiUpBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationHestonCLinearBoundary::downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // phi * dphi
       PhidPhiDownBBLinearBoundary func(this->storage);
-      sg::base::sweep<PhidPhiDownBBLinearBoundary> s(func, this->storage);
+      SGPP::base::sweep<PhidPhiDownBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationHestonCLinearBoundary::upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // x * dphi * phi
       XdPhiPhiUpBBLinearBoundary func(this->storage);
-      sg::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+      SGPP::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationHestonCLinearBoundary::downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // x * dphi * phi
       XdPhiPhiDownBBLinearBoundary func(this->storage);
-      sg::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+      SGPP::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
       s.sweep1D_Boundary(alpha, result, dim);
     }
 
-    void OperationHestonCLinearBoundary::upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
     }
 
-    void OperationHestonCLinearBoundary::downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void OperationHestonCLinearBoundary::downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
     }
 
   }

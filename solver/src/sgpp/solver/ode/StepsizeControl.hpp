@@ -13,7 +13,10 @@
 #include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
 #include <string>
 //
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     /**
@@ -29,8 +32,8 @@ namespace sg {
 
 
       protected:
-        /// Pointer to sg::base::ScreenOutput object
-        sg::base::ScreenOutput* myScreen;
+        /// Pointer to SGPP::base::ScreenOutput object
+        SGPP::base::ScreenOutput* myScreen;
 
         /// temp. Stepsize Control
         double mySC;
@@ -38,17 +41,17 @@ namespace sg {
         /// epsilon for the step size control
         double myEps;
 
-        virtual void predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
-                               double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector& corr, sg::base::DataVector* rhs) = 0;
-        virtual void corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector* rhs) = 0;
+        virtual void predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+                               double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) = 0;
+        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) = 0;
 
-        virtual double norm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& dv1, sg::base::DataVector& dv2);
+        virtual double norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
         virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon) = 0;
 
-        double twoNorm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& dv1, sg::base::DataVector& dv2);
+        double twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
-        double maxNorm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& dv1, sg::base::DataVector& dv2);
+        double maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
         std::string filename;
 
@@ -64,17 +67,17 @@ namespace sg {
          * @param imax number of maximum executed iterations
          * @param timestepSize the size of one timestep
          * @param eps the epsilon for the step size control
-         * @param screen possible pointer to a sg::base::ScreenOutput object
+         * @param screen possible pointer to a SGPP::base::ScreenOutput object
          * @param gamma damping factor
          */
-        StepsizeControl(size_t imax, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen = NULL, double gamma = 0.5);
+        StepsizeControl(size_t imax, double timestepSize, double eps, double sc, SGPP::base::ScreenOutput* screen = NULL, double gamma = 0.5);
 
         /**
          * Std-Destructor
          */
         virtual ~StepsizeControl();
 
-        void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+        void solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
     };
 
   }

@@ -36,7 +36,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  * after creating a screen.
  */
 void writeHelp() {
-  sg::finance::BlackScholesSolver* myBSSolver = new sg::finance::BlackScholesSolver();
+  SGPP::finance::BlackScholesSolver* myBSSolver = new SGPP::finance::BlackScholesSolver();
 
   myBSSolver->initScreen();
 
@@ -229,7 +229,7 @@ void writeHelp() {
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& mu, sg::base::DataVector& sigma, sg::base::DataMatrix& rho) {
+int readStochasticData(std::string tFile, size_t numAssets, SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho) {
   std::fstream file;
   double cur_mu;
   double cur_sigma;
@@ -286,7 +286,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray) {
+int readBoudingBoxData(std::string tFile, size_t numAssets, SGPP::base::DimensionBoundary* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -341,7 +341,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionB
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray, size_t& points) {
+int readAnalyzeData(std::string tFile, size_t numAssets, SGPP::base::DimensionBoundary* BoundaryArray, size_t& points) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -397,7 +397,7 @@ int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoun
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
+int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
   std::fstream file;
   double cur_coord;
 
@@ -432,7 +432,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
   i = 0;
 
   while (!file.eof()) {
-    sg::base::DataVector line(dim);
+    SGPP::base::DataVector line(dim);
     line.setAll(0.0);
 
     for (size_t d = 0; d < dim; d++) {
@@ -456,7 +456,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(sg::base::DataVector& values, std::string tFile) {
+int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
   double cur_value;
 
@@ -501,7 +501,7 @@ int readOptionsValues(sg::base::DataVector& values, std::string tFile) {
  *
  * @return error code
  */
-int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
+int writeDataMatrix(SGPP::base::DataMatrix& data, std::string tFile) {
   std::ofstream file;
   file.open(tFile.c_str());
 
@@ -532,7 +532,7 @@ int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
  *
  * @return error code
  */
-int writeDataVector(sg::base::DataVector& data, std::string tFile) {
+int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
   std::ofstream file;
   file.open(tFile.c_str());
 
@@ -578,9 +578,9 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
   double CGepsilon = CGeps;
   double maxStock = 0.0;
 
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
   double r = riskfree;
 
@@ -588,21 +588,21 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
     return;
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
-  sg::finance::BlackScholesSolver* myBSSolver;
+  SGPP::finance::BlackScholesSolver* myBSSolver;
   myBSSolver = NULL;
 
   if (coordsType == "log") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true);
   } else if (coordsType == "cart") {
-    myBSSolver = new sg::finance::BlackScholesSolver(false);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(false);
   } else if (coordsType == "PAT") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true, true);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
@@ -610,7 +610,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
     writeHelp();
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
 
   if (dim == 1) {
     maxStock = myBoundaries[0].rightBoundary;
@@ -625,7 +625,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
   myBSSolver->constructGrid(*myBoundingBox, level);
 
   // init the basis functions' coefficient vector
-  sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
   std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -765,43 +765,43 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
 
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
-  sg::base::DataMatrix EvalPoints(1, d);
+  SGPP::base::DataMatrix EvalPoints(1, d);
 
   double r = riskfree;
 
-  std::vector<sg::base::DataVector> results;
+  std::vector<SGPP::base::DataVector> results;
 
 
   if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0) {
     return;
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myEvalBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
   }
 
-  sg::finance::BlackScholesSolver* myBSSolver;
+  SGPP::finance::BlackScholesSolver* myBSSolver;
   myBSSolver = NULL;
 
   if (coordsType == "log") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true);
   } else if (coordsType == "cart") {
-    myBSSolver = new sg::finance::BlackScholesSolver(false);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(false);
   } else if (coordsType == "PAT") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true, true);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
@@ -809,9 +809,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     writeHelp();
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-  sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
-  sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myEvalBoundingBox = new SGPP::base::BoundingBox(dim, myEvalBoundaries);
+  SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
   delete[] myBoundaries;
   delete[] myEvalBoundaries;
 
@@ -837,7 +837,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     }
 
     // init the basis functions' coefficient vector
-    sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+    SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
     std::cout << "Grid has " << level << " Levels" << std::endl;
     std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -921,7 +921,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     if (i == start_l) {
       // if transformed Black Scholes Equation is used -> transform evaluation domain
       for (size_t v = 0; v < EvalPoints.getNrows(); v++) {
-        sg::base::DataVector r(dim);
+        SGPP::base::DataVector r(dim);
         EvalPoints.getRow(v, r);
         myBSSolver->transformPoint(r);
         EvalPoints.setRow(v, r);
@@ -929,7 +929,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     }
 
     // Evaluate Cuboid
-    sg::base::DataVector Prices(EvalPoints.getNrows());
+    SGPP::base::DataVector Prices(EvalPoints.getNrows());
     myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
     results.push_back(Prices);
 
@@ -960,8 +960,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
 
       // Calculate relative errors and some norms
       for (size_t j = 0; j < i - start_l; j++) {
-        sg::base::DataVector maxLevel(results[i - start_l]);
-        sg::base::DataVector relError(results[j]);
+        SGPP::base::DataVector maxLevel(results[i - start_l]);
+        SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
 
@@ -1033,46 +1033,46 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
   double CGepsilon = CGeps;
 
 
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
-  sg::base::DataMatrix EvalPoints(1, d);
+  SGPP::base::DataMatrix EvalPoints(1, d);
 
   double r = riskfree;
 
-  std::vector<sg::base::DataVector> results;
+  std::vector<SGPP::base::DataVector> results;
 
 
   if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0) {
     return;
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myEvalBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
   }
 
-  sg::finance::BlackScholesSolver* myBSSolver;
+  SGPP::finance::BlackScholesSolver* myBSSolver;
   myBSSolver = NULL;
 
   if (isLogSolve == true) {
-    myBSSolver = new sg::finance::BlackScholesSolver(true, "European");
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true, "European");
   } else {
-    myBSSolver = new sg::finance::BlackScholesSolver(false, "European");
+    myBSSolver = new SGPP::finance::BlackScholesSolver(false, "European");
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-  sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
-  sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myEvalBoundingBox = new SGPP::base::BoundingBox(dim, myEvalBoundaries);
+  SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
   delete[] myBoundaries;
   delete[] myEvalBoundaries;
 
@@ -1102,7 +1102,7 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     }
 
     // init the basis functions' coefficient vector
-    sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+    SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
     std::cout << "Grid has " << level << " Levels" << std::endl;
     std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -1197,7 +1197,7 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
     std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evaluatePoint(point, *alpha) << std::endl << std::endl;
 
     // Evaluate Cuboid
-    sg::base::DataVector Prices(EvalPoints.getNrows());
+    SGPP::base::DataVector Prices(EvalPoints.getNrows());
     myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
     results.push_back(Prices);
 
@@ -1228,8 +1228,8 @@ void testNUnderlyingsAnalyzeTimeStepping(size_t d, size_t start_l, size_t end_l,
 
       // Calculate relative errors and some norms
       for (size_t j = 0; j < i - start_l; j++) {
-        sg::base::DataVector maxLevel(results[i - start_l]);
-        sg::base::DataVector relError(results[j]);
+        SGPP::base::DataVector maxLevel(results[i - start_l]);
+        SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
 
@@ -1294,15 +1294,15 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
   double CGepsilon = CGeps;
 
   int dim = 1;
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
-  sg::base::DataMatrix EvalPoints(1, dim);
+  SGPP::base::DataMatrix EvalPoints(1, dim);
 
   double r = riskfree;
 
-  std::vector<sg::base::DataVector> results;
+  std::vector<SGPP::base::DataVector> results;
 
 
   if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0) {
@@ -1316,28 +1316,28 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     writeHelp();
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
   size_t points = 0;
-  sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myEvalBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
     return;
   }
 
-  sg::finance::BlackScholesSolver* myBSSolver;
+  SGPP::finance::BlackScholesSolver* myBSSolver;
   myBSSolver = NULL;
 
   if (coordsType == "log") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true);
   } else if (coordsType == "cart") {
-    myBSSolver = new sg::finance::BlackScholesSolver(false);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(false);
   } else if (coordsType == "PAT") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true, true);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
@@ -1345,9 +1345,9 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     writeHelp();
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
-  sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
-  sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myEvalBoundingBox = new SGPP::base::BoundingBox(dim, myEvalBoundaries);
+  SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
   delete[] myBoundaries;
   delete[] myEvalBoundaries;
 
@@ -1370,7 +1370,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     }
 
     // init the basis functions' coefficient vector
-    sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+    SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
     std::cout << "Grid has " << level << " Levels" << std::endl;
     std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -1417,7 +1417,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     }
 
     // get analytic solution and plot it and store
-    sg::base::DataVector* alpha_analytic = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+    SGPP::base::DataVector* alpha_analytic = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
     double maturity = ((double)(timesteps)) * stepsize;
     myBSSolver->getAnalyticAlpha1D(*alpha_analytic, dStrike, maturity, payoffType, true);
 
@@ -1429,7 +1429,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     }
 
     // evaluate analytic solution at evaluation cuboid and store values
-    sg::base::DataVector AnalyticOptionPrices(EvalPoints.getNrows());
+    SGPP::base::DataVector AnalyticOptionPrices(EvalPoints.getNrows());
     // this does an automatic transformation exp(log coords)!
     myBSSolver->evaluate1DAnalyticCuboid(AnalyticOptionPrices, EvalPoints, dStrike, sigma.get(0), r, maturity, isCall);
     writeDataVector(AnalyticOptionPrices, tFileEvalCuboidValues + ".analytic");
@@ -1487,7 +1487,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha) << std::endl << std::endl;
 
     // Evaluate Cuboid
-    sg::base::DataVector Prices(EvalPoints.getNrows());
+    SGPP::base::DataVector Prices(EvalPoints.getNrows());
     myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
     results.push_back(Prices);
 
@@ -1500,7 +1500,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     // If the transformed Black Scholes Equation is used -> transform Eval-cuboid
     if (i == start_l) {
       for (size_t v = 0; v < EvalPoints.getNrows(); v++) {
-        sg::base::DataVector r(dim);
+        SGPP::base::DataVector r(dim);
         EvalPoints.getRow(v, r);
         myBSSolver->transformPoint(r);
         EvalPoints.setRow(v, r);
@@ -1528,8 +1528,8 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
       // Calculate relative errors and some norms
       for (size_t j = 0; j < i - start_l; j++) {
-        sg::base::DataVector maxLevel(results[i - start_l]);
-        sg::base::DataVector relError(results[j]);
+        SGPP::base::DataVector maxLevel(results[i - start_l]);
+        SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
 
@@ -1564,7 +1564,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
       // Calculate relative errors and some norms
       for (size_t j = 0; j < i + 1 - start_l; j++) {
-        sg::base::DataVector relErrorAna(results[j]);
+        SGPP::base::DataVector relErrorAna(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
         double maxNormAbs = 0.0;
@@ -1572,7 +1572,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
         // calculate relative error
         relErrorAna.sub(AnalyticOptionPrices);
-        sg::base::DataVector absErrorAna(relErrorAna);
+        SGPP::base::DataVector absErrorAna(relErrorAna);
 
         // calculate norms abs error
         maxNormAbs = absErrorAna.maxNorm();
@@ -1593,7 +1593,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
         // print rel. error of current level compared to analytic solution
         if (j == i - start_l) {
           // dehierarchize before
-          sg::base::DataVector alpha_relErr(*alpha);
+          SGPP::base::DataVector alpha_relErr(*alpha);
           alpha_relErr.sub(*alpha_analytic);
 
           myBSSolver->printGrid(alpha_relErr, 50, "errAbs.level_" + level_string.str() + ".gnuplot");
@@ -1670,9 +1670,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
 
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
   double r = riskfree;
 
@@ -1680,21 +1680,21 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     return;
   }
 
-  sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
-  sg::finance::BlackScholesSolver* myBSSolver;
+  SGPP::finance::BlackScholesSolver* myBSSolver;
   myBSSolver = NULL;
 
   if (coordsType == "log") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true);
   } else if (coordsType == "cart") {
-    myBSSolver = new sg::finance::BlackScholesSolver(false);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(false);
   } else if (coordsType == "PAT") {
-    myBSSolver = new sg::finance::BlackScholesSolver(true, true);
+    myBSSolver = new SGPP::finance::BlackScholesSolver(true, true);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
@@ -1702,7 +1702,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     writeHelp();
   }
 
-  sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
 
   // init Screen Object
@@ -1717,7 +1717,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   }
 
   // init the basis functions' coefficient vector
-  sg::base::DataVector* alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
   // Set stochastic data
   myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -1731,11 +1731,11 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
   // estimate refine sigma from evaluation cuboid
   // read Evaluation cuboid
-  sg::base::DataMatrix EvalCuboid(1, dim);
+  SGPP::base::DataMatrix EvalCuboid(1, dim);
   int retCuboid = readEvalutionCuboid(EvalCuboid, tFileEvalCuboid, dim);
 
   // read reference values for evaluation cuboid
-  sg::base::DataVector EvalCuboidValues(1);
+  SGPP::base::DataVector EvalCuboidValues(1);
   int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
 
   if (EvalCuboid.getNrows() != EvalCuboidValues.getSize()) {
@@ -1909,7 +1909,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   if (retCuboid == 0 && retCuboidValues == 0) {
     // If the transformed Black Scholes Equation is used -> transform Eval-cuboid
     for (size_t v = 0; v < EvalCuboid.getNrows(); v++) {
-      sg::base::DataVector r(dim);
+      SGPP::base::DataVector r(dim);
       EvalCuboid.getRow(v, r);
       myBSSolver->transformPoint(r);
       EvalCuboid.setRow(v, r);
@@ -1917,10 +1917,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
     std::cout << "Calculating relative errors..." << std::endl;
     // Evaluate Cuboid
-    sg::base::DataVector Prices(EvalCuboid.getNrows());
+    SGPP::base::DataVector Prices(EvalCuboid.getNrows());
     myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
-    sg::base::DataVector relError(Prices);
+    SGPP::base::DataVector relError(Prices);
 
     // calculate relative error
     relError.sub(EvalCuboidValues);

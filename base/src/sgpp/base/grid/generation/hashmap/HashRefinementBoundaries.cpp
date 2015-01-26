@@ -13,7 +13,10 @@
 #include <vector>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indexes, RefinementFunctor::value_type* max_values) {

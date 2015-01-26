@@ -7,7 +7,10 @@
 
 #include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     ParabolicPDESolver::ParabolicPDESolver() : PDESolver() {

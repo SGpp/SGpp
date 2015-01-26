@@ -46,7 +46,10 @@
 #pragma offload_attribute(push, target(mic))
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     class MICKernelBase {

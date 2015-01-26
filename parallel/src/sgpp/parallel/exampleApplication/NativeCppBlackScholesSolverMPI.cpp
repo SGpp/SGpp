@@ -37,7 +37,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.MPI.data";
  * after creating a screen.
  */
 void writeHelp() {
-  sg::parallel::BlackScholesSolverMPI* myBSSolver = new sg::parallel::BlackScholesSolverMPI();
+  SGPP::parallel::BlackScholesSolverMPI* myBSSolver = new SGPP::parallel::BlackScholesSolverMPI();
 
   myBSSolver->initScreen();
 
@@ -160,17 +160,17 @@ void writeHelp() {
 
 /**
  * reads the values of mu, sigma and rho of all assets from
- * a file and stores them into three separated sg::base::DataVectors
+ * a file and stores them into three separated SGPP::base::DataVectors
  *
  * @param tFile the file that contains the stochastic data
  * @param numAssets the of Assets stored in the file
- * @param mu sg::base::DataVector for the exspected values
- * @param sigma sg::base::DataVector for standard deviation
- * @param rho sg::base::DataMatrix for the correlations
+ * @param mu SGPP::base::DataVector for the exspected values
+ * @param sigma SGPP::base::DataVector for standard deviation
+ * @param rho SGPP::base::DataMatrix for the correlations
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector& mu, sg::base::DataVector& sigma, sg::base::DataMatrix& rho) {
+int readStochasticData(std::string tFile, size_t numAssets, SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho) {
   std::fstream file;
   double cur_mu;
   double cur_sigma;
@@ -227,7 +227,7 @@ int readStochasticData(std::string tFile, size_t numAssets, sg::base::DataVector
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray) {
+int readBoudingBoxData(std::string tFile, size_t numAssets, SGPP::base::DimensionBoundary* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -282,7 +282,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets, sg::base::DimensionB
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoundary* BoundaryArray, size_t& points) {
+int readAnalyzeData(std::string tFile, size_t numAssets, SGPP::base::DimensionBoundary* BoundaryArray, size_t& points) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -332,13 +332,13 @@ int readAnalyzeData(std::string tFile, size_t numAssets, sg::base::DimensionBoun
 
 /**
  * reads a cuboid defined by several points from a file. These points are stored in the
- * cuboid sg::base::DataMatrix
+ * cuboid SGPP::base::DataMatrix
  *
- * @param cuboid sg::base::DataMatrix into which the evaluations points are stored
+ * @param cuboid SGPP::base::DataMatrix into which the evaluations points are stored
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
+int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
   std::fstream file;
   double cur_coord;
 
@@ -354,7 +354,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
     return -1;
   }
 
-  // Get number of lines and resize sg::base::DataMatrix
+  // Get number of lines and resize SGPP::base::DataMatrix
   size_t i = 0;
 
   while (!file.eof()) {
@@ -373,7 +373,7 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
   i = 0;
 
   while (!file.eof()) {
-    sg::base::DataVector line(dim);
+    SGPP::base::DataVector line(dim);
     line.setAll(0.0);
 
     for (size_t d = 0; d < dim; d++) {
@@ -393,11 +393,11 @@ int readEvalutionCuboid(sg::base::DataMatrix& cuboid, std::string tFile, size_t 
 /**
  * reads function values (here option prices) from a file
  *
- * @param values sg::base::DataVector into which the values will be stored
+ * @param values SGPP::base::DataVector into which the values will be stored
  * @param tFile file from which the values are read
  * @param numValues number of values stored in the file
  */
-int readOptionsValues(sg::base::DataVector& values, std::string tFile) {
+int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
   double cur_value;
 
@@ -435,14 +435,14 @@ int readOptionsValues(sg::base::DataVector& values, std::string tFile) {
 }
 
 /**
- * Writes a sg::base::DataMatrix into a file
+ * Writes a SGPP::base::DataMatrix into a file
  *
- * @param data the sg::base::DataMatrix that should be written into a file
+ * @param data the SGPP::base::DataMatrix that should be written into a file
  * @param tFile the file into which the data is written
  *
  * @return error code
  */
-int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
+int writeDataMatrix(SGPP::base::DataMatrix& data, std::string tFile) {
   std::ofstream file;
   file.open(tFile.c_str());
 
@@ -466,14 +466,14 @@ int writeDataMatrix(sg::base::DataMatrix& data, std::string tFile) {
 
 
 /**
- * Writes a sg::base::DataVector into a file
+ * Writes a SGPP::base::DataVector into a file
  *
- * @param data the sg::base::DataVector that should be written into a file
+ * @param data the SGPP::base::DataVector that should be written into a file
  * @param tFile the file into which the data is written
  *
  * @return error code
  */
-int writeDataVector(sg::base::DataVector& data, std::string tFile) {
+int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
   std::ofstream file;
   file.open(tFile.c_str());
 
@@ -518,17 +518,17 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
 
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
-  sg::base::DataMatrix EvalPoints(1, d);
+  SGPP::base::DataMatrix EvalPoints(1, d);
 
   double r = riskfree;
 
-  sg::base::DataVector* alpha;
+  SGPP::base::DataVector* alpha;
 
-  std::vector<sg::base::DataVector> results;
+  std::vector<SGPP::base::DataVector> results;
 
   // read process configuration
   if (readStochasticData(fileStoch, dim, mu, sigma, rho) != 0) {
@@ -536,28 +536,28 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
   }
 
   // create Black Scholes Solver Object
-  sg::parallel::BlackScholesSolverMPI* myBSSolver = NULL;
+  SGPP::parallel::BlackScholesSolverMPI* myBSSolver = NULL;
 
   if (coordsType == "log") {
-    myBSSolver = new sg::parallel::BlackScholesSolverMPI(true);
+    myBSSolver = new SGPP::parallel::BlackScholesSolverMPI(true);
   } else if (coordsType == "cart") {
-    myBSSolver = new sg::parallel::BlackScholesSolverMPI(false);
+    myBSSolver = new SGPP::parallel::BlackScholesSolverMPI(false);
   } else if (coordsType == "PAT") {
-    myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, true);
+    myBSSolver = new SGPP::parallel::BlackScholesSolverMPI(true, true);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
     std::cout << std::endl << std::endl;
 
-    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
       writeHelp();
     }
 
-    sg::parallel::myGlobalMPIComm->Abort();
+    SGPP::parallel::myGlobalMPIComm->Abort();
   }
 
   // Screen initialization only on rank 0
-  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
     // init Screen Object
     myBSSolver->initScreen();
   }
@@ -568,14 +568,14 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     // Reset Solve Time
     myBSSolver->resetSolveTime();
 
-    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
+      SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
       if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
         return;
       }
 
-      sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+      SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
       delete[] myBoundaries;
 
       // Construct a grid
@@ -585,16 +585,16 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       // in first iteration -> calculate the evaluation points
       if (i == start_l) {
         size_t points = 0;
-        sg::base::DimensionBoundary* myEvalBoundaries = new sg::base::DimensionBoundary[dim];
+        SGPP::base::DimensionBoundary* myEvalBoundaries = new SGPP::base::DimensionBoundary[dim];
 
         if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
           return;
         }
 
-        sg::base::BoundingBox* myEvalBoundingBox = new sg::base::BoundingBox(dim, myEvalBoundaries);
+        SGPP::base::BoundingBox* myEvalBoundingBox = new SGPP::base::BoundingBox(dim, myEvalBoundaries);
         delete[] myEvalBoundaries;
 
-        sg::base::EvalCuboidGenerator* myEvalCuboidGen = new sg::base::EvalCuboidGenerator();
+        SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
 
         myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
         writeDataMatrix(EvalPoints, tFileEvalCuboid);
@@ -616,7 +616,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       }
 
       // init the basis functions' coefficient vector
-      alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+      alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
       std::cout << "Grid has " << level << " Levels" << std::endl;
       std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
@@ -650,18 +650,18 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     }
 
     // Communicate grid
-    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
       std::string serialized_grid = myBSSolver->getGrid();
 
-      sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
+      SGPP::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
     } else {
       // Now receive the grid
       std::string serialized_grid = "";
 
-      sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
+      SGPP::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
       myBSSolver->setGrid(serialized_grid);
 
-      alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+      alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
       // Set stochastic data
       myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -671,7 +671,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     }
 
     // Communicate coefficients
-    sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
+    SGPP::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
     // Start solving the Black Scholes Equation
     if (Solver == "ExEul") {
@@ -685,7 +685,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
     }
 
     // print solved grid only on rank 0
-    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
       if (dim < 3) {
         // Print the solved Black Scholes Equation into a gnuplot file
         myBSSolver->printGrid(*alpha, 20, "solvedBS.MPI.gnuplot");
@@ -718,7 +718,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       if (i == start_l) {
         // if transformed Black Scholes Equation is used -> transform evaluation domain
         for (size_t v = 0; v < EvalPoints.getNrows(); v++) {
-          sg::base::DataVector r(dim);
+          SGPP::base::DataVector r(dim);
           EvalPoints.getRow(v, r);
           myBSSolver->transformPoint(r);
           EvalPoints.setRow(v, r);
@@ -726,7 +726,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       }
 
       // Evaluate Cuboid
-      sg::base::DataVector Prices(EvalPoints.getNrows());
+      SGPP::base::DataVector Prices(EvalPoints.getNrows());
       myBSSolver->evaluateCuboid(*alpha, Prices, EvalPoints);
       results.push_back(Prices);
 
@@ -750,8 +750,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
         std::cout << "------------------------------------------------------------------------------" << std::endl;
 
         for (size_t j = 0; j < i - start_l; j++) {
-          sg::base::DataVector maxLevel(results[i - start_l]);
-          sg::base::DataVector relError(results[j]);
+          SGPP::base::DataVector maxLevel(results[i - start_l]);
+          SGPP::base::DataVector relError(results[j]);
           double maxNorm = 0.0;
           double l2Norm = 0.0;
 
@@ -825,14 +825,14 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
   double refineSigma = DFLT_SIGMA_REFINE_NORMDIST;
 
-  sg::base::DataVector mu(dim);
-  sg::base::DataVector sigma(dim);
-  sg::base::DataMatrix rho(dim, dim);
+  SGPP::base::DataVector mu(dim);
+  SGPP::base::DataVector sigma(dim);
+  SGPP::base::DataMatrix rho(dim, dim);
 
-  sg::base::DataVector* alpha = NULL;
+  SGPP::base::DataVector* alpha = NULL;
 
-  sg::base::DataVector EvalCuboidValues(1);
-  sg::base::DataMatrix EvalCuboid(1, dim);
+  SGPP::base::DataVector EvalCuboidValues(1);
+  SGPP::base::DataMatrix EvalCuboid(1, dim);
 
   int retCuboid = -1;
   int retCuboidValues = -1;
@@ -843,24 +843,24 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     return;
   }
 
-  sg::parallel::BlackScholesSolverMPI* myBSSolver = NULL;
+  SGPP::parallel::BlackScholesSolverMPI* myBSSolver = NULL;
 
   if (coordsType == "log") {
-    myBSSolver = new sg::parallel::BlackScholesSolverMPI(true);
+    myBSSolver = new SGPP::parallel::BlackScholesSolverMPI(true);
   } else if (coordsType == "cart") {
-    myBSSolver = new sg::parallel::BlackScholesSolverMPI(false);
+    myBSSolver = new SGPP::parallel::BlackScholesSolverMPI(false);
   } else if (coordsType == "PAT") {
-    myBSSolver = new sg::parallel::BlackScholesSolverMPI(true, true);
+    myBSSolver = new SGPP::parallel::BlackScholesSolverMPI(true, true);
   } else {
     // Write Error
     std::cout << "Unsupported grid transformation!" << std::endl;
     std::cout << std::endl << std::endl;
 
-    if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
       writeHelp();
     }
 
-    sg::parallel::myGlobalMPIComm->Abort();
+    SGPP::parallel::myGlobalMPIComm->Abort();
   }
 
   // Enable Coarsening
@@ -868,14 +868,14 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, (int)maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
   }
 
-  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
-    sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[dim];
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
     if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
       return;
     }
 
-    sg::base::BoundingBox* myBoundingBox = new sg::base::BoundingBox(dim, myBoundaries);
+    SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
     delete[] myBoundaries;
 
     // init Screen Object
@@ -886,7 +886,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     delete myBoundingBox;
 
     // init the basis functions' coefficient vector
-    alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+    alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
     // Set stochastic data
     myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -993,18 +993,18 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   }
 
   // Communicate grid
-  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
     std::string serialized_grid = myBSSolver->getGrid();
 
-    sg::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
+    SGPP::parallel::myGlobalMPIComm->broadcastGrid(serialized_grid);
   } else {
     // Now receive the grid
     std::string serialized_grid = "";
 
-    sg::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
+    SGPP::parallel::myGlobalMPIComm->receiveGrid(serialized_grid);
     myBSSolver->setGrid(serialized_grid);
 
-    alpha = new sg::base::DataVector(myBSSolver->getNumberGridPoints());
+    alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
     // Set stochastic data
     myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -1014,7 +1014,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
   }
 
   // Communicate coefficients
-  sg::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
+  SGPP::parallel::myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*alpha);
 
   // Start solving the Black Scholes Equation
   if (Solver == "ExEul") {
@@ -1027,7 +1027,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
   }
 
-  if (sg::parallel::myGlobalMPIComm->getMyRank() == 0) {
+  if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
     if (dim < 3) {
       // Print the solved Black Scholes Equation into a gnuplot file
       myBSSolver->printGrid(*alpha, 20, "solvedBS.MPI.gnuplot");
@@ -1065,7 +1065,7 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
     if (retCuboid == 0 && retCuboidValues == 0) {
       // If the transformed Black Scholes Equation is used -> transform Eval-cuboid
       for (size_t v = 0; v < EvalCuboid.getNrows(); v++) {
-        sg::base::DataVector r(dim);
+        SGPP::base::DataVector r(dim);
         EvalCuboid.getRow(v, r);
         myBSSolver->transformPoint(r);
         EvalCuboid.setRow(v, r);
@@ -1073,10 +1073,10 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std
 
       std::cout << "Calculating relative errors..." << std::endl;
       // Evaluate Cuboid
-      sg::base::DataVector Prices(EvalCuboid.getNrows());
+      SGPP::base::DataVector Prices(EvalCuboid.getNrows());
       myBSSolver->evaluateCuboid(*alpha, Prices, EvalCuboid);
 
-      sg::base::DataVector relError(Prices);
+      SGPP::base::DataVector relError(Prices);
 
       // calculate relative error
       relError.sub(EvalCuboidValues);
@@ -1146,7 +1146,7 @@ int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_ranks);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
-  sg::parallel::myGlobalMPIComm = new sg::parallel::MPICommunicator(mpi_myid, mpi_ranks);
+  SGPP::parallel::myGlobalMPIComm = new SGPP::parallel::MPICommunicator(mpi_myid, mpi_ranks);
 
   std::streambuf* stdoutBuf = std::cout.rdbuf();
   std::ofstream dummy_out("/dev/null");
@@ -1160,7 +1160,7 @@ int main(int argc, char* argv[]) {
       writeHelp();
     }
 
-    sg::parallel::myGlobalMPIComm->Abort();
+    SGPP::parallel::myGlobalMPIComm->Abort();
     return 0;
   }
 
@@ -1172,7 +1172,7 @@ int main(int argc, char* argv[]) {
         writeHelp();
       }
 
-      sg::parallel::myGlobalMPIComm->Abort();
+      SGPP::parallel::myGlobalMPIComm->Abort();
       return 0;
     } else {
       std::string fileStoch;
@@ -1201,7 +1201,7 @@ int main(int argc, char* argv[]) {
         writeHelp();
       }
 
-      sg::parallel::myGlobalMPIComm->Abort();
+      SGPP::parallel::myGlobalMPIComm->Abort();
       return 0;
     } else {
       bool isNormalDist = false;
@@ -1238,7 +1238,7 @@ int main(int argc, char* argv[]) {
           writeHelp();
         }
 
-        sg::parallel::myGlobalMPIComm->Abort();
+        SGPP::parallel::myGlobalMPIComm->Abort();
         return 0;
       }
 
@@ -1256,7 +1256,7 @@ int main(int argc, char* argv[]) {
           writeHelp();
         }
 
-        sg::parallel::myGlobalMPIComm->Abort();
+        SGPP::parallel::myGlobalMPIComm->Abort();
         return 0;
       }
 
@@ -1267,11 +1267,11 @@ int main(int argc, char* argv[]) {
       writeHelp();
     }
 
-    sg::parallel::myGlobalMPIComm->Abort();
+    SGPP::parallel::myGlobalMPIComm->Abort();
     return 0;
   }
 
-  delete sg::parallel::myGlobalMPIComm;
+  delete SGPP::parallel::myGlobalMPIComm;
 
   if (mpi_myid != 0) { // restore stdout buffer
     std::cout.rdbuf(stdoutBuf);

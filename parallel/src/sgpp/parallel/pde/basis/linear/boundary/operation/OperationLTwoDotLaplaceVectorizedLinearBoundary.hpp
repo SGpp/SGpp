@@ -29,7 +29,10 @@
 #undef __AVX__
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -40,27 +43,27 @@ namespace sg {
     class OperationLTwoDotLaplaceVectorizedLinearBoundary: public OperationParabolicPDEMatrixCombined {
       private:
 
-        sg::base::GridStorage* storage;
-        sg::base::DataMatrix* level_;
-        sg::base::DataMatrix* level_int_;
-        sg::base::DataMatrix* index_;
-        sg::base::DataVector* lcl_q_;
-        sg::base::DataVector* lcl_q_inv_;
-        sg::base::DataVector* lambda_;
-        sg::base::DataVector* constants_;
-        sg::base::DataVector* alpha_padded_;
+        SGPP::base::GridStorage* storage;
+        SGPP::base::DataMatrix* level_;
+        SGPP::base::DataMatrix* level_int_;
+        SGPP::base::DataMatrix* index_;
+        SGPP::base::DataVector* lcl_q_;
+        SGPP::base::DataVector* lcl_q_inv_;
+        SGPP::base::DataVector* lambda_;
+        SGPP::base::DataVector* constants_;
+        SGPP::base::DataVector* alpha_padded_;
 
-        sg::base::DataVector* result_boundary_filtered_;
+        SGPP::base::DataVector* result_boundary_filtered_;
 
-        sg::base::DataMatrix* level_boundary_filtered_;
-        sg::base::DataMatrix* level_int_boundary_filtered_;
-        sg::base::DataMatrix* index_boundary_filtered_;
+        SGPP::base::DataMatrix* level_boundary_filtered_;
+        SGPP::base::DataMatrix* level_int_boundary_filtered_;
+        SGPP::base::DataMatrix* index_boundary_filtered_;
 
-        sg::base::DataVector** gradient_temp;
-        sg::base::DataVector** l2dot_temp;
+        SGPP::base::DataVector** gradient_temp;
+        SGPP::base::DataVector** l2dot_temp;
 
 #if defined(STORE_PDE_MATRIX_BOUNDARY)
-        sg::base::DataMatrix* operation_result_matrix_;
+        SGPP::base::DataMatrix* operation_result_matrix_;
         bool operation_result_generated_;
 #endif
         std::vector<std::size_t> i_boundary_filtered;
@@ -84,10 +87,10 @@ namespace sg {
         double gradient_dirichlet(size_t i, size_t j, size_t dim);
         double l2dot_dirichlet(size_t i, size_t j, size_t dim);
 
-        void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
         double all_time;
         double all_iterations;
-        sg::base::SGppStopwatch stopWatch;
+        SGPP::base::SGppStopwatch stopWatch;
 
       public:
         /**
@@ -95,7 +98,7 @@ namespace sg {
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-        OperationLTwoDotLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage);
+        OperationLTwoDotLaplaceVectorizedLinearBoundary(SGPP::base::GridStorage* storage);
 
         /**
          * Construtor of OperationLaplaceLinear
@@ -103,14 +106,14 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param lambda Vector which contains pre-factors for every dimension of the operator
          */
-        OperationLTwoDotLaplaceVectorizedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& lambda);
+        OperationLTwoDotLaplaceVectorizedLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda);
 
         /**
          * Destructor
          */
         virtual ~OperationLTwoDotLaplaceVectorizedLinearBoundary();
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         virtual void reset();
     };

@@ -20,7 +20,10 @@
 #define TASKS_PARALLEL_UPDOWN 4
 #endif
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -28,22 +31,22 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class UpDownFourOpDims: public sg::base::OperationMatrix {
+    class UpDownFourOpDims: public SGPP::base::OperationMatrix {
       public:
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          * @param coef 4d tensor that contains the constant coefficients of this operation
          */
-        UpDownFourOpDims(sg::base::GridStorage* storage, double**** * coef);
+        UpDownFourOpDims(SGPP::base::GridStorage* storage, double**** * coef);
 
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        UpDownFourOpDims(sg::base::GridStorage* storage);
+        UpDownFourOpDims(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -51,16 +54,16 @@ namespace sg {
         virtual ~UpDownFourOpDims();
 
 
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       protected:
-        typedef sg::base::GridStorage::grid_iterator grid_iterator;
+        typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
 
         /// Function pointer type. This is used in fnMap to map the particular dimension situation to the relevant method handler.
-        typedef void (sg::pde::UpDownFourOpDims::*MFP)(sg::base::DataVector&, sg::base::DataVector&, size_t, size_t, size_t, size_t, size_t);
+        typedef void (SGPP::pde::UpDownFourOpDims::*MFP)(SGPP::base::DataVector&, SGPP::base::DataVector&, size_t, size_t, size_t, size_t, size_t);
 
         /// Pointer to the grid's storage object
-        sg::base::GridStorage* storage;
+        SGPP::base::GridStorage* storage;
         /// Pointer to the coefficients of this bilinear form
         double**** coefs;
         /// algorithmic dimensions, operator is applied in this dimensions
@@ -89,17 +92,17 @@ namespace sg {
          * @param op_dim_three the dimension in which to use the third gradient
          * @param op_dim_four the dimension in which to use the fourth gradient
          */
-        void updown(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         // Unidirectional
-        void specialOpUnidirectional(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpUnidirectional(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         // Singles
-        void specialOpOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
-        void specialOpTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
-        void specialOpThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
-        void specialOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
-        void specialOpX(sg::base::DataVector& alpha, sg::base::DataVector& result, void (sg::pde::UpDownFourOpDims::*pt2UpFunc)(sg::base::DataVector&, sg::base::DataVector&, size_t), void (sg::pde::UpDownFourOpDims::*pt2DownFunc)(sg::base::DataVector&, sg::base::DataVector&, size_t), size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpX(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, void (SGPP::pde::UpDownFourOpDims::*pt2UpFunc)(SGPP::base::DataVector&, SGPP::base::DataVector&, size_t), void (SGPP::pde::UpDownFourOpDims::*pt2DownFunc)(SGPP::base::DataVector&, SGPP::base::DataVector&, size_t), size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         // Doubles
 
@@ -114,67 +117,67 @@ namespace sg {
          * @param op_dim_three the dimension in which to use the third gradient
          * @param op_dim_four the dimension in which to use the fourth gradient
          */
-        void specialOpOneAndOpTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the both special operation dimensions one and three.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpOneAndOpThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the both special operation dimensions one and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpOneAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the both special operation dimensions two and three.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpTwoAndOpThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpTwoAndOpThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the both special operation dimensions two and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpTwoAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpTwoAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the both special operation dimensions three and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpThreeAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpThreeAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the all special operation dimensions one, two and three.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpOneAndOpTwoAndOpThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpTwoAndOpThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the all special operation dimensions one, two and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpOneAndOpTwoAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpTwoAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the all special operation dimensions one, three and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpOneAndOpThreeAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpThreeAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the all special operation dimensions two, three and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpTwoAndOpThreeAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpTwoAndOpThreeAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
         /**
          * If the current dimension is equal to the all special operation dimensions one, two, three and four.
          * For an explanation of the parameters of this method, see the documentation for the method specialOpOneAndOpTwo in this class.
          */
-        void specialOpOneAndOpTwoAndOpThreeAndOpFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
+        void specialOpOneAndOpTwoAndOpThreeAndOpFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim_one, size_t op_dim_two, size_t op_dim_three, size_t op_dim_four);
 
 
         /**
@@ -186,7 +189,7 @@ namespace sg {
          * @param result vector to store the results in
          * @param dim dimension in which to apply the up-part
          */
-        virtual void up(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -197,7 +200,7 @@ namespace sg {
          * @param result vector to store the results in
          * @param dim dimension in which to apply the down-part
          */
-        virtual void down(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i.
@@ -206,182 +209,182 @@ namespace sg {
          * @param result vector with the result of this operation
          * @param dim the dimension in that down-Gradient is applied
          */
-        virtual void downOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOne(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to j.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to j.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i and j.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and j.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimTwo(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i and k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to j and k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to j and k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to j and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to j and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i and j and k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and j and k.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimTwoAndOpDimThree(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i and j and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and j and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimTwoAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to i and k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D down if the current dim is equal to j and k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to j and k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
 
         /**
          * 1D down if the current dim is equal to i and j and k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
         /**
          * 1D up if the current dim is equal to i and j and k and l.
          * For an explanation of the parameters of this method, see the documentation for the method downOpDimOne in this class.
          */
-        virtual void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) = 0;
+        virtual void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
     };
 
   }

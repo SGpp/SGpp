@@ -6,7 +6,10 @@
 //@author Michael Lettrich (m.lettrich@mytum.de)
 #include "ErrorStorage.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 ErrorStorage::ErrorStorage(size_t dim):hashErrorStorage(dim) {}
@@ -205,6 +208,6 @@ ErrorType ErrorStorage::popSubroutine(ErrorMap::iterator iter) {
 
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 
 

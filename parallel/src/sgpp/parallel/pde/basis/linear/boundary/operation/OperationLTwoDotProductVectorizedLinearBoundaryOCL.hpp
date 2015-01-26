@@ -15,7 +15,10 @@
 
 #include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -23,25 +26,25 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public sg::base::OperationMatrix {
+    class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public SGPP::base::OperationMatrix {
 
       private:
-        sg::base::GridStorage* storage;
-        sg::base::DataMatrix* level_;
-        sg::base::DataMatrix* level_int_;
-        sg::base::DataMatrix* index_;
+        SGPP::base::GridStorage* storage;
+        SGPP::base::DataMatrix* level_;
+        SGPP::base::DataMatrix* level_int_;
+        SGPP::base::DataMatrix* index_;
         double* lcl_q;
         OCLPDEKernels OCLPDEKernelsHandle;
 
-        void mult_dirichlet(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
       public:
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        OperationLTwoDotProductVectorizedLinearBoundaryOCL(sg::base::GridStorage* storage);
+        OperationLTwoDotProductVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -49,7 +52,7 @@ namespace sg {
         virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
 
       protected:
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
     };
 
   }

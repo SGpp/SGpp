@@ -14,7 +14,10 @@
 #include "VarTimestep.hpp"
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     /**
@@ -37,7 +40,7 @@ namespace sg {
          * @param eps the epsilon for the step size control
          * @param screen possible pointer to a ScreenOutput object
          */
-        StepsizeControlMC(size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen = NULL);
+        StepsizeControlMC(size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen = NULL);
 
         /**
          * Std-Destructor

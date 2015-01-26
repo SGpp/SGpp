@@ -10,18 +10,18 @@
 
 using namespace std;
 
-void combigrid::CombiSGppConverter::createSGpp( sg::base::GridStorage* storage , const CombiGridKernelD* combikernel ) {
+void combigrid::CombiSGppConverter::createSGpp( SGPP::base::GridStorage* storage , const CombiGridKernelD* combikernel ) {
 
   if (storage->size() > 0) {
     storage->emptyStorage();
     //COMBIGRID_ERROR_EXIT("CombiSgppConverter::createSGpp storage not empty , but size = " << storage->size() );
   }
 
-  // create the sg::base::GridStorage, and insert all points from the each full grid into the hashmap (but only once)
+  // create the SGPP::base::GridStorage, and insert all points from the each full grid into the hashmap (but only once)
   int dim = combikernel->getDim();
   std::vector<int> levelsLI( dim );
   std::vector<int> indexsLI( dim );
-  sg::base::GridIndex* hgi = new sg::base::GridIndex( dim );
+  SGPP::base::GridIndex* hgi = new SGPP::base::GridIndex( dim );
   int k , sgppIndex ;
 
   // use the stored SGpp index if they exist
@@ -61,16 +61,16 @@ void combigrid::CombiSGppConverter::createSGpp( sg::base::GridStorage* storage ,
 
 // --------- the old and wrong FullGridToSGpp method --------------
 /*
- void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , sg::base::GridStorage* storage , sg::base::DataVector *alpha){
+ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , SGPP::base::GridStorage* storage , SGPP::base::DataVector *alpha){
         int dim = fg->getDimension() , sgppIndex , k;
         std::vector<int> levelsLI( dim );
         std::vector<int> indexsLI( dim );
-        sg::base::GridIndex *hgi = new sg::base::GridIndex( dim );
+        SGPP::base::GridIndex *hgi = new SGPP::base::GridIndex( dim );
 
         // use the stored SGpp index if they exist
         if ( fg->getSGppIndex().size() < 1 )
         {
-                // each FG value will be added to the sg::base::DataVector, with the specified coefficient
+                // each FG value will be added to the SGPP::base::DataVector, with the specified coefficient
                 fg->getSGppIndex().resize(fg->getNrElements());
                 for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++){
                         // ... get the index and level
@@ -101,9 +101,9 @@ void combigrid::CombiSGppConverter::createSGpp( sg::base::GridStorage* storage ,
 
  */
 
-void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , sg::base::GridStorage* storage , sg::base::DataVector* alpha) {
+void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , SGPP::base::GridStorage* storage , SGPP::base::DataVector* alpha) {
   int dim = fg->getDimension();
-  sg::base::GridIndex* hgi = new sg::base::GridIndex( dim );
+  SGPP::base::GridIndex* hgi = new SGPP::base::GridIndex( dim );
 
   // ---- evaluate the full grid at each point of the SGpp and add to the SGpp vector ----
 
@@ -144,11 +144,11 @@ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double 
 }
 
 
-void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , sg::base::GridStorage* storage ,
-    sg::base::DataVector* alpha , sg::base::DataVector* minAlpha , sg::base::DataVector* maxAlpha ) {
+void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , SGPP::base::GridStorage* storage ,
+    SGPP::base::DataVector* alpha , SGPP::base::DataVector* minAlpha , SGPP::base::DataVector* maxAlpha ) {
 
   int dim = fg->getDimension();
-  sg::base::GridIndex* hgi = new sg::base::GridIndex( dim );
+  SGPP::base::GridIndex* hgi = new SGPP::base::GridIndex( dim );
 
   // ---- evaluate the full grid at each point of the SGpp and add to the SGpp vector ----
 
@@ -203,18 +203,18 @@ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double 
 }
 
 
-void combigrid::CombiSGppConverter::SGppToFullGrid( sg::base::GridStorage* storage , sg::base::DataVector* alpha , FullGridD* fg ) {
+void combigrid::CombiSGppConverter::SGppToFullGrid( SGPP::base::GridStorage* storage , SGPP::base::DataVector* alpha , FullGridD* fg ) {
   // for each full grid point get the corresponding value from SGpp and just set the FG value with that value
   int dim = fg->getDimension() , sgppIndex , k;
   std::vector<int> levelsLI( dim , 0.0);
   std::vector<int> indexsLI( dim , 0.0);
-  sg::base::GridIndex* hgi = new sg::base::GridIndex( dim );
+  SGPP::base::GridIndex* hgi = new SGPP::base::GridIndex( dim );
 
   // use the stored SGpp index if they exist
   if ( fg->getSGppIndex().size() < 1 ) {
     fg->getSGppIndex().resize(fg->getNrElements());
 
-    // each FG value will be added to the sg::base::DataVector, with the specified coefficient
+    // each FG value will be added to the SGPP::base::DataVector, with the specified coefficient
     for (int nrp = 0 ; nrp < fg->getNrElements() ; nrp++) {
       // ... get the index and level
       fg->getLI( nrp , levelsLI , indexsLI);

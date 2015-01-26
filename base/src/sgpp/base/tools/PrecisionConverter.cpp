@@ -8,12 +8,15 @@
 #include <sgpp/base/tools/PrecisionConverter.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
-    void PrecisionConverter::convertDataVectorToDataVectorSP(const sg::base::DataVector& src, sg::base::DataVectorSP& dest) {
+    void PrecisionConverter::convertDataVectorToDataVectorSP(const SGPP::base::DataVector& src, SGPP::base::DataVectorSP& dest) {
       if (src.getSize() != dest.getSize()) {
-        throw new sg::base::data_exception("PrecisionConverter::convertDataVectorToDataVectorSP : vector sizes don't match!");
+        throw new SGPP::base::data_exception("PrecisionConverter::convertDataVectorToDataVectorSP : vector sizes don't match!");
       } else {
         for (size_t i = 0; i < src.getSize(); i++) {
           dest.set(i, static_cast<float>(src.get(i)));
@@ -21,9 +24,9 @@ namespace sg {
       }
     }
 
-    void PrecisionConverter::convertDataVectorSPToDataVector(const sg::base::DataVectorSP& src, sg::base::DataVector& dest) {
+    void PrecisionConverter::convertDataVectorSPToDataVector(const SGPP::base::DataVectorSP& src, SGPP::base::DataVector& dest) {
       if (src.getSize() != dest.getSize()) {
-        throw new sg::base::data_exception("PrecisionConverter::convertDataVectorSPToDataVector : vector sizes don't match!");
+        throw new SGPP::base::data_exception("PrecisionConverter::convertDataVectorSPToDataVector : vector sizes don't match!");
       } else {
         for (size_t i = 0; i < src.getSize(); i++) {
           dest.set(i, static_cast<double>(src.get(i)));
@@ -31,9 +34,9 @@ namespace sg {
       }
     }
 
-    void PrecisionConverter::convertDataMatrixToDataMatrixSP(const sg::base::DataMatrix& src, sg::base::DataMatrixSP& dest) {
+    void PrecisionConverter::convertDataMatrixToDataMatrixSP(const SGPP::base::DataMatrix& src, SGPP::base::DataMatrixSP& dest) {
       if (src.getNcols() != dest.getNcols() || src.getNrows() != dest.getNrows()) {
-        throw new sg::base::data_exception("PrecisionConverter::convertDataMatrixToDataMatrixSP : matrix sizes don't match!");
+        throw new SGPP::base::data_exception("PrecisionConverter::convertDataMatrixToDataMatrixSP : matrix sizes don't match!");
       } else {
         for (size_t i = 0; i < src.getNrows(); i++) {
           for (size_t j = 0; j < src.getNcols(); j++) {
@@ -43,9 +46,9 @@ namespace sg {
       }
     }
 
-    void PrecisionConverter::convertDataMatrixSPToDataMatrix(const sg::base::DataMatrixSP& src, sg::base::DataMatrix& dest) {
+    void PrecisionConverter::convertDataMatrixSPToDataMatrix(const SGPP::base::DataMatrixSP& src, SGPP::base::DataMatrix& dest) {
       if (src.getNcols() != dest.getNcols() || src.getNrows() != dest.getNrows()) {
-        throw new sg::base::data_exception("PrecisionConverter::convertDataMatrixSPToDataMatrix : matrix sizes don't match!");
+        throw new SGPP::base::data_exception("PrecisionConverter::convertDataMatrixSPToDataMatrix : matrix sizes don't match!");
       } else {
         for (size_t i = 0; i < src.getNrows(); i++) {
           for (size_t j = 0; j < src.getNcols(); j++) {

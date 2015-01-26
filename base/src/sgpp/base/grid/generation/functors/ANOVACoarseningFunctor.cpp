@@ -9,7 +9,10 @@
 #include <algorithm>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     ANOVACoarseningFunctor::ANOVACoarseningFunctor(DataVector* alpha, size_t
@@ -110,4 +113,4 @@ namespace sg {
 
 
   } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

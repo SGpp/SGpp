@@ -12,7 +12,10 @@
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
 #include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 #include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 
@@ -47,7 +50,7 @@ namespace sg {
 
 #endif
       else {
-        throw sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
+        throw SGPP::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
       }
 
       return 0;
@@ -90,13 +93,13 @@ namespace sg {
 
 #endif
       else {
-        throw sg::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
+        throw SGPP::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
       }
 
       return 0;
     }
 
-    size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrix& dataset, VectorizationType& vecType) {
+    size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix& dataset, VectorizationType& vecType) {
       size_t vecWidth = getVecWidth(vecType);
 
       // Assure that data has a even number of instances -> padding might be needed
@@ -104,7 +107,7 @@ namespace sg {
       size_t loopCount = vecWidth - remainder;
 
       if (loopCount != vecWidth) {
-        sg::base::DataVector lastRow(dataset.getNcols());
+        SGPP::base::DataVector lastRow(dataset.getNcols());
         size_t oldSize = dataset.getNrows();
         dataset.getRow(dataset.getNrows() - 1, lastRow);
         dataset.resize(dataset.getNrows() + loopCount);
@@ -117,7 +120,7 @@ namespace sg {
       return dataset.getNrows();
     }
 
-    size_t DMVectorizationPaddingAssistant::padDataset(sg::base::DataMatrixSP& dataset, VectorizationType vecType) {
+    size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP& dataset, VectorizationType vecType) {
       size_t vecWidth = getVecWidthSP(vecType);
 
       // Assure that data has a even number of instances -> padding might be needed
@@ -125,7 +128,7 @@ namespace sg {
       size_t loopCount = vecWidth - remainder;
 
       if (loopCount != vecWidth) {
-        sg::base::DataVectorSP lastRow(dataset.getNcols());
+        SGPP::base::DataVectorSP lastRow(dataset.getNcols());
         size_t oldSize = dataset.getNrows();
         dataset.getRow(dataset.getNrows() - 1, lastRow);
         dataset.resize(dataset.getNrows() + loopCount);

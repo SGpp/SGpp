@@ -7,10 +7,13 @@
 
 #include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    LaplaceEnhancedDownBBLinear::LaplaceEnhancedDownBBLinear(sg::base::GridStorage* storage) :
+    LaplaceEnhancedDownBBLinear::LaplaceEnhancedDownBBLinear(SGPP::base::GridStorage* storage) :
       storage(storage), boundingBox(storage->getBoundingBox()),
       algoDims(storage->getAlgorithmicDimensions()),
       numAlgoDims_(storage->getAlgorithmicDimensions().size()),
@@ -27,7 +30,7 @@ namespace sg {
     LaplaceEnhancedDownBBLinear::~LaplaceEnhancedDownBBLinear() {
     }
 
-    void LaplaceEnhancedDownBBLinear::operator()(sg::base::DataMatrix& source, sg::base::DataMatrix& result, grid_iterator& index, size_t dim) {
+    void LaplaceEnhancedDownBBLinear::operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
       q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
       t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
 
@@ -112,8 +115,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::rec(double fl, double fr, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -145,8 +148,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::rec_grad(size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -178,8 +181,8 @@ namespace sg {
 #endif
     {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       // mesh-width
@@ -236,8 +239,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::rec_LG(double fl, double fr, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -273,8 +276,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::rec_GL(double fl, double fr, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -311,8 +314,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::recBB(double fl, double fr, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -344,8 +347,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::recBB_LL(double fl, double fr, double fl2, double fr2, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -381,8 +384,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::recBB_LG(double fl, double fr, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -418,8 +421,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::recBB_GL(double fl, double fr, size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -454,8 +457,8 @@ namespace sg {
 
     void LaplaceEnhancedDownBBLinear::recBB_grad(size_t dim, grid_iterator& index) {
       size_t seq = index.seq();
-      sg::base::GridStorage::index_type::level_type l;
-      sg::base::GridStorage::index_type::index_type i;
+      SGPP::base::GridStorage::index_type::level_type l;
+      SGPP::base::GridStorage::index_type::index_type i;
       index.get(cur_algo_dim_, l, i);
 
       double alpha_value = ptr_source_[(seq * this->numAlgoDims_) + dim];
@@ -482,5 +485,5 @@ namespace sg {
 
     // namespace pde
   }
-  // namespace sg
+  // namespace SGPP
 }

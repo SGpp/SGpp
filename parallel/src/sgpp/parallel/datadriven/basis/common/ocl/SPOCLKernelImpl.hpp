@@ -18,7 +18,10 @@
 #include <sgpp/parallel/datadriven/basis/common/ocl/OCLKernelImplBase.hpp>
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     template<typename OCLBasisType>
     class SPOCLKernelImpl: public OCLKernelImplBase {
@@ -28,11 +31,11 @@ namespace sg {
         SPOCLKernelImpl(): OCLKernelImplBase() {}
 
         inline void initOCLBuffers(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset) {
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset) {
           size_t storageSize = level->getSize();
 
           if (level != NULL && clLevel[0] == NULL) {
@@ -66,8 +69,8 @@ namespace sg {
           }
         }
 
-        inline void initParams(sg::base::DataVectorSP& grid,
-                               sg::base::DataVectorSP& tmp) {
+        inline void initParams(SGPP::base::DataVectorSP& grid,
+                               SGPP::base::DataVectorSP& tmp) {
           if (clPinnedGrid == NULL) {
             size_t mem_size = sizeof(float) * grid.getSize();
             clPinnedGrid = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, NULL, NULL);
@@ -108,13 +111,13 @@ namespace sg {
         }
 
         double multImpl(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& alpha,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& alpha,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -140,7 +143,7 @@ namespace sg {
           size_t* gpu_end_index_data = new size_t[num_devices];
 
           for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
-            sg::parallel::PartitioningTool::getPartitionSegment(start_index_data, end_index_data, num_devices, gpu_num, &gpu_start_index_data[gpu_num], &gpu_end_index_data[gpu_num], ocl_local_size);
+            SGPP::parallel::PartitioningTool::getPartitionSegment(start_index_data, end_index_data, num_devices, gpu_num, &gpu_start_index_data[gpu_num], &gpu_end_index_data[gpu_num], ocl_local_size);
           }
 
           // set kernel arguments
@@ -263,13 +266,13 @@ namespace sg {
         }
 
         double multTransposeImpl(
-          sg::base::DataMatrixSP* level,
-          sg::base::DataMatrixSP* index,
-          sg::base::DataMatrixSP* mask,
-          sg::base::DataMatrixSP* offset,
-          sg::base::DataMatrixSP* dataset,
-          sg::base::DataVectorSP& source,
-          sg::base::DataVectorSP& result,
+          SGPP::base::DataMatrixSP* level,
+          SGPP::base::DataMatrixSP* index,
+          SGPP::base::DataMatrixSP* mask,
+          SGPP::base::DataMatrixSP* offset,
+          SGPP::base::DataMatrixSP* dataset,
+          SGPP::base::DataVectorSP& source,
+          SGPP::base::DataVectorSP& result,
           const size_t start_index_grid,
           const size_t end_index_grid,
           const size_t start_index_data,
@@ -296,7 +299,7 @@ namespace sg {
           size_t* gpu_end_index_grid = new size_t[num_devices];
 
           for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
-            sg::parallel::PartitioningTool::getPartitionSegment(start_index_grid, end_index_grid, num_devices, gpu_num, &gpu_start_index_grid[gpu_num], &gpu_end_index_grid[gpu_num], ocl_local_size);
+            SGPP::parallel::PartitioningTool::getPartitionSegment(start_index_grid, end_index_grid, num_devices, gpu_num, &gpu_start_index_grid[gpu_num], &gpu_end_index_grid[gpu_num], ocl_local_size);
           }
 
           // set kernel arguments

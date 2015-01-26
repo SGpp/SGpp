@@ -15,7 +15,10 @@
 #include <sgpp/base/basis/prewavelet/PrewaveletBasis.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     PrewaveletGrid::PrewaveletGrid(std::istream& istr) : Grid(istr) {

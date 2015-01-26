@@ -21,7 +21,7 @@ namespace combigrid {
       }
 
       static void test_all_cases() {
-        COMBIGRID_OUT_LEVEL3( 4 , "Testing sg::base::Stretching ... ");
+        COMBIGRID_OUT_LEVEL3( 4 , "Testing SGPP::base::Stretching ... ");
         // test here all the functionalities of the full grid
         // 2D test
         test1();

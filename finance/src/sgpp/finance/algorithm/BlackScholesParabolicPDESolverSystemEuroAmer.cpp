@@ -14,29 +14,32 @@
 #include <sgpp/finance/operation/FinanceOpFactory.hpp>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
-    BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSystemEuroAmer(sg::base::Grid& SparseGrid, sg::base::DataVector& alpha, sg::base::DataVector& mu,
-        sg::base::DataVector& sigma, sg::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
+    BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
+        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
         double dStrike, std::string option_type,
         bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, sg::base::GridIndex::level_type xLevel) {
+        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type xLevel) {
       this->BoundGrid = &SparseGrid;
       this->alpha_complete = &alpha;
 
-      this->alpha_complete_old = new sg::base::DataVector(*this->alpha_complete);
-      this->alpha_complete_tmp = new sg::base::DataVector(*this->alpha_complete);
-      this->oldGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
-      this->secondGridStorage = new sg::base::GridStorage(*(this->BoundGrid)->getStorage());
+      this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
+      this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
+      this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+      this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
 
       this->InnerGrid = NULL;
       this->alpha_inner = NULL;
       this->tOperationMode = OperationMode;
       this->TimestepSize = TimestepSize;
       this->TimestepSize_old = TimestepSize;
-      this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
-      this->GridConverter = new sg::base::DirichletGridConverter();
+      this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
+      this->GridConverter = new SGPP::base::DirichletGridConverter();
       this->r = r;
       this->mus = &mu;
       this->sigmas = &sigma;
@@ -46,23 +49,23 @@ namespace sg {
 
       // throw exception if grid dimensions not equal algorithmic dimensions
       if (this->BSalgoDims.size() != this->BoundGrid->getStorage()->dim()) {
-        throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not equal to the number of grid's dimensions.");
+        throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not equal to the number of grid's dimensions.");
       }
 
       // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
       if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize()) {
-        throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
+        throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't match the grid's dimensions!");
       }
 
       // test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
       if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols()) {
-        throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Row or col of rho parameter don't match the grid's dimensions!");
+        throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Row or col of rho parameter don't match the grid's dimensions!");
       }
 
       // test if all algorithmic dimensions are inside the grid's dimensions
       for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
         if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim()) {
-          throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Minimum one algorithmic dimension is not inside the grid's dimensions!");
+          throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : Minimum one algorithmic dimension is not inside the grid's dimensions!");
         }
       }
 
@@ -79,13 +82,13 @@ namespace sg {
         }
 
         if (dimCount > 1) {
-          throw sg::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
+          throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
         }
       }
 
       // build the coefficient vectors for the operations
-      this->gammaCoef = new sg::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-      this->deltaCoef = new sg::base::DataVector(this->BSalgoDims.size());
+      this->gammaCoef = new SGPP::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
+      this->deltaCoef = new SGPP::base::DataVector(this->BSalgoDims.size());
 
       // create the inner grid
       this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
@@ -95,11 +98,11 @@ namespace sg {
         buildGammaCoefficients();
 
         //Create needed operations, on inner grid
-        this->OpDeltaInner = sg::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
-        this->OpGammaInner = sg::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
+        this->OpDeltaInner = SGPP::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef);
+        this->OpGammaInner = SGPP::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef);
         // Create needed operations, on boundary grid
-        this->OpDeltaBound = sg::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
-        this->OpGammaBound = sg::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
+        this->OpDeltaBound = SGPP::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
+        this->OpGammaBound = SGPP::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
       }
       // create needed operations that are different in case of a log-transformed Black-Scholoes equation
       else {
@@ -107,16 +110,16 @@ namespace sg {
         buildGammaCoefficientsLogTransform();
 
         // operations on boundary grid
-        this->OpDeltaBound = sg::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
-        this->OpGammaBound = sg::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
+        this->OpDeltaBound = SGPP::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+        this->OpGammaBound = SGPP::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
         //operations on inner grid
-        this->OpDeltaInner = sg::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
-        this->OpGammaInner = sg::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
+        this->OpDeltaInner = SGPP::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef);
+        this->OpGammaInner = SGPP::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef);
       }
 
       // Create operations, independent bLogTransform
-      this->OpLTwoInner = sg::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
-      this->OpLTwoBound = sg::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
+      this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+      this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
       // right hand side if System
       this->rhs = NULL;
@@ -142,8 +145,8 @@ namespace sg {
       this->b_log_transform = bLogTransform;
 
 #ifdef HEDGE
-      sg::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
-      sg::base::DimensionBoundary* myBoundaries = new sg::base::DimensionBoundary[grid_bb->getDimensions()];
+      SGPP::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
+      SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[grid_bb->getDimensions()];
 
       for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
         if (bLogTransform == true) {
@@ -161,9 +164,9 @@ namespace sg {
         myBoundaries[d].bDirichletRight = true;
       }
 
-      sg::base::BoundingBox* myHedgeBB = new sg::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
+      SGPP::base::BoundingBox* myHedgeBB = new SGPP::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
       // hedging
-      myHedge = new sg::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
+      myHedge = new SGPP::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
 
       delete myHedgeBB;
       delete[] myBoundaries;
@@ -202,8 +205,8 @@ namespace sg {
 #endif
     }
 
-    void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp(alpha.getSize());
+    void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector temp(alpha.getSize());
 
       result.setAll(0.0);
 
@@ -222,8 +225,8 @@ namespace sg {
       result.sub(temp);
     }
 
-    void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp(alpha.getSize());
+    void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector temp(alpha.getSize());
 
       result.setAll(0.0);
 
@@ -242,8 +245,8 @@ namespace sg {
       result.sub(temp);
     }
 
-    void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp(alpha.getSize());
+    void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector temp(alpha.getSize());
 
       result.setAll(0.0);
 
@@ -253,8 +256,8 @@ namespace sg {
       result.add(temp);
     }
 
-    void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataVector temp(alpha.getSize());
+    void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataVector temp(alpha.getSize());
 
       result.setAll(0.0);
 
@@ -283,10 +286,10 @@ namespace sg {
 
       // check if we are doing an American put -> handle early exercise
       if (this->option_type == "std_amer_put") {
-        sg::base::OperationHierarchisation* myHierarchisation = sg::op_factory::createOperationHierarchisation(*this->BoundGrid);
+        SGPP::base::OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
         myHierarchisation->doDehierarchisation(*this->alpha_complete);
         size_t dim = this->BoundGrid->getStorage()->dim();
-        sg::base::BoundingBox* myBB = new sg::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
+        SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
 
         double* dblFuncValues = new double[dim];
 
@@ -340,14 +343,14 @@ namespace sg {
         size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
         // Coarsen the grid
-        sg::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+        SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
         //std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
         //std::cout << "Grid Size: " << originalGridSize << std::endl;
 
         if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
           size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-          sg::base::SurplusRefinementFunctor* myRefineFunc = new sg::base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
+          SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(this->alpha_complete, numRefines, this->refineThreshold);
 
           if (this->refineMode == "maxLevel") {
             myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
@@ -364,7 +367,7 @@ namespace sg {
 
         if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
           size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-          sg::base::SurplusCoarseningFunctor* myCoarsenFunctor = new sg::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
+          SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor = new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen, this->coarsenThreshold);
           myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
           delete myCoarsenFunctor;
         }

@@ -7,16 +7,19 @@
 
 #include <sgpp/pde/basis/linear/boundary/algorithm_sweep/PhiPhiUpBBLinearBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(sg::base::GridStorage* storage) : PhiPhiUpBBLinear(storage) {
+    PhiPhiUpBBLinearBoundary::PhiPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage) : PhiPhiUpBBLinear(storage) {
     }
 
     PhiPhiUpBBLinearBoundary::~PhiPhiUpBBLinearBoundary() {
     }
 
-    void PhiPhiUpBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void PhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       double q = this->boundingBox->getIntervalWidth(dim);
       double t = this->boundingBox->getIntervalOffset(dim);
 
@@ -113,5 +116,5 @@ namespace sg {
 
     // namespace detail
   }
-  // namespace sg
+  // namespace SGPP
 }

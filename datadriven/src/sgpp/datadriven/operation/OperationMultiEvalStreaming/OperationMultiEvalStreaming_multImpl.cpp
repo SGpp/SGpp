@@ -7,13 +7,16 @@
 
 #include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace datadriven {
 
-void OperationMultiEvalStreaming::multImpl(sg::base::DataMatrix* level,
-        sg::base::DataMatrix* index,
-        sg::base::DataMatrix* dataset, sg::base::DataVector& alpha,
-        sg::base::DataVector& result, const size_t start_index_grid,
+void OperationMultiEvalStreaming::multImpl(SGPP::base::DataMatrix* level,
+        SGPP::base::DataMatrix* index,
+        SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+        SGPP::base::DataVector& result, const size_t start_index_grid,
         const size_t end_index_grid, const size_t start_index_data,
         const size_t end_index_data) {
 

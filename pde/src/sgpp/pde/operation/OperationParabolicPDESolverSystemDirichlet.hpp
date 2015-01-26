@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/DirichletGridConverter.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -37,45 +40,45 @@ namespace sg {
     class OperationParabolicPDESolverSystemDirichlet : public OperationParabolicPDESolverSystem {
       protected:
         /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
-        sg::base::DataVector* alpha_inner;
+        SGPP::base::DataVector* alpha_inner;
         /// Routine to modify the boundaries/inner points of the grid
-        sg::base::DirichletUpdateVector* BoundaryUpdate;
+        SGPP::base::DirichletUpdateVector* BoundaryUpdate;
         /// Class that allows a simple conversion between a grid with and a without boundary points
-        sg::base::DirichletGridConverter* GridConverter;
+        SGPP::base::DirichletGridConverter* GridConverter;
         /// Pointer to the inner grid object
-        sg::base::Grid* InnerGrid;
+        SGPP::base::Grid* InnerGrid;
 
         /**
          * applies the PDE's mass matrix, on complete grid - with boundaries
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyMassMatrixComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * applies the PDE's system matrix, on complete grid - with boundaries
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyLOperatorComplete(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * applies the PDE's mass matrix, on inner grid only
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyMassMatrixInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
         /**
          * applies the PDE's system matrix, on inner grid only
          *
          * @param alpha the coefficients of the sparse grid's ansatzfunctions
-         * @param result reference to the sg::base::DataVector into which the result is written
+         * @param result reference to the SGPP::base::DataVector into which the result is written
          */
-        virtual void applyLOperatorInner(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
+        virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
       public:
         /**
@@ -91,19 +94,19 @@ namespace sg {
         /**
          * Multiplicates a vector with the matrix
          *
-         * @param alpha sg::base::DataVector that contains the ansatzfunctions' coefficients
-         * @param result sg::base::DataVector into which the result of the space discretization operation is stored
+         * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
+         * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
          */
-        virtual void mult(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
         /**
          * generates the right hand side of the system
          *
          * @return returns the rhs
          */
-        virtual sg::base::DataVector* generateRHS();
+        virtual SGPP::base::DataVector* generateRHS();
 
-        virtual sg::base::DataVector* getGridCoefficientsForCG();
+        virtual SGPP::base::DataVector* getGridCoefficientsForCG();
     };
 
   }

@@ -1,6 +1,9 @@
 #include "OCLLTwoDotLaplaceInner.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 
@@ -207,8 +210,8 @@ namespace sg {
     }
 
     using namespace oclpdekernels;
-    void OCLPDEKernels::RunOCLKernelLTwoDotLaplaceInner(sg::base::DataVector& alpha,
-        sg::base::DataVector& result,
+    void OCLPDEKernels::RunOCLKernelLTwoDotLaplaceInner(SGPP::base::DataVector& alpha,
+        SGPP::base::DataVector& result,
         REAL* lcl_q,
         REAL* lcl_q_inv,
         REAL* ptrLevel,
@@ -217,7 +220,7 @@ namespace sg {
         REAL* ptrLambda,
         size_t argStorageSize,
         size_t argStorageDim,
-        sg::base::GridStorage* storage,
+        SGPP::base::GridStorage* storage,
         REAL tsCoeff) {
 
       TimestepCoeff = tsCoeff;

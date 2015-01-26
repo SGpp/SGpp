@@ -14,7 +14,7 @@ namespace combigrid {
   /**
    * Explicit representation of the matrix \f$(\Phi_i,\Phi_j)_{LTwo}\f$ for a full grid
    */
-  class OperationMatrixLTwoExplicitFullGrid: public sg::base::OperationMatrix {
+  class OperationMatrixLTwoExplicitFullGrid: public SGPP::base::OperationMatrix {
     public:
 
       /**
@@ -24,7 +24,7 @@ namespace combigrid {
        * @param m pointer to datamatrix of size (number of grid point) x (number of grid points)
        * @param grid the full grid
        */
-      OperationMatrixLTwoExplicitFullGrid(sg::base::DataMatrix* m,
+      OperationMatrixLTwoExplicitFullGrid(SGPP::base::DataMatrix* m,
                                           combigrid::FullGrid<double>* grid);
 
       /**
@@ -46,8 +46,8 @@ namespace combigrid {
        * @param alpha DataVector that is multiplied to the matrix
        * @param result DataVector into which the result of multiplication is stored
        */
-      virtual void mult(sg::base::DataVector& alpha,
-                        sg::base::DataVector& result);
+      virtual void mult(SGPP::base::DataVector& alpha,
+                        SGPP::base::DataVector& result);
 
     private:
       /**
@@ -55,7 +55,7 @@ namespace combigrid {
        */
       void buildMatrix(combigrid::FullGrid<double>* grid);
 
-      sg::base::DataMatrix* m_;
+      SGPP::base::DataMatrix* m_;
       bool ownsMatrix_;
   };
 

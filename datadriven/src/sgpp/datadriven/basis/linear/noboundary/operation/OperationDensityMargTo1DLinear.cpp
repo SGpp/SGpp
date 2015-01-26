@@ -10,7 +10,10 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace datadriven {
     void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid*& grid_x, base::DataVector*& alpha_x, size_t dim_x) {
 

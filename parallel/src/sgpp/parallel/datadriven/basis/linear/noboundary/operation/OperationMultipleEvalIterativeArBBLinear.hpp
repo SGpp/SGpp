@@ -17,11 +17,14 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
-     * This class implements sg::base::OperationMultipleEval for a grids with linear basis ansatzfunctions without boundaries
+     * This class implements SGPP::base::OperationMultipleEval for a grids with linear basis ansatzfunctions without boundaries
      *
      * However in this case high efficient vector code (Intel Array Building Blocks) is generated
      * to implement a iterative OperationB version. In addition cache blocking is used
@@ -32,12 +35,12 @@ namespace sg {
      * @li data MUST a have even number of points AND it must be transposed
      * @li result MUST have the same size as data points that should be evaluated
      */
-    class OperationMultipleEvalIterativeArBBLinear : public sg::parallel::OperationMultipleEvalVectorized {
+    class OperationMultipleEvalIterativeArBBLinear : public SGPP::parallel::OperationMultipleEvalVectorized {
       public:
         /**
-         * Construtor of sg::base::OperationMultipleEvalLinear
+         * Construtor of SGPP::base::OperationMultipleEvalLinear
          *
-         * Within the construct sg::base::DataMatrix Level and sg::base::DataMatrix Index are set up.
+         * Within the construct SGPP::base::DataMatrix Level and SGPP::base::DataMatrix Index are set up.
          * If the grid changes during your calculations and you don't want to create
          * a new instance of this class, you have to call rebuildLevelAndIndex before
          * doing any further mult or multTranspose calls.
@@ -45,24 +48,24 @@ namespace sg {
          * @param storage Pointer to the grid's gridstorage obejct
          * @param dataset dataset that should be evaluated on the grid
          */
-        OperationMultipleEvalIterativeArBBLinear(sg::base::GridStorage* storage, sg::base::DataMatrix* dataset);
+        OperationMultipleEvalIterativeArBBLinear(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix* dataset);
 
         /**
          * Destructor
          */
         virtual ~OperationMultipleEvalIterativeArBBLinear();
 
-        virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result);
+        virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result);
+        virtual double multTransposeVectorized(SGPP::base::DataVector& source, SGPP::base::DataVector& result);
 
         virtual void rebuildLevelAndIndex();
 
       protected:
         /// Pointer to the grid's gridstorage object
-        sg::base::GridStorage* storage;
+        SGPP::base::GridStorage* storage;
         /// Timer object to handle time measurements
-        sg::base::SGppStopwatch* myTimer;
+        SGPP::base::SGppStopwatch* myTimer;
         /// Object to access the OCL Kernel
         ArBBKernels* myArBBKernels;
         /// Object to access the ArBB 2D Kernel

@@ -14,7 +14,10 @@
 #include <sgpp/base/datatypes/DataMatrixSP.hpp>
 
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**
@@ -31,7 +34,7 @@ namespace sg {
          * @param src source DataVector, double precision
          * @param dest destination DataVectorSP, single precision
          */
-        static void convertDataVectorToDataVectorSP(const sg::base::DataVector& src, sg::base::DataVectorSP& dest);
+        static void convertDataVectorToDataVectorSP(const SGPP::base::DataVector& src, SGPP::base::DataVectorSP& dest);
 
         /**
          * Copies data from DataVectorSP object into DataVector object
@@ -39,7 +42,7 @@ namespace sg {
          * @param src source DataVectorSP, single precision
          * @param dest destination DataVector, double precision
          */
-        static void convertDataVectorSPToDataVector(const sg::base::DataVectorSP& src, sg::base::DataVector& dest);
+        static void convertDataVectorSPToDataVector(const SGPP::base::DataVectorSP& src, SGPP::base::DataVector& dest);
 
         /**
          * Copies data from DataMatrix object into DataMatrixSP object
@@ -47,7 +50,7 @@ namespace sg {
          * @param src source DataMatrix, double precision
          * @param dest destination DataMatrixSP, single precision
          */
-        static void convertDataMatrixToDataMatrixSP(const sg::base::DataMatrix& src, sg::base::DataMatrixSP& dest);
+        static void convertDataMatrixToDataMatrixSP(const SGPP::base::DataMatrix& src, SGPP::base::DataMatrixSP& dest);
 
         /**
          * Copies data from DataMatrixSP object into DataMatrix object
@@ -55,7 +58,7 @@ namespace sg {
          * @param src source DataMatrixSP, single precision
          * @param dest destination DataMatrix, double precision
          */
-        static void convertDataMatrixSPToDataMatrix(const sg::base::DataMatrixSP& src, sg::base::DataMatrix& dest);
+        static void convertDataMatrixSPToDataMatrix(const SGPP::base::DataMatrixSP& src, SGPP::base::DataMatrix& dest);
     };
 
   }

@@ -10,12 +10,15 @@
 
 #include <sstream>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(sg::base::Grid& SparseGrid, sg::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
-      this->BoundaryUpdate = new sg::base::DirichletUpdateVector(SparseGrid.getStorage());
-      this->GridConverter = new sg::base::DirichletGridConverter();
+    OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
+      this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
+      this->GridConverter = new SGPP::base::DirichletGridConverter();
 
       this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->rhs, &(this->InnerGrid), &(this->rhs_inner));
 
@@ -32,14 +35,14 @@ namespace sg {
       delete this->GridConverter;
     }
 
-    void OperationEllipticPDESolverSystemDirichlet::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
+    void OperationEllipticPDESolverSystemDirichlet::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
       applyLOperatorInner(alpha, result);
     }
 
-    sg::base::DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS() {
+    SGPP::base::DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS() {
       if (this->InnerGrid != NULL) {
-        sg::base::DataVector alpha_tmp_complete(*(this->rhs));
-        sg::base::DataVector rhs_tmp_complete(*(this->rhs));
+        SGPP::base::DataVector alpha_tmp_complete(*(this->rhs));
+        SGPP::base::DataVector rhs_tmp_complete(*(this->rhs));
 
         this->BoundaryUpdate->setInnerPointsToZero(alpha_tmp_complete);
         applyLOperatorComplete(alpha_tmp_complete, rhs_tmp_complete);
@@ -47,28 +50,28 @@ namespace sg {
         this->GridConverter->calcInnerCoefs(rhs_tmp_complete, *(this->rhs_inner));
         this->rhs_inner->mult(-1.0);
       } else {
-        throw new sg::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
+        throw new SGPP::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
       }
 
       return this->rhs_inner;
     }
 
-    sg::base::DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG() {
+    SGPP::base::DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG() {
       if (this->InnerGrid != NULL) {
         if (this->alpha_inner != NULL) {
           delete this->alpha_inner;
         }
 
-        this->alpha_inner = new sg::base::DataVector(this->InnerGrid->getSize());
+        this->alpha_inner = new SGPP::base::DataVector(this->InnerGrid->getSize());
         this->alpha_inner->setAll(0.0);
       } else {
-        throw new sg::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG : No inner grid exists!");
+        throw new SGPP::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG : No inner grid exists!");
       }
 
       return this->alpha_inner;
     }
 
-    void OperationEllipticPDESolverSystemDirichlet::getSolutionBoundGrid(sg::base::DataVector& Solution, sg::base::DataVector& SolutionInner) {
+    void OperationEllipticPDESolverSystemDirichlet::getSolutionBoundGrid(SGPP::base::DataVector& Solution, SGPP::base::DataVector& SolutionInner) {
       Solution = *(this->rhs);
       this->GridConverter->updateBoundaryCoefs(Solution, SolutionInner);
     }

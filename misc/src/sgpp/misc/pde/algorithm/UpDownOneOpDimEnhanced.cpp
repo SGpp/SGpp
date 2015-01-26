@@ -7,21 +7,24 @@
 
 #include <sgpp/misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(sg::base::GridStorage* storage, sg::base::DataVector& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
+    UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef) : storage(storage), coefs(&coef), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
     }
 
-    UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(sg::base::GridStorage* storage) : storage(storage), coefs(NULL), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
+    UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage) : storage(storage), coefs(NULL), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
     }
 
     UpDownOneOpDimEnhanced::~UpDownOneOpDimEnhanced() {
     }
 
-    void UpDownOneOpDimEnhanced::mult(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
-      sg::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
+    void UpDownOneOpDimEnhanced::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
+      SGPP::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
 
       result.setAll(0.0);
       maAlpha.expand(alpha);
@@ -41,9 +44,9 @@ namespace sg {
       }
     }
 
-    void UpDownOneOpDimEnhanced::multParallelBuildingBlock(sg::base::DataVector& alpha, sg::base::DataVector& result) {
-      sg::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
-      sg::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
+    void UpDownOneOpDimEnhanced::multParallelBuildingBlock(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      SGPP::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
+      SGPP::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
 
       result.setAll(0.0);
       maAlpha.expand(alpha);
@@ -57,16 +60,16 @@ namespace sg {
       }
     }
 
-    void UpDownOneOpDimEnhanced::updown(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim) {
+    void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim) {
       size_t curNumAlgoDims = this->numAlgoDims_;
       size_t curMaxParallelDims = this->maxParallelDims_;
 
       //Unidirectional scheme
       if (dim > 0) {
         // Reordering ups and downs
-        sg::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
-        sg::base::DataMatrix result_temp(alpha.getNrows(), this->numAlgoDims_);
-        sg::base::DataMatrix temp_two(alpha.getNrows(), this->numAlgoDims_);
+        SGPP::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
+        SGPP::base::DataMatrix result_temp(alpha.getNrows(), this->numAlgoDims_);
+        SGPP::base::DataMatrix temp_two(alpha.getNrows(), this->numAlgoDims_);
 
         #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp, result)
         {
@@ -85,7 +88,7 @@ namespace sg {
         result.add(result_temp);
       } else {
         // Terminates dimension recursion
-        sg::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
+        SGPP::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
 
         #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, result)
         up(alpha, result, dim);

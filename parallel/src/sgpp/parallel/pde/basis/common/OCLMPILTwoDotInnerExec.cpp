@@ -1,6 +1,9 @@
 #include "OCLLTwoDotInner.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     namespace oclpdekernels {
 
@@ -199,15 +202,15 @@ namespace sg {
 
     } // namespace parallel
     using namespace oclpdekernels;
-    void OCLPDEKernels::RunOCLKernelLTwoDotInner(sg::base::DataVector& alpha,
-        sg::base::DataVector& result,
+    void OCLPDEKernels::RunOCLKernelLTwoDotInner(SGPP::base::DataVector& alpha,
+        SGPP::base::DataVector& result,
         REAL* lcl_q,
         REAL* ptrLevel,
         REAL* ptrIndex,
         REAL* ptrLevel_int,
         size_t argStorageSize,
         size_t argStorageDim,
-        sg::base::GridStorage* storage) {
+        SGPP::base::GridStorage* storage) {
 
       myStopwatch->start();
 

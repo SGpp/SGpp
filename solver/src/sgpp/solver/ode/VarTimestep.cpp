@@ -17,10 +17,13 @@
 #include <fstream>
 #include <algorithm>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, sg::base::ScreenOutput* screen, double gamma)
+    VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen, double gamma)
       : StepsizeControl(imax, timestepSize, eps, 1.0, screen, gamma), _predictor(pred), _corrector(corr) {
 
       std::stringstream fnsstream;
@@ -34,8 +37,8 @@ namespace sg {
     VarTimestep::~VarTimestep() {
     }
 
-    void VarTimestep::predictor(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System,
-                                double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector& corr, sg::base::DataVector* rhs) {
+    void VarTimestep::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+                                double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       System.setTimestepSize(tmp_timestepsize);
 
       System.setODESolver("AdBas");
@@ -55,7 +58,7 @@ namespace sg {
       System.abortTimestep();
     }
 
-    void VarTimestep::corrector(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, sg::base::DataVector& dv, sg::base::DataVector* rhs) {
+    void VarTimestep::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       System.setODESolver("CrNic");
 
       // generate right hand side

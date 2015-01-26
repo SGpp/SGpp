@@ -10,7 +10,10 @@
 
 #include <sgpp/misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
     /**
@@ -24,17 +27,17 @@ namespace sg {
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        OperationLaplaceEnhancedLinearBoundary(sg::base::GridStorage* storage);
+        OperationLaplaceEnhancedLinearBoundary(SGPP::base::GridStorage* storage);
 
         /**
          * Constructor of OperationLaplaceLinear
          *
          * @param storage Pointer to the grid's gridstorage obejct
-         * @param coef reference to a sg::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
+         * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
          */
-        OperationLaplaceEnhancedLinearBoundary(sg::base::GridStorage* storage, sg::base::DataVector& coef);
+        OperationLaplaceEnhancedLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef);
 
         /**
          * Destructor
@@ -49,7 +52,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void up(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim);
+        virtual void up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim);
 
         /**
          * Down-step
@@ -58,7 +61,7 @@ namespace sg {
          * @param alpha vector of coefficients
          * @param result vector to store the results in
          */
-        virtual void down(sg::base::DataMatrix& alpha, sg::base::DataMatrix& result, size_t dim);
+        virtual void down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim);
     };
 
   }

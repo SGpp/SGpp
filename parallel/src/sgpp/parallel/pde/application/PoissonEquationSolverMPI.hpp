@@ -25,7 +25,10 @@
 #include <fstream>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
 
     /**
@@ -39,10 +42,10 @@ namespace sg {
      *
      * @version $HEAD$
      */
-    class PoissonEquationSolverMPI : public sg::pde::EllipticPDESolver {
+    class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
       private:
         /// screen object used in this solver
-        sg::base::ScreenOutput* myScreen;
+        SGPP::base::ScreenOutput* myScreen;
 
       public:
         /**
@@ -55,9 +58,9 @@ namespace sg {
          */
         virtual ~PoissonEquationSolverMPI();
 
-        void constructGrid(sg::base::BoundingBox& myBoundingBox, int level);
+        void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
-        void solvePDE(sg::base::DataVector& alpha, sg::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false);
+        void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false);
 
         /**
          * Inits the grid with a smooth heat distribution (based on
@@ -71,7 +74,7 @@ namespace sg {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeat(sg::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
 
         /**
          * Inits the grid with a smooth heat distribution (based on
@@ -86,7 +89,7 @@ namespace sg {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeatFullDomain(sg::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
 
         /**
          * Inits the grid with a heat distribution based on
@@ -98,7 +101,7 @@ namespace sg {
          * @param alpha reference to the coefficient's vector
          * @param factor a constant factor used to enlarge the exp-functions input parameter
          */
-        void initGridWithExpHeat(sg::base::DataVector& alpha, double factor = 1.0);
+        void initGridWithExpHeat(SGPP::base::DataVector& alpha, double factor = 1.0);
 
         /**
          * Inits the grid with a heat distribution based on
@@ -110,7 +113,7 @@ namespace sg {
          * @param alpha reference to the coefficient's vector
          * @param factor a constant factor used to enlarge the exp-functions input parameter
          */
-        void initGridWithExpHeatFullDomain(sg::base::DataVector& alpha, double factor = 1.0);
+        void initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha, double factor = 1.0);
 
         /**
          * Inits the screen object

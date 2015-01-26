@@ -7,18 +7,21 @@
 
 #include <sgpp/finance/basis/linear/boundary/algorithm_sweep/PhidPhiDownBBLinearBoundary.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    PhidPhiDownBBLinearBoundary::PhidPhiDownBBLinearBoundary(sg::base::GridStorage* storage) : PhidPhiDownBBLinear(storage) {
+    PhidPhiDownBBLinearBoundary::PhidPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage) : PhidPhiDownBBLinear(storage) {
     }
 
     PhidPhiDownBBLinearBoundary::~PhidPhiDownBBLinearBoundary() {
     }
 
-    void PhidPhiDownBBLinearBoundary::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void PhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       // get boundary values
       double left_boundary;
       double right_boundary;
@@ -73,5 +76,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

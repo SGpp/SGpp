@@ -8,18 +8,21 @@
 #include <sgpp/pde/basis/linear/boundary/operation/UpdPhidPhiBBIterativeLinearBoundary.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace pde {
 
-    UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(sg::base::GridStorage* storage) : storage(storage) {
+    UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(SGPP::base::GridStorage* storage) : storage(storage) {
     }
 
     UpdPhidPhiBBIterativeLinearBoundary::~UpdPhidPhiBBIterativeLinearBoundary() {
     }
 
-    void UpdPhidPhiBBIterativeLinearBoundary::operator()(sg::base::DataVector& alpha, sg::base::DataVector& result, size_t dim) {
+    void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // Bounding Box handling
-      sg::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+      SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
       double q = boundingBox->getIntervalWidth(dim);
       double Qqout = 1.0 / q;
 
@@ -29,14 +32,14 @@ namespace sg {
       if (q != 1.0) {
         // traverse all basis function by sequence number
         for (size_t i = 0; i < storage->size(); i++) {
-          sg::base::GridStorage::index_type::level_type level;
-          sg::base::GridStorage::index_type::index_type index;
+          SGPP::base::GridStorage::index_type::level_type level;
+          SGPP::base::GridStorage::index_type::index_type index;
           (*storage)[i]->get(dim, level, index);
 
           if (level == 0) {
             // up
             if (index == 1) {
-              sg::base::GridIndex index_zero = (*storage)[i];
+              SGPP::base::GridIndex index_zero = (*storage)[i];
               index_zero.set(dim, 0, 0);
 
               if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
@@ -48,14 +51,14 @@ namespace sg {
       } else {
         // traverse all basis function by sequence number
         for (size_t i = 0; i < storage->size(); i++) {
-          sg::base::GridStorage::index_type::level_type level;
-          sg::base::GridStorage::index_type::index_type index;
+          SGPP::base::GridStorage::index_type::level_type level;
+          SGPP::base::GridStorage::index_type::index_type index;
           (*storage)[i]->get(dim, level, index);
 
           if (level == 0) {
             // up
             if (index == 1) {
-              sg::base::GridIndex index_zero = (*storage)[i];
+              SGPP::base::GridIndex index_zero = (*storage)[i];
               index_zero.set(dim, 0, 0);
 
               if (!boundingBox->hasDirichletBoundaryLeft(dim)) {

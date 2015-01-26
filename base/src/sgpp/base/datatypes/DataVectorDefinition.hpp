@@ -8,7 +8,10 @@
 #ifndef DATAVECTORDEFINITION_HPP
 #define DATAVECTORDEFINITION_HPP
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
     /**
      * This struct is needed for exporting a DataVector

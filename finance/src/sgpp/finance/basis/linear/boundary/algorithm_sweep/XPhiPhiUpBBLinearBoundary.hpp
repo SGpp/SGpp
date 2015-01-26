@@ -13,7 +13,10 @@
 
 #include <sgpp/finance/basis/linear/noboundary/algorithm_sweep/XPhiPhiUpBBLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
@@ -28,9 +31,9 @@ namespace sg {
         /**
          * Constructor
          *
-         * @param storage the grid's sg::base::GridStorage object
+         * @param storage the grid's SGPP::base::GridStorage object
          */
-        XPhiPhiUpBBLinearBoundary(sg::base::GridStorage* storage);
+        XPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage);
 
         /**
          * Destructor
@@ -45,17 +48,17 @@ namespace sg {
          * result)
          * So please assure that both functions do exist!
          *
-         * @param source sg::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-         * @param result sg::base::DataVector that contains the result of the up operation
+         * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+         * @param result SGPP::base::DataVector that contains the result of the up operation
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        virtual void operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim);
+        virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
     };
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 
 #endif /* XPHIPHIUPBBLINEARBOUNDARY_HPP */

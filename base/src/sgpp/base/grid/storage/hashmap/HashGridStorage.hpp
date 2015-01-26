@@ -37,7 +37,10 @@
 #include <typeinfo>
 #include <stdint.h>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 /**
@@ -49,12 +52,12 @@ public:
 	typedef GIT index_type;
 	typedef GIT* index_pointer;
 //#ifndef USETRONE
-//        typedef std::hash_map<index_pointer, size_t, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
+//        typedef std::hash_map<index_pointer, size_t, SGPP::base::hash<index_pointer>, SGPP::base::eqIndex<index_pointer> > grid_map;
 //#else
 	//typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 //#endif
 	typedef std::unordered_map<index_pointer, size_t,
-			sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
+			SGPP::base::hash<index_pointer>, SGPP::base::eqIndex<index_pointer> > grid_map;
 
 	typedef typename grid_map::iterator grid_map_iterator;
 	typedef typename grid_map::const_iterator grid_map_const_iterator;
@@ -878,13 +881,13 @@ public:
 //         * @param vectorizationType Vectorization type
 //         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
 //         */
-//        void getLevelIndexArraysForEvalTLBOptimized(DataMatrix& level, DataMatrix& index, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
+//        void getLevelIndexArraysForEvalTLBOptimized(DataMatrix& level, DataMatrix& index, SGPP::parallel::VectorizationType vectorizationType, size_t blocking_length) {
 //          typename index_type::level_type curLevel;
 //          typename index_type::level_type curIndex;
 //
 //          //pad datasets
-//          sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
-//          sg::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
+//          SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+//          SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
 //
 //          level.setAll(0.0);
 //          index.setAll(0.0);
@@ -977,12 +980,12 @@ public:
 //         * @param vectorizationType Vectorization type
 //         * @param blocking_length parameter for an additional blocking length to avoid TLB misses
 //         */
-//        void getLevelForIntegralTLBOptimized(DataMatrix& level, sg::parallel::VectorizationType vectorizationType, size_t blocking_length) {
+//        void getLevelForIntegralTLBOptimized(DataMatrix& level, SGPP::parallel::VectorizationType vectorizationType, size_t blocking_length) {
 //          typename index_type::level_type curLevel;
 //          typename index_type::level_type curIndex;
 //
 //          //pad datasets
-//          sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+//          SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
 //
 //          level.setAll(0.0);
 //

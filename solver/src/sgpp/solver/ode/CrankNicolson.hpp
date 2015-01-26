@@ -11,7 +11,10 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     /**
@@ -25,8 +28,8 @@ namespace sg {
      */
     class CrankNicolson : public ODESolver {
       private:
-        /// Pointer to sg::base::ScreenOutput object
-        sg::base::ScreenOutput* myScreen;
+        /// Pointer to SGPP::base::ScreenOutput object
+        SGPP::base::ScreenOutput* myScreen;
 
       public:
         /**
@@ -34,16 +37,16 @@ namespace sg {
          *
          * @param nTimesteps number of maximum executed iterations
          * @param timestepSize the size of one timestep
-         * @param screen possible pointer to a sg::base::ScreenOutput object
+         * @param screen possible pointer to a SGPP::base::ScreenOutput object
          */
-        CrankNicolson(size_t nTimesteps, double timestepSize, sg::base::ScreenOutput* screen = NULL);
+        CrankNicolson(size_t nTimesteps, double timestepSize, SGPP::base::ScreenOutput* screen = NULL);
 
         /**
          * Std-Destructor
          */
         virtual ~CrankNicolson();
 
-        virtual void solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+        virtual void solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
     };
 
   }

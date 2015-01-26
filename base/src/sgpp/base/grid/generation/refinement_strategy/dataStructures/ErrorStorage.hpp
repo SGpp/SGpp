@@ -15,7 +15,10 @@
 #include <map>
 #include <vector>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 typedef ErrorContainer<AbstractRefinement::level_t,AbstractRefinement::index_t> ErrorType;
@@ -179,6 +182,6 @@ private:
 };
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 
 #endif /* ERRORSTORAGE_HPP_ */

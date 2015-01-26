@@ -12,7 +12,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/basis/poly/PolyBasis.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
     /**

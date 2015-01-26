@@ -7,7 +7,10 @@
 
 #include <sgpp/parallel/tools/MPI/MPICommunicator.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace parallel {
     // @todo MPI (heinecke) Hack, remove if possible
     MPICommunicator* myGlobalMPIComm;

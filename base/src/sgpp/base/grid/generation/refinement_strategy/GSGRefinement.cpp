@@ -7,7 +7,10 @@
 #include "GSGRefinement.hpp"
 #include "dataStructures/ErrorStorage.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
  void GSGRefinement::collectRefinablePoints(
@@ -87,4 +90,4 @@ namespace base {
 }
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */

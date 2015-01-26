@@ -6,7 +6,10 @@
 //@author Michael Lettrich (m.lettrich@mytum.de)
 #include "PredictiveStackANOVARefinement.hpp"
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 void PredictiveStackANOVARefinement::free_refine(GridStorage* storage,RefinementFunctor* functor)
@@ -277,5 +280,5 @@ void PredictiveStackANOVARefinement::resetParentLeafs(
 }
 
 } /* namespace base */
-} /* namespace sg */
+} /* namespace SGPP */
 

@@ -8,18 +8,21 @@
 
 #include <sgpp/finance/basis/linearstretched/noboundary/algorithm_sweep/XdPhiPhiUpBBLinearStretched.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace finance {
 
 
 
-    XdPhiPhiUpBBLinearStretched::XdPhiPhiUpBBLinearStretched(sg::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching()) {
+    XdPhiPhiUpBBLinearStretched::XdPhiPhiUpBBLinearStretched(SGPP::base::GridStorage* storage) : storage(storage), stretching(storage->getStretching()) {
     }
 
     XdPhiPhiUpBBLinearStretched::~XdPhiPhiUpBBLinearStretched() {
     }
 
-    void XdPhiPhiUpBBLinearStretched::operator()(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim) {
+    void XdPhiPhiUpBBLinearStretched::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       // get boundary values
       double fl = 0.0;
       double fr = 0.0;
@@ -28,15 +31,15 @@ namespace sg {
 
     }
 
-    void XdPhiPhiUpBBLinearStretched::rec(sg::base::DataVector& source, sg::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+    void XdPhiPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
       double fml = 0.0;
       double fmr = 0.0;
 
-      sg::base::GridStorage::index_type::level_type current_level;
-      sg::base::GridStorage::index_type::index_type current_index;
+      SGPP::base::GridStorage::index_type::level_type current_level;
+      SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -77,6 +80,6 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }
 

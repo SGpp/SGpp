@@ -8,7 +8,10 @@
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
     BiCGStab::BiCGStab(size_t imax, double epsilon) : SLESolver(imax, epsilon) {
@@ -17,7 +20,7 @@ namespace sg {
     BiCGStab::~BiCGStab() {
     }
 
-    void BiCGStab::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
+    void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
       this->nIterations = 1;
       double epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -27,7 +30,7 @@ namespace sg {
       }
 
       //Calculate r0
-      sg::base::DataVector r(alpha.getSize());
+      SGPP::base::DataVector r(alpha.getSize());
       SystemMatrix.mult(alpha, r);
       r.sub(b);
 
@@ -39,9 +42,9 @@ namespace sg {
       }
 
       //Choose r0 as r
-      sg::base::DataVector rZero(r);
+      SGPP::base::DataVector rZero(r);
       // Set p as r0
-      sg::base::DataVector p(rZero);
+      SGPP::base::DataVector p(rZero);
 
       double rho = rZero.dotProduct(r);
       double rho_new = 0.0;
@@ -50,9 +53,9 @@ namespace sg {
       double omega = 0.0;
       double beta = 0.0;
 
-      sg::base::DataVector s(alpha.getSize());
-      sg::base::DataVector v(alpha.getSize());
-      sg::base::DataVector w(alpha.getSize());
+      SGPP::base::DataVector s(alpha.getSize());
+      SGPP::base::DataVector v(alpha.getSize());
+      SGPP::base::DataVector w(alpha.getSize());
 
       s.setAll(0.0);
       v.setAll(0.0);

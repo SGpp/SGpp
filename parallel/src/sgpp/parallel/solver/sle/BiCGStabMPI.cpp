@@ -12,17 +12,20 @@
 #include <sgpp/parallel/solver/sle/BiCGStabMPI.hpp>
 #include <cmath>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace parallel {
 
-    BiCGStabMPI::BiCGStabMPI(size_t imax, double epsilon) : sg::solver::SLESolver(imax, epsilon) {
+    BiCGStabMPI::BiCGStabMPI(size_t imax, double epsilon) : SGPP::solver::SLESolver(imax, epsilon) {
     }
 
     BiCGStabMPI::~BiCGStabMPI() {
     }
 
-    void BiCGStabMPI::solve(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha, sg::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
+    void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
       if (myGlobalMPIComm->getMyRank() != 0) {
         this->waitForTask(SystemMatrix, alpha);
       } else {
@@ -36,7 +39,7 @@ namespace sg {
         }
 
         //Calculate r0
-        sg::base::DataVector r(alpha.getSize());
+        SGPP::base::DataVector r(alpha.getSize());
         ctrl = 'M';
         myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
         SystemMatrix.mult(alpha, r);
@@ -50,9 +53,9 @@ namespace sg {
         }
 
         //Choose r0 as r
-        sg::base::DataVector rZero(r);
+        SGPP::base::DataVector rZero(r);
         // Set p as r0
-        sg::base::DataVector p(rZero);
+        SGPP::base::DataVector p(rZero);
 
         double rho = rZero.dotProduct(r);
         double rho_new = 0.0;
@@ -61,9 +64,9 @@ namespace sg {
         double omega = 0.0;
         double beta = 0.0;
 
-        sg::base::DataVector s(alpha.getSize());
-        sg::base::DataVector v(alpha.getSize());
-        sg::base::DataVector w(alpha.getSize());
+        SGPP::base::DataVector s(alpha.getSize());
+        SGPP::base::DataVector v(alpha.getSize());
+        SGPP::base::DataVector w(alpha.getSize());
 
         s.setAll(0.0);
         v.setAll(0.0);
@@ -140,9 +143,9 @@ namespace sg {
       }
     }
 
-    void BiCGStabMPI::waitForTask(sg::base::OperationMatrix& SystemMatrix, sg::base::DataVector& alpha) {
+    void BiCGStabMPI::waitForTask(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha) {
       char ctrl;
-      sg::base::DataVector result(alpha.getSize());
+      SGPP::base::DataVector result(alpha.getSize());
 
       do {
         myGlobalMPIComm->broadcastControlFromRank0(&ctrl);

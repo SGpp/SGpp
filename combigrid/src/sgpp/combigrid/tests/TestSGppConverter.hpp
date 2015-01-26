@@ -50,8 +50,8 @@ namespace combigrid {
         std::vector<double> coords( 2 , 0.0);
         CombiSchemeBasis* combischeme = new TS_CT( 2 , 6 );
         AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
-        sg::base::GridStorage* gridstorageSGpp;
-        sg::base::DataVector* alphas , *minAlpha , *maxAlpha ;
+        SGPP::base::GridStorage* gridstorageSGpp;
+        SGPP::base::DataVector* alphas , *minAlpha , *maxAlpha ;
 
         // creates the full grids in the combination grid
         combigrid->createFullGrids();
@@ -74,9 +74,9 @@ namespace combigrid {
         gridstorageSGpp = combigrid->createSGppGridStorage();
 
         // create the coefficient vectors for the SGpp grid
-        alphas = new sg::base::DataVector(gridstorageSGpp->size());
-        minAlpha = new sg::base::DataVector(gridstorageSGpp->size());
-        maxAlpha = new sg::base::DataVector(gridstorageSGpp->size());
+        alphas = new SGPP::base::DataVector(gridstorageSGpp->size());
+        minAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
+        maxAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
 
         // recompose full grids -> SGpp
         combigrid->reCompose( gridstorageSGpp , alphas , minAlpha , maxAlpha );
@@ -157,8 +157,8 @@ namespace combigrid {
         std::vector<bool> makeCombi( 3 , true);
         CombiSchemeBasis* combischeme = new TS_CT( 3 , levels , makeCombi );
         AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
-        sg::base::GridStorage* gridstorageSGpp;
-        sg::base::DataVector* alphas , *minAlpha , *maxAlpha ;
+        SGPP::base::GridStorage* gridstorageSGpp;
+        SGPP::base::DataVector* alphas , *minAlpha , *maxAlpha ;
 
         // creates the full grids in the combination grid
         combigrid->createFullGrids();
@@ -180,9 +180,9 @@ namespace combigrid {
         gridstorageSGpp = combigrid->createSGppGridStorage();
 
         // create the coefficient vectors for the SGpp grid
-        alphas = new sg::base::DataVector(gridstorageSGpp->size());
-        minAlpha = new sg::base::DataVector(gridstorageSGpp->size());
-        maxAlpha = new sg::base::DataVector(gridstorageSGpp->size());
+        alphas = new SGPP::base::DataVector(gridstorageSGpp->size());
+        minAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
+        maxAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
 
         // recompose full grids -> SGpp
         combigrid->reCompose( gridstorageSGpp , alphas , minAlpha , maxAlpha );
@@ -277,8 +277,8 @@ namespace combigrid {
         levels_trunc[2] = 1;
         CombiSchemeBasis* combischeme = new S_CT( 3 , levels , levels_trunc );
         AbstractCombiGrid* combigrid = new SerialCombiGrid(combischeme);
-        sg::base::GridStorage* gridstorageSGpp;
-        sg::base::DataVector* alphas , *minAlpha , *maxAlpha ;
+        SGPP::base::GridStorage* gridstorageSGpp;
+        SGPP::base::DataVector* alphas , *minAlpha , *maxAlpha ;
 
         // creates the full grids in the combination grid
         combigrid->createFullGrids();
@@ -298,9 +298,9 @@ namespace combigrid {
         gridstorageSGpp = combigrid->createSGppGridStorage();
 
         // create the coefficient vectors for the SGpp grid
-        alphas = new sg::base::DataVector(gridstorageSGpp->size());
-        minAlpha = new sg::base::DataVector(gridstorageSGpp->size());
-        maxAlpha = new sg::base::DataVector(gridstorageSGpp->size());
+        alphas = new SGPP::base::DataVector(gridstorageSGpp->size());
+        minAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
+        maxAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
 
         // recompose full grids -> SGpp
         combigrid->reCompose( gridstorageSGpp , alphas , minAlpha , maxAlpha );
@@ -395,8 +395,8 @@ namespace combigrid {
         levels_trunc[2] = 3;
         CombiSchemeBasis* combischeme = new S_CT( 3 , levels , levels_trunc );
         AbstractCombiGrid* combigrid = new SerialCombiGrid( combischeme , false );
-        sg::base::GridStorage* gridstorageSGpp;
-        sg::base::DataVector* alphas , *minAlpha , *maxAlpha ;
+        SGPP::base::GridStorage* gridstorageSGpp;
+        SGPP::base::DataVector* alphas , *minAlpha , *maxAlpha ;
 
         // creates the full grids in the combination grid
         combigrid->createFullGrids();
@@ -416,9 +416,9 @@ namespace combigrid {
         gridstorageSGpp = combigrid->createSGppGridStorage();
 
         // create the coefficient vectors for the SGpp grid
-        alphas = new sg::base::DataVector(gridstorageSGpp->size());
-        minAlpha = new sg::base::DataVector(gridstorageSGpp->size());
-        maxAlpha = new sg::base::DataVector(gridstorageSGpp->size());
+        alphas = new SGPP::base::DataVector(gridstorageSGpp->size());
+        minAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
+        maxAlpha = new SGPP::base::DataVector(gridstorageSGpp->size());
 
         // recompose full grids -> SGpp
         combigrid->reCompose( gridstorageSGpp , alphas , minAlpha , maxAlpha );

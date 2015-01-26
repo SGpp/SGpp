@@ -7,7 +7,10 @@
 
 #include <sgpp/base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace base {
 
 
@@ -55,5 +58,5 @@ namespace sg {
 
     // namespace detail
 
-  } // namespace sg
+  } // namespace SGPP
 }

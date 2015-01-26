@@ -1,6 +1,9 @@
 #include <sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 ClassificationRefinementFunctor::ClassificationRefinementFunctor(
@@ -33,17 +36,17 @@ double ClassificationRefinementFunctor::operator()(GridStorage* storage,
 		trainDataset->getRow(i, row);
 
 		/* phi_{seq}(x_i) */
-		sg::base::DataVector singleAlpha(alpha->getSize());
+		SGPP::base::DataVector singleAlpha(alpha->getSize());
 		singleAlpha.setAll(0.0);
 		singleAlpha.set(seq, 1);
-		double phi = sg::op_factory::createOperationEval(*grid)->eval(
+		double phi = SGPP::op_factory::createOperationEval(*grid)->eval(
 				singleAlpha, row);
 
 		if (phi > 0) {
 			numSupport++;
 
 			/* evaluate grid at point x_i */
-			double val = sg::op_factory::createOperationEval(*grid)->eval(*alpha, row);
+			double val = SGPP::op_factory::createOperationEval(*grid)->eval(*alpha, row);
 			double y = classes->get(i);
 
 			if ( ! ((y > 0 && val > 0) || (y < 0 && val < 0)) ) {

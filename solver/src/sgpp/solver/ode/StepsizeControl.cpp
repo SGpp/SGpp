@@ -16,10 +16,13 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
   namespace solver {
 
-    StepsizeControl::StepsizeControl(size_t imax, double timestepSize, double eps, double sc, sg::base::ScreenOutput* screen, double gamma)
+    StepsizeControl::StepsizeControl(size_t imax, double timestepSize, double eps, double sc, SGPP::base::ScreenOutput* screen, double gamma)
       : ODESolver(imax, timestepSize), myScreen(screen), _gamma(gamma) {
       this->residuum = 0.0;
       this->myEps = eps;
@@ -31,17 +34,17 @@ namespace sg {
     StepsizeControl::~StepsizeControl() {
     }
 
-    double StepsizeControl::norm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& dv1, sg::base::DataVector& dv2) {
+    double StepsizeControl::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       return twoNorm(System, dv1, dv2);
     }
 
-    double StepsizeControl::twoNorm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& dv1, sg::base::DataVector& dv2) {
+    double StepsizeControl::twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       dv1.sub(dv2);
 
       return sqrt(dv1.dotProduct(dv1));
     }
 
-    double StepsizeControl::maxNorm(sg::pde::OperationParabolicPDESolverSystem& System, sg::base::DataVector& YkImEul, sg::base::DataVector& YkImEulOld) {
+    double StepsizeControl::maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& YkImEul, SGPP::base::DataVector& YkImEulOld) {
       double max = 0.0;
       double sc = this->mySC;
 
@@ -60,11 +63,11 @@ namespace sg {
       } else {
         //      std::cout << "YK" << YkImEul.getSize()<< " YKold" << YkImEulOld.getSize()  << std::endl;
 
-        sg::base::GridStorage* gs = System.getGridStorage();
-        sg::base::GridStorage* ogs = System.getOldGridStorage();
-        sg::base::GridStorage::grid_map_iterator q;
+        SGPP::base::GridStorage* gs = System.getGridStorage();
+        SGPP::base::GridStorage* ogs = System.getOldGridStorage();
+        SGPP::base::GridStorage::grid_map_iterator q;
 
-        for (sg::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
+        for (SGPP::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
           q = ogs->find(p->first);
 
           //   std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) << " " << (p->first)->toString() << " YKold" << ((q->first)->equals(*p->first)) << " "<< (q->first)->toString() << std::endl;
@@ -90,11 +93,11 @@ namespace sg {
       return max;
 
     }
-    void StepsizeControl::solve(SLESolver& LinearSystemSolver, sg::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
+    void StepsizeControl::solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
       size_t allIter = 0;
-      sg::base::DataVector* rhs;
-      sg::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
-      sg::base::DataVector YkImEul(System.getGridCoefficients()->getSize());
+      SGPP::base::DataVector* rhs;
+      SGPP::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
+      SGPP::base::DataVector YkImEul(System.getGridCoefficients()->getSize());
 
       double tmp_timestepsize = this->myEpsilon;
       double tmp_timestepsize_old = tmp_timestepsize;

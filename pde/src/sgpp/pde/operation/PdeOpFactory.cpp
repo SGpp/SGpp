@@ -29,7 +29,10 @@
 #include <sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 
   namespace op_factory {
 
@@ -53,7 +56,7 @@ namespace sg {
       }
     }
 
-    base::OperationMatrix* createOperationLaplace(base::Grid& grid, sg::base::DataVector& coef) {
+    base::OperationMatrix* createOperationLaplace(base::Grid& grid, SGPP::base::DataVector& coef) {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceLinear(grid.getStorage(), coef);

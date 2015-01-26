@@ -1,6 +1,9 @@
 #include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 WeightedErrorRefinementFunctor::WeightedErrorRefinementFunctor(
@@ -33,13 +36,13 @@ double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 
 	size_t numData = trainDataset->getNrows();
 
-	sg::base::DataVector singleAlpha(alpha->getSize());
+	SGPP::base::DataVector singleAlpha(alpha->getSize());
 	singleAlpha.setAll(0.0);
 	singleAlpha.set(seq, alpha->get(seq));
 
 	/* phi_j(x_i) * alpha_j */
-	sg::base::DataVector val1(numData);
-	sg::op_factory::createOperationMultipleEval(*grid, *trainDataset)->mult(singleAlpha, val1);
+	SGPP::base::DataVector val1(numData);
+	SGPP::op_factory::createOperationMultipleEval(*grid, *trainDataset)->mult(singleAlpha, val1);
 
 	if (val1.getNumberNonZero() < MIN_SUPPORT) {
 		return -std::numeric_limits<double>::infinity(); // threshold is 0.0

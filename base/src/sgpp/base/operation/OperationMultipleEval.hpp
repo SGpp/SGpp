@@ -11,7 +11,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
-namespace sg {
+#include <sgpp/globaldef.hpp>
+
+
+namespace SGPP {
 namespace base {
 
 /**
@@ -32,7 +35,7 @@ public:
 	 * @param grid the sparse grid used for this operation
 	 * @param dataset data set that should be evaluated on the sparse grid, a operation may create a copy of the dataset
 	 */
-	OperationMultipleEval(sg::base::Grid &grid, DataMatrix &dataset) :
+	OperationMultipleEval(SGPP::base::Grid &grid, DataMatrix &dataset) :
 			grid(grid), dataset(dataset), isPrepared(false) {
 	}
 
@@ -94,7 +97,7 @@ public:
 	 * Name of this implementation of the operation.
 	 */
 	virtual std::string getImplementationName() {
-		throw new sg::base::operation_exception(
+		throw new SGPP::base::operation_exception(
 				"error: OperationMultipleEval::getImplementationName(): not implemented for this kernel");
 	}
 };
