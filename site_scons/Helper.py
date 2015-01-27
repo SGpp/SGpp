@@ -56,14 +56,23 @@ def prepareDoxyfile(modules):
     doxyFileTemplate = open('Doxyfile_template','r')
     doxyFile = open('Doxyfile', 'w')
 
-    inputPaths = 'INPUT = bin/ doc/ '
-    examplePaths = 'EXAMPLE_PATH = '
-    imagePaths = 'IMAGE_PATH = '
+    inputPaths = 'INPUT = bin/ doc/'
+    examplePaths = 'EXAMPLE_PATH ='
+    imagePaths = 'IMAGE_PATH ='
 
     for moduleName in modules:
-        inputPaths += moduleName + '/ '
-        examplePaths += moduleName + '/examples '
-        imagePaths += moduleName + '/doc/doxygen/images '
+        
+        inputPath = moduleName + '/'
+        examplePath = moduleName + '/examples'
+        imagePath = moduleName + '/doc/doxygen/images'
+        
+        print os.path.join(os.getcwd(),inputPath)
+        if os.path.exists(os.path.join(os.getcwd(),inputPath)):
+            inputPaths += " " + inputPath
+        if os.path.exists(os.path.join(os.getcwd(),examplePath)):
+            examplePaths += " " + examplePath
+        if os.path.exists(os.path.join(os.getcwd(),imagePath)):
+            imagePaths += " " + imagePath
 	
     for line in doxyFileTemplate.readlines():
         if re.search(r'INPUT  .*', line):	   
