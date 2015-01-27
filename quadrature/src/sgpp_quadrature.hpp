@@ -8,7 +8,7 @@
 
 
 #include "sgpp/quadrature/Random.hpp"
-#include "sgpp/quadrature/operation/OperationQuadratureMCAdvanced.hpp"
+#include "sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp"
 #include "sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
 #include "sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp"
 #include "sgpp/quadrature/sample/NaiveSampleGenerator.hpp"

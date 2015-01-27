@@ -23,7 +23,7 @@ if __name__ == '__main__':
             unittest.defaultTestLoader.loadTestsFromModule(test_BBT),               
             unittest.defaultTestLoader.loadTestsFromModule(test_BT),
             #unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
-            unittest.defaultTestLoader.loadTestsFromModule(test_periodic),
+            #unittest.defaultTestLoader.loadTestsFromModule(test_periodic),
             unittest.defaultTestLoader.suiteClass(learnertests.alltests),
             unittest.defaultTestLoader.suiteClass(datatests.alltests),
             #unittest.defaultTestLoader.suiteClass(controllertests.alltests)
