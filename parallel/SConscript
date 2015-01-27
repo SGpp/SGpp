@@ -95,7 +95,6 @@ MICOnlyFiles = [
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
-    print currentFolder
     if currentFolder.startswith("./src/sgpp/parallel/exampleApplication"):
         continue
     if currentFolder.startswith("./src"):
