@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
-#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinear.hpp>
 
 

@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/OperationHierarchisationModPoly.hpp>
-#include <sgpp/base/basis/polyModified/algorithm_sweep/HierarchisationModPoly.hpp>
-#include <sgpp/base/basis/polyModified/algorithm_sweep/DehierarchisationModPoly.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationModPoly.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationModPoly.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 

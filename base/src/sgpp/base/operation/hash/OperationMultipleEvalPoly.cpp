@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/basis/poly/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPoly.hpp>
 
 

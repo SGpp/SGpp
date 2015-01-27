@@ -12,7 +12,7 @@
 
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
-#include <sgpp/base/basis/linear/LinearBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 //#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 
 

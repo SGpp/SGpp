@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 

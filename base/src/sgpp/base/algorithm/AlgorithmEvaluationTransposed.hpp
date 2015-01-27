@@ -8,9 +8,9 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp>
-#include <sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp>
-#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
 #include <vector>
 #include <utility>

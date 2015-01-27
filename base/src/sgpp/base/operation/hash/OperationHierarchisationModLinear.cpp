@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModLinear.hpp>
-#include <sgpp/base/basis/linearModified/algorithm_sweep/HierarchisationModLinear.hpp>
-#include <sgpp/base/basis/linearModified/algorithm_sweep/DehierarchisationModLinear.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationModLinear.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationModLinear.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 

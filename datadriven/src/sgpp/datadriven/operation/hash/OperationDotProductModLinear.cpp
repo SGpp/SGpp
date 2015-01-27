@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 #include "OperationDotProductModLinear.hpp"
 

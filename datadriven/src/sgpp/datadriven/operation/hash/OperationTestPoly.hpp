@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/basis/poly/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/datadriven/operation/hash/OperationTest.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 

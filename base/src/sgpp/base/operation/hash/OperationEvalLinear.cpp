@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
 
-#include <sgpp/base/basis/linear/LinearBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalLinear.hpp>
 

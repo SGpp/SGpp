@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/basis/poly/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 

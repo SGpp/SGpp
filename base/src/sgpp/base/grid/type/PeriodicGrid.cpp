@@ -5,7 +5,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
-#include <sgpp/base/basis/periodic/LinearPeriodicBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
 

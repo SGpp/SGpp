@@ -7,7 +7,7 @@
 #define MODPOLYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 
 #include <iostream>

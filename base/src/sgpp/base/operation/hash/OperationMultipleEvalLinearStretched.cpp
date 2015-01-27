@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
-#include <sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretched.hpp>
 
 

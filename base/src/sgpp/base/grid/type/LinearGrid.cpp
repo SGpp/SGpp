@@ -5,7 +5,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/basis/linear/LinearBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>

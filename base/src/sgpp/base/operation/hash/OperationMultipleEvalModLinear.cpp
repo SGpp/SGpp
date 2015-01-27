@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinear.hpp>
 
 

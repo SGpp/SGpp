@@ -5,8 +5,8 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisationPoly.hpp>
 
-#include <sgpp/base/basis/poly/algorithm_sweep/HierarchisationPoly.hpp>
-#include <sgpp/base/basis/poly/algorithm_sweep/DehierarchisationPoly.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPoly.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPoly.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
