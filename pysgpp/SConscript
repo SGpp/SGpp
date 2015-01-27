@@ -39,8 +39,8 @@ py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + swigIncludePaths + ['-D'+c fo
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid', 'sgppparallel', 'sgppquadrature']) # 
 pysgppInstall = py_env.Install(PYSGPP_BUILD_DIR, pysgpp)
 
-py_env.Install(PYSGPP_BUILD_DIR, "pysgpp.py")
-
+pysgppInstallFix = py_env.Install(PYSGPP_BUILD_DIR, "pysgpp.py")
+py_env.Depends(pysgppInstall, pysgppInstallFix)
 
 # run minimal test after compilation
 builder = Builder(action = "python $SOURCE")
