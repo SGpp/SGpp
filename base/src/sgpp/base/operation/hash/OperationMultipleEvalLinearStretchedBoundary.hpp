@@ -26,7 +26,7 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param storage the grid's GirdStorage object
+         * @param grid grid
          * @param dataset the dataset the should be evaluated
          */
         OperationMultipleEvalLinearStretchedBoundary(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {

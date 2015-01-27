@@ -23,7 +23,7 @@ namespace SGPP {
         /**
          * Constructor of OperationMultipleEvalPrewavelet
          *
-         * @param storage Pointer to the grid's gridstorage obejct
+         * @param grid grid
          * @param dataset Dataset
          */
         OperationMultipleEvalPrewavelet(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {

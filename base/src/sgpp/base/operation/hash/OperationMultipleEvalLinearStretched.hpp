@@ -23,8 +23,8 @@ namespace SGPP {
         /**
          * Constructor of OperationBLinearStretched
          *
-         * @param storage Pointer to the grid's gridstorage obejct
-         * @param dataset Pointer to the dataset that should be evaluated
+         * @param grid grid
+         * @param dataset the dataset that should be evaluated
          */
         OperationMultipleEvalLinearStretched(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
           this->storage = grid.getStorage();

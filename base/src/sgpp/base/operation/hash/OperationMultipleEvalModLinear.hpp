@@ -25,7 +25,7 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param storage the grid's GridStorage object
+         * @param grid grid
          * @param dataset the dataset that should be evaluated
          */
         OperationMultipleEvalModLinear(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {

@@ -24,7 +24,7 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param storage the grid's GridStorage object
+         * @param grid grid
          * @param degree the polynom's max. degree
          * @param dataset Dataset
          */
