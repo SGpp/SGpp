@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef ARFFTOOLS_HPP
@@ -44,7 +44,7 @@ namespace SGPP {
         /**
          * stores the attribute info of one instance into a SGPP::base::DataMatrix
          *
-         * @param instance the string that contains the instance's values
+         * @param arffLine the string that contains the instance's values
          * @param destination SGPP::base::DataMatrix into which the instance is stored
          * @param instanceNo the number of the instance
          */
@@ -53,7 +53,7 @@ namespace SGPP {
         /**
          * stores the class info of one instance into a SGPP::base::DataVector
          *
-         * @param instance the string that contains the instance's class
+         * @param arffLine the string that contains the instance's class
          * @param destination SGPP::base::DataVector into which the instance is stored
          * @param instanceNo the number of the instance
          */

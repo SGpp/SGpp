@@ -86,15 +86,6 @@ namespace SGPP {
   	}
 
 
-    /**
-     * Learning a dataset with regular sparse grids
-     *
-     * @param testDataset the training dataset
-     * @param classes classes corresponding to the training dataset
-     * @param GridConfig configuration of the regular grid
-     * @param SolverConfig configuration of the SLE solver
-     * @param lamda regularization parameter lambda
-     */
     LearnerTiming LearnerDensityCluster::train(SGPP::base::DataMatrix& testDataset,  SGPP::base::DataVector& classes,
 					  const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
 					  const double lambda){

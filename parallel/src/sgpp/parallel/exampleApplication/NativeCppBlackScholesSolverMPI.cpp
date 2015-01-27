@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <mpi.h>
@@ -25,7 +25,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.MPI.data";
 
 /// default number of Implicit Euler steps before starting with Crank Nicolson approach
 #define CRNIC_IMEUL_STEPS 3
-/// default value for epsilon in gridpoints @money
+/// default value for epsilon in gridpoints at money
 #define DFLT_EPS_AT_MONEY 0.0
 /// default value for sigma of refinement normal distribution
 #define DFLT_SIGMA_REFINE_NORMDIST 0.15
@@ -393,7 +393,6 @@ int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_
  *
  * @param values SGPP::base::DataVector into which the values will be stored
  * @param tFile file from which the values are read
- * @param numValues number of values stored in the file
  */
 int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
@@ -506,6 +505,7 @@ int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param fileAnalyze filename of the file that contains the analyze data
  * @param coordsType set the type of coordinates that should be used: cart, log, PAT
  */
 void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch, std::string fileBound, double dStrike, std::string payoffType,

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef PERSISTENTERRORREFINEMENTFUNCTOR_HPP
@@ -30,6 +30,7 @@ namespace SGPP {
          * Constructor.
          *
          * @param alpha DataVector that is basis for refinement decisions. The i-th entry corresponds to the i-th grid point.
+         * @param grid grid
          * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points)
          * @param threshold The absolute value of the entries have to be greater or equal than the threshold
          */
@@ -47,6 +48,11 @@ namespace SGPP {
          * The error indicator is updated using the rule
          * disc_err_{n+1} = disc_err_{n} * BETA + weight_error_per_basis * (1-BETA)
          * where 0 < BETA < 1
+         *
+         * @param storage pointer to the grids storage object
+         * @param seq sequence number in the coefficients array
+         *
+         * @return refinement value
          */
         virtual double operator()(GridStorage* storage, size_t seq);
 

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "sgpp_base.hpp"
@@ -52,15 +52,18 @@ double calculatetheta(double a, double sigma, double T, int count, double stepsi
  * Do a Hull White solver test with n assets (ND Sparse Grid) European call option
  *
  * @param l the number of levels used in the Sparse Grid
- * @param the stochastic data (theta, sigma, a)
- * @param the grid's bounding box - domain boundary(min,max)
- * @param r the interest rate
+ * @param sigma sigma
+ * @param a a
+ * @param fileBound the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param timeSt the number of timesteps that are executed during the solving process
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param t current time
+ * @param T time to maturity
+ * @param dStrike strike
  */
 void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std::string payoffType,
                    size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double t, double T, double dStrike) {

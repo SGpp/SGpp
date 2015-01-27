@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef DMSYSTEMMATRIX_HPP
@@ -32,13 +32,13 @@ namespace SGPP {
         //OperationMultiEval* B;
         SGPP::base::OperationMultipleEval* B;
 
-        SGPP::base::Grid &grid;
+        SGPP::base::Grid& grid;
 
       public:
         /**
          * Std-Constructor
          *
-         * @param SparseGrid reference to the sparse grid
+         * @param grid reference to the sparse grid
          * @param trainData reference to SGPP::base::DataVector that contains the training data
          * @param C the regression functional
          * @param lambda the lambda, the regression parameter

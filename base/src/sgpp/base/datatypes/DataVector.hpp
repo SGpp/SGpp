@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef DATAVECTOR_H_
@@ -49,20 +49,18 @@ namespace SGPP {
         DataVector(double* input, size_t size);
 
         /**
-		 * Create a new DataVector from a std::vector<double>.
-		 *
-		 * @param input std::vector<double> that contains the data
-		 * @param size number of elements
-		 */
-		DataVector(std::vector<double> input);
+        * Create a new DataVector from a std::vector<double>.
+        *
+        * @param input std::vector<double> that contains the data
+        */
+        DataVector(std::vector<double> input);
 
-		/**
-		 * Create a new DataVector from a std::vector<int>.
-		 *
-		 * @param input std::vector<double> that contains the data
-		 * @param size number of elements
-		 */
-		DataVector(std::vector<int> input);
+        /**
+         * Create a new DataVector from a std::vector<int>.
+         *
+         * @param input std::vector<double> that contains the data
+         */
+        DataVector(std::vector<int> input);
 
         /**
          * Constructor that constructs a DataVector from a DataVectorDefinition structure
