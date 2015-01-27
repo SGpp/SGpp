@@ -31,9 +31,6 @@ prepareDoxyfile(moduleFolders)
 moduleNames = []
 for name in moduleFolders:
     moduleNames.append('SG_' + name.upper())
-    
-print moduleFolders
-print moduleNames
 
 vars = Variables("custom.py")
 
@@ -124,11 +121,16 @@ env.Depends("#/" + BUILD_DIR.path + "/libsgppbase.so", alglibinst)
   
 env.Append(CPPPATH=['#/tools'])
   
+libraryTargetList = []
+installTargetList = []
+env.Export('libraryTargetList')
+env.Export('installTargetList')
+  
 # compile selected modules
 for name in moduleFolders:
-        print "Preparing to build module: ", name
-        # SConscript('src/sgpp/SConscript' + name, variant_dir='#/tmp/build/', duplicate=0)
-        env.SConscript('#/' + name + '/SConscript', {'env': env, 'moduleName': name})
+    print "Preparing to build module: ", name
+    # SConscript('src/sgpp/SConscript' + name, variant_dir='#/tmp/build/', duplicate=0)
+    env.SConscript('#/' + name + '/SConscript', {'env': env, 'moduleName': name})
        
 # build python lib
 if env['SG_PYTHON']:
@@ -160,6 +162,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
         #    # these modules don't currently have tests
             continue
         moduleTest = env.Test('#/' + moduleFolder + '/tests/test_' + moduleFolder + '.py')
+        env.Requires(moduleTest, installTargetList)
         env.Requires(moduleTest, pysgppInstall)
         env.Depends(moduleTest, pysgppSimpleImportTest)
         env.AlwaysBuild(moduleTest) 

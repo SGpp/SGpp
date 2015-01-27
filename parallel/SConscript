@@ -109,7 +109,6 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
 
 objs = []
 for sourceFile in srcs:
-    print sourceFile
     objs.append(env_parallel.SharedObject(sourceFile))
 
 lib = env_parallel.SharedLibrary(target="sgpp" + moduleName, source=objs, LIBPATH=BUILD_DIR, LIBS=['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppsolver'])
@@ -117,8 +116,13 @@ env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppdatadriven.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
-env_parallel.Install(BUILD_DIR, lib)
+libInstall = env_parallel.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows
 libStatic = env_parallel.StaticLibrary(target="sgpp" + moduleName + "static", source=objs, SHLIBPREFIX='lib')
 env_parallel.Install(BUILD_DIR, libStatic)
+
+Import('libraryTargetList')
+Import('installTargetList')
+libraryTargetList.append(lib)
+installTargetList.append(libInstall)
