@@ -1,73 +1,70 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationQuadratureMCAdvanced.hpp"
-
+#include "../operation/OperationQuadratureMCAdvanced.hpp"
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/mcm/SampleGenerator.hpp>
-#include <sgpp/mcm/NaiveSampleGenerator.hpp>
-#include <sgpp/mcm/SobolSampleGenerator.hpp>
-#include <sgpp/mcm/ScrambledSobolSampleGenerator.hpp>
-#include <sgpp/mcm/LatinHypercubeSampleGenerator.hpp>
-#include <sgpp/mcm/StratifiedSampleGenerator.hpp>
-#include <sgpp/mcm/SSobolSampleGenerator.hpp>
-
 #include <cmath>
 #include <iostream>
-#include <sgpp/mcm/Random.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp>
+#include <sgpp/quadrature/sample/NaiveSampleGenerator.hpp>
+#include <sgpp/quadrature/Random.hpp>
+#include <sgpp/quadrature/sample/ScrambledSobolSampleGenerator.hpp>
+#include <sgpp/quadrature/sample/SobolSampleGenerator.hpp>
+#include <sgpp/quadrature/sample/SSobolSampleGenerator.hpp>
+#include <sgpp/quadrature/sample/StratifiedSampleGenerator.hpp>
+#include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
 
 
     OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, int numberOfSamples) : grid(&grid), numberOfSamples(numberOfSamples) {
       this->dimensions = grid.getStorage()->dim();
-      myGenerator = new SGPP::mcm::NaiveSampleGenerator(this->dimensions);
+      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(this->dimensions);
     }
-    
+
     OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(size_t dimensions, int numberOfSamples) : numberOfSamples(numberOfSamples) {
       this->dimensions = dimensions;
-      myGenerator = new SGPP::mcm::NaiveSampleGenerator(this->dimensions);
+      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(this->dimensions);
       grid = NULL;
     }
-    
-    void OperationQuadratureMCAdvanced::useNaiveMonteCarlo(){
-      myGenerator = new SGPP::mcm::NaiveSampleGenerator(dimensions);
+
+    void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
+      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions);
     }
 
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarlo(){
-      myGenerator = new SGPP::mcm::SobolSampleGenerator(dimensions, 0);
+    void OperationQuadratureMCAdvanced::useQuasiMonteCarlo() {
+      myGenerator = new SGPP::quadrature::SobolSampleGenerator(dimensions, 0);
     }
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarloScrambled(){
-      myGenerator = new SGPP::mcm::ScrambledSobolSampleGenerator(dimensions, 0);
-    }
-
-    void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(long long int* strataPerDimension){
-      myGenerator = new SGPP::mcm::StratifiedSampleGenerator(dimensions, strataPerDimension);
+    void OperationQuadratureMCAdvanced::useQuasiMonteCarloScrambled() {
+      myGenerator = new SGPP::quadrature::ScrambledSobolSampleGenerator(dimensions, 0);
     }
 
-    void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo(){
-      myGenerator = new SGPP::mcm::LatinHypercubeSampleGenerator(dimensions, numberOfSamples);
+    void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(long long int* strataPerDimension) {
+      myGenerator = new SGPP::quadrature::StratifiedSampleGenerator(dimensions, strataPerDimension);
     }
-    
-    void OperationQuadratureMCAdvanced::useSSobol(int scrambling){
-      myGenerator = new SGPP::mcm::SSobolSampleGenerator(dimensions, (int) numberOfSamples, scrambling);
+
+    void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
+      myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(dimensions, numberOfSamples);
     }
-    
+
+    void OperationQuadratureMCAdvanced::useSSobol(int scrambling) {
+      myGenerator = new SGPP::quadrature::SSobolSampleGenerator(dimensions, (int) numberOfSamples, scrambling);
+    }
+
     double OperationQuadratureMCAdvanced::doQuadrature(SGPP::base::DataVector& alpha) {
-      
+
       SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
-      
+
       myGenerator->getSamples(dm);
-      
-      SGPP::base::OperationMultipleEval* opEval = SGPP::op_factory::createOperationMultipleEval(*grid, &dm);
+
+      SGPP::base::OperationMultipleEval* opEval = SGPP::op_factory::createOperationMultipleEval(*grid, dm);
       SGPP::base::DataVector res = SGPP::base::DataVector(numberOfSamples);
       opEval->mult(alpha, res);
       return res.sum() / static_cast<double>(numberOfSamples);
@@ -84,7 +81,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < numberOfSamples; i++) {
         SGPP::base::DataVector dv(dimensions);
-        dm.getRow(i,dv);
+        dm.getRow(i, dv);
         res += func(*reinterpret_cast<int*>(&dimensions), dv.getPointer(), clientdata);
       }
 
@@ -120,6 +117,6 @@ namespace SGPP {
     }
 
   }
-  
-  
+
+
 }

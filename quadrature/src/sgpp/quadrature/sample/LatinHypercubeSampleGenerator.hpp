@@ -7,16 +7,15 @@
 #define LATINHYPERCUBESAMPLEGENERATOR_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/mcm/SampleGenerator.hpp>
-
 #include <list>
 #include <vector>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
     
     /**
      * The class NaiveSampleGenerator implements a simple MonteCarlo sample

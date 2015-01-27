@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include "SampleGenerator.hpp"
+#include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 using namespace SGPP::base;
 
@@ -11,7 +11,7 @@ using namespace SGPP::base;
 
 
 namespace SGPP {
-namespace mcm {
+namespace quadrature {
 
 void SampleGenerator::getSamples(DataMatrix& samples) {
 

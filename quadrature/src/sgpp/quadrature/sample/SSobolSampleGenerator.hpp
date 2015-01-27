@@ -8,15 +8,14 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/mcm/SampleGenerator.hpp>
-#include <sgpp/mcm/ssobol.h>
-#include "Random.hpp"
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/quadrature/Random.hpp>
+#include <sgpp/quadrature/ssobol.h>
+#include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
 
     /**
      * A Sample generator based on the scrambled Sobol sequences implemented in SSOBOL.F

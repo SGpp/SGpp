@@ -7,13 +7,12 @@
 #define STRATIFIEDSAMPLEGENERATOR_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/mcm/SampleGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
     
     /**
      * The class StratifiedSampleGenerator subdivides every dimension in a given

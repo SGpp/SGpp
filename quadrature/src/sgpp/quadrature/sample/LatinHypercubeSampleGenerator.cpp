@@ -3,13 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include "LatinHypercubeSampleGenerator.hpp"
+#include <sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp>
 
 #include <cmath>
 #include <list>
 #include <algorithm>
 #include <vector>
-#include "Random.hpp"
+
+#include <sgpp/quadrature/Random.hpp>
 
 using namespace SGPP::base;
 
@@ -17,7 +18,7 @@ using namespace SGPP::base;
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
     
     LatinHypercubeSampleGenerator::LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples) : SampleGenerator(dimensions) {
       

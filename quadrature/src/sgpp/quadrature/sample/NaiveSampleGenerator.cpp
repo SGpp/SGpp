@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include "NaiveSampleGenerator.hpp"
+#include <sgpp/quadrature/sample/NaiveSampleGenerator.hpp>
 
-#include "Random.hpp"
+#include <sgpp/quadrature/Random.hpp>
 
 using namespace SGPP::base;
 
@@ -13,7 +13,7 @@ using namespace SGPP::base;
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
 
       void NaiveSampleGenerator::getSample(SGPP::base::DataVector& dv) {
         // generate random sample with dimensionality corresponding to the 

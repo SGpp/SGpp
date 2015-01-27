@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include "HaltonSampleGenerator.hpp"
+#include <sgpp/quadrature/sample/HaltonSampleGenerator.hpp>
 
 #include <cmath>
-#include "Random.hpp"
+
+#include <sgpp/quadrature/Random.hpp>
 
 using namespace SGPP::base;
 
@@ -14,7 +15,7 @@ using namespace SGPP::base;
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
 
     HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions) : SampleGenerator(dimensions)
     {
