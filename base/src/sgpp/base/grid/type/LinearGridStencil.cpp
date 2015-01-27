@@ -6,7 +6,7 @@
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
 
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
+#include <sgpp/base/basis/linear/LinearBasis.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 

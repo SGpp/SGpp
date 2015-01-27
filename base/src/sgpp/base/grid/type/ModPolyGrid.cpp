@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
 
 
 
@@ -43,7 +43,7 @@ namespace SGPP {
 
     const SBasis& ModPolyGrid::getBasis(){
     	if (basis_ == NULL){
-    		basis_ = new SModPolyBase(degree);
+    		basis_ = new SPolyModifiedBase(degree);
     	}
 		return *basis_;
 	}

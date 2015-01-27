@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
 
 
 #include <iostream>
@@ -44,7 +44,7 @@ namespace SGPP {
 		throw new factory_exception("Not implemented");
 		// it should never get so far, code just for compilation reasons
 		// If there will be a meaningful basis, this following lines should be changed
-		static SModLinearBase basis;
+		static SLinearModifiedBase basis;
 		return basis;
 	}
 

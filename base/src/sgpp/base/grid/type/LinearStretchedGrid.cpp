@@ -5,7 +5,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
-#include <sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp>
+#include <sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp>
 
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 

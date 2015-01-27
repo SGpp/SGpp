@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
+#include <sgpp/base/basis/linear/LinearBasis.hpp>
 
 #include <sgpp/datadriven/operation/hash/OperationDotProductLinear.hpp>
 

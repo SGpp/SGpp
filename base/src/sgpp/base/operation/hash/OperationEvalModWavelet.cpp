@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWavelet.hpp>
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
@@ -20,8 +20,8 @@ namespace SGPP {
       typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
       IndexValVector vec;
-      ModifiedWaveletBasis<unsigned int, unsigned int> base;
-      GetAffectedBasisFunctions<ModifiedWaveletBasis<unsigned int, unsigned int> > ga(storage);
+      WaveletModifiedBasis<unsigned int, unsigned int> base;
+      GetAffectedBasisFunctions<WaveletModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
       ga(base, point, vec);
 

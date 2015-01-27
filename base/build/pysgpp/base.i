@@ -139,15 +139,15 @@ namespace std {
 
 %include "base/src/sgpp/base/application/ScreenOutput.hpp"
 
-%include "base/src/sgpp/base/basis/linear/noboundary/LinearBasis.hpp"
-%include "base/src/sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp"
-%include "base/src/sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
-%include "base/src/sgpp/base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
-%include "base/src/sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp"
+%include "base/src/sgpp/base/basis/linear/LinearBasis.hpp"
+%include "base/src/sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp"
+%include "base/src/sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp"
+%include "base/src/sgpp/base/basis/linearStretchedBoundary/LinearStretchedBoundaryBasis.hpp"
+%include "base/src/sgpp/base/basis/linearModified/LinearModifiedBasis.hpp"
 %include "base/src/sgpp/base/basis/poly/PolyBasis.hpp"
-%include "base/src/sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp"
-%include "base/src/sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-%include "base/src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
+%include "base/src/sgpp/base/basis/polyModified/PolyModifiedBasis.hpp"
+%include "base/src/sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp"
+%include "base/src/sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
@@ -167,11 +167,11 @@ namespace std {
 %template(SLinearBoundaryBase) SGPP::base::LinearBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBase) SGPP::base::LinearStretchedBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBoundaryBase) SGPP::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-%template(SModLinearBase) SGPP::base::ModifiedLinearBasis<unsigned int, unsigned int>;
+%template(SLinearModifiedBase) SGPP::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) SGPP::base::PolyBasis<unsigned int, unsigned int>;
-//%template(SModPolyBase) SGPP::base::ModifiedPolyBasis<unsigned int, unsigned int>;
-%template(SModWaveletBase) SGPP::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
-%template(SModBsplineBase) SGPP::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
+//%template(SPolyModifiedBase) SGPP::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SWaveletModifiedBase) SGPP::base::WaveletModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };

@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
-#include <sgpp/base/basis/linear/boundary/algorithm_sweep/HierarchisationLinearBoundary.hpp>
-#include <sgpp/base/basis/linear/boundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp>
+#include <sgpp/base/basis/linearBoundary/algorithm_sweep/HierarchisationLinearBoundary.hpp>
+#include <sgpp/base/basis/linearBoundary/algorithm_sweep/DehierarchisationLinearBoundary.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 

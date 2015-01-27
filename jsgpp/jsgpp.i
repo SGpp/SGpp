@@ -123,15 +123,15 @@ namespace std {
 %include "pde/src/sgpp/pde/application/HeatEquationSolverWithStretching.hpp"
 %include "finance/src/sgpp/finance/tools/VariableDiscountFactor.hpp"
 
-%include "base/src/sgpp/base/basis/linear/noboundary/LinearBasis.hpp"
-%include "base/src/sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp"
-%include "base/src/sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
-%include "base/src/sgpp/base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
-%include "base/src/sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp"
+%include "base/src/sgpp/base/basis/linear/LinearBasis.hpp"
+%include "base/src/sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp"
+%include "base/src/sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp"
+%include "base/src/sgpp/base/basis/linearStretchedBoundary/LinearStretchedBoundaryBasis.hpp"
+%include "base/src/sgpp/base/basis/linearModified/LinearModifiedBasis.hpp"
 %include "base/src/sgpp/base/basis/poly/PolyBasis.hpp"
-%include "base/src/sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp"
-%include "base/src/sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-%include "base/src/sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
+%include "base/src/sgpp/base/basis/polyModified/PolyModifiedBasis.hpp"
+%include "base/src/sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp"
+%include "base/src/sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
 %include "solver/src/sgpp/solver/SGSolver.hpp"
@@ -161,11 +161,11 @@ namespace std {
 %template(SLinearBoundaryBase) sg::base::LinearBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBase) sg::base::LinearStretchedBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBoundaryBase) sg::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-%template(SModLinearBase) sg::base::ModifiedLinearBasis<unsigned int, unsigned int>;
+%template(SLinearModifiedBase) sg::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) sg::base::PolyBasis<unsigned int, unsigned int>;
-%template(SModPolyBase) sg::base::ModifiedPolyBasis<unsigned int, unsigned int>;
-%template(SModWaveletBase) sg::base::ModifiedWaveletBasis<unsigned int, unsigned int>;
-%template(SModBsplineBase) sg::base::ModifiedBsplineBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedBase) sg::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SWaveletModifiedBase) sg::base::WaveletModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedBase) sg::base::BsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sg::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
@@ -185,11 +185,11 @@ namespace std {
 //%template(SLinearBoundaryBase) sg::LinearBoundaryBasis<unsigned int, unsigned int>;
 //%template(SLinearStretchedBase) sg::LinearStretchedBasis<unsigned int, unsigned int>;
 //%template(SLinearStretchedBoundaryBase) sg::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
-//%template(SModLinearBase) sg::ModifiedLinearBasis<unsigned int, unsigned int>;
+//%template(SLinearModifiedBase) sg::LinearModifiedBasis<unsigned int, unsigned int>;
 //%template(SPolyBase) sg::PolyBasis<unsigned int, unsigned int>;
-//%template(SModPolyBase) sg::ModifiedPolyBasis<unsigned int, unsigned int>;
-//%template(SModWaveletBase) sg::ModifiedWaveletBasis<unsigned int, unsigned int>;
-//%template(SModBsplineBase) sg::ModifiedBsplineBasis<unsigned int, unsigned int>;
+//%template(SPolyModifiedBase) sg::PolyModifiedBasis<unsigned int, unsigned int>;
+//%template(SWaveletModifiedBase) sg::WaveletModifiedBasis<unsigned int, unsigned int>;
+//%template(SBsplineModifiedBase) sg::BsplineModifiedBasis<unsigned int, unsigned int>;
 //%template(SPrewaveletBase) sg::base::prewavelet_base<unsigned int, unsigned int>;
 //
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };

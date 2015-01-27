@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
 
 
 
@@ -37,7 +37,7 @@ namespace SGPP {
     }
 
     const SBasis& ModLinearGrid::getBasis(){
-		static SModLinearBase basis;
+		static SLinearModifiedBase basis;
 		return basis;
 	}
 

@@ -6,8 +6,8 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
 #include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
 #include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
-#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/HierarchisationLinear.hpp>
-#include <sgpp/base/basis/linear/noboundary/algorithm_sweep/DehierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/algorithm_sweep/HierarchisationLinear.hpp>
+#include <sgpp/base/basis/linear/algorithm_sweep/DehierarchisationLinear.hpp>
 
 
 #include <sgpp/base/algorithm/sweep.hpp>

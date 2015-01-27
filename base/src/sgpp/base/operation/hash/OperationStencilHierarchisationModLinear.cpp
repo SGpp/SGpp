@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationModLinear.hpp>
-#include <sgpp/base/basis/modlinear/algorithm_sweep/StencilHierarchisationModLinear.hpp>
-#include <sgpp/base/basis/modlinear/algorithm_sweep/StencilDehierarchisationModLinear.hpp>
+#include <sgpp/base/basis/linearModified/algorithm_sweep/StencilHierarchisationModLinear.hpp>
+#include <sgpp/base/basis/linearModified/algorithm_sweep/StencilDehierarchisationModLinear.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 

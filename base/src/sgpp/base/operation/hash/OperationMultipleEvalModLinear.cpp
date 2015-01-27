@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinear.hpp>
 
 
@@ -17,15 +17,15 @@ namespace SGPP {
   namespace base {
 
     void OperationMultipleEvalModLinear::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmDGEMV<SModLinearBase> op;
-      ModifiedLinearBasis<unsigned int, unsigned int> base;
+      AlgorithmDGEMV<SLinearModifiedBase> op;
+      LinearModifiedBasis<unsigned int, unsigned int> base;
 
       op.mult(storage, base, alpha, this->dataset, result);
     }
 
     void OperationMultipleEvalModLinear::multTranspose(DataVector& source, DataVector& result) {
-      AlgorithmDGEMV<SModLinearBase> op;
-      ModifiedLinearBasis<unsigned int, unsigned int> base;
+      AlgorithmDGEMV<SLinearModifiedBase> op;
+      LinearModifiedBasis<unsigned int, unsigned int> base;
 
       op.mult_transposed(storage, base, source, this->dataset, result);
     }

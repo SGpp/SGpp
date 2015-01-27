@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 
@@ -60,7 +60,7 @@ namespace SGPP {
         /// Pointer to GridStorage object
         GridStorage* storage;
         /// Mod Poly Basis object
-        SModPolyBase base;
+        SPolyModifiedBase base;
     };
 
   }

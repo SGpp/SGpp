@@ -6,15 +6,15 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-#include "sgpp/base/basis/linear/noboundary/LinearBasis.hpp"
-#include "sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp"
-#include "sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
-#include "sgpp/base/basis/linearstretched/boundary/LinearStretchedBoundaryBasis.hpp"
-#include "sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp"
+#include "sgpp/base/basis/linear/LinearBasis.hpp"
+#include "sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp"
+#include "sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp"
+#include "sgpp/base/basis/linearStretchedBoundary/LinearStretchedBoundaryBasis.hpp"
+#include "sgpp/base/basis/linearModified/LinearModifiedBasis.hpp"
 #include "sgpp/base/basis/poly/PolyBasis.hpp"
-#include "sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp"
-#include "sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-#include "sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
+#include "sgpp/base/basis/polyModified/PolyModifiedBasis.hpp"
+#include "sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp"
+#include "sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp"
 #include "sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 #include "sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"

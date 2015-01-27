@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include "PredictiveRefinementDimensionIndicator.hpp"
-#include <sgpp/base/basis/linear/noboundary/LinearBasis.hpp>
-#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
-#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/linear/LinearBasis.hpp>
+#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
 #include <map>
 #include <string>
 #include <utility>
@@ -134,7 +134,7 @@ double PredictiveRefinementDimensionIndicator::basisFunctionEvalHelper(AbstractR
 
     case 8: {
       // modified linear basis
-      ModifiedLinearBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> modLinBasis;
+      LinearModifiedBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> modLinBasis;
       return modLinBasis.eval(level, index, value);
     }
 

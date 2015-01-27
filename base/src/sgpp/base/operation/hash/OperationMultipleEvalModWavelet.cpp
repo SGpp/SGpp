@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModWavelet.hpp>
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
@@ -17,15 +17,15 @@ namespace SGPP {
   namespace base {
 
     void OperationMultipleEvalModWavelet::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmDGEMV<SModWaveletBase> op;
-      ModifiedWaveletBasis<unsigned int, unsigned int> base;
+      AlgorithmDGEMV<SWaveletModifiedBase> op;
+      WaveletModifiedBasis<unsigned int, unsigned int> base;
 
       op.mult(storage, base, alpha, this->dataset, result);
     }
 
     void OperationMultipleEvalModWavelet::multTranspose(DataVector& source, DataVector& result) {
-      AlgorithmDGEMV<SModWaveletBase> op;
-      ModifiedWaveletBasis<unsigned int, unsigned int> base;
+      AlgorithmDGEMV<SWaveletModifiedBase> op;
+      WaveletModifiedBasis<unsigned int, unsigned int> base;
 
       op.mult_transposed(storage, base, source, this->dataset, result);
     }

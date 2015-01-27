@@ -1002,7 +1002,7 @@ CModes = {
 ## base function types
 base_types = {
 #    "linear" : {"base" : SLinearBase, "b" : SGridOperationB, "t" : test_dataset_linear, "laplace" : SGridOperationLaplace},
-#    "modlinear" : {"base" : SModLinearBase, "b" : SGridModOperationB, "t" : test_dataset_modlin},
+#    "modlinear" : {"base" : SLinearModifiedBase, "b" : SGridModOperationB, "t" : test_dataset_modlin},
 #    "poly" : {"base" : "SPolyBase", },
               }
 
