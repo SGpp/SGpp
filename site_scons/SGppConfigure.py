@@ -38,12 +38,14 @@ def doConfigure(env, moduleFolders):
     # check whether swig installed
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
-    
-    print "Using doxygen " + commands.getoutput('doxygen --version')
+    else:
+        print "Using doxygen " + commands.getoutput('doxygen --version')
   
     # check whether dot installed
     if not config.CheckExec('dot'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
+    else:
+        print "Using " + commands.getoutput('dot -version').splitlines()[0]
     
     if env["SG_PYTHON"]:
         # check whether swig installed
