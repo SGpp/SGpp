@@ -10,7 +10,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
-#include <sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
+#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystemFreeBoundaries.hpp>
 
 #include <sgpp/globaldef.hpp>
 

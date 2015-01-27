@@ -9,63 +9,63 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationGammaLinear.hpp>
-#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationGammaLinearStretched.hpp>
-#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationGammaLogLinearStretchedBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationGammaLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLinearStretched.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLogLinearStretchedBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationGammaLogLinear.hpp>
-#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationGammaLogLinearStretched.hpp>
-#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationGammaLinearStretchedBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationGammaLogLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLogLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLogLinearStretched.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLinearStretchedBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationGammaLogLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLBLinear.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationLBLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationLBLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationLBLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLELinear.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationLELinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationLELinear.hpp>
+#include <sgpp/finance/operation/hash/OperationLELinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLDLinear.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationLDLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationLDLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationLDLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationLFLinear.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationLFLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationLFLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationLFLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationDeltaLinear.hpp>
-#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationDeltaLinearStretched.hpp>
-#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationDeltaLinearStretchedBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationDeltaLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLinearStretched.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLinearStretchedBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationDeltaLogLinear.hpp>
-#include <sgpp/finance/basis/linearstretched/noboundary/operation/OperationDeltaLogLinearStretched.hpp>
-#include <sgpp/finance/basis/linearstretched/boundary/operation/OperationDeltaLogLinearStretchedBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationDeltaLogLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLogLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLogLinearStretched.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLogLinearStretchedBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationDeltaLogLinearBoundary.hpp>
 
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonBLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonCLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonDLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonELinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonFLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonGLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonHLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonKLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonWLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonXLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonYLinear.hpp>
-#include <sgpp/finance/basis/linear/noboundary/operation/pde/OperationHestonZLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonBLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonCLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonDLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonELinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonFLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonGLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonHLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonKLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonWLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonXLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonYLinear.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonZLinear.hpp>
 
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonBLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonCLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonDLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonELinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonFLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonGLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonHLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonKLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonWLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonXLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonYLinearBoundary.hpp>
-#include <sgpp/finance/basis/linear/boundary/operation/OperationHestonZLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonBLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonCLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonDLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonELinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonFLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonGLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonHLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonKLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonWLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonXLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonYLinearBoundary.hpp>
+#include <sgpp/finance/operation/hash/OperationHestonZLinearBoundary.hpp>
 
 
 #include <sgpp/globaldef.hpp>

@@ -9,7 +9,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
+#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp>
 #include <sgpp/finance/tools/Hedging.hpp>
 
 //#define HEDGE

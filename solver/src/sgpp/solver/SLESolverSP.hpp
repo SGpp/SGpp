@@ -7,7 +7,7 @@
 #define SLESOLVERSP_HPP
 
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
-#include <sgpp/base/operation/OperationMatrixSP.hpp>
+#include <sgpp/base/operation/hash/OperationMatrixSP.hpp>
 
 #include <sgpp/solver/SGSolverSP.hpp>
 

@@ -33,7 +33,7 @@
 
 #include "sgpp/combigrid/converter/CombiSGppConverter.hpp"
 
-#include "sgpp/combigrid/operation/OperationMatrixLTwoExplicitFullGrid.hpp"
+#include "sgpp/combigrid/operation/hash/OperationMatrixLTwoExplicitFullGrid.hpp"
 
 
 #endif /* COMBIGRID_HPP_ */

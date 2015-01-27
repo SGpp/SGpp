@@ -6,7 +6,7 @@
 #ifndef BICGSTABSP_HPP
 #define BICGSTABSP_HPP
 
-#include <sgpp/base/operation/OperationMatrixSP.hpp>
+#include <sgpp/base/operation/hash/OperationMatrixSP.hpp>
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
 
 #include <sgpp/solver/SLESolverSP.hpp>

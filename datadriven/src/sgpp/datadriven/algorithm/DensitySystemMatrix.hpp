@@ -9,8 +9,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
 

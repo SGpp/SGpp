@@ -5,7 +5,7 @@
 
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/solver/ode/AdamsBashforth.hpp>
-#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
 

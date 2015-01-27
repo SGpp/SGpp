@@ -7,8 +7,8 @@
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 
 #include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
-//#include <sgpp/base/basis/linear/boundary/operation/OperationEvalLinearBoundary.hpp>
-//#include <sgpp/base/basis/linear/boundary/operation/OperationHierarchisationLinearBoundary.hpp>
+//#include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
+//#include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 
 #include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
 

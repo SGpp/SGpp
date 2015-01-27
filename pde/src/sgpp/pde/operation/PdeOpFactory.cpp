@@ -11,21 +11,21 @@
 
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
-#include <sgpp/pde/basis/linear/noboundary/operation/OperationLaplaceLinear.hpp>
-#include <sgpp/pde/basis/linear/boundary/operation/OperationLaplaceLinearBoundary.hpp>
-#include <sgpp/pde/basis/modlinear/operation/OperationLaplaceModLinear.hpp>
-#include <sgpp/pde/basis/prewavelet/operation/OperationLaplacePrewavelet.hpp>
-#include <sgpp/pde/basis/linearstretched/noboundary/operation/OperationLaplaceLinearStretched.hpp>
-#include <sgpp/pde/basis/linearstretched/boundary/operation/OperationLaplaceLinearStretchedBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceLinearBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceModLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplacePrewavelet.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceLinearStretched.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceLinearStretchedBoundary.hpp>
 
-#include <sgpp/pde/basis/linear/noboundary/operation/OperationLTwoDotProductLinear.hpp>
-#include <sgpp/pde/basis/linear/noboundary/operation/OperationMatrixLTwoDotExplicitLinear.hpp>
-#include <sgpp/pde/basis/linear/boundary/operation/OperationLTwoDotProductLinearBoundary.hpp>
-#include <sgpp/pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
-#include <sgpp/pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp>
-#include <sgpp/pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp>
-#include <sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp>
-#include <sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp>
+#include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretched.hpp>
+#include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearStretchedBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 
 #include <sgpp/globaldef.hpp>
 

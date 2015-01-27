@@ -9,7 +9,7 @@
 #include <vector>
 
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 

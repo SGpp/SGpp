@@ -13,13 +13,13 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
 #include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
-#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
 

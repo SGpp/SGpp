@@ -8,7 +8,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>

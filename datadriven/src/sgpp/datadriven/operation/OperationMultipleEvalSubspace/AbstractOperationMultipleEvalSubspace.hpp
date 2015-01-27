@@ -10,7 +10,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/tools/PartitioningTool.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
 

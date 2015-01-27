@@ -8,19 +8,19 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <sgpp/datadriven/operation/OperationTest.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
-#include <sgpp/datadriven/operation/OperationDensityMarginalize.hpp>
-#include <sgpp/datadriven/operation/OperationDensityMargTo1D.hpp>
-#include <sgpp/datadriven/operation/OperationDensityConditional.hpp>
-#include <sgpp/datadriven/operation/OperationDensitySampling1D.hpp>
-#include <sgpp/datadriven/operation/OperationDensitySampling.hpp>
-#include <sgpp/datadriven/operation/OperationDensityRejectionSampling.hpp>
-#include <sgpp/datadriven/operation/OperationRosenblattTransformation.hpp>
-#include <sgpp/datadriven/operation/OperationTransformation1D.hpp>
-#include <sgpp/datadriven/operation/OperationInverseRosenblattTransformation.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/OperationTest.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityMarginalize.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensitySampling.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityRejectionSampling.hpp>
+#include <sgpp/datadriven/operation/hash/OperationRosenblattTransformation.hpp>
+#include <sgpp/datadriven/operation/hash/OperationTransformation1D.hpp>
+#include <sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformation.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 /*
  * This file contains factory methods for operations.

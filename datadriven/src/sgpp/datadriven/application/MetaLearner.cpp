@@ -12,7 +12,7 @@
 #include <cstdio>
 
 #include "LearnerLeastSquaresIdentity.hpp"
-#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 

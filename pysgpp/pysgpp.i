@@ -205,8 +205,8 @@ namespace std {
 %include "sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp"
 %include "sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
 
-%include "sgpp/base/basis/periodic/operation/OperationMultipleEvalPeriodic.hpp"
-%include "sgpp/base/basis/periodic/operation/OperationEvalPeriodic.hpp"
+%include "sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
+%include "sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "sgpp/base/basis/periodic/LinearPeriodicBasis.hpp"
 
 // static factory methods
@@ -231,8 +231,8 @@ namespace std {
 #endif
 
 #ifdef SG_PDE
-%include "sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp"
-%include "sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp"
+%include "sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
+%include "sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"
 
 %include "sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"
 
@@ -246,10 +246,10 @@ namespace std {
 
 
 
-%include "sgpp/pde/operation/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
+%include "sgpp/pde/operation/hash/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
 %include "sgpp/pde/operation/PdeOpFactory.hpp"
-%include "sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
-%include "sgpp/pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
+%include "sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp"
+%include "sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp"
 #endif
 
 #ifdef SG_FINANCE

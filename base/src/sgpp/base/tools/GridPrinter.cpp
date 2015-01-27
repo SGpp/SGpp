@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/tools/GridPrinter.hpp>
-#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/exception/tool_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 

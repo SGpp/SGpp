@@ -7,7 +7,7 @@
 #define CONJUGATEGRADIENTSMPI_HPP
 
 #include <sgpp/solver/SLESolver.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
