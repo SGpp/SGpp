@@ -49,9 +49,13 @@ if env['SG_PYTHON']:
                        source=objs + [os.path.join("build", "pysgpp", "%s.i" % moduleName)],
                        SHLIBPREFIX='_',
                        CPPFLAGS=['--std=c++11', '-Wno-cast-qual'])
-  py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build", "pysgpp", "%s.py" % moduleName))
+  libInstallPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build", "pysgpp", "%s.py" % moduleName))
 
 Import('libraryTargetList')
 Import('installTargetList')
+
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
+
+if env['SG_PYTHON']:
+    installTargetList.append(libInstallPython)
