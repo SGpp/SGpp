@@ -162,7 +162,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
         #    # these modules don't currently have tests
             continue
         moduleTest = env.Test('#/' + moduleFolder + '/tests/test_' + moduleFolder + '.py')
-        env.Requires(moduleTest, installTargetList)
+        #env.Requires(moduleTest, installTargetList)
         env.Requires(moduleTest, pysgppInstall)
         env.Depends(moduleTest, pysgppSimpleImportTest)
         env.AlwaysBuild(moduleTest) 
