@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+
 #ifndef LEVELINDEXMASKOFFSETHELPER_HPP
 #define LEVELINDEXMASKOFFSETHELPER_HPP
 
@@ -83,6 +84,9 @@ namespace SGPP {
       }
     }
 
+    // TODO David
+    #if USE_DOUBLE_PRECISION==0
+
 
     namespace LevelIndexMaskOffsetHelperSP {
       template<KernelType T, typename C> struct rebuild {
@@ -133,6 +137,9 @@ namespace SGPP {
         op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_), *(op->offset_));
       }
     }
+
+#endif // USE_DOUBLE_PRECISION==0
+
 
   }
 }

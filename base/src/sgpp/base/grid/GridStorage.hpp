@@ -23,12 +23,12 @@ typedef unsigned int index_t;
  * Main typedef for GridIndex
  */
 //typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
-typedef HashGridIndex<level_t, index_t> GridIndex;
+typedef HashGridIndex GridIndex;
 
 /**
  * Main typedef for GridStorage
  */
-typedef HashGridStorage<GridIndex> GridStorage;
+typedef HashGridStorage GridStorage;
 
 }
 }
