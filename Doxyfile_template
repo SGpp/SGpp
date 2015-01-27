@@ -747,7 +747,8 @@ IMAGE_PATH             = doc/doxygen/images
 # If FILTER_PATTERNS is specified, this tag will be
 # ignored.
 
-INPUT_FILTER           = "python Doxyfile.INPUT_FILTER.py"
+#INPUT_FILTER           = "python Doxyfile.INPUT_FILTER.py"
+INPUT_FILTER           = 
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis.
@@ -764,7 +765,7 @@ FILTER_PATTERNS        =
 # INPUT_FILTER) will be used to filter the input files when producing source
 # files to browse (i.e. when SOURCE_BROWSER is set to YES).
 
-FILTER_SOURCE_FILES    = YES
+FILTER_SOURCE_FILES    = NO
 
 # The FILTER_SOURCE_PATTERNS tag can be used to specify source filters per file
 # pattern. A pattern will override the setting for FILTER_PATTERN (if any)

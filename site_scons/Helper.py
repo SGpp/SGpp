@@ -49,7 +49,10 @@ def print_cmd_line(s, target, src, env):
 
 #creates a Doxyfile containing proper module paths based on Doxyfile_template
 def prepareDoxyfile(modules):
+    '''Create Doxyfile(s) and overview-pages
+    @param modules list of modules'''
     
+    # create Doxyfile
     doxyFileTemplate = open('Doxyfile_template','r')
     doxyFile = open('Doxyfile', 'w')
 
@@ -73,3 +76,15 @@ def prepareDoxyfile(modules):
             doxyFile.write(line)
 
     doxyFile.close()
+    
+    # create example menu page
+    examplesFile = open('base/doc/doxygen/examples.doxy', 'w')
+    examplesFile.write('/**\n')
+    examplesFile.write('@page examples Examples\n')
+    examplesFile.write('This is a collection of examples from all modules.\n')
+    examplesFile.write('To add new examples, go to the respective folder module/doc/doxygen/\n')
+    examplesFile.write('and add a new example file code_examples_NAME.doxy\n')
+    for moduleName in modules:
+        for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy')):
+            examplesFile.write('- @subpage ' + subpage + '\n')
+    examplesFile.write('**/\n')
