@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 

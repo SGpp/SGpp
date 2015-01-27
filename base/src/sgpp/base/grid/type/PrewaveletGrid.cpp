@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/basis/prewavelet/PrewaveletBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp>
 
 
 #include <sgpp/globaldef.hpp>

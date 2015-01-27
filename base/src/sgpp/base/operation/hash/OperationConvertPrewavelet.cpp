@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
-#include <sgpp/base/basis/prewavelet/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/ConvertLinearToPrewavelet.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/ConvertPrewaveletToLinear.hpp>
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
 

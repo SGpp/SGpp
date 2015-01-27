@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 
 

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp>
-#include <sgpp/base/basis/linear/LinearBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 
 

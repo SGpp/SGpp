@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
-#include <sgpp/base/basis/periodic/LinearPeriodicBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 
 

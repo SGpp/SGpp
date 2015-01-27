@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include "PredictiveRefinementDimensionIndicator.hpp"
-#include <sgpp/base/basis/linear/LinearBasis.hpp>
-#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
-#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <map>
 #include <string>
 #include <utility>

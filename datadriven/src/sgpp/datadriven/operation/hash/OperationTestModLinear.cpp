@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/operation/hash/OperationTestModLinear.hpp>
-#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 

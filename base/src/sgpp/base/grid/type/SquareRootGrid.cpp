@@ -10,7 +10,7 @@
 //#include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
 //#include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 
-#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
 
 #include <iostream>

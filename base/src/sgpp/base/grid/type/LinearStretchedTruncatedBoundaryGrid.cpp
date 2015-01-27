@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/basis/linearStretchedBoundary/LinearStretchedBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 

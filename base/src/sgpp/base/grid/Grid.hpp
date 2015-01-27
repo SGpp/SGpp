@@ -8,7 +8,7 @@
 
 
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/basis/Basis.hpp>
+#include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
 #include <map>
