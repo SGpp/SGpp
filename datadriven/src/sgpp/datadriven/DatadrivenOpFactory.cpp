@@ -7,7 +7,6 @@
 
 #include <cstring>
 
-#include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/grid/type/PolyGrid.hpp>
@@ -36,8 +35,11 @@
 #include <sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationLinear.hpp>
 #include <sgpp/datadriven/operation/hash/OperationRegularizationDiagonalLinearBoundary.hpp>
 
+#ifdef __AVX__
+#include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 #include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
+#endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -162,16 +164,28 @@ base::OperationMultipleEval *createOperationMultipleEval(base::Grid &grid, base:
             if (configuration.subType != SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
                 throw base::factory_exception("OperationMultiEval is not implemented for this implementation subtype.");
             }
+#ifdef __AVX__
             return new datadriven::OperationMultiEvalStreaming(grid, dataset);
+#else
+      throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
+#endif
             break;
         case datadriven::OperationMultipleEvalType::SUBSPACELINEAR:
             switch (configuration.subType) {
             case SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT:
             case SGPP::datadriven::OperationMultipleEvalSubType::COMBINED:
+#ifdef __AVX__
                 return new datadriven::OperationMultipleEvalSubspaceCombined(grid, dataset);
+#else
+      throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
+#endif
                 break;
             case SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE:
+#ifdef __AVX__
                 return new datadriven::OperationMultipleEvalSubspaceSimple(grid, dataset);
+#else
+      throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
+#endif
                 break;
             default:
                 throw base::factory_exception("OperationMultiEval is not implemented for this implementation subtype.");
