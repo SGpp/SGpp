@@ -178,7 +178,7 @@ namespace SGPP {
         ~LearnerDensityCluster();
 
         /**
-         * The cluster function. Before the clustering the cluster configuration must be set with the function ::setClusterConfiguration
+         * The cluster function. Before the clustering the cluster configuration must be set with the function LearnerDensityCluster::setClusterConfiguration
          *
          * @param testDataset the given data
          * @param classes not used
@@ -225,7 +225,7 @@ namespace SGPP {
         void loadPrecalculatedValues(const char* filename);
 
         /**
-         * Cluster function. The grid values must be calculated with ::precalculateGridValues and the cluster configuration must be set with the function ::setClusterConfiguration
+         * Cluster function. The grid values must be calculated with LearnerDensityCluster::precalculateGridValues and the cluster configuration must be set with the function LearnerDensityCluster::setClusterConfiguration
          * @param trainDataset the data
          * @param GridConfig the grid configuration
          */

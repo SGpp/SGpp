@@ -25,7 +25,7 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param grid a referenz to the grid
+         * @param gridStorage pointer to the GridStorage of the grid
          */
         OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
 
