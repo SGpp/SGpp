@@ -7,8 +7,8 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/misc/operation/MiscOpFactory.hpp>
-#include <sgpp/misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp>
-#include <sgpp/misc/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp>
+#include <sgpp/pde/basis/linear/boundary/operation/OperationLaplaceEnhancedLinearBoundary.hpp>
 
 #include <sgpp/globaldef.hpp>
 

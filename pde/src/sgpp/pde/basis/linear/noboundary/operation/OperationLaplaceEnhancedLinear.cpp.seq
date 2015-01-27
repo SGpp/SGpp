@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include "misc/pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
+#include "pde/basis/linear/noboundary/operation/OperationLaplaceEnhancedLinear.hpp"
 
 #include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp"
 #include "misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp"
