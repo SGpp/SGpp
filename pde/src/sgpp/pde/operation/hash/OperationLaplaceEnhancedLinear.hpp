@@ -6,7 +6,7 @@
 #ifndef OPERATIONLAPLACEENHANCEDLINEAR_HPP
 #define OPERATIONLAPLACEENHANCEDLINEAR_HPP
 
-#include <sgpp/misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
+#include <sgpp/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
 
 #include <sgpp/globaldef.hpp>
 

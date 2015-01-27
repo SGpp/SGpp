@@ -23,7 +23,7 @@ allLanguageWrapperList = ['SG_PYTHON', 'SG_JAVA']
 ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
 
 # find all modules
-moduleFolders = ["base", "datadriven", "solver", "pde", "misc", "parallel"]  # getModules(ignoreFolders)
+moduleFolders = getModules(ignoreFolders)
 languageSupport = ['pysgpp']
 
 prepareDoxyfile(moduleFolders)

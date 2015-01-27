@@ -1,3 +1,5 @@
+
+
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -8,6 +10,7 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
+Import('PYSGPP_BUILD_PATH')
 Import('moduleName')
 
 dependencies = ["base", "pde"]
@@ -22,16 +25,44 @@ objs = []
 for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
     #objs.append(sourceFile)
- 
-lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgpppde'])
+
+lib = env.SharedLibrary(target="sgpp%s" % moduleName,
+                        source=objs,
+                        LIBPATH = [BUILD_DIR],
+                        LIBS=['sgppbase', 'sgpppde'])
+
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 libInstall = env.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows
-libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
+libStatic = env.StaticLibrary(target = "sgpp%sstatic" % moduleName,
+                              source = objs,
+                              SHLIBPREFIX = 'lib')
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
+
+if env['SG_PYTHON']:
+  py_env = env.Clone()
+  
+  py_env.AppendUnique(CPPFLAGS=['-w'])
+  if env['PLATFORM']=='cygwin':
+      py_env.Append(LIBS=['python2.7'])    
+  elif env['PLATFORM']=='darwin':
+      py_env['SHLIBSUFFIX'] = '.so'
+  
+  # build python module with swig
+  py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
+                        ['-D' + c for c in py_env['CPPDEFINES']],
+                      CPPPATH=['#/%s' % moduleName])
+  py_env.SharedLibrary(target=os.path.join('#', PYSGPP_BUILD_PATH, moduleName),
+                       source=[os.path.join("build", "pysgpp", "%s.i" % moduleName)],
+                       SHLIBPREFIX='_',
+                       CPPFLAGS=['--std=c++11'],
+                       LIBPATH = [BUILD_DIR],
+                       LIBS=['sgppbase', 'sgpppde', 'sgppsolver'])
+  py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH),
+                 os.path.join("build", "pysgpp", "%s.py" % moduleName))
 
 Import('libraryTargetList')
 Import('installTargetList')

@@ -5,8 +5,8 @@
 
 #include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
 
-#include <sgpp/misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.hpp>
-#include <sgpp/misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
