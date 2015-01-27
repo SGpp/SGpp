@@ -933,9 +933,8 @@ public:
     double x, y;
 };
 
-const alglib::complex operator/(const alglib::complex& lhs, const alglib::complex& rhs);
-const bool operator==(const alglib::complex& lhs, const alglib::complex& rhs);
-const bool operator!=(const alglib::complex& lhs, const alglib::complex& rhs);
+bool operator==(const alglib::complex& lhs, const alglib::complex& rhs);
+bool operator!=(const alglib::complex& lhs, const alglib::complex& rhs);
 const alglib::complex operator+(const alglib::complex& lhs);
 const alglib::complex operator-(const alglib::complex& lhs);
 const alglib::complex operator+(const alglib::complex& lhs, const alglib::complex& rhs);
