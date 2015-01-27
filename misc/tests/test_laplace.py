@@ -327,13 +327,13 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
         
         
-class TestOperationLaplaceLinearTrapezoidBoundary(unittest.TestCase):
+class TestOperationLaplaceLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
         m = generateLaplaceMatrix(factory, 4)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
@@ -347,7 +347,7 @@ class TestOperationLaplaceLinearTrapezoidBoundary(unittest.TestCase):
     def testHatRegular1D_two(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
         m = generateLaplaceMatrix(factory, 5)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
@@ -361,7 +361,7 @@ class TestOperationLaplaceLinearTrapezoidBoundary(unittest.TestCase):
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
+        factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
         m = generateLaplaceMatrix(factory, 3)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
@@ -375,7 +375,7 @@ class TestOperationLaplaceLinearTrapezoidBoundary(unittest.TestCase):
     def testHatRegulardD_two(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
+        factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
         m = generateLaplaceMatrix(factory, 2)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
@@ -384,13 +384,13 @@ class TestOperationLaplaceLinearTrapezoidBoundary(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
         
     
-class TestOperationLaplaceEnhancedLinearTrapezoidBoundary(unittest.TestCase):
+class TestOperationLaplaceEnhancedLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
         m = generateLaplaceEnhancedMatrix(factory, 4)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
@@ -404,7 +404,7 @@ class TestOperationLaplaceEnhancedLinearTrapezoidBoundary(unittest.TestCase):
     def testHatRegular1D_two(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
         m = generateLaplaceEnhancedMatrix(factory, 5)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
@@ -418,7 +418,7 @@ class TestOperationLaplaceEnhancedLinearTrapezoidBoundary(unittest.TestCase):
     def testHatRegulardD_one(self):  
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
+        factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
         m = generateLaplaceEnhancedMatrix(factory, 3)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
@@ -432,7 +432,7 @@ class TestOperationLaplaceEnhancedLinearTrapezoidBoundary(unittest.TestCase):
     def testHatRegulardD_two(self):
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
+        factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
         m = generateLaplaceEnhancedMatrix(factory, 2)
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')

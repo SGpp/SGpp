@@ -134,7 +134,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
 # @param resolution the number of testpoints in every dimension
-def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTestPrintND(dim, level, resolution):
+def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND(dim, level, resolution):
     node_values = None
     node_values_back = None
     alpha = None
@@ -146,7 +146,7 @@ def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTestPrintND
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     
@@ -306,7 +306,7 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
 ## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
-def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTest(dim, level):
+def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, level):
     node_values = None
     node_values_back = None
     alpha = None
@@ -319,7 +319,7 @@ def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTest(dim, l
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     

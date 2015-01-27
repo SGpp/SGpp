@@ -37,7 +37,7 @@ namespace SGPP {
       this->dim = stretching.getDimensions();
       this->levels = level;
 
-      this->myGrid = new LinearStretchedTrapezoidBoundaryGrid(stretching);
+      this->myGrid = new LinearStretchedTruncatedBoundaryGrid(stretching);
 
       GridGenerator* myGenerator = this->myGrid->createGridGenerator();
       myGenerator->regular(this->levels);

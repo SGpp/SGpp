@@ -283,9 +283,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -410,9 +410,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -601,9 +601,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -780,9 +780,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTrapezoidBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;

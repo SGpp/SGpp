@@ -8,16 +8,16 @@
 %newobject sg::base::Grid::createLinearGrid(size_t dim);
 %newobject sg::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject sg::base::Grid::createLinearBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearTrapezoidBoundaryGrid(BoudingBox& BB);
-%newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(Stretching& BB);
+%newobject sg::base::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
+%newobject sg::base::Grid::createLinearTruncatedBoundaryGrid(BoudingBox& BB);
+%newobject sg::base::Grid::createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+%newobject sg::base::Grid::createLinearStretchedTruncatedBoundaryGrid(Stretching& BB);
 %newobject sg::base::Grid::createModLinearGrid(size_t dim);
 %newobject sg::base::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject sg::base::Grid::createModWaveletGrid(size_t dim);
 %newobject sg::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
-%newobject sg::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
+%newobject sg::base::Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 %newobject sg::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sg::base::Grid::createPrewaveletGrid(size_t dim);
 
@@ -43,15 +43,15 @@ public:
 	static Grid* createLinearGrid(size_t dim);
 	static Grid* createLinearStretchedGrid(size_t dim);
 	static Grid* createLinearBoundaryGrid(size_t dim);
-	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
-	static Grid* createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
+	static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
+	static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 	static Grid* createModWaveletGrid(size_t dim);
 	static Grid* createModBsplineGrid(size_t dim, size_t degree);
     static Grid* createSquareRootGrid(size_t dim);
-	static Grid* createTruncatedTrapezoidGrid(size_t dim);
+	static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 	static Grid* createPrewaveletGrid(size_t dim);
 	
 	static Grid* unserialize(const std::string& istr); 

@@ -89,7 +89,7 @@ namespace SGPP {
       this->dim = stretching.getDimensions();
       this->levels = level;
 
-      this->myGrid = new SGPP::base::LinearStretchedTrapezoidBoundaryGrid(stretching);
+      this->myGrid = new SGPP::base::LinearStretchedTruncatedBoundaryGrid(stretching);
 
       SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
       myGenerator->regular(this->levels);

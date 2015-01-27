@@ -1,10 +1,10 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef TRUNCATEDTRAPEZOIDGRID_HPP_
-#define TRUNCATEDTRAPEZOIDGRID_HPP_
+#ifndef LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_
+#define LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
@@ -17,33 +17,33 @@ namespace SGPP {
 
     /**
      * grid with linear base functions with boundaries, pentagon cut
-     * Generalization of the LinearBoundary and LinearTrapezoidBoundary Grids
+     * Generalization of the LinearBoundary and LinearTruncatedBoundary Grids
      * The sparse grid does contain all fullgrids with |l|<a given level, and l_min>l_user
-     * For l_user=0 we obtain the LinearBoundaryGrid and for l_user=1 we obtain the linear trapezoid boundary grid
+     * For l_user=0 we obtain the LinearBoundaryGrid and for l_user=1 we obtain the linear truncated boundary grid
      */
-    class TruncatedTrapezoidGrid : public Grid {
+    class LinearGeneralizedTruncatedBoundaryGrid : public Grid {
       protected:
-        TruncatedTrapezoidGrid(std::istream& istr);
+        LinearGeneralizedTruncatedBoundaryGrid(std::istream& istr);
 
       public:
         /**
-         * Constructor Linear Trapezoid Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
          * @param dim the dimension of the grid
          */
-        TruncatedTrapezoidGrid(size_t dim);
+        LinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 
         /**
-         * Constructor Linear Trapezoid Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
          * @param BB the BoundingBox of the grid
          */
-        TruncatedTrapezoidGrid(BoundingBox& BB);
+        LinearGeneralizedTruncatedBoundaryGrid(BoundingBox& BB);
 
         /**
          * Destructor
          */
-        virtual ~TruncatedTrapezoidGrid();
+        virtual ~LinearGeneralizedTruncatedBoundaryGrid();
 
         virtual const char* getType();
 
@@ -57,4 +57,4 @@ namespace SGPP {
   }
 }
 
-#endif /* TRUNCATEDTRAPEZOIDGRID_HPP_ */
+#endif /* LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_ */

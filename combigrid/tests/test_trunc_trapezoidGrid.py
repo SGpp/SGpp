@@ -125,14 +125,14 @@ def buildParableBoundary(dim):
 
         
 
-class TestModTrapezoidGrid(unittest.TestCase):     
+class TestModTruncatedGrid(unittest.TestCase):     
     def test41(self):
         from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 8
         function = buildParableBoundary(dim)
-        grid = Grid.createTruncatedTrapezoidGrid(dim)
+        grid = Grid.createLinearGeneralizedTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
   
@@ -143,7 +143,7 @@ class TestModTrapezoidGrid(unittest.TestCase):
         dim = 3
         level = 4
         function = buildParableBoundary(dim)
-        grid = Grid.createTruncatedTrapezoidGrid(dim)
+        grid = Grid.createLinearGeneralizedTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
 
@@ -153,7 +153,7 @@ class TestModTrapezoidGrid(unittest.TestCase):
         dim = 4
         level = 4
         function = buildParableBoundary(dim)
-        grid = Grid.createTruncatedTrapezoidGrid(dim)
+        grid = Grid.createLinearGeneralizedTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)    
 
 
@@ -163,7 +163,7 @@ class TestModTrapezoidGrid(unittest.TestCase):
         dim = 2
         level = 8
         function = buildParableBoundary(dim)
-        grid = Grid.createTruncatedTrapezoidGrid(dim)
+        grid = Grid.createLinearGeneralizedTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function) 
 if __name__=='__main__':
     unittest.main()

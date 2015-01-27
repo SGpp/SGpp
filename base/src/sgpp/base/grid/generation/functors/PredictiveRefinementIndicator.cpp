@@ -139,9 +139,9 @@ size_t PredictiveRefinementIndicator::determineGridType(Grid* grid) {
 //	gridTypes.insert(std::make_pair("poly",7));
 	gridTypes.insert(std::make_pair("modlinear",8));
 //	gridTypes.insert(std::make_pair("modBspline",9));
-//	gridTypes.insert(std::make_pair("linearTrapezoidBoundary",10));
-//	gridTypes.insert(std::make_pair("linearStretchedTrapezoidBoundary",11));
-//	gridTypes.insert(std::make_pair("TruncatedTrapezoid",12));
+//	gridTypes.insert(std::make_pair("linearTruncatedBoundary",10));
+//	gridTypes.insert(std::make_pair("linearStretchedTruncatedBoundary",11));
+//	gridTypes.insert(std::make_pair("linearGeneralizedTruncatedBoundary",12));
 //	gridTypes.insert(std::make_pair("squareRoot",13));
 //	gridTypes.insert(std::make_pair("prewavelet",14));
 	gridTypes.insert(std::make_pair("linearBoundary",15));

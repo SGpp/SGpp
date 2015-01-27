@@ -68,8 +68,8 @@ namespace SGPP {
       }
 
       for (size_t i = 0; i < nrClasses; i++) {
-        if (GridConfig.type_ == SGPP::base::LinearTrapezoidBoundary) {
-          gridVec_.push_back(new SGPP::base::LinearTrapezoidBoundaryGrid(GridConfig.dim_));
+        if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
+          gridVec_.push_back(new SGPP::base::LinearTruncatedBoundaryGrid(GridConfig.dim_));
         } else if (GridConfig.type_ == SGPP::base::ModLinear) {
           gridVec_.push_back(new SGPP::base::ModLinearGrid(GridConfig.dim_));
         } else if (GridConfig.type_ == SGPP::base::Linear) {

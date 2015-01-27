@@ -120,7 +120,7 @@ namespace SGPP {
       this->dim = BoundingBox.getDimensions();
       this->levels = level;
 
-      this->myGrid = new base::LinearTrapezoidBoundaryGrid(BoundingBox);
+      this->myGrid = new base::LinearTruncatedBoundaryGrid(BoundingBox);
 
       SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
       myGenerator->regular(this->levels);

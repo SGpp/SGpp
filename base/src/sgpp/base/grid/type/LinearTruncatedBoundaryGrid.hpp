@@ -1,10 +1,10 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LINEARSTRETCHEDTRAPEZOIDBOUNDARYGRID_HPP
-#define LINEARSTRETCHEDTRAPEZOIDBOUNDARYGRID_HPP
+#ifndef LINEARTRUNCATEDBOUNDARYGRID_HPP
+#define LINEARTRUNCATEDBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -19,29 +19,29 @@ namespace SGPP {
     /**
      * grid with linear base functions with boundaries, pentagon cut
      */
-    class LinearStretchedTrapezoidBoundaryGrid : public Grid {
+    class LinearTruncatedBoundaryGrid : public Grid {
       protected:
-        LinearStretchedTrapezoidBoundaryGrid(std::istream& istr);
+        LinearTruncatedBoundaryGrid(std::istream& istr);
 
       public:
         /**
-         * Constructor Linear Trapezoid Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
          * @param dim the dimension of the grid
          */
-        LinearStretchedTrapezoidBoundaryGrid(size_t dim);
+        LinearTruncatedBoundaryGrid(size_t dim);
 
         /**
-         * Constructor Linear Trapezoid Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
-         * @param BB the Stretching of the grid
+         * @param BB the BoundingBox of the grid
          */
-        LinearStretchedTrapezoidBoundaryGrid(Stretching& BB);
+        LinearTruncatedBoundaryGrid(BoundingBox& BB);
 
         /**
          * Destructor
          */
-        virtual ~LinearStretchedTrapezoidBoundaryGrid();
+        virtual ~LinearTruncatedBoundaryGrid();
 
         virtual const char* getType();
 
@@ -55,4 +55,4 @@ namespace SGPP {
   }
 }
 
-#endif /* LINEARSTRETCHEDTRAPEZOIDBOUNDARYGRID_HPP */
+#endif /* LINEARTRUNCATEDBOUNDARYGRID_HPP */

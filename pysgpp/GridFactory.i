@@ -6,16 +6,16 @@
 %newobject SGPP::base::Grid::createLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearBoundaryGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearTrapezoidBoundaryGrid(SGPP::base::BoudingBox& BB);
-%newobject SGPP::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearStretchedTrapezoidBoundaryGrid(SGPP::base::Stretching& BB);
+%newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(SGPP::base::BoudingBox& BB);
+%newobject SGPP::base::Grid::createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearStretchedTruncatedBoundaryGrid(SGPP::base::Stretching& BB);
 %newobject SGPP::base::Grid::createModLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModWaveletGrid(size_t dim);
 %newobject SGPP::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
-%newobject SGPP::base::Grid::createTruncatedTrapezoidGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createSquareRootGrid(size_t dim);
 %newobject SGPP::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject SGPP::base::Grid::createPeriodicGrid(size_t dim);
@@ -49,8 +49,8 @@ typedef enum mail_ {
     Linear = 0,
     LinearStretched = 1,
     LinearBoundary = 2,
-    LinearTrapezoidBoundary = 3,
-    LinearStretchedTrapezoidBoundary = 4,
+    LinearTruncatedBoundary = 3,
+    LinearStretchedTruncatedBoundary = 4,
     ModLinear = 5,
     Poly = 6,
     ModPoly = 7,
@@ -58,7 +58,7 @@ typedef enum mail_ {
     ModBspline = 9,
     Prewavelet = 10,
     SquareRoot = 11,
-    TruncatedTrapezoid = 12,
+    LinearGeneralizedTruncatedBoundary = 12,
     Periodic = 13
 } GridType;
 
@@ -68,15 +68,15 @@ public:
 	static Grid* createLinearGrid(size_t dim);
 	static Grid* createLinearStretchedGrid(size_t dim);
 	static Grid* createLinearBoundaryGrid(size_t dim);
-	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
-	static Grid* createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
+	static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
+	static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
 	static Grid* createModWaveletGrid(size_t dim);
 	static Grid* createModBsplineGrid(size_t dim, size_t degree);
     static Grid* createSquareRootGrid(size_t dim);
-	static Grid* createTruncatedTrapezoidGrid(size_t dim);
+	static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 	static Grid* createPrewaveletGrid(size_t dim);
 	static Grid* createLinearGridStencil(size_t dim);
 	static Grid* createModLinearGridStencil(size_t dim);

@@ -9,10 +9,10 @@
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include "../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
 
 
 namespace SGPP {

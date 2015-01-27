@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef SQUAREROOTGRID_HPP_
@@ -24,14 +24,14 @@ namespace SGPP {
 
       public:
         /**
-         * Constructor Linear Trapezoid Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
          * @param dim the dimension of the grid
          */
         SquareRootGrid(size_t dim);
 
         /**
-         * Constructor Linear Trapezoid Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
          * @param BB the BoundingBox of the grid
          */
