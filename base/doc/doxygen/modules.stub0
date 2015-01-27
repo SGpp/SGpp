@@ -10,6 +10,7 @@ SG++ is grouped into several modules. This ensures
 
 The modules correspond to the corresponding namespaces in C++. Roughly, all files belonging to a namespace belong to the respective module. But a module can contain files belonging to some another namespace, especially static factory methods in the namespace SGPP::op_factory.
 
+<!--
 @dot
 digraph G {
 	rankdir=BT;
@@ -20,6 +21,7 @@ digraph G {
 
 }
 @enddot
+-->
 
 The modules can depend on each other. Especially all depend on the base module.
 Libraries are generated for all modules. The following modules are available:

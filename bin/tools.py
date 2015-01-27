@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
@@ -818,6 +818,8 @@ def checkData(data):
 # perform sequential(!) split of dataset in num_partitions partitions for n-fold-cv
 # split data into folds,
 # return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
+# @param data Dataset 
+# @param num_partitions The number of n partitions to split in.
 #-------------------------------------------------------------------------------
 def split_n_folds_sequential(data, num_partitions):
     dim = len(data["data"])

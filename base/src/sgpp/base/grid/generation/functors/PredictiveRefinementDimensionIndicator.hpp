@@ -50,6 +50,8 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
      * (given value of data point - evaluation of sparse grid at the data point position) for each grid point in dataSet.
      * @param refinements_num the amount of grid points to maximally be refined or created, depending on refinement strategy.
      * @param threshold The absolute value of the entries have to be greater or equal than the threshold
+     * @param minSupportPoints The minimal number of data points that have to be within the support of a basis function
+     * for refinement.
      */
     PredictiveRefinementDimensionIndicator(Grid* grid, DataMatrix* dataSet, DataVector* errorVector,
                                            size_t refinements_num = 1, double threshold = 0.0, long unsigned int minSupportPoints = 0);
