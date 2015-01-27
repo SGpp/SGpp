@@ -24,7 +24,7 @@ alglib/statistics.cpp
 """)
 
 alglib_env = env.Clone()
-alglib_env.AppendUnique(CPPFLAGS=['-Wno-conversion', '-Wno-unused-variable', '-Wno-maybe-uninitialized', '-fPIC'], CPPPATH=['#/tools/alglib'] )
+alglib_env.AppendUnique(CPPFLAGS=['-Wno-format-nonliteral', '-Wno-redundant-decls', '-Wno-extra', '-Wno-ignored-qualifiers', '-Wno-conversion', '-Wno-unused-variable', '-Wno-maybe-uninitialized', '-fPIC'], CPPPATH=['#/tools/alglib'] )
 
 alglibobjects = []
 for source in srcs:

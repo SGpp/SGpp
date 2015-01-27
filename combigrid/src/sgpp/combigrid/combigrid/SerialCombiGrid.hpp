@@ -31,6 +31,8 @@ namespace combigrid {
         ;
       }
 
+      virtual ~SerialCombiGrid() {}
+
       /** see superclass for docu */
       virtual void createFullGrids() ;
 
