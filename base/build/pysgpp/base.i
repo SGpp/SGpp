@@ -99,19 +99,15 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
-%include "base/src/sgpp/base/grid/generation/hashmap/SubspaceCoarsening.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
-%include "base/src/sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorContainer.hpp"
-%include "base/src/sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp"
 //%include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 //%include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
 //%include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp"
-%include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
@@ -166,8 +162,6 @@ namespace std {
 %apply std::string *INPUT { std::string& istr };
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-%template(GridIndex) SGPP::base::HashGridIndex<unsigned int, unsigned int>;
-%template(GridStorage) SGPP::base::HashGridStorage<SGPP::base::GridIndex>;
 
 %template(SLinearBase) SGPP::base::LinearBasis<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) SGPP::base::LinearBoundaryBasis<unsigned int, unsigned int>;
