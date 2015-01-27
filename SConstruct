@@ -114,7 +114,8 @@ env.Append(CPPDEFINES=cppdefines)
 Export('env')
 
 #Install alglib
-libalglib, alglibstatic  = SConscript('tools/SConscriptAlglib', variant_dir='tmp/build_alglib', duplicate=0)
+
+libalglib, alglibstatic  = env.SConscript('tools/SConscriptAlglib', variant_dir='tmp/build_alglib', duplicate=0)
 alglibinst = env.Install(env['OUTPUT_PATH'] + 'lib/alglib', [libalglib, alglibstatic])
   
 env.Append(CPPPATH=['#/tools'])

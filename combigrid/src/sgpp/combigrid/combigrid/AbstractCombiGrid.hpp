@@ -52,7 +52,7 @@ namespace combigrid {
       }
 
       /** Dtor which deletes the kernel */
-      ~AbstractCombiGrid() {
+      virtual ~AbstractCombiGrid() {
         // delete the kernel, and with it all the full grids
         delete combikernel_;
       }

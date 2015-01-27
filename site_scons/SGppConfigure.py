@@ -72,7 +72,7 @@ def doConfigure(env, moduleFolders):
                 sys.stderr.write('Warning: Cannot find NumPy header files in: "' + str(numpy_path) + '", disabling unit tests\n')
                 env['NO_UNIT_TESTS'] = True
         except:
-            sys.stderr.write('Warning: Numpy doesn\'t seem to be installed\n')
+            sys.stderr.write('Warning: Numpy doesn\'t seem to be installed. Disabling unit tests\n')
             env['NO_UNIT_TESTS'] = True
     else:
         print 'Warning: Python extension ("SG_PYTHON") not enabled, skipping python unit tests'

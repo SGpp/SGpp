@@ -109,6 +109,7 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
 
 objs = []
 for sourceFile in srcs:
+    print sourceFile
     objs.append(env_parallel.SharedObject(sourceFile))
 
 lib = env_parallel.SharedLibrary(target="sgpp" + moduleName, source=objs, LIBPATH=BUILD_DIR, LIBS=['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppsolver'])
