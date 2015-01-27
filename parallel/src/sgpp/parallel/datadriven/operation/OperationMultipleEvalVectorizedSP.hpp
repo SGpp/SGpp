@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+
 #ifndef OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP
 
@@ -15,6 +16,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+// TODO David
+#if USE_DOUBLE_PRECISION==0
 
 namespace SGPP {
   namespace parallel {
@@ -113,5 +116,7 @@ namespace SGPP {
 
   }
 }
+
+#endif // USE_DOUBLE_PRECISION==0
 
 #endif /* OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP */

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "OnlinePredictiveRefinementDimensionOld.hpp"
-#include <sgpp/base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 
 
@@ -144,8 +143,8 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 			// output counter sum
 			index_type it = *index;
 			size_t d = iter->first.second;
-			index_type::level_type lvl = it.getLevel(d);
-			index_type::level_type idx = it.getIndex(d);
+			auto lvl = it.getLevel(d);
+			auto idx = it.getIndex(d);
 			it.set(d, lvl+1, idx*2-1);
 			long unsigned int counter = 0;
 			if (predFunctor->countersMap.find(it) != predFunctor->countersMap.end()){

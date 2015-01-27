@@ -177,21 +177,6 @@ namespace SGPP {
     	 */
     	~LearnerDensityCluster();
 
-<<<<<<< .mine
-    	/**
-    	 * The cluster function. Before the clustering the cluster configuration must be set with the function ::setClusterConfiguration
-    	 *
-    	 * @param testDataset the given data
-    	 * @param classes not used
-    	 * @param GridConfig the grid configuration
-    	 * @param SolverConfig the solver configuration
-    	 * @param lambda the regularization parameter
-    	 * @return TODO: empty
-    	 */
-    	SGPP::datadriven::LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
-    						  const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-    						  const double lambda);
-=======
         /**
          * The cluster function. Before the clustering the cluster configuration must be set with the function LearnerDensityCluster::setClusterConfiguration
          *
@@ -205,7 +190,6 @@ namespace SGPP {
         SGPP::datadriven::LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
                                               const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
                                               const double lambda);
->>>>>>> .r4048
 
     	/**
     	 * TODO: Not implemented
@@ -240,21 +224,12 @@ namespace SGPP {
     	 */
     	void loadPrecalculatedValues(const char * filename);
 
-<<<<<<< .mine
-    	/**
-    	 * Cluster function. The grid values must be calculated with ::precalculateGridValues and the cluster configuration must be set with the function ::setClusterConfiguration
-    	 * @param trainDataset the data
-    	 * @param GridConfig the grid configuration
-    	 */
-    	void cluster(SGPP::base::DataMatrix& trainDataset, const SGPP::base::RegularGridConfiguration& GridConfig);
-=======
         /**
          * Cluster function. The grid values must be calculated with LearnerDensityCluster::precalculateGridValues and the cluster configuration must be set with the function LearnerDensityCluster::setClusterConfiguration
          * @param trainDataset the data
          * @param GridConfig the grid configuration
          */
         void cluster(SGPP::base::DataMatrix& trainDataset, const SGPP::base::RegularGridConfiguration& GridConfig);
->>>>>>> .r4048
 
     	/**
     	 * Set the cluster configuration

@@ -21,10 +21,10 @@ namespace SGPP {
      */
     class AbstractRefinement {
       public:
-        typedef GridStorage::index_type index_type;
-        typedef GridStorage::index_pointer index_pointer;
-        typedef index_type::index_type index_t;
-        typedef index_type::level_type level_t;
+        typedef HashGridIndex index_type;
+        typedef HashGridStorage::index_pointer index_pointer;
+        typedef HashGridIndex::index_type index_t;
+        typedef HashGridIndex::level_type level_t;
 
         /**
          * Refines a grid according to a RefinementFunctor provided.
