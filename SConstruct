@@ -151,7 +151,6 @@ if env['SG_JAVA']:
     jinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'),
                         [libjsgpp])
 
-
 # Unit tests
 #########################################################################
 
