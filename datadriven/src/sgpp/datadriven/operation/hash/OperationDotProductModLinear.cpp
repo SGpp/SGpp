@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
 
 #include "OperationDotProductModLinear.hpp"
 
@@ -15,7 +15,7 @@ namespace SGPP {
   namespace datadriven {
 
     double OperationDotProductModLinear::eval(base::DataVector& x1, base::DataVector& x2) {
-      base::ModifiedLinearBasis<unsigned int, unsigned int> base;
+      base::LinearModifiedBasis<unsigned int, unsigned int> base;
       GridStorage::index_type::level_type work_level = 1;
       GridStorage::index_type::index_type work_index;
 	  GridStorage::index_type::level_type temp;

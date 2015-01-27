@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
+#include <sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -49,7 +49,7 @@ protected:
 	/// Pointer to GridStorage object
 	GridStorage* storage;
 	/// Mod Bspline Basis object
-	SModBsplineBase base;
+	SBsplineModifiedBase base;
 };
 
 }

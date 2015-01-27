@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-#include <sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp>
+#include <sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp>
 
 
 
@@ -37,7 +37,7 @@ namespace SGPP {
     }
 
     const SBasis& ModWaveletGrid::getBasis(){
-		static SModWaveletBase basis;
+		static SWaveletModifiedBase basis;
 		return basis;
 	}
 

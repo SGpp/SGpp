@@ -9,7 +9,7 @@
 #include <sgpp/datadriven/operation/hash/OperationTest.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -48,7 +48,7 @@ namespace SGPP {
         /// Pointer to base::GridStorage object
         base::GridStorage* storage;
         /// Mod Poly Basis object
-        base::SModPolyBase base;
+        base::SPolyModifiedBase base;
     };
 
   }

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
 
 
 #include <iostream>

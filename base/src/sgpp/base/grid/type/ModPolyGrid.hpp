@@ -7,7 +7,7 @@
 #define MODPOLYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/basis/modpoly/ModifiedPolyBasis.hpp>
+#include <sgpp/base/basis/polyModified/PolyModifiedBasis.hpp>
 
 
 #include <iostream>
@@ -52,7 +52,7 @@ namespace SGPP {
       protected:
         /// max. polynom's degree
         size_t degree;
-        const SModPolyBase* basis_;
+        const SPolyModifiedBase* basis_;
     };
 
   }

@@ -8,7 +8,7 @@
 
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
+#include <sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -43,7 +43,7 @@ namespace SGPP {
         /// Pointer to GridStorage object
         GridStorage* storage;
         /// Mod Bspline Basis object
-        SModBsplineBase base;
+        SBsplineModifiedBase base;
     };
 
   }

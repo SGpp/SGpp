@@ -18,7 +18,7 @@ namespace SGPP {
       typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
       IndexValVector vec;
-      GetAffectedBasisFunctions<SModPolyBase> ga(storage);
+      GetAffectedBasisFunctions<SPolyModifiedBase> ga(storage);
 
       ga(base, point, vec);
 

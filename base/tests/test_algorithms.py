@@ -53,10 +53,10 @@ class TestBase(unittest.TestCase):
 
         self.baseTest(b, points)             
         
-    def testModifiedLinear(self):
-        from pysgpp import SModLinearBase
+    def testLinearModified(self):
+        from pysgpp import SLinearModifiedBase
         
-        b = SModLinearBase()
+        b = SLinearModifiedBase()
         
         points = [(1, 1, 0.5, 1.0),
                   (1, 1, 0.25, 1.0),
@@ -126,11 +126,11 @@ class TestBase(unittest.TestCase):
 #        self.baseTest(b, points)
 #
 #    def testModPoly(self):
-#        from pysgpp import SModPolyBase
+#        from pysgpp import SPolyModifiedBase
 #        
-#        self.failUnlessRaises(Exception, SModPolyBase, -1)
+#        self.failUnlessRaises(Exception, SPolyModifiedBase, -1)
 #        
-#        b = SModPolyBase(0)
+#        b = SPolyModifiedBase(0)
 #        points = [(1, 1, 0.5, 1.0),
 #                  (1, 1, 0.25, 1.0),
 #                  (2, 1, 0.25, 1.0),
@@ -141,7 +141,7 @@ class TestBase(unittest.TestCase):
 #
 #        self.baseTest(b, points)
 #
-#        b = SModPolyBase(1)
+#        b = SPolyModifiedBase(1)
 #        points = [(1, 1, 0.5, 1.0),
 #                  (1, 1, 0.25, 1.0),
 #                  
@@ -164,7 +164,7 @@ class TestBase(unittest.TestCase):
 #
 #        self.baseTest(b, points)
 #
-#        b = SModPolyBase(2)
+#        b = SPolyModifiedBase(2)
 #        points = [(1, 1, 0.5, 1.0),
 #                  (1, 1, 0.25, 1.0),
 #                  

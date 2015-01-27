@@ -5,7 +5,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
 
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 

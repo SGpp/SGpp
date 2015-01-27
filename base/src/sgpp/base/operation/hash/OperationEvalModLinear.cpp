@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
-#include <sgpp/base/basis/modlinear/ModifiedLinearBasis.hpp>
+#include <sgpp/base/basis/linearModified/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinear.hpp>
 
 
@@ -20,8 +20,8 @@ namespace SGPP {
       typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
       IndexValVector vec;
-      ModifiedLinearBasis<unsigned int, unsigned int> base;
-      GetAffectedBasisFunctions<ModifiedLinearBasis<unsigned int, unsigned int> > ga(storage);
+      LinearModifiedBasis<unsigned int, unsigned int> base;
+      GetAffectedBasisFunctions<LinearModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
       ga(base, point, vec);
 

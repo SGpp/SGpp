@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
 
-#include <sgpp/base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp>
+#include <sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalLinearStretched.hpp>
 

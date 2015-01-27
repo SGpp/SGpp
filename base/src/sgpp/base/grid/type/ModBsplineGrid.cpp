@@ -40,7 +40,7 @@ namespace SGPP {
 
     const SBasis& ModBsplineGrid::getBasis(){
     	if (basis_ == NULL){
-			basis_ = new SModBsplineBase(degree);
+			basis_ = new SBsplineModifiedBase(degree);
 		}
 		return *basis_;
 	}

@@ -8,9 +8,9 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/basis/modwavelet/ModifiedWaveletBasis.hpp>
-#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
-#include <sgpp/base/basis/linear/boundary/LinearBoundaryBasis.hpp>
+#include <sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp>
+#include <sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp>
+#include <sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp>
 
 #include <vector>
 #include <utility>
@@ -205,8 +205,8 @@ protected:
 // * Template Specialization for mod_Wavelet basis.
 // */
 //template<>
-//class GetAffectedBasisFunctions<ModifiedWaveletBasis<unsigned int, unsigned int> > {
-//    typedef ModifiedWaveletBasis<unsigned int, unsigned int> SModWaveletBase;
+//class GetAffectedBasisFunctions<WaveletModifiedBasis<unsigned int, unsigned int> > {
+//    typedef WaveletModifiedBasis<unsigned int, unsigned int> SWaveletModifiedBase;
 //public:
 //    GetAffectedBasisFunctions(GridStorage* storage) :
 //        storage(storage) {
@@ -215,7 +215,7 @@ protected:
 //    ~GetAffectedBasisFunctions() {
 //    }
 //
-//    void operator()(SModWaveletBase& basis, std::vector<double>& point,
+//    void operator()(SWaveletModifiedBase& basis, std::vector<double>& point,
 //            std::vector<std::pair<size_t, double> >& result) {
 //        GridStorage::grid_iterator working(storage);
 //
@@ -249,7 +249,7 @@ protected:
 //protected:
 //    GridStorage* storage;
 //
-//    void rec(SModWaveletBase& basis, std::vector<double>& point,
+//    void rec(SWaveletModifiedBase& basis, std::vector<double>& point,
 //            size_t current_dim, double value,
 //            GridStorage::grid_iterator& working,
 //            GridStorage::index_type::index_type* source, std::vector<std::pair<
@@ -381,9 +381,9 @@ protected:
 // * Template Specialization for B-Spline basis.
 // **/
 //template<>
-//class GetAffectedBasisFunctions<ModifiedBsplineBasis<unsigned int, unsigned int> >
+//class GetAffectedBasisFunctions<BsplineModifiedBasis<unsigned int, unsigned int> >
 //{
-//    typedef ModifiedBsplineBasis<unsigned int, unsigned int> SModBsplineBase;
+//    typedef BsplineModifiedBasis<unsigned int, unsigned int> SBsplineModifiedBase;
 //public:
 //    GetAffectedBasisFunctions(GridStorage* storage) : storage(storage)
 //    {
@@ -391,7 +391,7 @@ protected:
 //
 //    ~GetAffectedBasisFunctions() {}
 //
-//    void operator()(SModBsplineBase& base, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
+//    void operator()(SBsplineModifiedBase& base, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result)
 //    {
 //        GridStorage::grid_iterator working(storage);
 //
@@ -434,7 +434,7 @@ protected:
 //     * Example implementation of storage agnostic algorithm.
 //     * Returns all affected base functions
 //     */
-//    void rec(SModBsplineBase& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
+//    void rec(SBsplineModifiedBase& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result)
 //    {
 //        typedef GridStorage::index_type::level_type level_type;
 //        typedef GridStorage::index_type::index_type index_type;

@@ -7,7 +7,7 @@
 #define MODBSPLINEGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/basis/modbspline/ModifiedBsplineBasis.hpp>
+#include <sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp>
 
 #include <iostream>
 
@@ -54,7 +54,7 @@ namespace SGPP {
         // degree of Bspline
         size_t degree;
 
-        const SModBsplineBase* basis_;
+        const SBsplineModifiedBase* basis_;
 
 
     };
