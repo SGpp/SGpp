@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 
 #include <sgpp/globaldef.hpp>
 

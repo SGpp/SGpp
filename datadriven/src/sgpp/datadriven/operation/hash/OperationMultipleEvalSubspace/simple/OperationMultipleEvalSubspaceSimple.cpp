@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <limits>
-#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 
 #include <sgpp/globaldef.hpp>
 

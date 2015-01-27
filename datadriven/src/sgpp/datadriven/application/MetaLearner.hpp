@@ -18,7 +18,7 @@
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
-#include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/CommonParameters.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
