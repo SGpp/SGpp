@@ -147,8 +147,8 @@ def doConfigure(env, moduleFolders):
     
     elif env['TARGETCPU'] == 'ICC':
         print "Using icc"
-        env.Append(CPPFLAGS=['-Wall', '-ansi', '-Werror', '-Wno-deprecated', '-wd1125',
-                               '-fno-strict-aliasing', '-O3',
+        env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
+                               '-fno-strict-aliasing', 
                                '-ip', '-ipo', '-funroll-loops', '-msse3',
                                '-ansi-alias', '-fp-speculation=safe',
                                '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
