@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
@@ -89,11 +89,12 @@ def prepareDoxyfile(modules):
     # create example menu page
     examplesFile = open('base/doc/doxygen/examples.doxy', 'w')
     examplesFile.write('/**\n')
-    examplesFile.write('@page examples Examples\n')
+    examplesFile.write('@page examples Examples\n\n')
     examplesFile.write('This is a collection of examples from all modules.\n')
     examplesFile.write('To add new examples, go to the respective folder module/doc/doxygen/\n')
-    examplesFile.write('and add a new example file code_examples_NAME.doxy\n')
+    examplesFile.write('and add a new example file code_examples_NAME.doxy with doxygen-internal\n')
+    examplesFile.write('name code_examples_NAME.\n\n')
     for moduleName in modules:
         for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy')):
-            examplesFile.write('- @subpage ' + subpage + '\n')
+            examplesFile.write('- @subpage ' + (os.path.split(subpage)[-1]).rstrip('.doxy') + '\n')
     examplesFile.write('**/\n')

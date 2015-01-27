@@ -1,5 +1,5 @@
 /**
-@page code_examples Quick-Start: Short Code Examples
+@page code_examples_quick_start Quick-Start: Short Code Examples
 
 To be able to quickly start with a toolkit, it is often advantageous
 (not only for the impatient users), to look at some code examples
@@ -62,19 +62,19 @@ This includes the typicial python header. Then, the module sys is
 imported. The list @c sys.path includes the search paths for modules. To
 be able to import the module pysgpp, we have to add the directory
 <tt>../lib/pysgpp</tt> to the search path. After that, we import the two classes
-DataVector and @link SGPP::base::Grid Grid() @endlink, which we require afterwards.
+DataVector and @link sg::base::Grid Grid() @endlink, which we require afterwards.
 
 @until dimensionality
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
-@link SGPP::base::Grid.createLinearGrid() Grid.createLinearGrid()
+@link sg::base::Grid.createLinearGrid() Grid.createLinearGrid()
 @endlink. Then we obtain a reference to the Grid's 
 GridStorage-object, which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points. 
 
 @until number
-Here, we use a @link SGPP::base::GridGenerator GridGenerator() @endlink to
+Here, we use a @link sg::base::GridGenerator GridGenerator() @endlink to
 create a regular sparse grid of level 
 3. Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
@@ -131,10 +131,10 @@ This results in the same output as before,
 @subsection code_examples__cpp_linebyline Explanations line by line
 
 @dontinclude c++_simple.cpp
-@until SGPP::base;
+@until sg::base;
 Apart from iostream, we have to include the header files of all
 classes we are using. Finally, we import the namespaces std, sg, and (to
-simplify the example) SGPP::base.
+simplify the example) sg::base.
 
 @until }
 defines the function @f$f@f$ we want to interpolate.
@@ -142,13 +142,13 @@ defines the function @f$f@f$ we want to interpolate.
 @until dimensionality
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
-SGPP::Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+sg::Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
 GridStorage-object, which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points. 
 
 @until number
-Here, we use a SGPP::GridGenerator to create a regular sparse grid of level
+Here, we use a sg::GridGenerator to create a regular sparse grid of level
 3. Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
 
@@ -167,7 +167,7 @@ function value at the grid point's coordinates which are obtained by @c abs(dim)
 The current coefficient vector is then printed.
 
 @until cout << alpha
-An object SGPP::OperationHierarchisation is created and used to hierarchize 
+An object sg::OperationHierarchisation is created and used to hierarchize 
 the coefficient vector, which we print.
 
 @until u(

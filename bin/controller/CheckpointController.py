@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
@@ -7,7 +7,6 @@
                                     #
 #############################################################################
 
-# @version $HEAD$
 from pysgpp import createOperationLaplace, createOperationIdentity
 from bin.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
 from bin.controller.LearnerEventController import LearnerEventController
