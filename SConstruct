@@ -184,6 +184,8 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
       # run minimal test after compilation
       pysgppSimpleImportTest = env.SimpleTest(os.path.join('#', moduleFolder, 'tests', 'test_import.py'))
       env.Requires(pysgppSimpleImportTest, moduleSharedLibFile)
+      env.Requires(pysgppSimpleImportTest, installTargetList)
+      env.Requires(pysgppSimpleImportTest, libraryTargetList)
       env.AlwaysBuild(pysgppSimpleImportTest)
       env.Depends(moduleTest, pysgppSimpleImportTest)
       env.AlwaysBuild(moduleTest)
