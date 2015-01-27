@@ -10,7 +10,7 @@ Again, we deal with the function
 which we first interpolate. We then integrate the interpolant, then
 the function itself using 100000 Monte Carlo points, and we then 
 compute the L2-error.
-@see @ref code_examples
+@see @ref code_examples_quick_start
 
 @section code_examples_quadrature__overview Overview
 - @ref code_examples_quadrature__python
