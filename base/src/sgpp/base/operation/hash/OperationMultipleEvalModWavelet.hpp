@@ -23,7 +23,7 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param storage the grid's GridStorage object
+         * @param grid grid
          * @param dataset data
          */
         OperationMultipleEvalModWavelet(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {

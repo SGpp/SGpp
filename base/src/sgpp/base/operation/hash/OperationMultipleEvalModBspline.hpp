@@ -26,7 +26,7 @@ public:
 	/**
 	 * Constructor
 	 *
-	 * @param storage the grid's GridStorage object
+	 * @param grid grid
 	 * @param degree the Bspline's degree
 	 * @param dataset the dataset that should be evaluated
 	 */
