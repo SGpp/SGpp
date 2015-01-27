@@ -8,6 +8,8 @@
 %module(directors="1") base
 %feature("docstring");
 
+%include "../../../base/src/sgpp/globaldef.hpp"
+
 %include "stl.i"
 %include "std_vector.i"
 %include "std_pair.i"
@@ -67,6 +69,7 @@ namespace std {
 // This should include all necessary header files
 %{
 #include "src/sgpp_base.hpp"
+using namespace SGPP::base;
 %}
 
 // include other interface files

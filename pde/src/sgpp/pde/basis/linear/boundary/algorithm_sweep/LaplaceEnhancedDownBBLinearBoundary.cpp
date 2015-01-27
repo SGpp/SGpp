@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/misc/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedUpBBLinearBoundary.hpp>
+#include <sgpp/pde/basis/linear/boundary/algorithm_sweep/LaplaceEnhancedDownBBLinearBoundary.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -11,38 +11,55 @@
 namespace SGPP {
   namespace pde {
 
-    LaplaceEnhancedUpBBLinearBoundary::LaplaceEnhancedUpBBLinearBoundary(SGPP::base::GridStorage* storage) : LaplaceEnhancedUpBBLinear(storage) {
+    LaplaceEnhancedDownBBLinearBoundary::LaplaceEnhancedDownBBLinearBoundary(SGPP::base::GridStorage* storage) : LaplaceEnhancedDownBBLinear(storage) {
     }
 
-    LaplaceEnhancedUpBBLinearBoundary::~LaplaceEnhancedUpBBLinearBoundary() {
+    LaplaceEnhancedDownBBLinearBoundary::~LaplaceEnhancedDownBBLinearBoundary() {
     }
 
-    void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
+    void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
       q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
       t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
       double q_reci = 1.0 / q_;
+
+      //    h_table_ = new double[MAX_TABLE_DEPTH+1];
+      //    grad_table_ = new double[MAX_TABLE_DEPTH+1];
+      //
+      //    for (int i = 0; i <= MAX_TABLE_DEPTH; i++)
+      //    {
+      //        h_table_[i] = 1.0/static_cast<double>(1<<i);
+      //        grad_table_[i] = (static_cast<double>(1<<(i+1)))/q;
+      //    }
 
       ptr_source_ = source.getPointer();
       ptr_result_ = result.getPointer();
       cur_algo_dim_ = this->algoDims[dim];
 
-      size_t seq_left;
-      size_t seq_right;
-
+      /*
+       * Handle Level 0
+       */
+      // This handles the diagonal only
+      //////////////////////////////////////
       // left boundary
-      seq_left = index.seq();
+      index.left_levelzero(this->algoDims[dim]);
+      size_t seq_left = index.seq();
+
       // right boundary
       index.right_levelzero(this->algoDims[dim]);
-      seq_right = index.seq();
-      index.left_levelzero(this->algoDims[dim]);
+      size_t seq_right = index.seq();
 
       if (q_ != 1.0 || t_ != 0.0) {
         size_t i = 0;
 
         for (i = 0; i < this->numAlgoDims_ - 1; i += 2) {
+          double fl1 = source.get(seq_left, i);
+          double fl2 = source.get(seq_left, i + 1);
+          double fr1 = source.get(seq_right, i);
+          double fr2 = source.get(seq_right, i + 1);
+
           if (dim == i) {
-            double fl2 = 0.0;
-            double fr2 = 0.0;
+            calcGradBoundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_reci);
+            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
 
             if (!index.hint()) {
               index.top(dim);
@@ -53,12 +70,9 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, q_reci);
-            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
           } else if (dim == i + 1) {
-            double fl1 = 0.0;
-            double fr1 = 0.0;
+            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
+            calcGradBoundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_reci);
 
             if (!index.hint()) {
               index.top(dim);
@@ -69,14 +83,9 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
-            calcGradBoundary(0.0, 0.0, seq_left, seq_right, i + 1, cur_algo_dim_, q_reci);
           } else {
-            double fl1 = 0.0;
-            double fr1 = 0.0;
-            double fl2 = 0.0;
-            double fr2 = 0.0;
+            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
+            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
 
             if (!index.hint()) {
               index.top(dim);
@@ -87,14 +96,16 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
-            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
           }
         }
 
         for ( ; i < this->numAlgoDims_; i++) {
+          double fl = source.get(seq_left, i);
+          double fr = source.get(seq_right, i);
+
           if (dim == i) {
+            calcGradBoundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, q_reci);
+
             if (!index.hint()) {
               index.top(dim);
 
@@ -104,11 +115,8 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, q_reci);
           } else {
-            double fl = 0.0;
-            double fr = 0.0;
+            calcL2Boundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, q_);
 
             if (!index.hint()) {
               index.top(dim);
@@ -119,17 +127,24 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcL2Boundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, q_);
           }
         }
       } else {
         size_t i = 0;
 
         for (i = 0; i < this->numAlgoDims_ - 1; i += 2) {
+          double fl1 = source.get(seq_left, i);
+          double fl2 = source.get(seq_left, i + 1);
+          double fr1 = source.get(seq_right, i);
+          double fr2 = source.get(seq_right, i + 1);
+#ifdef __SSE3__
+          __m128d fl_xmm = _mm_set_pd(fl2, fl1);
+          __m128d fr_xmm = _mm_set_pd(fr2, fr1);
+#endif
+
           if (dim == i) {
-            double fl2 = 0.0;
-            double fr2 = 0.0;
+            calcGradBoundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
+            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
               index.top(dim);
@@ -140,12 +155,9 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, 1.0);
-            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
           } else if (dim == i + 1) {
-            double fl1 = 0.0;
-            double fr1 = 0.0;
+            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
+            calcGradBoundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
               index.top(dim);
@@ -156,17 +168,10 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
-            calcGradBoundary(0.0, 0.0, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
           } else {
-            double fl1 = 0.0;
-            double fr1 = 0.0;
-            double fl2 = 0.0;
-            double fr2 = 0.0;
+            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
+            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 #ifdef __SSE3__
-            __m128d fl_xmm = _mm_set1_pd(0.0);
-            __m128d fr_xmm = _mm_set1_pd(0.0);
 
             if (!index.hint()) {
               index.top(dim);
@@ -178,10 +183,6 @@ namespace SGPP {
               index.left_levelzero(dim);
             }
 
-            _mm_storel_pd(&fl1, fl_xmm);
-            _mm_storeh_pd(&fl2, fl_xmm);
-            _mm_storel_pd(&fr1, fr_xmm);
-            _mm_storeh_pd(&fr2, fr_xmm);
 #else
 
             if (!index.hint()) {
@@ -195,13 +196,16 @@ namespace SGPP {
             }
 
 #endif
-            calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
-            calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
           }
         }
 
         for ( ; i < this->numAlgoDims_; i++) {
+          double fl = source.get(seq_left, i);
+          double fr = source.get(seq_right, i);
+
           if (dim == i) {
+            calcGradBoundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, 1.0);
+
             if (!index.hint()) {
               index.top(dim);
 
@@ -211,50 +215,46 @@ namespace SGPP {
 
               index.left_levelzero(dim);
             }
-
-            calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, 1.0);
           } else {
-            double fl = 0.0;
-            double fr = 0.0;
+            calcL2Boundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
               index.top(dim);
 
               if (!this->storage->end(index.seq())) {
+
                 rec(fl, fr, i, index);
               }
 
               index.left_levelzero(dim);
             }
-
-            calcL2Boundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, 1.0);
           }
         }
       }
     }
 
-    void LaplaceEnhancedUpBBLinearBoundary::calcL2Boundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, double q) {
+    void LaplaceEnhancedDownBBLinearBoundary::calcL2Boundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, double q) {
       if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
         ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
       else
-        ptr_result_[(seq_left * this->numAlgoDims_) + dim] =  fl + ((1.0 / 6.0) * ptr_source_[(seq_right * this->numAlgoDims_) + dim] * q);
+        ptr_result_[(seq_left * this->numAlgoDims_) + dim] =  (1.0 / 3.0) * fl * q;
 
       if (this->boundingBox->hasDirichletBoundaryRight(algo_dim))
         ptr_result_[(seq_right * this->numAlgoDims_) + dim] = 0.0;
       else
-        ptr_result_[(seq_right * this->numAlgoDims_) + dim] = fr;
+        ptr_result_[(seq_right * this->numAlgoDims_) + dim] = ((1.0 / 3.0) * fr * q) + ((1.0 / 6.0) * fl * q);
     }
 
-    void LaplaceEnhancedUpBBLinearBoundary::calcGradBoundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, double q_reci) {
+    void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, double q_reci) {
       if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
         ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
       else
-        ptr_result_[(seq_left * this->numAlgoDims_) + dim] = ((-1.0 * q_reci) * ptr_source_[(seq_right * this->numAlgoDims_) + dim]);
+        ptr_result_[(seq_left * this->numAlgoDims_) + dim] = fl;
 
       if (this->boundingBox->hasDirichletBoundaryRight(cur_algo_dim_))
         ptr_result_[(seq_right * this->numAlgoDims_) + dim] = 0.0;
       else
-        ptr_result_[(seq_right * this->numAlgoDims_) + dim] = 0.0;
+        ptr_result_[(seq_right * this->numAlgoDims_) + dim] = fr + ((-1.0 * q_reci) * fl);
     }
 
     // namespace pde

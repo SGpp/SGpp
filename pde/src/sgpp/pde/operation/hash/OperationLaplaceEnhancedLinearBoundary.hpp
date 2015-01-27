@@ -6,7 +6,7 @@
 #ifndef OPERATIONLAPLACEENHANCEDLINEARBOUNDARY_HPP
 #define OPERATIONLAPLACEENHANCEDLINEARBOUNDARY_HPP
 
-#include <sgpp/misc/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
+#include <sgpp/pde/algorithm/UpDownOneOpDimEnhanced.hpp>
 
 #include <sgpp/globaldef.hpp>
 

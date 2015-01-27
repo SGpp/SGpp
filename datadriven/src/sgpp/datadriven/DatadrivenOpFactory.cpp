@@ -46,6 +46,7 @@
 #include <sgpp/globaldef.hpp>
 
 
+
 namespace SGPP {
 
 namespace op_factory {

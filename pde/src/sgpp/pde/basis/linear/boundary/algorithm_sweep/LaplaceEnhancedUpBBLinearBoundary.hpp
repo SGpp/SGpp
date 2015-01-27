@@ -6,7 +6,7 @@
 #ifndef LAPLACEENHANCEDUPBBLINEARBOUNDARY_HPP
 #define LAPLACEENHANCEDUPBBLINEARBOUNDARY_HPP
 
-#include <sgpp/misc/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp>
+#include <sgpp/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedUpBBLinear.hpp>
 
 #include <sgpp/globaldef.hpp>
 

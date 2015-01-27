@@ -39,7 +39,7 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         LIBPATH = [BUILD_DIR, '#/lib/alglib'],
-                        LIBS=['sgppbase', 'sgppsolver', 'libalglib'])
+                        LIBS=['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde'])
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
 env.Depends(lib, "#/lib/alglib" + "/libalglib.so")
@@ -66,9 +66,11 @@ if env['SG_PYTHON']:
                         ['-D' + c for c in py_env['CPPDEFINES']],
                       CPPPATH=['#/%s' % moduleName])
   py_env.SharedLibrary(target=os.path.join('#', PYSGPP_BUILD_PATH, moduleName),
-                       source=objs + [os.path.join("build", "pysgpp", "%s.i" % moduleName)],
+                       source=[os.path.join("build", "pysgpp", "%s.i" % moduleName)],
                        SHLIBPREFIX='_',
-                       CPPFLAGS=['--std=c++11', '-Wno-cast-qual'])
+                       CPPFLAGS=['--std=c++11', '-Wno-cast-qual'],
+                       LIBPATH = [BUILD_DIR, '#/lib/alglib'],
+                       LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'libalglib'])
   libInstallPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build", "pysgpp", "%s.py" % moduleName))
 
 Import('libraryTargetList')
