@@ -91,6 +91,6 @@ QUADRATURE_CALLBACK_EXTEND(SGPP::base::OperationQuadratureMC)
 
 #ifdef SG_QUADRATURE
 %apply (long long int* IN_ARRAY1, int DIM1) {(long long int* n, int dim)};
-%include "sgpp/quadrature/operation/OperationQuadratureMCAdvanced.hpp"
+%include "sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp"
 QUADRATURE_CALLBACK_EXTEND(SGPP::quadrature::OperationQuadratureMCAdvanced)
 #endif
