@@ -36,9 +36,9 @@
 #include <sgpp/datadriven/operation/hash/OperationRegularizationDiagonalLinearBoundary.hpp>
 
 #ifdef __AVX__
-#include <sgpp/datadriven/operation/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
-#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
-#include <sgpp/datadriven/operation/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
