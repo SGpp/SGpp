@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef GRID_HPP
@@ -28,8 +28,9 @@ namespace SGPP {
       Linear,
       LinearStretched,
       LinearBoundary,
-      LinearTrapezoidBoundary,
-      LinearStretchedTrapezoidBoundary,
+      LinearTruncatedBoundary,
+      LinearStretchedTruncatedBoundary,
+      LinearGeneralizedTruncatedBoundary,
       ModLinear,
       Poly,
       ModPoly,
@@ -37,7 +38,6 @@ namespace SGPP {
       ModBspline,
       Prewavelet,
       SquareRoot,
-      TruncatedTrapezoid,
       Periodic
     };
 
@@ -112,18 +112,18 @@ namespace SGPP {
         static Grid* createLinearBoundaryGrid(size_t dim);
 
         /**
-         * creates a linear trapezoid boundary grid
+         * creates a linear truncated boundary grid
          *
          * @param dim the grid's dimension
          */
-        static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
+        static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 
         /**
-         * creates a linearstretched trapezoid boundary grid
+         * creates a linearstretched truncated boundary grid
          *
          * @param dim the grid's dimension
          */
-        static Grid* createLinearStretchedTrapezoidBoundaryGrid(size_t dim);
+        static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
         /**
          * creates a mod linear grid
          *
@@ -176,11 +176,11 @@ namespace SGPP {
         static Grid* createSquareRootGrid(size_t dim);
 
         /**
-         * creates a trapezoid boundary grid=contains all the gridpoints of the fullgrids which have \f$|l|<level and li>=l_user\f$
+         * creates a truncated boundary grid=contains all the gridpoints of the fullgrids which have \f$|l|<level and li>=l_user\f$
          *
          * @param dim the grid's dimension
          * */
-        static Grid* createTruncatedTrapezoidGrid(size_t dim);
+        static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 
         /**
          * creates a periodic grid

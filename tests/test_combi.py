@@ -160,14 +160,14 @@ class TestCombinationLinearBoundary(unittest.TestCase):
         grid = Grid.createLinearBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
-class TestCombinationLinearTrapezoid(unittest.TestCase):        
+class TestCombinationLinearTruncated(unittest.TestCase):        
     def test31(self):
         from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
   
@@ -178,7 +178,7 @@ class TestCombinationLinearTrapezoid(unittest.TestCase):
         dim = 3
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
 
@@ -188,7 +188,7 @@ class TestCombinationLinearTrapezoid(unittest.TestCase):
         dim = 4
         level = 4
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)    
 
 
@@ -198,7 +198,7 @@ class TestCombinationLinearTrapezoid(unittest.TestCase):
         dim = 2
         level = 9
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
         testFG(self, grid, level, function)
 class TestCombinationSquareRoot(unittest.TestCase):        
     def test41(self):

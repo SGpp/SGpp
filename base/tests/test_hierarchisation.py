@@ -259,28 +259,28 @@ class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
         testHierarchisationDehierarchisation(self, grid, level, function)
 
         
-class TestHierarchisationLinearTrapezoidBoundary(unittest.TestCase):
+class TestHierarchisationLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
-    def testHierarchisation1DTrapezoidBoundary(self):
+    def testHierarchisation1DTruncatedBoundary(self):
         from pysgpp import Grid
         
         dim = 1
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
 
 
     ##
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDTrapezoidBoundary(self):
+    def testHierarchisationDTruncatedBoundary(self):
         from pysgpp import Grid
         
         dim = 3
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
 
         
@@ -308,10 +308,10 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
         grid = Grid.createLinearBoundaryGrid(dim)
         testHierarchisationDehierarchisation(self, grid, level, function)
 
-class TestHierarchisationLinearStretchedTrapezoidBoundary(unittest.TestCase):
+class TestHierarchisationLinearStretchedTruncatedBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
-    def testHierarchisation1DLinearStretchedTrapezoidBoundary(self):
+    def testHierarchisation1DLinearStretchedTruncatedBoundary(self):
         from pysgpp import Grid
 	from pysgpp import Stretching, Stretching1D, DimensionBoundary
 
@@ -328,7 +328,7 @@ class TestHierarchisationLinearStretchedTrapezoidBoundary(unittest.TestCase):
 	dimBound.rightBoundary=1
 	stretch=Stretching(1,dimBound,str1d)
 
-        grid = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+        grid = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
 	grid.getStorage().setStretching(stretch)
 
         testHierarchisationDehierarchisationStretching(self, grid, level, function)
@@ -336,7 +336,7 @@ class TestHierarchisationLinearStretchedTrapezoidBoundary(unittest.TestCase):
 
     ##
     # Test regular sparse grid dD, stretched hat basis functions.
-    def testHierarchisationDLinearStretchedTrapezoidBoundary(self):
+    def testHierarchisationDLinearStretchedTruncatedBoundary(self):
         from pysgpp import Grid
         from pysgpp import Stretching, Stretching1D, DimensionBoundary
 	from pysgpp import Stretching1DVector, DimensionBoundaryVector
@@ -365,7 +365,7 @@ class TestHierarchisationLinearStretchedTrapezoidBoundary(unittest.TestCase):
 	stretch = Stretching(dim, dimBoundVector, str1dVector)
 
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearStretchedTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearStretchedTruncatedBoundaryGrid(dim)
 	grid.getStorage().setStretching(stretch)
 	
         testHierarchisationDehierarchisationStretching(self, grid, level, function)

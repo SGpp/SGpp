@@ -127,7 +127,7 @@ namespace SGPP {
       }
 
       if (strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
-          || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+          || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
           return createDMSystemMatrixMPIType<CPUKernel<X86SimdLinear> >
                  (grid, trainDataset, lambda, vecType, mpiType);

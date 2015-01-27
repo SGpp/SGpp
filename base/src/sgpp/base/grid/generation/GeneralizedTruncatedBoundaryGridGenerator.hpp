@@ -1,10 +1,10 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef TRUNCATEDTRAPEZOIDGRIDGENERATOR_HPP_
-#define TRUNCATEDTRAPEZOIDGRIDGENERATOR_HPP_
+#ifndef GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_
+#define GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
@@ -18,28 +18,28 @@ namespace SGPP {
      * This class provides the interface for the grid generation
      * for grids with boundaries, pentagon cut through sub space scheme
      */
-    class TruncatedTrapezoidGridGenerator : public GridGenerator {
+    class GeneralizedTruncatedBoundaryGridGenerator : public GridGenerator {
       public:
         /**
          * Constructor
          *
          * @param storage template type that holds the grid points
          */
-        TruncatedTrapezoidGridGenerator(GridStorage* storage);
+        GeneralizedTruncatedBoundaryGridGenerator(GridStorage* storage);
 
         /**
          * Destructor
          */
-        virtual ~TruncatedTrapezoidGridGenerator();
+        virtual ~GeneralizedTruncatedBoundaryGridGenerator();
         /**
-         * Creates a regular trapezoid boundary grid with given level and l_user=1
-         * Is the same as the regular trapezoid grid
+         * Creates a regular truncated boundary grid with given level and l_user=1
+         * Is the same as the regular truncated grid
          * */
         virtual void regular(int level);
         virtual void cliques(int level, size_t clique_size);
         virtual void full(int level) {};
         /**
-         * Creates a super trapezoid boundary grid with given level and l_user
+         * Creates a super truncated boundary grid with given level and l_user
          * @param level the maximum level of the grid
          * @param l_user the number of fullgrids cut off from the boundaries.
          * */
@@ -71,4 +71,4 @@ namespace SGPP {
   }
 }
 
-#endif /* TRUNCATEDTRAPEZOIDGRIDGENERATOR_HPP_ */
+#endif /* GENERALIZEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP_ */

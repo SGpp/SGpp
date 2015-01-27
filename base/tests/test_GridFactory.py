@@ -53,11 +53,11 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
-    def testSerializationLinearTrapezoidBoudary(self):
+    def testSerializationLinearTruncatedBoundary(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearTruncatedBoundaryGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -71,7 +71,7 @@ class TestGridFactory(unittest.TestCase):
         
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
-    def testSerializationLinearBoudary(self):
+    def testSerializationLinearBoundary(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
@@ -190,11 +190,11 @@ class TestGridFactory(unittest.TestCase):
         self.assertEqual(False, tempBound.bDirichletLeft)
         self.assertEqual(False, tempBound.bDirichletRight)
         
-    def testSerializationLinearTrapezoidBoudaryBoundingBox(self):
+    def testSerializationLinearTruncatedBoundaryBoundingBox(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
-        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearTruncatedBoundaryGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -223,7 +223,7 @@ class TestGridFactory(unittest.TestCase):
         self.assertEqual(False, tempBound.bDirichletLeft)
         self.assertEqual(False, tempBound.bDirichletRight)
         
-    def testSerializationLinearBoudaryBoundingBox(self):
+    def testSerializationLinearBoundaryBoundingBox(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
@@ -338,12 +338,12 @@ class TestGridFactory(unittest.TestCase):
         for i in xrange(factory.getStorage().size()):
             self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
         
-    def testSerializationLinearTrapezoidBoudaryWithLeaf(self):
+    def testSerializationLinearTruncatedBoundaryWithLeaf(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
         srcLeaf = []
-        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearTruncatedBoundaryGrid(2)
         self.failIfEqual(factory, None)
 
         gen = factory.createGridGenerator()
@@ -363,7 +363,7 @@ class TestGridFactory(unittest.TestCase):
         for i in xrange(factory.getStorage().size()):
             self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])
         
-    def testSerializationLinearBoudaryWithLeaf(self):
+    def testSerializationLinearBoundaryWithLeaf(self):
         """Uses Linear grid for tests"""
         from pysgpp import Grid
         
@@ -575,10 +575,10 @@ class TestLinearGrid(unittest.TestCase):
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 0.5)
 
-class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
+class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
     def testGeneration(self):
         from pysgpp import Grid, DataVector
-        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -593,7 +593,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         
     def testRefinement2d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -617,7 +617,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
         
     def testRefinement3d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearTrapezoidBoundaryGrid(3)
+        factory = Grid.createLinearTruncatedBoundaryGrid(3)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -636,7 +636,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
 
     def testOperationMultipleEval(self):
         from pysgpp import Grid, DataVector, DataMatrix
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
         
@@ -671,7 +671,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
     def testOperationTest_test(self):
         from pysgpp import Grid, DataVector, DataMatrix
 
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(1)
         
@@ -700,7 +700,7 @@ class TestLinearTrapezoidBoundaryGrid(unittest.TestCase):
     def testOperationEval_eval(self):
         from pysgpp import Grid, DataVector
 
-        factory = Grid.createLinearTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(1)
         
@@ -1007,7 +1007,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
 
         self.failUnlessAlmostEqual(eval.eval(alpha, p), 1.5)
 
-class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
+class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
     def testGeneration(self):
         from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary, DimensionBoundaryVector, Stretching1DVector 
 	str1d = Stretching1D()
@@ -1025,7 +1025,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
 	str1dvector[1]=str1d
 	stretch = Stretching(2, dimBoundaryVector, str1dvector)
 
-        factory = Grid.createLinearTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -1040,7 +1040,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
         
     def testRefinement2d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor 
-        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(2)
+        factory = Grid.createLinearStretchedTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -1064,7 +1064,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
         
     def testRefinement3d(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(3)
+        factory = Grid.createLinearStretchedTruncatedBoundaryGrid(3)
         storage = factory.getStorage()
         
         gen = factory.createGridGenerator()
@@ -1094,7 +1094,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
 	dimBound.rightBoundary=7
 	stretch=Stretching(1,dimBound,str1d)
 
-        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
 	factory.getStorage().setStretching(stretch)
         gen = factory.createGridGenerator()
         gen.regular(2)
@@ -1139,7 +1139,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
 	dimBound.rightBoundary=7
 	stretch=Stretching(1,dimBound,str1d)
 
-        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
 	factory.getStorage().setStretching(stretch)
         gen = factory.createGridGenerator()
         gen.regular(1)
@@ -1179,7 +1179,7 @@ class TestLinearStretchedTrapezoidBoundaryGrid(unittest.TestCase):
 	dimBound.rightBoundary=7
 	stretch=Stretching(1,dimBound,str1d)
 
-        factory = Grid.createLinearStretchedTrapezoidBoundaryGrid(1)
+        factory = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
 	factory.getStorage().setStretching(stretch)
         gen = factory.createGridGenerator()
         gen.regular(1)

@@ -9,7 +9,6 @@
 
 #include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
-#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/solver/ODESolver.hpp>
@@ -30,6 +29,7 @@
 #include <algorithm>
 
 #include <sgpp/globaldef.hpp>
+#include "../../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
 
 
 namespace SGPP {

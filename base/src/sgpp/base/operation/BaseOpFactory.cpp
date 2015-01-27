@@ -78,15 +78,15 @@ namespace SGPP {
       } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
         return new base::OperationHierarchisationModLinear(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0
-                 || strcmp(grid.getType(), "TruncatedTrapezoid") == 0
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0
+                 || strcmp(grid.getType(), "linearGeneralizedTruncatedBoundary") == 0
                  || strcmp(grid.getType(), "squareRoot") == 0) {
         return new base::OperationHierarchisationLinearBoundary(grid.getStorage());
       }
 
       else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new base::OperationHierarchisationLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0 ) {
         return new base::OperationHierarchisationLinearStretchedBoundary(grid.getStorage());
       }
       //    else if(strcmp(grid.getType(), "poly") == 0 )
@@ -120,7 +120,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new base::OperationQuadratureLinear(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearBoundary") == 0 ||
-                 strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new base::OperationQuadratureLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "poly") == 0 ) {
         if (((base::PolyGrid*) &grid)->getDegree() > 3) {
@@ -167,8 +167,8 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new base::OperationEvalLinear(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0
-                 || strcmp(grid.getType(), "TruncatedTrapezoid") == 0
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0
+                 || strcmp(grid.getType(), "linearGeneralizedTruncatedBoundary") == 0
                  || strcmp(grid.getType(), "squareRoot") == 0) {
         return new base::OperationEvalLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
@@ -190,7 +190,7 @@ namespace SGPP {
         return new base::OperationEvalPrewavelet(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new base::OperationEvalLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0 ) {
         return new base::OperationEvalLinearStretchedBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(),"periodic") == 0) {
     	return new base::OperationEvalPeriodic(grid.getStorage());
@@ -203,7 +203,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new base::OperationMultipleEvalLinear(grid, dataset);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new base::OperationMultipleEvalLinearBoundary(grid, dataset);
       } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
         return new base::OperationMultipleEvalModLinear(grid, dataset);
@@ -222,7 +222,7 @@ namespace SGPP {
         return new base::OperationMultipleEvalPrewavelet(grid, dataset);
       } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new base::OperationMultipleEvalLinearStretched(grid, dataset);
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0 ) {
         return new base::OperationMultipleEvalLinearStretchedBoundary(grid, dataset);
       }else if (strcmp(grid.getType(),"periodic") == 0) {
       	return new base::OperationMultipleEvalPeriodic(grid, dataset);

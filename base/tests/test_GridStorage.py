@@ -295,7 +295,7 @@ class TestHashGenerator(unittest.TestCase):
         self.failUnlessEqual(s.size(), 7)
         
         
-    def testRegularTrapezoidBoundaries1D(self):
+    def testRegularTruncatedBoundaries1D(self):
         """Tests 1D grid generation"""
         from pysgpp import GridStorage, HashGenerator
         
@@ -306,7 +306,7 @@ class TestHashGenerator(unittest.TestCase):
         
         self.failUnlessEqual(s.size(), 5)
         
-    def testRegularTrapezoidBoundaries2D(self):
+    def testRegularTruncatedBoundaries2D(self):
         """Tests 2D grid generation"""
         from pysgpp import GridStorage, HashGenerator
         
@@ -348,7 +348,7 @@ class TestHashGenerator(unittest.TestCase):
         self.failUnless(s.has_key(i))
 
 
-    def testRegularTrapezoidBoundaries3D(self):
+    def testRegularTruncatedBoundaries3D(self):
         """Tests 3D grid generation"""
         from pysgpp import GridStorage, HashGenerator
         
@@ -382,7 +382,7 @@ class TestHashRefinement(unittest.TestCase):
         
         self.failUnlessEqual(s.size(), 5)
         
-    def testFreeRefineTrapezoidBoundaries(self):
+    def testFreeRefineTruncatedBoundaries(self):
         """Tests surplus based refine for Hash-Storage"""
         from pysgpp import GridStorage, HashGenerator
         from pysgpp import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
@@ -410,7 +410,7 @@ class TestHashRefinement(unittest.TestCase):
         
         self.failUnlessEqual(s.size(), 21)     
         
-    def testFreeRefineTrapezoidBoundaries(self):
+    def testFreeRefineTruncatedBoundaries(self):
         """Tests surplus based refine for Hash-Storage"""
         from pysgpp import GridStorage, HashGenerator
         from pysgpp import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector

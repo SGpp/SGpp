@@ -54,7 +54,7 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
     if (strcmp(grid.getType(), "linear") == 0) {
         return new datadriven::OperationTestLinear(grid.getStorage());
     } else if (strcmp(grid.getType(), "linearBoundary") == 0
-               || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+               || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new datadriven::OperationTestLinearBoundary(grid.getStorage());
     } else if (strcmp(grid.getType(), "modBspline") == 0) {
         return new datadriven::OperationTestModBspline(grid.getStorage(), ((base::ModBsplineGrid*) &grid)->getDegree());
@@ -70,7 +70,7 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
         return new datadriven::OperationTestPrewavelet(grid.getStorage());
     } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new datadriven::OperationTestLinearStretched(grid.getStorage());
-    } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+    } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0) {
         return new datadriven::OperationTestLinearStretchedBoundary(grid.getStorage());
     }
 
@@ -80,7 +80,7 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
 
 base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k) {
     if (strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
-            || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0 || strcmp(grid.getType(), "modlinear") == 0) {
+            || strcmp(grid.getType(), "linearTruncatedBoundary") == 0 || strcmp(grid.getType(), "modlinear") == 0) {
         return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode, k);
     } else
         throw base::factory_exception("OperationRegularizationDiagonal is not implemented for this grid type.");

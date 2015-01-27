@@ -3,24 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/generation/TruncatedTrapezoidGridGenerator.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include "GeneralizedTruncatedBoundaryGridGenerator.hpp"
 
 
 namespace SGPP {
   namespace base {
 
-    TruncatedTrapezoidGridGenerator::TruncatedTrapezoidGridGenerator(GridStorage* storage) : storage(storage) {
+    GeneralizedTruncatedBoundaryGridGenerator::GeneralizedTruncatedBoundaryGridGenerator(GridStorage* storage) : storage(storage) {
     }
 
-    TruncatedTrapezoidGridGenerator::~TruncatedTrapezoidGridGenerator() {
+    GeneralizedTruncatedBoundaryGridGenerator::~GeneralizedTruncatedBoundaryGridGenerator() {
     }
 
-    void TruncatedTrapezoidGridGenerator::regular(int level) {
+    void GeneralizedTruncatedBoundaryGridGenerator::regular(int level) {
       if (level < 0) {
         throw generation_exception("Grid level value is negative");
       }
@@ -28,12 +28,12 @@ namespace SGPP {
       this->truncated( static_cast<HashGenerator::level_t>(level), 1);
     }
 
-    void TruncatedTrapezoidGridGenerator::cliques(int level, size_t clique_size) {
+    void GeneralizedTruncatedBoundaryGridGenerator::cliques(int level, size_t clique_size) {
 		throw generation_exception("Method is not implemented");
 	}
 
 
-    void TruncatedTrapezoidGridGenerator::truncated(int level, int l_user) {
+    void GeneralizedTruncatedBoundaryGridGenerator::truncated(int level, int l_user) {
       if (level < 0) {
         throw generation_exception("Grid level value is negative");
       }

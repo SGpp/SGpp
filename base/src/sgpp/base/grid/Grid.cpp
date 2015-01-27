@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -12,15 +12,12 @@
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
-#include <sgpp/base/grid/type/TruncatedTrapezoidGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 
@@ -30,6 +27,9 @@
 
 
 #include <sgpp/globaldef.hpp>
+#include "type/LinearGeneralizedTruncatedBoundaryGrid.hpp"
+#include "type/LinearStretchedTruncatedBoundaryGrid.hpp"
+#include "type/LinearTruncatedBoundaryGrid.hpp"
 
 
 namespace SGPP {
@@ -55,12 +55,12 @@ namespace SGPP {
       return new LinearBoundaryGrid(dim);
     }
 
-    Grid* Grid::createLinearTrapezoidBoundaryGrid(size_t dim) {
-      return new LinearTrapezoidBoundaryGrid(dim);
+    Grid* Grid::createLinearTruncatedBoundaryGrid(size_t dim) {
+      return new LinearTruncatedBoundaryGrid(dim);
     }
 
-    Grid* Grid::createLinearStretchedTrapezoidBoundaryGrid(size_t dim) {
-      return new LinearStretchedTrapezoidBoundaryGrid(dim);
+    Grid* Grid::createLinearStretchedTruncatedBoundaryGrid(size_t dim) {
+      return new LinearStretchedTruncatedBoundaryGrid(dim);
     }
 
     Grid* Grid::createModLinearGrid(size_t dim) {
@@ -87,8 +87,8 @@ namespace SGPP {
       return new PrewaveletGrid(dim);
     }
 
-    Grid* Grid::createTruncatedTrapezoidGrid(size_t dim) {
-      return new TruncatedTrapezoidGrid(dim);
+    Grid* Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim) {
+      return new LinearGeneralizedTruncatedBoundaryGrid(dim);
     }
 
     //OperationMatrix* Grid::createOperationIdentity()
@@ -101,8 +101,8 @@ namespace SGPP {
     }
 
     Grid* Grid::createPeriodicGrid(size_t dim) {
-	  return new PeriodicGrid(dim);
-	}
+      return new PeriodicGrid(dim);
+    }
 
     Grid* Grid::unserialize(const std::string& istr) {
       std::istringstream istream;
@@ -150,8 +150,8 @@ namespace SGPP {
         tMap->insert(std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("linearstencil", LinearGridStencil::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinearstencil", ModLinearGridStencil::unserialize));
-        tMap->insert(std::pair<std::string, Grid::Factory>("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
-        tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedTruncatedBoundary", LinearStretchedTruncatedBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
@@ -166,8 +166,8 @@ namespace SGPP {
         tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("linearstencil", LinearGridStencil::unserialize));
         tMap->insert(std::make_pair("modlinearstencil", ModLinearGridStencil::unserialize));
-        tMap->insert(std::make_pair("linearTrapezoidBoundary", LinearTrapezoidBoundaryGrid::unserialize));
-        tMap->insert(std::make_pair("linearStretchedTrapezoidBoundary", LinearStretchedTrapezoidBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("linearStretchedTruncatedBoundary", LinearStretchedTruncatedBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
         tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));

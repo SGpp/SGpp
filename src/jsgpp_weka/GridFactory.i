@@ -13,8 +13,8 @@
 
 %newobject sg::Grid::createLinearGrid(size_t dim);
 %newobject sg::Grid::createLinearBoundaryGrid(size_t dim);
-%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(size_t dim);
-%newobject sg::Grid::createLinearTrapezoidBoundaryGrid(BoudingBox& BB);
+%newobject sg::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
+%newobject sg::Grid::createLinearTruncatedBoundaryGrid(BoudingBox& BB);
 %newobject sg::Grid::createModLinearGrid(size_t dim);
 %newobject sg::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sg::Grid::createModPolyGrid(size_t dim, size_t degree);
@@ -49,7 +49,7 @@ class Grid
 public:
 	static Grid* createLinearGrid(size_t dim);
 	static Grid* createLinearBoundaryGrid(size_t dim);
-	static Grid* createLinearTrapezoidBoundaryGrid(size_t dim);
+	static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);

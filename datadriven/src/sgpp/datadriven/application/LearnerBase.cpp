@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
@@ -20,6 +19,7 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
+#include "../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
 
 
 namespace SGPP {
@@ -74,8 +74,8 @@ LearnerBase::~LearnerBase() {
 }
 
 void LearnerBase::InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig) {
-    if (GridConfig.type_ == SGPP::base::LinearTrapezoidBoundary) {
-        grid_ = new SGPP::base::LinearTrapezoidBoundaryGrid(GridConfig.dim_);
+    if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
+        grid_ = new SGPP::base::LinearTruncatedBoundaryGrid(GridConfig.dim_);
     } else if (GridConfig.type_ == SGPP::base::ModLinear) {
         grid_ = new SGPP::base::ModLinearGrid(GridConfig.dim_);
     } else if (GridConfig.type_ == SGPP::base::Linear) {

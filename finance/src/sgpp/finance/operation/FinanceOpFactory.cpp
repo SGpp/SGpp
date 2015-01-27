@@ -81,11 +81,11 @@ namespace SGPP {
         return new finance::OperationGammaLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationGammaLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0) {
         return new finance::OperationGammaLinearStretchedBoundary(grid.getStorage(), coef);
       }
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationGammaLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationGamma is not implemented for this grid type.");
@@ -98,11 +98,11 @@ namespace SGPP {
         return new finance::OperationGammaLogLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationGammaLogLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0) {
         return new finance::OperationGammaLogLinearStretchedBoundary(grid.getStorage(), coef);
       }
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationGammaLogLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationGammaLog is not implemented for this grid type.");
@@ -117,7 +117,7 @@ namespace SGPP {
       }
 
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationLBLinearBoundary(grid.getStorage());
       } else
         throw base::factory_exception("OperationLB is not implemented for this grid type.");
@@ -130,7 +130,7 @@ namespace SGPP {
       }
 
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationLELinearBoundary(grid.getStorage());
       } else
         throw base::factory_exception("OperationLE is not implemented for this grid type.");
@@ -143,7 +143,7 @@ namespace SGPP {
       }
 
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationLDLinearBoundary(grid.getStorage());
       } else
         throw base::factory_exception("OperationLD is not implemented for this grid type.");
@@ -156,7 +156,7 @@ namespace SGPP {
       }
 
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationLFLinearBoundary(grid.getStorage());
       } else
         throw base::factory_exception("OperationLF is not implemented for this grid type.");
@@ -168,12 +168,12 @@ namespace SGPP {
         return new finance::OperationDeltaLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationDeltaLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0) {
         return new finance::OperationDeltaLinearStretchedBoundary(grid.getStorage(), coef);
       }
 
       else if (strcmp(grid.getType(), "linearBoundary") == 0
-               || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+               || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationDeltaLinearBoundary(grid.getStorage(), coef);
       }
 
@@ -187,10 +187,10 @@ namespace SGPP {
         return new finance::OperationDeltaLogLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationDeltaLogLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0) {
         return new finance::OperationDeltaLogLinearStretchedBoundary(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0 ) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0 ) {
         return new finance::OperationDeltaLogLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationDeltaLog is not implemented for this grid type.");
@@ -200,7 +200,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonBLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonBLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonB is not implemented for this grid type.");
@@ -210,7 +210,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonCLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonCLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonC is not implemented for this grid type.");
@@ -220,7 +220,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonDLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonDLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonD is not implemented for this grid type.");
@@ -230,7 +230,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonELinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonELinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonE is not implemented for this grid type.");
@@ -240,7 +240,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonFLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonFLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonF is not implemented for this grid type.");
@@ -250,7 +250,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonGLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonGLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonG is not implemented for this grid type.");
@@ -260,7 +260,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonHLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonHLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonH is not implemented for this grid type.");
@@ -270,7 +270,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonKLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonKLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonK is not implemented for this grid type.");
@@ -280,7 +280,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonXLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonXLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonX is not implemented for this grid type.");
@@ -290,7 +290,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonYLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonYLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonY is not implemented for this grid type.");
@@ -300,7 +300,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonWLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonWLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonW is not implemented for this grid type.");
@@ -310,7 +310,7 @@ namespace SGPP {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonZLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new finance::OperationHestonZLinearBoundary(grid.getStorage(), coef);
       } else
         throw base::factory_exception("OperationHestonZ is not implemented for this grid type.");

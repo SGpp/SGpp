@@ -147,8 +147,8 @@ def constructGrid(dim):
                 sys.exit(1)
             if options.trapezoidboundary == True:
                 if options.verbose:
-                    print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
-                grid = Grid.createLinearTrapezoidBoundaryGrid(dim)            
+                    print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
+                grid = Grid.createLinearTruncatedBoundaryGrid(dim)            
             if options.completeboundary == True:
                 if options.verbose:
                     print "LinearBoundaryGrid, l=%s" % (options.level)
@@ -175,8 +175,8 @@ def constructGrid(dim):
                     sys.exit(1)
                 else:
                     if options.verbose:
-                        print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
-                    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+                        print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
             # more grid points on boundary?
             elif options.boundary == 2:
                 if options.polynom > 1:

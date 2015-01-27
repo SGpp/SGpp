@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <mpi.h>
@@ -129,8 +129,8 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
   if (GridConfig.type_ == SGPP::base::Linear) {
     std::cout << "chosen gridtype: Linear" << std::endl << std::endl;
-  } else if (GridConfig.type_ == SGPP::base::LinearTrapezoidBoundary) {
-    std::cout << "chosen gridtype: LinearTrapezoidBoundary" << std::endl << std::endl;
+  } else if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
+    std::cout << "chosen gridtype: LinearTruncatedBoundary" << std::endl << std::endl;
   } else {
     const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
 
@@ -605,7 +605,7 @@ int main(int argc, char* argv[]) {
     ggridtype = gridtype;
 
     if (gridtype == "linearboundary") {
-      gridConfig.type_ = SGPP::base::LinearTrapezoidBoundary;
+      gridConfig.type_ = SGPP::base::LinearTruncatedBoundary;
     } else if (gridtype == "modlinear") {
       gridConfig.type_ = SGPP::base::ModLinear;
     } else if (gridtype == "linear") {

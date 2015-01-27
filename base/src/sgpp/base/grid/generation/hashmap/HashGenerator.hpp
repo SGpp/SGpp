@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef HASHGENERATOR_HPP
@@ -66,28 +66,28 @@ namespace SGPP {
 
 
         /**
-		 * Generates a regular sparse grid of level levels, without boundaries
-		 * where dimensions are splitted into a groups with only certain number
-		 * of dimensions completely connected in a clique
-		 *
-		 * @todo (blank) level should be of type level_t but swig doesnt want that
-		 *
-		 * @param storage Hashmap that stores the grid points
-		 * @param level Grid level (non-negative value)
-		 * @param clique_size number of dimensions in a clique
-		 */
-		void cliques(GridStorage* storage, level_t level, size_t clique_size) {
-		  if (storage->size() > 0) {
-			throw generation_exception("storage not empty");
-		  }
+        * Generates a regular sparse grid of level levels, without boundaries
+        * where dimensions are splitted into a groups with only certain number
+        * of dimensions completely connected in a clique
+        *
+        * @todo (blank) level should be of type level_t but swig doesnt want that
+        *
+        * @param storage Hashmap that stores the grid points
+        * @param level Grid level (non-negative value)
+        * @param clique_size number of dimensions in a clique
+        */
+        void cliques(GridStorage* storage, level_t level, size_t clique_size) {
+          if (storage->size() > 0) {
+            throw generation_exception("storage not empty");
+          }
 
-		  if (storage->dim() < clique_size){
-			  throw generation_exception("clique size should be not greater than grid dimension");
-			}
+          if (storage->dim() < clique_size) {
+            throw generation_exception("clique size should be not greater than grid dimension");
+          }
 
 
-		  this->cliques_iter(storage, level, clique_size);
-		}
+          this->cliques_iter(storage, level, clique_size);
+        }
 
 
         /**
@@ -119,7 +119,7 @@ namespace SGPP {
             throw generation_exception("storage not empty");
           }
 
-          this->createFullGridTrapezoidIterative(storage, level);
+          this->createFullGridTruncatedIterative(storage, level);
         }
 
         /**
@@ -129,16 +129,16 @@ namespace SGPP {
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)
-         * @param bTrapezoidBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
+         * @param bTruncatedBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
          */
-        void regularWithBoundaries(GridStorage* storage, level_t level, bool bTrapezoidBoundaries) {
+        void regularWithBoundaries(GridStorage* storage, level_t level, bool bTruncatedBoundaries) {
           if (storage->size() > 0) {
             throw generation_exception("storage not empty");
           }
 
           index_type index(storage->dim());
 
-          if (bTrapezoidBoundaries == true) {
+          if (bTruncatedBoundaries == true) {
             if (level == 0) {
               for (size_t d = 0; d < storage->dim(); d++) {
                 index.push(d, 0, 0, false);
@@ -151,9 +151,9 @@ namespace SGPP {
               //          index.push(d, 1, 1, false);
               //        }
               //
-              //        this->boundaries_trapezoid_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
+              //        this->boundaries_truncated_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
 
-              this->regular_boundary_trapezoid_iter(storage, level);
+              this->regular_boundary_truncated_iter(storage, level);
             }
           } else {
             /* new grid generation
@@ -223,7 +223,7 @@ namespace SGPP {
 
         }
         /**
-         * Generates a truncated trapezoid boundary grid containing all gridpoints with li<l-k and |l|<l+(dim-1)*k
+         * Generates a truncated boundary grid containing all gridpoints with li<l-k and |l|<l+(dim-1)*k
          *
          *
          * @param storage Hashmap, that stores the grid points
@@ -327,98 +327,101 @@ namespace SGPP {
 
 
         void cliques_iter(GridStorage* storage, level_t n, size_t clique_size) {
-                  if (storage->dim() == 0)
-                    return;
+          if (storage->dim() == 0)
+            return;
 
-                  index_type idx_1d(storage->dim());
+          index_type idx_1d(storage->dim());
 
-                  for (size_t d = 0; d < storage->dim(); d++) {
-                    idx_1d.push(d, 1, 1, false);
-                  }
+          for (size_t d = 0; d < storage->dim(); d++) {
+            idx_1d.push(d, 1, 1, false);
+          }
 
-                  // Generate 1D grid in first dimension
-                  for (level_t l = 1; l <= n; l++) {
-                    for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
-                      if (l == n) {
-                        idx_1d.push(0, l, i, true);
-                      } else {
-                        idx_1d.push(0, l, i, false);
-                      }
+          // Generate 1D grid in first dimension
+          for (level_t l = 1; l <= n; l++) {
+            for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+              if (l == n) {
+                idx_1d.push(0, l, i, true);
+              } else {
+                idx_1d.push(0, l, i, false);
+              }
 
-                      storage->insert(idx_1d);
+              storage->insert(idx_1d);
+            }
+          }
+
+          // Generate grid points in all other dimensions:
+          // loop dim times over intermediate grid, take all grid points and modify them
+          // in current dimension d
+          for (size_t d = 1; d < storage->dim(); d++) {
+            // current size
+            size_t grid_size = storage->size();
+            size_t clique_num = d / clique_size;
+
+            // loop over all current grid points
+            for (size_t g = 0; g < grid_size; g++) {
+              bool first = true;
+              bool skip = false;
+              index_type idx(storage->get(g));
+
+              // calculate current level-sum - 1
+              level_t level_sum = idx.getLevelSum() - 1;
+
+              for (size_t dt = 0; dt < clique_size * clique_num && dt < d; dt++) {
+                // if the level in dt dimension > 1, ignore the point and continue
+                level_t lt;
+                index_t it; // level and index in the particular dimension
+                idx.get(dt, lt, it);
+
+                if (lt > 1) {
+                  skip = true;
+                  break;
+                }
+              }
+
+              if (skip) {
+                continue;
+              }
+
+
+              // add remaining level-index pairs in current dimension d
+              for (level_t l = 1; l + level_sum <= n + storage->dim() - 1; l++) {
+                for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+                  // first grid point is updated, all others inserted
+                  if (first == false) {
+                    // is leaf?
+                    if ((l + level_sum) == n + storage->dim() - 1) {
+                      idx.push(d, l, i, true);
+                    } else {
+                      idx.push(d, l, i, false);
                     }
-                  }
 
-                  // Generate grid points in all other dimensions:
-                  // loop dim times over intermediate grid, take all grid points and modify them
-                  // in current dimension d
-                  for (size_t d = 1; d < storage->dim(); d++) {
-                    // current size
-                    size_t grid_size = storage->size();
-                    size_t clique_num = d/clique_size;
-
-                    // loop over all current grid points
-                    for (size_t g = 0; g < grid_size; g++) {
-                      bool first = true;
-                      bool skip = false;
-                      index_type idx(storage->get(g));
-
-                      // calculate current level-sum - 1
-                      level_t level_sum = idx.getLevelSum() - 1;
-
-                      for (size_t dt = 0; dt < clique_size*clique_num && dt < d; dt++){
-                    	  // if the level in dt dimension > 1, ignore the point and continue
-                    	  level_t lt;
-                    	  index_t it; // level and index in the particular dimension
-                    	  idx.get(dt, lt, it);
-                    	  if (lt > 1){
-                    		  skip = true;
-                    		  break;
-                    	  }
-                      }
-
-                      if (skip){ continue;}
-
-
-                      // add remaining level-index pairs in current dimension d
-                      for (level_t l = 1; l + level_sum <= n + storage->dim() - 1; l++) {
-                        for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
-                          // first grid point is updated, all others inserted
-                          if (first == false) {
-                            // is leaf?
-                            if ((l + level_sum) == n + storage->dim() - 1) {
-                              idx.push(d, l, i, true);
-                            } else {
-                              idx.push(d, l, i, false);
-                            }
-
-                            storage->insert(idx);
-                          } else {
-                            // is leaf?
-                            if ((l + level_sum) == n + storage->dim() - 1) {
-                              idx.push(d, l, i, true);
-                            } else {
-                              idx.push(d, l, i, false);
-                            }
-
-                            storage->update(idx, g);
-                            first = false;
-                          }
-                        }
-                      }
+                    storage->insert(idx);
+                  } else {
+                    // is leaf?
+                    if ((l + level_sum) == n + storage->dim() - 1) {
+                      idx.push(d, l, i, true);
+                    } else {
+                      idx.push(d, l, i, false);
                     }
+
+                    storage->update(idx, g);
+                    first = false;
                   }
                 }
+              }
+            }
+          }
+        }
 
 
         /**
          * Generate a regular sparse grid iteratively (much faster than recursively)
-         * with trapezoidal boundary.
+         * with truncated boundary.
          *
          * @param storage Pointer to storage object into which the grid points should be stored
          * @param n Level of regular sparse grid
          */
-        void regular_boundary_trapezoid_iter(GridStorage* storage, level_t n) {
+        void regular_boundary_truncated_iter(GridStorage* storage, level_t n) {
           if (storage->dim() == 0)
             return;
 
@@ -530,6 +533,7 @@ namespace SGPP {
               idx_1d.push(0, 0, 0, false);
               storage->insert(idx_1d);
             }
+
             for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
               if (l == n) {
                 idx_1d.push(0, l, i, true);
@@ -555,6 +559,7 @@ namespace SGPP {
 
               // Calculate level-sum
               level_t level_sum = idx.getLevelSum() - 1;
+
               for (size_t sd = 0; sd < d; sd++) {
                 if (idx.getLevel(sd) == 0)
                   level_sum += 1;
@@ -568,6 +573,7 @@ namespace SGPP {
                   idx.push(d, 0, 0, false);
                   storage->insert(idx);
                 }
+
                 for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
                   // first grid point is updated, all others inserted
                   if (first == false) {
@@ -674,12 +680,12 @@ namespace SGPP {
 
         /**
          * Generate a full grid iteratively (much faster than recursively)
-         * with trapezoidal boundary.
+         * with truncated boundary.
          *
          * @param storage Pointer to the storage object into which the grid points should be stored
          * @param n Level of full grid
          */
-        void createFullGridTrapezoidIterative(GridStorage* storage, level_t n) {
+        void createFullGridTruncatedIterative(GridStorage* storage, level_t n) {
           if (storage->dim() == 0)
             return;
 
@@ -847,9 +853,9 @@ namespace SGPP {
          * @param level maximum level of the sparse grid
          * @param bLevelZero specifies if the current index has a level zero component
          */
-        void boundaries_trapezoid_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool bLevelZero) {
+        void boundaries_truncated_rec(GridStorage* storage, index_type& index, size_t current_dim, level_t current_level, level_t level, bool bLevelZero) {
           if (current_dim == 0) {
-            boundaries_Trapezoid_rec_1d(storage, index, current_level, level, bLevelZero);
+            boundaries_Truncated_rec_1d(storage, index, current_level, level, bLevelZero);
           } else {
             index_t source_index;
             level_t source_level;
@@ -868,25 +874,25 @@ namespace SGPP {
 
               if (source_level == 1) {
                 index.push(current_dim, 0, 0, false);
-                this->boundaries_trapezoid_rec(storage, index, current_dim - 1, current_level, level, true);
+                this->boundaries_truncated_rec(storage, index, current_dim - 1, current_level, level, true);
 
                 index.push(current_dim, 0, 1, false);
-                this->boundaries_trapezoid_rec(storage, index, current_dim - 1, current_level, level, true);
+                this->boundaries_truncated_rec(storage, index, current_dim - 1, current_level, level, true);
 
                 index.push(current_dim, source_level, source_index);
               }
 
               // d-1 recursion
               index.setLeaf(bLeafProperty);
-              this->boundaries_trapezoid_rec(storage, index, current_dim - 1, current_level, level, bLevelZero);
+              this->boundaries_truncated_rec(storage, index, current_dim - 1, current_level, level, bLevelZero);
             }
 
             if (current_level < level) {
               index.push(current_dim, source_level + 1, 2 * source_index - 1);
-              this->boundaries_trapezoid_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
+              this->boundaries_truncated_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
 
               index.push(current_dim, source_level + 1, 2 * source_index + 1);
-              this->boundaries_trapezoid_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
+              this->boundaries_truncated_rec(storage, index, current_dim, current_level + 1, level, bLevelZero);
             }
 
             index.push(current_dim, source_level, source_index);
@@ -903,7 +909,7 @@ namespace SGPP {
          * @param level maximum level of grid
          * @param bLevelZero specifies if the current index has a level zero component
          */
-        void boundaries_Trapezoid_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool bLevelZero) {
+        void boundaries_Truncated_rec_1d(GridStorage* storage, index_type& index, level_t current_level, level_t level, bool bLevelZero) {
           bool bLevelGreaterZero = !bLevelZero;
 
           for (level_t l = 0; l <= level - current_level + 1; l++) {
@@ -1092,7 +1098,7 @@ namespace SGPP {
 
         }
         /**
-         * recursive construction of a super trapezoid grid with boundaries
+         * recursive construction of a super truncated grid with boundaries
          *
          * @param storage hashmap that stores the grid points
          * @param index point's index

@@ -7,12 +7,12 @@
 #define BLACKSCHOLESSOLVERWITHSTRETCHING_HPP
 
 #include <sgpp/finance/application/BlackScholesSolver.hpp>
-#include <sgpp/base/grid/type/LinearStretchedTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <sgpp/base/tools/GridPrinterForStretching.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include "../../../../../base/src/sgpp/base/grid/type/LinearStretchedTruncatedBoundaryGrid.hpp"
 
 
 namespace SGPP {

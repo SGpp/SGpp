@@ -38,7 +38,7 @@ namespace SGPP {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceLinear(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new pde::OperationLaplaceLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "modlinear") == 0 ) {
         return new pde::OperationLaplaceModLinear(grid.getStorage());
@@ -47,7 +47,7 @@ namespace SGPP {
                ((base::PrewaveletGrid*) &grid)->getShadowStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new pde::OperationLaplaceLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0 ) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0 ) {
         return new pde::OperationLaplaceLinearStretchedBoundary(grid.getStorage());
       } else {
         throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
@@ -58,7 +58,7 @@ namespace SGPP {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceLinear(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new pde::OperationLaplaceLinearBoundary(grid.getStorage(), coef);
       } else {
         throw base::factory_exception("OperationLaplace (with coefficients) is not implemented for this grid type.");
@@ -69,11 +69,11 @@ namespace SGPP {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLTwoDotProductLinear(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new pde::OperationLTwoDotProductLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new pde::OperationLTwoDotProductLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0) {
         return new pde::OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "periodic") == 0) {
         return new pde::OperationMatrixLTwoDotPeriodic(grid.getStorage());
