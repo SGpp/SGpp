@@ -231,6 +231,8 @@ double calculatetheta(double a, double sigma, double T, int t) {
  *
  * @param d dimensions
  * @param l the number of levels used in the Sparse Grid
+ * @param sigma TODO: missing
+ * @param a TODO: missing
  * @param fileStoch the stochastic data (theta, sigmahw, sigmabs, a)
  * @param fileBound the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function

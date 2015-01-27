@@ -61,7 +61,11 @@ namespace SGPP {
          * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
          *
          * @param storage hashmap that stores the grid points
-         * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+         * @param functor a RefinementFunctor specifying the refinement criteria
+         * @param refinements_num number of points to refine
+         * @param max_indices the array where the point indices should be stored
+         * @param max_values the array where the corresponding indicator values
+         * should be stored
          */
         virtual void refineGridpointsCollection(GridStorage* storage,
                                                 RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,

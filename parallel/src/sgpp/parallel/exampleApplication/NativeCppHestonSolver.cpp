@@ -124,7 +124,7 @@ void writeHelp() {
  * @param xi volatility of the volatility
  * @param theta long-run variance
  * @param kappa mean-reversion rate
- * @param H correlation matrix
+ * @param hMatrix correlation matrix
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
