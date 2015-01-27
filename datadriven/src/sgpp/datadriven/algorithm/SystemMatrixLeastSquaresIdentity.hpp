@@ -11,8 +11,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/CommonParameters.hpp>
-
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>

@@ -8,10 +8,10 @@
 import sys
 
 print "executing pysgpp import test (pysgpp/importTest.py)"
-print "trying to import python lib (%s) ..." % moduleName,
+print "trying to import python lib (base) ...",
 
 try:
-    import pysgpp
+    import base
 except Exception as e:
     print "failed, error:"
     print str(e)

@@ -307,14 +307,12 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
     return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
 }
 
-SGPP::base::DataVector LearnerBase::predict(SGPP::base::DataMatrix& testDataset) {
-    SGPP::base::DataVector classesComputed(testDataset.getNrows());
+void LearnerBase::predict(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classesComputed) {
+	classesComputed.resize(testDataset.getNrows());
 
     SGPP::base::OperationMultipleEval* MultEval = SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset);
     MultEval->mult(*alpha_, classesComputed);
     delete MultEval;
-
-    return classesComputed;
 }
 
 void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
@@ -325,7 +323,9 @@ void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
 double LearnerBase::getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
                                 const double threshold) {
     // evaluate test dataset
-    SGPP::base::DataVector classesComputed = predict(testDataset);
+
+    SGPP::base::DataVector classesComputed(testDataset.getNrows());
+    predict(testDataset, classesComputed);
 
     return getAccuracy(classesComputed, classesReference, threshold);
 }
@@ -363,7 +363,8 @@ double LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
 ClassificatorQuality LearnerBase::getCassificatorQuality(SGPP::base::DataMatrix& testDataset,
         const SGPP::base::DataVector& classesReference, const double threshold) {
     // evaluate test dataset
-    SGPP::base::DataVector classesComputed = predict(testDataset);
+    SGPP::base::DataVector classesComputed(testDataset.getNrows());
+    predict(testDataset, classesComputed);
 
     return getCassificatorQuality(classesComputed, classesReference, threshold);
 }

@@ -135,7 +135,8 @@ namespace SGPP {
         std::cout << "computing classes of test dataset" << std::endl;
       }
 
-      DataVector computedClasses = this->myLearner->predict(*testTrainingData);
+      DataVector computedClasses(testTrainingData->getNrows());
+      this->myLearner->predict(*testTrainingData, computedClasses);
 
       if (verbose) {
         std::cout << "classes computed" << std::endl;
@@ -229,13 +230,15 @@ namespace SGPP {
         std::cout << "predicting..." << std::endl;
       }
 
-      DataVector computedClasses = this->myLearner->predict(testTrainingData);
+      DataVector computedClasses(testTrainingData.getNrows());
+      this->referenceLearner->predict(testTrainingData, computedClasses);
 
       if (verbose) {
         std::cout << "predicting... (reference)" << std::endl;
       }
 
-      DataVector referenceClasses = this->referenceLearner->predict(testTrainingData);
+      DataVector referenceClasses(testTrainingData.getNrows());
+      this->referenceLearner->predict(testTrainingData, referenceClasses);
 
       double squareSum = 0.0;
 

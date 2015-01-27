@@ -169,10 +169,11 @@ public:
 	 * executes a Regression test for a given dataset and returns the result
 	 *
 	 * @param testDataset dataset that is evaluated with the current learner
+	 * @param classesComputed result of the evaluation of the data set
 	 *
 	 * @return regression values of testDataset
 	 */
-	virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
+	virtual void predict(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classesComputed);
 
 	/**
 	 * compute the accuracy for given testDataset. test is automatically called

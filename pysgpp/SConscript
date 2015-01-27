@@ -43,7 +43,7 @@ pysgppInstallFix = py_env.Install(PYSGPP_BUILD_DIR, "pysgpp.py")
 py_env.Depends(pysgppInstall, pysgppInstallFix)
 
 # run minimal test after compilation
-builder = Builder(action = "python $SOURCE")
+builder = Builder(action = "python $SOURCE %s" % moduleFolder)
 env.Append(BUILDERS = {'SimpleTest' : builder})
 pysgppSimpleImportTest = env.SimpleTest('importTest.py')
 env.Requires(pysgppSimpleImportTest, pysgppInstall)

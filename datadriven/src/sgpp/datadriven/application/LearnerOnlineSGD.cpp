@@ -8,11 +8,11 @@
 
 #include "LearnerOnlineSGD.hpp"
 
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
-#include <sgpp/parallel/tools/TypesParallel.hpp>
-#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
+// #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
+// #include <sgpp/parallel/tools/TypesParallel.hpp>
+// #include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
-#include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
+// #include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -23,7 +23,7 @@ namespace SGPP
 namespace datadriven
 {
 
-const SGPP::parallel::VectorizationType LearnerOnlineSGD::vecType_ = SGPP::parallel::VectorizationType::X86SIMD;
+// const SGPP::parallel::VectorizationType LearnerOnlineSGD::vecType_ = SGPP::parallel::VectorizationType::X86SIMD;
 
 
 LearnerOnlineSGD::LearnerOnlineSGD(
@@ -97,7 +97,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
      */
 
     // resize train dataset for vectorization (padding)
-    size_t oldSize = mainTrainDataset_.getNrows();
+    /*size_t oldSize = mainTrainDataset_.getNrows();
     double chunkSize = static_cast<double>(SGPP::parallel::X86SimdKernelBase::getChunkDataPoints());
     size_t newSize = static_cast<size_t>(std::ceil(static_cast<double>(mainTrainDataset_.getNrows()) / chunkSize) * chunkSize);
     mainTrainDataset_.resize(newSize);
@@ -116,7 +116,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
     			mainClasses_.getPointer()+oldSize);
     	remainder -= increment;
     	oldSize += increment;
-    }
+    }*/
 
 
     mainTrainDataset = &mainTrainDataset_;
@@ -519,13 +519,13 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
     SGPP::solver::ConjugateGradients *cg = new SGPP::solver::ConjugateGradients(
                                              config.CG_max, config.CG_eps);
 
-    //    SGPP::base::OperationMatrix *C_ = SGPP::op_factory::createOperationIdentity(
-    //                                        *this->grid_);
-    //    SGPP::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
-    //                                          config.lambda);
+        SGPP::base::OperationMatrix *C_ = SGPP::op_factory::createOperationIdentity(
+                                            *this->grid_);
+        SGPP::datadriven::DMSystemMatrix matrix(*grid_, *mainTrainDataset, *C_,
+                                              config.lambda);
 
-    SGPP::parallel::DMSystemMatrixVectorizedIdentity matrix(*grid_, *mainTrainDataset,
-            config.lambda, vecType_);
+    /*SGPP::parallel::DMSystemMatrixVectorizedIdentity matrix(*grid_, *mainTrainDataset,
+            config.lambda, vecType_);*/
 
     SGPP::base::DataVector b(alpha_->getSize());
     matrix.generateb(*mainClasses, b);
@@ -540,9 +540,9 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
     getError(mainTrainDataset, mainClasses, "MSE", NULL, false) << std::endl;
     */
     std::cout << "Error after CG (ACCURACY): " <<
-    getError(&mainTrainDatasetT, mainClasses, "ACCURACY", NULL, true) << std::endl;
+    getError(&mainTrainDatasetT, mainClasses, "ACCURACY", NULL, false) << std::endl;
     std::cout << "Error after CG (MSE): " <<
-    getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, true) << std::endl;
+    getError(&mainTrainDatasetT, mainClasses, "MSE", NULL, false) << std::endl;
 
     std::cout << "Error on test (ACCURACY): " <<
     getError(testTrainDataset, testClasses, "ACCURACY", NULL, false) << std::endl;
@@ -589,7 +589,7 @@ double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
 
     DataVector result(numData);
 
-    if( useEvalVectorized )
+    /*if( useEvalVectorized )
     {
         SGPP::parallel::OperationMultipleEvalVectorized* eval =
         		SGPP::op_factory::createOperationMultipleEvalVectorized(*grid_,
@@ -599,12 +599,12 @@ double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
         delete eval;
     }
     else
-    {
+    {*/
         OperationMultipleEval* eval = SGPP::op_factory::createOperationMultipleEval(*grid_, *trainDataset);
         eval->mult(*alphaAvg, result);
 
         delete eval;
-    }
+    //}
 
     double res = -1.0;
 

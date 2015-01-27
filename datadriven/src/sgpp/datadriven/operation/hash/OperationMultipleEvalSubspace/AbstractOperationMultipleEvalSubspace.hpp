@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "../OperationMultipleEvalSubspace/CommonParameters.hpp"
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>

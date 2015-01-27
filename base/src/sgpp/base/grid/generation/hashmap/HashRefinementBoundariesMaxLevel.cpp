@@ -235,7 +235,7 @@ namespace SGPP {
     }
 
 
-    void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage, index_type& index, size_t d, unsigned int maxLevel) {
+    void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage, AbstractRefinement::index_type& index, size_t d, unsigned int maxLevel) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
