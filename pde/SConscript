@@ -29,3 +29,8 @@ libInstall = env.Install(BUILD_DIR, lib)
 # # of the shared libaries on the static libraries on windows
 libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
 env.Install(BUILD_DIR, libStatic)
+
+Import('libraryTargetList')
+Import('installTargetList')
+libraryTargetList.append(lib)
+installTargetList.append(libInstall)

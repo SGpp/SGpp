@@ -21,11 +21,9 @@ def getModules(ignoreFolders):
     path = ''
     suffix = '/SConscript'
     searchString = path + '*' + suffix
-    print searchString
     modulePaths = glob.glob(searchString)
     modules = []
     for modulePath in modulePaths:
-        print modulePath
         module = modulePath[:-len(suffix)]
         module = module[len(path):]
         if module in ignoreFolders:
@@ -37,7 +35,6 @@ def getModules(ignoreFolders):
 #########################################################################
 
 def multiParamConverter(s):
-    print s
     return s.split(',')
 
 # detour compiler output

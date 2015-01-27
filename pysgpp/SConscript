@@ -38,6 +38,7 @@ py_env.AppendUnique(SWIGFLAGS=['-c++','-python'] + swigIncludePaths + ['-D'+c fo
 # The explicit ".so" suffix is required for OSX as otherwise ".dylib" is used in OSX. Python however requires ".so" on OSX as well. On all other plattforms ".so" actually is the default.
 pysgpp = py_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid', 'sgppparallel', 'sgppquadrature']) # 
 pysgppInstall = py_env.Install(PYSGPP_BUILD_DIR, pysgpp)
+
 py_env.Install(PYSGPP_BUILD_DIR, "pysgpp.py")
 
 

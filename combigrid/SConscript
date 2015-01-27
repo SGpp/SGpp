@@ -10,22 +10,23 @@ Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
-srcs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src"):
-        if currentFolder.startswith("./src/sgpp/combigrid/test") or    currentFolder.startswith("./src/sgpp/combigrid/tests") or currentFolder.startswith  ("./src/sgpp/combigrid/multigridFG/test"):
-            continue
-        for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            srcs.append(os.path.join(currentFolder, fileName))
-
 objs = []
-for sourceFile in srcs:
-    objs.append(env.SharedObject(sourceFile))
+for currentFolder, subdirNames, fileNames in os.walk("src"):
+    if currentFolder.startswith("src/sgpp/combigrid/test") or    currentFolder.startswith("src/sgpp/combigrid/tests") or currentFolder.startswith  ("src/sgpp/combigrid/multigridFG/test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        sourceFile = os.path.join(currentFolder, fileName)
+        objs.append(env.SharedObject(sourceFile))
 
 lib = env.SharedLibrary(target="sgpp" + moduleName, source = objs, LIBPATH = BUILD_DIR, LIBS=['sgppbase'])
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
-env.Install(BUILD_DIR, lib)
+libInstall = env.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows
 libStatic = env.StaticLibrary(target = "sgpp" + moduleName + "static", source = objs, SHLIBPREFIX = 'lib')
 env.Install(BUILD_DIR, libStatic)
+
+Import('libraryTargetList')
+Import('installTargetList')
+libraryTargetList.append(lib)
+installTargetList.append(libInstall)
