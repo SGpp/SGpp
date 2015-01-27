@@ -152,7 +152,7 @@ def doConfigure(env, moduleFolders):
         print "Using icc"
         env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
                                '-fno-strict-aliasing', 
-                               '-ip', '-ipo', '-funroll-loops', '-msse3',
+                               '-ip', '-ipo', '-funroll-loops',
                                '-ansi-alias', '-fp-speculation=safe',
                                '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
     

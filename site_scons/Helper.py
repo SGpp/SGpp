@@ -11,7 +11,7 @@ import shlex
 import fileinput
 import re
 
-# get all files in a folder matching "SConscript*"
+# get all folders containing an "SConscript*" file
 # path has to end with "/"
 def getModules(ignoreFolders):
     
@@ -47,6 +47,7 @@ def print_cmd_line(s, target, src, env):
     if env['CMD_LOGFILE']:
         open(env['CMD_LOGFILE'], 'a').write('%s\n' % s);
 
+#creates a Doxyfile containing proper module paths based on Doxyfile_template
 def prepareDoxyfile(modules):
     
     doxyFileTemplate = open('Doxyfile_template','r')
