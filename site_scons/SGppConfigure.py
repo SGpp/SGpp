@@ -6,6 +6,8 @@
 import distutils.sysconfig
 import os
 import sys
+import commands
+import re
 
 import SGppConfigureExtend
 import Helper
@@ -33,6 +35,8 @@ def doConfigure(env, moduleFolders):
     # check whether swig installed
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
+    
+    print "Using doxygen " + commands.getoutput('doxygen --version')
   
     # check whether dot installed
     if not config.CheckExec('dot'):
@@ -43,6 +47,8 @@ def doConfigure(env, moduleFolders):
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
             Exit(1)
+            
+        print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0]
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
         print "pythonpath: ", distutils.sysconfig.get_python_inc()
                 
@@ -109,7 +115,7 @@ def doConfigure(env, moduleFolders):
        env.Append(CPPFLAGS=['-g', '-O0'])
     
     if env['TARGETCPU'] == 'default':
-        print "Using default gcc"
+        print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
     
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
             -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
