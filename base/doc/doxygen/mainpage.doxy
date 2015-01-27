@@ -81,37 +81,46 @@ as short use cases as a quick-start to using SG++.
 <!-- ############################################################# -->
 @section mainpage__history Version History
 
+@subsection mainpage_history_100 Version 1.0.0
+
+What will be there for Release Version 1.0 (scheduled later this year)
+- Automatic check for requirements in SCons for compilation</li>
+- Release of further modules bejond the base package (module sgppbase)</li>
+- Extended parallelization support
+- New types of basis functions
+- More documentation, especially on adaptive refinement
+- And much more...
+
+@subsection mainpage_history_092 Version 0.9.2
+- minor fixes
+- changes in basic API
+
+@subsection mainpage_history_091 Version 0.9.1
+- Compilation support for auto detection of settings.
+- Extended use of DataVector from Python.
+- GridDataBase class.
+
 @subsection mainpage_history_090 Version 0.9.0
 - Provides everything that is necessary to use spatially adaptive
 sparse grids for interpolation, optimization, ...
 - Several types of piecewise linear basis functions
- - Different boundary treatment
- - Modified boundary basis functions
+  - Different boundary treatment
+  - Modified boundary basis functions
 - Grids (handling, creation, modification, ...)
 - Adaptivity
 - Hash-based grid storage
-
-@subsection mainpage_history_100 What will be there for Release Version 1.0
-- Support for the solution of (simple) PDEs
-- Different types of basis functions such as
- - B-splines
- - Polynomial basis functions
-- More documentation, especially on adaptive refinement
-- And much more...
 
 <!-- ############################################################# -->
 @section mainpage__literature Literature
 
 The following publications address SG++:
 
-- TBA
+- D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Dissertation, Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
 - ...
-- ...
-
 
 <!-- ############################################################# -->
 @section mainpage__references References
 
-[1] Spatially Adaptive Sparse Grids for Higher-Dimensional Problems ...
+[1] D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Dissertation, Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
 
 */
