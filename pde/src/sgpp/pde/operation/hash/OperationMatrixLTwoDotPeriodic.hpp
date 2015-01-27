@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONMATRIXLTWODOTPERIODIC_HPP
@@ -25,9 +25,9 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param gird a referenz to the grid
+         * @param grid a referenz to the grid
          */
-    	OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
+        OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
 
         /**
          * Destructor
@@ -35,16 +35,16 @@ namespace SGPP {
         virtual ~OperationMatrixLTwoDotPeriodic();
 
         /**
-		 * Implementation of standard matrix multiplication
-		 *
-		 * @param alpha DataVector that is multiplied to the matrix
-		 * @param result DataVector into which the result of multiplication is stored
-		 */
-		virtual void mult(SGPP::base::DataVector& alpha,
-						  SGPP::base::DataVector& result);
+        * Implementation of standard matrix multiplication
+        *
+        * @param alpha DataVector that is multiplied to the matrix
+        * @param result DataVector into which the result of multiplication is stored
+        */
+        virtual void mult(SGPP::base::DataVector& alpha,
+                          SGPP::base::DataVector& result);
       protected:
 
-		SGPP::base::GridStorage* gridStorage;
+        SGPP::base::GridStorage* gridStorage;
     };
 
   }

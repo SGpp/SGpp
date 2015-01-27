@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "sgpp_base.hpp"
@@ -23,7 +23,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 
 /// default number of Implicit Euler steps before starting with Crank Nicolson approach
 #define CRNIC_IMEUL_STEPS 3
-/// default value for epsilon in gridpoints @money
+/// default value for epsilon in gridpoints at money
 #define DFLT_EPS_AT_MONEY 0.0
 /// default value for sigma of refinement normal distribution
 #define DFLT_SIGMA_REFINE_NORMDIST 0.15
@@ -172,7 +172,6 @@ int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_
  *
  * @param values DataVector into which the values will be stored
  * @param tFile file from which the values are read
- * @param numValues number of values stored in the file
  */
 int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
@@ -232,8 +231,8 @@ double calculatetheta(double a, double sigma, double T, int t) {
  *
  * @param d dimensions
  * @param l the number of levels used in the Sparse Grid
- * @param the stochastic data (theta, sigmahw, sigmabs, a)
- * @param the grid's bounding box - domain boundary(min,max)
+ * @param fileStoch the stochastic data (theta, sigmahw, sigmabs, a)
+ * @param fileBound the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param timeSt the number of timesteps that are executed during the solving process
  *               (not the number of timesteps in total, but the number of timesteps after which
@@ -242,6 +241,9 @@ double calculatetheta(double a, double sigma, double T, int t) {
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param T TODO: missing
+ * @param dStrike TODO: missing
+ * @param isLogSolve TODO: missing
  */
 void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
               size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double T, double dStrike, bool isLogSolve) {
@@ -441,9 +443,12 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
 /**
  * Combine Hull White solver and Black Scholes solver with European call option
  *
+ * @param d dimensions
  * @param l the number of levels used in the Sparse Grid
- * @param the stochastic data (theta, sigmahw, sigmabs, a)
- * @param the grid's bounding box - domain boundary(min,max)
+ * @param sigma is the volatility
+ * @param a is the mean reversion rate
+ * @param fileStoch the stochastic data (theta, sigmahw, sigmabs, a)
+ * @param fileBound the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function
  * @param timeSt the number of timesteps that are executed during the solving process
  *               (not the number of timesteps in total, but the number of timesteps after which
@@ -452,6 +457,9 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param T TODO: missing
+ * @param dStrike TODO: missing
+ * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  * @param refinementMode the mode selected for surplus refinement: available: classic, maxLevel
  * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the grid is refined
  * @param numRefinePoints number of points that should be refined in each refine iteration before Black Scholes Equation is solved: -1 try to refine all points steered by threshold
@@ -460,7 +468,6 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
  * @param useCoarsen specifies if the grid should be coarsened between timesteps
  * @param adaptSolvingMode specifies which adaptive methods are applied during solving the BS Equation
  * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
- * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  * @param useNormalDist enable local initial refinement based on a normal distribution
  */
 void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -103,21 +103,16 @@ namespace SGPP {
       this->nrows = nrows;
     }
 
-    /**
-     * Adds unused rows to the DataMatrix, those can be used to add future data or for padding purposes.
-     *
-     * @param inc_rows number of (unused) rows to add
-     */
-    void DataMatrix::addSize(size_t inc_rows) {
+    void DataMatrix::addSize(size_t inc_nrows) {
       // create new vector
-      double* newdata = new double[(this->nrows + inc_rows) * this->ncols];
+      double* newdata = new double[(this->nrows + inc_nrows) * this->ncols];
       // copy entries of old vector
       memcpy(newdata, this->data, this->nrows * this->ncols * sizeof(double));
 
       delete[] this->data;
 
       this->data = newdata;
-      this->unused = inc_rows;
+      this->unused = inc_nrows;
     }
 
     size_t DataMatrix::appendRow() {

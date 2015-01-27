@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "sgpp_base.hpp"
@@ -121,9 +121,10 @@ void writeHelp() {
  *
  * @param tFile the file that contains the stochastic data
  * @param numAssets the of Assets stored in the file
- * @param mu DataVector for the exspected values
- * @param sigma DataVector for standard deviation
- * @param rho DataMatrix for the correlations
+ * @param xi volatility of the volatility
+ * @param theta long-run variance
+ * @param kappa mean-reversion rate
+ * @param H correlation matrix
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
@@ -223,7 +224,7 @@ int readStochasticData(std::string tFile, size_t numAssets, SGPP::base::DataVect
  * reads the values of the Bounding Box
  *
  * @param tFile the file that contains the stochastic data
- * @param numAssets the of Assets stored in the file
+ * @param numDims the number of dimensions
  * @param BoundaryArray Pointer to the Bounding Box array
  *
  * @return returns 0 if the file was successfully read, otherwise -1
@@ -277,7 +278,7 @@ int readBoudingBoxData(std::string tFile, size_t numDims, SGPP::base::DimensionB
 /**
  * Do a Heston solver test with n assets (2N Dimensional Sparse Grid) European call / put option
  *
- * @param d the number of assets
+ * @param numAssets the number of assets
  * @param l the number of levels used in the Sparse Grid
  * @param fileStoch filename of the file that contains the stochastic data (mu, sigma, rho)
  * @param fileBound filename of the file that contains the grid's bounding box

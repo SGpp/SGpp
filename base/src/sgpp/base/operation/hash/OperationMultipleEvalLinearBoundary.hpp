@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONMULTIPLEEVALLINEARBOUNDARY_HPP
@@ -26,10 +26,10 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param storage the grid's GirdStorage object
+         * @param grid grid
          * @param dataset the dataset the should be evaluated
          */
-        OperationMultipleEvalLinearBoundary(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+        OperationMultipleEvalLinearBoundary(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
           this->storage = grid.getStorage();
         }
 

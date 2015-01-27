@@ -18,7 +18,7 @@ compute the L2-error.
 
 @section code_examples_quadrature__python Python
 
-First, the example in Python. The function, which @link sg::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has one parameter, a sequence (C++ provides a tuple) with the coordinates of the grid point @f$\in[0,1]^d@f$.
+First, the example in Python. The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has one parameter, a sequence (C++ provides a tuple) with the coordinates of the grid point @f$\in[0,1]^d@f$.
 
 @include python_simple_quadrature.py
 which can be executed by
@@ -34,7 +34,7 @@ This results in the output
 @section code_examples_quadrature__cpp C++
 
 Now, the very same in C++.
-The function, which @link sg::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has three parameters. First, the dimensionality (int), then a double* with the coordinates of the grid point @f$\in[0,1]^d@f$, and finally a void* with clientdata for the function, see @ref sg::base::FUNC .
+The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has three parameters. First, the dimensionality (int), then a double* with the coordinates of the grid point @f$\in[0,1]^d@f$, and finally a void* with clientdata for the function, see @ref SGPP::base::FUNC .
 
 @include c++_simple_quadrature.cpp
 which can be executed by

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #define CRNIC_IMEUL_STEPS 3
@@ -95,7 +95,6 @@ int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_
  *
  * @param values DataVector into which the values will be stored
  * @param tFile file from which the values are read
- * @param numValues number of values stored in the file
  */
 int readCuboidValues(SGPP::base::DataVector& values, std::string tFile) {
   std::fstream file;
