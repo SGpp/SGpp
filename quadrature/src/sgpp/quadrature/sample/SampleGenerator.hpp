@@ -13,7 +13,7 @@
 
 
 namespace SGPP {
-namespace mcm {
+namespace quadrature {
 
 /**
  * Base class for all types of MonteCarlo sample generators

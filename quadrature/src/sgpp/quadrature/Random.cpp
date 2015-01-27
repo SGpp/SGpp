@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+#include <sgpp/quadrature/Random.hpp>
 #include <cstdlib>
 #include <ctime>
-#include "Random.hpp"
 
 #ifdef USE_STD_RANDOM
 #include <random>
@@ -15,7 +15,7 @@
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
       
     bool Random::is_seeded = false;
 #ifdef USE_STD_RANDOM

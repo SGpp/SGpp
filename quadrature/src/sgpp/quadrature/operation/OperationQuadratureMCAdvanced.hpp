@@ -8,13 +8,12 @@
 
 #include <sgpp/base/operation/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/mcm/SampleGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 
 namespace SGPP {
-namespace mcm {
+namespace quadrature {
 
 /**
  * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
@@ -135,7 +134,7 @@ protected:
 	size_t dimensions;
 
 	//SampleGenerator Instance 
-	SGPP::mcm::SampleGenerator* myGenerator;
+	SGPP::quadrature::SampleGenerator* myGenerator;
 
 };
 

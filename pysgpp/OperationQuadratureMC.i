@@ -89,8 +89,8 @@ namespace base
 %include "sgpp/base/tools/OperationQuadratureMC.hpp"
 QUADRATURE_CALLBACK_EXTEND(SGPP::base::OperationQuadratureMC)
 
-#ifdef SG_MCM
+#ifdef SG_QUADRATURE
 %apply (long long int* IN_ARRAY1, int DIM1) {(long long int* n, int dim)};
-%include "src/sgpp/mcm/tools/OperationQuadratureMCAdvanced.hpp"
-QUADRATURE_CALLBACK_EXTEND(SGPP::mcm::OperationQuadratureMCAdvanced)
+%include "sgpp/quadrature/operation/OperationQuadratureMCAdvanced.hpp"
+QUADRATURE_CALLBACK_EXTEND(SGPP::quadrature::OperationQuadratureMCAdvanced)
 #endif

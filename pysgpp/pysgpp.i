@@ -105,8 +105,8 @@ namespace std {
 #ifdef SG_COMBIGRID
 #include "combigrid.hpp"
 #endif
-#ifdef SG_MCM
-#include "sgpp_mcm.hpp"
+#ifdef SG_QUADRATURE
+#include "sgpp_quadrature.hpp"
 #endif
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
@@ -277,17 +277,17 @@ namespace std {
 %include "sgpp/solver/TypesSolver.hpp"
 #endif
 
-#ifdef SG_MCM
-%include "sgpp/mcm/SampleGenerator.hpp"
-%include "sgpp/mcm/Random.hpp"
-%include "sgpp/mcm/NaiveSampleGenerator.hpp"
-%include "sgpp/mcm/LatinHypercubeSampleGenerator.hpp"
+#ifdef SG_QUADRATURE
+%include "sgpp/quadrature/Random.hpp"
+%include "sgpp/quadrature/sample/SampleGenerator.hpp"
+%include "sgpp/quadrature/sample/NaiveSampleGenerator.hpp"
+%include "sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp"
 %apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
-%include "sgpp/mcm/StratifiedSampleGenerator.hpp"
-%include "sgpp/mcm/SobolSampleGenerator.hpp"
-%include "sgpp/mcm/ScrambledSobolSampleGenerator.hpp"
-%include "sgpp/mcm/SSobolSampleGenerator.hpp"
-%include "sgpp/mcm/HaltonSampleGenerator.hpp"
+%include "sgpp/quadrature/sample/StratifiedSampleGenerator.hpp"
+%include "sgpp/quadrature/sample/SobolSampleGenerator.hpp"
+%include "sgpp/quadrature/sample/ScrambledSobolSampleGenerator.hpp"
+%include "sgpp/quadrature/sample/SSobolSampleGenerator.hpp"
+%include "sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
 #endif
 
 #ifdef SG_PARALLEL

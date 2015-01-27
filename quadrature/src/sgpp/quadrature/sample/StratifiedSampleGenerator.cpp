@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include "StratifiedSampleGenerator.hpp"
+#include <sgpp/quadrature/sample/StratifiedSampleGenerator.hpp>
 
 #include <cmath>
-#include "Random.hpp"
+
+#include <sgpp/quadrature/Random.hpp>
 
 using namespace SGPP::base;
 
@@ -14,7 +15,7 @@ using namespace SGPP::base;
 
 
 namespace SGPP {
-  namespace mcm {
+  namespace quadrature {
     
     StratifiedSampleGenerator::StratifiedSampleGenerator(size_t dimensions, long long int* strataPerDimension) : SampleGenerator(dimensions)
     {

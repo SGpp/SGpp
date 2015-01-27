@@ -17,7 +17,7 @@
 
 using namespace std;
 
-#include "ssobol.h"
+#include <sgpp/quadrature/ssobol.h>
 
 static void lowdisc_error(string s){
     cout << s;
@@ -136,7 +136,7 @@ void Ssobol::init(int dimen, int atmost, int iflag, int maxd, int *isok)
 			ssobol_vinit[i][j] = 0;
 		}
 	}
-#include <sgpp/mcm/ssobol_poly.h>
+#include <sgpp/quadrature/ssobol_poly.h>
 
 	/*     FIND NUMBER OF BITS IN ATMOST */
 
