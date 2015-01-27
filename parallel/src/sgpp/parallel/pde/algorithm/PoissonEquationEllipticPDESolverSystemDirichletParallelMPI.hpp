@@ -6,7 +6,7 @@
 #ifndef POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 #define POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP
 
-#include <sgpp/pde/operation/OperationEllipticPDESolverSystemDirichlet.hpp>
+#include <sgpp/pde/operation/hash/OperationEllipticPDESolverSystemDirichlet.hpp>
 
 #include <sgpp/globaldef.hpp>
 

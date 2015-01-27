@@ -6,7 +6,7 @@
 #ifndef OPERATIONQUADRATUREMC_HPP
 #define OPERATIONQUADRATUREMC_HPP
 
-#include <sgpp/base/operation/OperationQuadrature.hpp>
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/globaldef.hpp>

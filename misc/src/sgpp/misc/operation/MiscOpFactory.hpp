@@ -7,7 +7,7 @@
 #define MISC_OP_FACTORY_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 
 /*
  * This file contains factory methods for operations.

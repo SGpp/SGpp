@@ -7,7 +7,7 @@
 #define GRID_HPP
 
 
-#include <sgpp/base/operation/OperationEval.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/basis/Basis.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 

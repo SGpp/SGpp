@@ -8,7 +8,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/pde/operation/OperationParabolicPDESolverSystemDirichlet.hpp>
+#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp>
 
 #include <sgpp/globaldef.hpp>
 

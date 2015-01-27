@@ -7,7 +7,7 @@
 #include <sgpp/base/grid/type/LinearTrapezoidBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>

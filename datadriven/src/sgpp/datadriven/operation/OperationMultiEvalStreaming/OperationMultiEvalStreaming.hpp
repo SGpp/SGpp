@@ -7,7 +7,7 @@
 
 #include <omp.h>
 
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 

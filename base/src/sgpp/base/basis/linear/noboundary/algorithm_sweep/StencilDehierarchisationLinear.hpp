@@ -8,7 +8,7 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
 
 #include <sgpp/globaldef.hpp>
 

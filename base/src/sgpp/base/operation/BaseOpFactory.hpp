@@ -8,16 +8,16 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <sgpp/base/operation/OperationHierarchisation.hpp>
-#include <sgpp/base/operation/OperationQuadrature.hpp>
-#include <sgpp/base/operation/OperationFirstMoment.hpp>
-#include <sgpp/base/operation/OperationSecondMoment.hpp>
-#include <sgpp/base/operation/OperationConvert.hpp>
-#include <sgpp/base/operation/OperationIdentity.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
-#include <sgpp/base/operation/OperationEval.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
-#include <sgpp/base/operation/OperationStencilHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
+#include <sgpp/base/operation/hash/OperationConvert.hpp>
+#include <sgpp/base/operation/hash/OperationIdentity.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
 
 /*
  * This file contains factory methods for operations.

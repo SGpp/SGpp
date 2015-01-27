@@ -7,8 +7,8 @@
 #define LEARNERLEASTSQUARESIDENTITY_HPP
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
 

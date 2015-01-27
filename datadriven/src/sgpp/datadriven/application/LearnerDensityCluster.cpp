@@ -7,11 +7,11 @@
 #include "LearnerDensityCluster.hpp"
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/base/operation/OperationMatrix.hpp>
-#include <sgpp/base/operation/OperationIdentity.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationIdentity.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 

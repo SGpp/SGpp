@@ -6,7 +6,7 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 
-#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
 
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/DirichletGridConverter.hpp>

@@ -21,8 +21,8 @@
 #include "sgpp/datadriven/application/LearnerOnlineSGD.hpp"
 #include "sgpp/datadriven/application/LearnerDensityCluster.hpp"
 
-#include "sgpp/datadriven/operation/OperationRegularizationDiagonal.hpp"
-#include "sgpp/datadriven/operation/OperationTest.hpp"
+#include "sgpp/datadriven/operation/hash/OperationRegularizationDiagonal.hpp"
+#include "sgpp/datadriven/operation/hash/OperationTest.hpp"
 
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 

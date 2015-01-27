@@ -8,7 +8,7 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
 #include <string>
 //
 #include <sgpp/globaldef.hpp>

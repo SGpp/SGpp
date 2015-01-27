@@ -8,7 +8,7 @@
 
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
 #include <sgpp/base/datatypes/DataMatrixSP.hpp>
-#include <sgpp/base/operation/OperationMatrixSP.hpp>
+#include <sgpp/base/operation/hash/OperationMatrixSP.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
 #include <sgpp/globaldef.hpp>

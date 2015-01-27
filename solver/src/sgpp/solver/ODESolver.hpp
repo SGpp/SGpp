@@ -8,7 +8,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <sgpp/pde/operation/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
 
 #include <sgpp/solver/SGSolver.hpp>
 #include <sgpp/solver/SLESolver.hpp>

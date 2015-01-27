@@ -13,9 +13,9 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include "../operation/OperationMultipleEvalSubspace/CommonParameters.hpp"
 
-#include <sgpp/base/operation/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-#include <sgpp/datadriven/operation/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 //#include "AbstractOperationMultipleEval.hpp"
