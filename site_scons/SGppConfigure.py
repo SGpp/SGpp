@@ -26,11 +26,14 @@ def doConfigure(env, moduleFolders):
         Exit(1)
     config.env.AppendUnique(CPPFLAGS = "-std=c++11")
     
-    # check avx support    
-    if not config.CheckFlag("-mavx"):
-        sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort!\n")
-        Exit(1)
-    config.env.AppendUnique(CPPFLAGS = "-mavx")
+    if not env['SSE3_FALLBACK']:
+        # check avx support    
+        if not config.CheckFlag("-mavx"):
+            sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
+            Exit(1)
+        config.env.AppendUnique(CPPFLAGS = "-mavx")
+    else:
+        config.env.AppendUnique(CPPFLAGS = "-msse3")        
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):

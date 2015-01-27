@@ -48,6 +48,7 @@ vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', True))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', False))
+vars.Add(BoolVariable('SSE3_FALLBACK', 'Tries to build as much as possible with SSE3 instead of AVX (intrinsics based functions won\'t work)', False))
 vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
@@ -117,6 +118,9 @@ Export('env')
 
 libalglib, alglibstatic  = env.SConscript('tools/SConscriptAlglib', variant_dir='tmp/build_alglib', duplicate=0)
 alglibinst = env.Install(env['OUTPUT_PATH'] + 'lib/alglib', [libalglib, alglibstatic])
+# make base depend on alglib
+
+env.Depends("#/" + BUILD_DIR.path + "/libsgppbase.so", alglibinst)
   
 env.Append(CPPPATH=['#/tools'])
   
@@ -152,8 +156,8 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     pysgppTestTargets = []
     dependency = None
     for moduleFolder in moduleFolders:
-        if moduleFolder == "parallel" or moduleFolder == "finance" or moduleFolder == "pde" or moduleFolder == "solver":
-            # these modules don't currently have tests
+        if moduleFolder == "parallel":
+        #    # these modules don't currently have tests
             continue
         moduleTest = env.Test('#/' + moduleFolder + '/tests/test_' + moduleFolder + '.py')
         env.Requires(moduleTest, pysgppInstall)

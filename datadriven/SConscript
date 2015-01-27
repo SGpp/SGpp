@@ -12,16 +12,29 @@ Import('moduleName')
 
 dependencies = ["base", "solver"]
 
-srcs = []
+avxFolders = ['./src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/', './src/sgpp/datadriven/operation/OperationMultiEvalStreaming']
+
+avx_env = env.Clone()
+avxCPPFLAGS = filter(lambda flag: flag != '-msse3', avx_env['CPPFLAGS'])
+avx_env['CPPFLAGS'] = avxCPPFLAGS
+#avx_env.Remove(CPPFLAGS = '-msse3')
+avx_env.Append(CPPFLAGS = '-mavx')
+
+def isAVXFolder(folder):
+    for avxFolder in avxFolders:
+        if folder.startswith(avxFolder):
+            return True
+    return False
+
+objs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./src"):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            srcs.append(os.path.join(currentFolder, fileName))
-        
-objs = []
-for sourceFile in srcs:
-    objs.append(env.SharedObject(sourceFile))
-
+            sourceFile = os.path.join(currentFolder, fileName)
+            if isAVXFolder(currentFolder):
+                objs.append(avx_env.SharedObject(sourceFile))
+            else:
+                objs.append(env.SharedObject(sourceFile))                
  
 lib = env.SharedLibrary(target ="sgpp" + moduleName, source = objs, LIBPATH = [BUILD_DIR, '#/lib/alglib'], LIBS=['sgppbase', 'sgppsolver', 'libalglib'])    
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
