@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import glob
@@ -23,18 +23,18 @@ allLanguageWrapperList = ['SG_PYTHON', 'SG_JAVA']
 ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
 
 # find all modules
-moduleFolders = getModules(ignoreFolders)
+moduleFolders = ["base", "datadriven", "solver", "pde", "misc", "parallel"]  # getModules(ignoreFolders)
 languageSupport = ['pysgpp']
 
 prepareDoxyfile(moduleFolders)
 
 moduleNames = []
-for name in moduleFolders:
-    moduleNames.append('SG_' + name.upper())
+for moduleFolder in moduleFolders:
+    moduleNames.append('SG_' + moduleFolder.upper())
 
 vars = Variables("custom.py")
 
-# define the flags 
+# define the flags
 vars.Add('CPPFLAGS', 'Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
 vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
 # define the target
@@ -83,19 +83,19 @@ export LIBPATH=$LD_LIBRARY_PATH
 ---------------------------------------------------------------------
 
 Parameters are:
-""" + 
+""" +
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
-env['OUTPUT_PATH'] = os.path.join(env['OUTPUT_PATH'], '')
-
-BUILD_DIR = Dir(env['OUTPUT_PATH'] + 'lib/sgpp')
+BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_BUILD_DIR = Dir(env['OUTPUT_PATH'] + 'lib/pysgpp')
+PYSGPP_BUILD_PATH = os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp')
+Export('PYSGPP_BUILD_PATH')
+PYSGPP_BUILD_DIR = Dir(PYSGPP_BUILD_PATH)
 Export('PYSGPP_BUILD_DIR')
-JAVASGPP_BUILD_DIR = Dir(env['OUTPUT_PATH'] + 'lib/javasgpp')
+JAVASGPP_BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
 Export('JAVASGPP_BUILD_DIR')
-TEST_DIR = Dir(env['OUTPUT_PATH'] + 'tests')
+TEST_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'tests'))
 Export('TEST_DIR')
 
 # no checks if clean:
@@ -111,73 +111,94 @@ env.Append(CPPDEFINES=cppdefines)
 # environement setup finished, export environment
 Export('env')
 
-#Install alglib
+# Install alglib
+libalglib, alglibstatic = SConscript(os.path.join('tools', 'SConscriptAlglib'),
+                                      variant_dir=os.path.join('tmp', 'build_alglib'),
+                                      duplicate=0)
+alglibinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'),
+                         [libalglib, alglibstatic])
+env.Depends(os.path.join("#", BUILD_DIR.path, "libsgppbase.so"), alglibinst)
 
-libalglib, alglibstatic  = env.SConscript('tools/SConscriptAlglib', variant_dir='tmp/build_alglib', duplicate=0)
-alglibinst = env.Install(env['OUTPUT_PATH'] + 'lib/alglib', [libalglib, alglibstatic])
-# make base depend on alglib
-
-env.Depends("#/" + BUILD_DIR.path + "/libsgppbase.so", alglibinst)
-  
 env.Append(CPPPATH=['#/tools'])
-  
+
 libraryTargetList = []
 installTargetList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
-  
+
 # compile selected modules
-for name in moduleFolders:
-    print "Preparing to build module: ", name
-    # SConscript('src/sgpp/SConscript' + name, variant_dir='#/tmp/build/', duplicate=0)
-    env.SConscript('#/' + name + '/SConscript', {'env': env, 'moduleName': name})
-       
+for moduleFolder in sorted(moduleFolders):
+  # as the dependency tracking for swig is buggy in scons, always trigger a
+  # "reswig" by removing the swig wrapper
+  moduleWrapperSourceFile = os.path.join(moduleFolder, "build", "pysgpp", "%s_wrap.cc" % moduleFolder)
+  if os.path.exists(moduleWrapperSourceFile):
+      os.remove(moduleWrapperSourceFile)
+
+  print "Preparing to build module: ", moduleFolder
+  # SConscript('src/sgpp/SConscript' + moduleFolder, variant_dir='#/tmp/build/', duplicate=0)
+  env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
+
 # build python lib
-if env['SG_PYTHON']:
-    SConscript('#/pysgpp/SConscript')
-    Import('pysgppInstall')
+# if env['SG_PYTHON']:
+#    SConscript('#/pysgpp/SConscript')
+#    Import('pysgppInstall')
 
 # build java lib
 if env['SG_JAVA']:
     libjsgpp = env.SConscript('#/jsgpp/SConscript',
                               variant_dir='tmp/build_jsgpp', duplicate=0)
     # install
-    jinst = env.Install(env['OUTPUT_PATH'] + 'lib/jsgpp', [libjsgpp])
-    
-  
+    jinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'),
+                        [libjsgpp])
+
+
 # Unit tests
 #########################################################################
-  
+
+# if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+#    testdep = env.SConscript('tests/SConscript')
+#    # execute after all installations (even where not necessary)
+#    if env['SG_JAVA']:
+#        Depends(testdep, [jinst, pysgppInstall])
+#    else:
+#        Depends(testdep, [pysgppInstall])
+# else:
+#    print "Warning: Skipping python unit tests"
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    
-    env.Import('pysgppSimpleImportTest')
-    
     # run tests
-    builder = Builder(action = "python $SOURCE.file", chdir=1)
-    env.Append(BUILDERS = {'Test' : builder})
+    builder = Builder(action="python $SOURCE.file", chdir=1)
+    env.Append(BUILDERS={'Test' : builder})
+    builder = Builder(action="python $SOURCE")
+    env.Append(BUILDERS={'SimpleTest' : builder})
+
     pysgppTestTargets = []
     dependency = None
     for moduleFolder in moduleFolders:
-        if moduleFolder == "parallel":
-        #    # these modules don't currently have tests
-            continue
-        moduleTest = env.Test('#/' + moduleFolder + '/tests/test_' + moduleFolder + '.py')
-        #env.Requires(moduleTest, installTargetList)
-        env.Requires(moduleTest, pysgppInstall)
-        env.Depends(moduleTest, pysgppSimpleImportTest)
-        env.AlwaysBuild(moduleTest) 
-        if dependency == None:
-            dependency = moduleTest
-        else:
-            env.Depends(moduleTest, dependency)
-            dependency = moduleTest
-            
-        pysgppTestTargets.append(moduleTest)
+      if moduleFolder in ["parallel", "finance", "pde", "solver"]:
+          # these modules don't currently have tests
+          continue
+
+      moduleTest = env.Test(os.path.join("#", moduleFolder, 'tests', 'test_%s.py' % moduleFolder))
+      moduleSharedLibFile = os.path.join("#", PYSGPP_BUILD_PATH, moduleFolder, "_%s.so" % moduleFolder)
+      env.Requires(moduleTest, moduleSharedLibFile)
+
+      # run minimal test after compilation
+      pysgppSimpleImportTest = env.SimpleTest(os.path.join('#', moduleFolder, 'tests', 'test_import.py'))
+      env.Requires(pysgppSimpleImportTest, moduleSharedLibFile)
+      env.AlwaysBuild(pysgppSimpleImportTest)
+      env.Depends(moduleTest, pysgppSimpleImportTest)
+      env.AlwaysBuild(moduleTest)
+      if dependency is None:
+          dependency = moduleTest
+      else:
+          env.Depends(moduleTest, dependency)
+          dependency = moduleTest
+
+      pysgppTestTargets.append(moduleTest)
 else:
     print "Warning: Skipping python unit tests"
-    
+
 # not strictly necessary, used to enforce an order on the final steps of the building of the wrapper
 # used to execute the unittests at the very end
 if env['SG_PYTHON'] and env['SG_JAVA']:
     env.Requires(pysgppInstall, jsgppInstall)
-

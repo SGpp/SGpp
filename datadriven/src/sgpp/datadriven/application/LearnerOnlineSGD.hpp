@@ -20,7 +20,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>
-#include <sgpp/parallel/tools/TypesParallel.hpp>
+//#include <sgpp/parallel/tools/TypesParallel.hpp>
 
 
 #include <sgpp/globaldef.hpp>
@@ -81,7 +81,7 @@ public:
 
     virtual ~LearnerOnlineSGD();
 protected:
-    static const SGPP::parallel::VectorizationType vecType_;
+    //static const SGPP::parallel::VectorizationType vecType_;
 
 private:
     SGPP::base::DataMatrix* mainTrainDataset;

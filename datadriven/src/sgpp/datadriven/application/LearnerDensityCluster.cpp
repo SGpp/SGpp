@@ -334,8 +334,8 @@ namespace SGPP {
     	throw base::factory_exception("createDMSystem is not implemented yet.");
     }
 
-    SGPP::base::DataVector LearnerDensityCluster::getClusterAssignments(){
-    	return *clusterAssignments_;
+    SGPP::base::DataVector* LearnerDensityCluster::getClusterAssignments(){
+    	return clusterAssignments_;
     }
 
     void LearnerDensityCluster::setClusterConfiguration(const SGPP::datadriven::DensityBasedClusteringConfiguration& ClusterConfig){
@@ -476,12 +476,12 @@ namespace SGPP {
 		return data;
     }
 
-    SGPP::base::DataVector LearnerDensityCluster::postprocessing(SGPP::base::DataMatrix& trainDataset,SGPP::base::DataVector components, int n){
+    void LearnerDensityCluster::postprocessing(SGPP::base::DataMatrix& trainDataset,SGPP::base::DataVector& components, int n, SGPP::base::DataVector& newComponents){
 		//SGPP::base::DataVector components = getClusterAssignments();
 		int numberOfClusters = int(components.max());
 
 		if(n == 0 ||  n > numberOfClusters+1)
-			return components;
+			newComponents = components;
 
 		int* dict = new int[numberOfClusters+1];
 		for(int i =0; i < numberOfClusters+1;i++){
@@ -510,8 +510,7 @@ namespace SGPP {
 			aboveThreshold[i] = dict[int(components[i])] >= threshold;
 		}
 
-		SGPP::base::DataVector newComponents(components);
-
+		newComponents = components;
 
 		for(size_t i = 0; i < indexUnderThreshold->size();i++){
 			SGPP::base::DataVector point(trainDataset.getNcols());
@@ -535,7 +534,6 @@ namespace SGPP {
 		aboveThreshold = NULL;
 		delete indexUnderThreshold;
 		indexUnderThreshold = NULL;
-		return newComponents;
 	 }
   }
 }

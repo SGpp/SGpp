@@ -14,29 +14,29 @@
 
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-/**
- * Free refinement class for sparse grids
- */
-class HashRefinementInconsistent: public HashRefinement {
+    /**
+     * Free refinement class for sparse grids
+     */
+    class HashRefinementInconsistent: public HashRefinement {
 
     //using HashRefinement::HashRefinement;
 
-protected:
+      protected:
 
-    /**
-     * This method creates a new point on the grid. It checks if some parents or
-     * children are needed in other dimensions.
-     *
-     * @param storage hashmap that stores the gridpoints
-     * @param index The point that should be inserted
-     */
-    void createGridpoint(GridStorage* storage, index_type& index) override;
+        /**
+         * This method creates a new point on the grid. It checks if some parents or
+         * children are needed in other dimensions.
+         *
+         * @param storage hashmap that stores the gridpoints
+         * @param index The point that should be inserted
+         */
+        void createGridpoint(GridStorage* storage, index_type& index) override;
 
 
-};
-}
+    };
+  }
 }
 
 #endif /* HASHREFINEMENTINCONSISTENT_HPP */
