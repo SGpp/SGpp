@@ -8,7 +8,7 @@ SG++ is grouped into several modules. This ensures
 - Correctness - at least to some degree; if some part is modified, it will not influence others
 - ...
 
-The modules correspond (roughly) to the corresponding namespaces in C++. Roughly, as all files belonging to a namespace belong to the respective module. But a module can contain files belonging to another namespace, especially static factory methods in the namespace sg::op_factory.
+The modules correspond (roughly) to the corresponding namespaces in C++. Roughly, as all files belonging to a namespace belong to the respective module. But a module can contain files belonging to another namespace, especially static factory methods in the namespace SGPP::op_factory.
 
 @dot
 digraph G {
@@ -18,12 +18,12 @@ digraph G {
 	
 	{ rank=same; datadriven; solver; combigrid; }
 
-	base [URL="@ref sg::base"];
-	pde [URL="@ref sg::pde"];
-	datadriven [URL="@ref sg::datadriven"];
-	finance [URL="@ref sg::finance"];
-	solver [URL="@ref sg::solver"];
-	parallel [URL="@ref sg::parallel"];
+	base [URL="@ref SGPP::base"];
+	pde [URL="@ref SGPP::pde"];
+	datadriven [URL="@ref SGPP::datadriven"];
+	finance [URL="@ref SGPP::finance"];
+	solver [URL="@ref SGPP::solver"];
+	parallel [URL="@ref SGPP::parallel"];
 	combigrid [URL=""];
 
 	pde -> base;
@@ -48,11 +48,11 @@ Libraries are generated for all modules, named sgppbase, sgpppde, etc. The follo
        base
      </td>
      <td>
-       - the main sg::base::Grid class
+       - the main SGPP::base::Grid class
        - different types of sparse grids (with or without grid points on the boundary etc.)
        - different types of basis function (piecewise linear/polynomial, b-splines, pre-wavelets, ...)
        - the underlying data structures
-       - data types (sg::base::DataVector and sg::base::DataMatrix)
+       - data types (SGPP::base::DataVector and SGPP::base::DataMatrix)
        - basic operations such as hierarchization and dehierarchization
        - evaluation, evaluation of multiple data points
        - adaptive refinement
