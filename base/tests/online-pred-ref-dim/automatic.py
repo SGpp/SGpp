@@ -9,7 +9,7 @@ import random
 import numpy
 import collections
 
-from pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex, PredictiveRefinementDimensionIndicator
+from pysgpp.base import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex, PredictiveRefinementDimensionIndicator
 
 class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 

@@ -32,6 +32,9 @@ libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
 
+Import('libraryTargetList')
+Import('installTargetList')
+
 if env['SG_PYTHON']:
   py_env = env.Clone()
   
@@ -45,19 +48,21 @@ if env['SG_PYTHON']:
   py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
                         ['-D' + c for c in py_env['CPPDEFINES']],
                       CPPPATH=['#/%s' % moduleName])
-  py_env.SharedLibrary(target=os.path.join('#', PYSGPP_BUILD_PATH, moduleName),
-                       source= [os.path.join("build", "pysgpp", "%s.i" % moduleName)],
+  libPython = py_env.SharedLibrary(target="base",
+                       source= [os.path.join("build", "pysgpp", moduleName + ".i")],
                        SHLIBPREFIX='_',
                        CPPFLAGS=['--std=c++11', '-Wno-cast-qual'],
                        LIBPATH = [BUILD_DIR],
                        LIBS=['sgppbase'])
-  libInstallPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build", "pysgpp", "%s.py" % moduleName))
-
-Import('libraryTargetList')
-Import('installTargetList')
+  
+  packageInit = File(os.path.join("build", "pysgpp", '__init__.py'))
+  installPackageInit = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), packageInit)
+  installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
+  installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
+  py_env.Depends(installLibPython, installLibWrapperPython)
+  py_env.Depends(installLibPython, installPackageInit)
+  installTargetList.append(installLibPython)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
 
-if env['SG_PYTHON']:
-    installTargetList.append(libInstallPython)

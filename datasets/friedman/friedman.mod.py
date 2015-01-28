@@ -9,7 +9,7 @@ import sys, os, re, optparse, random, math
 sys.path.append("../../bin/")
 import tools
 
-from pysgpp import *
+from pysgpp.base import *
 
 # parse args
 parser = optparse.OptionParser()

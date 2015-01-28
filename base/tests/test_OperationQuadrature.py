@@ -6,14 +6,14 @@
 
 import unittest
 import re
-from pysgpp import DataVector, createOperationQuadrature
+from pysgpp.base import DataVector, createOperationQuadrature
 
 
 class TestQuadratureLinear(unittest.TestCase):
     ##
     # Test quadrature for a few test cases
     def testQuadrature(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 3
         level = 4
@@ -37,7 +37,7 @@ class TestQuadratureMC(unittest.TestCase):
     # Test quadrature using Monte Carlo and compare against
     # sparse grid solution
     def testQuadratureMC(self):
-        from pysgpp import Grid, OperationQuadratureMC
+        from pysgpp.base import Grid, OperationQuadratureMC
         
         dim = 3
         level = 3

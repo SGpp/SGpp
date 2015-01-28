@@ -9,7 +9,7 @@
 import sys
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp import DataVector, Grid, createOperationHierarchisation, createOperationEval
+from pysgpp.base import DataVector, Grid, createOperationHierarchisation, createOperationEval
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2

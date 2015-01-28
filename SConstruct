@@ -83,7 +83,7 @@ export LIBPATH=$LD_LIBRARY_PATH
 ---------------------------------------------------------------------
 
 Parameters are:
-""" +
+""" + 
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
@@ -179,22 +179,24 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 
       moduleTest = env.Test(os.path.join("#", moduleFolder, 'tests', 'test_%s.py' % moduleFolder))
       moduleSharedLibFile = os.path.join("#", PYSGPP_BUILD_PATH, moduleFolder, "_%s.so" % moduleFolder)
-      env.Requires(moduleTest, moduleSharedLibFile)
+      #env.Requires(moduleTest, moduleSharedLibFile)
+      env.Requires(moduleTest, installTargetList)
 
       # run minimal test after compilation
-      pysgppSimpleImportTest = env.SimpleTest(os.path.join('#', moduleFolder, 'tests', 'test_import.py'))
-      env.Requires(pysgppSimpleImportTest, moduleSharedLibFile)
-      env.Requires(pysgppSimpleImportTest, installTargetList)
-      env.Requires(pysgppSimpleImportTest, libraryTargetList)
-      env.AlwaysBuild(pysgppSimpleImportTest)
-      env.Depends(moduleTest, pysgppSimpleImportTest)
+#       pysgppSimpleImportTest = env.SimpleTest(os.path.join('#', moduleFolder, 'tests', 'test_import.py'))
+#       env.Requires(pysgppSimpleImportTest, moduleSharedLibFile)
+#       env.Requires(pysgppSimpleImportTest, installTargetList)
+#       env.Requires(pysgppSimpleImportTest, libraryTargetList)
+#       env.AlwaysBuild(pysgppSimpleImportTest)
+#       env.Depends(moduleTest, pysgppSimpleImportTest)
+    
       env.AlwaysBuild(moduleTest)
       if dependency is None:
           dependency = moduleTest
       else:
           env.Depends(moduleTest, dependency)
           dependency = moduleTest
-
+        
       pysgppTestTargets.append(moduleTest)
 else:
     print "Warning: Skipping python unit tests"

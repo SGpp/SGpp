@@ -3,7 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from pysgpp import *
+from pysgpp.base import *
 
 from bin.utils.GzipSerializer import GzipSerializer
 

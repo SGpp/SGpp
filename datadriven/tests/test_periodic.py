@@ -13,7 +13,7 @@ from itertools import repeat, izip
 class TestOperationEval(unittest.TestCase):
     def testEval1D(self):
         """Test the eval function for 1D grid"""
-        from pysgpp import DataVector,DataMatrix, Grid
+        from pysgpp.base import DataVector,DataMatrix, Grid
         
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(3)
@@ -41,7 +41,7 @@ class TestOperationEval(unittest.TestCase):
 
     def testEval2D(self):
         """Test the eval function for 2D grid"""
-        from pysgpp import DataVector,DataMatrix, Grid
+        from pysgpp.base import DataVector,DataMatrix, Grid
         
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(3)
@@ -70,7 +70,7 @@ class TestOperationEval(unittest.TestCase):
         
     def testEval3D(self):
         """Test the eval function for 3D grid"""
-        from pysgpp import DataVector,DataMatrix, Grid
+        from pysgpp.base import DataVector,DataMatrix, Grid
         
         grid = Grid.createPeriodicGrid(3)
         grid.createGridGenerator().regular(3)
@@ -87,7 +87,7 @@ class TestOperationEval(unittest.TestCase):
         
     def testMultEval1D(self):
         """Test the multiple eval function for 1D grid"""
-        from pysgpp import DataVector,DataMatrix, Grid, OperationMultipleEval, createOperationMultipleEval
+        from pysgpp.base import DataVector,DataMatrix, Grid, OperationMultipleEval, createOperationMultipleEval
         
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(3)
@@ -121,7 +121,7 @@ class TestOperationEval(unittest.TestCase):
     
     def testMultEval2D(self):
         """Test the multiple eval function for 1D grid"""
-        from pysgpp import DataVector,DataMatrix, Grid, OperationMultipleEval, createOperationMultipleEval
+        from pysgpp.base import DataVector,DataMatrix, Grid, OperationMultipleEval, createOperationMultipleEval
         
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(3)
@@ -154,7 +154,7 @@ class TestOperationEval(unittest.TestCase):
 
 class TestLTwoDotProduct(unittest.TestCase):
     def testLTwoExplicitD1L1(self):
-        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(1)
@@ -171,7 +171,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.333333333, 0.166666667]), res)
         
     def testLTwoExplicitD1L3(self):
-        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(3)
@@ -196,7 +196,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.09375 , 0.03125 , 0.0 , 0.0625 , 0.0 , 0.0 , 0.0 , 0.0833333333333]), res)
         
     def testLTwoExplicitD2L1(self):
-        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(1)
@@ -221,7 +221,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.0277777777778 , 0.0555555555556 , 0.0555555555556 , 0.111111111111]), res)
         
     def testLTwoExplicitD2L2(self):
-        from pysgpp import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotExplicitPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(2)
@@ -235,7 +235,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         
         
     def testLTwoD1L1(self):
-        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(1)
@@ -252,7 +252,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.333333333, 0.166666667]), res)
         
     def testLTwoD1L3(self):
-        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(1)
         grid.createGridGenerator().regular(3)
@@ -277,7 +277,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.09375 , 0.03125 , 0.0 , 0.0625 , 0.0 , 0.0 , 0.0 , 0.0833333333333]), res)
         
     def testLTwoD2L1(self):
-        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(1)
@@ -302,7 +302,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         np.testing.assert_array_almost_equal(DataVector([0.0277777777778 , 0.0555555555556 , 0.0555555555556 , 0.111111111111]), res)
         
     def testLTwoD2L2(self):
-        from pysgpp import OperationMatrixLTwoDotPeriodic, Grid, DataVector
+        from pysgpp.base import OperationMatrixLTwoDotPeriodic, Grid, DataVector
         
         grid = Grid.createPeriodicGrid(2)
         grid.createGridGenerator().regular(2)
@@ -317,7 +317,7 @@ class TestLTwoDotProduct(unittest.TestCase):
         
 class TestLearnerDensityCluster(unittest.TestCase):
     def testExample1D_relative(self):
-        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        from pysgpp.base import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
         data = [ 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5]
         trainData = DataMatrix(10,1)
         for i in range(10):
@@ -347,7 +347,7 @@ class TestLearnerDensityCluster(unittest.TestCase):
         np.testing.assert_array_equal(clust.getClusterAssignments(), DataVector([0, 0, 1, 0, 0, 0, 2, 0, 0, 0]))
     
     def testExample1D_constant_classify(self):
-        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        from pysgpp.base import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
         data = [ 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5]
         trainData = DataMatrix(10,1)
         for i in range(10):
@@ -378,7 +378,7 @@ class TestLearnerDensityCluster(unittest.TestCase):
         np.testing.assert_array_equal(res, DataVector([ 0.,  0.,  1.,  0.,  1.,  0.,  0.,  0.,  0.,  1.]))
     
     def testExample1D_constant(self):
-        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        from pysgpp.base import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
         data = [ 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5]
         trainData = DataMatrix(10,1)
         for i in range(10):
@@ -408,7 +408,7 @@ class TestLearnerDensityCluster(unittest.TestCase):
         np.testing.assert_array_equal(clust.getClusterAssignments(), DataVector([0, 0, 1, 2, 1, 3, 4, 3, 2, 1]))   
         
     def testExample2D_minima(self):
-        from pysgpp import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
+        from pysgpp.base import LearnerDensityCluster, DataMatrix, DataVector, Grid, SLESolverConfiguration, RegularGridConfiguration, Periodic, DensityBasedClusteringConfiguration
         data = [ 0.5,0.5 , 0.2,0.2 , 0.2, 0.25 , 0.25,0.2, 0.8,0.85 ,0.8,0.8, 0.85,0.8]
         trainData = DataMatrix(7,2)
         for i in range(7):

@@ -14,7 +14,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.learner.formatter.GridFormatter import GridFormatter
-from pysgpp import Grid
+from pysgpp.base import Grid
 
 
 ##
