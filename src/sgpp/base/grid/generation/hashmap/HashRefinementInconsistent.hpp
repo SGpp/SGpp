@@ -20,7 +20,7 @@ namespace base {
  */
 class HashRefinementInconsistent: public HashRefinement {
 
-    using HashRefinement::HashRefinement;
+//    using HashRefinement::HashRefinement;
 
 protected:
 
