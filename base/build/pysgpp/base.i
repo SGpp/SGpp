@@ -83,17 +83,25 @@ using namespace SGPP::base;
 
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];
+%ignore SGPP::base::DataVectorSP::toString(std::string& text);
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %ignore SGPP::base::DataMatrixSP::operator=;
 %ignore SGPP::base::DataMatrixSP::operator[];
+%ignore SGPP::base::DataMatrixSP::toString(std::string& text);
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
+
+%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
 
 // The Good, i.e. without any modifications
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
+%ignore sg::base::HashGridIndex::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
+%ignore sg::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
+%ignore sg::base::BoundingBox::toString(std::string& text);
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"

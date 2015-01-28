@@ -52,12 +52,12 @@ public:
 	virtual void multTranspose(SGPP::base::DataVector& soruce, SGPP::base::DataVector& result) = 0;
 };
 
-class OperationMatrix
+/*class OperationMatrix
 {
 public:
 	virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
-};
-
+};*/
+/*
 class OperationConvert
 {
 public:
@@ -77,6 +77,8 @@ public:
 	virtual void doHierarchisation(SGPP::base::DataVector& node_values) = 0;
 	virtual void doDehierarchisation(SGPP::base::DataVector& alpha) = 0;
 };
+*/
+
 }
 
 namespace base {

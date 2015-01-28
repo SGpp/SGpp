@@ -58,6 +58,17 @@ namespace std {
 using namespace SGPP;
 %}
 
+%import "base/build/pysgpp/DataVector.i"
+%import "base/build/pysgpp/DataMatrix.i"
+
+%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
+%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
+%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
+%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"
+
+%include "pde/src/sgpp/pde/application/PDESolver.hpp"
+%include "pde/src/sgpp/pde/application/ParabolicPDESolver.hpp"
+
 // The Good, i.e. without any modifications
 %include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
 %include "finance/src/sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"

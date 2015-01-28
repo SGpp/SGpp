@@ -62,7 +62,8 @@ namespace std {
 %include "quadrature/src/sgpp/quadrature/sample/SampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sample/NaiveSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp"
-%apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
+//TODO franzefn
+//%apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
 %include "quadrature/src/sgpp/quadrature/sample/StratifiedSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sample/SobolSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sample/ScrambledSobolSampleGenerator.hpp"
