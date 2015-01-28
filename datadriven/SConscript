@@ -10,6 +10,8 @@ Import('env')
 Import('BUILD_DIR')
 Import('PYSGPP_BUILD_PATH')
 Import('moduleName')
+Import('libraryTargetList')
+Import('installTargetList')
 
 dependencies = ["base", "solver", "pde", "misc"]
 
@@ -65,18 +67,18 @@ if env['SG_PYTHON']:
   py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
                         ['-D' + c for c in py_env['CPPDEFINES']],
                       CPPPATH=['#/%s' % moduleName])
-  py_env.SharedLibrary(target=os.path.join('#', PYSGPP_BUILD_PATH, moduleName),
+  libPython = py_env.SharedLibrary(target=moduleName,
                        source=[os.path.join("build", "pysgpp", "%s.i" % moduleName)],
                        SHLIBPREFIX='_',
                        CPPFLAGS=['--std=c++11', '-Wno-cast-qual'],
                        LIBPATH = [BUILD_DIR, '#/lib/alglib'],
                        LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'libalglib'])
-  libInstallPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build", "pysgpp", "%s.py" % moduleName))
+  installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
+  installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
+  py_env.Depends(installLibPython, installLibWrapperPython)
+  installTargetList.append(installLibPython)
 
 Import('libraryTargetList')
 Import('installTargetList')
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
-
-if env['SG_PYTHON']:
-    installTargetList.append(libInstallPython)
