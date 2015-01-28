@@ -73,7 +73,7 @@ using namespace SGPP::base;
 %}
 
 // include other interface files
-%import "base/src/sgpp/base/basis/Basis.hpp"
+%import "base/src/sgpp/base/operation/hash/common/basis/Basis.hpp"
 %template(SBasis) SGPP::base::Basis<unsigned int, unsigned int>;
 %include "DataVector.i"
 %include "DataMatrix.i"
@@ -142,20 +142,20 @@ using namespace SGPP::base;
 
 %include "base/src/sgpp/base/application/ScreenOutput.hpp"
 
-%include "base/src/sgpp/base/basis/linear/LinearBasis.hpp"
-%include "base/src/sgpp/base/basis/linearBoundary/LinearBoundaryBasis.hpp"
-%include "base/src/sgpp/base/basis/linearStretched/LinearStretchedBasis.hpp"
-%include "base/src/sgpp/base/basis/linearStretchedBoundary/LinearStretchedBoundaryBasis.hpp"
-%include "base/src/sgpp/base/basis/linearModified/LinearModifiedBasis.hpp"
-%include "base/src/sgpp/base/basis/poly/PolyBasis.hpp"
-%include "base/src/sgpp/base/basis/polyModified/PolyModifiedBasis.hpp"
-%include "base/src/sgpp/base/basis/waveletModified/WaveletModifiedBasis.hpp"
-%include "base/src/sgpp/base/basis/bsplineModified/BsplineModifiedBasis.hpp"
-%include "base/src/sgpp/base/basis/prewavelet/PrewaveletBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
-%include "base/src/sgpp/base/basis/periodic/LinearPeriodicBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp"
 
 // static factory methods
 %include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
