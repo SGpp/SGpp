@@ -12,9 +12,6 @@
 
 #include "base/exception/factory_exception.hpp"
 
-#include "base/basis/modwavelet/ModifiedWaveletBasis.hpp"
-
-
 
 #include <iostream>
 
@@ -34,11 +31,6 @@ namespace sg {
     const char* ModWaveletGrid::getType() {
       return "modWavelet";
     }
-
-    const SBasis& ModWaveletGrid::getBasis(){
-		static SModWaveletBase basis;
-		return basis;
-	}
 
     Grid* ModWaveletGrid::unserialize(std::istream& istr) {
       return new ModWaveletGrid(istr);

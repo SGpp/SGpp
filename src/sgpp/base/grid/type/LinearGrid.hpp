@@ -45,8 +45,6 @@ namespace sg {
 
         virtual const char* getType();
 
-        virtual const SBasis& getBasis();
-
         virtual GridGenerator* createGridGenerator();
 
         static Grid* unserialize(std::istream& istr);

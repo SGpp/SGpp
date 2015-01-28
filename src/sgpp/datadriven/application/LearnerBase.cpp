@@ -367,9 +367,8 @@ namespace sg {
 
         for (size_t i = 0; i < classesComputed.getSize(); i++) {
           if ( (classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0)
-               || (classesComputed.get(i) < -threshold && classesReference.get(i) < 0.0) ) {
+               || (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0) ) {
             correct++;
-            //std::cout << classesComputed.get(i) << " " <<classesReference.get(i) << std::endl;
           }
         }
 

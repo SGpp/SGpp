@@ -8,7 +8,7 @@
 #include "base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
 
-//using namespace std;
+using namespace std;
 
 namespace sg {
   namespace base {
@@ -37,6 +37,7 @@ namespace sg {
       refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
       delete [] max_values;
       delete [] max_indices;
+
     }
 
     void ANOVARefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
@@ -56,7 +57,6 @@ namespace sg {
 
           for (size_t dim = 0; dim < storage->dim(); dim++) {
             if (index.getLevel(dim) > 1) {
-
               this->get_decorated_refinement()->refineGridpoint1D(storage, index,
                   dim);
             }

@@ -3,7 +3,7 @@
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
- 
+
 dependencies = []
 
 srcs = Split("""
@@ -44,8 +44,6 @@ base/basis/modpoly/operation/OperationMultipleEvalModPoly.cpp
 base/basis/modwavelet/operation/OperationEvalModWavelet.cpp
 base/basis/modwavelet/operation/OperationHierarchisationModWavelet.cpp
 base/basis/modwavelet/operation/OperationMultipleEvalModWavelet.cpp
-base/basis/periodic/operation/OperationEvalPeriodic.cpp
-base/basis/periodic/operation/OperationMultipleEvalPeriodic.cpp
 base/basis/poly/algorithm_sweep/HierarchisationPoly.cpp
 base/basis/poly/algorithm_sweep/DehierarchisationPoly.cpp
 base/basis/poly/operation/OperationEvalPoly.cpp
@@ -67,19 +65,10 @@ base/grid/common/DirichletGridConverter.cpp
 base/grid/common/DirichletUpdateVector.cpp
 base/grid/generation/hashmap/AbstractRefinement.cpp
 base/grid/generation/hashmap/HashRefinement.cpp
-base/grid/generation/hashmap/HashRefinementInconsistent.cpp
-base/grid/generation/hashmap/SubspaceCoarsening.cpp
 base/grid/generation/hashmap/HashRefinementBoundaries.cpp
 base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.cpp
-base/grid/generation/refinement_strategy/dataStructures/ErrorStorage.cpp
 base/grid/generation/refinement_strategy/RefinementDecorator.cpp
 base/grid/generation/refinement_strategy/ANOVARefinement.cpp
-base/grid/generation/refinement_strategy/GSGRefinement.cpp
-base/grid/generation/refinement_strategy/PredictiveRefinement.cpp
-base/grid/generation/refinement_strategy/PredictiveRefinementDimension.cpp
-base/grid/generation/refinement_strategy/PredictiveStackANOVARefinement.cpp
-base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.cpp
-base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.cpp
 base/grid/generation/BoundaryGridGenerator.cpp
 base/grid/generation/PrewaveletGridGenerator.cpp
 base/grid/generation/SquareRootGridGenerator.cpp
@@ -87,14 +76,8 @@ base/grid/generation/StandardGridGenerator.cpp
 base/grid/generation/functors/ANOVACoarseningFunctor.cpp
 base/grid/generation/functors/SurplusCoarseningFunctor.cpp
 base/grid/generation/functors/SurplusRefinementFunctor.cpp
-base/grid/generation/functors/PredictiveRefinementIndicator.cpp
-base/grid/generation/functors/WeightedErrorRefinementFunctor.cpp
-base/grid/generation/functors/PersistentErrorRefinementFunctor.cpp
-base/grid/generation/functors/ClassificationRefinementFunctor.cpp
-base/grid/generation/functors/PredictiveRefinementDimensionIndicator.cpp
 base/grid/generation/TrapezoidBoundaryGridGenerator.cpp
 base/grid/generation/TruncatedTrapezoidGridGenerator.cpp
-base/grid/generation/PeriodicGridGenerator.cpp
 base/grid/Grid.cpp
 base/grid/type/GridStencil.cpp
 base/grid/type/LinearBoundaryGrid.cpp
@@ -110,7 +93,6 @@ base/grid/type/PolyGrid.cpp
 base/grid/type/PrewaveletGrid.cpp
 base/grid/type/SquareRootGrid.cpp
 base/grid/type/TruncatedTrapezoidGrid.cpp
-base/grid/type/PeriodicGrid.cpp
 base/tools/EvalCuboidGenerator.cpp
 base/tools/GridPrinter.cpp
 base/tools/SGppStopwatch.cpp

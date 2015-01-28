@@ -12,40 +12,27 @@
 
 #include "base/exception/factory_exception.hpp"
 
-#include "base/basis/modpoly/ModifiedPolyBasis.hpp"
-
-
 
 #include <iostream>
 
 namespace sg {
   namespace base {
 
-    ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
+    ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16) {
       istr >> degree;
     }
 
 
-    ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
+    ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) : degree(degree) {
       this->storage = new GridStorage(dim);
     }
 
     ModPolyGrid::~ModPolyGrid() {
-    	if (basis_ != NULL){
-    		delete basis_;
-    	}
     }
 
     const char* ModPolyGrid::getType() {
       return "modpoly";
     }
-
-    const SBasis& ModPolyGrid::getBasis(){
-    	if (basis_ == NULL){
-    		basis_ = new SModPolyBase(degree);
-    	}
-		return *basis_;
-	}
 
     size_t ModPolyGrid::getDegree() const {
       return this->degree;

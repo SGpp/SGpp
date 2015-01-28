@@ -58,7 +58,6 @@ namespace sg {
 
       // calculate the starting residuum
       SystemMatrix.mult(alpha, temp);
-
       r.sub(temp);
 
       sg::base::DataVector d(r);

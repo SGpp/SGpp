@@ -10,7 +10,6 @@
 
 #include <cmath>
 #include <iostream>
-#include "base/basis/Basis.hpp"
 
 namespace sg {
   namespace base {
@@ -34,7 +33,7 @@ namespace sg {
      * this advantage is bought with a wider support of the ansatzfunctions.
      */
     template<class LT, class IT>
-    class PrewaveletBasis: public Basis<LT, IT> {
+    class PrewaveletBasis {
       private:
 
         static const double normal_stamp[];

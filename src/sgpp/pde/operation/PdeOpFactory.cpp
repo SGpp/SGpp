@@ -26,8 +26,6 @@
 #include "pde/basis/linear/boundary/operation/OperationMatrixLTwoDotExplicitLinearBoundary.hpp"
 #include "pde/basis/linearstretched/noboundary/operation/OperationLTwoDotProductLinearStretched.hpp"
 #include "pde/basis/linearstretched/boundary/operation/OperationLTwoDotProductLinearStretchedBoundary.hpp"
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotPeriodic.hpp"
 
 namespace sg {
 
@@ -74,10 +72,8 @@ namespace sg {
         return new pde::OperationLTwoDotProductLinearStretched(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretchedTrapezoidBoundary") == 0) {
         return new pde::OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
-      } else if (strcmp(grid.getType(), "periodic") == 0) {
-        return new pde::OperationMatrixLTwoDotPeriodic(grid.getStorage());
       } else
-        throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type.");
+        throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
     }
 
     base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
@@ -85,8 +81,6 @@ namespace sg {
         return new pde::OperationMatrixLTwoDotExplicitLinear(&grid);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0) {
         return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
-      } else if (strcmp(grid.getType(), "periodic") == 0) {
-        return new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid);
       } else
         throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
     }
@@ -96,8 +90,6 @@ namespace sg {
         return new pde::OperationMatrixLTwoDotExplicitLinear(m, &grid);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0) {
         return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
-      } else if (strcmp(grid.getType(), "periodic") == 0) {
-    	return new pde::OperationMatrixLTwoDotExplicitPeriodic(m, &grid);
       } else
         throw base::factory_exception("OperationLTwoDotExplicit is not implemented for this grid type.");
     }

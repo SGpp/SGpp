@@ -12,7 +12,6 @@
 #include <cmath>
 #include <algorithm>
 #include "base/grid/common/Stretching.hpp"
-#include "base/basis/linear/noboundary/LinearBasis.hpp"
 
 namespace sg {
   namespace base {
@@ -22,7 +21,7 @@ namespace sg {
      * And here we have another implicit dependence on tensor products
      */
     template<class LT, class IT>
-    class LinearStretchedBasis: public LinearBasis<LT, IT> {
+    class LinearStretchedBasis {
       public:
         /**
          * Evaluate a basis function.

@@ -81,13 +81,11 @@ class GridImageFormatter(GridFormatter):
             
             for x1 in xrange(1,storage.dim()):
                 for x2 in xrange(2,storage.dim()+1):
-                     figure.add_subplot(rows*100 + cols*10 + i)
-                     figure.add_subplot(rows, cols, i)
-                     plt.xlabel('x%d'%x1, figure=figure)
-                     plt.ylabel('x%d'%x2, figure=figure)
-                     plt.scatter(points[:,x1-1], points[:,x2-1], figure=figure)
-
-                     i +=1
+                    figure.add_subplot(rows*100 + cols*10 + i)
+                    plt.xlabel('x%d'%x1, figure=figure)
+                    plt.ylabel('x%d'%x2, figure=figure)
+                    plt.scatter(points[:,x1-1], points[:,x2-1], figure=figure)
+                    i +=1
             plt.savefig(fstream, figure=figure)
             plt.close(figure)
         finally:

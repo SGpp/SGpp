@@ -12,9 +12,6 @@
 
 #include "base/exception/factory_exception.hpp"
 
-#include "base/basis/modlinear/ModifiedLinearBasis.hpp"
-
-
 
 #include <iostream>
 
@@ -34,11 +31,6 @@ namespace sg {
     const char* ModLinearGrid::getType() {
       return "modlinear";
     }
-
-    const SBasis& ModLinearGrid::getBasis(){
-		static SModLinearBase basis;
-		return basis;
-	}
 
     Grid* ModLinearGrid::unserialize(std::istream& istr) {
       return new ModLinearGrid(istr);
