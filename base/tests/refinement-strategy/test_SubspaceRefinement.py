@@ -7,7 +7,7 @@
 # sgpp.sparsegrids.org
 
 import unittest
-from pysgpp import Grid, HashRefinement, GridIndex, \
+from pysgpp.base import Grid, HashRefinement, GridIndex, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
     SubspaceRefinement
 

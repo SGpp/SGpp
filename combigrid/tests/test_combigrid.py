@@ -11,7 +11,7 @@ if __name__ == '__main__':
     alltests = unittest.TestSuite()
     
     try:
-        from pysgpp import AbstractCombiGrid
+        from pysgpp.base import AbstractCombiGrid
         import test_newCombi
         alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_newCombi))
     except ImportError:

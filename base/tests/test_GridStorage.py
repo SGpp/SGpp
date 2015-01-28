@@ -10,7 +10,7 @@ import unittest
 class TestGridStorage(unittest.TestCase):
     def testCreateDestroy(self):
         """Test creation and destruction via storage"""
-        from pysgpp import GridIndex, GridStorage
+        from pysgpp.base import GridIndex, GridStorage
         
         i = GridIndex(1)
         s = GridStorage(1)
@@ -24,7 +24,7 @@ class TestGridStorage(unittest.TestCase):
         
     def testSerialize(self):
         """Tests serialization"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -41,7 +41,7 @@ class TestGridStorage(unittest.TestCase):
 
     def testSerializeWithLeaf(self):
         """Tests serialization with Leaf"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         srcLeaf = []
         s = GridStorage(2)
@@ -66,7 +66,7 @@ class TestGridStorage(unittest.TestCase):
         
     def testInsert(self):
         """Tests insertion of an index into a storage"""
-        from pysgpp import GridIndex, GridStorage
+        from pysgpp.base import GridIndex, GridStorage
         
         i = GridIndex(1)
         s = GridStorage(1)
@@ -79,7 +79,7 @@ class TestGridStorage(unittest.TestCase):
  
     def testChilds(self):
         """Tests child construction. Superseded by GridIterator"""
-        from pysgpp import GridIndex, GridStorage, HashGenerator
+        from pysgpp.base import GridIndex, GridStorage, HashGenerator
 
         s = GridStorage(1)
         g = HashGenerator()
@@ -98,7 +98,7 @@ class TestGridStorage(unittest.TestCase):
         
     def testLevelZero(self):
         """Tests child construction. Superseded by GridIterator"""
-        from pysgpp import GridIndex, GridStorage, HashGenerator
+        from pysgpp.base import GridIndex, GridStorage, HashGenerator
 
         s = GridStorage(1)
         g = HashGenerator()
@@ -118,7 +118,7 @@ class TestGridStorage(unittest.TestCase):
         
     def testTop(self):
         """Tests top construction. Now superseded by GridIterator"""
-        from pysgpp import GridIndex, GridStorage, HashGenerator
+        from pysgpp.base import GridIndex, GridStorage, HashGenerator
         s = GridStorage(1)
         g = HashGenerator()
         
@@ -136,7 +136,7 @@ class TestGridStorage(unittest.TestCase):
         
     def testSeq(self):
         """Tests sequence numbers"""
-        from pysgpp import GridIndex, GridStorage, HashGenerator
+        from pysgpp.base import GridIndex, GridStorage, HashGenerator
         s = GridStorage(1)
         g = HashGenerator()
         
@@ -159,7 +159,7 @@ class TestGridStorage(unittest.TestCase):
 class TestHashGenerator(unittest.TestCase):
     def testPeriodic1D(self):
         """Test 1D grid with periodic boundaries generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
          
         s = GridStorage(1)
         g = HashGenerator()
@@ -171,8 +171,8 @@ class TestHashGenerator(unittest.TestCase):
      
     def testPeriodic2D(self):
         """Tests 2D grid with periodic boundaries generation"""
-        from pysgpp import GridStorage, HashGenerator
-        from pysgpp import GridIndex
+        from pysgpp.base import GridStorage, HashGenerator
+        from pysgpp.base import GridIndex
          
         s = GridStorage(2)
         g = HashGenerator()
@@ -226,7 +226,7 @@ class TestHashGenerator(unittest.TestCase):
          
     def testPeriodic3D(self):
         """Tests 3D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
          
         s = GridStorage(3)
         g = HashGenerator()
@@ -238,7 +238,7 @@ class TestHashGenerator(unittest.TestCase):
         
     def testRegular1D(self):
         """Tests 1D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(1)
         g = HashGenerator()
@@ -249,7 +249,7 @@ class TestHashGenerator(unittest.TestCase):
         
     def testRegular2D(self):
         """Tests 2D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -262,7 +262,7 @@ class TestHashGenerator(unittest.TestCase):
         g.regular(s, 3)
         self.failUnlessEqual(s.size(), 17)
         
-        from pysgpp import GridIndex
+        from pysgpp.base import GridIndex
         
         i = GridIndex(2)
         i.set(0,1,1)
@@ -285,7 +285,7 @@ class TestHashGenerator(unittest.TestCase):
 
     def testRegular3D(self):
         """Tests 3D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(3)
         g = HashGenerator()
@@ -297,7 +297,7 @@ class TestHashGenerator(unittest.TestCase):
         
     def testRegularTruncatedBoundaries1D(self):
         """Tests 1D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(1)
         g = HashGenerator()
@@ -308,7 +308,7 @@ class TestHashGenerator(unittest.TestCase):
         
     def testRegularTruncatedBoundaries2D(self):
         """Tests 2D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -321,7 +321,7 @@ class TestHashGenerator(unittest.TestCase):
         g.regularWithBoundaries(s, 3, True)
         self.failUnlessEqual(s.size(), 49)
         
-        from pysgpp import GridIndex
+        from pysgpp.base import GridIndex
         
         i = GridIndex(2)
         i.set(0,1,1)
@@ -350,7 +350,7 @@ class TestHashGenerator(unittest.TestCase):
 
     def testRegularTruncatedBoundaries3D(self):
         """Tests 3D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
+        from pysgpp.base import GridStorage, HashGenerator
         
         s = GridStorage(3)
         g = HashGenerator()
@@ -364,8 +364,8 @@ class TestHashGenerator(unittest.TestCase):
 class TestHashRefinement(unittest.TestCase):
     def testFreeRefine(self):
         """Tests surplus based refine for Hash-Storage"""
-        from pysgpp import GridStorage, HashGenerator
-        from pysgpp import SurplusRefinementFunctor, HashRefinement, DataVector
+        from pysgpp.base import GridStorage, HashGenerator
+        from pysgpp.base import SurplusRefinementFunctor, HashRefinement, DataVector
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -384,8 +384,8 @@ class TestHashRefinement(unittest.TestCase):
         
     def testFreeRefineTruncatedBoundaries(self):
         """Tests surplus based refine for Hash-Storage"""
-        from pysgpp import GridStorage, HashGenerator
-        from pysgpp import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
+        from pysgpp.base import GridStorage, HashGenerator
+        from pysgpp.base import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -412,8 +412,8 @@ class TestHashRefinement(unittest.TestCase):
         
     def testFreeRefineTruncatedBoundaries(self):
         """Tests surplus based refine for Hash-Storage"""
-        from pysgpp import GridStorage, HashGenerator
-        from pysgpp import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
+        from pysgpp.base import GridStorage, HashGenerator
+        from pysgpp.base import SurplusRefinementFunctor, HashRefinementBoundaries, DataVector
         
         s = GridStorage(2)
         g = HashGenerator()
@@ -437,8 +437,8 @@ class TestHashRefinement(unittest.TestCase):
 
     def testSurplusFunctor(self):
         """Tests if surplus functor correctly considers absolute values"""
-        from pysgpp import GridStorage
-        from pysgpp import SurplusRefinementFunctor, DataVector
+        from pysgpp.base import GridStorage
+        from pysgpp.base import SurplusRefinementFunctor, DataVector
 
         s = GridStorage(2)
         d = DataVector(1)

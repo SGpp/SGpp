@@ -10,7 +10,7 @@ Created on 24.02.2012
 '''
 import unittest
 
-from pysgpp import AdaptiveSerialCombiGrid, CombiArbitraryScheme, \
+from pysgpp.base import AdaptiveSerialCombiGrid, CombiArbitraryScheme, \
     AdaptiveSerialCombiGridVariableCoefficients, BoolVector, IntVector,\
     CombigridLevelVector
 

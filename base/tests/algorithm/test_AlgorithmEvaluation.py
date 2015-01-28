@@ -6,7 +6,7 @@
 import unittest
 import math
 import random
-from pysgpp import Grid, DataVector, DataMatrix, DimensionBoundary, BoundingBox
+from pysgpp.base import Grid, DataVector, DataMatrix, DimensionBoundary, BoundingBox
 
 class TestAlgorithmEvaluation(unittest.TestCase):
 

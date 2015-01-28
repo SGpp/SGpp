@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 
-from pysgpp import *
+from pysgpp.base import *
 from bin.learner.solver.CGSolver import CGSolver
 from bin.learner.folding.FoldingPolicy import FoldingPolicy
 import bin.utils.json as json

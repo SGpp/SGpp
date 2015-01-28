@@ -15,7 +15,7 @@ namespace base {
 
 HashGridStorage::HashGridStorage(size_t dim) :
 //  GridStorage(dim),
-list(), map(), algoDims()
+list(), map(), algoDims(), DIM(dim)
 {
 	for (size_t i = 0; i < DIM; i++) {
       algoDims.push_back(i);

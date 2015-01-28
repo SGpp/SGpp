@@ -9,7 +9,7 @@
 import sys
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp import *
+from pysgpp.base import *
 
 # the standard parabola (arbitrary-dimensional)
 def f(x):

@@ -10,7 +10,7 @@
 
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
 import sys, re, time, fcntl, os, random, gzip, math
-from pysgpp import *
+from pysgpp.base import *
 
 # constants
 ARFF = 1

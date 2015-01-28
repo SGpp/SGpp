@@ -8,7 +8,7 @@ import math
 import random
 import numpy
 
-from pysgpp import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
+from pysgpp.base import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
 
 class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 

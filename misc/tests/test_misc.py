@@ -12,7 +12,7 @@ if __name__ == '__main__':
     alltests = unittest.TestSuite()    
     
     try:
-        from pysgpp import createOperationLaplaceEnhanced
+        from pysgpp.base import createOperationLaplaceEnhanced
         import test_laplace
         alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_laplace),)
     except ImportError:

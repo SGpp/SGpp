@@ -10,7 +10,7 @@ import sys
 import math
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp import *
+from pysgpp.base import *
 import matplotlib.pyplot as plotter
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import random

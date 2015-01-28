@@ -11,7 +11,7 @@ import unittest
 import re
 import sys
 import random
-from pysgpp import *
+from pysgpp.base import *
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -126,7 +126,7 @@ def buildParableBoundary(dim):
 class TestCombinationLinearBoundary(unittest.TestCase):
 
     def test11(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 10
@@ -137,7 +137,7 @@ class TestCombinationLinearBoundary(unittest.TestCase):
   
 
     def test12(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 6
@@ -147,7 +147,7 @@ class TestCombinationLinearBoundary(unittest.TestCase):
 
 
     def test13(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 6
@@ -157,7 +157,7 @@ class TestCombinationLinearBoundary(unittest.TestCase):
 
 
     def test14(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 9
@@ -167,7 +167,7 @@ class TestCombinationLinearBoundary(unittest.TestCase):
 
 class TestCombinationLinearTruncated(unittest.TestCase):        
     def test31(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 5
@@ -178,7 +178,7 @@ class TestCombinationLinearTruncated(unittest.TestCase):
   
 
     def test32(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 5
@@ -188,7 +188,7 @@ class TestCombinationLinearTruncated(unittest.TestCase):
 
 
     def test33(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 4
@@ -198,7 +198,7 @@ class TestCombinationLinearTruncated(unittest.TestCase):
 
 
     def test34(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 9
@@ -207,7 +207,7 @@ class TestCombinationLinearTruncated(unittest.TestCase):
         testFG(self, grid, level, function)
 class TestCombinationSquareRoot(unittest.TestCase):        
     def test41(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 8
@@ -218,7 +218,7 @@ class TestCombinationSquareRoot(unittest.TestCase):
   
 
     def test42(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 6
@@ -228,7 +228,7 @@ class TestCombinationSquareRoot(unittest.TestCase):
 
 
     def test43(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 4
@@ -238,7 +238,7 @@ class TestCombinationSquareRoot(unittest.TestCase):
 
 
     def test44(self):
-        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 8

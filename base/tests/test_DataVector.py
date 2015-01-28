@@ -22,7 +22,7 @@ class TestDataVector(unittest.TestCase):
     # Set up, create random DataVector and corresponding Python data structures.
     # @test DataVector::get(), DataVector::set()
     def setUp(self):
-        from pysgpp import DataVector
+        from pysgpp.base import DataVector
         import random
 
         ## number of rows
@@ -57,7 +57,7 @@ class TestDataVector(unittest.TestCase):
     # @test DataVector::DataVector(size_t size), DataVector::DataVector(size_t size, size_t dim), DataVector::DataVector(DataVectorDefinition &DataVectorDef), DataVector::getSize(), DataVector::getDim(), DataVector::getSize()
     # @todo (pflueged) DataVector::DataVector(double *input, size_t size, size_t dim)
     def testConstructor(self):
-        from pysgpp import DataVector
+        from pysgpp.base import DataVector
         
         d = DataVector(2)
         self.assertEqual(len(d), 2) # getSize()
@@ -100,7 +100,7 @@ class TestDataVector(unittest.TestCase):
     # Operations on DataVectors.
     # @test DataVector::sum(), DataVector::sqr(), DataVector::abs(), DataVector::componentwise_mult(), DataVector::componentwise_div()
     def testOps(self):
-        from pysgpp import DataVector
+        from pysgpp.base import DataVector
         # sum
         self.assertAlmostEqual(self.d_rand.sum(), sum(self.l_rand_total))
 
@@ -137,7 +137,7 @@ class TestDataVector(unittest.TestCase):
     ##
     # Vector-Operations
     def testDotProduct(self):
-        from pysgpp import DataVector
+        from pysgpp.base import DataVector
         
         x = 0
         
@@ -153,7 +153,7 @@ class TestDataVector(unittest.TestCase):
     # @test DataVector::array()
     def testArray(self):
         from sys import version_info
-        from pysgpp import DataVector
+        from pysgpp.base import DataVector
         try:
             from numpy import array,ndarray
         except ImportError:

@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 from Learner import Learner, LearnerEvents
-from pysgpp import SurplusRefinementFunctor, createOperationTest
+from pysgpp.base import SurplusRefinementFunctor, createOperationTest
 
 
 ## The class implements the abstract methods from Learner and allows to accomplish

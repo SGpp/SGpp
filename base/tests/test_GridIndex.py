@@ -8,7 +8,7 @@ import unittest
 class TestSGridIndex(unittest.TestCase):
     def testConstructor(self):
         """Tests copy constructor"""
-        from pysgpp import GridIndex
+        from pysgpp.base import GridIndex
         
         s = GridIndex(2)
         s.set(0,1,1)
@@ -19,7 +19,7 @@ class TestSGridIndex(unittest.TestCase):
         
     def testAssign(self):
         """Tests assignment"""
-        from pysgpp import GridIndex
+        from pysgpp.base import GridIndex
         
         s = GridIndex(2)
         s.set(0,1,1)

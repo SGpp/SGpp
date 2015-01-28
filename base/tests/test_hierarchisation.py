@@ -5,7 +5,7 @@
 
 import unittest
 import re
-from pysgpp import DataVector, createOperationEval, createOperationHierarchisation
+from pysgpp.base import DataVector, createOperationEval, createOperationHierarchisation
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -189,7 +189,7 @@ class TestHierarchisationLinear(unittest.TestCase):
     ##
     # Test hierarchisation for 1D, LinearGrid
     def testHierarchisation1D(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 1
         level = 5
@@ -201,7 +201,7 @@ class TestHierarchisationLinear(unittest.TestCase):
     ##
     # Test regular sparse grid dD, LinearGrid
     def testHierarchisationD(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 3
         level = 5
@@ -213,7 +213,7 @@ class TestHierarchisationModLinear(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
     def testHierarchisation1DModLinear(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 1
         level = 5
@@ -225,7 +225,7 @@ class TestHierarchisationModLinear(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationDModLinear(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 3
         level = 5
@@ -238,7 +238,7 @@ class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
     def testHierarchisation1DModLinearWithBoundary(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 1
         level = 5
@@ -250,7 +250,7 @@ class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationDModLinearWithBoundary(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
 
         dim = 3
         level = 5
@@ -263,7 +263,7 @@ class TestHierarchisationLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
     def testHierarchisation1DTruncatedBoundary(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 1
         level = 5
@@ -275,7 +275,7 @@ class TestHierarchisationLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationDTruncatedBoundary(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 3
         level = 5
@@ -288,7 +288,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
     def testHierarchisation1DBoundary(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 1
         level = 5
@@ -300,7 +300,7 @@ class TestHierarchisationLinearBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationDBoundary(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 3
         level = 5
@@ -312,8 +312,8 @@ class TestHierarchisationLinearStretchedTruncatedBoundary(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
     def testHierarchisation1DLinearStretchedTruncatedBoundary(self):
-        from pysgpp import Grid
-	from pysgpp import Stretching, Stretching1D, DimensionBoundary
+        from pysgpp.base import Grid
+	from pysgpp.base import Stretching, Stretching1D, DimensionBoundary
 
         
         dim = 1
@@ -337,9 +337,9 @@ class TestHierarchisationLinearStretchedTruncatedBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, stretched hat basis functions.
     def testHierarchisationDLinearStretchedTruncatedBoundary(self):
-        from pysgpp import Grid
-        from pysgpp import Stretching, Stretching1D, DimensionBoundary
-	from pysgpp import Stretching1DVector, DimensionBoundaryVector
+        from pysgpp.base import Grid
+        from pysgpp.base import Stretching, Stretching1D, DimensionBoundary
+	from pysgpp.base import Stretching1DVector, DimensionBoundaryVector
 
 	str1d = Stretching1D()
 	str1d.type='sinh'
@@ -376,7 +376,7 @@ class TestHierarchisationPrewavelet(unittest.TestCase):
     ##
     # Test hierarchisation for 1D
     def testHierarchisation1D(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 1
         level = 5
@@ -388,7 +388,7 @@ class TestHierarchisationPrewavelet(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHierarchisationD(self):
-        from pysgpp import Grid
+        from pysgpp.base import Grid
         
         dim = 3
         level = 5
