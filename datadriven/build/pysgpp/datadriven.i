@@ -62,6 +62,11 @@ namespace std {
 using namespace SGPP;
 %}
 
+%import "base/build/pysgpp/DataVector.i"
+%import "base/build/pysgpp/DataMatrix.i"
+
+%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"

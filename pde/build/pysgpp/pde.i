@@ -58,6 +58,11 @@ namespace std {
 using namespace SGPP;
 %}
 
+%import "base/build/pysgpp/DataVector.i"
+%import "base/build/pysgpp/DataMatrix.i"
+
+%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
+
 // The Good, i.e. without any modifications
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"
