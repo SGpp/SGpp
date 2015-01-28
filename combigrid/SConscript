@@ -10,6 +10,8 @@ Import('env')
 Import('BUILD_DIR')
 Import('PYSGPP_BUILD_PATH')
 Import('moduleName')
+Import('libraryTargetList')
+Import('installTargetList')
 
 dependencies = ["base"]
 
@@ -22,16 +24,16 @@ for currentFolder, subdirNames, fileNames in os.walk("src"):
         objs.append(env.SharedObject(sourceFile))
 
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
-                        source = objs,
-                        LIBPATH = BUILD_DIR,
+                        source=objs,
+                        LIBPATH=BUILD_DIR,
                         LIBS=['sgppbase'])
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 libInstall = env.Install(BUILD_DIR, lib)
 # # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
 # # of the shared libaries on the static libraries on windows
-libStatic = env.StaticLibrary(target = "sgpp%static" % moduleName,
-                              source = objs,
-                              SHLIBPREFIX = 'lib')
+libStatic = env.StaticLibrary(target="sgpp%static" % moduleName,
+                              source=objs,
+                              SHLIBPREFIX='lib')
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
 
@@ -39,26 +41,28 @@ if env['SG_PYTHON']:
   py_env = env.Clone()
   
   py_env.AppendUnique(CPPFLAGS=['-w'])
-  if env['PLATFORM']=='cygwin':
+  if env['PLATFORM'] == 'cygwin':
       py_env.Append(LIBS=['python2.7'])    
-  elif env['PLATFORM']=='darwin':
+  elif env['PLATFORM'] == 'darwin':
       py_env['SHLIBSUFFIX'] = '.so'
   
   # build python module with swig
   py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
                         ['-D' + c for c in py_env['CPPDEFINES']],
                       CPPPATH=['#/%s' % moduleName])
-  py_env.SharedLibrary(target=os.path.join('#', PYSGPP_BUILD_PATH, moduleName),
+  libPython = py_env.SharedLibrary(target=moduleName,
                        source=[os.path.join("build", "pysgpp", "%s.i" % moduleName)],
                        SHLIBPREFIX='_',
-                       CPPFLAGS=['--std=c++11'],
-                       LIBPATH = [BUILD_DIR],
+                       LIBPATH=[BUILD_DIR],
                        LIBS=['sgppbase', 'sgppcombigrid'])
   py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH),
                  os.path.join("build", "pysgpp", "%s.py" % moduleName))
 
+  installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
+  installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
+  py_env.Depends(installLibPython, installLibWrapperPython)
+  installTargetList.append(installLibPython)
 
-Import('libraryTargetList')
-Import('installTargetList')
+
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
