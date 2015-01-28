@@ -7,7 +7,6 @@
 
 #include "base/grid/Grid.hpp"
 #include "base/grid/type/LinearStretchedGrid.hpp"
-#include "base/basis/linearstretched/noboundary/LinearStretchedBasis.hpp"
 
 #include "base/grid/generation/StandardGridGenerator.hpp"
 
@@ -38,11 +37,6 @@ namespace sg {
     const char* LinearStretchedGrid::getType() {
       return "linearStretched";
     }
-
-    const SBasis& LinearStretchedGrid::getBasis(){
-		static SLinearStretchedBase basis;
-		return basis;
-	}
 
     Grid* LinearStretchedGrid::unserialize(std::istream& istr) {
       return new LinearStretchedGrid(istr);

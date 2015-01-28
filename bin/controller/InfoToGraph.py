@@ -21,7 +21,7 @@
 #############################################################################
 
 
-from bin.learner.solver.LinearSolver import LinearSolverEvents
+from bin.learner.LinearSolver import LinearSolverEvents
 from bin.learner.Learner import LearnerEvents
 from bin.controller.LearnerEventController import LearnerEventController
 from bin.controller.SolverEventController import SolverEventController

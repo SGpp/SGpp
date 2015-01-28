@@ -11,35 +11,26 @@
 
 #include "base/exception/factory_exception.hpp"
 
+
 #include <iostream>
 
 namespace sg {
   namespace base {
 
-    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL)  {
+    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16) {
       istr >> degree;
     }
 
-    PolyGrid::PolyGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL)  {
+    PolyGrid::PolyGrid(size_t dim, size_t degree) : degree(degree) {
       this->storage = new GridStorage(dim);
     }
 
     PolyGrid::~PolyGrid() {
-    	if (basis_ != NULL){
-    	    		delete basis_;
-    	    	}
     }
 
     const char* PolyGrid::getType() {
       return "poly";
     }
-
-    const SBasis& PolyGrid::getBasis(){
-    	if (basis_ == NULL){
-			basis_ = new SPolyBase(degree);
-		}
-		return *basis_;
-	}
 
     size_t PolyGrid::getDegree() const {
       return this->degree;

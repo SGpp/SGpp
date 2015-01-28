@@ -1,0 +1,11 @@
+Copyright (C) 2009 Technische Universitaet Muenchen
+This file is part of the SG++ project. For conditions of distribution and
+use, please see the copyright notice at http://www5.in.tum.de/SGpp
+
+
+
+
+For further information run doxygen in the main folder (typically the
+folder this file is located in), and open the file doc/html/index.html
+in some browser of your choice -- or look at the source documentation
+files.

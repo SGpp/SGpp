@@ -8,7 +8,6 @@
 #ifndef SURPLUSREFINEMENTFUNCTOR_HPP
 #define SURPLUSREFINEMENTFUNCTOR_HPP
 
-#include <iostream>
 #include "base/datatypes/DataVector.hpp"
 #include "base/grid/generation/functors/RefinementFunctor.hpp"
 #include "base/grid/GridStorage.hpp"

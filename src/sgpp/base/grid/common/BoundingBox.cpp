@@ -6,7 +6,6 @@
 // @author Alexander Heinecke (Alexander.Heinecke@mytum.de), Sarpkan Selcuk (Sarpkan.Selcuk@mytum.de)
 
 #include "base/grid/common/BoundingBox.hpp"
-#include <sstream>
 
 namespace sg {
   namespace base {
@@ -92,23 +91,6 @@ namespace sg {
 
     bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) {
       return dimensionBoundaries[dimension].bDirichletRight;
-    }
-
-
-    void BoundingBox::toString(std::string& text) {
-    	std::stringstream str;
-    	for(size_t d =0; d < nDim; d++ ){
-    		str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
-    				<< "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
-    	}
-
-    	text = str.str();
-    }
-
-    std::string BoundingBox::toString() {
-		std::string str;
-		toString(str);
-		return str;
     }
 
   }

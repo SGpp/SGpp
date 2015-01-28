@@ -12,8 +12,6 @@
 
 #include "base/exception/factory_exception.hpp"
 
-#include "base/basis/prewavelet/PrewaveletBasis.hpp"
-
 
 namespace sg {
   namespace base {
@@ -32,11 +30,6 @@ namespace sg {
     const char* PrewaveletGrid::getType() {
       return "prewavelet";
     }
-
-    const SBasis& PrewaveletGrid::getBasis(){
-		static SPrewaveletBase basis;
-		return basis;
-	}
 
     Grid* PrewaveletGrid::unserialize(std::istream& istr) {
       return new PrewaveletGrid(istr);

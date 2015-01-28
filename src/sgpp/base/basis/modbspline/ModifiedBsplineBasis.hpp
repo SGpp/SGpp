@@ -9,7 +9,6 @@
 #define MODIFIED_BSPLINE_BASE_HPP
 
 #include <cmath>
-#include "base/basis/Basis.hpp"
 
 namespace sg {
   namespace base {
@@ -19,7 +18,7 @@ namespace sg {
      *
      */
     template<class LT, class IT>
-    class ModifiedBsplineBasis: public Basis<LT, IT> {
+    class ModifiedBsplineBasis {
       protected:
         size_t degree;
 

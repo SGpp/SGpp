@@ -7,7 +7,6 @@
 
 #include "base/grid/Grid.hpp"
 #include "base/grid/type/LinearBoundaryGrid.hpp"
-#include "base/basis/linear/boundary/LinearBoundaryBasis.hpp"
 
 #include "base/grid/generation/BoundaryGridGenerator.hpp"
 
@@ -35,11 +34,6 @@ namespace sg {
     const char* LinearBoundaryGrid::getType() {
       return "linearBoundary";
     }
-
-    const SBasis& LinearBoundaryGrid::getBasis(){
-		static SLinearBoundaryBase basis;
-		return basis;
-	}
 
     Grid* LinearBoundaryGrid::unserialize(std::istream& istr) {
       return new LinearBoundaryGrid(istr);

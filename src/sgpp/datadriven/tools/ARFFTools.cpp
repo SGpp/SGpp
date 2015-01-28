@@ -10,7 +10,6 @@
 #include <fstream>
 #include <stdlib.h>
 #include <iostream>
-#include <algorithm>
 
 namespace sg {
   namespace datadriven {
@@ -29,7 +28,7 @@ namespace sg {
       if (myfile.is_open()) {
         while (!myfile.eof() ) {
           getline (myfile, line);
-          std::transform(line.begin(), line.end(), line.begin(), toupper);
+
           if (line.find("@ATTRIBUTE", 0) != line.npos) {
             numFound++;
           }
@@ -56,7 +55,6 @@ namespace sg {
         getline (myfile, line);
 
         while (!myfile.eof() ) {
-          std::transform(line.begin(), line.end(), line.begin(), toupper);
           if (line.find("@DATA", 0) != line.npos) {
             numInst = 0;
           } else {
@@ -85,7 +83,6 @@ namespace sg {
         getline (myfile, line);
 
         while (!myfile.eof() ) {
-          std::transform(line.begin(), line.end(), line.begin(), toupper);
           if (data == true) {
             writeNewElement(line, destination, instanceNo);
             instanceNo++;
@@ -115,7 +112,6 @@ namespace sg {
         getline (myfile, line);
 
         while (!myfile.eof() ) {
-          std::transform(line.begin(), line.end(), line.begin(), toupper);
           if (data == true) {
             writeNewClass(line, destination, instanceNo);
             instanceNo++;

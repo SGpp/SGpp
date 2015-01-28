@@ -10,7 +10,7 @@
 
 
 #include "base/operation/OperationEval.hpp"
-#include "base/basis/Basis.hpp"
+
 #include "base/grid/generation/GridGenerator.hpp"
 
 #include <map>
@@ -36,8 +36,7 @@ namespace sg {
       ModBspline,
       Prewavelet,
       SquareRoot,
-      TruncatedTrapezoid,
-      Periodic
+      TruncatedTrapezoid
     };
 
     /**
@@ -182,13 +181,6 @@ namespace sg {
         static Grid* createTruncatedTrapezoidGrid(size_t dim);
 
         /**
-         * creates a periodic grid
-         *
-         * @param dim the grid's dimension
-         */
-        static Grid* createPeriodicGrid(size_t dim);
-
-        /**
          * reads a grid out of a string
          *
          * @param istr string that contains the grid information
@@ -275,13 +267,6 @@ namespace sg {
         virtual const char* getType() = 0;
 
         /**
-         * Returns the Basis class associated with the grid
-         *
-         * @return Basis class associated with the grid
-         */
-        virtual const SBasis& getBasis() = 0;
-
-        /**
          * Serializes grid to a string.
          * Needed for Python compatibility. Calls serialize(std::ostream&).
          *
@@ -364,7 +349,6 @@ namespace sg {
         typedef std::map<std::string, Grid::Factory> factoryMap;
 
         static Grid* nullFactory(std::istream&);
-
 
       private:
         /**

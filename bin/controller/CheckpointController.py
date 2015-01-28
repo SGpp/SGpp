@@ -21,7 +21,7 @@
 #############################################################################
 
 # @version $HEAD$
-from bin.pysgpp import createOperationLaplace, createOperationIdentity
+from pysgpp import createOperationLaplace, createOperationIdentity
 from bin.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
 from bin.controller.LearnerEventController import LearnerEventController
 #from bin.data.ARFFAdapter import ARFFAdapter

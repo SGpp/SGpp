@@ -158,85 +158,6 @@ class TestGridStorage(unittest.TestCase):
 
  
 class TestHashGenerator(unittest.TestCase):
-    def testPeriodic1D(self):
-        """Test 1D grid with periodic boundaries generation"""
-        from pysgpp import GridStorage, HashGenerator
-         
-        s = GridStorage(1)
-        g = HashGenerator()
-         
-        g.regularWithPeriodicBoundaries(s, 2)
-         
-        self.failUnlessEqual(s.size(), 4)
-         
-     
-    def testPeriodic2D(self):
-        """Tests 2D grid with periodic boundaries generation"""
-        from pysgpp import GridStorage, HashGenerator
-        from pysgpp import GridIndex
-         
-        s = GridStorage(2)
-        g = HashGenerator()
-         
-        g.regularWithPeriodicBoundaries(s, 2)
-        
-        self.failUnlessEqual(s.size(), 12)
- 
-        s = GridStorage(2)
-        g.regularWithPeriodicBoundaries(s, 3)
-        self.failUnlessEqual(s.size(), 32)
-        
-        i = GridIndex(2)
-        i.set(0,0,0)
-        i.set(1,0,0)
-        self.failUnless(s.has_key(i))
-         
-        i.set(1,1,1)
-         
-        self.failUnless(s.has_key(i))
-         
-        i.set(1,2,1)
-        self.failUnless(s.has_key(i))
-         
-        i.set(0,2,3)
-        self.failUnless(s.has_key(i))
-         
-        i.set(0,3,5)
-        self.failIf(s.has_key(i))
-         
-        i.set(1,1,1)
-        self.failUnless(s.has_key(i))
-         
-        i.set(0,1,1)
-        i.set(1,1,1)
-         
-        self.failUnless(s.has_key(i))
-         
-        i.set(1,2,1)
-        self.failUnless(s.has_key(i))
-         
-        i.set(0,2,3)
-        self.failUnless(s.has_key(i))
-         
-        i.set(0,3,5)
-        self.failIf(s.has_key(i))
-         
-        i.set(1,1,1)
-        self.failUnless(s.has_key(i))
-         
-         
-    def testPeriodic3D(self):
-        """Tests 3D grid generation"""
-        from pysgpp import GridStorage, HashGenerator
-         
-        s = GridStorage(3)
-        g = HashGenerator()
-         
-        g.regularWithPeriodicBoundaries(s, 2)
-         
-        self.failUnlessEqual(s.size(), 32)
-            
-        
     def testRegular1D(self):
         """Tests 1D grid generation"""
         from pysgpp import GridStorage, HashGenerator
@@ -283,7 +204,6 @@ class TestHashGenerator(unittest.TestCase):
         i.set(1,1,1)
         self.failUnless(s.has_key(i))
 
-
     def testRegular3D(self):
         """Tests 3D grid generation"""
         from pysgpp import GridStorage, HashGenerator
@@ -294,7 +214,6 @@ class TestHashGenerator(unittest.TestCase):
         g.regular(s, 2)
         
         self.failUnlessEqual(s.size(), 7)
-        
         
     def testRegularTrapezoidBoundaries1D(self):
         """Tests 1D grid generation"""
@@ -348,7 +267,6 @@ class TestHashGenerator(unittest.TestCase):
         i.set(0,0,0)
         self.failUnless(s.has_key(i))
 
-
     def testRegularTrapezoidBoundaries3D(self):
         """Tests 3D grid generation"""
         from pysgpp import GridStorage, HashGenerator
@@ -359,8 +277,6 @@ class TestHashGenerator(unittest.TestCase):
         g.regularWithBoundaries(s, 2, True)
         
         self.failUnlessEqual(s.size(), 81)        
-
-
 
 class TestHashRefinement(unittest.TestCase):
     def testFreeRefine(self):
@@ -451,5 +367,4 @@ class TestHashRefinement(unittest.TestCase):
         d[0] = 10.0
         self.failUnless(f(s, 0) > f.start())
         
-if __name__=="__main__":
-    unittest.main()         
+        

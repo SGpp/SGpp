@@ -22,7 +22,7 @@ namespace sg {
      * adaptive case. A grid point is refined only in those dimensions, where the
      * corresponding level is not 1. This method works with ModLinear basis functions.
      */
-    class ANOVARefinement: public virtual RefinementDecorator {
+    class ANOVARefinement: public RefinementDecorator {
       public:
         /**
          * Constructor
@@ -44,7 +44,7 @@ namespace sg {
          * @param functor a RefinementFunctor specifying the refinement criteria
          */
         void free_refine(GridStorage* storage, RefinementFunctor* functor);
-      protected:
+      private:
         /**
          * Refines the collection of points.
          *
