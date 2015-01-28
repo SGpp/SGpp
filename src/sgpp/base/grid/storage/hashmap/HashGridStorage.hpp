@@ -48,7 +48,7 @@ namespace sg {
         typedef GIT index_type;
         typedef GIT* index_pointer;
 #ifndef USETRONE
-        typedef std::hash_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+        typedef std::hash_map<index_pointer, size_t, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
 #else
         typedef std::tr1::unordered_map<index_pointer, size_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif

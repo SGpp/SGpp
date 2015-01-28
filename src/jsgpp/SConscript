@@ -4,6 +4,11 @@
 
 # author Dirk Pflueger (Dirk.Pflueger@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
 
+import os
+
+# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+if os.path.exists("jsgpp_wrap.cc"):
+    os.remove("jsgpp_wrap.cc")
 
 Import('env')
 Import('src_objs')

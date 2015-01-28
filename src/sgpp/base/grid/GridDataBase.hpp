@@ -32,7 +32,7 @@ namespace sg {
         typedef GridIndex* index_pointer;
 #ifndef USETRONE
 #ifndef LARRABEENATIVE
-        typedef std::hash_map<index_pointer, double, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+        typedef std::hash_map<index_pointer, double, sg::base::hash<index_pointer>, sg::base::eqIndex<index_pointer> > grid_map;
 #endif
 #ifdef LARRABEENATIVE
         typedef std::hash_map<index_pointer, double, LRBSGHasher<index_pointer> > grid_map;
