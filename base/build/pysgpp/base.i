@@ -75,8 +75,11 @@ using namespace SGPP::base;
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
-%include "Operations.i"
-//%include "OperationQuadratureMC.i"
+//%include "Operations.i"
+
+
+
+//
 
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];
@@ -91,6 +94,9 @@ using namespace SGPP::base;
 %include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
 
 // The Good, i.e. without any modifications
+%ignore sg::base::BoundingBox::toString(std::string& text);
+%include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
+%include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
 %ignore sg::base::HashGridIndex::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
@@ -98,9 +104,20 @@ using namespace SGPP::base;
 %ignore sg::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
-%ignore sg::base::BoundingBox::toString(std::string& text);
-%include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
-%include "base/src/sgpp/base/grid/common/Stretching.hpp"
+
+%include "base/src/sgpp/base/grid/generation/functors/RefinementFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/CoarseningFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/GridGenerator.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationMultipleEval.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationConvert.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationQuadrature.hpp"
+%include "OperationQuadratureMC.i"
+
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
@@ -161,6 +178,8 @@ using namespace SGPP::base;
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp"
+
+
 
 // static factory methods
 %include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
