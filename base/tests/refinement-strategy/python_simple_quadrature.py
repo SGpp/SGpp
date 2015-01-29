@@ -21,19 +21,19 @@ def f(x):
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
 grid = Grid.createLinearGrid(dim)
-gridStorage = grid.getStorage()
+HashGridStorage = grid.getStorage()
 print "dimensionality:        %d" % (dim)
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
-print "number of grid points: %d" % (gridStorage.size())
+print "number of grid points: %d" % (HashGridStorage.size())
 
 # create coefficient vector
-alpha = DataVector(gridStorage.size())
-for i in xrange(gridStorage.size()):
-    gp = gridStorage.get(i)
+alpha = DataVector(HashGridStorage.size())
+for i in xrange(HashGridStorage.size()):
+    gp = HashGridStorage.get(i)
     alpha[i] = f((gp.abs(0), gp.abs(1)))
 createOperationHierarchisation(grid).doHierarchisation(alpha)
 

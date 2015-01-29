@@ -192,11 +192,11 @@ class TestBase(unittest.TestCase):
         
 class TestFunctions(unittest.TestCase):
     def testGetAffected(self):
-        from pysgpp.base import GridIndex, GridStorage, SLinearBase
+        from pysgpp.base import HashGridIndex, HashGridStorage, SLinearBase
         from pysgpp.base import SGetAffectedBasisFunctions
         
-        i = GridIndex(1)
-        s = GridStorage(1)
+        i = HashGridIndex(1)
+        s = HashGridStorage(1)
         
         b = SLinearBase()
         
@@ -212,11 +212,11 @@ class TestFunctions(unittest.TestCase):
         
         
     def testGetAffectedBoundaries(self):
-        from pysgpp.base import GridIndex, GridStorage, SLinearBoundaryBase
+        from pysgpp.base import HashGridIndex, HashGridStorage, SLinearBoundaryBase
         from pysgpp.base import SGetAffectedBasisFunctionsBoundaries
         
-        i = GridIndex(1)
-        s = GridStorage(1)
+        i = HashGridIndex(1)
+        s = HashGridStorage(1)
         
         b = SLinearBoundaryBase()
 
@@ -239,7 +239,7 @@ class TestFunctions(unittest.TestCase):
         self.failUnlessEqual(x[2][1], 1.0)   
 
     def testGetAffectedLinearStretched(self):
-        from pysgpp.base import GridIndex, GridStorage, SLinearStretchedBoundaryBase
+        from pysgpp.base import HashGridIndex, HashGridStorage, SLinearStretchedBoundaryBase
         from pysgpp.base import SGetAffectedBasisFunctionsLinearStretchedBoundaries
 	from pysgpp.base import Stretching, Stretching1D, DimensionBoundary
         
@@ -252,8 +252,8 @@ class TestFunctions(unittest.TestCase):
 	dimBound.rightBoundary=7
 	stretch=Stretching(1,dimBound,str1d)
 
-        i = GridIndex(1)
-        s = GridStorage(1)
+        i = HashGridIndex(1)
+        s = HashGridStorage(1)
 	s.setStretching(stretch)
         
         b = SLinearStretchedBoundaryBase()

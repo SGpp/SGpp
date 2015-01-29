@@ -15,7 +15,7 @@ namespace base {
 
 HashGridStorage::HashGridStorage(size_t dim) :
 //  GridStorage(dim),
-list(), map(), algoDims(), DIM(dim)
+list(), map(), algoDims(), DIM(dim), bUseStretching(false), boundingBox(new BoundingBox(dim))
 {
 	for (size_t i = 0; i < DIM; i++) {
       algoDims.push_back(i);
@@ -25,6 +25,7 @@ list(), map(), algoDims(), DIM(dim)
 HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox) :
 //  GridStorage(creationBoundingBox, creationBoundingBox.getDimensions()),
 list(), map(), algoDims() {
+	//TODO gerrit: this look like a bug, creationBoundingBox not used
     for (size_t i = 0; i < DIM; i++) {
       algoDims.push_back(i);
     }
@@ -33,6 +34,7 @@ list(), map(), algoDims() {
 HashGridStorage::HashGridStorage(Stretching& creationStretching) :
 //  : GridStorage(creationStretching, creationStretching.getDimensions()),
 list(), map(), algoDims() {
+	//TODO gerrit: this look like a bug, creationBoundingBox not used
     for (size_t i = 0; i < DIM; i++) {
       algoDims.push_back(i);
     }

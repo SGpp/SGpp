@@ -128,7 +128,7 @@ def doConfigure(env, moduleFolders):
             -Winvalid-pch -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs \
              -Wpacked   -Wpointer-arith -Wredundant-decls -Wstack-protector \
             -Wstrict-aliasing=2 -Wswitch-default -Wswitch-enum -Wunreachable-code -Wunused -Wunused-parameter \
-            -Wvariadic-macros -Wwrite-strings".split(" ")
+            -Wvariadic-macros -Wwrite-strings -Wuninitialized".split(" ")
         # rather uninteresting: -Wlong-long -Wpadded -Wshadow -Wfloat-equal -Waggregate-return -Wimplicit -Wmissing-noreturn -Weffc++
         # cannot really use:
 

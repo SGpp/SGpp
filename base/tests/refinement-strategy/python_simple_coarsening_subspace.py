@@ -15,7 +15,7 @@ import matplotlib.pyplot as plotter
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
 grid = Grid.createLinearGrid(dim)
-gridStorage = grid.getStorage()
+HashGridStorage = grid.getStorage()
 print "dimensionality:         %d" % (dim)
 
 
@@ -23,28 +23,28 @@ print "dimensionality:         %d" % (dim)
 level = 5
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
-print "Start: number of grid points:  %d" % (gridStorage.size())
+print "Start: number of grid points:  %d" % (HashGridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
 # create coefficient vector
-alpha = DataVector(gridStorage.size())
+alpha = DataVector(HashGridStorage.size())
 
 #store old files
 xCoordsOld = []
 yCoordsOld = []
 
-for i in xrange(gridStorage.size()):
+for i in xrange(HashGridStorage.size()):
         gridPointCoordinates = DataVector(dim)
-        gridStorage.get(i).getCoords(gridPointCoordinates)
+        HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordsOld.append(gridPointCoordinates[0])
         yCoordsOld.append(gridPointCoordinates[1])
 
 # now refine adaptively 5 times
 for refnum in range(5):
     # set function values in alpha
-    for i in xrange(gridStorage.size()):
-        gp = gridStorage.get(i)
+    for i in xrange(HashGridStorage.size()):
+        gp = HashGridStorage.get(i)
         alpha[i] = f(gp.abs(0), gp.abs(1))
  
     # hierarchize
@@ -54,10 +54,10 @@ for refnum in range(5):
     #coarsening
     coarsening = SubspaceCoarsening()
     functor = SurplusCoarseningFunctor(alpha,1)
-    coarsening.free_coarsen(gridStorage,functor,alpha)
-    #decorator.createSubspace(gridStorage,)
+    coarsening.free_coarsen(HashGridStorage,functor,alpha)
+    #decorator.createSubspace(HashGridStorage,)
    
-    print "Refinement step %d, new grid size: %d" % (refnum+1, gridStorage.size())
+    print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.size())
     
     #
     #plot grid
@@ -82,9 +82,9 @@ for refnum in range(5):
     yCoordinates = []
  
     #print all points
-    for i in xrange(gridStorage.size()):
+    for i in xrange(HashGridStorage.size()):
         gridPointCoordinates = DataVector(dim)
-        gridStorage.get(i).getCoords(gridPointCoordinates)
+        HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordinates.append(gridPointCoordinates[0])
         yCoordinates.append(gridPointCoordinates[1])
     
@@ -99,4 +99,4 @@ for refnum in range(5):
     plotter.show()
  
     # extend alpha vector (new entries uninitialized)
-    alpha.resize(gridStorage.size())
+    alpha.resize(HashGridStorage.size())

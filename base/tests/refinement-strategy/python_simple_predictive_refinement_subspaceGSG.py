@@ -35,21 +35,21 @@ def serializeToCSV(path,xvec,yvec):
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
 grid = Grid.createModLinearGrid(dim)
-gridStorage = grid.getStorage()
+HashGridStorage = grid.getStorage()
 print "dimensionality:         %d" % (dim)
 
 # create regular grid, level 3
 level = 1
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
-print "Start: number of grid points:  %d" % (gridStorage.size())
+print "Start: number of grid points:  %d" % (HashGridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 #f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1- math.sin(x1*math.pi)1)*x1-x1
 #f = lambda x0, x1: math.sin(x1*math.pi) + math.sin(x0*math.pi)
 f = lambda x0, x1: x0**2 * x1**2
 # create coefficient vectors
-alpha = DataVector(gridStorage.size())
+alpha = DataVector(HashGridStorage.size())
 
 #dataPoints
 
@@ -104,9 +104,9 @@ yCoordsOld = []
 zCoordsOld = []
  
 opEval = createOperationEval(grid)
-for i in xrange(gridStorage.size()):
+for i in xrange(HashGridStorage.size()):
         gridPointCoordinates = DataVector(dim)
-        gridStorage.get(i).getCoords(gridPointCoordinates)
+        HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordsOld.append(gridPointCoordinates[0])
         yCoordsOld.append(gridPointCoordinates[1])
         zCoordsOld.append(opEval.eval(alpha,gridPointCoordinates))
@@ -118,8 +118,8 @@ decorator = PredictiveSubspaceGSGRefinement(refinement,dim)
 # now refine adaptively 5 times
 for refnum in range(15):
     # set function values in alpha
-    for i in xrange(gridStorage.size()):
-        gp = gridStorage.get(i)
+    for i in xrange(HashGridStorage.size()):
+        gp = HashGridStorage.get(i)
         alpha[i] = f(gp.abs(0), gp.abs(1))
   
     # hierarchize
@@ -140,9 +140,9 @@ for refnum in range(15):
     
     opEval = createOperationEval(grid)
     
-    for i in xrange(gridStorage.size()):
+    for i in xrange(HashGridStorage.size()):
         gridPointCoordinates = DataVector(dim)
-        gridStorage.get(i).getCoords(gridPointCoordinates)
+        HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordinates.append(gridPointCoordinates[0])
         yCoordinates.append(gridPointCoordinates[1])
         bla = opEval.eval(alpha,gridPointCoordinates)
@@ -180,10 +180,10 @@ for refnum in range(15):
     # refine a single grid point each time
     #print(errorVector)
     indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
-    decorator.freeRefineSubspace(gridStorage,indicator)
-    #decorator.createSubspace(gridStorage,)
+    decorator.freeRefineSubspace(HashGridStorage,indicator)
+    #decorator.createSubspace(HashGridStorage,)
     
-    print "Refinement step %d, new grid size: %d" % (refnum+1, gridStorage.size())
+    print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.size())
      
     #
     #plot grid
@@ -191,6 +191,6 @@ for refnum in range(15):
   
   
     # extend alpha vector (new entries uninitialized)
-    alpha.resize(gridStorage.size())
+    alpha.resize(HashGridStorage.size())
 
 serializeToCSV("PredGSGMean_Mult.csv",xCoordsOld,yCoordsOld)

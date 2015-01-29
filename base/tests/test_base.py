@@ -6,8 +6,8 @@
 
 import unittest, sys
 
-import test_GridIndex
-import test_GridStorage
+import test_HashGridIndex
+import test_HashGridStorage
 import test_algorithms
 
 import test_hierarchisation
@@ -20,8 +20,8 @@ if __name__ == '__main__':
     sys.stdout.write("Running unit tests. ")
         
     alltests = unittest.TestSuite([
-            unittest.defaultTestLoader.loadTestsFromModule(test_GridIndex),
-            unittest.defaultTestLoader.loadTestsFromModule(test_GridStorage),
+            unittest.defaultTestLoader.loadTestsFromModule(test_HashGridIndex),
+            unittest.defaultTestLoader.loadTestsFromModule(test_HashGridStorage),
             unittest.defaultTestLoader.loadTestsFromModule(test_algorithms),
             #unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
             unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
