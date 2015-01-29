@@ -65,6 +65,10 @@ namespace std {
 using namespace SGPP::base;
 %}
 
+//TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
+//%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };%
+%apply uint32_t *OUTPUT {SGPP::base::HashGridIndex::level_type& l, SGPP::base::HashGridIndex::index_type& i}
+
 // include other interface files
 %import "base/src/sgpp/base/operation/hash/common/basis/Basis.hpp"
 %template(SBasis) SGPP::base::Basis<unsigned int, unsigned int>;
@@ -164,8 +168,6 @@ using namespace SGPP::base;
 
 // and the rest
 %apply std::string *INPUT { std::string& istr };
-%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
-
 
 %template(SLinearBase) SGPP::base::LinearBasis<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) SGPP::base::LinearBoundaryBasis<unsigned int, unsigned int>;
