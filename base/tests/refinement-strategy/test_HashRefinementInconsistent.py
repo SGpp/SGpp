@@ -7,7 +7,7 @@
 # sgpp.sparsegrids.org
 
 import unittest
-from pysgpp.base import Grid, HashRefinementInconsistent, GridIndex, \
+from pysgpp.base import Grid, HashRefinementInconsistent, HashGridIndex, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
     ANOVARefinement, SurplusCoarseningFunctor
 
@@ -21,7 +21,7 @@ class Test_HashRefinementInconsistent(unittest.TestCase):
     def setUp(self):
         self.grid = Grid.createLinearGrid(2)  # a simple 2D grid
         self.grid.createGridGenerator().regular(3)  # max level 3 => 17 points
-        self.gridStorage = self.grid.getStorage()
+        self.HashGridStorage = self.grid.getStorage()
         alpha = DataVector(self.grid.getSize())
         alpha.setAll(1.0)
         for i in [9, 10, 11, 12]:
@@ -33,7 +33,7 @@ class Test_HashRefinementInconsistent(unittest.TestCase):
 
     def tearDown(self):
         del self.grid
-        del self.gridStorage 
+        del self.HashGridStorage 
 
 
     def test_InconsistentRefinement1Point(self):
@@ -48,7 +48,7 @@ class Test_HashRefinementInconsistent(unittest.TestCase):
         
         functor = SurplusRefinementFunctor(alpha, 1, 0.0)
         refinement = HashRefinementInconsistent()
-        refinement.free_refine(self.gridStorage, functor)
+        refinement.free_refine(self.HashGridStorage, functor)
         
         self.assertEqual(self.grid.getSize(), 17)
 

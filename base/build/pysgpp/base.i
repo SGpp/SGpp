@@ -15,11 +15,10 @@
 %include "std_pair.i"
 %include "std_complex.i"
 %include "std_map.i"
-
 %include "carrays.i"
 %include "cpointer.i" 
 %include "typemaps.i"
-
+%include "stdint.i"
 %include "exception.i"
 
 %exception {
@@ -40,13 +39,7 @@ import_array();
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
 
-%typemap(in) SGPP::base::HashGenerator::level_t level{
-    if (PyInt_AsLong($input) < 0) {
-           PyErr_SetString(PyExc_ValueError,"Expected a nonnegative value.");
-           return NULL;
-        }
-    $1 = static_cast<SGPP::base::HashGenerator::level_t>(PyInt_AsLong($input));
-}
+
 
 //%array_class(unsigned int, unsignedIntArray);
 //%array_class(bool,BoolArray);

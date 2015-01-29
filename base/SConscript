@@ -44,7 +44,7 @@ if env['SG_PYTHON']:
       py_env['SHLIBSUFFIX'] = '.so'
   
   # build python module with swig
-  py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
+  py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + \
                         ['-D' + c for c in py_env['CPPDEFINES']],
                       CPPPATH=['#/%s' % moduleName])
   libPython = py_env.SharedLibrary(target=moduleName,

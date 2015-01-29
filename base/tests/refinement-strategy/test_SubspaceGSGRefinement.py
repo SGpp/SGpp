@@ -7,7 +7,7 @@
 # sgpp.sparsegrids.org
 
 import unittest
-from pysgpp.base import Grid, HashRefinement, GridIndex, \
+from pysgpp.base import Grid, HashRefinement, HashGridIndex, \
     SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
     SubspaceGSGRefinement, HashCoarsening, SurplusCoarseningFunctor
 
@@ -19,7 +19,7 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
     def setUp(self):
         self.grid = Grid.createLinearGrid(2)  # a simple 2D grid
         self.grid.createGridGenerator().regular(3)  # max level 3 => 17 points
-        self.gridStorage = self.grid.getStorage()
+        self.HashGridStorage = self.grid.getStorage()
         alpha = DataVector(self.grid.getSize())
         alpha.setAll(1.0)
         for i in [9, 10, 11, 12]:
@@ -31,7 +31,7 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
 
     def tearDown(self):
         del self.grid
-        del self.gridStorage 
+        del self.HashGridStorage 
     
     
     def test_freeRefineSubspaceAnisotropic(self):
@@ -43,19 +43,19 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
             alpha[i] = 2.
         #refinement  stuff
         refinement = HashRefinement()
-        decorator = SubspaceGSGRefinement(refinement, self.gridStorage.dim())
+        decorator = SubspaceGSGRefinement(refinement, self.HashGridStorage.dim())
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
-        decorator.freeRefineSubspace(self.gridStorage,functor)
+        decorator.freeRefineSubspace(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            gridIndex = self.gridStorage.get(i)
-            print i, gridIndex.toString()
+            HashGridIndex = self.HashGridStorage.get(i)
+            print i, HashGridIndex.toString()
 
         self.assertEqual(self.grid.getSize(), 29)
         
         for i in xrange(self.grid.getSize()):
-            gridIndex = self.gridStorage.get(i)
-            levelIndex = eval(gridIndex.toString())
+            HashGridIndex = self.HashGridStorage.get(i)
+            levelIndex = eval(HashGridIndex.toString())
             self.assertFalse(levelIndex[2] >= 3)
             
             
@@ -67,19 +67,19 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
             alpha[i] = 2.
         #refinement  stuff
         refinement = HashRefinement()
-        decorator = SubspaceGSGRefinement(refinement, self.gridStorage.dim())
+        decorator = SubspaceGSGRefinement(refinement, self.HashGridStorage.dim())
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
-        decorator.freeRefineSubspace(self.gridStorage,functor)
+        decorator.freeRefineSubspace(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
-            gridIndex = self.gridStorage.get(i)
-            print i, gridIndex.toString()
+            HashGridIndex = self.HashGridStorage.get(i)
+            print i, HashGridIndex.toString()
 
         self.assertEqual(self.grid.getSize(), 21)
         
         for i in xrange(self.grid.getSize()):
-            gridIndex = self.gridStorage.get(i)
-            levelIndex = eval(gridIndex.toString())
+            HashGridIndex = self.HashGridStorage.get(i)
+            levelIndex = eval(HashGridIndex.toString())
             self.assertFalse(levelIndex[0] == 4 or levelIndex[2] >= 3)
 
 

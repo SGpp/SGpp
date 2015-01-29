@@ -91,7 +91,7 @@ public:
    * @param l the level of the ansatzfunction
    * @param i the index of the ansatzfunction
    */
-  void set(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i);
+  void set(size_t d, level_type l, index_type i);
 
   /**
    * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
@@ -101,7 +101,7 @@ public:
    * @param i the index of the ansatzfunction
    * @param isLeaf specifies if this gridpoint has any childrens in any dimension
    */
-  void set(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf);
+  void set(size_t d, level_type l, index_type i, bool isLeaf);
 
   /**
    * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the HashGridIndex object

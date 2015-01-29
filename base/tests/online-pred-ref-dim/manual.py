@@ -8,7 +8,7 @@ import math
 import random
 import numpy
 
-from pysgpp.base import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, GridIndex
+from pysgpp.base import Grid, DataVector, DataMatrix, OnlinePredictiveRefinementDimension, HashRefinement, refinement_map, createOperationMultipleEval, HashGridIndex
 
 class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
@@ -85,10 +85,10 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
         for j in xrange(self.gridSize):
 
-            gridIndex = self.storage.get(j)
-            gridIndex.setLeaf(False)
+            HashGridIndex = self.storage.get(j)
+            HashGridIndex.setLeaf(False)
 
-            print "Point: ", j, " (", gridIndex.toString(), ")"
+            print "Point: ", j, " (", HashGridIndex.toString(), ")"
 
             for d in xrange(self.dim):
 
@@ -98,8 +98,8 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 # Get left and right child
                 #
 
-                leftChild = GridIndex(gridIndex)
-                rightChild = GridIndex(gridIndex)
+                leftChild = HashGridIndex(HashGridIndex)
+                rightChild = HashGridIndex(HashGridIndex)
 
                 self.storage.left_child(leftChild, d)
                 self.storage.right_child(rightChild, d)
