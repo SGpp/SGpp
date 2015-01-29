@@ -67,7 +67,7 @@ namespace base
   $1 = $input;
 }
 
-%include "src/sgpp/base/tools/OperationQuadratureMC.hpp"
+%include "base/src/sgpp/base/tools/OperationQuadratureMC.hpp"
 
 // attach a new method to OperationQuadratureMC
 %define QUADRATURE_CALLBACK_EXTEND(class)
@@ -88,7 +88,7 @@ namespace base
 }
 %enddef
 
-%include "src/sgpp/base/tools/OperationQuadratureMC.hpp"
+%include "base/src/sgpp/base/tools/OperationQuadratureMC.hpp"
 QUADRATURE_CALLBACK_EXTEND(SGPP::base::OperationQuadratureMC)
 
 
