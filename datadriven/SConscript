@@ -15,7 +15,7 @@ Import('installTargetList')
 
 dependencies = ["base", "solver", "pde", "misc"]
 
-avxFolders = ['./src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', './src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
+avxFolders = ['src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', 'src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
 
 avx_env = env.Clone()
 avxCPPFLAGS = filter(lambda flag: flag != '-msse3', avx_env['CPPFLAGS'])
@@ -30,16 +30,19 @@ def isAVXFolder(folder):
     return False
 
 objs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src"):
-        for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            sourceFile = os.path.join(currentFolder, fileName)
-            print "current: ", currentFolder
-            if isAVXFolder(currentFolder):
-                print "avx: ", currentFolder
-                objs.append(avx_env.SharedObject(sourceFile))
-            else:
-                objs.append(env.SharedObject(sourceFile))                
+for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
+  if os.path.exists(os.path.join(currentFolder, "SConscript")):
+    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    objs += objsSubmodule
+    # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
+    subdirNames[:] = []
+    print "exit module"
+  else:
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+      print fileName
+      sourceFile = os.path.join(currentFolder, fileName)
+      objs.append(env.SharedObject(sourceFile))
+                                
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         LIBPATH = [BUILD_DIR, '#/lib/alglib'],

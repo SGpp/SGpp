@@ -163,7 +163,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         env['CXX'] = ('icpc')
         env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp'])
-
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for TARGETCPU."
         print "Available configurations are: ICC"
