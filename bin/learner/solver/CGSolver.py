@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 from LinearSolver import LinearSolver, LinearSolverEvents
-from pysgpp.base import *
+from pysgpp import *
 import types
 
 ## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sg::ConjugateGradients class.

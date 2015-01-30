@@ -6,7 +6,7 @@
 import unittest
 import math
 import random
-from pysgpp.base import Grid, DataVector, DataMatrix, PersistentErrorRefinementFunctor
+from pysgpp import Grid, DataVector, DataMatrix, PersistentErrorRefinementFunctor
 
 BETA = 0.1
 DIM = 2

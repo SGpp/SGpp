@@ -11,7 +11,7 @@ from optparse import OptionParser
 import sys
 from tools import *
 from toolsExtended import *
-from pysgpp.base import *
+from pysgpp import *
 from math import sqrt
 import random
 import re

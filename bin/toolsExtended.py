@@ -11,7 +11,7 @@
 from optparse import OptionParser
 import sys
 from tools import *
-from pysgpp.base import *
+from pysgpp import *
 from math import sqrt
 import random
 import re
@@ -329,7 +329,7 @@ def testHierarchisationResults(node1, node2):
 # @param factory the grid object
 # @param verbose default:False prints some additional information
 def generateCMatrix(factory, verbose=False):
-    from pysgpp.base import DataVector
+    from pysgpp import DataVector
     storage = factory.getStorage()
     
     laplace = createOperationLaplace(factory)
@@ -362,7 +362,7 @@ def generateCMatrix(factory, verbose=False):
 # @param training DataVector to contains the used training data
 # @param verbose default:False prints some additional information
 def generateBBTMatrix(factory, training, verbose=False):
-    from pysgpp.base import DataVector
+    from pysgpp import DataVector
     storage = factory.getStorage()
        
     b = factory.createOperationB()
@@ -400,7 +400,7 @@ def generateBBTMatrix(factory, training, verbose=False):
 # @param training DataVector to contains the used training data
 # @param verbose default:False prints some additional information
 def generateBTMatrix(factory, training, verbose=False):
-    from pysgpp.base import DataVector
+    from pysgpp import DataVector
     storage = factory.getStorage()
        
     b = factory.createOperationB()
@@ -434,7 +434,7 @@ def generateBTMatrix(factory, training, verbose=False):
 # @param training DataVector to contains the used training data
 # @param verbose default:False prints some additional information
 def generateBTMatrixPython(factory, training, verbose=False):
-    from pysgpp.base import DataVector
+    from pysgpp import DataVector
     storage = factory.getStorage()
        
     b = factory.createOperationB()
@@ -493,7 +493,7 @@ def generateBBTMatrixPython(factory, training, verbose=False):
 # @param filename the filename of the file that contains the reference data
 # @return returns a python array with the reference matrix
 def readReferenceMatrix(storage, filename):
-    from pysgpp.base import DataVector
+    from pysgpp import DataVector
     # read reference matrix
     try:
         fd = gzOpen(filename, 'r')

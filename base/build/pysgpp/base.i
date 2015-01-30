@@ -3,48 +3,8 @@
 * This file is part of the SG++ project. For conditions of distribution and   *
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
-// @author Dirk Pflueger (pflueged@in.tum.de), Joerg Blank (blankj@in.tum.de), Alexander Heinecke (alexander.heinecke@mytum.de)
-
-%module(directors="1") base
-%feature("docstring");
-
-%include "../../../base/src/sgpp/globaldef.hpp"
-
-%include "stl.i"
-%include "std_vector.i"
-%include "std_pair.i"
-%include "std_complex.i"
-%include "std_map.i"
-%include "carrays.i"
-%include "cpointer.i" 
-%include "typemaps.i"
-%include "stdint.i"
-%include "exception.i"
-
-%exception {
-  try {
-    $action
-  } catch (const std::exception& e) {
-    SWIG_exception(SWIG_RuntimeError, e.what());
-  }
-}
-
-%{
-#define SWIG_FILE_WITH_INIT
-%}
-%include "numpy.i"
-%init %{
-import_array();
-%}
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
-
-
-
-//%array_class(unsigned int, unsignedIntArray);
-//%array_class(bool,BoolArray);
-//%array_class(int, IntArray);
-
 
 namespace std {
     %template(IntVector) vector<int>;
@@ -59,12 +19,6 @@ namespace std {
 
 }
 
-// This should include all necessary header files
-%{
-#include "src/sgpp_base.hpp"
-using namespace SGPP::base;
-%}
-
 //TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
 //%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };%
 %apply uint32_t *OUTPUT {SGPP::base::HashGridIndex::level_type& l, SGPP::base::HashGridIndex::index_type& i}
@@ -75,11 +29,7 @@ using namespace SGPP::base;
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
-//%include "Operations.i"
 
-
-
-//
 
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];

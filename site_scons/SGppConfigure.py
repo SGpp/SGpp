@@ -12,7 +12,7 @@ import re
 import SGppConfigureExtend
 import Helper
 
-def doConfigure(env, moduleFolders):
+def doConfigure(env, moduleFolders, languageWrapperFolders):
     print "Checking programs and libraries: "
 
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
@@ -192,7 +192,9 @@ def doConfigure(env, moduleFolders):
     # setup the include base folder
     # env.Append(CPPPATH=['#/src/sgpp'])
     for moduleFolder in moduleFolders:
-        env.Append(CPPPATH=['#/' + moduleFolder + '/src/'])
+      if moduleFolder in languageWrapperFolders:
+        continue
+      env.Append(CPPPATH=['#/' + moduleFolder + '/src/'])
 
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line

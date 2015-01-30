@@ -40,30 +40,5 @@ libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
 
-if env['SG_PYTHON']:
-  py_env = env.Clone()
-  
-  py_env.AppendUnique(CPPFLAGS=['-w'])
-  if env['PLATFORM'] == 'cygwin':
-      py_env.Append(LIBS=['python2.7'])    
-  elif env['PLATFORM'] == 'darwin':
-      py_env['SHLIBSUFFIX'] = '.so'
-  
-  # build python module with swig
-  py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
-                        ['-D' + c for c in py_env['CPPDEFINES']],
-                      CPPPATH=['#/%s' % moduleName])
-  libPython = py_env.SharedLibrary(target=moduleName,
-                       source=[os.path.join("build", "pysgpp", "%s.i" % moduleName)],
-                       SHLIBPREFIX='_',
-                       CPPFLAGS=['--std=c++11'],
-                       LIBPATH=[BUILD_DIR],
-                       LIBS=['sgppbase', 'sgpppde', 'sgppfinance', 'sgppsolver'])
-  
-  installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
-  installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
-  py_env.Depends(installLibPython, installLibWrapperPython)
-  installTargetList.append(installLibPython)
-
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

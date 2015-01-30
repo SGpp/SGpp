@@ -18,9 +18,10 @@ EnsureSConsVersion(2, 0)
 print "Using SCons", SCons.__version__
 
 # languageWrapperList = ['SG_PYTHON', 'SG_JAVA']
-allLanguageWrapperList = ['SG_PYTHON', 'SG_JAVA']
+languageWrapperNames = ['SG_PYTHON', 'SG_JAVA']
+languageWrapperFolders = ['pysgpp', 'jsgpp']
 
-ignoreFolders = ['tests', 'jsgpp', 'pysgpp']
+ignoreFolders = ['tests', 'jsgpp'] #, 'pysgpp'
 
 # find all modules
 moduleFolders = getModules(ignoreFolders)
@@ -100,7 +101,7 @@ Export('TEST_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    SGppConfigure.doConfigure(env, moduleFolders)
+    SGppConfigure.doConfigure(env, moduleFolders, languageWrapperFolders)
 
 # add C++ defines for all modules
 cppdefines = []
@@ -128,20 +129,13 @@ env.Export('installTargetList')
 
 # compile selected modules
 for moduleFolder in sorted(moduleFolders):
-  # as the dependency tracking for swig is buggy in scons, always trigger a
-  # "reswig" by removing the swig wrapper
-  moduleWrapperSourceFile = os.path.join(moduleFolder, "build", "pysgpp", "%s_wrap.cc" % moduleFolder)
-  if os.path.exists(moduleWrapperSourceFile):
-      os.remove(moduleWrapperSourceFile)
-
   print "Preparing to build module: ", moduleFolder
   # SConscript('src/sgpp/SConscript' + moduleFolder, variant_dir='#/tmp/build/', duplicate=0)
   env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
 
 # build python lib
 # if env['SG_PYTHON']:
-#    SConscript('#/pysgpp/SConscript')
-#    Import('pysgppInstall')
+#   SConscript('#/pysgpp/SConscript')
 
 # build java lib
 if env['SG_JAVA']:
@@ -173,9 +167,11 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     pysgppTestTargets = []
     dependency = None
     for moduleFolder in moduleFolders:
-      if moduleFolder in ["parallel", "finance", "pde", "solver"]:
+      if moduleFolder in ['pysgpp', 'jsgpp'] + ['parallel']:
+        continue
+      #if moduleFolder in ["parallel", "finance", "pde", "solver"]:
           # these modules don't currently have tests
-          continue
+      #    continue
 
       moduleTest = env.Test(os.path.join("#", moduleFolder, 'tests', 'test_%s.py' % moduleFolder))
       moduleSharedLibFile = os.path.join("#", PYSGPP_BUILD_PATH, moduleFolder, "_%s.so" % moduleFolder)

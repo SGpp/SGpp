@@ -4,10 +4,10 @@
 # sgpp.sparsegrids.org
 
 import unittest, tools
-from pysgpp.base import *
+from pysgpp import *
 
 def generateLaplaceMatrix(factory, level, verbose=False):
-    from pysgpp.base import DataVector, DataMatrix
+    from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
@@ -34,7 +34,7 @@ def generateLaplaceMatrix(factory, level, verbose=False):
     return m
 
 def generateLaplaceEnhancedMatrix(factory, level, verbose=False):
-    from pysgpp.base import DataVector, DataMatrix
+    from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
     
     gen = factory.createGridGenerator()
@@ -63,7 +63,7 @@ def generateLaplaceEnhancedMatrix(factory, level, verbose=False):
 # is currently only available for MPI
 #####################################
 #def generateLaplaceVectorizedMatrix(factory, level, verbose=False):
-#    from pysgpp.base import DataVector, DataMatrix
+#    from pysgpp import DataVector, DataMatrix
 #    storage = factory.getStorage()
 #    
 #    gen = factory.createGridGenerator()
@@ -90,7 +90,7 @@ def generateLaplaceEnhancedMatrix(factory, level, verbose=False):
 #    return m
 
 def readReferenceMatrix(self, storage, filename):
-    from pysgpp.base import DataMatrix
+    from pysgpp import DataMatrix
     # read reference matrix
     try:
         fd = tools.gzOpen(filename, 'r')
@@ -122,7 +122,7 @@ def readReferenceMatrix(self, storage, filename):
 # differently. Uses heuristics, e.g. whether the diagonal elements
 # and row and column sums match.
 def compareStiffnessMatrices(testCaseClass, m1, m2):
-    from pysgpp.base import DataVector, DataMatrix
+    from pysgpp import DataVector, DataMatrix
 
     # check dimensions
     testCaseClass.assertEqual(m1.getNrows(), m1.getNcols())
@@ -180,7 +180,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
         
         factory = Grid.createLinearGrid(1)
         storage = factory.getStorage()
@@ -208,7 +208,7 @@ class TestOperationLaplaceLinear(unittest.TestCase):
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD(self):
         
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearGrid(3)
 
@@ -222,7 +222,7 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
         
         factory = Grid.createLinearGrid(1)
         storage = factory.getStorage()
@@ -249,7 +249,7 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD(self):
         
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearGrid(3)
 
@@ -263,7 +263,7 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
 #    ##
 #    # Test laplace for regular sparse grid in 1d using linear hat functions
 #    def testHatRegular1D(self):
-#        from pysgpp.base import Grid, DataVector, DataMatrix
+#        from pysgpp import Grid, DataVector, DataMatrix
 #        
 #        factory = Grid.createLinearGrid(1)
 #        storage = factory.getStorage()
@@ -291,7 +291,7 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
 #    # Test regular sparse grid dD, normal hat basis functions.
 #    def testHatRegulardD(self):
 #        
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #        
 #        factory = Grid.createLinearGrid(3)
 #
@@ -304,7 +304,7 @@ class TestOperationLaplaceEnhancedLinear(unittest.TestCase):
    
 class TestOperationLaplaceModLinear(unittest.TestCase):
     def testHatRegular1D(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
         
         factory = Grid.createModLinearGrid(1)
 
@@ -315,7 +315,7 @@ class TestOperationLaplaceModLinear(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
    
     def testHatRegulardD(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(3)
         #print "------------------------------------------------"
@@ -331,7 +331,7 @@ class TestOperationLaplaceLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
@@ -345,7 +345,7 @@ class TestOperationLaplaceLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
@@ -359,7 +359,7 @@ class TestOperationLaplaceLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):  
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
@@ -373,7 +373,7 @@ class TestOperationLaplaceLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
@@ -388,7 +388,7 @@ class TestOperationLaplaceEnhancedLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
@@ -402,7 +402,7 @@ class TestOperationLaplaceEnhancedLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
 
@@ -416,7 +416,7 @@ class TestOperationLaplaceEnhancedLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):  
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
@@ -430,7 +430,7 @@ class TestOperationLaplaceEnhancedLinearTruncatedBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
 
@@ -445,7 +445,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
 
@@ -459,7 +459,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
 
@@ -473,7 +473,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3)
 
@@ -487,7 +487,7 @@ class TestOperationLaplaceLinearBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3)
 
@@ -502,7 +502,7 @@ class TestOperationLaplaceEnhancedLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
 
@@ -516,7 +516,7 @@ class TestOperationLaplaceEnhancedLinearBoundary(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
 
@@ -530,7 +530,7 @@ class TestOperationLaplaceEnhancedLinearBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3)
 
@@ -544,7 +544,7 @@ class TestOperationLaplaceEnhancedLinearBoundary(unittest.TestCase):
     ##
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3)
 
@@ -559,7 +559,7 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
     ##
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testPrewavelet1D_one(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createPrewaveletGrid(1)
 
@@ -570,7 +570,7 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref) 
         
     def testPrewavelet1D_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createPrewaveletGrid(1)
 
@@ -581,7 +581,7 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
         
     def testPrewaveletdD_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createPrewaveletGrid(3)
 
@@ -592,7 +592,7 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
         
     def testPrewaveletdD_two(self):
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createPrewaveletGrid(3)
 
@@ -603,7 +603,7 @@ class TestOperationLaplacePrewavelet(unittest.TestCase):
         compareStiffnessMatrices(self, m, m_ref)
         
     def testPrewaveletAdaptivedD_two(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor, DataMatrix
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor, DataMatrix
         
         factory = Grid.createPrewaveletGrid(4)
         level = 2

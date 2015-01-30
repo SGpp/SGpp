@@ -11,7 +11,7 @@ import unittest
 import re
 import sys
 # append trunk/bin to search path for modules
-from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet, DataMatrix
+from pysgpp import Grid, DataVector, FullGrid, FullGridSet, DataMatrix
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -118,7 +118,7 @@ def buildParableBoundary(dim):
 class TestCompositionLinearBoundary(unittest.TestCase):
 
     def test11(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 5
@@ -129,7 +129,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
   
 
     def test12(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 5
@@ -139,7 +139,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
 
 
     def test13(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 6
@@ -149,7 +149,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
 
 
     def test14(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 9
@@ -159,7 +159,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
 
 class TestCompositionLinearTruncated(unittest.TestCase):        
     def test31(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 5
@@ -170,7 +170,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
   
 
     def test32(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 5
@@ -180,7 +180,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
 
 
     def test33(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 4
@@ -190,7 +190,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
 
 
     def test34(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 9
@@ -200,7 +200,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
         
 class TestCompositionSquareRoot(unittest.TestCase):        
     def test41(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 8
@@ -211,7 +211,7 @@ class TestCompositionSquareRoot(unittest.TestCase):
   
 
     def test42(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 6
@@ -221,7 +221,7 @@ class TestCompositionSquareRoot(unittest.TestCase):
 
 
     def test43(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 4
@@ -231,7 +231,7 @@ class TestCompositionSquareRoot(unittest.TestCase):
 
 
     def test44(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 8

@@ -8,7 +8,7 @@
 import sys, os, re, optparse, random, math
 sys.path.append("../../bin/")
 import tools
-from pysgpp.base import *
+from pysgpp import *
 
 random.seed(12345)
 N = 10000

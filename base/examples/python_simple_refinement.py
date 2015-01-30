@@ -9,7 +9,7 @@
 import sys
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp.base import *
+from pysgpp import *
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2

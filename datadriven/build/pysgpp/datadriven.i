@@ -3,70 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-%module(directors="1") datadriven
-%feature("docstring");
-
-%include "../../../base/src/sgpp/globaldef.hpp"
-
-%include "stl.i"
-%include "std_vector.i"
-%include "std_pair.i"
-%include "std_complex.i"
-%include "std_map.i"
-
-%include "cpointer.i" 
-%include "typemaps.i"
-
-%include "exception.i"
-
-%{
-#define SWIG_FILE_WITH_INIT
-%}
-%include "numpy.i"
-%init %{
-import_array();
-%}
-
-%apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
-
-%exception {
-  try {
-    $action
-  } catch (const std::exception& e) {
-    SWIG_exception(SWIG_RuntimeError, e.what());
-  }
-}
-
-%include "carrays.i"
-%array_class(unsigned int, unsignedIntArray);
-%array_class(bool,BoolArray);
-%array_class(int, IntArray);
-
-
-namespace std {
-	%template(IntVector) vector<int>;
-	%template(IntIntVector) vector< vector<int> >; 
-	%template(BoolVector) vector<bool>;
-	%template(DoubleVector) vector<double>;
-	%template(IndexValPair) pair<size_t, double>;
-        %template(IndexValVector) vector<pair<size_t, double> >;
-        // For OnlinePredictiveRefinementDimension
-        %template(refinement_key) std::pair<size_t, unsigned int>;
-        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
-
-}
-
-// This should include all necessary header files
-%{
-#include "src/sgpp_datadriven.hpp"
-using namespace SGPP;
-%}
-
-%import "base/build/pysgpp/DataVector.i"
-%import "base/build/pysgpp/DataMatrix.i"
-
-%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
-
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -93,10 +29,14 @@ using namespace SGPP;
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point }; 
 
-#ifdef SG_DATADRIVEN
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationTest.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRegularizationDiagonal.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformation.hpp"
+
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {
-%nodefaultdtor SGPP::datadriven::OperationTest;
+/*%nodefaultdtor SGPP::datadriven::OperationTest;
 class OperationTest
 {
 public:
@@ -129,7 +69,6 @@ public:
   virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points) = 0;
   virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points, size_t dim_start) = 0;
 };
-
+*/
 }
 //- end namespace datadriven ------------------------------------------
-#endif

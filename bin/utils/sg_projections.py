@@ -16,7 +16,7 @@
 import sys, os, re, optparse
 sys.path.append(os.environ["SGPP"])#+"/bin")
 from bin import tools
-from pysgpp.base import *
+from pysgpp import *
 
 
 if __name__ == '__main__':
