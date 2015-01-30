@@ -15,7 +15,7 @@ Import('installTargetList')
 
 dependencies = ["base", "solver", "pde", "misc"]
 
-avxFolders = ['./src/sgpp/datadriven/operation/OperationMultipleEvalSubspace/', './src/sgpp/datadriven/operation/OperationMultiEvalStreaming']
+avxFolders = ['./src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', './src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
 
 avx_env = env.Clone()
 avxCPPFLAGS = filter(lambda flag: flag != '-msse3', avx_env['CPPFLAGS'])
@@ -34,7 +34,9 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./src"):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
             sourceFile = os.path.join(currentFolder, fileName)
+            print "current: ", currentFolder
             if isAVXFolder(currentFolder):
+                print "avx: ", currentFolder
                 objs.append(avx_env.SharedObject(sourceFile))
             else:
                 objs.append(env.SharedObject(sourceFile))                
