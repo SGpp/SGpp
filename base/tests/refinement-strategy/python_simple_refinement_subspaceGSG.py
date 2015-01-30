@@ -11,7 +11,7 @@ from numpy.core.function_base import linspace
 from Crypto.Util.number import size
 # append trunk/bin to search path for modules
 sys.path.append('../lib/pysgpp')
-from pysgpp.base import *
+from pysgpp import *
 import matplotlib.pyplot as plotter
 import numpy
 import csv

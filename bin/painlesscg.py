@@ -23,7 +23,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from pysgpp.base import *
+from pysgpp import *
 from pysgpp.datadriven import *
 
 def ApplyA(B, C, alpha, result, x, l):

@@ -38,10 +38,10 @@ class TestOperationMultipleEval(unittest.TestCase):
     # Min, Max operations.
     # @test DataVector::min(int d), DataVector::max(int d), DataVector::minmax(int d, double *min, double *max), DataVector::min(), DataVector::max()
     def testOperationMultipleEval(self):
-        from pysgpp.base import Grid
-        from pysgpp.base import DataVector
-        from pysgpp.base import DataMatrix
-        from pysgpp.base import createOperationMultipleEval
+        from pysgpp import Grid
+        from pysgpp import DataVector
+        from pysgpp import DataMatrix
+        from pysgpp import createOperationMultipleEval
         
         dim = 2
         level = 2

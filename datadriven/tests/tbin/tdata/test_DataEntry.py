@@ -12,7 +12,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.DataEntry import DataEntry
-from pysgpp.base import DataVector
+from pysgpp import DataVector
 
 
 ##

@@ -4,12 +4,12 @@
 # sgpp.sparsegrids.org
 
 import unittest
-from pysgpp.base import *
+from pysgpp import *
 
 class TestGridFactory(unittest.TestCase):
     def testCreation(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearGrid(2)
         self.failIfEqual(factory, None)
@@ -19,7 +19,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinear(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearGrid(2)
         self.failIfEqual(factory, None)
@@ -37,7 +37,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationModLinear(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(2)
         self.failIfEqual(factory, None)
@@ -55,7 +55,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinearTruncatedBoundary(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(2)
         self.failIfEqual(factory, None)
@@ -73,7 +73,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinearBoundary(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(2)
         self.failIfEqual(factory, None)
@@ -91,7 +91,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationPrewavelet(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createPrewaveletGrid(2)
         self.failIfEqual(factory, None)
@@ -108,7 +108,7 @@ class TestGridFactory(unittest.TestCase):
         self.assertEqual(factory.getStorage().size(), newfac.getStorage().size())
         
 #    def testSerializationPoly(self):
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #        
 #        factory = Grid.createPolyGrid(2,2)
 #        self.failIfEqual(factory, None)
@@ -126,7 +126,7 @@ class TestGridFactory(unittest.TestCase):
 
     def testSerializationLinearBoundingBox(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearGrid(2)
         self.failIfEqual(factory, None)
@@ -159,7 +159,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationModLinearBoundingBox(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(2)
         self.failIfEqual(factory, None)
@@ -192,7 +192,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinearTruncatedBoundaryBoundingBox(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearTruncatedBoundaryGrid(2)
         self.failIfEqual(factory, None)
@@ -225,7 +225,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinearBoundaryBoundingBox(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(2)
         self.failIfEqual(factory, None)
@@ -257,7 +257,7 @@ class TestGridFactory(unittest.TestCase):
         self.assertEqual(False, tempBound.bDirichletRight)
         
 #    def testSerializationPolyBoundingBox(self):
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #        
 #        factory = Grid.createPolyGrid(2,2)
 #        self.failIfEqual(factory, None)
@@ -290,7 +290,7 @@ class TestGridFactory(unittest.TestCase):
 
     def testSerializationLinearWithLeaf(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         srcLeaf = []
         factory = Grid.createLinearGrid(2)
@@ -315,7 +315,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationModLinearWithLeaf(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         srcLeaf = []
         factory = Grid.createModLinearGrid(2)
@@ -340,7 +340,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinearTruncatedBoundaryWithLeaf(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         srcLeaf = []
         factory = Grid.createLinearTruncatedBoundaryGrid(2)
@@ -365,7 +365,7 @@ class TestGridFactory(unittest.TestCase):
         
     def testSerializationLinearBoundaryWithLeaf(self):
         """Uses Linear grid for tests"""
-        from pysgpp.base import Grid
+        from pysgpp import Grid
         
         srcLeaf = []
         factory = Grid.createLinearBoundaryGrid(2)
@@ -389,7 +389,7 @@ class TestGridFactory(unittest.TestCase):
             self.failUnlessEqual(newfac.getStorage().get(i).isLeaf(), srcLeaf[i])       
         
 #    def testSerializationPolyWithLeaf(self):
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #        
 #        srcLeaf = []
 #        factory = Grid.createPolyGrid(2,2)
@@ -414,7 +414,7 @@ class TestGridFactory(unittest.TestCase):
         
 #class TestPolyGrid(unittest.TestCase):
 #    def testGeneration(self):
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #
 #        factory = Grid.createPolyGrid(2, 4)
 #        self.failIfEqual(factory, None)
@@ -433,7 +433,7 @@ class TestGridFactory(unittest.TestCase):
 #
 #class TestModPolyGrid(unittest.TestCase):
 #    def testGeneration(self):
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #
 #        factory = Grid.createModPolyGrid(2, 4)
 #        self.failIfEqual(factory, None)
@@ -452,7 +452,7 @@ class TestGridFactory(unittest.TestCase):
 #
 #class TestModLinearGrid(unittest.TestCase):
 #    def testGeneration(self):
-#        from pysgpp.base import Grid
+#        from pysgpp import Grid
 #
 #        factory = Grid.createModLinearGrid(2)
 #        self.failIfEqual(factory, None)
@@ -472,7 +472,7 @@ class TestGridFactory(unittest.TestCase):
         
 class TestLinearGrid(unittest.TestCase):
     def testGeneration(self):
-        from pysgpp.base import Grid, DataVector
+        from pysgpp import Grid, DataVector
         factory = Grid.createLinearGrid(2)
         storage = factory.getStorage()
         
@@ -487,7 +487,7 @@ class TestLinearGrid(unittest.TestCase):
         self.failUnlessRaises(Exception, gen.regular, 3)
         
     def testRefinement(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearGrid(2)
         storage = factory.getStorage()
         
@@ -503,7 +503,7 @@ class TestLinearGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 5)
 
     def testOperationMultipleEval(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
         factory = Grid.createLinearGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
@@ -535,7 +535,7 @@ class TestLinearGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
 
         factory = Grid.createLinearGrid(1)
         gen = factory.createGridGenerator()
@@ -559,7 +559,7 @@ class TestLinearGrid(unittest.TestCase):
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):
-        from pysgpp.base import Grid, DataVector
+        from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearGrid(1)
         gen = factory.createGridGenerator()
@@ -577,7 +577,7 @@ class TestLinearGrid(unittest.TestCase):
 
 class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
     def testGeneration(self):
-        from pysgpp.base import Grid, DataVector
+        from pysgpp import Grid, DataVector
         factory = Grid.createLinearTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -592,7 +592,7 @@ class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessRaises(Exception, gen.regular, 3)
         
     def testRefinement2d(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -616,7 +616,7 @@ class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 21)
         
     def testRefinement3d(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
         storage = factory.getStorage()
         
@@ -635,7 +635,7 @@ class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 81)
 
     def testOperationMultipleEval(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
@@ -669,7 +669,7 @@ class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
 
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -698,7 +698,7 @@ class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):
-        from pysgpp.base import Grid, DataVector
+        from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -716,7 +716,7 @@ class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
 
 class TestLinearBoundaryGrid(unittest.TestCase):
     def testGeneration(self):
-        from pysgpp.base import Grid, DataVector
+        from pysgpp import Grid, DataVector
         factory = Grid.createLinearBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -731,7 +731,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessRaises(Exception, gen.regular, 3)
         
     def testRefinement2d_one(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -752,7 +752,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 8)
         
     def testRefinement2d_two(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -781,7 +781,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 13)        
 
     def testRefinement2d_three(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -820,7 +820,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 18) 
 
     def testRefinement2d_four(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -869,7 +869,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 25) 
 
     def testRefinement2d_five(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -928,7 +928,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 29) 
 
     def testOperationMultipleEval(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
         factory = Grid.createLinearBoundaryGrid(1)
         gen = factory.createGridGenerator()
         gen.regular(2)
@@ -962,7 +962,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
     def testOperationTest_test(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix
+        from pysgpp import Grid, DataVector, DataMatrix
 
         factory = Grid.createLinearBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -991,7 +991,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):
-        from pysgpp.base import Grid, DataVector
+        from pysgpp import Grid, DataVector
 
         factory = Grid.createLinearBoundaryGrid(1)
         gen = factory.createGridGenerator()
@@ -1009,7 +1009,7 @@ class TestLinearBoundaryGrid(unittest.TestCase):
 
 class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
     def testGeneration(self):
-        from pysgpp.base import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary, DimensionBoundaryVector, Stretching1DVector 
+        from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary, DimensionBoundaryVector, Stretching1DVector 
 	str1d = Stretching1D()
 	str1d.type='log'
 	str1d.x_0=1
@@ -1039,7 +1039,7 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessRaises(Exception, gen.regular, 3)
         
     def testRefinement2d(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor 
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor 
         factory = Grid.createLinearStretchedTruncatedBoundaryGrid(2)
         storage = factory.getStorage()
         
@@ -1063,7 +1063,7 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 21)
         
     def testRefinement3d(self):
-        from pysgpp.base import Grid, DataVector, SurplusRefinementFunctor
+        from pysgpp import Grid, DataVector, SurplusRefinementFunctor
         factory = Grid.createLinearStretchedTruncatedBoundaryGrid(3)
         storage = factory.getStorage()
         
@@ -1082,7 +1082,7 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessEqual(storage.size(), 81)
 
     def testOperationMultipleEval(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
+        from pysgpp import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
 
 #Create Stretching
 	str1d = Stretching1D()
@@ -1128,7 +1128,7 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnlessAlmostEqual(beta[0],-0.182371437)
 
     def testOperationTest_test(self):
-        from pysgpp.base import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
+        from pysgpp import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
 
      	str1d = Stretching1D()
 	str1d.type='log'
@@ -1168,7 +1168,7 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
         self.failUnless(c == 0.0)
         
     def testOperationEval_eval(self):
-        from pysgpp.base import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary
+        from pysgpp import Grid, DataVector, Stretching, Stretching1D, DimensionBoundary
 
      	str1d = Stretching1D()
 	str1d.type='log'

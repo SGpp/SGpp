@@ -5,7 +5,7 @@
 
 
 from Learner import Learner, LearnerEvents
-from pysgpp.base import DataVector, SurplusRefinementFunctor
+from pysgpp import DataVector, SurplusRefinementFunctor
 
 from  math import sqrt
 

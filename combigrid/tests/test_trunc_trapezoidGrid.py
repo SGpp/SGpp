@@ -11,7 +11,7 @@ import unittest
 import re
 import sys
 import random
-from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet, createOperationEval, createOperationHierarchisation
+from pysgpp import Grid, DataVector, FullGrid, FullGridSet, createOperationEval, createOperationHierarchisation
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -127,7 +127,7 @@ def buildParableBoundary(dim):
 
 class TestModTruncatedGrid(unittest.TestCase):     
     def test41(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 1
         level = 8
@@ -138,7 +138,7 @@ class TestModTruncatedGrid(unittest.TestCase):
   
 
     def test42(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 3
         level = 4
@@ -148,7 +148,7 @@ class TestModTruncatedGrid(unittest.TestCase):
 
 
     def test43(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 4
         level = 4
@@ -158,7 +158,7 @@ class TestModTruncatedGrid(unittest.TestCase):
 
 
     def test44(self):
-        from pysgpp.base import Grid, DataVector, FullGrid, FullGridSet
+        from pysgpp import Grid, DataVector, FullGrid, FullGridSet
         
         dim = 2
         level = 8

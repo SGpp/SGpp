@@ -13,7 +13,7 @@ from numpy.core.function_base import linspace
 # append trunk/bin to search path for modules
 #sys.path.append('../lib/pysgpp')
 print(sys.path) 
-from pysgpp.base import DataVector, Grid, createOperationHierarchisation, createOperationEval
+from pysgpp import DataVector, Grid, createOperationHierarchisation, createOperationEval
 import matplotlib.pyplot as plotter
 import numpy
 

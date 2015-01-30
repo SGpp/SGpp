@@ -18,7 +18,7 @@ class TestBase(unittest.TestCase):
       self.failUnlessAlmostEqual(val, t[3], msg = ("%f != %f => (%d, %d) @ %f"%(val, t[3], t[0], t[1], t[2])))
 
   def testLinear(self):
-    from pysgpp.base import SLinearBase
+    from pysgpp import SLinearBase
         
     b = SLinearBase()
         
@@ -31,7 +31,7 @@ class TestBase(unittest.TestCase):
     self.baseTest(b, points)
         
   def testLinearBoundary(self):
-    from pysgpp.base import SLinearBoundaryBase
+    from pysgpp import SLinearBoundaryBase
         
     b = SLinearBoundaryBase()
         
@@ -52,7 +52,7 @@ class TestBase(unittest.TestCase):
     self.baseTest(b, points)             
         
   def testLinearModified(self):
-    from pysgpp.base import SLinearModifiedBase
+    from pysgpp import SLinearModifiedBase
     
     b = SLinearModifiedBase()
     
@@ -73,7 +73,7 @@ class TestBase(unittest.TestCase):
     self.baseTest(b, points)
 
   def testLinearStretched(self):
-    from pysgpp.base import SLinearStretchedBase
+    from pysgpp import SLinearStretchedBase
     
     b = SLinearStretchedBase()
     
@@ -88,7 +88,7 @@ class TestBase(unittest.TestCase):
         
 
 #    def testPoly(self):
-#        from pysgpp.base import SPolyBase
+#        from pysgpp import SPolyBase
 #        
 #        self.failUnlessRaises(Exception, SPolyBase, 0)
 #        
@@ -124,7 +124,7 @@ class TestBase(unittest.TestCase):
 #        self.baseTest(b, points)
 #
 #    def testModPoly(self):
-#        from pysgpp.base import SPolyModifiedBase
+#        from pysgpp import SPolyModifiedBase
 #        
 #        self.failUnlessRaises(Exception, SPolyModifiedBase, -1)
 #        
@@ -190,8 +190,8 @@ class TestBase(unittest.TestCase):
         
 class TestFunctions(unittest.TestCase):
   def testGetAffected(self):
-    from pysgpp.base import HashGridIndex, HashGridStorage, SLinearBase
-    from pysgpp.base import SGetAffectedBasisFunctions
+    from pysgpp import HashGridIndex, HashGridStorage, SLinearBase
+    from pysgpp import SGetAffectedBasisFunctions
     
     i = HashGridIndex(1)
     s = HashGridStorage(1)
@@ -210,8 +210,8 @@ class TestFunctions(unittest.TestCase):
         
         
   def testGetAffectedBoundaries(self):
-    from pysgpp.base import HashGridIndex, HashGridStorage, SLinearBoundaryBase
-    from pysgpp.base import SGetAffectedBasisFunctionsBoundaries
+    from pysgpp import HashGridIndex, HashGridStorage, SLinearBoundaryBase
+    from pysgpp import SGetAffectedBasisFunctionsBoundaries
     
     i = HashGridIndex(1)
     s = HashGridStorage(1)
@@ -237,9 +237,9 @@ class TestFunctions(unittest.TestCase):
     self.failUnlessEqual(x[2][1], 1.0)   
 
   def testGetAffectedLinearStretched(self):
-    from pysgpp.base import HashGridIndex, HashGridStorage, SLinearStretchedBoundaryBase
-    from pysgpp.base import SGetAffectedBasisFunctionsLinearStretchedBoundaries
-    from pysgpp.base import Stretching, Stretching1D, DimensionBoundary
+    from pysgpp import HashGridIndex, HashGridStorage, SLinearStretchedBoundaryBase
+    from pysgpp import SGetAffectedBasisFunctionsLinearStretchedBoundaries
+    from pysgpp import Stretching, Stretching1D, DimensionBoundary
     print "blubb"
     str1d = Stretching1D()
     str1d.type='log'

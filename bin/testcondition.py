@@ -9,7 +9,7 @@ from optparse import OptionParser
 import sys
 from tools import *
 from toolsExtended import *
-from pysgpp.base import *
+from pysgpp import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
 import random

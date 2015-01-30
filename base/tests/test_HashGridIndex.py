@@ -8,7 +8,7 @@ import unittest
 class TestSHashGridIndex(unittest.TestCase):
     def testConstructor(self):
         """Tests copy constructor"""
-        from pysgpp.base import HashGridIndex
+        from pysgpp import HashGridIndex
         
         s = HashGridIndex(2)
         s.set(0,1,1)
@@ -21,7 +21,7 @@ class TestSHashGridIndex(unittest.TestCase):
         
     def testAssign(self):
         """Tests assignment"""
-        from pysgpp.base import HashGridIndex
+        from pysgpp import HashGridIndex
          
         s = HashGridIndex(2)
         s.set(0,2,1)

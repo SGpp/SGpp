@@ -7,7 +7,7 @@
                                     #
 #############################################################################
 
-from pysgpp.base import DataVector
+from pysgpp import DataVector
 
 
 ## Class keeps all information, which was learned during the learning process.

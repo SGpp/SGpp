@@ -34,32 +34,32 @@ libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
 
-if env['SG_PYTHON']:
-  py_env = env.Clone()
-  
-  py_env.AppendUnique(CPPFLAGS=['-w'])
-  if env['PLATFORM']=='cygwin':
-      py_env.Append(LIBS=['python2.7'])    
-  elif env['PLATFORM']=='darwin':
-      py_env['SHLIBSUFFIX'] = '.so'
-  
-  # build python module with swig
-  py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + \
-                        ['-D' + c for c in py_env['CPPDEFINES']],
-                      CPPPATH=['#/%s' % moduleName])
-  libPython = py_env.SharedLibrary(target=moduleName,
-                       source= [os.path.join("build", "pysgpp", moduleName + ".i")],
-                       SHLIBPREFIX='_',
-                       LIBPATH = [BUILD_DIR],
-                       LIBS=['sgppbase'])
-  
-  packageInit = File(os.path.join("build", "pysgpp", '__init__.py'))
-  installPackageInit = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), packageInit)
-  installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
-  installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
-  py_env.Depends(installLibPython, installLibWrapperPython)
-  py_env.Depends(installLibPython, installPackageInit)
-  installTargetList.append(installLibPython)
+# if env['SG_PYTHON']:
+#   py_env = env.Clone()
+#   
+#   py_env.AppendUnique(CPPFLAGS=['-w'])
+#   if env['PLATFORM']=='cygwin':
+#       py_env.Append(LIBS=['python2.7'])    
+#   elif env['PLATFORM']=='darwin':
+#       py_env['SHLIBSUFFIX'] = '.so'
+#   
+#   # build python module with swig
+#   py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + \
+#                         ['-D' + c for c in py_env['CPPDEFINES']],
+#                       CPPPATH=['#/%s' % moduleName])
+#   libPython = py_env.SharedLibrary(target=moduleName,
+#                        source= [os.path.join("build", "pysgpp", moduleName + ".i")],
+#                        SHLIBPREFIX='_',
+#                        LIBPATH = [BUILD_DIR],
+#                        LIBS=['sgppbase'])
+#   
+#   packageInit = File(os.path.join("build", "pysgpp", '__init__.py'))
+#   installPackageInit = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), packageInit)
+#   installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
+#   installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
+#   py_env.Depends(installLibPython, installLibWrapperPython)
+#   py_env.Depends(installLibPython, installPackageInit)
+#   installTargetList.append(installLibPython)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
