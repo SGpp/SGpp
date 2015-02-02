@@ -104,6 +104,6 @@ def prepareDoxyfile(modules):
     modulesFile.write(open('base/doc/doxygen/modules.stub0', 'r').read())
     for moduleName in modules:
         for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'module_*.doxy')):
-            modulesFile.write('- @subpage ' + (os.path.split(subpage)[-1])[:-5] + '\n')
+            modulesFile.write('- @subpage ' + os.path.splitext(os.path.split(subpage)[-1])[0] + '\n')
     modulesFile.write(open('base/doc/doxygen/modules.stub1', 'r').read())
     modulesFile.close()

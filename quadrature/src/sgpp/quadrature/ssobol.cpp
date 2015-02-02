@@ -17,7 +17,7 @@
 
 using namespace std;
 
-#include <sgpp/quadrature/ssobol.h>
+#include <sgpp/quadrature/ssobol.hpp>
 
 static void lowdisc_error(string s) {
   cout << s;
@@ -132,11 +132,7 @@ void Ssobol::init(int dimen, int atmost, int iflag, int maxd, int* isok) {
     }
   }
 
-  // exclude the "#include" from Doxygen's preprocessing, because
-  // otherwise Doxygen complains about ssobol_poly.h not found
-  /// @cond INCLUDE_SSOBOL_POLY_H
-#include <sgpp/quadrature/ssobol_poly.h>
-  /// @endcond
+#include <sgpp/quadrature/ssobol_poly.hpp>
 
   /*     FIND NUMBER OF BITS IN ATMOST */
 

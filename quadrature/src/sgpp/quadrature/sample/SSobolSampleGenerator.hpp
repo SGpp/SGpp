@@ -10,7 +10,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/Random.hpp>
-#include <sgpp/quadrature/ssobol.h>
+#include <sgpp/quadrature/ssobol.hpp>
 #include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
 
