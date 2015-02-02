@@ -84,8 +84,8 @@ as short use cases as a quick-start to using SG++.
 @subsection mainpage_history_100 Version 1.0.0
 
 What will be there for Release Version 1.0 (scheduled later this year)
-- Automatic check for requirements in SCons for compilation</li>
-- Release of further modules bejond the base package (module sgppbase)</li>
+- Automatic check for requirements in SCons for compilation
+- Release of further modules bejond the base package (module sgppbase)
 - Extended parallelization support
 - New types of basis functions
 - More documentation, especially on adaptive refinement

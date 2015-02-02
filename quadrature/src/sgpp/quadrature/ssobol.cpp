@@ -132,7 +132,11 @@ void Ssobol::init(int dimen, int atmost, int iflag, int maxd, int* isok) {
     }
   }
 
+  // exclude the "#include" from Doxygen's preprocessing, because
+  // otherwise Doxygen complains about ssobol_poly.h not found
+  /// @cond INCLUDE_SSOBOL_POLY_H
 #include <sgpp/quadrature/ssobol_poly.h>
+  /// @endcond
 
   /*     FIND NUMBER OF BITS IN ATMOST */
 
