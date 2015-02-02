@@ -15,7 +15,7 @@ namespace base {
 
 HashGridStorage::HashGridStorage(size_t dim) :
 //  GridStorage(dim),
-list(), map(), algoDims(), DIM(dim), bUseStretching(false), boundingBox(new BoundingBox(dim))
+list(), map(), DIM(dim), algoDims(), boundingBox(new BoundingBox(dim)), bUseStretching(false)
 {
 	for (size_t i = 0; i < DIM; i++) {
       algoDims.push_back(i);
