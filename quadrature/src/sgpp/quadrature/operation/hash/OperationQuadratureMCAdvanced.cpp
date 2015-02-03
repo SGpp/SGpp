@@ -13,9 +13,6 @@
 #include <sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp>
 #include <sgpp/quadrature/sample/NaiveSampleGenerator.hpp>
 #include <sgpp/quadrature/Random.hpp>
-#include <sgpp/quadrature/sample/ScrambledSobolSampleGenerator.hpp>
-#include <sgpp/quadrature/sample/SobolSampleGenerator.hpp>
-#include <sgpp/quadrature/sample/SSobolSampleGenerator.hpp>
 #include <sgpp/quadrature/sample/StratifiedSampleGenerator.hpp>
 #include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
@@ -39,23 +36,12 @@ namespace SGPP {
       myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions);
     }
 
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarlo() {
-      myGenerator = new SGPP::quadrature::SobolSampleGenerator(dimensions, 0);
-    }
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarloScrambled() {
-      myGenerator = new SGPP::quadrature::ScrambledSobolSampleGenerator(dimensions, 0);
-    }
-
     void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(long long int* strataPerDimension) {
       myGenerator = new SGPP::quadrature::StratifiedSampleGenerator(dimensions, strataPerDimension);
     }
 
     void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
       myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(dimensions, numberOfSamples);
-    }
-
-    void OperationQuadratureMCAdvanced::useSSobol(int scrambling) {
-      myGenerator = new SGPP::quadrature::SSobolSampleGenerator(dimensions, (int) numberOfSamples, scrambling);
     }
 
     double OperationQuadratureMCAdvanced::doQuadrature(SGPP::base::DataVector& alpha) {

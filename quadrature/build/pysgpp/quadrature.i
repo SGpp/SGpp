@@ -12,9 +12,6 @@
 //TODO franzefn
 //%apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
 %include "quadrature/src/sgpp/quadrature/sample/StratifiedSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/SobolSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/ScrambledSobolSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/SSobolSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
 
 %apply std::string *INPUT { std::string& istr };
@@ -22,4 +19,4 @@
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+%apply std::vector<double> *INPUT { std::vector<double>& point };

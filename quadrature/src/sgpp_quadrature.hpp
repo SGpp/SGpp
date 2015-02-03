@@ -13,9 +13,6 @@
 #include "sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp"
 #include "sgpp/quadrature/sample/NaiveSampleGenerator.hpp"
 #include "sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/ScrambledSobolSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/SobolSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/SSobolSampleGenerator.hpp"
 #include "sgpp/quadrature/sample/StratifiedSampleGenerator.hpp"
 
 #endif /* QUADRATURE_HPP */
