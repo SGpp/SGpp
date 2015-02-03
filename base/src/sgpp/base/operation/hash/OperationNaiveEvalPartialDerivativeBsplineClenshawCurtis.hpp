@@ -27,7 +27,6 @@ namespace SGPP {
          *
          * @param storage   storage of the sparse grid
          * @param degree    B-spline degree
-         * @param cosine_table  cosine table for faster cosine evaluation (optional)
          */
         OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis(
           GridStorage* storage, size_t degree)
