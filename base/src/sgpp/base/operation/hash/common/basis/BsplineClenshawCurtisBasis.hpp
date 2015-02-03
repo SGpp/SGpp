@@ -252,7 +252,7 @@ namespace SGPP {
     };
 
     // default type-def (unsigned int for level and index)
-    typedef BsplineBoundaryBasis<unsigned int, unsigned int> SBsplineBoundaryBase;
+    typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int> SBsplineClenshawCurtisBase;
   }
 }
 

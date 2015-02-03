@@ -1,58 +1,142 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef MODIFIED_WAVELET_BASE_HPP
-#define MODIFIED_WAVELET_BASE_HPP
+#ifndef WAVELET_MODIFIED_BASE_HPP
+#define WAVELET_MODIFIED_BASE_HPP
 
 #include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
   namespace base {
 
     /**
-     * Modified Wavelet basis functions.
-     * @todo (pflueged) Concernc also most other basis functions: Why static cast in int and not in unsigned int?? If index is unsigned int (which is the case) then for level 32, indices get lost/corrupted.
+     * Modified wavelet basis on Noboundary grids.
      */
-    template<class LT, class IT>
+    template <class LT, class IT>
     class WaveletModifiedBasis: public Basis<LT, IT> {
       public:
-        double eval(LT level, IT index, double p) {
-          //std::cout << "Level " << level <<" Index "<<index<<" Point "<<p<<" BasisValue ";
-          if (level == 1) {
-            //std::cout<<1<<std::endl;
-            return 1;
+        /**
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of modified wavelet basis function
+         */
+        inline double eval(LT l, IT i, double x) {
+          if (l == 1) {
+            // first level
+            return 1.0;
           }
 
-          double sup = 1 << level;
-          sup = 1 / sup;
+          const IT hInv = static_cast<IT>(1) << l;
+          const double hInvDbl = static_cast<double>(hInv);
+          const double h = 1.0 / hInvDbl;
 
-          if (static_cast<int>(index) == static_cast<int>((1 << level) - 1) && p > (1 - 1.5602 * sup) ) {
-            //std::cout<<0.5014+1.3803*(0.5602+p/sup-index)<<std::endl;
-            return 0.5014 + 1.3803 * (0.5602 + p / sup - index);
+          if ((i == 1) && (x < 1.560231504260063 * h)) {
+            // left modified basis function
+            return 0.501309319347014 + 1.38033323862282 * (0.560231504260063 - x * hInvDbl + 1.0);
+          } else if ((i == hInv - 1) && (x > 1.0 - 1.560231504260063 * h)) {
+            // right modified basis function
+            return 0.501309319347014 + 1.38033323862282 * (0.560231504260063 +
+                   x * hInvDbl - static_cast<double>(i));
+          } else {
+            // interior basis function
+            // (or modified function, but x is in the non-modified part)
+            const double t = x * hInvDbl - static_cast<double>(i);
+
+            if ((t > 2.0) || (t < -2.0)) {
+              // out of support (cut-off)
+              return 0.0;
+            }
+
+            const double t2 = t * t;
+            return (1.0 - t2) * std::exp(-t2);
           }
-
-          if ( index == 1 && p < 1.5602 * sup ) {
-            //std::cout<<0.5014+1.3803*(0.5602-p/sup+1)<<std::endl;
-            return 0.5014 + 1.3803 * (0.5602 - p / sup + 1);
-          }
-
-          double t = pow(p / sup - index, 2);
-          //std::cout<<(1-t)*exp(-0.9986*t)<<std::endl;
-          return (1 - t) * exp(-0.9986 * t);
-
         }
 
+        /**
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of derivative of modified wavelet basis function
+         */
+        inline double evalDx(LT l, IT i, double x) {
+          if (l == 1) {
+            // first level
+            return 0.0;
+          }
+
+          const IT hInv = static_cast<IT>(1) << l;
+          const double hInvDbl = static_cast<double>(hInv);
+          const double h = 1.0 / hInvDbl;
+
+          if ((i == 1) && (x < 1.560231504260063 * h)) {
+            // left modified basis function
+            return -1.38033323862282 * hInvDbl;
+          } else if ((i == hInv - 1) && (x > 1.0 - 1.560231504260063 * h)) {
+            // right modified basis function
+            return 1.38033323862282 * hInvDbl;
+          } else {
+            // interior basis function
+            // (or modified function, but x is in the non-modified part)
+            const double t = x * hInvDbl - static_cast<double>(i);
+
+            if ((t > 2.0) || (t < -2.0)) {
+              // out of support (cut-off)
+              return 0.0;
+            }
+
+            const double t2 = t * t;
+            return 2.0 * t * (t2 - 2.0) * std::exp(-t2) * hInvDbl;
+          }
+        }
+
+        /**
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of 2nd derivative of modified wavelet basis function
+         */
+        inline double evalDxDx(LT l, IT i, double x) {
+          if (l == 1) {
+            // first level
+            return 0.0;
+          }
+
+          const IT hInv = static_cast<IT>(1) << l;
+          const double hInvDbl = static_cast<double>(hInv);
+          const double h = 1.0 / hInvDbl;
+
+          if ((i == 1) && (x < 1.560231504260063 * h)) {
+            // left modified basis function
+            return 0.0;
+          } else if ((i == hInv - 1) && (x > 1.0 - 1.560231504260063 * h)) {
+            // right modified basis function
+            return 0.0;
+          } else {
+            // interior basis function
+            // (or modified function, but x is in the non-modified part)
+            const double t = x * hInvDbl - static_cast<double>(i);
+
+            if ((t > 2.0) || (t < -2.0)) {
+              // out of support (cut-off)
+              return 0.0;
+            }
+
+            const double t2 = t * t;
+            const double t4 = t2 * t2;
+            return -2.0 * (2.0 * t4 - 7.0 * t2 + 2.0) * std::exp(-t2) * hInvDbl * hInvDbl;
+          }
+        }
     };
+
     // default type-def (unsigned int for level and index)
     typedef WaveletModifiedBasis<unsigned int, unsigned int> SWaveletModifiedBase;
   }
 }
 
-#endif /* MODIFIED_WAVELET_BASE_HPP */
+#endif /* WAVELET_MODIFIED_BASE_HPP */
