@@ -15,17 +15,17 @@ namespace SGPP {
       : table(std::vector<double>((1 << (maxLevel + 1)) + maxLevel, 0.0)),
         maxLevel(maxLevel) {
       size_t k = 0;
-      IT hinv = 1;
+      IT hInv = 1;
 
       for (LT l = 0; l <= maxLevel; l++) {
-        const double h = 1.0 / static_cast<double>(hinv);
+        const double h = 1.0 / static_cast<double>(hInv);
 
-        for (IT i = 0; i <= hinv; i++) {
+        for (IT i = 0; i <= hInv; i++) {
           table[k] = (cos(M_PI * (1.0 - static_cast<double>(i) * h)) + 1.0) / 2.0;
           k++;
         }
 
-        hinv *= 2;
+        hInv *= 2;
       }
     }
 
