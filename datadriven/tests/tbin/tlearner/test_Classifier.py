@@ -61,27 +61,27 @@ class TestClassifier(unittest.TestCase):
         solver.setReuse(True)
         self.classifier.setSolver(solver)
 
-    ##
-    # Tests the function @link bin.learner.Learner.Learner.learnDataWithTest() Classifier.learnDataWithTest() @endlink
-    def testLearnDataWithTest(self,):
-        correct = [-0.33360635579319858346,
-                   0.67890792146517364714,
-                   17.37781054927400248289,
-                   19.86707480839170614217,
-                   -1.61960456623131343612,
-                   -7.70442957659598182119,
-                   -22.14900166819601423640,
-                   8.92745373469135827804,
-                   -11.12477960213342775830
-                   ]
-        testDataset = ARFFAdapter(pathlocal + "/datasets/classifier.test.arff").loadData("test")
-        self.classifier.setDataContainer(self.classifier.dataContainer.combine(testDataset))
-        self.classifier.stopPolicy.setAdaptiveIterationLimit(1)
-        self.classifier.specification.setAdaptPoints(1)
-        alpha = self.classifier.learnDataWithTest(self.classifier.dataContainer.combine(testDataset))
-        self.assertEqual(len(alpha), len(correct))
-        for i in xrange(len(correct)):
-            self.assertAlmostEqual(alpha[i], correct[i], 3)
+#     ##
+#     # Tests the function @link bin.learner.Learner.Learner.learnDataWithTest() Classifier.learnDataWithTest() @endlink
+#     def testLearnDataWithTest(self,):
+#         correct = [-0.33360635579319858346,
+#                    0.67890792146517364714,
+#                    17.37781054927400248289,
+#                    19.86707480839170614217,
+#                    -1.61960456623131343612,
+#                    -7.70442957659598182119,
+#                    -22.14900166819601423640,
+#                    8.92745373469135827804,
+#                    -11.12477960213342775830
+#                    ]
+#         testDataset = ARFFAdapter(pathlocal + "/datasets/classifier.test.arff").loadData("test")
+#         self.classifier.setDataContainer(self.classifier.dataContainer.combine(testDataset))
+#         self.classifier.stopPolicy.setAdaptiveIterationLimit(1)
+#         self.classifier.specification.setAdaptPoints(1)
+#         alpha = self.classifier.learnDataWithTest(self.classifier.dataContainer.combine(testDataset))
+#         self.assertEqual(len(alpha), len(correct))
+#         for i in xrange(len(correct)):
+#             self.assertAlmostEqual(alpha[i], correct[i], 3)
     
     ##
     # Tests the function @link bin.learner.Learner.Learner.applyData() Classifier.applyData() @endlink
