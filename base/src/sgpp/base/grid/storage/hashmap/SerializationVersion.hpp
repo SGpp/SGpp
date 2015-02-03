@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef SERIALIZATIONVERSION_HPP
@@ -15,7 +15,9 @@
  * Version 4: needed for import of the Bonner's Sparse Grid Definition files; same as Ver 3
  *        but without leaf property, NOT FOR EXPORT
  * Version 5: differentiate BoundingBox and Stretching, added support for stretching.
+ * Version 6: added PointDistribution to HashGridIndex
+ *            ("Normal" with x = i*2^(-l) and "ClenshawCurtis")
  */
-#define SERIALIZATION_VERSION 5
+#define SERIALIZATION_VERSION 6
 
 #endif /* SERIALIZATIONVERSION_HPP */

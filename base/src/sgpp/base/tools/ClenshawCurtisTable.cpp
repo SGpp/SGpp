@@ -1,0 +1,35 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/base/tools/ClenshawCurtisTable.hpp>
+
+namespace SGPP {
+  namespace base {
+
+    template<class LT, class IT>
+    ClenshawCurtisTable<LT, IT>::ClenshawCurtisTable(LT maxLevel)
+      : table(std::vector<double>((1 << (maxLevel + 1)) + maxLevel, 0.0)),
+        maxLevel(maxLevel) {
+      size_t k = 0;
+      IT hinv = 1;
+
+      for (LT l = 0; l <= maxLevel; l++) {
+        const double h = 1.0 / static_cast<double>(hinv);
+
+        for (IT i = 0; i <= hinv; i++) {
+          table[k] = (cos(M_PI * (1.0 - static_cast<double>(i) * h)) + 1.0) / 2.0;
+          k++;
+        }
+
+        hinv *= 2;
+      }
+    }
+
+    SClenshawCurtisTable clenshawCurtisTable;
+
+  }
+}
