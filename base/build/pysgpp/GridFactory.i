@@ -9,6 +9,7 @@
 %newobject SGPP::base::Grid::createLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearStretchedGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(SGPP::base::BoudingBox& BB);
 %newobject SGPP::base::Grid::createLinearStretchedTruncatedBoundaryGrid(size_t dim);
@@ -16,7 +17,12 @@
 %newobject SGPP::base::Grid::createModLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModPolyGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createWaveletGrid(size_t dim);
+%newobject SGPP::base::Grid::createWaveletTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createModWaveletGrid(size_t dim);
+%newobject SGPP::base::Grid::createBsplineGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createSquareRootGrid(size_t dim);
@@ -62,7 +68,13 @@ typedef enum mail_ {
     Prewavelet = 10,
     SquareRoot = 11,
     LinearGeneralizedTruncatedBoundary = 12,
-    Periodic = 13
+    Periodic = 13,
+    LinearClenshawCurtis = 14,
+    Bspline = 15,
+    BsplineTruncatedBoundary = 16,
+    BsplineClenshawCurtis = 17,
+    Wavelet = 18,
+    WaveletTruncatedBoundary = 19
 } GridType;
 
 class Grid
@@ -70,14 +82,20 @@ class Grid
 public:
 	static Grid* createLinearGrid(size_t dim);
 	static Grid* createLinearStretchedGrid(size_t dim);
-	static Grid* createLinearBoundaryGrid(size_t dim);
+    static Grid* createLinearBoundaryGrid(size_t dim);
+    static Grid* createLinearClenshawCurtisGrid(size_t dim);
 	static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 	static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
 	static Grid* createModLinearGrid(size_t dim);
 	static Grid* createPolyGrid(size_t dim, size_t degree);
 	static Grid* createModPolyGrid(size_t dim, size_t degree);
-	static Grid* createModWaveletGrid(size_t dim);
-	static Grid* createModBsplineGrid(size_t dim, size_t degree);
+    static Grid* createWaveletGrid(size_t dim);
+    static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
+    static Grid* createModWaveletGrid(size_t dim);
+    static Grid* createBsplineGrid(size_t dim, size_t degree);
+    static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+    static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+    static Grid* createModBsplineGrid(size_t dim, size_t degree);
     static Grid* createSquareRootGrid(size_t dim);
 	static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 	static Grid* createPrewaveletGrid(size_t dim);

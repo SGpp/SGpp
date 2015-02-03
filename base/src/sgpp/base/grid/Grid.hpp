@@ -38,7 +38,13 @@ namespace SGPP {
       ModBspline,
       Prewavelet,
       SquareRoot,
-      Periodic
+      Periodic,
+      LinearClenshawCurtis,
+      Bspline,
+      BsplineTruncatedBoundary,
+      BsplineClenshawCurtis,
+      Wavelet,
+      WaveletTruncatedBoundary
     };
 
     /**
@@ -124,6 +130,14 @@ namespace SGPP {
          * @param dim the grid's dimension
          */
         static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+
+        /**
+         * creates a linear Clenshaw-Curtis grid
+         *
+         * @param dim the grid's dimension
+         */
+        static Grid* createLinearClenshawCurtisGrid(size_t dim);
+
         /**
          * creates a mod linear grid
          *
@@ -148,11 +162,49 @@ namespace SGPP {
         static Grid* createModPolyGrid(size_t dim, size_t degree);
 
         /**
+         * creates a wavelet grid
+         *
+         * @param dim the grid's dimension
+         */
+        static Grid* createWaveletGrid(size_t dim);
+
+        /**
+         * creates a wavelet trapezoid boundary grid
+         *
+         * @param dim the grid's dimension
+         */
+        static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
+
+        /**
          * creates a mod wavelet grid
          *
          * @param dim the grid's dimension
          */
         static Grid* createModWaveletGrid(size_t dim);
+
+        /**
+         * creates a Bspline grid
+         *
+         * @param dim the grid's dimension
+         * @param degree the polynom's max. degree
+         */
+        static Grid* createBsplineGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a Bspline trapezoid boundary grid
+         *
+         * @param dim the grid's dimension
+         * @param degree the polynom's max. degree
+         */
+        static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a Bspline Clenshaw-Curtis grid
+         *
+         * @param dim the grid's dimension
+         * @param degree the polynom's max. degree
+         */
+        static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 
         /**
          * creates a mod-Bspline grid
