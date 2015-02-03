@@ -27,7 +27,7 @@ namespace SGPP {
 
       public:
         /**
-         * Constructor of grid with modified bspline basis functions
+         * Constructor of grid with Bspline basis functions with boundaries, pentagon cut
          *
          * @param dim the dimension of the grid
          * @param degree the bspline's degree

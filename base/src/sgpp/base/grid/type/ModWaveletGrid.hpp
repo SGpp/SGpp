@@ -17,7 +17,7 @@ namespace SGPP {
   namespace base {
 
     /**
-     * grid with modified polynomial base functions
+     * grid with modified wavelet base functions
      */
     class ModWaveletGrid : public Grid {
       protected:
@@ -25,7 +25,7 @@ namespace SGPP {
 
       public:
         /**
-         * Constructor of grid with modified polynomial base functions
+         * Constructor of grid with modified wavelet base functions
          *
          * @param dim the dimension of the grid
          */
