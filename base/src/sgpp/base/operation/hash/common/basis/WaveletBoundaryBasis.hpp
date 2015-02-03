@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef WAVELET_BASE_HPP
-#define WAVELET_BASE_HPP
+#ifndef WAVELET_BOUNDARY_BASE_HPP
+#define WAVELET_BOUNDARY_BASE_HPP
 
 #include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
@@ -83,4 +83,4 @@ namespace SGPP {
   }
 }
 
-#endif /* WAVELET_BASE_HPP */
+#endif /* WAVELET_BOUNDARY_BASE_HPP */
