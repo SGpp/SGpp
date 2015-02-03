@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
