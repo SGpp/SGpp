@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef MODIFIED_BSPLINE_BASE_HPP
-#define MODIFIED_BSPLINE_BASE_HPP
+#ifndef BSPLINE_MODIFIED_BASE_HPP
+#define BSPLINE_MODIFIED_BASE_HPP
 
 #include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
@@ -1243,4 +1243,4 @@ namespace SGPP {
   }
 }
 
-#endif /* MODIFIED_BSPLINE_BASE_HPP */
+#endif /* BSPLINE_MODIFIED_BASE_HPP */
