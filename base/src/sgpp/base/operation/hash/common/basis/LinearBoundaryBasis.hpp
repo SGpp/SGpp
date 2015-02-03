@@ -1,79 +1,57 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LINEARBOUNDARYBASE_HPP
-#define LINEARBOUNDARYBASE_HPP
+#ifndef LINEAR_BOUNDARY_BASE_HPP
+#define LINEAR_BOUNDARY_BASE_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace base {
 
     /**
-     * linear basis functions with boundaries
-     * And here we have another implicit dependence on tensor products
-     *
-     * @version $HEAD$
+     * Linear basis on Boundary grids.
      */
     template<class LT, class IT>
     class LinearBoundaryBasis: public Basis<LT, IT> {
       public:
         /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
-         *
-         * @param level the level of the current basis function
-         * @param index the index of the current basis function
-         * @param p the absolute position of the evaluation point
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of boundary linear basis function
          */
-        double eval(LT level, IT index, double p) {
-          if (level == 0) {
-            if (index == 0) {
-              return 1.0 - p;
-            }
-
-            if (index == 1) {
-              return p;
+        inline double eval(LT l, IT i, double x) {
+          if (l == 0) {
+            // first level
+            if (i == 0) {
+              return 1.0 - x;
+            } else {
+              return x;
             }
           } else {
-            return 1.0 - fabs((1 << level) * p - index);
+            return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x -
+                                           static_cast<double>(i)), 0.0);
           }
-
-          // should not happen
-          return 0.0;
         }
 
         /**
-         * Evaluate a basis function with an offset and scaling factor
-         * Has a dependence on the absolute position of grid point and support.
+         * Evaluate basis function with offset and scaling factor.
          *
-         * @param level the level of the current basis function
-         * @param index the index of the current basis function
-         * @param p the absolute position of the evaluation point
-         * @param q the scaling factor of the basis function
-         * @param t the offset of the basis function
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @param q     scaling factor of basis function
+         * @param t     offset of basis function
          */
-        double eval(LT level, IT index, double p, double q, double t) {
-          if (level == 0) {
-            if (index == 0) {
-              return 1.0 - ((1.0 / q) * (p - t));
-            }
-
-            if (index == 1) {
-              return ((1.0 / q) * (p - t));
-            }
-          } else {
-            return 1.0 - ((1.0 / q) * (fabs(((1 << level) * (p - t)) - (q * index))));
-          }
-
-          // should not happen
-          return 0.0;
+        inline double eval(LT l, IT i, double x, double q, double t) {
+          return eval(l, i, (x - t) / q);
         }
     };
 
@@ -83,4 +61,4 @@ namespace SGPP {
   }
 }
 
-#endif /* LINEARBOUNDARYBASE_HPP */
+#endif /* LINEAR_BOUNDARY_BASE_HPP */
