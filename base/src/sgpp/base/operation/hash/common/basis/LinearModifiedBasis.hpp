@@ -3,40 +3,47 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef MODIFIED_LINEAR_BASE_HPP
-#define MODIFIED_LINEAR_BASE_HPP
+#ifndef LINEAR_MODIFIED_BASE_HPP
+#define LINEAR_MODIFIED_BASE_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace base {
 
     /**
-     * modified linear base functions.
-     *
-     * @version $HEAD$
+     * Modified linear basis on Noboundary grids.
      */
     template<class LT, class IT>
     class LinearModifiedBasis: public Basis<LT, IT> {
       public:
         /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of modified linear basis function
          */
-        double eval(LT level, IT index, double p) {
-          if (level == 1) {
-            return 1.0;
-          } else if (index == 1) {
-            return 2.0 - (1 << level) * p;
-          } else if (static_cast<int>(index) == static_cast<int>((1 << level) - 1)) {
-            return (1 << level) * p - index + 1.0;
-          }
+        inline double eval(LT l, IT i, double x) {
+          const IT hInv = static_cast<IT>(1) << l;
+          const double h = 1.0 / static_cast<double>(hInv);
 
-          return 1.0 - fabs((1 << level) * p - index);
+          if (l == 1) {
+            // first level
+            return 1.0;
+          } else if (i == 1) {
+            // left modified basis function
+            return ((x <= 2.0 * h) ? (2.0 - hInv * x) : 0.0);
+          } else if (i == hInv - 1) {
+            // right modified basis function
+            return ((x >= 1.0 - 2.0 * h) ? (hInv * x - i + 1.0) : 0.0);
+          } else {
+            // interior basis function
+            return std::max(1.0 - std::abs(hInv * x - i), 0.0);
+          }
         }
     };
 
@@ -45,4 +52,4 @@ namespace SGPP {
   }
 }
 
-#endif /* MODIFIED_LINEAR_BASE_HPP */
+#endif /* LINEAR_MODIFIED_BASE_HPP */

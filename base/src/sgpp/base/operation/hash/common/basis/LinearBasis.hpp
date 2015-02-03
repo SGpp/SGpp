@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef LINEAR_BASE_HPP
@@ -13,33 +13,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace base {
 
     /**
-     * Piecewise linear basis functions.
+     * Linear basis on Noboundary grids.
      */
     template<class LT, class IT>
     class LinearBasis: public Basis<LT, IT> {
       public:
         /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of linear basis function
          */
-        double eval(LT level, IT index, double p) {
-          return 1.0 - fabs((1 << level) * p - index);
-        }
-
-        /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
-         *
-         * This version catches errors, that occur if a basis function
-         * is evaluated outside its domain
-         */
-        double evalSave(LT level, IT index, double p) {
-          return std::max(1.0 - fabs((1 << level) * p - index), 0.0);
+        inline double eval(LT l, IT i, double x) {
+          return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x -
+                                         static_cast<double>(i)), 0.0);
         }
     };
 
