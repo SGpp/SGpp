@@ -12,8 +12,8 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include "LinearTruncatedBoundaryGrid.hpp"
-#include "../generation/TruncatedBoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/generation/TruncatedBoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
