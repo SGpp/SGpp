@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef BASE_OP_FACTORY_HPP
@@ -17,6 +17,10 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
 
 /*
@@ -96,7 +100,39 @@ namespace SGPP {
      * the sparse grid function
      * @return Pointer to the new OperationMultipleEval object for the Grid grid
      */
-    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix &dataset);
+    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix& dataset);
+    /**
+     * Factory method, returning an OperationNaiveEval for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEval object for the Grid grid
+     */
+    base::OperationNaiveEval* createOperationNaiveEval(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationNaiveEvalGradient for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEvalGradient object for the Grid grid
+     */
+    base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationNaiveEvalHessian for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEvalHessian object for the Grid grid
+     */
+    base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(base::Grid& grid);
+    /**
+     * Factory method, returning an OperationNaiveEvalPartialDerivative for the grid at hand.
+     * Note: object has to be freed after use.
+     *
+     * @param grid Grid which is to be used
+     * @return Pointer to the new OperationNaiveEvalPartialDerivative object for the Grid grid
+     */
+    base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartialDerivative(base::Grid& grid);
   }
 
 }

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -10,6 +10,9 @@
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
+#include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationLinear.hpp>
@@ -57,6 +60,42 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretched.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
+
+#include <sgpp/base/operation/hash/OperationNaiveEvalBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalLinearBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalLinearClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalLinear.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalWaveletBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalModWavelet.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalWavelet.hpp>
+
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientWaveletBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientModWavelet.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalGradientWavelet.hpp>
+
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianWaveletBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianModWavelet.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalHessianWavelet.hpp>
+
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeBspline.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeWaveletBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModWavelet.hpp>
+#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeWavelet.hpp>
 
 #include <cstring>
 
@@ -192,13 +231,13 @@ namespace SGPP {
         return new base::OperationEvalLinearStretched(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0 ) {
         return new base::OperationEvalLinearStretchedBoundary(grid.getStorage());
-      } else if (strcmp(grid.getType(),"periodic") == 0) {
-    	return new base::OperationEvalPeriodic(grid.getStorage());
+      } else if (strcmp(grid.getType(), "periodic") == 0) {
+        return new base::OperationEvalPeriodic(grid.getStorage());
       } else
         throw base::factory_exception("OperationEval is not implemented for this grid type.");
     }
 
-    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix &dataset) {
+    base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix& dataset) {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new base::OperationMultipleEvalLinear(grid, dataset);
@@ -224,14 +263,141 @@ namespace SGPP {
         return new base::OperationMultipleEvalLinearStretched(grid, dataset);
       } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary") == 0 ) {
         return new base::OperationMultipleEvalLinearStretchedBoundary(grid, dataset);
-      }else if (strcmp(grid.getType(),"periodic") == 0) {
-      	return new base::OperationMultipleEvalPeriodic(grid, dataset);
+      } else if (strcmp(grid.getType(), "periodic") == 0) {
+        return new base::OperationMultipleEvalPeriodic(grid, dataset);
       }
 
       else
         throw base::factory_exception("OperationMultipleEval is not implemented for this grid type.");
     }
 
+    base::OperationNaiveEval* createOperationNaiveEval(base::Grid& grid) {
+
+      if (strcmp(grid.getType(), "linear") == 0) {
+        return new base::OperationNaiveEvalLinear(grid.getStorage());
+      } else if (strcmp(grid.getType(), "modlinear") == 0) {
+        return new base::OperationNaiveEvalModLinear(grid.getStorage());
+      } else if (strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+        return new base::OperationNaiveEvalLinearBoundary(grid.getStorage());
+      } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
+        return new base::OperationNaiveEvalLinearClenshawCurtis(
+                 grid.getStorage());
+      } else if (strcmp(grid.getType(), "bspline") == 0) {
+        return new base::OperationNaiveEvalBspline(
+                 grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "modBspline") == 0) {
+        return new base::OperationNaiveEvalModBspline(
+                 grid.getStorage(),
+                 dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalBsplineBoundary(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+        return new base::OperationNaiveEvalBsplineClenshawCurtis(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "wavelet") == 0) {
+        return new base::OperationNaiveEvalWavelet(grid.getStorage());
+      } else if (strcmp(grid.getType(), "modWavelet") == 0) {
+        return new base::OperationNaiveEvalModWavelet(grid.getStorage());
+      } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalWaveletBoundary(grid.getStorage());
+      } else
+        throw base::factory_exception(
+          "OperationNaiveEval is not implemented for this grid type.");
+    }
+
+    base::OperationNaiveEvalGradient* createOperationNaiveEvalGradient(
+      base::Grid& grid) {
+
+      if (strcmp(grid.getType(), "bspline") == 0) {
+        return new base::OperationNaiveEvalGradientBspline(
+                 grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "modBspline") == 0) {
+        return new base::OperationNaiveEvalGradientModBspline(
+                 grid.getStorage(),
+                 dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalGradientBsplineBoundary(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+        return new base::OperationNaiveEvalGradientBsplineClenshawCurtis(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "wavelet") == 0) {
+        return new base::OperationNaiveEvalGradientWavelet(grid.getStorage());
+      } else if (strcmp(grid.getType(), "modWavelet") == 0) {
+        return new base::OperationNaiveEvalGradientModWavelet(grid.getStorage());
+      } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalGradientWaveletBoundary(
+                 grid.getStorage());
+      } else
+        throw base::factory_exception(
+          "OperationNaiveEvalGradient is not implemented for this grid type.");
+    }
+
+    base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(
+      base::Grid& grid) {
+
+      if (strcmp(grid.getType(), "bspline") == 0) {
+        return new base::OperationNaiveEvalHessianBspline(
+                 grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "modBspline") == 0) {
+        return new base::OperationNaiveEvalHessianModBspline(
+                 grid.getStorage(),
+                 dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalHessianBsplineBoundary(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+        return new base::OperationNaiveEvalHessianBsplineClenshawCurtis(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "wavelet") == 0) {
+        return new base::OperationNaiveEvalHessianWavelet(grid.getStorage());
+      } else if (strcmp(grid.getType(), "modWavelet") == 0) {
+        return new base::OperationNaiveEvalHessianModWavelet(grid.getStorage());
+      } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalHessianWaveletBoundary(grid.getStorage());
+      } else
+        throw base::factory_exception(
+          "OperationNaiveEvalHessian is not implemented for this grid type.");
+    }
+
+    base::OperationNaiveEvalPartialDerivative* createOperationNaiveEvalPartialDerivative(
+      base::Grid& grid) {
+
+      if (strcmp(grid.getType(), "bspline") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeBspline(
+                 grid.getStorage(), dynamic_cast<base::BsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "modBspline") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeModBspline(
+                 grid.getStorage(),
+                 dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeBsplineBoundary(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis(
+                 grid.getStorage(),
+                 dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree());
+      } else if (strcmp(grid.getType(), "wavelet") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeWavelet(
+                 grid.getStorage());
+      } else if (strcmp(grid.getType(), "modWavelet") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeModWavelet(
+                 grid.getStorage());
+      } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+        return new base::OperationNaiveEvalPartialDerivativeWaveletBoundary(
+                 grid.getStorage());
+      } else
+        throw base::factory_exception(
+          "OperationNaiveEvalPartialDerivative is not implemented for this grid type.");
+    }
 
 
   }
