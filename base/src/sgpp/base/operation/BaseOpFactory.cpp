@@ -277,7 +277,7 @@ namespace SGPP {
         return new base::OperationNaiveEvalLinear(grid.getStorage());
       } else if (strcmp(grid.getType(), "modlinear") == 0) {
         return new base::OperationNaiveEvalModLinear(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearTrapezoidBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
         return new base::OperationNaiveEvalLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
         return new base::OperationNaiveEvalLinearClenshawCurtis(
