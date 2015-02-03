@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef BASE_HPP
@@ -8,12 +8,18 @@
 
 #include "sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/BsplineBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 #include "sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
