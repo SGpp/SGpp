@@ -13,9 +13,15 @@
 namespace SGPP {
   namespace base {
 
-    HashGridStorage::HashGridStorage(size_t dim) :
+            HashGridStorage::HashGridStorage(size_t dim) :
       //  GridStorage(dim),
-      DIM(dim), list(), map(), algoDims(), boundingBox(new BoundingBox(dim)), bUseStretching(false) {
+      DIM(dim)
+      , list()
+      , map()
+      , algoDims()
+      , boundingBox(new BoundingBox(dim))
+      , stretching(nullptr)
+      , bUseStretching(false) {
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
       }
@@ -23,7 +29,13 @@ namespace SGPP {
 
     HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox) :
       //  GridStorage(creationBoundingBox, creationBoundingBox.getDimensions()),
-      list(), map(), algoDims() {
+      DIM(creationBoundingBox.getDimensions())
+      , list()
+      , map()
+      , algoDims()
+      , boundingBox(new BoundingBox(creationBoundingBox))
+      , stretching(nullptr)
+      , bUseStretching(false) {
       //TODO gerrit: this look like a bug, creationBoundingBox not used
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
@@ -32,7 +44,13 @@ namespace SGPP {
 
     HashGridStorage::HashGridStorage(Stretching& creationStretching) :
       //  : GridStorage(creationStretching, creationStretching.getDimensions()),
-      list(), map(), algoDims() {
+      DIM(creationStretching.getDimensions())
+      , list()
+      , map()
+      , algoDims()
+      , boundingBox(nullptr)
+      , stretching(new Stretching(creationStretching))
+      , bUseStretching(true) {
       //TODO gerrit: this look like a bug, creationBoundingBox not used
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
@@ -41,7 +59,10 @@ namespace SGPP {
 
     HashGridStorage::HashGridStorage(std::string& istr) :
       //  : GridStorage(istr),
-      list(), map(), algoDims() {
+      DIM(0lu)
+      , list()
+      , map()
+      , algoDims() {
       std::istringstream istream;
       istream.str(istr);
 
@@ -55,7 +76,10 @@ namespace SGPP {
 
     HashGridStorage::HashGridStorage(std::istream& istream) :
       // GridStorage(istream),
-      list(), map(), algoDims() {
+      DIM(0lu)
+      , list()
+      , map()
+      , algoDims() {
       parseGridDescription(istream);
 
       for (size_t i = 0; i < DIM; i++) {
@@ -65,8 +89,13 @@ namespace SGPP {
 
     HashGridStorage::HashGridStorage(HashGridStorage& copyFrom) :
       // GridStorage(copyFrom),
-      list(), map(), algoDims(copyFrom.algoDims) {
-
+      DIM(copyFrom.DIM)
+      , list()
+      , map()
+      , algoDims(copyFrom.algoDims)
+      , boundingBox(copyFrom.bUseStretching ? nullptr : new BoundingBox(*copyFrom.boundingBox))
+      , stretching(copyFrom.bUseStretching ? new Stretching(*copyFrom.stretching) : nullptr)
+      , bUseStretching(copyFrom.bUseStretching) {
       // copy gridpoints
       for (size_t i = 0; i < copyFrom.size(); i++) {
         this->insert(*(copyFrom[i]));
@@ -75,6 +104,12 @@ namespace SGPP {
 
     HashGridStorage::~HashGridStorage() {
       // delete all grid points
+      if (bUseStretching) {
+        delete stretching;
+      } else {
+        delete boundingBox;
+      }
+
       for (grid_list_iterator iter = list.begin(); iter != list.end(); iter++) {
         delete *iter;
       }
