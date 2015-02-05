@@ -117,11 +117,6 @@ env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppdatadriven.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
 libInstall = env_parallel.Install(BUILD_DIR, lib)
-# # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
-# # of the shared libaries on the static libraries on windows
-libStatic = env_parallel.StaticLibrary(target="sgpp" + moduleName + "static", source=objs, SHLIBPREFIX='lib')
-libStaticInstall = env.Install(BUILD_DIR, libStatic)
-env.Depends(libInstall, libStaticInstall)
 
 Import('libraryTargetList')
 Import('installTargetList')
