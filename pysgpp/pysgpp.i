@@ -69,6 +69,9 @@ using namespace combigrid;
 #include "sgpp_quadrature.hpp"
 using namespace SGPP::quadrature;
 #endif
+#ifdef SG_OPTIMIZATION
+#include "sgpp_optimization.hpp"
+#endif
 #ifdef SG_MISC
 #include "sgpp_misc.hpp"
 #endif
@@ -102,4 +105,8 @@ using namespace SGPP;
 
 #ifdef SG_COMBIGRID
 %include "combigrid/build/pysgpp/combigrid.i"
+#endif
+
+#ifdef SG_OPTIMIZATION
+%include "optimization/build/pysgpp/optimization.i"
 #endif
