@@ -13,8 +13,6 @@ Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
 
-dependencies = ["base", "solver", "pde", "misc"]
-
 avxFolders = ['src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', 'src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
 
 avx_env = env.Clone()
@@ -36,10 +34,8 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
     objs += objsSubmodule
     # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
     subdirNames[:] = []
-    print "exit module"
   else:
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-      print fileName
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
                                 
@@ -59,29 +55,11 @@ libStatic = env.StaticLibrary(target = "sgpp%sstatic" % moduleName,
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
 
-# if env['SG_PYTHON']:
-#   py_env = env.Clone()
-#   
-#   py_env.AppendUnique(CPPFLAGS=['-w'])
-#   if env['PLATFORM']=='cygwin':
-#       py_env.Append(LIBS=['python2.7'])    
-#   elif env['PLATFORM']=='darwin':
-#       py_env['SHLIBSUFFIX'] = '.so'
-#   
-#   # build python module with swig
-#   py_env.AppendUnique(SWIGFLAGS=['-c++', '-python'] + \
-#                         ['-D' + c for c in py_env['CPPDEFINES']],
-#                       CPPPATH=['#/%s' % moduleName])
-#   libPython = py_env.SharedLibrary(target=moduleName,
-#                        source=[os.path.join("build", "pysgpp", "%s.i" % moduleName)],
-#                        SHLIBPREFIX='_',
-#                        CPPFLAGS=['--std=c++11', '-Wno-cast-qual'],
-#                        LIBPATH = [BUILD_DIR, '#/lib/alglib'],
-#                        LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'libalglib'])
-#   installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
-#   installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), os.path.join("build/pysgpp/", moduleName + ".py"))
-#   py_env.Depends(installLibPython, installLibWrapperPython)
-#   installTargetList.append(installLibPython)
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  Import('testTargetList')
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
+  testTargetList.append(moduleTest)
 
 Import('libraryTargetList')
 Import('installTargetList')

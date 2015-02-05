@@ -17,21 +17,28 @@ EnsurePythonVersion(2, 7)
 EnsureSConsVersion(2, 0)
 print "Using SCons", SCons.__version__
 
-# languageWrapperList = ['SG_PYTHON', 'SG_JAVA']
-languageWrapperNames = ['SG_PYTHON', 'SG_JAVA']
-languageWrapperFolders = ['pysgpp', 'jsgpp']
-
 ignoreFolders = ['tests', 'jsgpp'] #, 'pysgpp'
 
 # find all modules
-moduleFolders = getModules(ignoreFolders)
-languageSupport = ['pysgpp']
+moduleFolders, languageSupport = getModules(ignoreFolders)
 
 prepareDoxyfile(moduleFolders)
 
 moduleNames = []
+languageSupportNames = []
+
 for moduleFolder in moduleFolders:
-    moduleNames.append('SG_' + moduleFolder.upper())
+  moduleName = 'SG_' + moduleFolder.upper()
+  moduleNames.append(moduleName)
+      
+for wrapper in languageSupport:
+    if wrapper == "pysgpp":
+      languageSupportNames.append('SG_PYTHON')
+    elif wrapper == "jsgpp":
+      languageSupportNames.append('SG_JAVA')
+      
+print languageSupport
+print languageSupportNames
 
 vars = Variables("custom.py")
 
@@ -44,8 +51,12 @@ vars.Add('TARGETCPU', "Sets the processor you are compiling for. 'default' means
 vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
-vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', True))
-vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', False))
+vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
+vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
+
+for moduleName in moduleNames:
+  vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
+
 vars.Add(BoolVariable('SSE3_FALLBACK', 'Tries to build as much as possible with SSE3 instead of AVX (intrinsics based functions won\'t work)', False))
 vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
@@ -101,7 +112,7 @@ Export('TEST_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    SGppConfigure.doConfigure(env, moduleFolders, languageWrapperFolders)
+    SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # add C++ defines for all modules
 cppdefines = []
@@ -122,20 +133,28 @@ env.Depends(os.path.join("#", BUILD_DIR.path, "libsgppbase.so"), alglibinst)
 
 env.Append(CPPPATH=['#/tools'])
 
+# add custom builder to trigger the unittests after the build and to enable a special import test
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+    # run tests
+    builder = Builder(action="python $SOURCE.file", chdir=1)
+    env.Append(BUILDERS={'Test' : builder})
+    builder = Builder(action="python $SOURCE")
+    env.Append(BUILDERS={'SimpleTest' : builder})
+
 libraryTargetList = []
 installTargetList = []
+testTargetList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
+env.Export('testTargetList')
 
 # compile selected modules
 for moduleFolder in sorted(moduleFolders):
+  if not env['SG_' + moduleFolder.upper()]:
+    continue
   print "Preparing to build module: ", moduleFolder
   # SConscript('src/sgpp/SConscript' + moduleFolder, variant_dir='#/tmp/build/', duplicate=0)
   env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
-
-# build python lib
-# if env['SG_PYTHON']:
-#   SConscript('#/pysgpp/SConscript')
 
 # build java lib
 if env['SG_JAVA']:
@@ -148,56 +167,21 @@ if env['SG_JAVA']:
 # Unit tests
 #########################################################################
 
-# if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-#    testdep = env.SConscript('tests/SConscript')
-#    # execute after all installations (even where not necessary)
-#    if env['SG_JAVA']:
-#        Depends(testdep, [jinst, pysgppInstall])
-#    else:
-#        Depends(testdep, [pysgppInstall])
-# else:
-#    print "Warning: Skipping python unit tests"
+# necessary to enforce an order on the final steps of the building of the wrapper    
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    # run tests
-    builder = Builder(action="python $SOURCE.file", chdir=1)
-    env.Append(BUILDERS={'Test' : builder})
-    builder = Builder(action="python $SOURCE")
-    env.Append(BUILDERS={'SimpleTest' : builder})
+  # serialize tests and move them at the end of the build
+  dependency = None
+  for testTarget in testTargetList:
+    env.Requires(testTarget, installTargetList)
 
-    pysgppTestTargets = []
-    dependency = None
-    for moduleFolder in moduleFolders:
-      if moduleFolder in ['pysgpp', 'jsgpp'] + ['parallel']:
-        continue
-      #if moduleFolder in ["parallel", "finance", "pde", "solver"]:
-          # these modules don't currently have tests
-      #    continue
-
-      moduleTest = env.Test(os.path.join("#", moduleFolder, 'tests', 'test_%s.py' % moduleFolder))
-      moduleSharedLibFile = os.path.join("#", PYSGPP_BUILD_PATH, moduleFolder, "_%s.so" % moduleFolder)
-      #env.Requires(moduleTest, moduleSharedLibFile)
-      env.Requires(moduleTest, installTargetList)
-
-      # run minimal test after compilation
-#       pysgppSimpleImportTest = env.SimpleTest(os.path.join('#', moduleFolder, 'tests', 'test_import.py'))
-#       env.Requires(pysgppSimpleImportTest, moduleSharedLibFile)
-#       env.Requires(pysgppSimpleImportTest, installTargetList)
-#       env.Requires(pysgppSimpleImportTest, libraryTargetList)
-#       env.AlwaysBuild(pysgppSimpleImportTest)
-#       env.Depends(moduleTest, pysgppSimpleImportTest)
-    
-      env.AlwaysBuild(moduleTest)
-      if dependency is None:
-          dependency = moduleTest
-      else:
-          env.Depends(moduleTest, dependency)
-          dependency = moduleTest
-        
-      pysgppTestTargets.append(moduleTest)
-else:
-    print "Warning: Skipping python unit tests"
-
-# not strictly necessary, used to enforce an order on the final steps of the building of the wrapper
+    if dependency == None:
+      #print testTarget, 'depends on nothing'
+      dependency = testTarget
+    else:
+      #print testTarget, 'depends on', dependency
+      env.Depends(testTarget, dependency)
+      dependency = testTarget
+      
 # used to execute the unittests at the very end
 if env['SG_PYTHON'] and env['SG_JAVA']:
-    env.Requires(pysgppInstall, jsgppInstall)
+  env.Requires(pysgppInstall, jsgppInstall)
