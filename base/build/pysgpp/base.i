@@ -40,9 +40,6 @@ namespace std {
 %ignore SGPP::base::DataMatrixSP::toString(std::string& text);
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
-%include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
-
 // The Good, i.e. without any modifications
 %ignore sg::base::BoundingBox::toString(std::string& text);
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
@@ -63,7 +60,10 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationConvert.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationEval.hpp"
-%include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationNaiveEval.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp"
+%include "base/src/sgpp/base/operation/hash/OperationNaiveEvalPartialDerivative.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationHierarchisation.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationQuadrature.hpp"
 %include "OperationQuadratureMC.i"
@@ -114,15 +114,21 @@ namespace std {
 
 %include "base/src/sgpp/base/application/ScreenOutput.hpp"
 
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
@@ -140,12 +146,18 @@ namespace std {
 
 %template(SLinearBase) SGPP::base::LinearBasis<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) SGPP::base::LinearBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearClenshawCurtisBase) SGPP::base::LinearClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBase) SGPP::base::LinearStretchedBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBoundaryBase) SGPP::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearModifiedBase) SGPP::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) SGPP::base::PolyBasis<unsigned int, unsigned int>;
 //%template(SPolyModifiedBase) SGPP::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SWaveletBase) SGPP::base::WaveletBasis<unsigned int, unsigned int>;
+%template(SWaveletBoundaryBase) SGPP::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
 %template(SWaveletModifiedBase) SGPP::base::WaveletModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineBase) SGPP::base::BsplineBasis<unsigned int, unsigned int>;
+%template(SBsplineBoundaryBase) SGPP::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
+%template(SBsplineClenshawCurtisBase) SGPP::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 

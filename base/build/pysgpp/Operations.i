@@ -72,6 +72,30 @@ public:
 	virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
 };
 
+class OperationNaiveEval
+{
+public:
+    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
+};
+
+class OperationNaiveEvalGradient
+{
+public:
+    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, SGPP::base::DataVector& gradient) = 0;
+};
+
+class OperationNaiveEvalHessian
+{
+public:
+    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, SGPP::base::DataVector& gradient, SGPP::base::DataMatrix& hessian) = 0;
+};
+
+class OperationNaiveEvalPartialDerivative
+{
+public:
+    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, size_t deriv_dim) = 0;
+};
+
 class OperationHierarchisation
 {
 public:
