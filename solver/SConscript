@@ -1,5 +1,3 @@
-
-
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -41,6 +39,12 @@ libStatic = env.StaticLibrary(target = "sgpp%sstatic" % moduleName,
                               SHLIBPREFIX = 'lib')
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
+
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  Import('testTargetList')
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
+  testTargetList.append(moduleTest)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

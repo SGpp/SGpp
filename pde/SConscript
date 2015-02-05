@@ -13,8 +13,6 @@ Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
 
-dependencies = ["base"]
-
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./src"):
@@ -39,6 +37,12 @@ libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
                               SHLIBPREFIX='lib')
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 env.Depends(libInstall, libStaticInstall)
+
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  Import('testTargetList')
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
+  testTargetList.append(moduleTest)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

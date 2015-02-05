@@ -23,13 +23,18 @@ def getModules(ignoreFolders):
     searchString = path + '*' + suffix
     modulePaths = glob.glob(searchString)
     modules = []
+    languageSupport = []
+    
     for modulePath in modulePaths:
         module = modulePath[:-len(suffix)]
         module = module[len(path):]
         if module in ignoreFolders:
-            continue        
+            continue
+        if module in ['jsgpp', 'pysgpp']:
+          languageSupport.append(module)
+          continue
         modules.append(module)
-    return modules
+    return modules, languageSupport
 
 # Definition of flags / command line parameters for SCons
 #########################################################################
@@ -66,7 +71,7 @@ def prepareDoxyfile(modules):
         examplePath = moduleName + '/examples'
         imagePath = moduleName + '/doc/doxygen/images'
         
-        print os.path.join(os.getcwd(),inputPath)
+        #print os.path.join(os.getcwd(),inputPath)
         if os.path.exists(os.path.join(os.getcwd(),inputPath)):
             inputPaths += " " + inputPath
         if os.path.exists(os.path.join(os.getcwd(),examplePath)):

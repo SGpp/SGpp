@@ -10,8 +10,6 @@ Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
-dependencies = ["base", "pde", "datadriven", "finance"]
-
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./src"):
