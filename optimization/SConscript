@@ -69,13 +69,6 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         LIBS=libs)
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 libInstall = env.Install(BUILD_DIR, lib)
-# # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies 
-# # of the shared libaries on the static libraries on windows
-libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
-                              source=objs,
-                              SHLIBPREFIX="lib")
-libStaticInstall = env.Install(BUILD_DIR, libStatic)
-env.Depends(libInstall, libStaticInstall)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

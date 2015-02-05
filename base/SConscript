@@ -27,14 +27,6 @@ for sourceFile in srcs:
 lib = env.SharedLibrary(target="sgpp%s" % moduleName, source=objs)
 libInstall = env.Install(BUILD_DIR, lib)
 
-# # static libraries get the suffix "static" which allos scons to correctly resolve the dependencies
-# # of the shared libaries on the static libraries on windows
-libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
-                              source=objs,
-                              SHLIBPREFIX='lib')
-libStaticInstall = env.Install(BUILD_DIR, libStatic)
-env.Depends(libInstall, libStaticInstall)
-
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
   moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
