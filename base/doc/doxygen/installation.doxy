@@ -124,6 +124,7 @@ avoid "undefined symbol" errors: When using them, depending on the dependencies,
 - SG_FINANCE financial module
 - SG_PARALLEL classes for parallel computing
 - SG_COMBIGRID combigrid classes
+- SG_OPTIMIZATION optimization of objective functions
 
 Then there are two switches for supported high-level back-ends:
 - SG_PYTHON integration of SG++ in Python

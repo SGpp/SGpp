@@ -10,7 +10,8 @@ digraph G {
 	datadriven [URL="\ref sg::datadriven"];
 	finance [URL="\ref sg::finance"];
 	solver [URL="\ref sg::solver"];
-	parallel [URL="\ref sg::parallel"];
+    parallel [URL="\ref sg::parallel"];
+    optimization [URL="\ref sg::optimization"];
 	combigrid [URL=""];
 
 	pde -> base;
@@ -24,4 +25,5 @@ digraph G {
 	parallel -> finance;
 	parallel -> datadriven [constraint=false];
 	combigrid -> base;
+	optimization -> base;
 }
