@@ -34,7 +34,7 @@ print "number of grid points: %d" % (gridStorage.size())
 alpha = DataVector(gridStorage.size())
 for i in xrange(gridStorage.size()):
     gp = gridStorage.get(i)
-    alpha[i] = f((gp.abs(0), gp.abs(1)))
+    alpha[i] = f((gp.getCoord(0), gp.getCoord(1)))
 createOperationHierarchisation(grid).doHierarchisation(alpha)
 
 # direct quadrature

@@ -183,9 +183,8 @@ namespace SGPP {
          * @param d the dimension in which the coordinate should be calculated
          *
          * @return the coordinate in the given dimension
-         * @todo (heinecke, should) rename to getCoord
          */
-        double abs(size_t d) const;
+        double getCoord(size_t d) const;
 
         /**
          * determines the coordinate in a given dimension

@@ -185,7 +185,7 @@ namespace SGPP {
     }
 
     double
-    HashGridIndex::abs(size_t d) const {
+    HashGridIndex::getCoord(size_t d) const {
       if (distr == Normal) {
         // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
         return static_cast<double>(index[d]) /
@@ -199,7 +199,7 @@ namespace SGPP {
 
     double
     HashGridIndex::getCoordBB(size_t d, double q, double t) const {
-      return q * abs(d) + t;
+      return q * getCoord(d) + t;
     }
 
     double
@@ -323,14 +323,14 @@ namespace SGPP {
     void
     HashGridIndex::getCoords(DataVector& p) {
       for (size_t d = 0; d < DIM; d++) {
-        p.set(d, abs(d));
+        p.set(d, getCoord(d));
       }
     }
 
     void
     HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) {
       for (size_t d = 0; d < DIM; d++) {
-        p.set(d, BB.getIntervalWidth(d) * abs(d) + BB.getIntervalOffset(d));
+        p.set(d, BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d));
       }
     }
 
@@ -356,7 +356,7 @@ namespace SGPP {
         if (level[d] == 0) {
           return_stream << index[d];
         } else {
-          return_stream << std::scientific << abs(d);
+          return_stream << std::scientific << getCoord(d);
         }
 
         if (d < DIM - 1) {
@@ -373,7 +373,7 @@ namespace SGPP {
 
       for (size_t d = 0; d < DIM; d++) {
         return_stream << std::scientific
-                      << BB.getIntervalWidth(d) * abs(d) + BB.getIntervalOffset(d);
+                      << BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d);
 
         if (d < DIM - 1) {
           return_stream << " ";
