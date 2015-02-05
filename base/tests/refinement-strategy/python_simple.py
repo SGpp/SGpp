@@ -38,7 +38,7 @@ print "length of alpha-vector: %d" % (len(alpha))
 f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1
 for i in xrange(HashGridStorage.size()):
     gp = HashGridStorage.get(i)
-    alpha[i] = f(gp.abs(0), gp.abs(1))
+    alpha[i] = f(gp.getCoord(0), gp.getCoord(1))
 print alpha
 
 

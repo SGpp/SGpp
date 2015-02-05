@@ -42,8 +42,8 @@ int main() {
 
   for (int i = 0; i < gridStorage->size(); i++) {
     gp = gridStorage->get(i);
-    p[0] = gp->abs(0);
-    p[1] = gp->abs(1);
+    p[0] = gp->getCoord(0);
+    p[1] = gp->getCoord(1);
     alpha[i] = f(2, p, NULL);
   }
 

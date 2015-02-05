@@ -120,7 +120,7 @@ for refnum in range(15):
     # set function values in alpha
     for i in xrange(HashGridStorage.size()):
         gp = HashGridStorage.get(i)
-        alpha[i] = f(gp.abs(0), gp.abs(1))
+        alpha[i] = f(gp.getCoord(0), gp.getCoord(1))
   
     # hierarchize
     createOperationHierarchisation(grid).doHierarchisation(alpha)
