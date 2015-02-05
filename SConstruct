@@ -36,7 +36,10 @@ for wrapper in languageSupport:
       languageSupportNames.append('SG_PYTHON')
     elif wrapper == "jsgpp":
       languageSupportNames.append('SG_JAVA')
-      
+
+print moduleFolders      
+print moduleNames
+
 print languageSupport
 print languageSupportNames
 
@@ -149,12 +152,18 @@ env.Export('installTargetList')
 env.Export('testTargetList')
 
 # compile selected modules
-for moduleFolder in sorted(moduleFolders):
+for moduleFolder in moduleFolders:
   if not env['SG_' + moduleFolder.upper()]:
     continue
   print "Preparing to build module: ", moduleFolder
   # SConscript('src/sgpp/SConscript' + moduleFolder, variant_dir='#/tmp/build/', duplicate=0)
   env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
+
+if env['SG_PYTHON']:
+  env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': moduleFolder})
+
+if env['SG_JAVA']:
+  env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': moduleFolder})
 
 # build java lib
 if env['SG_JAVA']:
