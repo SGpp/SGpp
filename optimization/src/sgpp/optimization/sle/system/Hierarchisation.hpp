@@ -127,10 +127,10 @@ namespace SGPP {
             }
 
             /**
-             * @return smart pointer to cloned object
+             * @param[out] clone pointer to cloned object
              */
-            virtual Cloneable* clone() {
-              return new Hierarchisation(grid, gridStorage);
+            virtual void clone(Cloneable*& clone) {
+              clone = new Hierarchisation(grid, gridStorage);
             }
 
           protected:

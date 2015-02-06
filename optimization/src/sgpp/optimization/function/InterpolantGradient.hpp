@@ -53,10 +53,10 @@ namespace SGPP {
           }
 
           /**
-           * @return clone of the object
+           * @param[out] clone pointer to cloned object
            */
-          virtual ObjectiveGradient* clone() const {
-            return new InterpolantGradient(d, grid, alpha);
+          virtual void clone(ObjectiveGradient*& clone) const {
+            clone = new InterpolantGradient(d, grid, alpha);
           }
 
         protected:

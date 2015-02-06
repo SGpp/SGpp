@@ -57,10 +57,10 @@ namespace SGPP {
           }
 
           /**
-           * @return clone of the object
+           * @param[out] clone pointer to cloned object
            */
-          virtual ObjectiveHessian* clone() const {
-            return new InterpolantHessian(d, grid, alpha);
+          virtual void clone(ObjectiveHessian*& clone) const {
+            clone = new InterpolantHessian(d, grid, alpha);
           }
 
         protected:

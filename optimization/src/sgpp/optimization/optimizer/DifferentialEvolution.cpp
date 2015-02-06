@@ -138,8 +138,8 @@ namespace SGPP {
             std::unique_ptr<function::Objective> curF;
 
             if (omp_get_max_threads() > 1) {
-              curF = std::unique_ptr<function::Objective>(f->clone());
-              curFPtr = curF.get();
+              f->clone(curFPtr);
+              curF = std::unique_ptr<function::Objective>(curFPtr);
             }
 
 #endif
@@ -260,12 +260,11 @@ namespace SGPP {
         return fOpt;
       }
 
-      Optimizer* DifferentialEvolution::clone() {
-        Optimizer* result = new DifferentialEvolution(
+      void DifferentialEvolution::clone(Optimizer*& clone) {
+        clone = new DifferentialEvolution(
           *f, N, populationSize, crossoverProbability, scalingFactor,
           idleGenerationsCount, avgImprovementThreshold, maxDistanceThreshold);
-        result->setStartingPoint(x0);
-        return result;
+        clone->setStartingPoint(x0);
       }
 
       size_t DifferentialEvolution::getPopulationSize() const {

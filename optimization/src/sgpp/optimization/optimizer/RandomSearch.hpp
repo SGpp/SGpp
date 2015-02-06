@@ -47,9 +47,9 @@ namespace SGPP {
                        size_t populationSize = 0);
 
           /**
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          Optimizer* clone();
+          void clone(Optimizer*& clone);
 
           /**
            * @param[out] xOpt optimal point

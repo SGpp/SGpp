@@ -74,8 +74,8 @@ namespace SGPP {
           std::unique_ptr<Optimizer> curOptimizer;
 
           if (omp_get_max_threads() > 1) {
-            curOptimizer = std::unique_ptr<Optimizer>(optimizer.clone());
-            curOptimizerPtr = curOptimizer.get();
+            optimizer.clone(curOptimizerPtr);
+            curOptimizer = std::unique_ptr<Optimizer>(curOptimizerPtr);
           }
 
 #endif
@@ -125,10 +125,9 @@ namespace SGPP {
         return fOpt;
       }
 
-      Optimizer* RandomSearch::clone() {
-        Optimizer* result = new RandomSearch(optimizer, N, populationSize);
-        result->setStartingPoint(x0);
-        return result;
+      void RandomSearch::clone(Optimizer*& clone) {
+        clone = new RandomSearch(optimizer, N, populationSize);
+        clone->setStartingPoint(x0);
       }
 
       size_t RandomSearch::getPopulationSize() const {

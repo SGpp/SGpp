@@ -25,12 +25,14 @@ namespace SGPP {
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon, float_t restartThreshold) :
         Optimizer(f, maxItCount),
-        fGradient(fGradient.clone()),
         beta(beta),
         gamma(gamma),
         tol(tolerance),
         eps(epsilon),
         alpha(restartThreshold) {
+        function::ObjectiveGradient* fGradientPtr;
+        fGradient.clone(fGradientPtr);
+        this->fGradient.reset(fGradientPtr);
       }
 
       float_t NLCG::optimize(std::vector<float_t>& xOpt) {
@@ -115,11 +117,9 @@ namespace SGPP {
         return fx;
       }
 
-      Optimizer* NLCG::clone() {
-        Optimizer* result =
-          new NLCG(*f, *fGradient, N, beta, gamma, tol, eps, alpha);
-        result->setStartingPoint(x0);
-        return result;
+      void NLCG::clone(Optimizer*& clone) {
+        clone = new NLCG(*f, *fGradient, N, beta, gamma, tol, eps, alpha);
+        clone->setStartingPoint(x0);
       }
 
       function::ObjectiveGradient& NLCG::getObjectiveGradient() const {

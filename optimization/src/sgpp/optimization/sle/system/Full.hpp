@@ -79,10 +79,10 @@ namespace SGPP {
              * Clones the linear system.
              * Because A is stored as a reference, A is not copied (only b).
              *
-             * @return pointer to cloned object
+             * @param[out] clone pointer to cloned object
              */
-            virtual Cloneable* clone() {
-              return new Full(A);
+            virtual void clone(Cloneable*& clone) {
+              clone = new Full(A);
             }
 
           protected:

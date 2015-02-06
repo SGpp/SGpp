@@ -18,8 +18,8 @@ class TitleFunction : public SGPP::optimization::function::Objective {
       return std::sin(8 * x[0]) + std::sin(7 * x[1]);
     }
 
-    virtual Objective* clone() const {
-      return new TitleFunction(*this);
+    virtual void clone(Objective*& clone) const {
+      clone = new TitleFunction(*this);
     }
 };
 

@@ -132,8 +132,8 @@ namespace SGPP {
           std::unique_ptr<function::Objective> curF;
 
           if (omp_get_max_threads() > 1) {
-            curF = std::unique_ptr<function::Objective>(f.clone());
-            curFPtr = curF.get();
+            f.clone(curFPtr);
+            curF = std::unique_ptr<function::Objective>(curFPtr);
           }
 
 #endif
@@ -250,8 +250,8 @@ namespace SGPP {
             std::unique_ptr<function::Objective> curF;
 
             if (omp_get_max_threads() > 1) {
-              curF = std::unique_ptr<function::Objective>(f.clone());
-              curFPtr = curF.get();
+              f.clone(curFPtr);
+              curF = std::unique_ptr<function::Objective>(curFPtr);
             }
 
 #endif

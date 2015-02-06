@@ -106,9 +106,9 @@ namespace SGPP {
           float_t optimize(std::vector<float_t>& xOpt);
 
           /**
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          Optimizer* clone();
+          void clone(Optimizer*& clone);
 
           /**
            * @return objective function Hessian
@@ -210,6 +210,7 @@ namespace SGPP {
           /**
            * Internal function for initializing the member variables.
            *
+           * @param fHessian          objective function Hessian
            * @param beta              beta (parameter for Armijo's rule)
            * @param gamma             gamma (parameter for Armijo's rule)
            * @param tolerance         tolerance (parameter for Armijo's rule)
@@ -218,7 +219,8 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          void initialize(float_t beta, float_t gamma, float_t tolerance, float_t epsilon,
+          void initialize(const function::ObjectiveHessian& fHessian,
+                          float_t beta, float_t gamma, float_t tolerance, float_t epsilon,
                           float_t alpha1, float_t alpha2, float_t p);
       };
 

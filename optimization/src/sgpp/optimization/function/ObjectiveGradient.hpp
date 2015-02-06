@@ -47,7 +47,7 @@ namespace SGPP {
            * @return                  \f$f(\vec{x})\f$
            */
           virtual float_t evalGradient(const std::vector<float_t>& x,
-                                      base::DataVector& gradient) = 0;
+                                       base::DataVector& gradient) = 0;
 
           /**
            * @return dimension \f$d\f$ of the domain
@@ -58,13 +58,13 @@ namespace SGPP {
 
           /**
            * Pure virtual method for cloning the objective gradient.
-           * It should return a pointer to the cloned object and
+           * It should generate a pointer to the cloned object and
            * it's used for parallel computations
            * (the evalGradient() method might not be thread-safe).
            *
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          virtual ObjectiveGradient* clone() const = 0;
+          virtual void clone(ObjectiveGradient*& clone) const = 0;
 
         protected:
           /// dimension of the domain

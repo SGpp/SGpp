@@ -105,14 +105,28 @@ const bool UMFPACK_ENABLED;
 %rename(OptPrinterInstance) SGPP::optimization::tools::printer;
 
 // classes with director interface
-%feature("director") SGPP::optimization::function::test::Test;
 %feature("director") SGPP::optimization::function::Objective;
 %feature("director") SGPP::optimization::function::ObjectiveGradient;
 %feature("director") SGPP::optimization::function::ObjectiveHessian;
 %feature("director") SGPP::optimization::gridgen::IterativeGridGenerator;
 %feature("director") SGPP::optimization::sle::system::System;
 %feature("director") SGPP::optimization::sle::solver::Solver;
-%feature("director") SGPP::optimization::optimizer::Optimizer;
+
+// dirty hack to override SWIG's generated director method for "clone"
+%typemap(directorin) SGPP::optimization::function::Objective*& {
+    clone = new SwigDirector_OptObjective(*this);
+    return;
+}
+
+%typemap(directorin) SGPP::optimization::function::ObjectiveGradient*& {
+    clone = new SwigDirector_OptObjectiveGradient(*this);
+    return;
+}
+
+%typemap(directorin) SGPP::optimization::function::ObjectiveHessian*& {
+    clone = new SwigDirector_OptObjectiveHessian(*this);
+    return;
+}
 
 // includes
 %include "optimization/src/sgpp/optimization/function/Objective.hpp"
