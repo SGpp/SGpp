@@ -33,10 +33,9 @@ namespace SGPP {
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1, float_t alpha2, float_t p) :
         Optimizer(f, max_it_count),
-        fHessian(fHessian.clone()),
         defaultSleSolver(sle::solver::BiCGStab()),
         sleSolver(defaultSleSolver) {
-        initialize(beta, gamma, tolerance, epsilon, alpha1, alpha2, p);
+        initialize(fHessian, beta, gamma, tolerance, epsilon, alpha1, alpha2, p);
       }
 
       Newton::Newton(
@@ -46,14 +45,17 @@ namespace SGPP {
         float_t tolerance, float_t epsilon, float_t alpha1, float_t alpha2, float_t p,
         const sle::solver::Solver& sleSolver) :
         Optimizer(f, max_it_count),
-        fHessian(fHessian.clone()),
         defaultSleSolver(sle::solver::BiCGStab()),
         sleSolver(sleSolver) {
-        initialize(beta, gamma, tolerance, epsilon, alpha1, alpha2, p);
+        initialize(fHessian, beta, gamma, tolerance, epsilon, alpha1, alpha2, p);
       }
 
-      void Newton::initialize(float_t beta, float_t gamma, float_t tolerance, float_t epsilon,
+      void Newton::initialize(const function::ObjectiveHessian& fHessian,
+                              float_t beta, float_t gamma, float_t tolerance, float_t epsilon,
                               float_t alpha1, float_t alpha2, float_t p) {
+        function::ObjectiveHessian* fHessianPtr;
+        fHessian.clone(fHessianPtr);
+        this->fHessian.reset(fHessianPtr);
         this->beta = beta;
         this->gamma = gamma;
         this->tol = tolerance;
@@ -141,11 +143,10 @@ namespace SGPP {
         return fx;
       }
 
-      Optimizer* Newton::clone() {
-        Optimizer* result = new Newton(*f, *fHessian, N, beta, gamma, tol, eps,
-                                       alpha1, alpha2, p, sleSolver);
-        result->setStartingPoint(x0);
-        return result;
+      void Newton::clone(Optimizer*& clone) {
+        clone = new Newton(*f, *fHessian, N, beta, gamma, tol, eps,
+                           alpha1, alpha2, p, sleSolver);
+        clone->setStartingPoint(x0);
       }
 
       function::ObjectiveHessian& Newton::getObjectiveHessian() const {

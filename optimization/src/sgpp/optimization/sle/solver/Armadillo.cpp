@@ -57,9 +57,10 @@ namespace SGPP {
             std::unique_ptr<system::System> clonedSystem;
 
             if (system.isCloneable() && (omp_get_max_threads() > 1)) {
-              clonedSystem = std::unique_ptr<system::System>(
-                               dynamic_cast<system::Cloneable&>(system).clone());
-              system2 = clonedSystem.get();
+              system::Cloneable* system2Cloneable;
+              dynamic_cast<system::Cloneable&>(system).clone(system2Cloneable);
+              system2 = system2Cloneable;
+              clonedSystem = std::unique_ptr<system::System>(system2);
             }
 
 #endif

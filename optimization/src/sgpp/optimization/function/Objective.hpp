@@ -53,12 +53,12 @@ namespace SGPP {
 
           /**
            * Pure virtual method for cloning the objective function.
-           * It should return a pointer to the cloned object and it's used for parallel computations
+           * It should generate a pointer to the cloned object and it's used for parallel computations
            * (the eval() method might not be thread-safe).
            *
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          virtual Objective* clone() const = 0;
+          virtual void clone(Objective*& clone) const = 0;
 
         protected:
           /// dimension of the domain

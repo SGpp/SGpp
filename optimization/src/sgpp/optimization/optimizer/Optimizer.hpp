@@ -35,14 +35,20 @@ namespace SGPP {
            *              (depending on the implementation)
            */
           Optimizer(const function::Objective& f, size_t N = DEFAULT_N) :
-            f(f.clone()), N(N), x0(std::vector<float_t>(f.getDimension(), 0.5)) {
+            N(N), x0(std::vector<float_t>(f.getDimension(), 0.5)) {
+            function::Objective* fPtr;
+            f.clone(fPtr);
+            this->f.reset(fPtr);
           }
 
           /**
            * Copy constructor.
            */
           Optimizer(const Optimizer& other) :
-            f(other.f->clone()), N(other.N), x0(other.x0) {
+            N(other.N), x0(other.x0) {
+            function::Objective* fPtr;
+            other.f->clone(fPtr);
+            this->f.reset(fPtr);
           }
 
           /**
@@ -61,11 +67,11 @@ namespace SGPP {
 
           /**
            * Pure virtual method for cloning the optimizer.
-           * It should return a pointer to the cloned object and it's used for parallel computations.
+           * It should generate a pointer to the cloned object and it's used for parallel computations.
            *
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          virtual Optimizer* clone() = 0;
+          virtual void clone(Optimizer*& clone) = 0;
 
           /**
            * @return objective function

@@ -23,11 +23,13 @@ namespace SGPP {
         const function::ObjectiveGradient& fGradient,
         size_t N, float_t beta, float_t gamma, float_t tolerance, float_t epsilon) :
         Optimizer(f, N),
-        fGradient(fGradient.clone()),
         beta(beta),
         gamma(gamma),
         tol(tolerance),
         eps(epsilon) {
+        function::ObjectiveGradient* fGradientPtr;
+        fGradient.clone(fGradientPtr);
+        this->fGradient.reset(fGradientPtr);
       }
 
       float_t GradientMethod::optimize(std::vector<float_t>& xOpt) {
@@ -78,11 +80,9 @@ namespace SGPP {
         return fx;
       }
 
-      Optimizer* GradientMethod::clone() {
-        Optimizer* result =
-          new GradientMethod(*f, *fGradient, N, beta, gamma, tol, eps);
-        result->setStartingPoint(x0);
-        return result;
+      void GradientMethod::clone(Optimizer*& clone) {
+        clone = new GradientMethod(*f, *fGradient, N, beta, gamma, tol, eps);
+        clone->setStartingPoint(x0);
       }
 
       function::ObjectiveGradient& GradientMethod::getObjectiveGradient() const {

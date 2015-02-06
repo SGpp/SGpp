@@ -57,9 +57,9 @@ namespace SGPP {
           float_t optimize(std::vector<float_t>& xOpt);
 
           /**
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          Optimizer* clone();
+          void clone(Optimizer*& clone);
 
           /**
            * @return          reflection coefficient

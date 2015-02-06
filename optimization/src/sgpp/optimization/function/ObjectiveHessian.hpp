@@ -51,7 +51,7 @@ namespace SGPP {
            * @return                  \f$f(\vec{x})\f$
            */
           virtual float_t evalHessian(const std::vector<float_t>& x,
-                                     base::DataVector& gradient, base::DataMatrix& hessian) = 0;
+                                      base::DataVector& gradient, base::DataMatrix& hessian) = 0;
 
           /**
            * @return dimension \f$d\f$ of the domain
@@ -62,13 +62,13 @@ namespace SGPP {
 
           /**
            * Pure virtual method for cloning the objective Hessian.
-           * It should return a pointer to the cloned object and
+           * It should generate a pointer to the cloned object and
            * it's used for parallel computations
            * (the evalHessian() method might not be thread-safe).
            *
-           * @return pointer to cloned object
+           * @param[out] clone pointer to cloned object
            */
-          virtual ObjectiveHessian* clone() const = 0;
+          virtual void clone(ObjectiveHessian*& clone) const = 0;
 
         protected:
           /// dimension of the domain

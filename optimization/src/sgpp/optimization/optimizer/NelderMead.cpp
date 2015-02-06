@@ -209,10 +209,9 @@ namespace SGPP {
         return fPoints[0];
       }
 
-      Optimizer* NelderMead::clone() {
-        Optimizer* result = new NelderMead(*f, N, alpha, beta, gamma, delta);
-        result->setStartingPoint(x0);
-        return result;
+      void NelderMead::clone(Optimizer*& clone) {
+        clone = new NelderMead(*f, N, alpha, beta, gamma, delta);
+        clone->setStartingPoint(x0);
       }
 
       float_t NelderMead::getAlpha() const {

@@ -62,10 +62,10 @@ namespace SGPP {
             }
 
             /**
-             * @return clone of the object
+             * @param[out] clone pointer to cloned object
              */
-            virtual Objective* clone() const {
-              return new SHCB(*this);
+            virtual void clone(Objective*& clone) const {
+              clone = new SHCB(*this);
             }
         };
 

@@ -38,12 +38,12 @@ namespace SGPP {
 
             /**
              * Pure virtual method for cloning the linear system.
-             * It should return a pointer to the cloned object and it's used for parallel computations
+             * It should generate a pointer to the cloned object and it's used for parallel computations
              * (e.g. the getMatrixEntry() method might not be thread-safe).
              *
-             * @return pointer to cloned object
+             * @param[out] clone pointer to cloned object
              */
-            virtual Cloneable* clone() = 0;
+            virtual void clone(Cloneable*& clone) = 0;
 
             /**
              * @return whether this system derives from Cloneable or not (true)
