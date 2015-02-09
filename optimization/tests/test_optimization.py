@@ -7,7 +7,6 @@ import unittest, sys
 
 import test_testfcns
 import test_gridgen
-import test_operation
 import test_optimizer
 import test_sle
 import test_example
@@ -18,7 +17,6 @@ if __name__ == "__main__":
     alltests = unittest.TestSuite([
             unittest.defaultTestLoader.loadTestsFromModule(test_testfcns),
             unittest.defaultTestLoader.loadTestsFromModule(test_gridgen),
-            unittest.defaultTestLoader.loadTestsFromModule(test_operation),
             unittest.defaultTestLoader.loadTestsFromModule(test_optimizer),
             unittest.defaultTestLoader.loadTestsFromModule(test_sle),
             unittest.defaultTestLoader.loadTestsFromModule(test_example)

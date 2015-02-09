@@ -5,6 +5,7 @@
 
 
 import unittest
+import math
 
 ##
 # Test base classes
@@ -17,60 +18,160 @@ class TestBase(unittest.TestCase):
       val = b.eval(t[0], t[1], t[2])
       self.failUnlessAlmostEqual(val, t[3], msg = ("%f != %f => (%d, %d) @ %f"%(val, t[3], t[0], t[1], t[2])))
 
+  def linearUniformUnmodifiedTest(self, b):
+    points = [(1, 1, 0.5,   1.0),
+              (1, 1, 0.75,  0.5),
+              (1, 1, 0.875, 0.25),
+              (1, 1, 0.0,   0.0),
+              (1, 1, 1.0,   0.0),
+              (2, 1, 0.75,  0.0),
+              (2, 3, 0.75,  1.0),
+              (3, 1, 0.0,   0.0),
+              (3, 1, 0.125, 1.0),
+              (3, 1, 0.25,  0.0),
+              ]
+    self.baseTest(b, points)
+
+  def linearModifiedTest(self, b):
+    points = [(1, 1, 0.5,   1.0),
+              (1, 1, 0.75,  1.0),
+              (1, 1, 0.875, 1.0),
+              (1, 1, 0.0,   1.0),
+              (1, 1, 1.0,   1.0),
+              (2, 1, 0.0,   2.0),
+              (2, 1, 0.125, 1.5),
+              (2, 1, 0.25,  1.0),
+              (2, 1, 0.375, 0.5),
+              (2, 1, 0.75,  0.0),
+              (2, 3, 0.75,  1.0),
+              (2, 3, 1.0,   2.0),
+              (3, 1, 0.0,   2.0),
+              (3, 1, 0.125, 1.0),
+              (3, 1, 0.25,  0.0),
+              ]
+    self.baseTest(b, points)
+
+  def linearLevelZeroTest(self, b):
+    """Test boundary linear basis functions (level 0)."""
+    for i in range(2):
+        for x in [j/4.0 for j in range(5)]:
+            self.assertEqual(b.eval(0, i, x), i*x + (1-i)*(1.0-x))
+
+  def ccKnot(self, l, i):
+    """Return Clenshaw-Curtis knot with given level and index."""
+    return 0.5 * (math.cos(math.pi * (1.0 - i / 2.0**l)) + 1.0)
+
+  def linearClenshawCurtisTest(self, b):
+    points = [(1, 1, 0.5,               1.0),
+              (1, 1, 0.75,              0.5),
+              (1, 1, 0.875,             0.25),
+              (1, 1, 0.0,               0.0),
+              (1, 1, 1.0,               0.0),
+              (2, 1, 0.75,              0.0),
+              (2, 3, 0.75,              0.25 / (self.ccKnot(2, 3) - 0.5)),
+              (2, 3, self.ccKnot(2, 3), 1.0),
+              (3, 1, 0.0,               0.0),
+              (3, 1, 0.125,
+                   1.0 - (0.125 - self.ccKnot(3, 1)) /
+                   (self.ccKnot(3, 2) - self.ccKnot(3, 1))),
+              (3, 1, self.ccKnot(3, 1), 1.0),
+              (3, 1, 0.25,              0.0),
+              ]
+    self.baseTest(b, points)
+
+  def derivativesTest(self, b, deg=2, start_level=1, max_discontinuities_count=0):
+    """Test derivatives (up to order deg, max. 2) of basis functions for level >= start_level.
+    Allow for max_discontinuities_count discontinuities (e.g. for Wavelets which are cut off).
+    """
+    dx = 1e-8
+    tol = 0.01
+    
+    # levels
+    for l in range(start_level, 4):
+      # indices
+      for i in range(1, 2**l, 2):
+        f = lambda y: b.eval(l, i, y)
+        
+        if deg >= 1:
+          # test first derivative at boundary (central difference quotient)
+          df = lambda y: b.evalDx(l, i, y)
+          self.assertAlmostEqual((f(2*dx) - f(0.0)) / (2*dx), df(dx), delta=tol)
+          self.assertAlmostEqual((f(1.0) - f(1.0-2*dx)) / (2*dx), df(1.0-dx), delta=tol)
+        if deg >= 2:
+          # test second derivative at boundary (central difference quotient)
+          ddf = lambda y: b.evalDxDx(l, i, y)
+          self.assertAlmostEqual((df(2*dx) - df(0.0)) / (2*dx), ddf(dx), delta=tol)
+          self.assertAlmostEqual((df(1.0) - df(1.0-2*dx)) / (2*dx), ddf(1.0-dx), delta=tol)
+        
+        # count discontinuities
+        discontinuities = 0
+        for x in [j/100.0 for j in range(1, 100)]:
+          if abs(f(x+dx) - f(x-dx)) > 1e5 * dx:
+            # discontinuity found
+            discontinuities += 1
+          else:
+            # test derivatives only if the function is continuous
+            if deg >= 1:
+              # test first derivative (central difference quotient)
+              self.assertAlmostEqual((f(x+dx) - f(x-dx)) / (2*dx), df(x), delta=tol)
+            if deg >= 2:
+              # test second derivative (central difference quotient)
+              self.assertAlmostEqual((df(x+dx) - df(x-dx)) / (2*dx), ddf(x), delta=tol)
+        self.assertLessEqual(discontinuities, max_discontinuities_count)
+
+  def bsplinePropertiesTest(self, b, start_level=1):
+    """Test basic B-spline properties (mixed monotonicity, bounds) for level >= start_level."""
+    for l in range(start_level, 4):
+        for i in range(1, 2**l, 2):
+            # rising at the beginning
+            falling = False
+            fx = None
+            for x in [j/100.0 for j in range(101)]:
+                fx_new = b.eval(l, i, x)
+                if fx is not None:
+                    if falling:
+                        # hope we're still falling
+                        self.assertLessEqual(fx_new, fx)
+                    elif fx_new < fx:
+                        # we're now falling (and weren't until now)
+                        falling = True
+                fx = fx_new
+                
+                # test bounds
+                self.assertGreaterEqual(fx, 0.0)
+                
+                if 1 < i < 2**l-1:
+                    self.assertLessEqual(fx, 1.0)
+                else:
+                    # allow 2 as upper bound for leftmost and rightmost basis functions
+                    # (in case of modified B-splines)
+                    self.assertLessEqual(fx, 2.0 + 1e-2)
+
   def testLinear(self):
     from pysgpp import SLinearBase
-        
     b = SLinearBase()
-        
-    points = [(1, 1, 0.5, 1.0),
-              (1, 1, 0.25, 0.5),
-              (2, 1, 0.25, 1.0),
-              (2, 1, 0.125, 0.5),
-              ]
-
-    self.baseTest(b, points)
-        
+    self.linearUniformUnmodifiedTest(b)
+    self.derivativesTest(b, deg=0)
+  
   def testLinearBoundary(self):
     from pysgpp import SLinearBoundaryBase
-        
     b = SLinearBoundaryBase()
-        
-    points = [(0, 0, 0.0, 1.0),
-              (0, 0, 1.0, 0.0),
-              (0, 0, 0.25, 0.75),
-              (0, 0, 0.75, 0.25),
-              (0, 1, 0.0, 0.0),
-              (0, 1, 1.0, 1.0),
-              (0, 1, 0.75, 0.75),
-              (0, 1, 0.25, 0.25),
-              (1, 1, 0.5, 1.0),
-              (1, 1, 0.25, 0.5),
-              (2, 1, 0.25, 1.0),
-              (2, 1, 0.125, 0.5),
-              ]
-
-    self.baseTest(b, points)             
-        
+    self.linearLevelZeroTest(b)
+    self.linearUniformUnmodifiedTest(b)
+    self.derivativesTest(b, deg=0, start_level=0)
+  
+  def testLinearClenshawCurtis(self):
+    from pysgpp import SLinearClenshawCurtisBase
+    b = SLinearClenshawCurtisBase()
+    self.linearLevelZeroTest(b)
+    self.linearClenshawCurtisTest(b)
+    self.derivativesTest(b, deg=0, start_level=0)
+  
   def testLinearModified(self):
     from pysgpp import SLinearModifiedBase
-    
     b = SLinearModifiedBase()
-    
-    points = [(1, 1, 0.5, 1.0),
-              (1, 1, 0.25, 1.0),
-              
-              (2, 1, 0.25, 1.0),
-              (2, 1, 0.125, 1.5),
-              (2, 1, 0.375, 0.5),
-              
-              (2, 3, 0.75, 1.0),
-              (2, 3, 0.75 + 0.125, 1.5),
-              (2, 3, 0.75 - 0.125, 0.5),
-              
-              (3, 3, 0.375 + 0.0625, 0.5)
-              ]
-        
-    self.baseTest(b, points)
+    self.linearModifiedTest(b)
+    self.derivativesTest(b, deg=0)
 
   def testLinearStretched(self):
     from pysgpp import SLinearStretchedBase
@@ -85,7 +186,69 @@ class TestBase(unittest.TestCase):
     
     self.baseTest(b, points)
         
-        
+  def testBspline(self):
+    """Test B-spline Noboundary basis."""
+    from pysgpp import SBsplineBase
+    b = SBsplineBase(1)
+    self.linearUniformUnmodifiedTest(b)
+    
+    for p in range(10):
+      b = SBsplineBase(p)
+      self.bsplinePropertiesTest(b)
+      self.derivativesTest(b, deg=max(b.getDegree() - 1, 0))
+
+  def testBsplineBoundaryBasis(self):
+    """Test B-spline Boundary basis."""
+    from pysgpp import SBsplineBoundaryBase
+    b = SBsplineBoundaryBase(1)
+    self.linearLevelZeroTest(b)
+    self.linearUniformUnmodifiedTest(b)
+    
+    for p in range(10):
+      b = SBsplineBoundaryBase(p)
+      self.bsplinePropertiesTest(b, 0)
+      self.derivativesTest(b, deg=max(b.getDegree() - 1, 0), start_level=0)
+
+  def testBsplineClenshawCurtisBasis(self):
+    """Test B-spline Clenshaw-Curtis basis."""
+    from pysgpp import SBsplineClenshawCurtisBase
+    b = SBsplineClenshawCurtisBase(1)
+    self.linearLevelZeroTest(b)
+    self.linearClenshawCurtisTest(b)
+    
+    for p in range(10):
+      b = SBsplineClenshawCurtisBase(p)
+      self.bsplinePropertiesTest(b, 0)
+      self.derivativesTest(b, deg=max(b.getDegree() - 1, 0), start_level=0)
+    
+  def testBsplineModifiedBasis(self):
+    """Test modified B-spline basis."""
+    from pysgpp import SBsplineModifiedBase
+    b = SBsplineModifiedBase(1)
+    self.linearModifiedTest(b)
+    
+    for p in range(10):
+      b = SBsplineModifiedBase(p)
+      self.bsplinePropertiesTest(b)
+      self.derivativesTest(b, deg=max(b.getDegree() - 1, 0))
+    
+  def testWaveletBasis(self):
+    """Test Wavelet Noboundary basis."""
+    from pysgpp import SWaveletBase
+    b = SWaveletBase()
+    self.derivativesTest(b, max_discontinuities_count=2)
+    
+  def testWaveletBoundaryBasis(self):
+    """Test Wavelet Boundary basis."""
+    from pysgpp import SWaveletBoundaryBase
+    b = SWaveletBoundaryBase()
+    self.derivativesTest(b, max_discontinuities_count=2)
+    
+  def testWaveletModifiedBasis(self):
+    """Test modified Wavelet basis."""
+    from pysgpp import SWaveletModifiedBase
+    b = SWaveletModifiedBase()
+    self.derivativesTest(b, max_discontinuities_count=2)
 
 #    def testPoly(self):
 #        from pysgpp import SPolyBase

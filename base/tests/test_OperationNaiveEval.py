@@ -5,26 +5,15 @@
 
 import unittest
 import pysgpp
-import objective_functions
 import random
 
-class TestOperation(unittest.TestCase):
-    def setUp(self):
-        """Initialize the test case."""
-        # disable status output
-        pysgpp.cvar.OptPrinterInstance.setVerbosity(-1)
-        # disable multi-threading
-        pysgpp.omp_set_num_threads(1)
-    
-    def testNaiveEvalOperations(self):
-        """Test naive evaluation operations created for SGPP::optimization."""
-        random.seed(42)
+class TestOperationNaiveEval(unittest.TestCase):
+    def testOperationNaiveEval(self):
+        """Test naive evaluation operations (OperationNaiveEval)."""
         d = 2
         l = 4
         p = 3
-        
-        f = objective_functions.TitleFunction()
-        solver = pysgpp.OptAutoSolver()
+        random.seed(42)
         
         # Test All The Grids!
         grids = [pysgpp.Grid.createBsplineGrid(d, p),
@@ -58,7 +47,7 @@ class TestOperation(unittest.TestCase):
             # create regular sparse grid
             grid.createGridGenerator().regular(l)
             n = grid.getSize()
-            function_values = pysgpp.DoubleVector(n)
+            alpha = pysgpp.DataVector(n)
             
             for i in range(n):
                 gp = grid.getStorage().get(i)
@@ -67,14 +56,7 @@ class TestOperation(unittest.TestCase):
                 if grid.getType() in ["bsplineClenshawCurtis", "linearClenshawCurtis"]:
                     gp.setPointDistribution(pysgpp.HashGridIndex.ClenshawCurtis)
                 x = pysgpp.DoubleVector([gp.getCoord(t) for t in range(d)])
-                function_values[i] = f.eval(x)
-            
-            # create hierarchisation system
-            system = pysgpp.OptHierarchisationSystem(grid)
-            alpha = pysgpp.DoubleVector(n)
-            # solve system
-            self.assertTrue(solver.solve(system, function_values, alpha))
-            alpha_dv = pysgpp.DataVector(alpha)
+                alpha[i] = random.gauss(0.0, 1.0)
             
             # create operations
             op = pysgpp.createOperationNaiveEval(grid)
@@ -124,24 +106,23 @@ class TestOperation(unittest.TestCase):
                             ddfx[j*d+k] += val
                 
                 # test function evaluation
-                fx2 = op.eval(alpha_dv, x)
+                fx2 = op.eval(alpha, x)
                 self.assertAlmostEqual(fx, fx2, places=2)
                 
                 if has_gradients:
                     dfx2 = pysgpp.DataVector(d)
-                    fx2 = op_dx.evalGradient(alpha_dv, x, dfx2)
+                    fx2 = op_dx.evalGradient(alpha, x, dfx2)
                     # test function evaluation
                     self.assertAlmostEqual(fx, fx2, places=2)
                     for t in range(d):
                         # test gradient evaluation
                         self.assertAlmostEqual(dfx[t], dfx2[t], places=2)
                         # test partial derivative evaluation
-                        self.assertAlmostEqual(op_pdx.evalPartialDerivative(alpha_dv, x, t),
-                                               dfx[t])
+                        self.assertAlmostEqual(op_pdx.evalPartialDerivative(alpha, x, t), dfx[t])
                     
                     dfx2 = pysgpp.DataVector(d)
                     ddfx2 = pysgpp.DataMatrix(d, d)
-                    fx2 = op_ddx.evalHessian(alpha_dv, x, dfx2, ddfx2)
+                    fx2 = op_ddx.evalHessian(alpha, x, dfx2, ddfx2)
                     # test function evaluation
                     self.assertAlmostEqual(fx, fx2, places=2)
                     for t1 in range(d):
