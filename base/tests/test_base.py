@@ -12,6 +12,7 @@ import test_algorithms
 
 import test_hierarchisation
 import test_OperationQuadrature
+import test_OperationNaiveEval
 
 import test_GridFactory
 import test_DataVector
@@ -26,7 +27,8 @@ if __name__ == '__main__':
             #unittest.defaultTestLoader.loadTestsFromModule(test_GridFactory),
             unittest.defaultTestLoader.loadTestsFromModule(test_DataVector),
             unittest.defaultTestLoader.loadTestsFromModule(test_hierarchisation),
-            unittest.defaultTestLoader.loadTestsFromModule(test_OperationQuadrature)
+            unittest.defaultTestLoader.loadTestsFromModule(test_OperationQuadrature),
+            unittest.defaultTestLoader.loadTestsFromModule(test_OperationNaiveEval)
             ])    
 
     result = unittest.TextTestRunner(verbosity=9).run(alltests)
