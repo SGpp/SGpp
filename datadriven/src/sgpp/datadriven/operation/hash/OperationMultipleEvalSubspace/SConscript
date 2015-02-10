@@ -3,16 +3,10 @@ import fnmatch
 
 Import('env')
 
-avx_env = env.Clone()
-avxCPPFLAGS = filter(lambda flag: flag != '-msse3', avx_env['CPPFLAGS'])
-avx_env['CPPFLAGS'] = avxCPPFLAGS
-#avx_env.Remove(CPPFLAGS = '-msse3')
-avx_env.Append(CPPFLAGS = '-mavx')
-
 objs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-  for fileName in fnmatch.filter(fileNames, '*.cpp'):
-    sourceFile = os.path.join(currentFolder, fileName)
-    objs.append(avx_env.SharedObject(sourceFile))
-
+if '-mavx' in env['CPPFLAGS']:
+  for currentFolder, subdirNames, fileNames in os.walk("."):
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+      sourceFile = os.path.join(currentFolder, fileName)
+      objs.append(env.SharedObject(sourceFile))
 Return('objs')
