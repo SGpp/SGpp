@@ -19,11 +19,9 @@ namespace base
 //%rename(assign) DataMatrix::operator=;
 //%rename(__len__) DataMatrix::getSize;
 
-
-
-class DataMatrix
-{
-public:
+%ignore DataMatrix::operator=;
+%ignore DataMatrix::operator[];
+%ignore DataMatrix::toString(std::string& text);
 
 // typemap allowing to pass sequence of numbers to constructor
 %typemap(in) (double *input, int nrows, int ncols)
@@ -70,99 +68,38 @@ public:
 $1 = PySequence_Check($input) ? 1 : 0;
 }
 
-    // Constructors
-    DataMatrix(size_t nrows, size_t ncols);
-    DataMatrix(const DataMatrix& matr);
-    DataMatrix(double* input, int nrows, int ncols);
+%extend DataMatrix {
+	// Create a ndarray view from the DataMatrix data
+	// an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
+	PyObject* __array(PyObject* datavector){
+	    //Get the data and number of entries
+		double *vec = $self->getPointer();
+		int rows = $self->getNrows();
+		int cols = $self->getNcols();
 
-    void resize(size_t size);
-    void resizeZero(size_t nrows);
-    void transpose();
-
-    void addSize(size_t inc_nrows);
-    size_t appendRow();
-    void setAll(double value);
-    void copyFrom(const DataMatrix& matr);
-
-    double get(size_t row, size_t col) const;
-    void set(size_t row, size_t col, double value);
-
-//    %extend {
-//    	    double getxy(int* INPUT) {
-//	        	return INPUT[0]*INPUT[1];
-//	    };
-//    }	    
-
-    void getRow(size_t row, DataVector& vec);
-    void setRow(size_t row, DataVector& vec);
-    void getColumn(size_t col, DataVector& vec);
-    void setColumn(size_t col, DataVector& vec);
-    double* getPointer();
-
-    void add(DataMatrix& matr);
-    void sub(DataMatrix& matr);
-    void componentwise_mult(DataMatrix& matr);
-    void componentwise_div(DataMatrix& matr);
-    void mult(double scalar);
-    void sqr();
-    void sqrt();
-    void abs();
-    double sum();
-
-    size_t getSize();
-    size_t getUnused();
-    size_t getNumberNonZero();
-    size_t getNrows();
-    size_t getNcols();
-    size_t getInc();
-    void setInc(size_t inc_rows);
-
-    void normalizeDimension(size_t d);
-    void normalizeDimension(size_t d, double border);
-
-    double min(size_t col);
-    double min();
-    double max(size_t col);
-    double max();
-    void minmax(size_t col, double* min, double* max);
-    void minmax(double* min, double* max);
-
-//    void toString(std::string& text); // otherwise overloaded duplicate
-    std::string toString();
-    
-    %extend {
-		// Create a ndarray view from the DataMatrix data
-		// an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
-		PyObject* __array(PyObject* datavector){
-		    //Get the data and number of entries
-			double *vec = $self->getPointer();
-			int rows = $self->getNrows();
-			int cols = $self->getNcols();
-
-			npy_intp dims[2] = {rows,cols};
-			
-			// Create a ndarray with data from vec
-			PyObject* arr = PyArray_SimpleNewFromData(2,dims, NPY_DOUBLE, vec);
-			
-			// Let the array base point on the original data, free_array is a additional destructor for our ndarray, 
-			// since we need to DECREF DataVector object
-			PyObject* base = PyCObject_FromVoidPtrAndDesc((void*)vec, (void*)datavector, free_array);
-			PyArray_BASE(arr) = base;
-			
-			// Increase the number of references to PyObject DataMatrix, after the object the variable is reinitialized or deleted the object
-			// will still be on the heap, if the reference counter is positive.
-			Py_INCREF(datavector);
-			
-			return arr;
-		}
-		 %pythoncode
-		 {
-		    def array(self):   
-		      return self.__array(self)
-		 }
+		npy_intp dims[2] = {rows,cols};
+		
+		// Create a ndarray with data from vec
+		PyObject* arr = PyArray_SimpleNewFromData(2,dims, NPY_DOUBLE, vec);
+		
+		// Let the array base point on the original data, free_array is a additional destructor for our ndarray, 
+		// since we need to DECREF DataVector object
+		PyObject* base = PyCObject_FromVoidPtrAndDesc((void*)vec, (void*)datavector, free_array);
+		PyArray_BASE(arr) = base;
+		
+		// Increase the number of references to PyObject DataMatrix, after the object the variable is reinitialized or deleted the object
+		// will still be on the heap, if the reference counter is positive.
+		Py_INCREF(datavector);
+		
+		return arr;
 	}
-
-};
+	 %pythoncode
+	 {
+	    def array(self):   
+	      return self.__array(self)
+	 }
+}
 
 }
 }
+%include "base/src/sgpp/base/datatypes/DataMatrix.hpp"

@@ -27,8 +27,6 @@ namespace std {
 %import "base/src/sgpp/base/operation/hash/common/basis/Basis.hpp"
 %template(SBasis) SGPP::base::Basis<unsigned int, unsigned int>;
 %include "DataVector.i"
-
-
 %include "DataMatrix.i"
 %include "GridFactory.i"
 
