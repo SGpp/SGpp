@@ -29,7 +29,7 @@ namespace SGPP {
     class PolyModifiedBasis: public Basis<LT, IT> {
       protected:
         /// Pointer to polynoms
-        double* polynoms;
+        float_t* polynoms;
         /// polynom's max. degree
         size_t degree;
 
@@ -47,10 +47,10 @@ namespace SGPP {
           //}
 
           int polycount = (1 << (degree + 1)) - 1;
-          std::vector<double> x;
+          std::vector<float_t> x;
 
           // degree + 1 for the polynom, +1 for the integral value, +1 for the base-point
-          polynoms = new double[(degree + 1 + 2) * polycount];
+          polynoms = new float_t[(degree + 1 + 2) * polycount];
           initPolynoms(x, 1, 1);
         }
 
@@ -67,19 +67,19 @@ namespace SGPP {
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
          */
-        double eval(LT level, IT index, double p) {
+        float_t eval(LT level, IT index, float_t p) {
           size_t deg = degree + 1 < level ? degree + 1 : level;
 
           size_t idMask = (1 << deg) - 1;
           size_t id = (((index & idMask) >> 1) | (1 << (deg - 1))) - 1;
 
           // scale p to a value in [-1.0,1.0]
-          double val = (1 << level) * p - index;
+          float_t val = (1 << level) * p - index;
           return evalPolynom(id, deg, val);
         }
 
-        double evalHierToTop(LT level, IT index, DataVector& koeffs, double pos) {
-          double result = 0.0;
+        float_t evalHierToTop(LT level, IT index, DataVector& koeffs, float_t pos) {
+          float_t result = 0.0;
 
           for (; level >= 1; level--) {
             result += koeffs[level] * eval(level, index, pos);
@@ -95,13 +95,13 @@ namespace SGPP {
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
          */
-        double evalPolynom(size_t id, size_t deg, double val) {
-          double* x_store = this->polynoms + (degree + 1 + 2) * id;
-          double* y_store = x_store + 2;
+        float_t evalPolynom(size_t id, size_t deg, float_t val) {
+          float_t* x_store = this->polynoms + (degree + 1 + 2) * id;
+          float_t* y_store = x_store + 2;
 
-          double y_val = y_store[deg - 1];
+          float_t y_val = y_store[deg - 1];
           // @todo (blank) scale val back into the right range
-          double x_val = x_store[0] + val * pow(2.0, -(1.0) * (static_cast<double>(deg)));
+          float_t x_val = x_store[0] + val * pow(2.0, -(1.0) * (static_cast<float_t>(deg)));
 
           //Horner
           for (size_t i = deg - 2; i > 0; i--) {
@@ -114,12 +114,12 @@ namespace SGPP {
         /**
          * recursively creates polynomial values
          */
-        void initPolynoms(std::vector<double>& x, LT level, IT index) {
+        void initPolynoms(std::vector<float_t>& x, LT level, IT index) {
           // Add new point
-          x.push_back(index * pow(2.0, -(1.0) * (static_cast<double>(level))));
+          x.push_back(index * pow(2.0, -(1.0) * (static_cast<float_t>(level))));
 
-          std::vector<double> y;
-          std::vector<double> intpoly;
+          std::vector<float_t> y;
+          std::vector<float_t> intpoly;
 
           for (size_t i = 0; i < level - 1; i++) {
             y.push_back(0.0);
@@ -133,16 +133,16 @@ namespace SGPP {
           size_t id = ((index >> 1) | (1 << (level - 1))) - 1;
 
           int n = level;
-          std::vector<std::vector<double> > lagpoly;
+          std::vector<std::vector<float_t> > lagpoly;
 
           /**
            * Fill lagpoly with multiplied lagrange polynomials
            * Add lagrange polynomials together into intpoly
            */
           for (int i = 0; i < n; i++) {
-            lagpoly.push_back(std::vector<double>());
+            lagpoly.push_back(std::vector<float_t>());
             lagpoly[i].push_back(1.0);
-            double fac = y[i];
+            float_t fac = y[i];
 
             int j = 0;
 
@@ -169,8 +169,8 @@ namespace SGPP {
           }
 
           //determine position in storage. (degree + 1) polynomial factors and 2 values for integral and x-value
-          double* x_store = this->polynoms + (degree + 3) * id;
-          double* y_store = x_store + 2;
+          float_t* x_store = this->polynoms + (degree + 3) * id;
+          float_t* y_store = x_store + 2;
 
           // Copy values into storage
           for (int i = 0; i < n; i++) {

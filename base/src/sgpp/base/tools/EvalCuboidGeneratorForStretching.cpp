@@ -21,9 +21,9 @@ namespace SGPP {
       if (curDim == 0) {
         if (points > 1) {
           for (size_t i = 0; i < points; i++) {
-            double inc = (myStretching.getBoundary(curDim).rightBoundary - myStretching.getBoundary(curDim).leftBoundary) / static_cast<double>(points - 1);
+            float_t inc = (myStretching.getBoundary(curDim).rightBoundary - myStretching.getBoundary(curDim).leftBoundary) / static_cast<float_t>(points - 1);
 
-            curPoint.set(curDim, myStretching.getBoundary(curDim).leftBoundary + (inc * static_cast<double>(i)));
+            curPoint.set(curDim, myStretching.getBoundary(curDim).leftBoundary + (inc * static_cast<float_t>(i)));
 
             evalPoints.push_back(curPoint);
           }
@@ -35,9 +35,9 @@ namespace SGPP {
       } else {
         if (points > 1) {
           for (size_t i = 0; i < points; i++) {
-            double inc = (myStretching.getBoundary(curDim).rightBoundary - myStretching.getBoundary(curDim).leftBoundary) / static_cast<double>(points - 1);
+            float_t inc = (myStretching.getBoundary(curDim).rightBoundary - myStretching.getBoundary(curDim).leftBoundary) / static_cast<float_t>(points - 1);
 
-            curPoint.set(curDim, myStretching.getBoundary(curDim).leftBoundary + (inc * static_cast<double>(i)));
+            curPoint.set(curDim, myStretching.getBoundary(curDim).leftBoundary + (inc * static_cast<float_t>(i)));
 
             getCuboidEvalPoints(evalPoints, curPoint, myStretching, points, curDim - 1);
           }

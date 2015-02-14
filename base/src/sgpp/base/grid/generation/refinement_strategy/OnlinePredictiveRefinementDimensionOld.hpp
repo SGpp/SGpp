@@ -30,7 +30,7 @@ class OnlinePredictiveRefinementDimensionOld: public virtual RefinementDecorator
 public:
 
   typedef std::pair<size_t, size_t> key_type; // gred point seq number and dimension
-  typedef double value_type; // refinement functor value
+  typedef float_t value_type; // refinement functor value
 
 	OnlinePredictiveRefinementDimensionOld(AbstractRefinement* refinement): RefinementDecorator(refinement), iThreshold_(0.0){};
   void free_refine(GridStorage* storage, PredictiveRefinementDimensionIndicator* functor);
@@ -64,7 +64,7 @@ protected:
 	    size_t length);
 
 private:
-	double iThreshold_;
+	float_t iThreshold_;
 	std::map<key_type, value_type> refinementCollection_;
 	//virtual static bool refinementPairCompare(std::pair<key_type, value_type>& firstEl, std::pair<key_type, value_type>& secondEl);
 	DataVector* alpha_;

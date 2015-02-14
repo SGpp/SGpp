@@ -76,7 +76,7 @@ namespace SGPP {
       return _map.find(gi) != _map.end();
     }
 
-    void GridDataBase::set(GridIndex* gi, double value) {
+    void GridDataBase::set(GridIndex* gi, float_t value) {
       grid_map_const_iterator ind = _map.find(gi);
 
       if (ind == _map.end()) {
@@ -97,7 +97,7 @@ namespace SGPP {
       }
     }
 
-    double GridDataBase::get(GridIndex* gi) {
+    float_t GridDataBase::get(GridIndex* gi) {
       grid_map_const_iterator ind = _map.find(gi);
 
       if (ind == _map.end()) {
@@ -248,7 +248,7 @@ namespace SGPP {
       GridIndex gi(_dim);
       level_t lev;
       index_t ind;
-      double val;
+      float_t val;
 
       // ASCII data
       if (ftype == ascii) {

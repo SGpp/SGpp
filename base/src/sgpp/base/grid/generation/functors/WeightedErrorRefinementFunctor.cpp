@@ -12,7 +12,7 @@ namespace SGPP {
 namespace base {
 
 WeightedErrorRefinementFunctor::WeightedErrorRefinementFunctor(
-		DataVector* alpha, Grid* grid, size_t refinements_num, double threshold) :
+		DataVector* alpha, Grid* grid, size_t refinements_num, float_t threshold) :
 		alpha(alpha), refinements_num(refinements_num), threshold(threshold), grid(
 				grid), trainDataset(
 		NULL), classes(NULL) {
@@ -30,7 +30,7 @@ WeightedErrorRefinementFunctor::~WeightedErrorRefinementFunctor() {
  *
  * r_i = y_i - \sum{j=0}^{M} phi_j(x_i) * alpha_j
  */
-double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
+float_t WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
 	if (trainDataset == NULL || classes == NULL || errors == NULL) {
@@ -50,10 +50,10 @@ double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 	SGPP::op_factory::createOperationMultipleEval(*grid, *trainDataset)->mult(singleAlpha, val1);
 
 	if (val1.getNumberNonZero() < MIN_SUPPORT) {
-		return -std::numeric_limits<double>::infinity(); // threshold is 0.0
+		return -std::numeric_limits<float_t>::infinity(); // threshold is 0.0
 	}
 
-	double error = 0;
+	float_t error = 0;
 	for (size_t i = 0; i < numData; i++) {
 		/* abs(phi_j(x_i) * alpha_j * r_i^2) */
 		//error += fabs(errors->get(i) * errors->get(i));
@@ -63,7 +63,7 @@ double WeightedErrorRefinementFunctor::operator()(GridStorage* storage,
 	return error;
 }
 
-double WeightedErrorRefinementFunctor::start() {
+float_t WeightedErrorRefinementFunctor::start() {
 	return 0.0;
 }
 
@@ -71,7 +71,7 @@ size_t WeightedErrorRefinementFunctor::getRefinementsNum() {
 	return this->refinements_num;
 }
 
-double WeightedErrorRefinementFunctor::getRefinementThreshold() {
+float_t WeightedErrorRefinementFunctor::getRefinementThreshold() {
 	return this->threshold;
 }
 

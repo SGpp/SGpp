@@ -20,8 +20,8 @@ namespace SGPP {
     }
 
     void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double q = this->boundingBox->getIntervalWidth(dim);
-      double t = this->boundingBox->getIntervalOffset(dim);
+      float_t q = this->boundingBox->getIntervalWidth(dim);
+      float_t t = this->boundingBox->getIntervalOffset(dim);
 
       bool useBB = false;
 
@@ -30,8 +30,8 @@ namespace SGPP {
       }
 
       // get boundary values
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
 
       if (useBB) {
         if (!index.hint()) {

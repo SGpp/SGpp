@@ -3,12 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-static inline void calculateIndexCombined(size_t dim, size_t nextIterationToRecalc,
-		const double * const (&dataTuplePtr)[4], std::vector<uint32_t> &hInversePtr, uint32_t *(&intermediates)[4],
-		double *(&evalIndexValues)[4],
-		//uint32_t *(&indexPtr)[4],
-		uint32_t (&indexFlat)[4], double (&phiEval)[4]) {
+#ifndef SGPP_GLOBALDEF_HPP_
+#include <sgpp/globaldef.h>
+#endif
 
+static inline void calculateIndexCombined(size_t dim, size_t nextIterationToRecalc,
+		const SGPP::float_t * const (&dataTuplePtr)[4], std::vector<uint32_t> &hInversePtr, uint32_t *(&intermediates)[4],
+		SGPP::float_t *(&evalIndexValues)[4],
+		//uint32_t *(&indexPtr)[4],
+		uint32_t (&indexFlat)[4], SGPP::float_t (&phiEval)[4]) {
+#if USE_DOUBLE_PRECISION==0
+		assert(false);
+#else
 	__m128i oneIntegerReg = _mm_set1_epi32((uint32_t) 1);
 
 	union {
@@ -25,11 +31,11 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
 	// evaluate only
 	union {
 		__m256d doubleRegister;
-		double doubleValue[4];
+		SGPP::float_t doubleValue[4];
 	} avxUnion;
 
 	int64_t absIMask = 0x7FFFFFFFFFFFFFFF;
-	double* fabsMask = (double *) &absIMask;
+	SGPP::float_t* fabsMask = (SGPP::float_t *) &absIMask;
 	__m256d absMask = _mm256_broadcast_sd(fabsMask);
 	__m256d one = _mm256_set1_pd(1.0);
 	//__m256d zero = _mm256_set1_pd(0.0);
@@ -67,7 +73,7 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
 		// __m256d dataTupleReg = allData[dataVectorIndex];
 		// dataVectorIndex += 1;
 
-		__m256d hInverseReg = _mm256_set1_pd((double) hInversePtr[i]);
+		__m256d hInverseReg = _mm256_set1_pd((SGPP::float_t) hInversePtr[i]);
 		__m256d unadjustedReg = _mm256_mul_pd(dataTupleReg, hInverseReg);
 
 		//implies flooring
@@ -115,21 +121,24 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
 	//}
 	_mm_storeu_si128((__m128i *) indexFlat, indexFlatReg);
 	_mm256_storeu_pd(phiEval, phiEvalReg);
+#endif
 }
 
 static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRecalc,
 //rep
-		const double * const (&dataTuplePtr)[4], const double * const (&dataTuplePtr2)[4],
+		const SGPP::float_t * const (&dataTuplePtr)[4], const SGPP::float_t * const (&dataTuplePtr2)[4],
 		std::vector<uint32_t> &hInversePtr,
 		//rep
 		uint32_t *(&intermediates)[4], uint32_t *(&intermediates2)[4],
 		//rep
-		double *(&evalIndexValues)[4], double *(&evalIndexValues2)[4],
+		SGPP::float_t *(&evalIndexValues)[4], SGPP::float_t *(&evalIndexValues2)[4],
 		//rep
 		uint32_t (&indexFlat)[4], uint32_t (&indexFlat2)[4],
 		//rep
-		double (&phiEval)[4], double (&phiEval2)[4]) {
-
+		SGPP::float_t (&phiEval)[4], SGPP::float_t (&phiEval2)[4]) {
+#if USE_DOUBLE_PRECISION==0
+	assert(false);
+#else
 	__m128i oneIntegerReg = _mm_set1_epi32((uint32_t) 1);
 
 	union {
@@ -149,11 +158,11 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
 	// evaluate only
 	union {
 		__m256d doubleRegister;
-		double doubleValue[4];
+		SGPP::float_t doubleValue[4];
 	} avxUnion;
 
 	int64_t absIMask = 0x7FFFFFFFFFFFFFFF;
-	double* fabsMask = (double *) &absIMask;
+	SGPP::float_t* fabsMask = (SGPP::float_t *) &absIMask;
 	__m256d absMask = _mm256_broadcast_sd(fabsMask);
 	__m256d one = _mm256_set1_pd(1.0);
 	__m256d zero = _mm256_set1_pd(0.0);
@@ -172,7 +181,7 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
 		__m256d dataTupleReg2 = _mm256_set_pd(dataTuplePtr2[3][i], dataTuplePtr2[2][i], dataTuplePtr2[1][i],
 				dataTuplePtr2[0][i]);
 
-		__m256d hInverseReg = _mm256_set1_pd((double) hInversePtr[i]);
+		__m256d hInverseReg = _mm256_set1_pd((SGPP::float_t) hInversePtr[i]);
 
 		__m256d unadjustedReg = _mm256_mul_pd(dataTupleReg, hInverseReg);
 		__m256d unadjustedReg2 = _mm256_mul_pd(dataTupleReg2, hInverseReg);
@@ -256,4 +265,5 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
 
 	_mm256_storeu_pd(phiEval, phiEvalReg);
 	_mm256_storeu_pd(phiEval2, phiEvalReg2);
+#endif
 }

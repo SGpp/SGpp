@@ -23,7 +23,7 @@ namespace SGPP {
 
       private:
         base::SGppStopwatch timer;
-        double duration;
+        float_t duration;
       public:
         AbstractOperationMultipleEvalSubspace(base::Grid& grid, base::DataMatrix& dataset) :
           base::OperationMultipleEval(grid, dataset), storage(grid.getStorage()), duration(-1.0) {

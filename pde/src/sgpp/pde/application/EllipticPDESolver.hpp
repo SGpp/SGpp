@@ -44,7 +44,7 @@ namespace SGPP {
          * @param epsilonCG the epsilon used in the CG
          * @param verbose enables verbose output during solving
          */
-        virtual void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
+        virtual void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations, float_t epsilonCG, bool verbose = false) = 0;
     };
 
   }

@@ -23,9 +23,9 @@ namespace SGPP {
 			SGPP::base::DataVector& classes, 
 			SGPP::base::RegularGridConfiguration& GridConfig, 
 		    size_t maxIterations,	
-			double eps,
-            double lambda,
-			double gamma
+			float_t eps,
+            float_t lambda,
+			float_t gamma
 			) {
 		using namespace SGPP::base;
 
@@ -48,13 +48,13 @@ namespace SGPP {
 			int k = getRandom((int) trainDataset.getNrows() - 1); 
 			DataVector x(dim);
 		   	trainDataset.getRow((size_t)k, x);
-			double y = classes[k];
+			float_t y = classes[k];
 
 			// Calculate delta^n according to [Maier BA, 5.10]:
 
 			// tmp1 = (b_k^T * a^n - y_k) where
 			// b_k = (phi_1(x_k) ... phi_N(x_k))
-			double tmp1 = grid_->eval(*alpha_, x) - y;
+			float_t tmp1 = grid_->eval(*alpha_, x) - y;
 
 			// delta^n = 2 * gamma * (b_k * tmp1 + lambda * a^n)
 			DataVector delta(num_coeff);

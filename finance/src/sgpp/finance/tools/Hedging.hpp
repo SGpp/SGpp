@@ -32,7 +32,7 @@ namespace SGPP {
         /// resoluation in hedging area
         size_t m_res;
         /// epsilon used for calculating finite differences
-        double m_eps;
+        float_t m_eps;
         /// Points at which delta and gamma should be calculated, in Cartesian coordinates
         SGPP::base::DataMatrix* m_hedge_points;
         /// is hedging used with log-transformed grids
@@ -47,7 +47,7 @@ namespace SGPP {
          * @param eps epsilon used for calculating finite differences
          * @param is_log_transformed set to true if hedging is used with log-transformed grids
          */
-        Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed);
+        Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, float_t eps, bool is_log_transformed);
 
         /**
          * Destructor

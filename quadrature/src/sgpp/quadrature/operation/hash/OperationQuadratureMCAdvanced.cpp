@@ -44,7 +44,7 @@ namespace SGPP {
       myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(dimensions, numberOfSamples);
     }
 
-    double OperationQuadratureMCAdvanced::doQuadrature(SGPP::base::DataVector& alpha) {
+    float_t OperationQuadratureMCAdvanced::doQuadrature(SGPP::base::DataVector& alpha) {
 
       SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
 
@@ -53,17 +53,17 @@ namespace SGPP {
       SGPP::base::OperationMultipleEval* opEval = SGPP::op_factory::createOperationMultipleEval(*grid, dm);
       SGPP::base::DataVector res = SGPP::base::DataVector(numberOfSamples);
       opEval->mult(alpha, res);
-      return res.sum() / static_cast<double>(numberOfSamples);
+      return res.sum() / static_cast<float_t>(numberOfSamples);
     }
 
-    double OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func, void* clientdata) {
-      //double* p = new double[dimensions];
+    float_t OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func, void* clientdata) {
+      //float_t* p = new float_t[dimensions];
 
       SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
       myGenerator->getSamples(dm);
 
       // create number of paths (uniformly drawn from [0,1]^d)
-      double res = 0;
+      float_t res = 0;
 
       for (size_t i = 0; i < numberOfSamples; i++) {
         SGPP::base::DataVector dv(dimensions);
@@ -72,17 +72,17 @@ namespace SGPP {
       }
 
       //delete p;
-      return res / static_cast<double>(numberOfSamples);
+      return res / static_cast<float_t>(numberOfSamples);
     }
 
-    double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clientdata, SGPP::base::DataVector& alpha) {
-      double x;
-      double* p = new double[dimensions];
+    float_t OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clientdata, SGPP::base::DataVector& alpha) {
+      float_t x;
+      float_t* p = new float_t[dimensions];
 
       SGPP::base::DataVector point(dimensions);
       SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
       // create number of paths (uniformly drawn from [0,1]^d)
-      double res = 0;
+      float_t res = 0;
 
       for (size_t i = 0; i < numberOfSamples; i++) {
         for (size_t d = 0; d < dimensions; d++) {
@@ -95,7 +95,7 @@ namespace SGPP {
       }
 
       delete p;
-      return sqrt(res / static_cast<double>(numberOfSamples));
+      return sqrt(res / static_cast<float_t>(numberOfSamples));
     }
 
     size_t OperationQuadratureMCAdvanced::getDimensions() {

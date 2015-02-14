@@ -29,7 +29,7 @@ namespace SGPP {
       protected:
 
         /// the riskfree interest rate
-        double r;
+        float_t r;
 
         /// Operator on the boundary grid corresponding to the A operator in the thesis
         SGPP::base::OperationMatrix* OpABound;
@@ -155,7 +155,7 @@ namespace SGPP {
         SGPP::base::DataMatrix* wCoeff;
 
         /// Up/down four op dims
-        double**** kCoeff;
+        float_t**** kCoeff;
 
         /// Whether or not to use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
@@ -167,10 +167,10 @@ namespace SGPP {
         int numCoarsenPoints;
 
         /// Threshold used to decide if a grid point should be deleted
-        double coarsenThreshold;
+        float_t coarsenThreshold;
 
         /// Threshold used to decide if a grid point should be refined
-        double refineThreshold;
+        float_t refineThreshold;
 
         /// Refine mode during solving the Heston Equation: classic or maxLevel
         std::string refineMode;
@@ -188,7 +188,7 @@ namespace SGPP {
         size_t nExecTimesteps;
 
         /// The strike of the current option
-        double dStrike;
+        float_t dStrike;
 
         /// The type of the current option
         std::string option_type;
@@ -305,7 +305,7 @@ namespace SGPP {
          * @param dimSize The number of elements in each dimension of the array.
          * @param array Pointer to the first element of the 4d array.
          */
-        void create4dEqualDimSizeArray(size_t dimSize, double**** * array);
+        void create4dEqualDimSizeArray(size_t dimSize, float_t**** * array);
 
 
         /**
@@ -313,7 +313,7 @@ namespace SGPP {
          * @param dimSize The number of elements in each dimension of the array.
          * @param array Pointer to the first element of the 4d array.
          */
-        void delete4dEqualDimSizeArray(size_t dimSize, double**** * array);
+        void delete4dEqualDimSizeArray(size_t dimSize, float_t**** * array);
 
         /**
          * Utility method to set all values in a 4d array of equal size to one value (e.g. this method can be used to set all the values to zero).
@@ -321,7 +321,7 @@ namespace SGPP {
          * @param array Pointer to the first element of the 4d array.
          * @param value Value that each of the array elements will be set to.
          */
-        void setAll4dEqualDimSizeArray(size_t dimSize, double**** * array, double value);
+        void setAll4dEqualDimSizeArray(size_t dimSize, float_t**** * array, float_t value);
 
       public:
         /**
@@ -349,10 +349,10 @@ namespace SGPP {
          */
         HestonParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& thetas, SGPP::base::DataVector& volvols,
                                                SGPP::base::DataVector& kappas,
-                                               SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-                                               double dStrike, std::string option_type,
-                                               bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                               int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+                                               SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode,
+                                               float_t dStrike, std::string option_type,
+                                               bool bLogTransform = false, bool useCoarsen = false, float_t coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+                                               int numCoarsenPoints = -1, float_t refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Destructor. Just does the usual...releases all allocated memory.

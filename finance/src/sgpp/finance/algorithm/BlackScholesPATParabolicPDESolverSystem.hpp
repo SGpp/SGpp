@@ -44,9 +44,9 @@ namespace SGPP {
         /// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
         int numCoarsenPoints;
         /// Threshold used to decide if a grid point should be deleted
-        double coarsenThreshold;
+        float_t coarsenThreshold;
         /// Threshold used to decide if a grid point should be refined
-        double refineThreshold;
+        float_t refineThreshold;
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
         std::string refineMode;
         /// maxLevel max. Level of refinement
@@ -83,10 +83,10 @@ namespace SGPP {
          * @param option_type type of option used here
          */
         BlackScholesPATParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-                                                SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
-                                                double dStrike, std::string option_type,
-                                                bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                                int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+                                                SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, float_t TimestepSize, std::string OperationMode,
+                                                float_t dStrike, std::string option_type,
+                                                bool useCoarsen = false, float_t coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+                                                int numCoarsenPoints = -1, float_t refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Std-Destructor

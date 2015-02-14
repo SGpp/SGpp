@@ -35,11 +35,11 @@ PDESolver::~PDESolver() {
 	}
 }
 
-void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<double>& norm_mu,
-		std::vector<double>& norm_sigma) {
+void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<float_t>& norm_mu,
+		std::vector<float_t>& norm_sigma) {
 	if (bGridConstructed) {
-		double tmp;
-		double value;
+		float_t tmp;
+		float_t value;
 		SGPP::base::StdNormalDistribution myNormDistr;
 
 		for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
@@ -105,7 +105,7 @@ std::string PDESolver::getGrid() const {
 	return gridSer;
 }
 
-void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numRefinePoints, double dThreshold) {
+void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numRefinePoints, float_t dThreshold) {
 	size_t nRefinements;
 
 	if (numRefinePoints < 0) {
@@ -129,8 +129,8 @@ void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numR
 	}
 }
 
-void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha, int numRefinePoints, double dThreshold,
-		std::vector<double>& norm_mu, std::vector<double>& norm_sigma) {
+void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha, int numRefinePoints, float_t dThreshold,
+		std::vector<float_t>& norm_mu, std::vector<float_t>& norm_sigma) {
 	size_t nRefinements;
 
 	if (numRefinePoints < 0) {
@@ -162,7 +162,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
 	}
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevel(SGPP::base::DataVector& alpha, double dThreshold,
+void PDESolver::refineInitialGridSurplusToMaxLevel(SGPP::base::DataVector& alpha, float_t dThreshold,
 		SGPP::base::GridStorage::index_type::level_type maxLevel) {
 	if (bGridConstructed) {
 		size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
@@ -181,9 +181,9 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(SGPP::base::DataVector& alpha
 	}
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(SGPP::base::DataVector& alpha, double dThreshold,
-		SGPP::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu,
-		std::vector<double>& norm_sigma) {
+void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(SGPP::base::DataVector& alpha, float_t dThreshold,
+		SGPP::base::GridStorage::index_type::level_type maxLevel, std::vector<float_t>& norm_mu,
+		std::vector<float_t>& norm_sigma) {
 	if (bGridConstructed) {
 		size_t nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
@@ -209,7 +209,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(SGPP::base::DataVect
 	}
 }
 
-void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, double dThreshold) {
+void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t dThreshold) {
 	if (bGridConstructed) {
 		SGPP::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
 		size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
@@ -232,12 +232,12 @@ void PDESolver::printLevelIndexGrid(std::string tfilename) const {
 	myPrinter.printLevelIndexGrid(tfilename);
 }
 
-void PDESolver::printGrid(SGPP::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const {
+void PDESolver::printGrid(SGPP::base::DataVector& alpha, float_t PointesPerDimension, std::string tfilename) const {
 	SGPP::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGrid(alpha, tfilename, static_cast<size_t>(PointesPerDimension));
 }
 
-void PDESolver::printGridDomain(SGPP::base::DataVector& alpha, double PointesPerDimension,
+void PDESolver::printGridDomain(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
 		SGPP::base::BoundingBox& GridArea, std::string tfilename) const {
 	SGPP::base::GridPrinter myPrinter(*this->myGrid);
 	myPrinter.printGridDomain(alpha, tfilename, GridArea, static_cast<size_t>(PointesPerDimension));
@@ -253,8 +253,8 @@ void PDESolver::printSparseGridExpTransform(SGPP::base::DataVector& alpha, std::
 	myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
 
-double PDESolver::evaluatePoint(std::vector<double>& evalPoint, SGPP::base::DataVector& alpha) {
-	double result = 0.0;
+float_t PDESolver::evaluatePoint(std::vector<float_t>& evalPoint, SGPP::base::DataVector& alpha) {
+	float_t result = 0.0;
 
 	if (bGridConstructed) {
 		SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);

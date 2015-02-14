@@ -44,26 +44,26 @@ protected:
 	/// is the grid trained
 	bool isTrained_;
 	/// execution time
-	double execTime_;
+	float_t execTime_;
 	/// execution time for current refinement
 	/// to calculate the GFlops at the current timestep only
 	/// otherwise accumulated GFlops (all refinement steps)
 	/// are calculated
-	double stepExecTime_;
+	float_t stepExecTime_;
 	/// number of executed Floating Point operations
-	double GFlop_;
+	float_t GFlop_;
 	/// number of executed Floating Point operations
 	/// in the current refinement step
-	double stepGFlop_;
+	float_t stepGFlop_;
 	/// number of transferred Gbytes
-	double GByte_;
+	float_t GByte_;
 	/// number of transferred Gbytes
 	/// in the current refinement step
-	double stepGByte_;
+	float_t stepGByte_;
 	/// the current refinment step during training
 	size_t currentRefinementStep;
 
-	std::vector<std::pair<size_t, double> > ExecTimeOnStep;
+	std::vector<std::pair<size_t, float_t> > ExecTimeOnStep;
 
 	/**
 	 * Hook-Method for pre-processing before
@@ -100,7 +100,7 @@ protected:
 	 * @param trainDataset training dataset
 	 * @param lambda lambda regularization parameter
 	 */
-	virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda) = 0;
+	virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda) = 0;
 
 public:
 	/**
@@ -150,7 +150,7 @@ public:
 			const SGPP::base::RegularGridConfiguration& GridConfig,
 			const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
 			const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-			const SGPP::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt, const double lambda);
+			const SGPP::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt, const float_t lambda);
 
 	/**
 	 * Learning a dataset with regular sparse grids
@@ -163,7 +163,7 @@ public:
 	 */
 	LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
 			const SGPP::base::RegularGridConfiguration& GridConfig,
-			const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lamda);
+			const SGPP::solver::SLESolverConfiguration& SolverConfig, const float_t lamda);
 
 	/**
 	 * executes a Regression test for a given dataset and returns the result
@@ -188,8 +188,8 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
-			const double threshold = 0.0);
+	virtual float_t getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
+			const float_t threshold = 0.0);
 
 	/**
 	 * compute the accuracy for given testDataset.
@@ -203,8 +203,8 @@ public:
 	 *
 	 * @return accuracy, percent or MSE, depending on the execution mode
 	 */
-	virtual double getAccuracy(const SGPP::base::DataVector& classesComputed,
-			const SGPP::base::DataVector& classesReference, const double threshold = 0.0);
+	virtual float_t getAccuracy(const SGPP::base::DataVector& classesComputed,
+			const SGPP::base::DataVector& classesReference, const float_t threshold = 0.0);
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -218,7 +218,7 @@ public:
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
 	virtual ClassificatorQuality getCassificatorQuality(SGPP::base::DataMatrix& testDataset,
-			const SGPP::base::DataVector& classesReference, const double threshold = 0.0);
+			const SGPP::base::DataVector& classesReference, const float_t threshold = 0.0);
 
 	/**
 	 * compute the quality for given testDataset, classification ONLY!
@@ -230,7 +230,7 @@ public:
 	 * @return quality structure containing tp, tn, fp, fn counts
 	 */
 	virtual ClassificatorQuality getCassificatorQuality(const SGPP::base::DataVector& classesComputed,
-			const SGPP::base::DataVector& classesReference, const double threshold = 0.0);
+			const SGPP::base::DataVector& classesReference, const float_t threshold = 0.0);
 
 	/**
 	 * store the grid and its current coefficients into files for
@@ -283,7 +283,7 @@ public:
 	 */
 	void setIsVerbose(const bool isVerbose);
 
-	std::vector<std::pair<size_t, double> > getRefinementExecTimes();
+	std::vector<std::pair<size_t, float_t> > getRefinementExecTimes();
 };
 
 }

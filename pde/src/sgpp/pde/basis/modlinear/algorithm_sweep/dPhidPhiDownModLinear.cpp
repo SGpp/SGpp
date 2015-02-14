@@ -23,16 +23,16 @@ namespace SGPP {
       rec(source, result, index, dim, 0.0);
     }
 
-    void dPhidPhiDownModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double f) {
+    void dPhidPhiDownModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t f) {
       size_t seq = index.seq();
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 
-      double alpha_value = source[seq];
-      double ht = pow(2.0, static_cast<int>(l));
-      double f_local = 0.0;
+      float_t alpha_value = source[seq];
+      float_t ht = pow(2.0, static_cast<int>(l));
+      float_t f_local = 0.0;
 
       // level 1, constant function
       if (l == 1) {

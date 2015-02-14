@@ -40,9 +40,9 @@ namespace SGPP {
       private:
 	int index;
         int* base_vektor;
-	double* i_vektor;
-	double* f_vektor;
-	double* result_vektor;
+	float_t* i_vektor;
+	float_t* f_vektor;
+	float_t* result_vektor;
 
     };
 

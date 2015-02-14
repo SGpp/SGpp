@@ -25,9 +25,9 @@ namespace SGPP {
 
     struct SLESolverConfiguration {
       SGPP::solver::SLESolverType type_;
-      double eps_;
+      float_t eps_;
       size_t maxIterations_;
-      double threshold_;
+      float_t threshold_;
     };
 
     struct SLESolverSPConfiguration {

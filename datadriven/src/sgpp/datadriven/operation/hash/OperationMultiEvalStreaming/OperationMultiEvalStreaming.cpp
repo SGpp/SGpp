@@ -163,7 +163,7 @@ size_t OperationMultiEvalStreaming::padDataset(SGPP::base::DataMatrix &dataset) 
     return dataset.getNrows();
 }
 
-double OperationMultiEvalStreaming::getDuration() {
+float_t OperationMultiEvalStreaming::getDuration() {
     return this->duration;
 }
 

@@ -26,11 +26,11 @@ namespace SGPP {
     class HullWhiteParabolicPDESolverSystem : public SGPP::pde::OperationParabolicPDESolverSystemFreeBoundaries {
       protected:
         /// theta
-        double theta;
+        float_t theta;
         /// sigma
-        double sigma;
+        float_t sigma;
         /// a
-        double a;
+        float_t a;
         /// the B matrix Operation, on boundary grid
         SGPP::base::OperationMatrix* OpBBound;
         /// the D matrix Operation, on boundary grid
@@ -49,9 +49,9 @@ namespace SGPP {
         /// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
         int numCoarsenPoints;
         /// Threshold used to decide if a grid point should be deleted
-        double coarsenThreshold;
+        float_t coarsenThreshold;
         /// Threshold used to decide if a grid point should be refined
-        double refineThreshold;
+        float_t refineThreshold;
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
         std::string refineMode;
         /// maxLevel max. Level of refinement
@@ -90,10 +90,10 @@ namespace SGPP {
          * @param refineMaxLevel max. refinement level
          * @param dim_HW dimension of Hull-White (dimension of risk-free rate)
          */
-        HullWhiteParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double sigma, double theta,
-                                          double a, double TimestepSize, std::string OperationMode = "ExEul",
-                                          bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                          int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
+        HullWhiteParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, float_t sigma, float_t theta,
+                                          float_t a, float_t TimestepSize, std::string OperationMode = "ExEul",
+                                          bool useCoarsen = false, float_t coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+                                          int numCoarsenPoints = -1, float_t refineThreshold = 0.0, std::string refineMode = "classic",
                                           SGPP::base::GridIndex::level_type refineMaxLevel = 0, int dim_HW = 1);
 
         /**

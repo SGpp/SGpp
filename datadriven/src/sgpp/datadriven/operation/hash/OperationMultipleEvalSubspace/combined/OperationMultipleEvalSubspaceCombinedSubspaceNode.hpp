@@ -30,8 +30,8 @@ public:
 	uint32_t existingGridPointsOnLevel;
 	SubspaceType type;
 	std::vector<uint32_t> indices; //for list representation (and future streaming subspaces
-	std::vector<std::pair<uint32_t, double> > indexFlatSurplusPairs;
-	double *subspaceArray;
+	std::vector<std::pair<uint32_t, float_t> > indexFlatSurplusPairs;
+	float_t *subspaceArray;
 	omp_lock_t subspaceLock;
 
 	uint32_t jumpTargetIndex;
@@ -122,16 +122,16 @@ public:
 	// this method will decide how to best represent the subspace (list or array type)
 	// and prepare the subspace for its representation
 	void unpack() {
-		double usageRatio = (double) this->existingGridPointsOnLevel / (double) this->gridPointsOnLevel;
+		float_t usageRatio = (float_t) this->existingGridPointsOnLevel / (float_t) this->gridPointsOnLevel;
 
 		if (usageRatio < X86COMBINED_LIST_RATIO && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
 			this->type = LIST;
 		} else {
 			this->type = ARRAY;
 			if (this->subspaceArray == nullptr) {
-				this->subspaceArray = new double[this->gridPointsOnLevel];
+				this->subspaceArray = new float_t[this->gridPointsOnLevel];
 				for (size_t i = 0; i < this->gridPointsOnLevel; i++) {
-					this->subspaceArray[i] = std::numeric_limits<double>::quiet_NaN();
+					this->subspaceArray[i] = std::numeric_limits<float_t>::quiet_NaN();
 				}
 			}
 		}
@@ -139,13 +139,13 @@ public:
 
 	// the first call initializes the array for ARRAY type subspaces
 	//
-	void setSurplus(size_t indexFlat, double surplus) {
+	void setSurplus(size_t indexFlat, float_t surplus) {
 		if (this->type == ARRAY) {
 			this->subspaceArray[indexFlat] = surplus;
 		} else if (this->type == LIST) {
 			bool found = false;
 
-			for (std::pair<uint32_t, double> &tuple : this->indexFlatSurplusPairs) {
+			for (std::pair<uint32_t, float_t> &tuple : this->indexFlatSurplusPairs) {
 				if (tuple.first == indexFlat) {
 					tuple.second = surplus;
 					found = true;
@@ -159,12 +159,12 @@ public:
 	}
 
 	// the first call initializes the array for ARRAY type subspaces
-	double getSurplus(size_t indexFlat) {
+	float_t getSurplus(size_t indexFlat) {
 
 		if (this->type == ARRAY) {
 			return this->subspaceArray[indexFlat];
 		} else if (this->type == LIST) {
-			for (std::pair<uint32_t, double> tuple : this->indexFlatSurplusPairs) {
+			for (std::pair<uint32_t, float_t> tuple : this->indexFlatSurplusPairs) {
 				if (tuple.first == indexFlat) {
 					return tuple.second;
 				}

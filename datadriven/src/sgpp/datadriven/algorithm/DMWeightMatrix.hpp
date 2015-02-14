@@ -24,7 +24,7 @@ namespace SGPP {
     class DMWeightMatrix : public SGPP::base::OperationMatrix {
       private:
         /// the lambda, the regularisation parameter
-        double lamb;
+        float_t lamb;
         /// SGPP::base::OperationMatrix, the regularisation mehtod
         SGPP::base::OperationMatrix* C;
         /// OperationB for calculating the data matrix
@@ -44,7 +44,7 @@ namespace SGPP {
          * @param lambda the lambda, the regression parameter
          * @param w the weights to the training data
          */
-        DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda, SGPP::base::DataVector& w);
+        DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambda, SGPP::base::DataVector& w);
 
         /**
          * Std-Destructor

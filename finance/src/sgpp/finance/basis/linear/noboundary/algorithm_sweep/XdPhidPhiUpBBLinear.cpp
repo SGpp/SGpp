@@ -22,8 +22,8 @@ namespace SGPP {
 
 
     void XdPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double q = boundingBox->getIntervalWidth(dim);
-      double t = boundingBox->getIntervalOffset(dim);
+      float_t q = boundingBox->getIntervalWidth(dim);
+      float_t t = boundingBox->getIntervalOffset(dim);
 
       bool useBB = false;
 
@@ -32,8 +32,8 @@ namespace SGPP {
       }
 
       // get boundary values
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
 
       if (useBB) {
         recBB(source, result, index, dim, fl, fr, q, t);
@@ -42,12 +42,12 @@ namespace SGPP {
       }
     }
 
-    void XdPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+    void XdPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
-      double fml = 0.0;
-      double fmr = 0.0;
+      float_t fml = 0.0;
+      float_t fmr = 0.0;
 
       SGPP::base::GridStorage::index_type::level_type current_level;
       SGPP::base::GridStorage::index_type::index_type current_index;
@@ -70,9 +70,9 @@ namespace SGPP {
 
       index.get(dim, current_level, current_index);
 
-      double fm = fml + fmr;
+      float_t fm = fml + fmr;
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       // transposed operations:
       result[seq] = fm;
@@ -81,12 +81,12 @@ namespace SGPP {
       fr = (fm / 2.0) + (alpha_value * ((-0.5))) + fr;
     }
 
-    void XdPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
+    void XdPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q, float_t t) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
-      double fml = 0.0;
-      double fmr = 0.0;
+      float_t fml = 0.0;
+      float_t fmr = 0.0;
 
       SGPP::base::GridStorage::index_type::level_type current_level;
       SGPP::base::GridStorage::index_type::index_type current_index;
@@ -109,9 +109,9 @@ namespace SGPP {
 
       index.get(dim, current_level, current_index);
 
-      double fm = fml + fmr;
+      float_t fm = fml + fmr;
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       // transposed operations:
       result[seq] = fm;

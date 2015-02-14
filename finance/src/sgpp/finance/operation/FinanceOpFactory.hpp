@@ -114,7 +114,7 @@ namespace SGPP {
     base::OperationMatrix* createOperationHestonFLog(base::Grid& grid, base::DataVector& coef);
     base::OperationMatrix* createOperationHestonGLog(base::Grid& grid, base::DataVector& coef);
     base::OperationMatrix* createOperationHestonHLog(base::Grid& grid, base::DataMatrix& coef);
-    base::OperationMatrix* createOperationHestonKLog(base::Grid& grid, double**** * coef);
+    base::OperationMatrix* createOperationHestonKLog(base::Grid& grid, float_t**** * coef);
     base::OperationMatrix* createOperationHestonX(base::Grid& grid, base::DataMatrix& coef);
     base::OperationMatrix* createOperationHestonY(base::Grid& grid, base::DataMatrix& coef);
     base::OperationMatrix* createOperationHestonW(base::Grid& grid, base::DataMatrix& coef);

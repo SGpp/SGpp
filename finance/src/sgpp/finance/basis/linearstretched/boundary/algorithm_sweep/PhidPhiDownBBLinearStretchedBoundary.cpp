@@ -21,8 +21,8 @@ namespace SGPP {
 
     void PhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       // get boundary values
-      double left_boundary;
-      double right_boundary;
+      float_t left_boundary;
+      float_t right_boundary;
       size_t seq_left;
       size_t seq_right;
 

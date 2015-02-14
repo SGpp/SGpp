@@ -20,11 +20,11 @@ namespace SGPP {
     }
 
     void dPhidPhiUpModLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double f = 0.0;
+      float_t f = 0.0;
       rec(source, result, index, dim, f);
     }
 
-    void dPhidPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& f) {
+    void dPhidPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& f) {
       size_t seq = index.seq();
 
       SGPP::base::GridStorage::index_type::level_type l;
@@ -32,8 +32,8 @@ namespace SGPP {
 
       index.get(dim, l, i);
 
-      double alpha_value = source[seq];
-      double ht = pow(2.0, static_cast<int>(l));
+      float_t alpha_value = source[seq];
+      float_t ht = pow(2.0, static_cast<int>(l));
 
       if (l == 1) {
         f = 0.0;

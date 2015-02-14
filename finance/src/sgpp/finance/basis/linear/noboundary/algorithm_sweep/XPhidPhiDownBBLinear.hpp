@@ -66,7 +66,7 @@ namespace SGPP {
          * @param fl function value on the left boundary
          * @param fr function value on the right boundary
          */
-        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
+        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr);
 
         /**
          * recursive function for the calculation of Down wit Bounding Box support
@@ -80,7 +80,7 @@ namespace SGPP {
          * @param q interval width in the current dimension <i>dim</i>
          * @param t interval offset in current dimension <i>dim</i>
          */
-        void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t);
+        void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr, float_t q, float_t t);
     };
 
     // namespace detail

@@ -46,7 +46,7 @@ namespace SGPP {
     }
 
     SGPP::datadriven::DMSystemMatrixBase* LearnerDensityBased::createDMSystem(
-      SGPP::base::DataMatrix& trainDataset, double lambda) {
+      SGPP::base::DataMatrix& trainDataset, float_t lambda) {
       // Is not used
       return NULL;
     }
@@ -96,7 +96,7 @@ namespace SGPP {
     //    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
     //    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
     //    const SGPP::base::AdpativityConfiguration& AdaptConfig,
-    //    const bool testAccDuringAdapt, const double lambda)
+    //    const bool testAccDuringAdapt, const float_t lambda)
     // {
     //   return train(trainDataset, classes, GridConfig, SolverConfigRefine, SolverConfigFinal, AdaptConfig, testAccDuringAdapt, lambda, true);
     // }
@@ -108,7 +108,7 @@ namespace SGPP {
         const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
         const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
         const SGPP::base::AdpativityConfiguration& AdaptConfig,
-        const bool testAccDuringAdapt, const double lambda) {
+        const bool testAccDuringAdapt, const float_t lambda) {
       LearnerTiming result;
 
       if (trainDataset.getNrows() != classes.getSize()) {
@@ -129,7 +129,7 @@ namespace SGPP {
       GFlop_ = 0.0;
       GByte_ = 0.0;
 
-      double oldAcc = 0.0;
+      float_t oldAcc = 0.0;
 
       SGPP::solver::SLESolver* myCG;
 
@@ -141,7 +141,7 @@ namespace SGPP {
                                         SolverConfigRefine.eps_);
       } else {
         throw base::application_exception(
-          "LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
+          "LearnerDensityBased::train: An unsupported SLE solver type was chosen!");
       }
 
       // Pre-Procession
@@ -155,13 +155,13 @@ namespace SGPP {
       int dim = (int)trainDataset.getNcols();
 
       //Compute all occurring class labels and how many data points exist per label:
-      std::map<double, int> entriesPerClass;
+      std::map<float_t, int> entriesPerClass;
 
       for (unsigned int i = 0; i < classes.getSize(); i++) {
-        double classNum = classes.get(i);
+        float_t classNum = classes.get(i);
 
         if (entriesPerClass.find(classNum) == entriesPerClass.end()) {
-          entriesPerClass.insert(std::pair<double, int>(classNum, 1));
+          entriesPerClass.insert(std::pair<float_t, int>(classNum, 1));
         } else {
           entriesPerClass[classNum]++;
         }
@@ -169,20 +169,20 @@ namespace SGPP {
 
       //Create an empty matrix for every class:
       std::vector<SGPP::base::DataMatrix> trainDataClasses;
-      std::map<double, int> class_indeces; //Maps class numbers to indices
+      std::map<float_t, int> class_indeces; //Maps class numbers to indices
 
-      std::map<double, int>::iterator it;
+      std::map<float_t, int>::iterator it;
       int index = 0;
 
       for (it = entriesPerClass.begin(); it != entriesPerClass.end(); it++) {
         SGPP::base::DataMatrix m(0/*(*it).second*/, dim);
         trainDataClasses.push_back(m);
         class_indeces[(*it).first] = index;
-        index_to_class_.insert(std::pair<int, double>(index, (*it).first));
+        index_to_class_.insert(std::pair<int, float_t>(index, (*it).first));
 
         //compute prior
         if (this->withPrior) {
-          prior.push_back((*it).second / (double)classes.getSize());
+          prior.push_back((*it).second / (float_t)classes.getSize());
         } else {
           prior.push_back(1.);
         }
@@ -192,7 +192,7 @@ namespace SGPP {
 
       //Split the data into the different classes:
       for (unsigned int i = 0; i < trainDataset.getNrows(); i++) {
-        double classLabel = classes[i];
+        float_t classLabel = classes[i];
         SGPP::base::DataVector vec(dim);
         trainDataset.getRow(i, vec);
         trainDataClasses[class_indeces[classLabel]].appendRow(vec);
@@ -296,7 +296,7 @@ namespace SGPP {
                          myCG->getNumberIterations());
         }
 
-        /*double tmp1, tmp2, tmp3, tmp4;
+        /*float_t tmp1, tmp2, tmp3, tmp4;
           DMSystem->getTimers(tmp1, tmp2, tmp3, tmp4);
           result.timeComplete_ = execTime_;
           result.timeMultComplete_ = tmp1;
@@ -309,7 +309,7 @@ namespace SGPP {
         result.GByte_ = GByte_;
 
         if (testAccDuringAdapt) {
-          double acc = getAccuracy(trainDataset, classes);
+          float_t acc = getAccuracy(trainDataset, classes);
 
           if (isVerbose_) {
             if (isRegression_) {
@@ -372,14 +372,14 @@ namespace SGPP {
           //Compute maximum of all density functions:
           std::vector<SGPP::base::DataVector>::iterator it;
           int max_index = -1;
-          double max = std::numeric_limits<double>::min();
+          float_t max = std::numeric_limits<float_t>::min();
           int class_index = 0;
 
           for (it = alphaVec_.begin(); it != alphaVec_.end(); it++) {
             SGPP::base::OperationEval* Eval = SGPP::op_factory::createOperationEval(*gridVec_[class_index]);
             SGPP::base::DataVector alpha = *it;
             //posterior = likelihood*prior
-            double res = Eval->eval(alpha, p) * this->prior[class_index];
+            float_t res = Eval->eval(alpha, p) * this->prior[class_index];
 
             if (res > max) {
               max = res;

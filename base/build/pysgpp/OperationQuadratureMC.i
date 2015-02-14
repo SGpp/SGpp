@@ -17,22 +17,22 @@ namespace base
  * clientdata pointer is used for holding a reference to a 
  * Python callable object. 
  */
-  static double PythonCallBackFunc(int len, double* a, void *clientdata)
+  static float_t PythonCallBackFunc(int len, float_t* a, void *clientdata)
 {
   PyObject *func, *lst, *arglist;
    PyObject *result;
-   double    dres = 0;
+   float_t    dres = 0;
 
    // get Python function
    func = (PyObject *) clientdata;
-   // build argument list (only Python list, convert double* to Python list)
+   // build argument list (only Python list, convert float_t* to Python list)
    lst = PyTuple_New(len);        // alternatively: PyList_New(len)
    if (!lst) {
      PyErr_SetString(PyExc_TypeError, "No data provided!");
      return NULL;
    }
    for (int i=0; i<len; i++) {
-     // create new Python double
+     // create new Python float_t
      PyObject *num = PyFloat_FromDouble(a[i]);
      if (!num) {
        PyErr_SetString(PyExc_TypeError, "No data in list!");
@@ -75,13 +75,13 @@ namespace base
    // set a Python function object as a callback function
    // overloads functions
    // note : PyObject *pyfunc is remapped with a typemap
-   double doQuadratureFunc(PyObject *pyfunc) {
-     double d;
+   float_t doQuadratureFunc(PyObject *pyfunc) {
+     float_t d;
      d = self->doQuadratureFunc(SGPP::base::PythonCallBackFunc, (void *) pyfunc);
      return d;
    }
-   double doQuadratureL2Error(PyObject *pyfunc, SGPP::base::DataVector& alpha) {
-     double d;
+   float_t doQuadratureL2Error(PyObject *pyfunc, SGPP::base::DataVector& alpha) {
+     float_t d;
      d = self->doQuadratureL2Error(SGPP::base::PythonCallBackFunc, (void *) pyfunc, alpha);
      return d;
    }

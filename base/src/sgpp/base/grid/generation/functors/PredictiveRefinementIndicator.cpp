@@ -17,7 +17,7 @@ namespace base {
 
 
 PredictiveRefinementIndicator::PredictiveRefinementIndicator(Grid* grid, DataMatrix* dataSet,DataVector* errorVector,
-		size_t refinements_num, double threshold)
+		size_t refinements_num, float_t threshold)
 
 {
 	//find out what type of grid is used;
@@ -30,7 +30,7 @@ PredictiveRefinementIndicator::PredictiveRefinementIndicator(Grid* grid, DataMat
 	this->threshold = threshold;
 }
 
-double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type* gridPoint)
+float_t PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type* gridPoint)
 {
 	//calculate the floor and ceiling of the support on dimension of the grid point.
 	DataVector floorMask(dataSet->getNcols());
@@ -40,10 +40,10 @@ double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type
 	//level, index and evaulation of a gridPoint in dimension d
 	AbstractRefinement::level_t level = 0;
 	AbstractRefinement::index_t index = 0;
-	double valueInDim;
+	float_t valueInDim;
 
 	//the actuall value of the errorIndicator
-	double errorIndicator = 0;
+	float_t errorIndicator = 0;
 
 
 	//counter of contributions - for DEBUG purposes
@@ -72,17 +72,17 @@ double PredictiveRefinementIndicator::operator ()(AbstractRefinement::index_type
 	}
 
 	//DEBUG
-	//std::cout << gridPoint->toString() << " with error estimate " << errorIndicator << ",caused by " << counter << "contribs - in average: " << (errorIndicator/static_cast<double>(counter)) << "\n";
+	//std::cout << gridPoint->toString() << " with error estimate " << errorIndicator << ",caused by " << counter << "contribs - in average: " << (errorIndicator/static_cast<float_t>(counter)) << "\n";
 	return errorIndicator;
 
 }
 
-double PredictiveRefinementIndicator::operator ()(GridStorage* storage,size_t seq) {
+float_t PredictiveRefinementIndicator::operator ()(GridStorage* storage,size_t seq) {
 	return errorVector->get(seq);
 }
 
 
-double PredictiveRefinementIndicator::basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, double value)
+float_t PredictiveRefinementIndicator::basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, float_t value)
 {
 
 	switch (gridType) {
@@ -115,12 +115,12 @@ size_t PredictiveRefinementIndicator::getRefinementsNum()
 	return refinementsNum;
 }
 
-double PredictiveRefinementIndicator::getRefinementThreshold()
+float_t PredictiveRefinementIndicator::getRefinementThreshold()
 {
 	return threshold;
 }
 
-double PredictiveRefinementIndicator::start() {
+float_t PredictiveRefinementIndicator::start() {
 	return 0.0;
 }
 
@@ -166,7 +166,7 @@ bool PredictiveRefinementIndicator::isOnSupport(
 	//=> go through all samples in dataset and check if in dim "col" "valueInDim" is on support
 	for(size_t col = 0; col < dataSet->getNcols(); ++col)
 	{
-		double valueInDim = dataSet->get(row,col);
+		float_t valueInDim = dataSet->get(row,col);
 		if(valueInDim < floorMask->get(col) || valueInDim >= ceilingMask->get(col) )
 		{
 			return false;

@@ -57,7 +57,7 @@ public:
 	 * @param trainData reference to SGPP::base::DataMatrix that contains the training data
 	 * @param lambda the lambda, the regression parameter
 	 */
-	SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda);
+	SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, float_t lambda);
 
 	/**
 	 * Std-Destructor

@@ -11,7 +11,7 @@
 namespace SGPP {
   namespace pde {
 
-    UpDownFourOpDims::UpDownFourOpDims(SGPP::base::GridStorage* storage, double**** * coef) : storage(storage), coefs((*coef)), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
+    UpDownFourOpDims::UpDownFourOpDims(SGPP::base::GridStorage* storage, float_t**** * coef) : storage(storage), coefs((*coef)), algoDims(storage->getAlgorithmicDimensions()), numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
       generateMap();
     }
 
@@ -34,7 +34,7 @@ namespace SGPP {
       fnMap.insert( std::make_pair( 4, &SGPP::pde::UpDownFourOpDims::specialOpTwo ));
       fnMap.insert( std::make_pair( 8, &SGPP::pde::UpDownFourOpDims::specialOpOne ));
 
-      // doubles
+      // float_ts
       fnMap.insert( std::make_pair( 3, &SGPP::pde::UpDownFourOpDims::specialOpThreeAndOpFour ));
       fnMap.insert( std::make_pair( 5, &SGPP::pde::UpDownFourOpDims::specialOpTwoAndOpFour ));
       fnMap.insert( std::make_pair( 6, &SGPP::pde::UpDownFourOpDims::specialOpTwoAndOpThree ));

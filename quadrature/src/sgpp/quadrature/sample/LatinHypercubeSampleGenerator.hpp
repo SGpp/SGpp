@@ -20,7 +20,7 @@ namespace SGPP {
     /**
      * The class NaiveSampleGenerator implements a simple MonteCarlo sample
      * generator. A sample is generated using the standard random number
-     * generator from cmath and transforming the values to double range 0.0 to
+     * generator from cmath and transforming the values to float_t range 0.0 to
      * 1.0.
      */
     class LatinHypercubeSampleGenerator : public SampleGenerator {
@@ -64,7 +64,7 @@ namespace SGPP {
         size_t numberOfSamples;
         
         //
-        double sizeOfStrata;
+        float_t sizeOfStrata;
   
         //      
         std::vector< std::vector<size_t> > currentStrata;

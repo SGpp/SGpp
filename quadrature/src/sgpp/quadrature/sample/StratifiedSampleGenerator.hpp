@@ -56,7 +56,7 @@ namespace SGPP {
         size_t numberOfCurrentSample;
         
         // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]	
-        double* sizeOfStrata;
+        float_t* sizeOfStrata;
         
         /**
          * This method computes in which strata the next sample should be generated.

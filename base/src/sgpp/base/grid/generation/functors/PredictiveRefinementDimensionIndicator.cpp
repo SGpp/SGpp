@@ -20,7 +20,7 @@ namespace base {
 
 
 PredictiveRefinementDimensionIndicator::PredictiveRefinementDimensionIndicator(Grid* grid, DataMatrix* dataSet, DataVector* errorVector,
-    size_t refinements_num, double threshold, long unsigned int minSupportPoints): minSupportPoints_(minSupportPoints)
+    size_t refinements_num, float_t threshold, long unsigned int minSupportPoints): minSupportPoints_(minSupportPoints)
 {
   //find out what type of grid is used;
   gridType = determineGridType(grid);
@@ -33,13 +33,13 @@ PredictiveRefinementDimensionIndicator::PredictiveRefinementDimensionIndicator(G
   this->grid_ = grid;
 }
 
-double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::index_type* gridPoint)
+float_t PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::index_type* gridPoint)
 {
   //the actuall value of the errorIndicator
-  double errorIndicator = 0.0;
-  double denominator = 0.0;
-  double r22 = 0.0;
-  double r2phi = 0.0;
+  float_t errorIndicator = 0.0;
+  float_t denominator = 0.0;
+  float_t r22 = 0.0;
+  float_t r2phi = 0.0;
 
 
   //counter of contributions - for DEBUG purposes
@@ -53,13 +53,13 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
     //level, index and evaulation of a gridPoint in dimension d
     AbstractRefinement::level_t level = 0;
     AbstractRefinement::index_t index = 0;
-    double valueInDim;
+    float_t valueInDim;
     //if on the support of the grid point in all dim
     //if(isOnSupport(&floorMask,&ceilingMask,row))
     //{
     //counter for DEBUG
     //++counter;*****
-    double funcval = 1.0;
+    float_t funcval = 1.0;
 
     //calculate error Indicator
     for (size_t dim = 0; dim < gridPoint->dim() && funcval != 0; ++dim) {
@@ -69,7 +69,7 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 
       valueInDim = dataSet->get(row, dim);
 
-      funcval *=  std::max(0.0, basis.eval(level,
+      funcval *=  std::max(float_t(0), basis.eval(level,
                                            index,
                                            valueInDim));
 
@@ -93,7 +93,7 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
     // to match with OnlineRefDim, use this:
     //return (errorIndicator * errorIndicator) / denominator;
 
-    double a = (errorIndicator / denominator);
+    float_t a = (errorIndicator / denominator);
     return /*r2phi/denominator*/ /*2*r22 - 2*a*r2phi + a*a*denominator*/ a * (2 * r2phi - a * denominator);
     //return fabs(a);
   }
@@ -104,19 +104,19 @@ double PredictiveRefinementDimensionIndicator::operator ()(AbstractRefinement::i
 }
 
 
-double PredictiveRefinementDimensionIndicator::operator ()(GridStorage* storage, size_t seq)
+float_t PredictiveRefinementDimensionIndicator::operator ()(GridStorage* storage, size_t seq)
 {
   return errorVector->get(seq);
 }
 
 
-double PredictiveRefinementDimensionIndicator::runOperator(GridStorage* storage, size_t seq)
+float_t PredictiveRefinementDimensionIndicator::runOperator(GridStorage* storage, size_t seq)
 {
   return (*this)(storage->get(seq));
 }
 
 
-double PredictiveRefinementDimensionIndicator::basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, double value)
+float_t PredictiveRefinementDimensionIndicator::basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, float_t value)
 {
 
   switch (gridType) {
@@ -149,12 +149,12 @@ size_t PredictiveRefinementDimensionIndicator::getRefinementsNum()
   return refinementsNum;
 }
 
-double PredictiveRefinementDimensionIndicator::getRefinementThreshold()
+float_t PredictiveRefinementDimensionIndicator::getRefinementThreshold()
 {
   return threshold;
 }
 
-double PredictiveRefinementDimensionIndicator::start()
+float_t PredictiveRefinementDimensionIndicator::start()
 {
   return 0.0;
 }
@@ -202,7 +202,7 @@ bool PredictiveRefinementDimensionIndicator::isOnSupport(
   //go through all cols of the dataset
   //=> go through all samples in dataset and check if in dim "col" "valueInDim" is on support
   for (size_t col = 0; col < dataSet->getNcols(); ++col) {
-    double valueInDim = dataSet->get(row, col);
+    float_t valueInDim = dataSet->get(row, col);
 
     if (valueInDim < floorMask->get(col) || valueInDim >= ceilingMask->get(col) ) {
       return false;

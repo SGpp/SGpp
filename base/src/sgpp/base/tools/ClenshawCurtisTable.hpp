@@ -40,18 +40,18 @@ namespace SGPP {
          * @param l       level of the grid point
          * @param i       index of the grid point (can be even)
          */
-        inline double getPoint(LT l, IT i) const {
+        inline float_t getPoint(LT l, IT i) const {
           if (l <= maxLevel) {
             return table[(1 << l) + l + i - 1];
           } else {
-            const double h = 1.0 / static_cast<double>(1 << l);
-            return (cos(M_PI * (1.0 - static_cast<double>(i) * h)) + 1.0) / 2.0;
+            const float_t h = 1.0 / static_cast<float_t>(1 << l);
+            return (cos(M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
           }
         }
 
       protected:
         /// lookup table
-        std::vector<double> table;
+        std::vector<float_t> table;
         /// maximal level
         LT maxLevel;
     };

@@ -75,11 +75,11 @@ namespace SGPP {
       return nDim;
     }
 
-    double BoundingBox::getIntervalWidth(size_t dimension) {
+    float_t BoundingBox::getIntervalWidth(size_t dimension) {
       return dimensionBoundaries[dimension].rightBoundary - dimensionBoundaries[dimension].leftBoundary;
     }
 
-    double BoundingBox::getIntervalOffset(size_t dimension) {
+    float_t BoundingBox::getIntervalOffset(size_t dimension) {
       return dimensionBoundaries[dimension].leftBoundary;
     }
 

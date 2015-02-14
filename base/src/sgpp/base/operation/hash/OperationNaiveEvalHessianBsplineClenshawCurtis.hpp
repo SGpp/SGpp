@@ -48,8 +48,8 @@ namespace SGPP {
          * @param[out]  hessian     Hessian matrix of linear combination
          * @return                  value of linear combination
          */
-        virtual double evalHessian(DataVector& alpha,
-                                   const std::vector<double>& point,
+        virtual float_t evalHessian(DataVector& alpha,
+                                   const std::vector<float_t>& point,
                                    DataVector& gradient, DataMatrix& hessian);
 
       protected:

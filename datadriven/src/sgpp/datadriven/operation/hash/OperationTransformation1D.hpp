@@ -32,7 +32,7 @@ public:
 	 * @param coord1d
 	 * @return
 	 */
-	virtual double doTransformation1D(base::DataVector* alpha1d, double coord1d) = 0;
+	virtual float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d) = 0;
 };
 
 }

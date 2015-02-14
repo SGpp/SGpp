@@ -111,7 +111,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
                                  const SGPP::base::RegularGridConfiguration& GridConfig,
                                  const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                  const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                                 const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const double lambda) {
+                                 const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float_t lambda) {
     LearnerTiming result;
 
     if (trainDataset.getNrows() != classes.getSize()) {
@@ -131,7 +131,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
     GFlop_ = 0.0;
     GByte_ = 0.0;
 
-    double oldAcc = 0.0;
+    float_t oldAcc = 0.0;
 
     // Construct Grid
     if (alpha_ != NULL)
@@ -163,7 +163,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
     } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
         myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
     } else {
-        throw base::application_exception("LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
+        throw base::application_exception("LearnerBase::train: An unsupported SLE solver type was chosen!");
     }
 
     // Pre-Procession
@@ -196,7 +196,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
             DMSystem->rebuildLevelAndIndex();
 
             alpha_->resizeZero(grid_->getSize());
-            double refineTime = myStopwatch2->stop();
+            float_t refineTime = myStopwatch2->stop();
 
             if (isVerbose_)
                 std::cout << "New Grid Size: " << grid_->getSize() << " (Refinement took " << refineTime << " secs)"
@@ -216,7 +216,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
 
         myCG->solve(*DMSystem, *alpha_, b, true, false, 0.0);
 
-        double stopTime = myStopwatch->stop();
+        float_t stopTime = myStopwatch->stop();
         this->execTime_ += stopTime;
         this->stepExecTime_ = stopTime;
 
@@ -233,7 +233,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
             postProcessing(trainDataset, SolverConfigFinal.type_, myCG->getNumberIterations());
         }
 
-        double tmp1, tmp2, tmp3, tmp4;
+        float_t tmp1, tmp2, tmp3, tmp4;
         DMSystem->getTimers(tmp1, tmp2, tmp3, tmp4);
         result.timeComplete_ = execTime_;
         result.timeMultComplete_ = tmp1;
@@ -246,7 +246,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
         result.GByte_ = GByte_;
 
         if (testAccDuringAdapt) {
-            double acc = getAccuracy(trainDataset, classes);
+            float_t acc = getAccuracy(trainDataset, classes);
 
             if (isVerbose_) {
                 if (isRegression_) {
@@ -295,7 +295,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::bas
 
 LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::base::DataVector& classes,
                                  const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-                                 const double lambda) {
+                                 const float_t lambda) {
     SGPP::base::AdpativityConfiguration AdaptConfig;
 
     AdaptConfig.maxLevelType_ = false;
@@ -320,8 +320,8 @@ void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
     throw base::application_exception("LearnerBase::store: This method isn't implemented, yet!");
 }
 
-double LearnerBase::getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
-                                const double threshold) {
+float_t LearnerBase::getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
+                                const float_t threshold) {
     // evaluate test dataset
 
     SGPP::base::DataVector classesComputed(testDataset.getNrows());
@@ -330,9 +330,9 @@ double LearnerBase::getAccuracy(SGPP::base::DataMatrix& testDataset, const SGPP:
     return getAccuracy(classesComputed, classesReference, threshold);
 }
 
-double LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
-                                const SGPP::base::DataVector& classesReference, const double threshold) {
-    double result = -1.0;
+float_t LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
+                                const SGPP::base::DataVector& classesReference, const float_t threshold) {
+    float_t result = -1.0;
 
     if (classesComputed.getSize() != classesReference.getSize()) {
         throw base::application_exception("LearnerBase::getAccuracy: lengths of classes vectors do not match!");
@@ -343,7 +343,7 @@ double LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
         tmp.sub(classesReference);
         tmp.sqr();
         result = tmp.sum();
-        result /= static_cast<double>(tmp.getSize());
+        result /= static_cast<float_t>(tmp.getSize());
     } else {
         size_t correct = 0;
 
@@ -354,14 +354,14 @@ double LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
             }
         }
 
-        result = static_cast<double>(correct) / static_cast<double>(classesComputed.getSize());
+        result = static_cast<float_t>(correct) / static_cast<float_t>(classesComputed.getSize());
     }
 
     return result;
 }
 
 ClassificatorQuality LearnerBase::getCassificatorQuality(SGPP::base::DataMatrix& testDataset,
-        const SGPP::base::DataVector& classesReference, const double threshold) {
+        const SGPP::base::DataVector& classesReference, const float_t threshold) {
     // evaluate test dataset
     SGPP::base::DataVector classesComputed(testDataset.getNrows());
     predict(testDataset, classesComputed);
@@ -370,7 +370,7 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(SGPP::base::DataMatrix&
 }
 
 ClassificatorQuality LearnerBase::getCassificatorQuality(const SGPP::base::DataVector& classesComputed,
-        const SGPP::base::DataVector& classesReference, const double threshold) {
+        const SGPP::base::DataVector& classesReference, const float_t threshold) {
     ClassificatorQuality result;
 
     if (isRegression_) {
@@ -429,7 +429,7 @@ void LearnerBase::setIsVerbose(const bool isVerbose) {
     isVerbose_ = isVerbose;
 }
 
-std::vector<std::pair<size_t, double> > LearnerBase::getRefinementExecTimes() {
+std::vector<std::pair<size_t, float_t> > LearnerBase::getRefinementExecTimes() {
     return this->ExecTimeOnStep;
 }
 

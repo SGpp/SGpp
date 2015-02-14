@@ -151,7 +151,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     // iterate though the subspaces for information (can be removed)
     //////////////////////////////////////////////////////////////////
 
-    /*	double averageSubspaceUtilizationPercent = 0;
+    /*	float_t averageSubspaceUtilizationPercent = 0;
      int averagePointsOnSubspace = 0;
 
      for (typename std::map<size_t, SubspaceNode>::iterator it = allLevelsMap.begin();
@@ -165,7 +165,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
      gridPointsOnLevel *= dimTemp;
      }
 
-     double subspaceUtilizationPercent = (subspace.actualGridPointsOnLevel / (double) gridPointsOnLevel) * 100.0;
+     float_t subspaceUtilizationPercent = (subspace.actualGridPointsOnLevel / (float_t) gridPointsOnLevel) * 100.0;
      cout << level.toString() << " populated: " << subspace.actualGridPointsOnLevel;
      cout << " (max: " << gridPointsOnLevel << ")";
      cout << " -> " << subspaceUtilizationPercent << "%" << endl;
@@ -173,9 +173,9 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
      averagePointsOnSubspace += subspace.actualGridPointsOnLevel;
      }
 
-     double overallUtilization = averageSubspaceUtilizationPercent / (double) this->allLevels->getNrows();
+     float_t overallUtilization = averageSubspaceUtilizationPercent / (float_t) this->allLevels->getNrows();
      cout << "averageSubspaceUtilizationPercent: " << overallUtilization << "%" << endl;
-     double overallPointsOnSubspace = averagePointsOnSubspace / (double) this->allLevels->getNrows();
+     float_t overallPointsOnSubspace = averagePointsOnSubspace / (float_t) this->allLevels->getNrows();
      cout << "averagePointsOnSubspace: " << overallPointsOnSubspace << endl;
      */
 
@@ -315,7 +315,7 @@ void OperationMultipleEvalSubspaceSimple::createFlatStorage() {
     }
 
     // the linearLevelIndex in allSubspaces encodes the start of the individual level array
-    this->allSurplusses = new double[totalGridPoints];
+    this->allSurplusses = new float_t[totalGridPoints];
 }
 
 void OperationMultipleEvalSubspaceSimple::setCoefficients(base::DataVector &surplusVector) {
@@ -324,7 +324,7 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(base::DataVector &surp
     std::vector<size_t> index(dim);
 
     for (size_t i = 0; i < this->totalGridPoints; i++) {
-        this->allSurplusses[i] = std::numeric_limits<double>::quiet_NaN();
+        this->allSurplusses[i] = std::numeric_limits<float_t>::quiet_NaN();
     }
 
     base::level_t curLevel;
@@ -358,7 +358,7 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector &result) {
             index[d] = curIndex;
             maxIndex[d] = 1 << curLevel;
         }
-        double surplus;
+        float_t surplus;
         bool isVirtual;
         this->getSurplus(level, maxIndex, index, surplus, isVirtual);
 
@@ -367,20 +367,20 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector &result) {
 }
 
 void OperationMultipleEvalSubspaceSimple::setSurplus(std::vector<size_t> &level, std::vector<size_t> &maxIndices,
-        std::vector<size_t> &index, double value) {
+        std::vector<size_t> &index, float_t value) {
     size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
     size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
     uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>(levelFlat)];
-    double *levelArray = &(this->allSurplusses[linearLevelIndex]);
+    float_t *levelArray = &(this->allSurplusses[linearLevelIndex]);
     levelArray[indexFlat] = value;
 }
 
 void OperationMultipleEvalSubspaceSimple::getSurplus(std::vector<size_t> &level, std::vector<size_t> &maxIndices,
-        std::vector<size_t> &index, double &value, bool &isVirtual) {
+        std::vector<size_t> &index, float_t &value, bool &isVirtual) {
     size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
     size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
     uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>(levelFlat)];
-    double *levelArray = &(this->allSurplusses[linearLevelIndex]);
+    float_t *levelArray = &(this->allSurplusses[linearLevelIndex]);
     value = levelArray[indexFlat];
     if (std::isnan(value)) {
         isVirtual = true;

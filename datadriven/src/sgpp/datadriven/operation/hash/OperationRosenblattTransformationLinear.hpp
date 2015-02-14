@@ -56,8 +56,8 @@ protected:
 	void doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in,
 			size_t dim_x, base::DataVector* coords1d, base::DataVector* cdfs1d,
 			size_t& curr_dim);
-	virtual double doTransformation1D(base::Grid* grid1d,
-			base::DataVector* alpha1d, double coord1d);
+	virtual float_t doTransformation1D(base::Grid* grid1d,
+			base::DataVector* alpha1d, float_t coord1d);
 };
 
 }

@@ -26,11 +26,11 @@ namespace SGPP {
       rec(source, result, index, dim, 0.0, 0.0);
     }
 
-    void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       // current position on the grid
       size_t seq = index.seq();
       // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      double fm = source[seq];
+      float_t fm = source[seq];
 
       // recursive calls for the right and left side of the current node
       if (index.hint() == false) {

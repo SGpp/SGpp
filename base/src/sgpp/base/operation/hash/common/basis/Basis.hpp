@@ -15,7 +15,7 @@ namespace base {
 	template<class LT, class IT>
 	class Basis {
       public:
-		virtual double eval(LT level, IT index, double p) = 0;
+		virtual float_t eval(LT level, IT index, float_t p) = 0;
 		virtual ~Basis(){};
 		//Basis();
       /*private:

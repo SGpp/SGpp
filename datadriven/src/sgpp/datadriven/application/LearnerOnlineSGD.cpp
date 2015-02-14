@@ -98,8 +98,8 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
 
     // resize train dataset for vectorization (padding)
     /*size_t oldSize = mainTrainDataset_.getNrows();
-    double chunkSize = static_cast<double>(SGPP::parallel::X86SimdKernelBase::getChunkDataPoints());
-    size_t newSize = static_cast<size_t>(std::ceil(static_cast<double>(mainTrainDataset_.getNrows()) / chunkSize) * chunkSize);
+    float_t chunkSize = static_cast<float_t>(SGPP::parallel::X86SimdKernelBase::getChunkDataPoints());
+    size_t newSize = static_cast<size_t>(std::ceil(static_cast<float_t>(mainTrainDataset_.getNrows()) / chunkSize) * chunkSize);
     mainTrainDataset_.resize(newSize);
     mainClasses_.resize(newSize);
 
@@ -214,7 +214,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
     {
         functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
                   config.refinementNumPoints,
-                  -std::numeric_limits<double>::infinity());
+                  -std::numeric_limits<float_t>::infinity());
         WeightedErrorRefinementFunctor* wfunctor =
             (WeightedErrorRefinementFunctor*) functor;
         wfunctor->setTrainDataset(minibatchTrainDataset);
@@ -239,7 +239,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
     {
         functor = new PersistentErrorRefinementFunctor(alphaAvg, grid_,
                   config.refinementNumPoints,
-                  -std::numeric_limits<double>::infinity());
+                  -std::numeric_limits<float_t>::infinity());
         PersistentErrorRefinementFunctor* pfunctor =
             (PersistentErrorRefinementFunctor*) functor;
         pfunctor->setTrainDataset(minibatchTrainDataset);
@@ -329,7 +329,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
                         i < config.numIterations;
                         i++)
                 {
-                    currentGamma = config.gamma*pow(1+config.gamma*config.lambda*(double)currentRunIterations, -2.0/3);
+                    currentGamma = config.gamma*pow(1+config.gamma*config.lambda*(float_t)currentRunIterations, -2.0/3);
                     performSGDStep();
                     currentRunIterations++;
                 }
@@ -339,11 +339,11 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
             if(config.refinementCondition == "SMOOTHED_ERROR_DECLINE")
             {
 
-                double oldErrorSum = 0;
-                double oldErrorLast = 0;
+                float_t oldErrorSum = 0;
+                float_t oldErrorLast = 0;
 
-                double currentMinibatchError = 0;
-                double ratio = 1;
+                float_t currentMinibatchError = 0;
+                float_t ratio = 1;
 
                 do
                 {
@@ -358,7 +358,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
 
                         // Calculate average of old minibatch errors
                         for (
-                            std::list<double>::iterator it = smoothedErrorDeclineBuffer.begin();
+                            std::list<float_t>::iterator it = smoothedErrorDeclineBuffer.begin();
                             it != smoothedErrorDeclineBuffer.end();
                             ++it
                         )
@@ -374,7 +374,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
 
                         // Update ratio
                         ratio = (oldErrorLast - currentMinibatchError) / oldErrorSum;
-                        ratio *= 1.0 / (double) config.smoothedErrorDeclineBufferSize;
+                        ratio *= 1.0 / (float_t) config.smoothedErrorDeclineBufferSize;
 
                     }
                     else
@@ -397,7 +397,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
             {
             // FIXME: add different cases!!!!!!!
             // computation of the error vector on minibatch
-                double accuracy = getError(minibatchTrainDataset,
+                float_t accuracy = getError(minibatchTrainDataset,
                                            minibatchClasses,
                                            config.errorType,
                                            minibatchError, false);
@@ -432,13 +432,13 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
 
             size_t totalIterations = currentRunIterations + countRun * numMainData;
 
-            //double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
+            //float_t err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
             // FIXME: make sure to compute it only once
-            double err1 = getError(&mainTrainDatasetT, mainClasses, config.errorType, NULL, true);
-            double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
-            // double err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
-            // double err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL, false);
-            // double err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
+            float_t err1 = getError(&mainTrainDatasetT, mainClasses, config.errorType, NULL, true);
+            float_t err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
+            // float_t err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
+            // float_t err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL, false);
+            // float_t err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
 
             /*
             ferr0 << totalIterations << "," << err0 << std::endl;
@@ -455,7 +455,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
             grid_->serialize(grid_str);
             fgrid << grid_str << std::endl;
 
-            double percent = (double) totalIterations / ((int) numMainData * config.numRuns);
+            float_t percent = (float_t) totalIterations / ((int) numMainData * config.numRuns);
             percent *= 100;
             if (percent > 100)
             {
@@ -566,7 +566,7 @@ void LearnerOnlineSGD::train(SGPP::base::DataMatrix& mainTrainDataset_,
     delete functor;
 }
 
-double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
+float_t LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
                                   SGPP::base::DataVector* classes, std::string errorType, SGPP::base::DataVector* error, bool useEvalVectorized)
 {
     using namespace SGPP::base;
@@ -606,7 +606,7 @@ double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
         delete eval;
     //}
 
-    double res = -1.0;
+    float_t res = -1.0;
 
     if(errorType == "MSE")
     {
@@ -616,13 +616,13 @@ double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
         }
 
         // Error
-        double sum = 0;
+        float_t sum = 0;
         for (unsigned int i = 0; i < numData; i++)
         {
             sum += error->get(i) * error->get(i);
         }
 
-        res = (sum / (double) numData);
+        res = (sum / (float_t) numData);
 
     }
     if(errorType == "ACCURACY")
@@ -634,7 +634,7 @@ double LearnerOnlineSGD::getError(SGPP::base::DataMatrix* trainDataset,
             error->set(i, classes->get(i) - result.get(i));
 
         }
-        res = static_cast<double>(correct) / static_cast<double>(numData);
+        res = static_cast<float_t>(correct) / static_cast<float_t>(numData);
 
     }
 
@@ -653,7 +653,7 @@ void LearnerOnlineSGD::performSGDStep()
     // Get x and y pair
     DataVector x(numMainDim);
     mainTrainDataset->getRow(SGDIndexOrder[SGDCurrentIndex], x);
-    double y = mainClasses->get(SGDIndexOrder[SGDCurrentIndex]);
+    float_t y = mainClasses->get(SGDIndexOrder[SGDCurrentIndex]);
 
     // Store in minibatch
     pushMinibatch(x, y);
@@ -683,17 +683,17 @@ void LearnerOnlineSGD::performSGDStep()
     multEval->multTranspose(singleAlpha, delta);
     delete multEval;
 
-    double residual = delta.dotProduct(*alpha_) - y;
+    float_t residual = delta.dotProduct(*alpha_) - y;
 
     alpha_->mult(1-currentGamma * config.lambda);
     alpha_->axpy(-currentGamma * residual, delta);
 
-    //double mu = 0.1; // boring exponential smoothing
+    //float_t mu = 0.1; // boring exponential smoothing
 
     // L. Bottou exciting smoothing
     size_t t1 = (currentRunIterations > numMainDim+1) ? currentRunIterations - numMainDim : 1;
     size_t t2 = (currentRunIterations > numMainData+1) ? currentRunIterations - numMainData: 1;
-    double mu = (t1>t2) ? static_cast<double>(t1) : static_cast<double>(t2);
+    float_t mu = (t1>t2) ? static_cast<float_t>(t1) : static_cast<float_t>(t2);
     mu = 1.0/mu;
 
     alphaAvg->mult(1-mu);
@@ -714,7 +714,7 @@ void LearnerOnlineSGD::performSGDStep()
 }*/
 }
 
-void LearnerOnlineSGD::pushMinibatch(SGPP::base::DataVector& x, double y)
+void LearnerOnlineSGD::pushMinibatch(SGPP::base::DataVector& x, float_t y)
 {
     static size_t next_idx = 0;
     if (minibatchTrainDataset->getUnused() > 0)

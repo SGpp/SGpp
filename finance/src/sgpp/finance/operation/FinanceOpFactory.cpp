@@ -266,7 +266,7 @@ namespace SGPP {
         throw base::factory_exception("OperationHestonH is not implemented for this grid type.");
     }
 
-    base::OperationMatrix* createOperationHestonKLog(base::Grid& grid, double**** * coef) {
+    base::OperationMatrix* createOperationHestonKLog(base::Grid& grid, float_t**** * coef) {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new finance::OperationHestonKLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearBoundary") == 0

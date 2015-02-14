@@ -36,16 +36,16 @@ private:
     size_t subspaceSize = -1;
 
     size_t totalGridPoints = 0;
-    double *allSurplusses = nullptr;
+    float_t *allSurplusses = nullptr;
     std::map<uint32_t, uint32_t> allSurplussesIndexMap;
 
     void prepareSubspaceIterator();
 
     void createFlatStorage();
 
-    void setSurplus(std::vector<size_t>  &level, std::vector<size_t> &maxIndices, std::vector<size_t> &index, double value);
+    void setSurplus(std::vector<size_t>  &level, std::vector<size_t> &maxIndices, std::vector<size_t> &index, float_t value);
 
-    void getSurplus(std::vector<size_t> &level, std::vector<size_t> &maxIndices, std::vector<size_t> &index, double &value, bool &isVirtual);
+    void getSurplus(std::vector<size_t> &level, std::vector<size_t> &maxIndices, std::vector<size_t> &index, float_t &value, bool &isVirtual);
 
     void setCoefficients(base::DataVector &surplusVector);
 
@@ -58,7 +58,7 @@ private:
 
     size_t flattenLevel(size_t dim, size_t maxLevel, std::vector<size_t> &level);
 
-    static inline size_t calculateIndexComponent(size_t dim, double unadjusted) {
+    static inline size_t calculateIndexComponent(size_t dim, float_t unadjusted) {
         //implies flooring
         size_t rounded = static_cast<size_t>(unadjusted);
 

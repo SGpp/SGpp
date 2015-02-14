@@ -35,7 +35,7 @@ namespace SGPP {
          */
         virtual ~OperationEvalLinearBoundary() {}
 
-        virtual double eval(DataVector& alpha, std::vector<double>& point);
+        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point);
 
       protected:
         /// Pointer to GridStorage object

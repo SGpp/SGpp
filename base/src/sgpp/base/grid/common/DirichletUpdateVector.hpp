@@ -86,14 +86,14 @@ namespace SGPP {
         * @param updateVector the vector that should be updated
         * @param value the value that is multiplied with the value on the boundaries
         */
-        void multiplyBoundary(DataVector& updateVector, double value);
+        void multiplyBoundary(DataVector& updateVector, float_t value);
 
         /**
          * Multiplies the values of the points in the vector that meet the predicate condition by the constant value.
          * Calling this method with a function pointer that returns true if point->isInnerPoint() and false otherwise gives the same result as
          * the multiplyBoundary method.
          */
-        void multiply(DataVector& updateVector, double value, bool (*predicate)(GridIndex*, GridStorage*));
+        void multiply(DataVector& updateVector, float_t value, bool (*predicate)(GridIndex*, GridStorage*));
     };
 
   }

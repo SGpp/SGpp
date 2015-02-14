@@ -19,10 +19,10 @@
 namespace SGPP {
   namespace finance {
 
-    HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double sigma,
-        double theta, double a, double TimestepSize, std::string OperationMode,
-        bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel,
+    HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, float_t sigma,
+        float_t theta, float_t a, float_t TimestepSize, std::string OperationMode,
+        bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel,
         int dim_HW) {
       this->BoundGrid = &SparseGrid;
       this->alpha_complete = &alpha;

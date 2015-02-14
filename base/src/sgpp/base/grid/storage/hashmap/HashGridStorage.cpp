@@ -556,7 +556,7 @@ namespace SGPP {
 #if USE_DOUBLE_PRECISION
             uint64_t intmask = 0x0000000000000000;
 #else
-            uint32_t intMask = 0x00000000;
+            uint32_t intmask = 0x00000000;
 #endif
             mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
             offset.set(i, current_dim, 1.0);
@@ -567,7 +567,7 @@ namespace SGPP {
 #if USE_DOUBLE_PRECISION
             uint64_t intmask = 0x0000000000000000;
 #else
-            uint32_t intMask = 0x00000000;
+            uint32_t intmask = 0x00000000;
 #endif
             mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
             offset.set(i, current_dim, 2.0);
@@ -578,7 +578,7 @@ namespace SGPP {
 #if USE_DOUBLE_PRECISION
             uint64_t intmask = 0x0000000000000000;
 #else
-            uint32_t intMask = 0x00000000;
+            uint32_t intmask = 0x00000000;
 #endif
             mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
             offset.set(i, current_dim, 1.0);
@@ -588,7 +588,7 @@ namespace SGPP {
 #if USE_DOUBLE_PRECISION
             uint64_t intmask = 0x8000000000000000;
 #else
-            uint32_t intMask = 0x80000000;
+            uint32_t intmask = 0x80000000;
 #endif
             mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
             offset.set(i, current_dim, 1.0);

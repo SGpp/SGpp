@@ -14,7 +14,7 @@ namespace SGPP {
   namespace base {
 
     ANOVACoarseningFunctor::ANOVACoarseningFunctor(DataVector* alpha, size_t
-        /*removements_num*/, double threshold, GridStorage* storage) : alpha(alpha),
+        /*removements_num*/, float_t threshold, GridStorage* storage) : alpha(alpha),
       threshold(threshold) {
       removements_num = 0;
       int num_anova_components = 1 << storage->dim();
@@ -31,8 +31,8 @@ namespace SGPP {
 
       GridStorage::index_type index;
       GridStorage::grid_map_iterator end_iter = storage->end();
-      double L2_value;
-      double total_L2_value = 0.0;
+      float_t L2_value;
+      float_t total_L2_value = 0.0;
       size_t seq;
 
       for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++) {
@@ -42,9 +42,9 @@ namespace SGPP {
 
         if (level_sum > static_cast<int>(storage->dim())) {
           //Ignore the ANOVA Component f0
-          double dim = static_cast<double>(storage->dim());
+          float_t dim = static_cast<float_t>(storage->dim());
           L2_value = fabs(alpha->get(seq))
-                     * pow(2.0, static_cast<double>(dim - level_sum) / 2)
+                     * pow(2.0, static_cast<float_t>(dim - level_sum) / 2)
                      / pow(3.0, dim / 2.0);
           int anove_component = getANOVAComponentIndex(index);
           anova_variances[anove_component].value += L2_value;
@@ -54,9 +54,9 @@ namespace SGPP {
       }
 
       std::sort(anova_variances.begin(), anova_variances.end(), sorter);
-      double cut_off_variance = threshold * total_L2_value;
+      float_t cut_off_variance = threshold * total_L2_value;
 
-      double cumul_variance = 0.0;
+      float_t cumul_variance = 0.0;
       i = 0;
 
       for (it = anova_variances.begin(); it != anova_variances.end(); it++) {
@@ -92,12 +92,12 @@ namespace SGPP {
     }
 
 
-    double ANOVACoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
+    float_t ANOVACoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
 
       return anova_variances_pointers[getANOVAComponentIndex(*(*storage)[seq])]->refinement_value;
     }
 
-    double ANOVACoarseningFunctor::start() {
+    float_t ANOVACoarseningFunctor::start() {
       return 0.5;
     }
 
@@ -105,7 +105,7 @@ namespace SGPP {
       return this->removements_num;
     }
 
-    double ANOVACoarseningFunctor::getCoarseningThreshold() {
+    float_t ANOVACoarseningFunctor::getCoarseningThreshold() {
       return 0.5;
     }
 

@@ -48,7 +48,7 @@ namespace SGPP {
          * @param result the result vector of the matrix vector multiplication
          */
         void mult_transposed(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result) {
-          typedef std::vector<std::pair<size_t, double> > IndexValVector;
+          typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
           result.setAll(0.0);
 
@@ -56,7 +56,7 @@ namespace SGPP {
           {
             size_t source_size = source.getSize();
             DataVector privateResult(result);
-            std::vector<double> line;
+            std::vector<float_t> line;
             IndexValVector vec;
             GetAffectedBasisFunctions<BASIS> ga(storage);
 
@@ -97,7 +97,7 @@ namespace SGPP {
          * @param result the result vector of the matrix vector multiplication
          */
         void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result) {
-          typedef std::vector<std::pair<size_t, double> > IndexValVector;
+          typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
           result.setAll(0.0);
 
@@ -105,7 +105,7 @@ namespace SGPP {
           {
             size_t result_size = result.getSize();
 
-            std::vector<double> line;
+            std::vector<float_t> line;
             IndexValVector vec;
 
             GetAffectedBasisFunctions<BASIS> ga(storage);

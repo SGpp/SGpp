@@ -17,13 +17,13 @@ namespace SGPP {
     VariableDiscountFactor::~VariableDiscountFactor() {
     }
 
-    void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, double T) {
-      double tmp;
+    void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, float_t T) {
+      float_t tmp;
 
       for (size_t i = 0; i < storage->size(); i++) {
         std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
         std::stringstream coordsStream(coords);
-        double dblFuncValues[2];
+        float_t dblFuncValues[2];
 
         for (size_t j = 0; j < 2; j++) {
           coordsStream >> tmp;

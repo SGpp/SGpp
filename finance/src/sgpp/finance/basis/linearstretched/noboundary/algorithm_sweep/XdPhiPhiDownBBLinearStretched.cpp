@@ -26,21 +26,21 @@ namespace SGPP {
     }
 
 
-    void XdPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void XdPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       size_t seq = index.seq();
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
       //get the positions of the current index as well as its left and right neighbors
-      double posl = 0, posr = 0, posc = 0;
+      float_t posl = 0, posr = 0, posc = 0;
       this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl, posr );
 
-      double baseLength = posr - posl;
-      double leftLength = posc - posl;
+      float_t baseLength = posr - posl;
+      float_t leftLength = posc - posl;
 
       result[seq] = fl * (-1.0 / 6.0) * (posc + posl + posr) - fr * (-1.0 / 6.0) * (posc + posl + posr)
                     - (1.0 / 6.0) * baseLength * alpha_value; // diagonal entry
@@ -49,7 +49,7 @@ namespace SGPP {
 
 
       // dehierarchisation
-      double fm =  (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
+      float_t fm =  (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
 
 
       if (!index.hint()) {

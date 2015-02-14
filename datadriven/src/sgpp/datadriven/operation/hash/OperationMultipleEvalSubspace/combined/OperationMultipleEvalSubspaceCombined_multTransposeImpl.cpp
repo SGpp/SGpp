@@ -22,11 +22,11 @@ void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVe
     #pragma omp barrier
 
     size_t dim = this->paddedDataset->getNcols();
-    const double * const datasetPtr = this->paddedDataset->getPointer();
+    const float_t * const datasetPtr = this->paddedDataset->getPointer();
 
     size_t totalThreadNumber = X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING;
 
-    double *evalIndexValuesAll = new double[(dim + 1) * totalThreadNumber];
+    float_t *evalIndexValuesAll = new float_t[(dim + 1) * totalThreadNumber];
     for (size_t i = 0; i < (dim + 1) * totalThreadNumber; i++) {
         evalIndexValuesAll[i] = 1.0;
     }
@@ -43,9 +43,9 @@ void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVe
     size_t levelIndices[X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING];
     //size_t nextIterationToRecalcReferences[X86COMBINED_PARALLEL_DATA_POINTS + X86COMBINED_VEC_PADDING];
 
-    double *listSubspace = new double[this->maxGridPointsOnLevel];
+    float_t *listSubspace = new float_t[this->maxGridPointsOnLevel];
     for (size_t i = 0; i < this->maxGridPointsOnLevel; i++) {
-        listSubspace[i] = std::numeric_limits<double>::quiet_NaN();
+        listSubspace[i] = std::numeric_limits<float_t>::quiet_NaN();
     }
 
     /*uint64_t jumpCount = 0;
@@ -69,7 +69,7 @@ void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVe
             if (subspace.type == SubspaceNodeCombined::SubspaceType::LIST) {
 
                 //fill with surplusses
-                for (std::pair<uint32_t, double> tuple : subspace.indexFlatSurplusPairs) {
+                for (std::pair<uint32_t, float_t> tuple : subspace.indexFlatSurplusPairs) {
                     //accumulator that are later added to the global surplusses
                     listSubspace[tuple.first] = 0.0;
                 }
@@ -94,7 +94,7 @@ void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVe
                 validIndices[i] = threadId;
                 levelIndices[threadId] = 0;
                 //nextIterationToRecalcReferences[threadId] = 0;
-                double *evalIndexValues = evalIndexValuesAll + (dim + 1) * threadId;
+                float_t *evalIndexValues = evalIndexValuesAll + (dim + 1) * threadId;
 
                 //for faster index flattening, last element is for padding
                 uint32_t *intermediates = intermediatesAll + (dim + 1) * threadId;
@@ -134,12 +134,12 @@ void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVe
 
                 //write results into the global surplus array
                 if (subspace.type == SubspaceNodeCombined::SubspaceType::LIST) {
-                    for (std::pair<uint32_t, double> &tuple : subspace.indexFlatSurplusPairs) {
+                    for (std::pair<uint32_t, float_t> &tuple : subspace.indexFlatSurplusPairs) {
                         if (listSubspace[tuple.first] != 0.0) {
                             #pragma omp atomic
                             tuple.second += listSubspace[tuple.first];
                         }
-                        listSubspace[tuple.first] = std::numeric_limits<double>::quiet_NaN();
+                        listSubspace[tuple.first] = std::numeric_limits<float_t>::quiet_NaN();
                     }
                 }
             }
@@ -176,7 +176,7 @@ void OperationMultipleEvalSubspaceCombined::multTransposeImpl(SGPP::base::DataVe
         cout << "avr. jump distance: " << (jumpDistance / jumpCount) << endl;
         cout << "actual evaluations: " << evaluationCounter << endl;
         cout << "skipped " << (jumpDistance) << " out of " << totalEvaluations << " total evaluations" << endl;
-        cout << "skipped " << ((double) (jumpDistance) / (double) totalEvaluations) * 100 << "% evaluations" << endl;
+        cout << "skipped " << ((float_t) (jumpDistance) / (float_t) totalEvaluations) * 100 << "% evaluations" << endl;
     } else {
         cout << "no jumps" << endl;
     }*/

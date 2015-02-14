@@ -28,9 +28,9 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of linear basis function
          */
-        inline double eval(LT l, IT i, double x) {
-          return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x -
-                                         static_cast<double>(i)), 0.0);
+        inline float_t eval(LT l, IT i, float_t x) {
+          return std::max(1.0 - std::abs(static_cast<float_t>(static_cast<IT>(1) << l) * x -
+                                         static_cast<float_t>(i)), 0.0);
         }
     };
 

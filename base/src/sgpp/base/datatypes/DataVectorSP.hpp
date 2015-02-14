@@ -45,7 +45,7 @@ namespace SGPP {
         /**
          * Create a new DataVector from a float array with size elements.
          *
-         * @param input double array that contains the data
+         * @param input float_t array that contains the data
          * @param size number of elements
          */
         DataVectorSP(float* input, size_t size);

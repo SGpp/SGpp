@@ -34,7 +34,7 @@ namespace SGPP {
          * @param mdim Marginalize in dimension mdim
          * @param xbar Point at which to conditionalize
          */
-        void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim, double xbar);
+        void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim, float_t xbar);
 
       protected:
         base::Grid* grid;

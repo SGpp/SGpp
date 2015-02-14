@@ -20,12 +20,12 @@ namespace SGPP {
     }
 
     void SqXdPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double q = this->stretching->getIntervalWidth(dim);
-      double t = this->stretching->getIntervalOffset(dim);
+      float_t q = this->stretching->getIntervalWidth(dim);
+      float_t t = this->stretching->getIntervalOffset(dim);
 
       // get boundary values
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
 
 
       if (!index.hint()) {
@@ -55,7 +55,7 @@ namespace SGPP {
         result[seq_left] = 0.0; // source[seq_left];
       } else {
         result[seq_left] = fl;
-        double bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+        float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
         result[seq_left] -= (1.0 / 3.0) * source[seq_right] * bbFactor;
       }
 

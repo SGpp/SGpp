@@ -23,7 +23,7 @@ namespace SGPP {
 
     LearnerDensityBasedReg::LearnerDensityBasedReg(
       SGPP::datadriven::LearnerRegularizationType& regularization,
-      double border) :
+      float_t border) :
       LearnerBase(true), CMode_(regularization), C_(NULL), maxValue_(0.), minValue_(
         0.), border_(border) {
 
@@ -35,7 +35,7 @@ namespace SGPP {
     }
 
     SGPP::datadriven::DMSystemMatrixBase* LearnerDensityBasedReg::createDMSystem(
-      SGPP::base::DataMatrix& trainDataset, double lambda) {
+      SGPP::base::DataMatrix& trainDataset, float_t lambda) {
       // Is not used
       return NULL;
     }
@@ -46,7 +46,7 @@ namespace SGPP {
         const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
         const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
         const SGPP::base::AdpativityConfiguration& AdaptConfig,
-        bool testAccDuringAdapt, const double lambda) {
+        bool testAccDuringAdapt, const float_t lambda) {
       LearnerTiming result;
 
       size_t dim = trainDataset.getNcols();
@@ -70,7 +70,7 @@ namespace SGPP {
       GFlop_ = 0.0;
       GByte_ = 0.0;
 
-      double oldAcc = 0.0;
+      float_t oldAcc = 0.0;
 
       SGPP::solver::SLESolver* myCG;
 
@@ -82,7 +82,7 @@ namespace SGPP {
                                         SolverConfigRefine.eps_);
       } else {
         throw base::application_exception(
-          "LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
+          "LearnerDensityBasedReg::train: An unsupported SLE solver type was chosen!");
       }
 
       SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
@@ -95,9 +95,9 @@ namespace SGPP {
       classes_copy.minmax(&minValue_, &maxValue_);
       classes_copy.normalize(border_);
       SGPP::base::DataMatrix densityMatrix(m, dim + 1);
-      double* densityData = densityMatrix.getPointer();
-      double* trainData = trainDataset.getPointer();
-      double* classesData = classes_copy.getPointer();
+      float_t* densityData = densityMatrix.getPointer();
+      float_t* trainData = trainDataset.getPointer();
+      float_t* classesData = classes_copy.getPointer();
       size_t acc = 0;
 
       for (size_t i = 0; i < m; i++) {
@@ -191,7 +191,7 @@ namespace SGPP {
         }
 
         if (testAccDuringAdapt) {
-          double acc = getAccuracy(trainDataset, classes);
+          float_t acc = getAccuracy(trainDataset, classes);
 
           if (isVerbose_)
             std::cout << "MSE (train): " << acc << std::endl;
@@ -240,7 +240,7 @@ namespace SGPP {
       SGPP::base::DataMatrix& testDataset) {
       SGPP::base::DataVector res(testDataset.getNrows());
 
-      double delta = (maxValue_ - minValue_) / (1 - 2 * border_);
+      float_t delta = (maxValue_ - minValue_) / (1 - 2 * border_);
 
       size_t dim = testDataset.getNcols();
       size_t m = testDataset.getNrows();
@@ -278,7 +278,7 @@ namespace SGPP {
         SGPP::base::OperationFirstMoment* fm =
           SGPP::op_factory::createOperationFirstMoment(*lastGrid);
 
-        double value_normalized = fm->doQuadrature(*lastAlpha);
+        float_t value_normalized = fm->doQuadrature(*lastAlpha);
 
         res.set(i, ((value_normalized - border_) * delta) + minValue_);
 

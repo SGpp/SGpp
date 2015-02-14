@@ -36,21 +36,21 @@ namespace SGPP {
      */
     struct LearnerTiming {
       /// complete learning time
-      double timeComplete_;
+      float_t timeComplete_;
       /// time to apply B (including data transfer to eventually used accelerators)
-      double timeMultComplete_;
+      float_t timeMultComplete_;
       /// pure application time of B
-      double timeMultCompute_;
+      float_t timeMultCompute_;
       /// time to apply B^T (including data transfer to eventually used accelerators)
-      double timeMultTransComplete_;
+      float_t timeMultTransComplete_;
       /// pure application time of B^T
-      double timeMultTransCompute_;
+      float_t timeMultTransCompute_;
       /// time of regularization
-      double timeRegularization_;
+      float_t timeRegularization_;
       /// number of executed Floating Point operations
-      double GFlop_;
+      float_t GFlop_;
       /// number of transferred Gbytes
-      double GByte_;
+      float_t GByte_;
     };
 
   }

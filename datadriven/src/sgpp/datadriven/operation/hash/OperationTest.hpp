@@ -45,7 +45,7 @@ namespace SGPP {
          * @param data the coordinates of the evaluation points
          * @param classes SGPP::base::DataVector holding the class information
          */
-        virtual double test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) = 0;
+        virtual float_t test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) = 0;
 
         /**
          * Computes the regression accuracy on some test data.
@@ -57,7 +57,7 @@ namespace SGPP {
          * @param data the coordinates of the evaluation points
          * @param refValues SGPP::base::DataVector holding the reference function values
          */
-        virtual double testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) = 0;
+        virtual float_t testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) = 0;
 
         /**
          * Computes the classification accuracy on some test data.
@@ -71,7 +71,7 @@ namespace SGPP {
          * @param classes SGPP::base::DataVector the holds the class information
          * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
          */
-        virtual double testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) = 0;
+        virtual float_t testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) = 0;
 
         /**
          * Computes the classification accuracy on some test data.

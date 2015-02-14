@@ -67,7 +67,7 @@ namespace SGPP {
          * @param fl function value on the left boundary, reference parameter
          * @param fr function value on the right boundary, reference parameter
          */
-        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr);
+        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr);
     };
 
 

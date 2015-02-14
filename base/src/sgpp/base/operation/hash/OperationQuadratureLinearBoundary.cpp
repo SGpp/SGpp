@@ -12,16 +12,16 @@
 namespace SGPP {
   namespace base {
 
-    double OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
-      double res = 0;
-      double tmp;
+    float_t OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
+      float_t res = 0;
+      float_t tmp;
       int nr_boundaries = 0; //nr. of boundaries a point touches
       int cur_ind, cur_lev;
       GridStorage::index_type index;
       GridStorage::grid_map_iterator end_iter = storage->end();
 
       for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++) {
-        tmp = pow(2.0, -static_cast<double>(iter->first->getLevelSum())) * alpha.get(iter->second);
+        tmp = pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) * alpha.get(iter->second);
 
         if (!iter->first->isInnerPoint()) {
           nr_boundaries = 0;

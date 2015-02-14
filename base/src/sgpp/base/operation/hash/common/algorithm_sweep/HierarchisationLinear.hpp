@@ -67,7 +67,7 @@ namespace SGPP {
          * @param fl left value of the current region regarded in this step of the recursion
          * @param fr right value of the current region regarded in this step of the recursion
          */
-        void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr);
+        void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr);
     };
 
     // namespace detail

@@ -52,9 +52,9 @@ namespace SGPP {
          * @param dim_HW of Hull-White (= where r value is taken)
          */
         ModifiedBlackScholesParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-            SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-            bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-            int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel,
+            SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode,
+            bool bLogTransform, bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+            int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel,
             int dim_HW);
 
         /**

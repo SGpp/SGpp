@@ -40,7 +40,7 @@ namespace SGPP {
          *
          * @param x the value for which the cumulative density value should be calculated
          */
-        double getCumulativeDensity(const double x);
+        float_t getCumulativeDensity(const float_t x);
 
         /*
          * Calculates the Density values of the standard normal distribution
@@ -50,7 +50,7 @@ namespace SGPP {
          *
          * @param x the value for which the density value should be calculated
          */
-        double getDensity(const double x);
+        float_t getDensity(const float_t x);
 
         /*
          * Calculates the Density values of the normal distribution
@@ -61,7 +61,7 @@ namespace SGPP {
          * @param mu the expected value of the normal distribution
          * @param sigma the standard deviation of the normal distribution
          */
-        double getDensity(const double x, const double mu, const double sigma);
+        float_t getDensity(const float_t x, const float_t mu, const float_t sigma);
 
 
         /*
@@ -71,7 +71,7 @@ namespace SGPP {
          * @param mu the expected value of the normal distribution
          * @param sigma the standard deviation of the normal distribution
          */
-        double getNormedDensity(const double x, const double mu, const double sigma);
+        float_t getNormedDensity(const float_t x, const float_t mu, const float_t sigma);
     };
 
   }

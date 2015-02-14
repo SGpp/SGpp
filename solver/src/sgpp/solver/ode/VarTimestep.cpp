@@ -21,7 +21,7 @@
 namespace SGPP {
   namespace solver {
 
-    VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen, double gamma)
+    VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, float_t timestepSize, float_t eps, SGPP::base::ScreenOutput* screen, float_t gamma)
       : StepsizeControl(imax, timestepSize, eps, 1.0, screen, gamma), _predictor(pred), _corrector(corr) {
 
       std::stringstream fnsstream;
@@ -36,7 +36,7 @@ namespace SGPP {
     }
 
     void VarTimestep::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
-                                double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
+                                float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       System.setTimestepSize(tmp_timestepsize);
 
       System.setODESolver("AdBas");
@@ -56,7 +56,7 @@ namespace SGPP {
       System.abortTimestep();
     }
 
-    void VarTimestep::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
+    void VarTimestep::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       System.setODESolver("CrNic");
 
       // generate right hand side
@@ -71,11 +71,11 @@ namespace SGPP {
     }
 
 
-    double VarTimestep::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon) {
+    float_t VarTimestep::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon) {
 
-      double deltaY = norm / (3.0 * (1.0 + tmp_timestepsize / tmp_timestepsize_old));
+      float_t deltaY = norm / (3.0 * (1.0 + tmp_timestepsize / tmp_timestepsize_old));
 
-      return tmp_timestepsize * std::max(0.67, std::min(1.5, pow(epsilon / deltaY, (double)1.0 / (double)3.0)));
+      return tmp_timestepsize * std::max(0.67, std::min(1.5, pow(epsilon / deltaY, (float_t)1.0 / (float_t)3.0)));
 
     }
   }

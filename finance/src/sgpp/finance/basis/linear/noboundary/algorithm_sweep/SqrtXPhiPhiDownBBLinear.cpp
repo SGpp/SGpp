@@ -20,8 +20,8 @@ namespace SGPP {
     }
 
     void SqrtXPhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double q = this->boundingBox->getIntervalWidth(dim);
-      double t = this->boundingBox->getIntervalOffset(dim);
+      float_t q = this->boundingBox->getIntervalWidth(dim);
+      float_t t = this->boundingBox->getIntervalOffset(dim);
 
       bool useBB = false;
 
@@ -36,38 +36,38 @@ namespace SGPP {
       }
     }
 
-    void SqrtXPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void SqrtXPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       size_t seq = index.seq();
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i_idx;
 
       index.get(dim, l, i_idx);
 
-      double i = static_cast<double>(i_idx);
+      float_t i = static_cast<float_t>(i_idx);
       int l_int = static_cast<int>(l);
 
-      double h = (1.0 / (static_cast<double>(1 << (l_int))));
+      float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
 
-      double a = fl;
-      double b = fr;
+      float_t a = fl;
+      float_t b = fr;
 
-      double c = sqrt(i * h + h);
-      double d = sqrt(i * h);
-      double e = sqrt(i * h - h);
+      float_t c = sqrt(i * h + h);
+      float_t d = sqrt(i * h);
+      float_t e = sqrt(i * h - h);
 
-      double hSq = pow(h, 2);
-      double hCu = pow(h, 3);
-      double iSq = pow(i, 2);
-      double iCu = pow(i, 3);
+      float_t hSq = pow(h, 2);
+      float_t hCu = pow(h, 3);
+      float_t iSq = pow(i, 2);
+      float_t iCu = pow(i, 3);
 
-      double diagResultTemp = e * iCu * hCu - 3 * e * iSq * hCu + 3 * e * i * hCu + 7 * d * iSq * hCu - c * iCu * hCu
+      float_t diagResultTemp = e * iCu * hCu - 3 * e * iSq * hCu + 3 * e * i * hCu + 7 * d * iSq * hCu - c * iCu * hCu
                               - 3 * c * iSq * hCu - 3 * c * i * hCu - e * hCu - c * hCu;
       diagResultTemp = (-16.0 / 105.0) * (1.0 / (hSq)) * diagResultTemp;
 
-      double downResultTemp = 2 * c * hCu * a + 5 * c * hCu * b + 4 * d * iCu * hCu * b - 7 * d * iSq * hCu * b -
+      float_t downResultTemp = 2 * c * hCu * a + 5 * c * hCu * b + 4 * d * iCu * hCu * b - 7 * d * iSq * hCu * b -
                               4 * d * iCu * hCu * a - 8 * e * hCu * a * i - 6 * e * hCu * b * i - 2 * e * iCu * hCu * b +
                               6 * e * iSq * hCu * b + 2 * e * iCu * hCu * a + e * iSq * hCu * a + 5 * e * hCu * a + 2 * e * hCu * b +
                               6 * c * hCu * a * i - 2 * c * iCu * hCu * b + c * iSq * hCu * b +
@@ -80,7 +80,7 @@ namespace SGPP {
       result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
 
       // dehierarchisation
-      double fm = ((fl + fr) / 2.0) + alpha_value;
+      float_t fm = ((fl + fr) / 2.0) + alpha_value;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -99,38 +99,38 @@ namespace SGPP {
       }
     }
 
-    void SqrtXPhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t) {
+    void SqrtXPhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr, float_t q, float_t t) {
       size_t seq = index.seq();
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i_idx;
 
       index.get(dim, l, i_idx);
 
-      double i = static_cast<double>(i_idx);
+      float_t i = static_cast<float_t>(i_idx);
       int l_int = static_cast<int>(l);
 
-      double h = (1.0 / (static_cast<double>(1 << (l_int))));
+      float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
 
-      double c = sqrt(i * h * q + t + q * h);
-      double d = sqrt(i * h * q + t);
-      double e = sqrt(i * h * q + t - q * h);
+      float_t c = sqrt(i * h * q + t + q * h);
+      float_t d = sqrt(i * h * q + t);
+      float_t e = sqrt(i * h * q + t - q * h);
 
-      double qSq = pow(q, 2);
-      double qCu = pow(q, 3);
-      double hSq = pow(h, 2);
-      double hCu = pow(h, 3);
-      double tSq = pow(t, 2);
-      double tCu = pow(t, 3);
-      double iSq = pow(i, 2);
-      double iCu = pow(i, 3);
+      float_t qSq = pow(q, 2);
+      float_t qCu = pow(q, 3);
+      float_t hSq = pow(h, 2);
+      float_t hCu = pow(h, 3);
+      float_t tSq = pow(t, 2);
+      float_t tCu = pow(t, 3);
+      float_t iSq = pow(i, 2);
+      float_t iCu = pow(i, 3);
 
-      double a = fl;
-      double b = fr;
+      float_t a = fl;
+      float_t b = fr;
 
-      double diagResultTemp = e * iCu * hCu * qCu - 3 * e * iSq * hCu * qCu + 3 * e * i * hCu * qCu
+      float_t diagResultTemp = e * iCu * hCu * qCu - 3 * e * iSq * hCu * qCu + 3 * e * i * hCu * qCu
                               - 3 * e * tSq * q * h + 3 * e * t * qSq * hSq + 7 * d * tSq * q * h + 7 * d * iSq * hCu * qCu
                               - c * iCu * hCu * qCu - 3 * c * iSq * hCu * qCu - 3 * c * i * hCu * qCu
                               - 3 * c * tSq * q * h - 3 * c * t * qSq * hSq + 3 * e * iSq * hSq * qSq * t
@@ -140,7 +140,7 @@ namespace SGPP {
 
       diagResultTemp = (-16.0 / 105.0) * (1.0 / (qSq * hSq)) * diagResultTemp;
 
-      double downResultTemp = 2 * c * qCu * hCu * a + 5 * c * qCu * hCu * b - 14 * d * i * hSq * qSq * a * t
+      float_t downResultTemp = 2 * c * qCu * hCu * a + 5 * c * qCu * hCu * b - 14 * d * i * hSq * qSq * a * t
                               + 6 * c * a * tSq * i * h * q - 6 * c * b * tSq * i * h * q + 6 * c * iSq * hSq * qSq * a * t
                               + 12 * c * i * hSq * qSq * a * t - 6 * c * iSq * hSq * qSq * b * t + 2 * c * i * hSq * qSq * b * t
                               + 2 * e * a * tCu - 2 * e * b * tCu + 4 * d * b * tCu - 4 * d * a * tCu
@@ -164,7 +164,7 @@ namespace SGPP {
       result[seq] = downResultTemp + ((diagResultTemp) * alpha_value);
 
       // dehierarchisation
-      double fm = ((fl + fr) / 2.0) + alpha_value;
+      float_t fm = ((fl + fr) / 2.0) + alpha_value;
 
       if (!index.hint()) {
         index.left_child(dim);

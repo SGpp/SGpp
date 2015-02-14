@@ -26,18 +26,18 @@ void OperationMultipleEvalSubspaceSimple::multTransposeImpl(SGPP::base::DataVect
     size_t dim = this->dataset.getNcols();
 
     base::DataVector dataTuple(dim);
-    double *dataTuplePtr = dataTuple.getPointer();
+    float_t *dataTuplePtr = dataTuple.getPointer();
 
     size_t *indexPtr = new size_t[dim];
-    double *evalIndexValues = new double[dim + 1];
+    float_t *evalIndexValues = new float_t[dim + 1];
 
-    //double **flatLevels = this->flatLevels;
+    //float_t **flatLevels = this->flatLevels;
 
     //for faster index flattening
     size_t *intermediates = new size_t[dim + 1];
 
-    //double maxIndex = sizeof(allSubspaces) / (subspaceSize * sizeof(size_t));
-    double maxIndex = static_cast<double>(subspaceCount * subspaceSize);
+    //float_t maxIndex = sizeof(allSubspaces) / (subspaceSize * sizeof(size_t));
+    float_t maxIndex = static_cast<float_t>(subspaceCount * subspaceSize);
     for (size_t dataIndex = start_index_data; dataIndex < end_index_data; dataIndex++) {
 
         evalIndexValues[0] = 1.0;
@@ -51,8 +51,8 @@ void OperationMultipleEvalSubspaceSimple::multTransposeImpl(SGPP::base::DataVect
             size_t *hInversePtr = allSubspaces + levelIndex + dim;
             //size_t *levelPtr = allSubspaces + levelIndex;
             size_t linearSurplusIndex = *(allSubspaces + levelIndex + (2 * dim) + 1);
-            //double *levelArray = flatLevels[levelFlat];
-            double *levelArray = &(this->allSurplusses[linearSurplusIndex]);
+            //float_t *levelArray = flatLevels[levelFlat];
+            float_t *levelArray = &(this->allSurplusses[linearSurplusIndex]);
 
             // calculate index
 #if X86SIMPLE_ENABLE_PARTIAL_RESULT_REUSAGE == 1
@@ -60,31 +60,31 @@ void OperationMultipleEvalSubspaceSimple::multTransposeImpl(SGPP::base::DataVect
 #else
             for (size_t i = 0; i < dim; i++) {
 #endif
-                double unadjusted = dataTuplePtr[i] * static_cast<double>(hInversePtr[i]);
+                float_t unadjusted = dataTuplePtr[i] * static_cast<float_t>(hInversePtr[i]);
                 indexPtr[i] = calculateIndexComponent(dim, unadjusted);
             }
 
             size_t indexFlat = this->flattenIndex(intermediates, dim, hInversePtr, indexPtr, nextIterationToRecalc);
-            double surplus = levelArray[indexFlat];
+            float_t surplus = levelArray[indexFlat];
 
             if (!std::isnan(surplus)) {
 
                 //prepare the values for the individual components
 #if X86SIMPLE_ENABLE_PARTIAL_RESULT_REUSAGE == 1
-                double phiEval = evalIndexValues[nextIterationToRecalc];
+                float_t phiEval = evalIndexValues[nextIterationToRecalc];
                 for (size_t i = nextIterationToRecalc; i < dim; i++) {
 #else
-                double phiEval = 1.0;
+                float_t phiEval = 1.0;
                 for (size_t i = 0; i < dim; i++) {
 #endif
-                    double phi1DEval = static_cast<double>(hInversePtr[i]) * dataTuplePtr[i]
-                                       - static_cast<double>(indexPtr[i]);
+                    float_t phi1DEval = static_cast<float_t>(hInversePtr[i]) * dataTuplePtr[i]
+                                       - static_cast<float_t>(indexPtr[i]);
                     phi1DEval = std::max(0.0, 1.0 - fabs(phi1DEval));
                     phiEval *= phi1DEval;
                     evalIndexValues[i + 1] = phiEval;
                 }
 
-                double partialSurplus = phiEval * alpha[dataIndex];
+                float_t partialSurplus = phiEval * alpha[dataIndex];
 
                 #pragma omp atomic
                 levelArray[indexFlat] += partialSurplus;

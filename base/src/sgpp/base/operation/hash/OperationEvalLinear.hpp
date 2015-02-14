@@ -32,7 +32,7 @@ namespace SGPP {
          */
         virtual ~OperationEvalLinear() {}
 
-        virtual double eval(DataVector& alpha, std::vector<double>& point);
+        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point);
 
       protected:
         /// Pointer to the grid's GridStorage object

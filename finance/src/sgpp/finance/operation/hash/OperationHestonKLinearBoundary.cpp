@@ -27,7 +27,7 @@
 namespace SGPP {
   namespace finance {
 
-    OperationHestonKLinearBoundary::OperationHestonKLinearBoundary(SGPP::base::GridStorage* storage, double**** * coef) : SGPP::pde::UpDownFourOpDims(storage, coef) {
+    OperationHestonKLinearBoundary::OperationHestonKLinearBoundary(SGPP::base::GridStorage* storage, float_t**** * coef) : SGPP::pde::UpDownFourOpDims(storage, coef) {
     }
 
     OperationHestonKLinearBoundary::~OperationHestonKLinearBoundary() {

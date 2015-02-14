@@ -34,15 +34,20 @@ namespace SGPP {
 	  /// Number of neighbors
 	  int numberOfNeighbors;
 	  /// Epsilon
-	  double eps;
+	  float_t eps;
 	  /// Method that is used to remove edges from the graph
 	  SGPP::datadriven::ThresholdType thresholdType;
 	  /// Threshold value
-	  double threshold;
+	  float_t threshold;
     };
 
 
-    class LearnerDensityCluster: public SGPP::datadriven::LearnerBase {
+    class LearnerDensityCluster
+#if USE_DOUBLE_PRECISION==0
+    {
+#else
+    : public SGPP::datadriven::LearnerBase {
+
       protected:
     	/// contains the clustering result
     	SGPP::base::DataVector* clusterAssignments_ = NULL;
@@ -55,9 +60,9 @@ namespace SGPP {
     	int neighborsCols_ = 0;
 
     	/// epsilon for the threshold function
-    	double eps = 5;
+    	float_t eps = 5;
     	/// threshold for the local minima
-    	double threshold = 0;
+    	float_t threshold = 0;
     	/// how many neighbors should taken into consideration
     	int numberOfNeighbors = 5;
     	/// specify the threshold function
@@ -75,28 +80,28 @@ namespace SGPP {
     	 * @param lambda the regularization parameter
     	 */
     	void calculateGridValues(SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig,
-    			const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lambda);
+    			const SGPP::solver::SLESolverConfiguration& SolverConfig, const float_t lambda);
 
     	/**
-    	 * save a double array
+    	 * save a float_t array
     	 *
     	 * @param tFilename where to save the array
     	 * @param len the length of the array
     	 * @param data the array
     	 */
-    	void saveArray(const char * tFilename, int len, double data[]);
+    	void saveArray(const char * tFilename, int len, float_t data[]);
 
     	/**
-    	 * load a double array
+    	 * load a float_t array
     	 *
     	 * @param tFilename from where to load
     	 * @param len the length of the array
     	 * @return the array from the file
     	 */
-    	double * loadArray(const char * tFilename,int * len);
+    	float_t * loadArray(const char * tFilename,int * len);
 
     	/**
-    	 * save a two-dimensional double array
+    	 * save a two-dimensional float_t array
     	 *
     	 * @param tFilename where to save the array
     	 * @param row how many rows
@@ -106,7 +111,7 @@ namespace SGPP {
     	void saveArray(const char * tFilename, int row, int col, int ** data);
 
     	/**
-    	 * load a two-dimensional double array
+    	 * load a two-dimensional float_t array
     	 *
     	 * @param tFilename from where to load
     	 * @param row how many rows
@@ -157,7 +162,7 @@ namespace SGPP {
     	 * @param secondElem
     	 * @return
     	 */
-    	static bool pairCompare(const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem);
+    	static bool pairCompare(const std::pair<int, float_t>& firstElem, const std::pair<int, float_t>& secondElem);
       public:
 
     	/**
@@ -189,7 +194,7 @@ namespace SGPP {
          */
         SGPP::datadriven::LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
                                               const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-                                              const double lambda);
+                                              const float_t lambda);
 
     	/**
     	 * TODO: Not implemented
@@ -197,7 +202,7 @@ namespace SGPP {
     	 * @param lambda
     	 * @return
     	 */
-    	SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& testDataset, double lambda);
+    	SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& testDataset, float_t lambda);
 
     	/**
     	 * Gets the last clustering result
@@ -216,7 +221,7 @@ namespace SGPP {
     	 * @param lamda the regularization parameter
     	 */
     	void precalculateGridValues(const char * filename, SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-				  const double lamda);
+				  const float_t lamda);
 
     	/**
     	 * Load the precalculated values from a file
@@ -261,6 +266,7 @@ namespace SGPP {
     	 * @param filename file
     	 */
     	void loadPrecalculatedNeighbors(const char * filename);
+#endif
     };
 
   }

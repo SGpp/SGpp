@@ -34,7 +34,7 @@ namespace SGPP {
          *
          * @param alpha the function's values in the nodal basis
          */
-        virtual double doQuadrature(DataVector& alpha) = 0;
+        virtual float_t doQuadrature(DataVector& alpha) = 0;
 
     };
 

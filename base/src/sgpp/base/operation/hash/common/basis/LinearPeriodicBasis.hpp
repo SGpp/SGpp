@@ -31,7 +31,7 @@ namespace SGPP {
          * @param index the index of the current basis function
          * @param p the absolute position of the evaluation point
          */
-        double eval(LT level, IT index, double p) {
+        float_t eval(LT level, IT index, float_t p) {
           if (level == 0) {
         	return fabs(2 * p - 1);
           } else {
@@ -52,7 +52,7 @@ namespace SGPP {
          * @param q the scaling factor of the basis function
          * @param t the offset of the basis function
          */
-        double eval(LT level, IT index, double p, double q, double t) {
+        float_t eval(LT level, IT index, float_t p, float_t q, float_t t) {
           if (level == 0) {
         	return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
           } else {

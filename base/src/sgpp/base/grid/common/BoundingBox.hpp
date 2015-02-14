@@ -20,9 +20,9 @@ namespace SGPP {
      */
     struct DimensionBoundary {
       /// the left boundary
-      double leftBoundary;
+      float_t leftBoundary;
       /// the right boundary
-      double rightBoundary;
+      float_t rightBoundary;
       /// Use Dirichlet-Boundaries on the left boundary
       bool bDirichletLeft;
       /// Use Dirichlet-Boundaries on the right boundary
@@ -110,7 +110,7 @@ namespace SGPP {
          *
          * @return the width of the interval
          */
-        double getIntervalWidth(size_t dimension);
+        float_t getIntervalWidth(size_t dimension);
 
         /**
          * gets the offset in positive x-direction of the interval in one dimension
@@ -119,7 +119,7 @@ namespace SGPP {
          *
          * @return the offset in positive x-direction of the interval
          */
-        double getIntervalOffset(size_t dimension);
+        float_t getIntervalOffset(size_t dimension);
 
         /**
          * Use this function to determine if this bounding box describes a trivial cube [0;1]^d

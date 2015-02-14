@@ -34,7 +34,7 @@ namespace SGPP {
          * @param algo_dim current algorithmic dimension
          * @param q stretching of basis function in the current algorithmic dimension
          */
-        void calcL2Boundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, double q);
+        void calcL2Boundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, float_t q);
 
         /**
          * calculates the gradient down operation on level 0 basis functions
@@ -47,7 +47,7 @@ namespace SGPP {
          * @param algo_dim current algorithmic dimension
          * @param q_reci reciprocal of stretching of basis function in the current algorithmic dimension
          */
-        void calcGradBoundary(double fl, double fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, double q_reci);
+        void calcGradBoundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, float_t q_reci);
 
       public:
         /**

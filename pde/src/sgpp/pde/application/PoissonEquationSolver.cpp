@@ -49,10 +49,10 @@ namespace SGPP {
       this->bGridConstructed = true;
     }
 
-    void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, double epsilonCG, bool verbose) {
-      double dTimeAlpha = 0.0;
-      double dTimeRHS = 0.0;
-      double dTimeSolver = 0.0;
+    void PoissonEquationSolver::solvePDE(DataVector& alpha, DataVector& rhs, size_t maxCGIterations, float_t epsilonCG, bool verbose) {
+      float_t dTimeAlpha = 0.0;
+      float_t dTimeRHS = 0.0;
+      float_t dTimeSolver = 0.0;
 
       SGppStopwatch* myStopwatch = new SGppStopwatch();
       ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
@@ -93,10 +93,10 @@ namespace SGPP {
       delete myStopwatch;
     }
 
-    void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor) {
+    void PoissonEquationSolver::initGridWithSmoothHeat(DataVector& alpha, float_t mu, float_t sigma, float_t factor) {
       if (this->bGridConstructed) {
-        double tmp;
-        double* dblFuncValues = new double[this->dim];
+        float_t tmp;
+        float_t* dblFuncValues = new float_t[this->dim];
 
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -139,10 +139,10 @@ namespace SGPP {
       }
     }
 
-    void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(DataVector& alpha, double mu, double sigma, double factor) {
+    void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(DataVector& alpha, float_t mu, float_t sigma, float_t factor) {
       if (this->bGridConstructed) {
-        double tmp;
-        double* dblFuncValues = new double[this->dim];
+        float_t tmp;
+        float_t* dblFuncValues = new float_t[this->dim];
 
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -173,11 +173,11 @@ namespace SGPP {
       }
     }
 
-    void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha, double factor) {
+    void PoissonEquationSolver::initGridWithExpHeat(DataVector& alpha, float_t factor) {
       if (this->bGridConstructed) {
-        double tmp;
-        double* dblFuncValues = new double[this->dim];
-        double* rightBound = new double[this->dim];
+        float_t tmp;
+        float_t* dblFuncValues = new float_t[this->dim];
+        float_t* rightBound = new float_t[this->dim];
 
         BoundingBox* tmpBB = this->myGrid->getBoundingBox();
 
@@ -227,11 +227,11 @@ namespace SGPP {
       }
     }
 
-    void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha, double factor) {
+    void PoissonEquationSolver::initGridWithExpHeatFullDomain(DataVector& alpha, float_t factor) {
       if (this->bGridConstructed) {
-        double tmp;
-        double* dblFuncValues = new double[this->dim];
-        double* rightBound = new double[this->dim];
+        float_t tmp;
+        float_t* dblFuncValues = new float_t[this->dim];
+        float_t* rightBound = new float_t[this->dim];
 
         BoundingBox* tmpBB = this->myGrid->getBoundingBox();
 
@@ -291,7 +291,7 @@ namespace SGPP {
       delete myStopwatch;
     }
 
-    void PoissonEquationSolver::storeInnerSolution(DataVector& alpha, size_t maxCGIterations, double epsilonCG, std::string tFilename) {
+    void PoissonEquationSolver::storeInnerSolution(DataVector& alpha, size_t maxCGIterations, float_t epsilonCG, std::string tFilename) {
       ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
       PoissonEquationEllipticPDESolverSystemDirichlet* mySystem = new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), alpha);
 

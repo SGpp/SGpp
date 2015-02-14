@@ -26,7 +26,7 @@ namespace SGPP {
     class DensitySystemMatrix : public SGPP::base::OperationMatrix {
       private:
         /// the lambda, the regularisation parameter
-        double lambda;
+        float_t lambda;
         /// Operation A for calculating the data matrix
         /// (L2 Dot-Product of basis functions)
         SGPP::base::OperationMatrix* A;
@@ -47,7 +47,7 @@ namespace SGPP {
          * @param lambda the regression parameter
          */
         DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData,
-                            SGPP::base::OperationMatrix& C, double lambda);
+                            SGPP::base::OperationMatrix& C, float_t lambda);
 
         /**
          * Generates the left hand side of the classification equation

@@ -31,7 +31,7 @@ namespace SGPP {
       computeTimeMultTrans_ = 0.0;
     }
 
-    void DMSystemMatrixBaseSP::getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans) {
+    void DMSystemMatrixBaseSP::getTimers(float_t& timeMult, float_t& computeMult, float_t& timeMultTrans, float_t& computeMultTrans) {
       timeMult = completeTimeMult_;
       computeMult = computeTimeMult_;
       timeMultTrans = completeTimeMultTrans_;

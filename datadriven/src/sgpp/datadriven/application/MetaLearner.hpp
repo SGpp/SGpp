@@ -32,7 +32,7 @@ namespace SGPP {
         size_t dim;
         size_t instances;
         size_t baseLevel;
-        double lambda;
+        float_t lambda;
 
         std::string csvSep;
 
@@ -49,19 +49,19 @@ namespace SGPP {
         LearnerTiming myTiming;
         LearnerTiming referenceTiming;
 
-        std::vector<std::pair<size_t, double> > ExecTimesOnStep;
-        std::vector<std::pair<size_t, double> > ExecTimesOnStepReference;
+        std::vector<std::pair<size_t, float_t> > ExecTimesOnStep;
+        std::vector<std::pair<size_t, float_t> > ExecTimesOnStepReference;
 
         void writeRefinementResults(std::string fileName, std::string fileHeader,
-                                    std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > datasetDetails,
-                                    std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > datasetDetailsReference,
+                                    std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > datasetDetails,
+                                    std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > datasetDetailsReference,
                                     bool referenceComparison);
 
       public:
         MetaLearner() = delete;
 
         MetaLearner(SGPP::solver::SLESolverConfiguration solverConfig, SGPP::solver::SLESolverConfiguration solverFinalStep,
-                    SGPP::base::AdpativityConfiguration adaptivityConfiguration, size_t baseLevel, double lambda, bool verbose =
+                    SGPP::base::AdpativityConfiguration adaptivityConfiguration, size_t baseLevel, float_t lambda, bool verbose =
                       false);
 
         ~MetaLearner() {
@@ -83,8 +83,8 @@ namespace SGPP {
                           std::string datasetFileName, std::string testFileName, bool isBinaryClassification);
 
         //learn and test against the streaming implementation
-        double learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                               std::string datasetFileName, size_t gridGranularity, double tolerance);
+        float_t learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                               std::string datasetFileName, size_t gridGranularity, float_t tolerance);
 
         void refinementAndOverallPerformance(
           std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
@@ -101,7 +101,7 @@ namespace SGPP {
                                     bool removeOld);
 
         void testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, size_t dim,
-                         size_t level, size_t instances, double& duration, double& durationReference);
+                         size_t level, size_t instances, float_t& duration, float_t& durationReference);
     };
 
   }

@@ -14,7 +14,7 @@ namespace SGPP {
 namespace base {
 
 PersistentErrorRefinementFunctor::PersistentErrorRefinementFunctor(
-		DataVector* alpha, Grid* grid, size_t refinements_num, double threshold) :
+		DataVector* alpha, Grid* grid, size_t refinements_num, float_t threshold) :
 		alpha(alpha), refinements_num(refinements_num), threshold(threshold), grid(
 				grid), trainDataset(
 		NULL), classes(NULL), errors(NULL), accum(NULL) {
@@ -28,7 +28,7 @@ PersistentErrorRefinementFunctor::~PersistentErrorRefinementFunctor() {
  * accum[j] = BETA * accum[j] + current[j]
  * functor value = -alpha_j * accum[j]
  */
-double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
+float_t PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
 	if (trainDataset == NULL || classes == NULL) {
@@ -36,7 +36,7 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 				"Training dataset or classes not set");
 	}
 
-	const double BETA = 0.1;
+	const float_t BETA = 0.1;
 	const size_t MIN_SUPPORT = 5;
 
 	size_t numData = trainDataset->getNrows();
@@ -70,8 +70,8 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 	// Calculate
 	// current[j] = \sum_{i=0}^{N} (r_i + y_i) * \phi_j(x_i)
 
-	double current_j = 0;
-	double tmp = 0;
+	float_t current_j = 0;
+	float_t tmp = 0;
 	for (size_t i = 0; i < numData; i++) {
 		/* (r_i + y_i) * \phi_j(x_i) */
 		tmp = (errors->get(i)) * phi_x[i];
@@ -85,13 +85,13 @@ double PersistentErrorRefinementFunctor::operator()(GridStorage* storage,
 	 }*/
 	accum->set(seq, accum->get(seq) * (1-BETA) + BETA*current_j*fabs(alpha->get(seq)));
 
-	double func_val = accum->get(seq);
+	float_t func_val = accum->get(seq);
 
 	//std::cout << "Functor value (of " << seq << "): " << func_val << std::endl;
 	return func_val;
 }
 
-double PersistentErrorRefinementFunctor::start() {
+float_t PersistentErrorRefinementFunctor::start() {
 	return this->threshold;
 }
 
@@ -99,7 +99,7 @@ size_t PersistentErrorRefinementFunctor::getRefinementsNum() {
 	return this->refinements_num;
 }
 
-double PersistentErrorRefinementFunctor::getRefinementThreshold() {
+float_t PersistentErrorRefinementFunctor::getRefinementThreshold() {
 	return this->threshold;
 }
 

@@ -32,7 +32,7 @@ namespace SGPP {
         SGPP::base::OperationMatrix* C_;
 
         /// construct system matrix
-        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda);
 
       public:
         /**

@@ -26,11 +26,11 @@ namespace SGPP {
 
     struct Stretching1D {
       std::string type;
-      double x_0, xsi;
+      float_t x_0, xsi;
       //Index 0 : current position
       //Index 1: left neighbor position
       //Index 2: right neighbor position
-      double lookup[LOOKUPSIZE][3];
+      float_t lookup[LOOKUPSIZE][3];
     };
 
     /**
@@ -70,12 +70,12 @@ namespace SGPP {
          * where f is the transformation function and [a,b] are the intervals the transformation is defined.
          *
          * Calculates the streched coordinate with respect to the given parameters
-         *Note to self: may take other than double, take care
+         *Note to self: may take other than float_t, take care
          * @param level level of the node
          * @param index index of the node
          * @param dimension dimension of the node
          */
-        double stretchingXform(int level, int index, size_t dimension);
+        float_t stretchingXform(int level, int index, size_t dimension);
 
         /*
          * calculates the logarithm transform in the given dimension
@@ -94,7 +94,7 @@ namespace SGPP {
          * @param index index of the node
          * @param dimension dimension of the node
          */
-        double logXform(int level, int index, size_t dimension);
+        float_t logXform(int level, int index, size_t dimension);
 
         /*
          * calculates the leentvar transform in the given dimension
@@ -113,7 +113,7 @@ namespace SGPP {
          *
          * @param dimension describes in which dimension the Stretching occurs.
          */
-        double leentvaarXform (int level, int index, size_t dimension);
+        float_t leentvaarXform (int level, int index, size_t dimension);
 
         /*
          * makes no Stretching on the dimension, the points are equidistant
@@ -131,7 +131,7 @@ namespace SGPP {
          * @param dimension dimension of the node
          *
          */
-        double noXform(int level, int index, size_t dimension);
+        float_t noXform(int level, int index, size_t dimension);
 
         /*
          * calculates the lookup table index
@@ -143,13 +143,13 @@ namespace SGPP {
 
         /*
          * gets the discrete points that are stretched and creates a lookup table
-         * @param vec double vector containing the discrete points, includes left and right boundary
+         * @param vec float_t vector containing the discrete points, includes left and right boundary
          * @param stretch1d Stretch1D to write on the type of stretching and lookup table
          * @param dim dimension of the node
          * @param discreteVectorLevel how many levels the grid vector points form
          */
 
-        void parseVectorToLookupTable(std::vector<double> vec, Stretching1D& stretch1d, size_t dim, int& discreteVectorLevel);
+        void parseVectorToLookupTable(std::vector<float_t> vec, Stretching1D& stretch1d, size_t dim, int& discreteVectorLevel);
 
 
         /*
@@ -186,10 +186,10 @@ namespace SGPP {
          * initializes the Stretching using the coordinates given. (For Janos' request)
          *
          * @param dim number of the dimensions used with the grid
-         * @param coordinates vector<double> array to get the boundaries, as well as the coordinates
+         * @param coordinates vector<float_t> array to get the boundaries, as well as the coordinates
          * of the specific level the vector defines for each dimension.
          */
-        Stretching(size_t dim, std::vector<double>* coordinates);
+        Stretching(size_t dim, std::vector<float_t>* coordinates);
 
         /**
          * Copy-Constructor
@@ -213,7 +213,7 @@ namespace SGPP {
          * @param dimension dimension of the node
          *
          */
-        double getCoordinates(int level, int index, size_t dimension);
+        float_t getCoordinates(int level, int index, size_t dimension);
 
         /*
          * Returns the type of the Stretching of the dimension given
@@ -238,7 +238,7 @@ namespace SGPP {
          * @param posl left point
          * @param posr right point
          */
-        void getAdjacentPositions(int level, int index, size_t dimension, double& posc, double& posl, double& posr);
+        void getAdjacentPositions(int level, int index, size_t dimension, float_t& posc, float_t& posl, float_t& posr);
 
         /*
          * returns the stretchingMode, can be "analytic" or "discrete"
@@ -249,7 +249,7 @@ namespace SGPP {
          * returns the discreteVector for the discrete grid structure.
          * used for serializing the grid
          */
-        std::vector<double>* getDiscreteVector(bool bSort);
+        std::vector<float_t>* getDiscreteVector(bool bSort);
 
         /*
          * returns the discretevectorlevel array of size nDim

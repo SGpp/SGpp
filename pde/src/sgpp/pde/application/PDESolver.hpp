@@ -50,7 +50,7 @@ namespace SGPP {
          * @param norm_mu the expected values of the normal distribution for every grid dimension
          * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
          */
-        virtual void getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+        virtual void getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<float_t>& norm_mu, std::vector<float_t>& norm_sigma);
 
       public:
 
@@ -102,7 +102,7 @@ namespace SGPP {
          * @param numRefinePoints the number of grid points that should be refined; if this smaller than zero -> all refineable points will be refined
          * @param dThreshold Threshold for a point's surplus for refining this point
          */
-        void refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numRefinePoints, double dThreshold);
+        void refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numRefinePoints, float_t dThreshold);
 
         /**
          * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -114,7 +114,7 @@ namespace SGPP {
          * @param dThreshold Threshold for a point's surplus for refining this point
          * @param maxLevel maxLevel of refinement
          */
-        void refineInitialGridSurplusToMaxLevel(SGPP::base::DataVector& alpha, double dThreshold, SGPP::base::GridStorage::index_type::level_type maxLevel);
+        void refineInitialGridSurplusToMaxLevel(SGPP::base::DataVector& alpha, float_t dThreshold, SGPP::base::GridStorage::index_type::level_type maxLevel);
 
         /**
          * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -131,7 +131,7 @@ namespace SGPP {
          * @param norm_mu the expected values of the normal distribution for every grid dimension
          * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
          */
-        void refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha, int numRefinePoints, double dThreshold, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+        void refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha, int numRefinePoints, float_t dThreshold, std::vector<float_t>& norm_mu, std::vector<float_t>& norm_sigma);
 
         /**
          * Refines a grid by taking the grid's coefficients into account. This refinement method
@@ -149,7 +149,7 @@ namespace SGPP {
          * @param norm_mu the expected values of the normal distribution for every grid dimension
          * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
          */
-        void refineInitialGridSurplusToMaxLevelSubDomain(SGPP::base::DataVector& alpha, double dThreshold, SGPP::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+        void refineInitialGridSurplusToMaxLevelSubDomain(SGPP::base::DataVector& alpha, float_t dThreshold, SGPP::base::GridStorage::index_type::level_type maxLevel, std::vector<float_t>& norm_mu, std::vector<float_t>& norm_sigma);
 
         /**
          * Coarsens a grid by taking the grid's coefficients into account. This coarsen method
@@ -159,7 +159,7 @@ namespace SGPP {
          * @param alpha a SGPP::base::DataVector containing the grids coefficients
          * @param dThreshold Threshold for a point's surplus for coarsening this point
          */
-        void coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, double dThreshold);
+        void coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t dThreshold);
 
         /**
          * Determines the value of the function in the d-dimensional space
@@ -169,7 +169,7 @@ namespace SGPP {
          *
          * @return price of option for given point
          */
-        double evaluatePoint(std::vector<double>& evalPoint, SGPP::base::DataVector& alpha);
+        float_t evaluatePoint(std::vector<float_t>& evalPoint, SGPP::base::DataVector& alpha);
 
         /**
          * Evaluates the sparse grid's function given by the stored grid and the alpha coefficients.
@@ -198,7 +198,7 @@ namespace SGPP {
          * @param PointesPerDimension the distance between evaluation points
          * @param tfilename absolute path to file into which the grid's evaluation is written
          */
-        virtual void printGrid(SGPP::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+        virtual void printGrid(SGPP::base::DataVector& alpha, float_t PointesPerDimension, std::string tfilename) const;
 
         /**
          * This is some kind of debug functionality. It writes a file,
@@ -211,7 +211,7 @@ namespace SGPP {
          * @param GridArea the area in which the function should be plotted
          * @param tfilename absolute path to file into which the grid's evaluation is written
          */
-        virtual void printGridDomain(SGPP::base::DataVector& alpha, double PointesPerDimension, SGPP::base::BoundingBox& GridArea, std::string tfilename) const;
+        virtual void printGridDomain(SGPP::base::DataVector& alpha, float_t PointesPerDimension, SGPP::base::BoundingBox& GridArea, std::string tfilename) const;
 
         /**
          * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value

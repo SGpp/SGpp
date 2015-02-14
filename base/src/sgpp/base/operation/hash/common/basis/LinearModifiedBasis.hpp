@@ -27,9 +27,9 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of modified linear basis function
          */
-        inline double eval(LT l, IT i, double x) {
+        inline float_t eval(LT l, IT i, float_t x) {
           const IT hInv = static_cast<IT>(1) << l;
-          const double h = 1.0 / static_cast<double>(hInv);
+          const float_t h = 1.0 / static_cast<float_t>(hInv);
 
           if (l == 1) {
             // first level

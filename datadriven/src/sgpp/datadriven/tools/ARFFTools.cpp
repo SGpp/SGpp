@@ -82,7 +82,7 @@ namespace SGPP {
       size_t cur_find = 0;
       size_t dim = destination.getNcols();
       std::string cur_value;
-      double dbl_cur_value;
+      float_t dbl_cur_value;
 
       for (size_t i = 0; i < dim; i++) {
         cur_find = arffLine.find(",", cur_pos);
@@ -96,7 +96,7 @@ namespace SGPP {
     void ARFFTools::writeNewClass(const std::string& arffLine, SGPP::base::DataVector& destination, size_t instanceNo) {
       size_t cur_pos = arffLine.find_last_of(",");
       std::string cur_value = arffLine.substr(cur_pos + 1);
-      double dbl_cur_value = atof(cur_value.c_str());
+      float_t dbl_cur_value = atof(cur_value.c_str());
       destination.set(instanceNo, dbl_cur_value);
     }
 

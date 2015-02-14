@@ -44,8 +44,8 @@ namespace SGPP {
 #endif   
     }
     
-    double Random::random_double() {
-        return (double)(random())/RAND_MAX;
+    float_t Random::random_double() {
+        return (float_t)(random())/RAND_MAX;
     }
 
   }

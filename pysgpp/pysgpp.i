@@ -38,7 +38,8 @@ import_array();
 
 
 %{
-
+#include "../base/src/sgpp/globaldef.hpp"
+//using namespace SGPP;
 #include "sgpp_base.hpp"
 using namespace SGPP::base;
 #ifdef SG_DATADRIVEN
@@ -76,7 +77,7 @@ using namespace SGPP::quadrature;
 #include "sgpp_misc.hpp"
 #endif
 
-using namespace SGPP;
+
 
 %}
 

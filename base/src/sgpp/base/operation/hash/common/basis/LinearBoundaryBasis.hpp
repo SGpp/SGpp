@@ -27,7 +27,7 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of boundary linear basis function
          */
-        inline double eval(LT l, IT i, double x) {
+        inline float_t eval(LT l, IT i, float_t x) {
           if (l == 0) {
             // first level
             if (i == 0) {
@@ -36,8 +36,8 @@ namespace SGPP {
               return x;
             }
           } else {
-            return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x -
-                                           static_cast<double>(i)), 0.0);
+            return std::max(1.0 - std::abs(static_cast<float_t>(static_cast<IT>(1) << l) * x -
+                                           static_cast<float_t>(i)), 0.0);
           }
         }
 
@@ -50,7 +50,7 @@ namespace SGPP {
          * @param q     scaling factor of basis function
          * @param t     offset of basis function
          */
-        inline double eval(LT l, IT i, double x, double q, double t) {
+        inline float_t eval(LT l, IT i, float_t x, float_t q, float_t t) {
           return eval(l, i, (x - t) / q);
         }
     };

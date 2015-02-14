@@ -27,7 +27,7 @@ namespace SGPP {
     class StepsizeControlMC : public VarTimestep {
       protected:
 
-        double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon);
+        float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon);
 
       public:
         /**
@@ -38,7 +38,7 @@ namespace SGPP {
          * @param eps the epsilon for the step size control
          * @param screen possible pointer to a ScreenOutput object
          */
-        StepsizeControlMC(size_t imax, double timestepSize, double eps, SGPP::base::ScreenOutput* screen = NULL);
+        StepsizeControlMC(size_t imax, float_t timestepSize, float_t eps, SGPP::base::ScreenOutput* screen = NULL);
 
         /**
          * Std-Destructor

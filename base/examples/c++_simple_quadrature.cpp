@@ -12,8 +12,8 @@ using namespace SGPP;
 using namespace SGPP::base;
 
 // function to interpolate
-double f(int dim, double* x, void* clientdata) {
-  double res = 1.0;
+float_t f(int dim, float_t* x, void* clientdata) {
+  float_t res = 1.0;
 
   for (int i = 0; i < dim; i++) {
     res *= 4 * x[i] * (1 - x[i]);
@@ -38,7 +38,7 @@ int main() {
   // create coefficient vector
   DataVector alpha(gridStorage->size());
   GridIndex* gp;
-  double p[2];
+  float_t p[2];
 
   for (int i = 0; i < gridStorage->size(); i++) {
     gp = gridStorage->get(i);
@@ -51,7 +51,7 @@ int main() {
 
   // direct quadrature
   OperationQuadrature* opQ = op_factory::createOperationQuadrature(*grid);
-  double res = opQ->doQuadrature(alpha);
+  float_t res = opQ->doQuadrature(alpha);
   cout << "exact integral value:  " << res << endl;
   delete opQ;
 

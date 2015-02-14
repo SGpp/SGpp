@@ -30,6 +30,9 @@
 #include <complex>
 #include <limits>
 
+#include <sgpp/globaldef.hpp>
+
+
 using namespace SGPP::pde;
 using namespace SGPP::solver;
 using namespace SGPP::base;
@@ -38,8 +41,6 @@ using namespace std;
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -110,7 +111,7 @@ namespace SGPP {
       this->bGridConstructed = true;
     }
 
-    void HestonSolver::refineInitialGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance) {
+    void HestonSolver::refineInitialGridWithPayoff(DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance) {
       size_t nRefinements = 0;
 
       this->dStrike = strike;
@@ -123,9 +124,9 @@ namespace SGPP {
 
           if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put") {
             this->tBoundaryType = "Dirichlet";
-            double tmp;
-            double* dblFuncValues = new double[dim];
-            double dDistance = 0.0;
+            float_t tmp;
+            float_t* dblFuncValues = new float_t[dim];
+            float_t dDistance = 0.0;
 
             for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
               std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
@@ -144,11 +145,11 @@ namespace SGPP {
               }
 
               if (payoffType == "std_euro_call") {
-                dDistance = fabs(((tmp / static_cast<double>(this->dim)) - strike));
+                dDistance = fabs(((tmp / static_cast<float_t>(this->dim)) - strike));
               }
 
               if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
-                dDistance = fabs((strike - (tmp / static_cast<double>(this->dim))));
+                dDistance = fabs((strike - (tmp / static_cast<float_t>(this->dim))));
               }
 
               if (dDistance <= dStrikeDistance) {
@@ -180,7 +181,7 @@ namespace SGPP {
       }
     }
 
-    void HestonSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel) {
+    void HestonSolver::refineInitialGridWithPayoffToMaxLevel(DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel) {
       size_t nRefinements = 0;
 
       this->dStrike = strike;
@@ -192,9 +193,9 @@ namespace SGPP {
           DataVector refineVector(alpha.getSize());
 
           if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put") {
-            double tmp;
-            double* dblFuncValues = new double[dim];
-            double dDistance = 0.0;
+            float_t tmp;
+            float_t* dblFuncValues = new float_t[dim];
+            float_t dDistance = 0.0;
 
             this->tBoundaryType = "Dirichlet";
 
@@ -215,11 +216,11 @@ namespace SGPP {
               }
 
               if (payoffType == "std_euro_call") {
-                dDistance = fabs(((tmp / static_cast<double>(this->dim)) - strike));
+                dDistance = fabs(((tmp / static_cast<float_t>(this->dim)) - strike));
               }
 
               if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
-                dDistance = fabs((strike - (tmp / static_cast<double>(this->dim))));
+                dDistance = fabs((strike - (tmp / static_cast<float_t>(this->dim))));
               }
 
               if (dDistance <= dStrikeDistance) {
@@ -251,7 +252,7 @@ namespace SGPP {
       }
     }
 
-    void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_arg, DataVector& volvols_arg, DataMatrix& hMatrix_arg, double r) {
+    void HestonSolver::setStochasticData(DataVector& thetas_arg, DataVector& kappas_arg, DataVector& volvols_arg, DataMatrix& hMatrix_arg, float_t r) {
       this->thetas = new SGPP::base::DataVector(thetas_arg);
       this->kappas = new SGPP::base::DataVector(kappas_arg);
       this->volvols = new SGPP::base::DataVector(volvols_arg);
@@ -261,7 +262,7 @@ namespace SGPP {
       bStochasticDataAlloc = true;
     }
 
-    void HestonSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul) {
+    void HestonSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, size_t NumImEul) {
       if (this->bGridConstructed && this->bStochasticDataAlloc) {
         SLESolver* myCG = NULL;
         OperationParabolicPDESolverSystem* myHestonSystem = NULL;
@@ -305,8 +306,8 @@ namespace SGPP {
         std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
         std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-        std::cout << "Average Grid size: " << static_cast<double>(myHestonSystem->getSumGridPointsComplete()) / static_cast<double>(numTimesteps) << std::endl;
-        std::cout << "Average Grid size (Inner): " << static_cast<double>(myHestonSystem->getSumGridPointsInner()) / static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+        std::cout << "Average Grid size: " << static_cast<float_t>(myHestonSystem->getSumGridPointsComplete()) / static_cast<float_t>(numTimesteps) << std::endl;
+        std::cout << "Average Grid size (Inner): " << static_cast<float_t>(myHestonSystem->getSumGridPointsInner()) / static_cast<float_t>(numTimesteps) << std::endl << std::endl << std::endl;
 
         if (this->myScreen != NULL) {
           std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
@@ -314,7 +315,7 @@ namespace SGPP {
         }
 
         this->finInnerGridSize = getNumberInnerGridPoints();
-        this->avgInnerGridSize = static_cast<size_t>((static_cast<double>(myHestonSystem->getSumGridPointsInner()) / static_cast<double>(numTimesteps)) + 0.5);
+        this->avgInnerGridSize = static_cast<size_t>((static_cast<float_t>(myHestonSystem->getSumGridPointsInner()) / static_cast<float_t>(numTimesteps)) + 0.5);
         this->nNeededIterations = myEuler->getNumberIterations() + myCN->getNumberIterations();
 
         delete myHestonSystem;
@@ -323,14 +324,14 @@ namespace SGPP {
         delete myEuler;
         delete myStopwatch;
 
-        this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
+        this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
       } else {
         throw new application_exception("HestonSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
       }
     }
 
 
-    void HestonSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType) {
+    void HestonSolver::initGridWithPayoff(DataVector& alpha, float_t strike, std::string payoffType) {
       this->dStrike = strike;
       this->payoffType = payoffType;
 
@@ -345,7 +346,7 @@ namespace SGPP {
       }
     }
 
-    double HestonSolver::get1DEuroCallPayoffValue(double assetValue, double strike) {
+    float_t HestonSolver::get1DEuroCallPayoffValue(float_t assetValue, float_t strike) {
       if (assetValue <= strike) {
         return 0.0;
       } else {
@@ -353,11 +354,11 @@ namespace SGPP {
       }
     }
 
-    void HestonSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HestonSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       throw new application_exception("This scheme is not implemented for the Heston solver!");
     }
 
-    void HestonSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HestonSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       throw new application_exception("This scheme is not implemented for the Heston solver!");
     }
 
@@ -379,7 +380,7 @@ namespace SGPP {
       this->myScreen->writeStartSolve("Multidimensional Heston Solver");
     }
 
-    void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold) {
+    void HestonSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, float_t coarsenThreshold, float_t refineThreshold) {
       this->useCoarsen = true;
       this->coarsenThreshold = coarsenThreshold;
       this->refineThreshold = refineThreshold;
@@ -389,7 +390,7 @@ namespace SGPP {
       this->numCoarsenPoints = numCoarsenPoints;
     }
 
-    size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, double strike, double eps) {
+    size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike, float_t eps) {
       size_t nPoints = 0;
 
       if (this->useLogTransform == false) {
@@ -402,13 +403,13 @@ namespace SGPP {
             // The stock prices come from the coordinates of the 0th, 2nd, 4th, 6th... dimensions. The other dimensions are the volatilities...they don't count for adding up stock prices.
             // So...in order to determine whether the point is at the money or not, we have to add up only the 0th, 2nd, 4th, 6th...dimension values.
             if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "std_amer_put") {
-              double stockPriceSum = 0.0;
+              float_t stockPriceSum = 0.0;
 
               for (size_t j = 0; j < this->dim; j = j + 2) {
                 stockPriceSum += coords[j];
               }
 
-              if ( ((stockPriceSum / static_cast<double>(this->dim)) < (strike - eps)) || ((stockPriceSum / static_cast<double>(this->dim)) > (strike + eps)) ) {
+              if ( ((stockPriceSum / static_cast<float_t>(this->dim)) < (strike - eps)) || ((stockPriceSum / static_cast<float_t>(this->dim)) > (strike + eps)) ) {
                 isAtMoney = false;
               }
             } else {
@@ -427,8 +428,8 @@ namespace SGPP {
       return nPoints;
     }
 
-    void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, double strike, std::string payoffType) {
-      double tmp;
+    void HestonSolver::initCartesianGridWithPayoff(DataVector& alpha, float_t strike, std::string payoffType) {
+      float_t tmp;
 
       //BlackScholesSolver* bsSolver = new BlackScholesSolver();
 
@@ -441,7 +442,7 @@ namespace SGPP {
           GridIndex* curPoint = (*myGridStorage)[i];
 
           std::stringstream coordsStream(coords);
-          double* dblFuncValues = new double[dim];
+          float_t* dblFuncValues = new float_t[dim];
 
           for (size_t j = 0; j < this->dim; j++) {
             coordsStream >> tmp;
@@ -467,13 +468,13 @@ namespace SGPP {
               alpha[i] = dblFuncValues[0]; //(this->myBoundingBox->getBoundary(0).rightBoundary-strike)/(this->myBoundingBox->getBoundary(0).rightBoundary)*dblFuncValues[0];
             } else if (!curPoint->isInnerPoint() && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary) {
               // Set boundary to be the linear function at s_max
-              double normalPayoff = std::max<double>(((tmp / static_cast<double>(numAssets)) - strike), 0.0);
-              double vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
-              double sPayoffDiff = dblFuncValues[0] - normalPayoff;
+              float_t normalPayoff = std::max<float_t>(((tmp / static_cast<float_t>(numAssets)) - strike), 0.0);
+              float_t vRange = this->myBoundingBox->getBoundary(1).rightBoundary - this->myBoundingBox->getBoundary(1).leftBoundary;
+              float_t sPayoffDiff = dblFuncValues[0] - normalPayoff;
               alpha[i] = normalPayoff + ((dblFuncValues[1] - this->myBoundingBox->getBoundary(1).leftBoundary) / vRange) * sPayoffDiff;
             } else {
               // Payoff function
-              alpha[i] = std::max<double>(((tmp / static_cast<double>(numAssets)) - strike), 0.0);
+              alpha[i] = std::max<float_t>(((tmp / static_cast<float_t>(numAssets)) - strike), 0.0);
             }
           } else if (payoffType == "std_euro_put") {
             if (!curPoint->isInnerPoint()) {
@@ -482,47 +483,47 @@ namespace SGPP {
                 alpha[i] = strike;
               } else if (numAssets == 1 && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary) {
                 // Smax boundary for a single asset. exponential function
-                //double constantC = 20.0;
-                double constantB = (strike * pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary), 20.0)) / (1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
-                double constantA = strike + constantB;
+                //float_t constantC = 20.0;
+                float_t constantB = (strike * pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary), 20.0)) / (1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
+                float_t constantA = strike + constantB;
                 alpha[i] = constantA * pow(exp(dblFuncValues[1] - this->myBoundingBox->getBoundary(1).rightBoundary), 20.0) - constantB;
               } else {
 
                 // Get the payoff function value for this point
-                double payoffFuncVal = 0.0;
+                float_t payoffFuncVal = 0.0;
 
                 for (size_t k = 0; k < numAssets; k++) {
                   payoffFuncVal += dblFuncValues[2 * k];
                 }
 
-                payoffFuncVal = std::max<double>(strike - payoffFuncVal / (static_cast<double>(numAssets)), 0.0);
+                payoffFuncVal = std::max<float_t>(strike - payoffFuncVal / (static_cast<float_t>(numAssets)), 0.0);
 
                 // Get the max-volatility function value for this point
-                double maxVolFuncVal = 0.0;
+                float_t maxVolFuncVal = 0.0;
 
                 for (size_t k = 0; k < numAssets; k++) {
-                  double stockPrice = dblFuncValues[2 * k];
-                  double sMaxValue = this->myBoundingBox->getBoundary(2 * k).rightBoundary;
+                  float_t stockPrice = dblFuncValues[2 * k];
+                  float_t sMaxValue = this->myBoundingBox->getBoundary(2 * k).rightBoundary;
                   maxVolFuncVal +=  (strike / (2.0 * sMaxValue)) * stockPrice;
                 }
 
-                maxVolFuncVal = strike - maxVolFuncVal / (static_cast<double>(numAssets));
+                maxVolFuncVal = strike - maxVolFuncVal / (static_cast<float_t>(numAssets));
 
                 // Get the fraction that we are away from the v=vMin value in the direction of vMax
-                double volFraction = 0.0;
+                float_t volFraction = 0.0;
 
                 for (size_t k = 0; k < numAssets; k++) {
-                  double vValue = dblFuncValues[2 * k + 1];
-                  double vRightValue = this->myBoundingBox->getBoundary(2 * k + 1).rightBoundary;
-                  double vLeftValue = this->myBoundingBox->getBoundary(2 * k + 1).leftBoundary;
-                  double vRange = vRightValue - vLeftValue;
+                  float_t vValue = dblFuncValues[2 * k + 1];
+                  float_t vRightValue = this->myBoundingBox->getBoundary(2 * k + 1).rightBoundary;
+                  float_t vLeftValue = this->myBoundingBox->getBoundary(2 * k + 1).leftBoundary;
+                  float_t vRange = vRightValue - vLeftValue;
                   volFraction += (vValue - vLeftValue) / vRange;
                 }
 
-                volFraction = volFraction / (static_cast<double>(numAssets));
+                volFraction = volFraction / (static_cast<float_t>(numAssets));
 
                 // Now set the value of the point as the payoff function + fraction*maxVol function
-                alpha[i] = std::max<double>(payoffFuncVal + volFraction * (maxVolFuncVal - payoffFuncVal), 0.0);
+                alpha[i] = std::max<float_t>(payoffFuncVal + volFraction * (maxVolFuncVal - payoffFuncVal), 0.0);
               }
             } else {
               // Non-boundary point. Just set the payoff value.
@@ -532,7 +533,7 @@ namespace SGPP {
                 tmp += dblFuncValues[2 * j];
               }
 
-              alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(numAssets))), 0.0);
+              alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(numAssets))), 0.0);
             }
           } else {
             throw new application_exception("HestonSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
@@ -567,8 +568,8 @@ namespace SGPP {
       }
     }
 
-    void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, double strike, std::string payoffType) {
-      double tmp;
+    void HestonSolver::initLogTransformedGridWithPayoff(DataVector& alpha, float_t strike, std::string payoffType) {
+      float_t tmp;
 
       //BlackScholesSolver* bsSolver = new BlackScholesSolver();
 
@@ -576,7 +577,7 @@ namespace SGPP {
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
-          double* dblFuncValues = new double[dim];
+          float_t* dblFuncValues = new float_t[dim];
 
           GridIndex* curPoint = (*myGridStorage)[i];
 
@@ -595,22 +596,22 @@ namespace SGPP {
             // Thus, in oder to determine the payoff value, we have to only iterate over the first, third, fifth... dimensions.
 
             if (!curPoint->isInnerPoint()) {
-              double sumStockPrices = 0.0;
-              double kMultiplier = 0;
+              float_t sumStockPrices = 0.0;
+              float_t kMultiplier = 0;
 
               for (size_t k = 0; k < numAssets; k++) {
                 // Get the sum of all stock prices
                 sumStockPrices += exp(dblFuncValues[2 * k]);
 
                 // At the same time, figure out the fraction of the way we are away from the max-v value for this stock
-                double vValue = dblFuncValues[2 * k + 1];
-                double vRightValue = this->myBoundingBox->getBoundary(2 * k + 1).rightBoundary;
-                double vLeftValue = this->myBoundingBox->getBoundary(2 * k + 1).leftBoundary;
-                double vRange = vRightValue - vLeftValue;
+                float_t vValue = dblFuncValues[2 * k + 1];
+                float_t vRightValue = this->myBoundingBox->getBoundary(2 * k + 1).rightBoundary;
+                float_t vLeftValue = this->myBoundingBox->getBoundary(2 * k + 1).leftBoundary;
+                float_t vRange = vRightValue - vLeftValue;
                 kMultiplier += (vRightValue - vValue) / vRange;
               }
 
-              alpha[i] = std::max<double>((sumStockPrices - strike * kMultiplier) / static_cast<double>(numAssets), 0.0);
+              alpha[i] = std::max<float_t>((sumStockPrices - strike * kMultiplier) / static_cast<float_t>(numAssets), 0.0);
             } else {
               // Non-boundary point. Just set the payoff value.
               tmp = 0.0;
@@ -619,7 +620,7 @@ namespace SGPP {
                 tmp += exp(dblFuncValues[2 * j]);
               }
 
-              alpha[i] = std::max<double>(((tmp / static_cast<double>(numAssets)) - strike), 0.0);
+              alpha[i] = std::max<float_t>(((tmp / static_cast<float_t>(numAssets)) - strike), 0.0);
             }
           } else if (payoffType == "std_euro_put") {
             if (!curPoint->isInnerPoint()) {
@@ -628,47 +629,47 @@ namespace SGPP {
                 alpha[i] = strike;
               } else if (numAssets == 1 && dblFuncValues[0] == this->myBoundingBox->getBoundary(0).rightBoundary) {
                 // Smax boundary for a single asset. exponential function
-                //double constantC = 20.0;
-                double constantB = (strike * pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary), 20.0)) / (1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
-                double constantA = strike + constantB;
+                //float_t constantC = 20.0;
+                float_t constantB = (strike * pow(exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary), 20.0)) / (1 - exp(this->myBoundingBox->getBoundary(1).leftBoundary - this->myBoundingBox->getBoundary(1).rightBoundary));
+                float_t constantA = strike + constantB;
                 alpha[i] = constantA * pow(exp(dblFuncValues[1] - this->myBoundingBox->getBoundary(1).rightBoundary), 20.0) - constantB;
               } else {
                 // Get the payoff function value for this point
-                double payoffFuncVal = 0.0;
+                float_t payoffFuncVal = 0.0;
 
                 for (size_t k = 0; k < numAssets; k++) {
                   payoffFuncVal += exp(dblFuncValues[2 * k]);
                 }
 
-                payoffFuncVal = std::max<double>(strike - payoffFuncVal / (static_cast<double>(numAssets)), 0.0);
+                payoffFuncVal = std::max<float_t>(strike - payoffFuncVal / (static_cast<float_t>(numAssets)), 0.0);
 
                 // Get the max-volatility function value for this point
-                double maxVolFuncVal = 0.0;
+                float_t maxVolFuncVal = 0.0;
 
                 for (size_t k = 0; k < numAssets; k++) {
-                  double stockPrice = exp(dblFuncValues[2 * k]);
-                  double sMinValue = exp(this->myBoundingBox->getBoundary(2 * k).leftBoundary);
-                  double sMaxValue = exp(this->myBoundingBox->getBoundary(2 * k).rightBoundary);
+                  float_t stockPrice = exp(dblFuncValues[2 * k]);
+                  float_t sMinValue = exp(this->myBoundingBox->getBoundary(2 * k).leftBoundary);
+                  float_t sMaxValue = exp(this->myBoundingBox->getBoundary(2 * k).rightBoundary);
                   maxVolFuncVal +=  (strike / (2.0 * (sMaxValue - sMinValue))) * (stockPrice - sMinValue);
                 }
 
-                maxVolFuncVal = strike - maxVolFuncVal / (static_cast<double>(numAssets));
+                maxVolFuncVal = strike - maxVolFuncVal / (static_cast<float_t>(numAssets));
 
                 // Get the fraction that we are away from the v=vMin value in the direction of vMax
-                double volFraction = 0.0;
+                float_t volFraction = 0.0;
 
                 for (size_t k = 0; k < numAssets; k++) {
-                  double vValue = dblFuncValues[2 * k + 1];
-                  double vRightValue = this->myBoundingBox->getBoundary(2 * k + 1).rightBoundary;
-                  double vLeftValue = this->myBoundingBox->getBoundary(2 * k + 1).leftBoundary;
-                  double vRange = vRightValue - vLeftValue;
+                  float_t vValue = dblFuncValues[2 * k + 1];
+                  float_t vRightValue = this->myBoundingBox->getBoundary(2 * k + 1).rightBoundary;
+                  float_t vLeftValue = this->myBoundingBox->getBoundary(2 * k + 1).leftBoundary;
+                  float_t vRange = vRightValue - vLeftValue;
                   volFraction += (vValue - vLeftValue) / vRange;
                 }
 
-                volFraction = volFraction / (static_cast<double>(numAssets));
+                volFraction = volFraction / (static_cast<float_t>(numAssets));
 
                 // Now set the value of the point as the payoff function + fraction*maxVol function
-                alpha[i] = std::max<double>(payoffFuncVal + volFraction * (maxVolFuncVal - payoffFuncVal), 0.0);
+                alpha[i] = std::max<float_t>(payoffFuncVal + volFraction * (maxVolFuncVal - payoffFuncVal), 0.0);
               }
             } else {
               // Non-boundary point. Just set the payoff value.
@@ -678,7 +679,7 @@ namespace SGPP {
                 tmp += exp(dblFuncValues[2 * j]);
               }
 
-              alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(numAssets))), 0.0);
+              alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(numAssets))), 0.0);
             }
           } else {
             throw new application_exception("HestonSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was specified!");
@@ -695,8 +696,8 @@ namespace SGPP {
       }
     }
 
-    double HestonSolver::evalOption(std::vector<double>& eval_point, SGPP::base::DataVector& alpha) {
-      std::vector<double> trans_eval = eval_point;
+    float_t HestonSolver::evalOption(std::vector<float_t>& eval_point, SGPP::base::DataVector& alpha) {
+      std::vector<float_t> trans_eval = eval_point;
 
       // apply needed coordinate transformations
       if (this->useLogTransform) {
@@ -706,7 +707,7 @@ namespace SGPP {
       }
 
       SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
-      double result = myEval->eval(alpha, trans_eval);
+      float_t result = myEval->eval(alpha, trans_eval);
       delete myEval;
 
       return result;
@@ -733,7 +734,7 @@ namespace SGPP {
       return this->nNeededIterations;
     }
 
-    double HestonSolver::getNeededTimeToSolve() {
+    float_t HestonSolver::getNeededTimeToSolve() {
       return this->dNeededTime;
     }
 
@@ -749,8 +750,8 @@ namespace SGPP {
       return this->avgInnerGridSize;
     }
 
-    double EvaluateHestonClosedFormIntegralFunction(double phi, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type) {
-      double a, b, u, x;
+    float_t EvaluateHestonClosedFormIntegralFunction(float_t phi, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type) {
+      float_t a, b, u, x;
 
       if (type == 1) {
         u = 0.5;
@@ -764,60 +765,60 @@ namespace SGPP {
       x = log(S);
 
       //  Build d
-      complex<double> dBuilder1;
-      complex<double> dBuilder2;
-      complex<double> d;
-      dBuilder1 = std::complex<double>(0.0, 1.0);
+      complex<float_t> dBuilder1;
+      complex<float_t> dBuilder2;
+      complex<float_t> d;
+      dBuilder1 = std::complex<float_t>(0.0, 1.0);
       dBuilder1 = pow(dBuilder1 * phi * rho * xi - b, 2.0);
-      dBuilder2 = std::complex<double>(0.0, 1.0);
+      dBuilder2 = std::complex<float_t>(0.0, 1.0);
       dBuilder2 = dBuilder2 * phi;
-      dBuilder2 = dBuilder2 * 2.0 * u - pow(phi, 2.0);
-      dBuilder2 = dBuilder2 * pow(xi, 2.0);
+      dBuilder2 = dBuilder2 * float_t(2.0) * u - pow(phi, float_t(2.0));
+      dBuilder2 = dBuilder2 * float_t(pow(xi, 2.0));
       d = sqrt(dBuilder1 - dBuilder2);
 
       // Build g
-      complex<double> g;
-      g = std::complex<double>(0.0, 1.0);
+      complex<float_t> g;
+      g = std::complex<float_t>(0.0, 1.0);
       g = (b - rho * xi * phi * g + d) / (b - rho * xi * phi * g - d);
 
 
       // Build C
-      complex<double> C;
-      C = std::complex<double>(0.0, 1.0);
-      C = (r * phi * C * T) + (a / pow(xi, 2.0)) * ((b - rho * xi * phi * C + d) * T - 2.0 * log( (1.0 - g * exp(d * T)) / (1.0 - g)  ));
+      complex<float_t> C;
+      C = std::complex<float_t>(0.0, 1.0);
+      C = (r * phi * C * T) + (a / float_t(pow(xi, 2.0))) * ((b - rho * xi * phi * C + d) * T - float_t(2.0) * log( (float_t(1.0) - g * exp(d * T)) / (float_t(1.0) - g)  ));
 
       // Build D
-      complex<double> D;
-      D = std::complex<double>(0.0, 1.0);
-      D = ((b - rho * xi * phi * D + d) / (pow(xi, 2.0))) * ((1.0 - exp(d * T)) / (1.0 - g * exp(d * T)));
+      complex<float_t> D;
+      D = std::complex<float_t>(0.0, 1.0);
+      D = ((b - rho * xi * phi * D + d) / float_t(pow(xi, 2.0))) * ((float_t(1.0) - exp(d * T)) / (float_t(1.0) - g * exp(d * T)));
 
       // Build f
-      complex<double> f;
-      f = complex<double>(0.0, 1.0);
+      complex<float_t> f;
+      f = complex<float_t>(0.0, 1.0);
       f = exp(C + D * v + f * phi * x);
 
 
       // Build realArgument
-      complex<double> realArgument;
-      realArgument = std::complex<double>(0.0, 1.0);
-      realArgument = (exp(0.0 - realArgument * phi * log(K)) * f) / (realArgument * phi);
+      complex<float_t> realArgument;
+      realArgument = std::complex<float_t>(0.0, 1.0);
+      realArgument = (exp(float_t(0.0) - realArgument * phi * float_t(log(K))) * f) / (realArgument * phi);
 
       return real(realArgument);
     }
 
-    void HestonSolver::EvaluateHestonExactSurface(DataVector& alpha, double maturity) {
+    void HestonSolver::EvaluateHestonExactSurface(DataVector& alpha, float_t maturity) {
       if (!this->bGridConstructed)
         throw new application_exception("HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
       if (this->numAssets != 1 || this->payoffType != "std_euro_call")
         throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
 
-      double tmp;
+      float_t tmp;
 
       for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
         std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
         std::stringstream coordsStream(coords);
-        double* dblFuncValues = new double[dim];
+        float_t* dblFuncValues = new float_t[dim];
 
         for (size_t j = 0; j < this->dim; j++) {
           coordsStream >> tmp;
@@ -837,19 +838,19 @@ namespace SGPP {
       delete myHierarchisation;
     }
 
-    void HestonSolver::EvaluateHestonExactSurfacePut(DataVector& alpha, double maturity) {
+    void HestonSolver::EvaluateHestonExactSurfacePut(DataVector& alpha, float_t maturity) {
       if (!this->bGridConstructed)
         throw new application_exception("HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
       if (this->numAssets != 1 || this->payoffType != "std_euro_put")
         throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European put option with one asset!");
 
-      double tmp;
+      float_t tmp;
 
       for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
         std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
         std::stringstream coordsStream(coords);
-        double* dblFuncValues = new double[dim];
+        float_t* dblFuncValues = new float_t[dim];
 
         for (size_t j = 0; j < this->dim; j++) {
           coordsStream >> tmp;
@@ -869,7 +870,7 @@ namespace SGPP {
       delete myHierarchisation;
     }
 
-    void HestonSolver::CompareHestonBs1d(double maturity, double v) {
+    void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
       if (this->numAssets != 1 || this->payoffType != "std_euro_call")
         throw new application_exception("HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European call option with one asset!");
 
@@ -917,13 +918,13 @@ namespace SGPP {
       delete alphaBS;
     }
 
-    void HestonSolver::EvaluateHestonExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double v) {
-      double tmp;
+    void HestonSolver::EvaluateHestonExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, float_t maturity, float_t v) {
+      float_t tmp;
 
       for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
         std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
         std::stringstream coordsStream(coords);
-        double* dblFuncValues = new double[1];
+        float_t* dblFuncValues = new float_t[1];
         coordsStream >> tmp;
         dblFuncValues[0] = tmp;
 
@@ -936,15 +937,15 @@ namespace SGPP {
       delete myHierarchisation;
     }
 
-    void HestonSolver::EvaluateBsExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, double maturity, double sigma) {
-      double tmp;
+    void HestonSolver::EvaluateBsExact1d(DataVector& alpha, Grid* grid1d, BoundingBox* boundingBox1d, float_t maturity, float_t sigma) {
+      float_t tmp;
 
       SGPP::finance::BlackScholesSolver* myBSSolver = new SGPP::finance::BlackScholesSolver(false);
 
       for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
         std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
         std::stringstream coordsStream(coords);
-        double* dblFuncValues = new double[1];
+        float_t* dblFuncValues = new float_t[1];
         coordsStream >> tmp;
         dblFuncValues[0] = tmp;
 
@@ -958,30 +959,30 @@ namespace SGPP {
       delete myBSSolver;
     }
 
-    double HestonSolver::EvaluateHestonPriceExact(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K) {
-      double int1 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
-      double int2 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
+    float_t HestonSolver::EvaluateHestonPriceExact(float_t S, float_t v, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K) {
+      float_t int1 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
+      float_t int2 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
       return S * int1 - K * exp((-1.0) * r * T) * int2;
     }
 
-    double HestonSolver::EvaluateHestonPriceExact(double S, double v, double maturity) {
+    float_t HestonSolver::EvaluateHestonPriceExact(float_t S, float_t v, float_t maturity) {
       return EvaluateHestonPriceExact(S, v, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
     }
 
-    double HestonSolver::EvaluateHestonPriceExactPut(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K) {
-      double int1 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
-      double int2 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
+    float_t HestonSolver::EvaluateHestonPriceExactPut(float_t S, float_t v, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K) {
+      float_t int1 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 1);
+      float_t int2 = 0.5 + (1.0 / M_PI) * GaussLobattoInt(0.001, 1000.0, 1e-10, 100000, xi, theta, kappa, rho, r, T, K, S, v, 2);
       return S * int1 - K * exp((-1.0) * r * T) * int2 + K * exp((-1.0) * r * T) - S;
     }
 
-    double HestonSolver::EvaluateHestonPriceExactPut(double S, double v, double maturity) {
+    float_t HestonSolver::EvaluateHestonPriceExactPut(float_t S, float_t v, float_t maturity) {
       return EvaluateHestonPriceExactPut(S, v, this->volvols->get(0), this->thetas->get(0), this->kappas->get(0), this->hMatrix->get(0, 1), this->r, maturity, this->dStrike);
     }
 
-    void HestonSolver::GetBsExactSolution(SGPP::base::DataVector& alphaBS, double maturity) {
+    void HestonSolver::GetBsExactSolution(SGPP::base::DataVector& alphaBS, float_t maturity) {
       SGPP::finance::BlackScholesSolver* myBSSolver = new SGPP::finance::BlackScholesSolver(false);
 
-      double S, v;
+      float_t S, v;
 
       for (size_t i = 0; i < this->myGridStorage->size(); i++) {
         std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -1000,7 +1001,7 @@ namespace SGPP {
       delete myHierarchisation;
     }
 
-    void HestonSolver::CompareHestonBsExact(SGPP::base::DataVector& alpha, double maturity) {
+    void HestonSolver::CompareHestonBsExact(SGPP::base::DataVector& alpha, float_t maturity) {
       DataVector* alphaHeston = new DataVector(getNumberGridPoints());
       DataVector* alphaBS = new DataVector(getNumberGridPoints());
 
@@ -1013,7 +1014,7 @@ namespace SGPP {
       }
     }
 
-    void HestonSolver::CompareHestonNumericToBsExact(SGPP::base::DataVector& alphaHestonNumeric, SGPP::base::DataVector& alphaBS, SGPP::base::DataVector& error, double maturity) {
+    void HestonSolver::CompareHestonNumericToBsExact(SGPP::base::DataVector& alphaHestonNumeric, SGPP::base::DataVector& alphaBS, SGPP::base::DataVector& error, float_t maturity) {
       GetBsExactSolution(alphaBS, maturity);
 
       // Find the difference (heston - BS)
@@ -1023,17 +1024,17 @@ namespace SGPP {
     }
 
 
-    double HestonSolver::GaussLobattoIntStep(
-      double a, double b,
-      double fa, double fb,
+    float_t HestonSolver::GaussLobattoIntStep(
+      float_t a, float_t b,
+      float_t fa, float_t fb,
       size_t& neval,
       size_t maxeval,
-      double acc
-      , double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type) {
+      float_t acc
+      , float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type) {
 
       // Constants used in the algorithm
-      const double alpha = std::sqrt(2.0 / 3.0);
-      const double beta  = 1.0 / std::sqrt(5.0);
+      const float_t alpha = std::sqrt(2.0 / 3.0);
+      const float_t beta  = 1.0 / std::sqrt(5.0);
 
       if (neval >= maxeval) {
         throw new application_exception("HestonSolver::Gauss-Lobatto : Maximum number of evaluations reached in GaussLobatto.");
@@ -1043,35 +1044,35 @@ namespace SGPP {
       // and the 7-point rule are calculated (the points at the end of
       // interval come from the function call, i.e., fa and fb. Also note
       // the 7-point rule re-uses all the points of the 4-point rule.)
-      const double h = (b - a) / 2;
-      const double m = (a + b) / 2;
+      const float_t h = (b - a) / 2;
+      const float_t m = (a + b) / 2;
 
-      const double mll = m - alpha * h;
-      const double ml = m - beta * h;
-      const double mr = m + beta * h;
-      const double mrr = m + alpha * h;
+      const float_t mll = m - alpha * h;
+      const float_t ml = m - beta * h;
+      const float_t mr = m + beta * h;
+      const float_t mrr = m + alpha * h;
 
-      const double fmll = EvaluateHestonClosedFormIntegralFunction(mll, xi, theta, kappa, rho, r, T, K, S, v, type);
-      const double fml = EvaluateHestonClosedFormIntegralFunction(ml, xi, theta, kappa, rho, r, T, K, S, v, type);
-      const double fm  = EvaluateHestonClosedFormIntegralFunction(m, xi, theta, kappa, rho, r, T, K, S, v, type);
-      const double fmr = EvaluateHestonClosedFormIntegralFunction(mr, xi, theta, kappa, rho, r, T, K, S, v, type);
-      const double fmrr = EvaluateHestonClosedFormIntegralFunction(mrr, xi, theta, kappa, rho, r, T, K, S, v, type);
+      const float_t fmll = EvaluateHestonClosedFormIntegralFunction(mll, xi, theta, kappa, rho, r, T, K, S, v, type);
+      const float_t fml = EvaluateHestonClosedFormIntegralFunction(ml, xi, theta, kappa, rho, r, T, K, S, v, type);
+      const float_t fm  = EvaluateHestonClosedFormIntegralFunction(m, xi, theta, kappa, rho, r, T, K, S, v, type);
+      const float_t fmr = EvaluateHestonClosedFormIntegralFunction(mr, xi, theta, kappa, rho, r, T, K, S, v, type);
+      const float_t fmrr = EvaluateHestonClosedFormIntegralFunction(mrr, xi, theta, kappa, rho, r, T, K, S, v, type);
       neval += 5;
 
       // Both the 4-point and 7-point rule integrals are evaluted
-      const double integral2 = (h / 6) * (fa + fb + 5 * (fml + fmr));
-      const double integral1 = (h / 1470) * (77 * (fa + fb)
+      const float_t integral2 = (h / 6) * (fa + fb + 5 * (fml + fmr));
+      const float_t integral1 = (h / 1470) * (77 * (fa + fb)
                                              + 432 * (fmll + fmrr) + 625 * (fml + fmr) + 672 * fm);
 
       // The difference betwen the 4-point and 7-point integrals is the
       // estimate of the accuracy
-      const double estacc = (integral1 - integral2);
+      const float_t estacc = (integral1 - integral2);
 
       // The volatile keyword should prevent the floating point
       // destination value from being stored in extended precision
       // registers which actually have a very different
-      // std::numeric_limits<double>::epsilon().
-      volatile double dist = acc + estacc;
+      // std::numeric_limits<float_t>::epsilon().
+      volatile float_t dist = acc + estacc;
 
       if (dist == acc || mll <= a || b <= mrr) {
         if (!(m > a && b > m)) {
@@ -1090,11 +1091,11 @@ namespace SGPP {
       }
     }
 
-    double HestonSolver::GaussLobattoInt(double a, double b,
-                                         double abstol,
+    float_t HestonSolver::GaussLobattoInt(float_t a, float_t b,
+                                         float_t abstol,
                                          size_t maxeval
-                                         , double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type) {
-      const double tol_epsunit = abstol / std::numeric_limits<double>::epsilon();
+                                         , float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type) {
+      const float_t tol_epsunit = abstol / std::numeric_limits<float_t>::epsilon();
       size_t neval = 0;
       return GaussLobattoIntStep(a, b,
                                  EvaluateHestonClosedFormIntegralFunction(a, xi, theta, kappa, rho, r, T, K, S, v, type), EvaluateHestonClosedFormIntegralFunction(b, xi, theta, kappa, rho, r, T, K, S, v, type),
@@ -1116,19 +1117,19 @@ namespace SGPP {
         dimOne = myGrid->getBoundingBox()->getBoundary(0);
         dimTwo = myGrid->getBoundingBox()->getBoundary(1);
 
-        double offset_x = dimOne.leftBoundary;
-        double offset_y = dimTwo.leftBoundary;
-        double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) / double(PointsPerDimension - 1));
-        double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary) / double(PointsPerDimension - 1));
+        float_t offset_x = dimOne.leftBoundary;
+        float_t offset_y = dimTwo.leftBoundary;
+        float_t inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) / float_t(PointsPerDimension - 1));
+        float_t inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary) / float_t(PointsPerDimension - 1));
 
         size_t points = (size_t)PointsPerDimension;
 
         for (size_t i = 0; i < points; i++) {
           for (size_t j = 0; j < points; j++) {
-            std::vector<double> point;
-            point.push_back(offset_x + (((double)(i))*inc_x));
-            point.push_back(offset_y + (((double)(j))*inc_y));
-            fileout << (offset_x + ((double)(i))*inc_x) << " " << (offset_y + ((double)(j))*inc_y) << " " << (myEval->eval(*solution, point) - myEval->eval(*exact, point)) << std::endl;
+            std::vector<float_t> point;
+            point.push_back(offset_x + (((float_t)(i))*inc_x));
+            point.push_back(offset_y + (((float_t)(j))*inc_y));
+            fileout << (offset_x + ((float_t)(i))*inc_x) << " " << (offset_y + ((float_t)(j))*inc_y) << " " << (myEval->eval(*solution, point) - myEval->eval(*exact, point)) << std::endl;
           }
 
           fileout << std::endl;
@@ -1140,9 +1141,9 @@ namespace SGPP {
       fileout.close();
     }
 
-    double HestonSolver::EvalSinglePoint1Asset(double s, double v, DataVector& alphaVec) {
+    float_t HestonSolver::EvalSinglePoint1Asset(float_t s, float_t v, DataVector& alphaVec) {
       OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
-      std::vector<double> point;
+      std::vector<float_t> point;
       point.push_back(s);
       point.push_back(v);
       return myEval->eval(alphaVec, point);

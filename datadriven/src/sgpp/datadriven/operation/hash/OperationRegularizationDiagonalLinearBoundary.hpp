@@ -26,13 +26,13 @@ namespace SGPP {
          * Initialize Hkmix
          * @param k Parameter k
          */
-        virtual void initHkmix(double k);
+        virtual void initHkmix(float_t k);
 
         /**
          * Initialize H0HkLaplace
          * @param k Parameter k
          */
-        virtual void initH0HkLaplace(double k);
+        virtual void initH0HkLaplace(float_t k);
 
       public:
 
@@ -42,7 +42,7 @@ namespace SGPP {
          * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
          * @param k Parameter for @f$H^k@f$
          */
-        OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, double k);
+        OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, float_t k);
         //      : OperationRegularizationDiagonal(storage, mode, k) {
         //      init();
         //    };

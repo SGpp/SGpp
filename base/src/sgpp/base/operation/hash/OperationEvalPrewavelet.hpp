@@ -32,9 +32,9 @@ namespace SGPP {
          */
         virtual ~OperationEvalPrewavelet() {}
 
-        virtual double eval(DataVector& alpha, std::vector<double>& point);
-        virtual double test(DataVector& alpha, DataVector& data, DataVector& classes);
-        virtual double integrate(DataVector& alpha);
+        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point);
+        virtual float_t test(DataVector& alpha, DataVector& data, DataVector& classes);
+        virtual float_t integrate(DataVector& alpha);
 
       protected:
         /// Pointer to GridStorage object

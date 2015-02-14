@@ -46,7 +46,7 @@ namespace SGPP {
     class HeatEquationSolverWithStretching : public ParabolicPDESolver {
       private:
         /// the heat coefficient
-        double a;
+        float_t a;
         /// screen object used in this solver
         SGPP::base::ScreenOutput* myScreen;
         ////BoundingBox replacement
@@ -67,18 +67,18 @@ namespace SGPP {
 
         void constructGrid(SGPP::base::BoundingBox& myStretching, int level);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * This method sets the heat coefficient of the regarded material
          *
          * @param a the heat coefficient
          */
-        void setHeatCoefficient(double a);
+        void setHeatCoefficient(float_t a);
 
         /**
          * Inits the grid in the middle of the whole domain with one single heat
@@ -86,7 +86,7 @@ namespace SGPP {
          * alpha reference to the coefficients vector
          * heat the value of the heat in the middle of the domain
          */
-        //  void initGridWithSingleHeat(SGPP::base::DataVector& alpha, double heat);
+        //  void initGridWithSingleHeat(SGPP::base::DataVector& alpha, float_t heat);
 
         /**
          * Inits the grid in the middle the domain with an smooth heat distribution that the
@@ -97,7 +97,7 @@ namespace SGPP {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma, float_t factor);
 
         /**
          * Inits the grid with a constant heat
@@ -105,7 +105,7 @@ namespace SGPP {
          * alpha reference to the coefficients vector
          * constHeat the temperature of the constant heat
          */
-        //  void initGridWithConstantHeat(SGPP::base::DataVector& alpha, double constHeat);
+        //  void initGridWithConstantHeat(SGPP::base::DataVector& alpha, float_t constHeat);
 
         /**
          * Inits the screen object
@@ -122,12 +122,12 @@ namespace SGPP {
          * @param PointesPerDimension the distance between evaluation points
          * @param tfilename absolute path to file into which the grid's evaluation is written
          */
-        void printGrid(SGPP::base::DataVector& alpha, double PointesPerDimension, std::string tfilename) const;
+        void printGrid(SGPP::base::DataVector& alpha, float_t PointesPerDimension, std::string tfilename) const;
 
         /**
          This function is a placeholder, is not used.
          */
-        void printGridDomain(SGPP::base::DataVector& alpha, double PointesPerDimension, SGPP::base::BoundingBox& GridArea, std::string tfilename) const;
+        void printGridDomain(SGPP::base::DataVector& alpha, float_t PointesPerDimension, SGPP::base::BoundingBox& GridArea, std::string tfilename) const;
 
         /**
          * This is some kind of debug functionality. It writes a file,
@@ -140,7 +140,7 @@ namespace SGPP {
          * @param GridArea the area in which the function should be plotted
          * @param tfilename absolute path to file into which the grid's evaluation is written
          */
-        void printGridDomainStretching(SGPP::base::DataVector& alpha, double PointesPerDimension, SGPP::base::Stretching& GridArea, std::string tfilename) const;
+        void printGridDomainStretching(SGPP::base::DataVector& alpha, float_t PointesPerDimension, SGPP::base::Stretching& GridArea, std::string tfilename) const;
 
         /**
          * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value

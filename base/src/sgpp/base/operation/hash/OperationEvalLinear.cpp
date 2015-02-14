@@ -16,7 +16,7 @@
 namespace SGPP {
   namespace base {
 
-    double OperationEvalLinear::eval(DataVector& alpha, std::vector<double>& point) {
+    float_t OperationEvalLinear::eval(DataVector& alpha, std::vector<float_t>& point) {
       LinearBasis<unsigned int, unsigned int> base;
       AlgorithmEvaluation<LinearBasis<unsigned int, unsigned int> > AlgoEval(storage);
 

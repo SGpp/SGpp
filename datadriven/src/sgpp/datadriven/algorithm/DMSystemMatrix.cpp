@@ -17,7 +17,7 @@ namespace datadriven {
 //TODO where do I get the kernel from (who constructs the kernel?)
 
 DMSystemMatrix::DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C,
-		double lambda) :
+		float_t lambda) :
 		DMSystemMatrixBase(trainData, lambda), grid(grid) {
 	// create the operations needed in ApplyMatrix
 	this->C = &C;
@@ -77,7 +77,7 @@ void DMSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector&
 
 	SGPP::base::DataVector temptwo(alpha.getSize());
 	this->C->mult(alpha, temptwo);
-	result.axpy(static_cast<double>(M) * this->lambda_, temptwo);
+	result.axpy(static_cast<float_t>(M) * this->lambda_, temptwo);
 }
 
 void DMSystemMatrix::generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {

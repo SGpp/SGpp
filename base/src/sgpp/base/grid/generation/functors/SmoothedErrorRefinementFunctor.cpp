@@ -13,7 +13,7 @@ namespace SGPP {
 namespace base {
 
 SmoothedErrorRefinementFunctor::SmoothedErrorRefinementFunctor(
-		DataVector* alpha, Grid* grid, size_t refinements_num, double threshold) :
+		DataVector* alpha, Grid* grid, size_t refinements_num, float_t threshold) :
 		alpha(alpha), refinements_num(refinements_num), threshold(threshold), grid(
 				grid), trainDataset(
 		NULL), classes(NULL) {
@@ -24,7 +24,7 @@ SmoothedErrorRefinementFunctor::~SmoothedErrorRefinementFunctor() {
 
 }
 
-double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
+float_t SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
 	if (trainDataset == NULL || classes == NULL) {
@@ -32,7 +32,7 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 				"Training dataset or classes not set");
 	}
 
-	std::vector<double> errors;
+	std::vector<float_t> errors;
 
 	size_t numData = trainDataset->getNrows();
 	size_t dim = trainDataset->getNcols();
@@ -46,7 +46,7 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 		trainDataset->getRow(i, row);
 
 		// check if this particular training data is in the support
-		double tmp = SGPP::op_factory::createOperationEval(*grid)->eval(unit,
+		float_t tmp = SGPP::op_factory::createOperationEval(*grid)->eval(unit,
 				row);
 		if (tmp == 0) {
 			continue;
@@ -55,13 +55,13 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 		// if it is inside the support,
 		// calculate error and add it to
 		// the vector
-		double err = classes->get(i)
+		float_t err = classes->get(i)
 				- SGPP::op_factory::createOperationEval(*grid)->eval(*alpha, row);
 		errors.push_back(err);
 	}
 
 	// Uniform weight
-	double SmoothedErrors = 0;
+	float_t SmoothedErrors = 0;
 	size_t numErrors = errors.size();
 
 	if (numErrors == 0) {
@@ -69,13 +69,13 @@ double SmoothedErrorRefinementFunctor::operator()(GridStorage* storage,
 	}
 
 	for (unsigned int i = 0; i < numErrors; i++) {
-		SmoothedErrors += errors[i] * (1.0 / (double)numErrors);
+		SmoothedErrors += errors[i] * (1.0 / (float_t)numErrors);
 	}
 
 	return SmoothedErrors;
 }
 
-double SmoothedErrorRefinementFunctor::start() {
+float_t SmoothedErrorRefinementFunctor::start() {
 	return 0.0;
 }
 
@@ -83,7 +83,7 @@ size_t SmoothedErrorRefinementFunctor::getRefinementsNum() {
 	return this->refinements_num;
 }
 
-double SmoothedErrorRefinementFunctor::getRefinementThreshold() {
+float_t SmoothedErrorRefinementFunctor::getRefinementThreshold() {
 	return this->threshold;
 }
 

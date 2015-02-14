@@ -101,7 +101,7 @@ namespace SGPP {
     void HashRefinementBoundaries::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indexes, RefinementFunctor::value_type* max_values) {
       RefinementFunctor::value_type max_value;
       size_t max_index;
-      double threshold = functor->getRefinementThreshold();
+      float_t threshold = functor->getRefinementThreshold();
 
       for (size_t i = 0; i < refinements_num; i++) {
         max_value = max_values[i];

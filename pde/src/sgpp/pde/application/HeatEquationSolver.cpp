@@ -52,14 +52,14 @@ namespace SGPP {
       this->bGridConstructed = true;
     }
 
-    void HeatEquationSolver::setHeatCoefficient(double a) {
+    void HeatEquationSolver::setHeatCoefficient(float_t a) {
       this->a = a;
     }
 
-    void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed) {
         this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        double dNeededTime;
+        float_t dNeededTime;
         Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
@@ -86,10 +86,10 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed) {
         this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        double dNeededTime;
+        float_t dNeededTime;
         Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
@@ -117,10 +117,10 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul) {
+    void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, size_t NumImEul) {
       if (this->bGridConstructed) {
         this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        double dNeededTime;
+        float_t dNeededTime;
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
         HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
@@ -167,10 +167,10 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor) {
+    void HeatEquationSolver::initGridWithSmoothHeat(DataVector& alpha, float_t mu, float_t sigma, float_t factor) {
       if (this->bGridConstructed) {
-        double tmp;
-        double* dblFuncValues = new double[this->dim];
+        float_t tmp;
+        float_t* dblFuncValues = new float_t[this->dim];
 
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -206,7 +206,7 @@ namespace SGPP {
       this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0", "Alexander Heinecke, (C) 2009-2011");
     }
 
-    void HeatEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilename, double timestepsize) {
+    void HeatEquationSolver::storeInnerRHS(DataVector& alpha, std::string tFilename, float_t timestepsize) {
       if (this->bGridConstructed) {
         HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(*this->myGrid, alpha, this->a, timestepsize, "ImEul");
         SGppStopwatch* myStopwatch = new SGppStopwatch();
@@ -231,7 +231,7 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename) {
+    void HeatEquationSolver::storeInnerSolution(DataVector& alpha, size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, std::string tFilename) {
       if (this->bGridConstructed) {
         Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, false, 0, this->myScreen);
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);

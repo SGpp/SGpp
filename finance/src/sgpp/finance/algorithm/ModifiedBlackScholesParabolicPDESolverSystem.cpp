@@ -20,9 +20,9 @@ namespace SGPP {
   namespace finance {
 
     ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-        bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int dim_HW)
+        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode,
+        bool bLogTransform, bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int dim_HW)
       : BlackScholesParabolicPDESolverSystem(SparseGrid,
                                              alpha,
                                              mu,
@@ -47,13 +47,13 @@ namespace SGPP {
     }
 
     void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(SGPP::base::DataVector& updateVector) {
-      double tmp;
+      float_t tmp;
 
       for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
         //std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
         std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*this->BoundGrid->getBoundingBox());
         std::stringstream coordsStream(coords);
-        double dblFuncValues[2];
+        float_t dblFuncValues[2];
 
         for (size_t j = 0; j < 2; j++) {
           coordsStream >> tmp;

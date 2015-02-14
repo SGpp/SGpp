@@ -23,10 +23,10 @@ namespace SGPP {
 
     HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& thetas, SGPP::base::DataVector& volvols,
         SGPP::base::DataVector& kappas,
-        SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-        double dStrike, std::string option_type,
-        bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
+        SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode,
+        float_t dStrike, std::string option_type,
+        bool bLogTransform, bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
       this->BoundGrid = &SparseGrid;
       this->alpha_complete = &alpha;
 
@@ -83,7 +83,7 @@ namespace SGPP {
         }
       }
 
-      // Test if there are double algorithmic dimensions
+      // Test if there are float_t algorithmic dimensions
       std::vector<size_t> tempAlgoDims(this->HestonAlgoDims);
 
       for (size_t i = 0; i < this->HestonAlgoDims.size(); i++) {
@@ -96,7 +96,7 @@ namespace SGPP {
         }
 
         if (dimCount > 1) {
-          throw SGPP::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
+          throw SGPP::base::algorithm_exception("HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : There is minimum one float_td algorithmic dimension!");
         }
       }
 
@@ -550,18 +550,18 @@ namespace SGPP {
     }
 
     void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficients() {
-      double volvol = volvols->get(0);
-      double rho = this->hMatrix->get(0, 1);
-      double kappa = this->kappas->get(0);
+      float_t volvol = volvols->get(0);
+      float_t rho = this->hMatrix->get(0, 1);
+      float_t kappa = this->kappas->get(0);
 
       this->gCoeff->setAll(0.0);
       this->gCoeff->set(1, (kappa) + rho * volvol);
     }
 
     void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficients() {
-      double volvol = volvols->get(0);
-      double kappa = this->kappas->get(0);
-      double theta = this->thetas->get(0);
+      float_t volvol = volvols->get(0);
+      float_t kappa = this->kappas->get(0);
+      float_t theta = this->thetas->get(0);
 
       this->fCoeff->setAll(0.0);
       this->fCoeff->set(1, kappa * theta - 0.5 * pow(volvol, 2.0));
@@ -569,7 +569,7 @@ namespace SGPP {
 
 
     void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficients() {
-      double volvol = volvols->get(0);
+      float_t volvol = volvols->get(0);
 
       this->dCoeff->setAll(0.0);
       this->dCoeff->set(1, (0.5)*pow(volvol, 2.0));
@@ -583,8 +583,8 @@ namespace SGPP {
 
 
     void HestonParabolicPDESolverSystemEuroAmer::buildWCoefficients() {
-      double volvol = volvols->get(0);
-      double rho = this->hMatrix->get(0, 1);
+      float_t volvol = volvols->get(0);
+      float_t rho = this->hMatrix->get(0, 1);
 
       this->wCoeff->setAll(0.0);
       this->wCoeff->set(0, 1, rho * volvol);
@@ -609,7 +609,7 @@ namespace SGPP {
     }
 
     void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform() {
-      double volvol, rho;
+      float_t volvol, rho;
       this->cCoeff->setAll(0.0);
 
       for (size_t i = 0; i < this->nAssets; i++) {
@@ -625,7 +625,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < this->nAssets; i++) {
         // Determine and set the coefficient for this asset
-        double volvol = volvols->get(i);
+        float_t volvol = volvols->get(i);
         this->dCoeff->set(2 * i + 1, (0.5)*pow(volvol, 2.0));
       }
     }
@@ -639,7 +639,7 @@ namespace SGPP {
     }
 
     void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform() {
-      double theta, kappa, volvol;
+      float_t theta, kappa, volvol;
       this->fCoeff->setAll(0.0);
 
       for (size_t i = 0; i < nAssets; i++) {
@@ -652,7 +652,7 @@ namespace SGPP {
 
     void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform() {
       this->gCoeff->setAll(0.0);
-      double kappa;
+      float_t kappa;
 
       for (size_t i = 0; i < nAssets; i++) {
         kappa = this->kappas->get(i);
@@ -669,7 +669,7 @@ namespace SGPP {
     }
 
     void HestonParabolicPDESolverSystemEuroAmer::buildKCoefficientsLogTransform() {
-      double rho;
+      float_t rho;
       setAll4dEqualDimSizeArray(this->HestonAlgoDims.size(), &(this->kCoeff), 0.0);
 
       for (size_t i = 0; i < nAssets; i++) {
@@ -680,17 +680,17 @@ namespace SGPP {
       }
     }
 
-    void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t dimSize, double**** * array) {
-      (*array) = (double****) calloc(dimSize, sizeof(double***));
+    void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t dimSize, float_t**** * array) {
+      (*array) = (float_t****) calloc(dimSize, sizeof(float_t***));
 
       for (size_t i = 0; i < dimSize; i++) {
-        (*array)[i] = (double***) calloc(dimSize, sizeof(double**));
+        (*array)[i] = (float_t***) calloc(dimSize, sizeof(float_t**));
 
         for (size_t j = 0; j < dimSize; j++) {
-          (*array)[i][j] = (double**) calloc(dimSize, sizeof(double*));
+          (*array)[i][j] = (float_t**) calloc(dimSize, sizeof(float_t*));
 
           for (size_t k = 0; k < dimSize; k++) {
-            (*array)[i][j][k] = (double*) calloc(dimSize, sizeof(double));
+            (*array)[i][j][k] = (float_t*) calloc(dimSize, sizeof(float_t));
 
             for (size_t m = 0; m < dimSize; m++) {
               (*array)[i][j][k][m] = 0.0;
@@ -700,7 +700,7 @@ namespace SGPP {
       }
     }
 
-    void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t dimSize, double**** * array) {
+    void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t dimSize, float_t**** * array) {
       for (size_t i = 0; i < dimSize; i++) {
         for (size_t j = 0; j < dimSize; j++) {
           for (size_t k = 0; k < dimSize; k++) {
@@ -716,7 +716,7 @@ namespace SGPP {
       delete[] (*array);
     }
 
-    void HestonParabolicPDESolverSystemEuroAmer::setAll4dEqualDimSizeArray(size_t dimSize, double**** * array, double value) {
+    void HestonParabolicPDESolverSystemEuroAmer::setAll4dEqualDimSizeArray(size_t dimSize, float_t**** * array, float_t value) {
       for (size_t i = 0; i < dimSize; i++) {
         for (size_t j = 0; j < dimSize; j++) {
           for (size_t k = 0; k < dimSize; k++) {

@@ -87,9 +87,9 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 		//#pragma omp parallel for schedule(static)
         for (size_t k = 0; k < dim; k++ )
         {
-            double index = gridIndex->getIndex(k);
-            double level = gridIndex->getLevel(k);
-            double intval = pow(2.0, -level);
+            float_t index = gridIndex->getIndex(k);
+            float_t level = gridIndex->getLevel(k);
+            float_t intval = pow(2.0, -level);
             //std::cout << "level " << level << " intval " << intval << std::endl;
 
             DimensionBoundary boundary;
@@ -132,11 +132,11 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
             GridIndex predGridIdx = predictiveGridStorage->get(j);
             for (size_t point_idx = 0; point_idx < numData; point_idx++){
-            	double prod = 1.0;
+            	float_t prod = 1.0;
             	for (size_t d = 0; d < dim && prod != 0; d++){
-                	double transformedCoords = (trainDataset->get(point_idx, d) -
+                	float_t transformedCoords = (trainDataset->get(point_idx, d) -
                 			boundaries[d].leftBoundary)/(boundaries[d].rightBoundary - boundaries[d].leftBoundary);
-            		prod *= std::max(0.0, basis.eval(predGridIdx.getLevel(d),
+            		prod *= std::max(float_t(0), basis.eval(predGridIdx.getLevel(d),
             				predGridIdx.getIndex(d),
             				transformedCoords));
             	}
@@ -167,8 +167,8 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
 
             size_t childSeq;
 
-            double value1 = 0;
-            double value2 = 0;
+            float_t value1 = 0;
+            float_t value2 = 0;
 
             // Left Child
             childIndex.set(k, 2, 1);
@@ -199,7 +199,7 @@ void OnlinePredictiveRefinementDimension::collectRefinablePoints(
                 value2 = 0;
             }
 
-            result->insert(std::pair<refinement_key, double>(
+            result->insert(std::pair<refinement_key, float_t>(
                                refinement_key(storage->seq(gridIndex),
                                               (unsigned int) k), value1 + value2)
                           );
@@ -265,7 +265,7 @@ void OnlinePredictiveRefinementDimension::free_refine(GridStorage* storage,
     {
     	size_t seq = it->first.first;
     	unsigned int dim = it->first.second;
-    	double val = it->second;
+    	float_t val = it->second;
 
     	if ( val < functor->getRefinementThreshold() || val <= functor->start() ) {
     		continue;
@@ -321,7 +321,7 @@ void OnlinePredictiveRefinementDimension::setErrors(DataVector* errors_)
     errors = errors_;
 }
 
-double OnlinePredictiveRefinementDimension::basisFunctionEvalHelper(unsigned int level, unsigned int index, double value)
+float_t OnlinePredictiveRefinementDimension::basisFunctionEvalHelper(unsigned int level, unsigned int index, float_t value)
 {
     LinearBasis<unsigned int,unsigned int> linBasis;
     return linBasis.eval(level,index,value);

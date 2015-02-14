@@ -45,7 +45,7 @@ namespace SGPP {
       RefinementFunctor::value_type refinement_value;
       size_t refine_index;
       // now refine all grid points which satisfy the refinement criteria
-      double threshold = functor->getRefinementThreshold();
+      float_t threshold = functor->getRefinementThreshold();
 
       for (size_t i = 0; i < refinements_num; i++) {
         refinement_value = max_values[i];

@@ -23,8 +23,8 @@ namespace SGPP {
       //std::cout << dim << std::endl;
       //std::cout << index.toString() << std::endl;
 
-      double q = this->boundingBox->getIntervalWidth(dim);
-      double t = this->boundingBox->getIntervalOffset(dim);
+      float_t q = this->boundingBox->getIntervalWidth(dim);
+      float_t t = this->boundingBox->getIntervalOffset(dim);
 
       bool useBB = false;
 
@@ -39,24 +39,24 @@ namespace SGPP {
       }
     }
 
-    void PhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void PhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       size_t seq = index.seq();
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 
-      double h = 1.0 / static_cast<double>(1 << l);
-      double tmp_m = ((fl + fr) / 2.0);
+      float_t h = 1.0 / static_cast<float_t>(1 << l);
+      float_t tmp_m = ((fl + fr) / 2.0);
 
       // integration
       result[seq] = (h * tmp_m) + (((2.0 / 3.0) * h) * alpha_value);
 
       // dehierarchisation
-      double fm = tmp_m + alpha_value;
+      float_t fm = tmp_m + alpha_value;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -75,24 +75,24 @@ namespace SGPP {
       }
     }
 
-    void PhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double fl, double fr, double q, double t) {
+    void PhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr, float_t q, float_t t) {
       size_t seq = index.seq();
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 
-      double h = 1.0 / static_cast<double>(1 << l);
-      double tmp_m = ((fl + fr) / 2.0);
+      float_t h = 1.0 / static_cast<float_t>(1 << l);
+      float_t tmp_m = ((fl + fr) / 2.0);
 
       // integration
       result[seq] = ((h * tmp_m) + (((2.0 / 3.0) * h) * alpha_value)) * q;  // diagonal entry
 
       // dehierarchisation
-      double fm = tmp_m + alpha_value;
+      float_t fm = tmp_m + alpha_value;
 
       if (!index.hint()) {
         index.left_child(dim);

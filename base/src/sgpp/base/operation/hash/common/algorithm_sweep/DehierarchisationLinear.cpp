@@ -23,11 +23,11 @@ namespace SGPP {
       rec(source, result, index, dim, 0.0, 0.0);
     }
 
-    void DehierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void DehierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       // current position on the grid
       size_t seq = index.seq();
       // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      double fm = source[seq];
+      float_t fm = source[seq];
 
       // dehierarchisation
       fm += ((fl + fr) / 2.0);

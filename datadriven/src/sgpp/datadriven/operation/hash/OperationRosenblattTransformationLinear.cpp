@@ -47,7 +47,7 @@ void OperationRosenblattTransformationLinear::doTransformation(
 	marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
 	// 2. 1D transformation on dim_start
-	double y = 0;
+	float_t y = 0;
 
 	// 3. for every sample do...
 //#pragma omp parallel
@@ -87,7 +87,7 @@ void OperationRosenblattTransformationLinear::doTransformation(
 
 	base::DataVector* coords1d = new base::DataVector(points->getNcols());
 	base::DataVector* cdfs1d = new base::DataVector(points->getNcols());
-	double y = 0;
+	float_t y = 0;
 
 	// 1. marginalize to dim_start
 	base::Grid* g1d = NULL;
@@ -163,7 +163,7 @@ void OperationRosenblattTransformationLinear::doTransformation_in_next_dim(
 	op_dim = (op_dim + 1) % g_out->getStorage()->dim();
 
 	/* Step 2: draw a sample in next dim */
-	double y = 0;
+	float_t y = 0;
 	if (g_out->getStorage()->dim() > 1) {
 
 		// Marginalize to next dimension
@@ -198,14 +198,14 @@ void OperationRosenblattTransformationLinear::doTransformation_in_next_dim(
 	return;
 }
 
-double OperationRosenblattTransformationLinear::doTransformation1D(
-		base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
+float_t OperationRosenblattTransformationLinear::doTransformation1D(
+		base::Grid* grid1d, base::DataVector* alpha1d, float_t coord1d) {
 
 	/***************** STEP 1. Compute CDF  ********************/
 
 	// compute PDF, sort by coordinates
-	std::multimap<double, double> coord_pdf, coord_cdf;
-	std::multimap<double, double>::iterator it1, it2;
+	std::multimap<float_t, float_t> coord_pdf, coord_cdf;
+	std::multimap<float_t, float_t>::iterator it1, it2;
 
 	base::GridStorage* gs = grid1d->getStorage();
 	base::OperationEval* opEval = op_factory::createOperationEval(*(grid1d));
@@ -214,25 +214,25 @@ double OperationRosenblattTransformationLinear::doTransformation1D(
 	for (unsigned int i = 0; i < gs->size(); i++) {
 		coord[0] = gs->get(i)->getCoord(0);
 		coord_pdf.insert(
-				std::pair<double, double>(coord[0],
+				std::pair<float_t, float_t>(coord[0],
 						opEval->eval(*alpha1d, coord)));
-		coord_cdf.insert(std::pair<double, double>(coord[0], i));
+		coord_cdf.insert(std::pair<float_t, float_t>(coord[0], i));
 	}
 
 	delete opEval;
 	opEval = NULL;
 	// include values at the boundary [0,1]
-	coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
-	coord_pdf.insert(std::pair<double, double>(1.0, 0.0));
-	coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
-	coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
+	coord_pdf.insert(std::pair<float_t, float_t>(0.0, 0.0));
+	coord_pdf.insert(std::pair<float_t, float_t>(1.0, 0.0));
+	coord_cdf.insert(std::pair<float_t, float_t>(0.0, 0.0));
+	coord_cdf.insert(std::pair<float_t, float_t>(1.0, 1.0));
 
 	// Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
 	it1 = coord_pdf.begin();
 	it2 = coord_pdf.begin();
-	std::vector<double> tmp;
+	std::vector<float_t> tmp;
 	tmp.push_back(0.0);
-	double sum = 0.0, area;
+	float_t sum = 0.0, area;
 
 	for (++it2; it2 != coord_pdf.end(); ++it2) {
 		//(*it).first : the coordinate
@@ -254,7 +254,7 @@ double OperationRosenblattTransformationLinear::doTransformation1D(
 	}
 
 	// compute CDF
-	double tmp_sum;
+	float_t tmp_sum;
 	unsigned int i = 0;
 
 	for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
@@ -272,7 +272,7 @@ double OperationRosenblattTransformationLinear::doTransformation1D(
 	/***************** STEP 1. Done  ********************/
 
 	/***************** STEP 2. Sampling  ********************/
-	double y, x1, x2, y1, y2;
+	float_t y, x1, x2, y1, y2;
 	// find cdf interval
 	for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
 		if ((*it1).first >= coord1d)

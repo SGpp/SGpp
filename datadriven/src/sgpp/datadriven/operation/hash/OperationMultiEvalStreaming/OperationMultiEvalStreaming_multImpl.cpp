@@ -3,8 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <cmath>
 
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/globaldef.hpp>
 
 
@@ -18,11 +19,11 @@ void OperationMultiEvalStreaming::multImpl(SGPP::base::DataMatrix* level,
         const size_t end_index_grid, const size_t start_index_data,
         const size_t end_index_data) {
 
-    double* ptrLevel = level->getPointer();
-    double* ptrIndex = index->getPointer();
-    double* ptrAlpha = alpha.getPointer();
-    double* ptrData = dataset->getPointer();
-    double* ptrResult = result.getPointer();
+    float_t* ptrLevel = level->getPointer();
+    float_t* ptrIndex = index->getPointer();
+    float_t* ptrAlpha = alpha.getPointer();
+    float_t* ptrData = dataset->getPointer();
+    float_t* ptrResult = result.getPointer();
     size_t result_size = result.getSize();
     size_t dims = dataset->getNrows();
 
@@ -43,11 +44,11 @@ void OperationMultiEvalStreaming::multImpl(SGPP::base::DataMatrix* level,
         for (size_t m = start_index_grid; m < end_index_grid;
                 m += std::min<size_t>((size_t) getChunkGridPoints(),
                                       (end_index_grid - m))) {
-#if defined(__SSE3__) && !defined(__AVX__)
+#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION==1
             size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
             long long imask = 0x7FFFFFFFFFFFFFFF;
-            double* fmask = (double*)&imask;
+            float_t* fmask = (float_t*)&imask;
 
             for (size_t i = c; i < c + getChunkDataPoints(); i += 12) {
                 for (size_t j = m; j < m + grid_inc; j++) {
@@ -140,11 +141,11 @@ void OperationMultiEvalStreaming::multImpl(SGPP::base::DataMatrix* level,
             }
 
 #endif
-#if defined(__SSE3__) && defined(__AVX__)
+#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION==1
             size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
             int64_t imask = 0x7FFFFFFFFFFFFFFF;
-            double* fmask = (double*)&imask;
+            float_t* fmask = (float_t*)&imask;
 
             for (size_t i = c; i < c + getChunkDataPoints(); i += 24) {
                 for (size_t j = m; j < m + grid_inc; j++) {
@@ -237,21 +238,21 @@ void OperationMultiEvalStreaming::multImpl(SGPP::base::DataMatrix* level,
             }
 
 #endif
-#if !defined(__SSE3__) && !defined(__AVX__)
+#if (!defined(__SSE3__) && !defined(__AVX__)) || USE_DOUBLE_PRECISION==0
             size_t grid_end = std::min<size_t>(
                                   (size_t) getChunkGridPoints() + m, end_index_grid);
 
             for (size_t i = c; i < data_end; i++) {
                 for (size_t j = m; j < grid_end; j++) {
-                    double curSupport = ptrAlpha[j];
+                    float_t curSupport = ptrAlpha[j];
 
                     for (size_t d = 0; d < dims; d++) {
-                        double eval = ((ptrLevel[(j * dims) + d])
+                        float_t eval = ((ptrLevel[(j * dims) + d])
                                        * (ptrData[(d * result_size) + i]));
-                        double index_calc = eval - (ptrIndex[(j * dims) + d]);
-                        double abs = fabs(index_calc);
-                        double last = 1.0 - abs;
-                        double localSupport = std::max<double>(last, 0.0);
+                        float_t index_calc = eval - (ptrIndex[(j * dims) + d]);
+                        float_t abs = std::fabs(index_calc);
+                        float_t last = 1.0 - abs;
+                        float_t localSupport = std::max<float_t>(last, 0.0);
                         curSupport *= localSupport;
                     }
 

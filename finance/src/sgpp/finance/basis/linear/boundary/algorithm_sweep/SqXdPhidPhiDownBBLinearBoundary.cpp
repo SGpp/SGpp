@@ -20,8 +20,8 @@ namespace SGPP {
     }
 
     void SqXdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double q = this->boundingBox->getIntervalWidth(dim);
-      double t = this->boundingBox->getIntervalOffset(dim);
+      float_t q = this->boundingBox->getIntervalWidth(dim);
+      float_t t = this->boundingBox->getIntervalOffset(dim);
 
       bool useBB = false;
 
@@ -30,8 +30,8 @@ namespace SGPP {
       }
 
       // get boundary values
-      double left_boundary;
-      double right_boundary;
+      float_t left_boundary;
+      float_t right_boundary;
       size_t seq_left;
       size_t seq_right;
 
@@ -51,7 +51,7 @@ namespace SGPP {
       right_boundary = source[seq_right];
 
       if (useBB) {
-        double bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+        float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
 
         // check boundary conditions
         if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {

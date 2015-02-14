@@ -30,12 +30,12 @@ namespace SGPP {
       index.get(dim, init_level, init_index);
 
       size_t _seq;
-      double _val;
+      float_t _val;
 
-      double* temp = new double[1 << (level + 1)]; // The temp values
-      double* r = new double[1 << (level - 1)]; // The following arrays are required for the triangulation
-      double* gam = new double[1 << (level - 1)];
-      double* u = new double[1 << (level - 1)];
+      float_t* temp = new float_t[1 << (level + 1)]; // The temp values
+      float_t* r = new float_t[1 << (level - 1)]; // The following arrays are required for the triangulation
+      float_t* gam = new float_t[1 << (level - 1)];
+      float_t* u = new float_t[1 << (level - 1)];
 
       for (int i = 0; i < 1 << (level - 1); ++i) {
         r[i] = 0.0;
@@ -79,7 +79,7 @@ namespace SGPP {
 
         //Run the actual triangulation
 
-        double bet = 0.0;
+        float_t bet = 0.0;
 
         for (int i = 0; i < 1 << (level - 1); i++) { // This is the forward-reduction
           index.set(dim, level, i * 2 + 1);

@@ -47,7 +47,7 @@ namespace base {
 			index_t source_index;
 			level_t source_level;
 			index.get(d, source_level, source_index);
-			double error =  functor->start();
+			float_t error =  functor->start();
 			//errorIndicator->setActiveDim(d);
 
 			// test existence of left child
@@ -95,7 +95,7 @@ void PredictiveRefinementDimension::refineGridpointsCollection(GridStorage* stor
    size_t max_index;
    //PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
    // now refine all grid points which satisfy the refinement criteria
-   double threshold = functor->getRefinementThreshold();
+   float_t threshold = functor->getRefinementThreshold();
 
    for (size_t i = 0; i < refinements_num; i++) {
     max_value = max_values[i];

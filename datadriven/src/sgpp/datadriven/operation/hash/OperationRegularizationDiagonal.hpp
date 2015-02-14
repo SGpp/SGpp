@@ -26,7 +26,7 @@ namespace SGPP {
         // to remember mode
         int mode;
         // to remember parameter k
-        double k;
+        float_t k;
         // to remember state of grid in terms of number of grid points
         size_t size;
         // ro remember grid's storage
@@ -48,7 +48,7 @@ namespace SGPP {
          * @f$\prod_{k=1}^d \langle \phi_k(x_k),\phi_k(x_k) \rangle_{H^k}@f$.
          * @param k Parameter k
          */
-        virtual void initHkmix(double k) = 0;
+        virtual void initHkmix(float_t k) = 0;
 
         /**
          * Initialize H0HkLaplace.
@@ -57,7 +57,7 @@ namespace SGPP {
          * \prod_{l\neq k} \langle \phi_k(x_k),\phi_k(x_k) \rangle_{H^0}@f$.
          * @param k Parameter k
          */
-        virtual void initH0HkLaplace(double k) = 0;
+        virtual void initH0HkLaplace(float_t k) = 0;
 
         /**
          * Initialize ISOTROPIC_PENALTY, ignores constructor parameter k.
@@ -93,7 +93,7 @@ namespace SGPP {
          * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
          * @param k Parameter for @f$H^k@f$
          */
-        OperationRegularizationDiagonal(base::GridStorage* storage, int mode, double k);
+        OperationRegularizationDiagonal(base::GridStorage* storage, int mode, float_t k);
 
         /**
          * Destructor

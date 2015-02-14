@@ -22,19 +22,19 @@ namespace SGPP {
         grid_iterator& index, size_t dim) {
 
       size_t _seql2, _seql1, _seq, _seqr1, _seqr2 = 0;
-      double _vall2, _vall1, _val, _valr1, _valr2 = 0;
+      float_t _vall2, _vall1, _val, _valr1, _valr2 = 0;
 
       SGPP::base::GridStorage::index_type::level_type l, l_old, max_level;
       SGPP::base::GridStorage::index_type::index_type i, i_old;
 
-      double h;
+      float_t h;
 
       index.get(dim, l_old, i_old); //save iterator and restore afterwards
       max_level = index.getGridDepth(dim); //How many levels to decent?
 
       //We need the temp_values of the level above
-      double* temp_current = new double[1];
-      double* temp_old;
+      float_t* temp_current = new float_t[1];
+      float_t* temp_old;
 
       //Level 1-----------------------------------------------------------
       _seq = index.seq();
@@ -53,7 +53,7 @@ namespace SGPP {
       l = 2;
       h = 1 << l;
       temp_old = temp_current;
-      temp_current = new double[3];
+      temp_current = new float_t[3];
       index.left_child(dim);
       _seql1 = index.seq();
       index.step_right(dim);
@@ -81,7 +81,7 @@ namespace SGPP {
         //Calculate new temp-Variables ################################################
         delete[] temp_old;
         temp_old = temp_current;
-        temp_current = new double[(1 << l) - 1];
+        temp_current = new float_t[(1 << l) - 1];
 
         if (l != max_level) { //If we are in the last iteration, we don't need any more temp-variables, thus skip the calculation
           //Ramp up

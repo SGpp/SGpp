@@ -23,7 +23,7 @@ namespace SGPP {
     class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
       protected:
         //Mapping from class index to class number:
-        std::map<int, double> index_to_class_;
+        std::map<int, float_t> index_to_class_;
         //Stores the coefficients for every class
         std::vector<SGPP::base::DataVector> alphaVec_;
         /// regularization mode
@@ -33,7 +33,7 @@ namespace SGPP {
         //number of classes
         size_t nrClasses;
         // prior of data
-        std::vector<double> prior;
+        std::vector<float_t> prior;
         // vectors of grids
         std::vector<SGPP::base::Grid*> gridVec_;
         // vector of regterms
@@ -64,12 +64,12 @@ namespace SGPP {
         virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
                                     const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                     const SGPP::solver::SLESolverConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                    bool testAccDuringAdapt, const double lambda);
+                                    bool testAccDuringAdapt, const float_t lambda);
 
 
         virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
         /// construct system matrix
-        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda);
 
         /**
          * Returns the execution time

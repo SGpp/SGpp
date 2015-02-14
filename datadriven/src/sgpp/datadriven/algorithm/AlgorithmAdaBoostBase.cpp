@@ -12,7 +12,7 @@
 
 namespace SGPP {
   namespace datadriven {
-    AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final, double eps_final, double firstLabel, double secondLabel, double threshold, double maxLambda, double minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode) {
+    AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, float_t lambda, size_t IMAX, float_t eps, size_t IMAX_final, float_t eps_final, float_t firstLabel, float_t secondLabel, float_t threshold, float_t maxLambda, float_t minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, float_t percentOfAda, size_t mode) {
       if (refine && (gridType != 1 && gridType != 2 && gridType != 3)) {
         throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
       }
@@ -47,9 +47,9 @@ namespace SGPP {
       this->lambSteps = searchNum;
 
       if (searchNum == 1)
-        this->lambStepsize = (log((double)maxLambda) - log((double)minLambda)) / 2;
+        this->lambStepsize = (log((float_t)maxLambda) - log((float_t)minLambda)) / 2;
       else
-        this->lambStepsize = (log((double)maxLambda) - log((double)minLambda)) / ((double)searchNum - 1);
+        this->lambStepsize = (log((float_t)maxLambda) - log((float_t)minLambda)) / ((float_t)searchNum - 1);
 
       this->actualBaseLearners = 0;
       this->refinement = refine;
@@ -68,7 +68,7 @@ namespace SGPP {
 
     void AlgorithmAdaBoostBase::doDiscreteAdaBoost(SGPP::base::DataVector& hypoWeight, SGPP::base::DataVector& weightError, SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& decision, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest) {
       SGPP::base::DataVector weight(this->numData);
-      weight.setAll(1.0 / double(this->numData));
+      weight.setAll(1.0 / float_t(this->numData));
       SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
       SGPP::base::DataVector p_train(this->dim);
@@ -93,13 +93,13 @@ namespace SGPP {
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
-          this->maxGridPoint->set(count, (double)this->gridPoint);
+          this->maxGridPoint->set(count, (float_t)this->gridPoint);
 
         if (!this->refinement) {
           if (count == 0)
-            this->sumGridPoint->set(count, (double)gridPoint);
+            this->sumGridPoint->set(count, (float_t)gridPoint);
           else
-            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (double)gridPoint);
+            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (float_t)gridPoint);
         }
 
         alpha_train.setAll(0.0);
@@ -127,7 +127,7 @@ namespace SGPP {
         for (size_t i = 0; i < this->numData; i++) {
           SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
-          double value_train = opEval->eval(alpha_train, p_train_private);
+          float_t value_train = opEval->eval(alpha_train, p_train_private);
           newclasses.set(i, hValue(value_train));
         }
 
@@ -146,22 +146,22 @@ namespace SGPP {
 
         // find the optimal lambda to minimize the weighted error
         if (this->lambSteps > 0 && count > 0) {
-          double cur_lambda;
-          double weighterror;
-          double minWeightError = weightError.get(count);
+          float_t cur_lambda;
+          float_t weighterror;
+          float_t minWeightError = weightError.get(count);
 
           for (size_t it = 0; it < this->lambSteps; it++) {
             std::cout << std::endl;
             std::cout << "This is the " << it + 1 << "th search of " << this->actualBaseLearners << "th weak learner." << std::endl;
             std::cout << std::endl;
             alpha_train.setAll(0.0);
-            cur_lambda = exp(this->lambLogMax - (double)it * this->lambStepsize);
+            cur_lambda = exp(this->lambLogMax - (float_t)it * this->lambStepsize);
 
             alphaSolver(cur_lambda, weight, alpha_train, true);
 
             for (size_t i = 0; i < this->numData; i++) {
               this->data->getRow(i, p_train);
-              double value_seach = opEval->eval(alpha_train, p_train);
+              float_t value_seach = opEval->eval(alpha_train, p_train);
               newclasses.set(i, hValue(value_seach));
             }
 
@@ -203,7 +203,7 @@ namespace SGPP {
         }
 
         // calculate the weight of this weak classif
-        double hypoweight;
+        float_t hypoweight;
 
         if (weightError.get(count) == 0) {
           hypoweight = log(1e+10);
@@ -220,7 +220,7 @@ namespace SGPP {
         for (size_t i = 0; i < numData; i++) {
           SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
-          double value_train = opEval->eval(alpha_learn, p_train_private);
+          float_t value_train = opEval->eval(alpha_learn, p_train_private);
 
           // when there is only one baselearner actually, we do as following, just use normal classify to get the value
           if (this->numBaseLearners == 1)
@@ -238,7 +238,7 @@ namespace SGPP {
         for (size_t i = 0; i < testData.getNrows(); i++) {
           SGPP::base::DataVector p_test_private(this->dim);
           testData.getRow(i, p_test_private);
-          double value_test = opEval->eval(alpha_learn, p_test_private);
+          float_t value_test = opEval->eval(alpha_learn, p_test_private);
 
           // when there is only one baselearner actually, we do as following, just use normal classify to get the value
           if (this->numBaseLearners == 1)
@@ -250,7 +250,7 @@ namespace SGPP {
             algorithmValueTest.set(i, count, algorithmValueTest.get(i, count - 1) + hypoweight * hValue(value_test));
         }
 
-        double helper;
+        float_t helper;
 
         for (size_t i = 0; i < this->numData; i++) {
           // helper = weight.get(i)*exp(-hypoWeight.get(count) * newclasses.get(i)*this->classes->get(i));
@@ -263,7 +263,7 @@ namespace SGPP {
         }
 
         // normalization constant, this expression equals to normalizer = 2 * sqrt((weightError.get(count)) * (1.0 - weightError.get(count)));
-        double normalizer = tmpweight.sum();
+        float_t normalizer = tmpweight.sum();
 
         // get new weights vector
         // SGPP::base::DataVector tmpweighthelp(this->numData);
@@ -308,7 +308,7 @@ namespace SGPP {
 
     void AlgorithmAdaBoostBase::doRealAdaBoost(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest) {
       SGPP::base::DataVector weight(this->numData);
-      weight.setAll(1.0 / double(this->numData));
+      weight.setAll(1.0 / float_t(this->numData));
       SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
       SGPP::base::DataVector p_train(this->dim);
@@ -329,13 +329,13 @@ namespace SGPP {
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
-          this->maxGridPoint->set(count, (double)this->gridPoint);
+          this->maxGridPoint->set(count, (float_t)this->gridPoint);
 
         if (!this->refinement) {
           if (count == 0)
-            this->sumGridPoint->set(count, (double)gridPoint);
+            this->sumGridPoint->set(count, (float_t)gridPoint);
           else
-            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (double)gridPoint);
+            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (float_t)gridPoint);
         }
 
         alpha_train.setAll(0.0);
@@ -365,8 +365,8 @@ namespace SGPP {
         for (size_t i = 0; i < numData; i++) {
           SGPP::base::DataVector p_train_private(this->dim);
           this->data->getRow(i, p_train_private);
-          double value_train = opEval->eval(alpha_learn, p_train_private);
-          double helper = weight.get(i) * exp(-this->classes->get(i) * value_train);
+          float_t value_train = opEval->eval(alpha_learn, p_train_private);
+          float_t helper = weight.get(i) * exp(-this->classes->get(i) * value_train);
           tmpweight.set(i, helper);
 
           // when there is only one baselearner actually, we do as following, just use normal classify to get the value
@@ -381,7 +381,7 @@ namespace SGPP {
 
         // normalize weight
         // update the weight
-        double normalizer = tmpweight.sum();
+        float_t normalizer = tmpweight.sum();
         tmpweight.mult(1.0 / normalizer);
         weight = tmpweight;
 
@@ -391,7 +391,7 @@ namespace SGPP {
         for (size_t i = 0; i < testData.getNrows(); i++) {
           SGPP::base::DataVector p_test_private(this->dim);
           testData.getRow(i, p_test_private);
-          double value_test = opEval->eval(alpha_learn, p_test_private);
+          float_t value_test = opEval->eval(alpha_learn, p_test_private);
 
           // when there is only one baselearner actually, we do as following, just use normal classify to get the value
           if (this->numBaseLearners == 1)
@@ -439,7 +439,7 @@ namespace SGPP {
       }
 
       SGPP::base::DataVector weight(this->numData);
-      weight.setAll(1.0 / double(this->numData));
+      weight.setAll(1.0 / float_t(this->numData));
       SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
       SGPP::base::DataVector p_train(this->dim);
@@ -455,8 +455,8 @@ namespace SGPP {
       SGPP::base::DataVector value_train(this->numData);
       // to store the prediction testing values
       SGPP::base::DataVector value_test(testData.getNrows());
-      double maxloss;
-      double meanloss;
+      float_t maxloss;
+      float_t meanloss;
       SGPP::base::DataVector beta(this->numBaseLearners); //[0,1]
       SGPP::base::DataVector logBetaSumR(this->numBaseLearners); //[0,1]
 
@@ -472,13 +472,13 @@ namespace SGPP {
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
-          this->maxGridPoint->set(count, (double)this->gridPoint);
+          this->maxGridPoint->set(count, (float_t)this->gridPoint);
 
         if (!this->refinement) {
           if (count == 0)
-            this->sumGridPoint->set(count, (double)gridPoint);
+            this->sumGridPoint->set(count, (float_t)gridPoint);
           else
-            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (double)gridPoint);
+            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (float_t)gridPoint);
         }
 
         alpha_train.setAll(0.0);
@@ -543,7 +543,7 @@ namespace SGPP {
         beta.set(count, meanloss / (1 - meanloss));
 
         SGPP::base::DataVector TrValueHelper(this->numData);
-        double loghelp = log(1 / beta.get(count));
+        float_t loghelp = log(1 / beta.get(count));
 
         if (count == 0) {
           logBetaSumR.set(count, loghelp);
@@ -567,7 +567,7 @@ namespace SGPP {
         tmpweight.componentwise_mult(weight);
         // normalize weight
         // update the weight
-        double normalizer = tmpweight.sum();
+        float_t normalizer = tmpweight.sum();
         tmpweight.mult(1.0 / normalizer);
         weight = tmpweight;
 
@@ -624,7 +624,7 @@ namespace SGPP {
       delete opEval;
     }
 
-    void AlgorithmAdaBoostBase::doAdaBoostRT(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, double Tvalue, std::string powerType) {
+    void AlgorithmAdaBoostBase::doAdaBoostRT(SGPP::base::DataMatrix& weights, SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, float_t Tvalue, std::string powerType) {
       if (Tvalue >= 1 || Tvalue <= 0) {
         throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : the Tvalue must lie between 0 and 1!");
       }
@@ -634,7 +634,7 @@ namespace SGPP {
       }
 
       SGPP::base::DataVector weight(this->numData);
-      weight.setAll(1.0 / double(this->numData));
+      weight.setAll(1.0 / float_t(this->numData));
       SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*this->grid);
       // to store certain train data point
       SGPP::base::DataVector p_train(this->dim);
@@ -651,7 +651,7 @@ namespace SGPP {
 
       SGPP::base::DataVector beta(this->numBaseLearners);
       SGPP::base::DataVector logBetaSumR(this->numBaseLearners);
-      double errorRate;
+      float_t errorRate;
 
       for (size_t count = 0; count < this->numBaseLearners; count++) {
         (this->actualBaseLearners)++;
@@ -665,13 +665,13 @@ namespace SGPP {
         std::cout << "gridPoint: " << this->gridPoint << std::endl;
 
         if (this->maxGridPoint->get(count) < this->gridPoint)
-          this->maxGridPoint->set(count, (double)this->gridPoint);
+          this->maxGridPoint->set(count, (float_t)this->gridPoint);
 
         if (!this->refinement) {
           if (count == 0)
-            this->sumGridPoint->set(count, (double)gridPoint);
+            this->sumGridPoint->set(count, (float_t)gridPoint);
           else
-            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (double)gridPoint);
+            this->sumGridPoint->set(count, this->sumGridPoint->get(count - 1) + (float_t)gridPoint);
         }
 
         alpha_train.setAll(0.0);
@@ -719,7 +719,7 @@ namespace SGPP {
           throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : An unknown power type was specified!");
 
         SGPP::base::DataVector TrValueHelper(this->numData);
-        double loghelp = log(1 / beta.get(count));
+        float_t loghelp = log(1 / beta.get(count));
 
         if (count == 0) {
           logBetaSumR.set(count, loghelp);
@@ -746,7 +746,7 @@ namespace SGPP {
 
         // normalize weight
         // update the weight
-        double normalizer = tmpweight.sum();
+        float_t normalizer = tmpweight.sum();
         tmpweight.mult(1.0 / normalizer);
         weight = tmpweight;
 
@@ -834,7 +834,7 @@ namespace SGPP {
       }
     }
 
-    void AlgorithmAdaBoostBase::getAccuracy(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, double* accuracy_train, double* accuracy_test) {
+    void AlgorithmAdaBoostBase::getAccuracy(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, float_t* accuracy_train, float_t* accuracy_test) {
       /* get the accuracy */
       size_t right_test = 0;
       size_t right_train = 0;
@@ -850,7 +850,7 @@ namespace SGPP {
           right_train = right_train + 1;
       }
 
-      *accuracy_train = double(right_train) / double(this->numData);
+      *accuracy_train = float_t(right_train) / float_t(this->numData);
 
       // for testing data
       for (size_t i = 0; i < testData.getNrows(); i++) {
@@ -858,10 +858,10 @@ namespace SGPP {
           right_test = right_test + 1;
       }
 
-      *accuracy_test = double(right_test) / double(classTest.getSize());
+      *accuracy_test = float_t(right_test) / float_t(classTest.getSize());
     }
 
-    void AlgorithmAdaBoostBase::getROC(SGPP::base::DataMatrix& validationData, SGPP::base::DataVector& validationDataClass, double* acc, double* sensitivity, double* specificity, double* precision, double* recall, double* fOneScore) {
+    void AlgorithmAdaBoostBase::getROC(SGPP::base::DataMatrix& validationData, SGPP::base::DataVector& validationDataClass, float_t* acc, float_t* sensitivity, float_t* specificity, float_t* precision, float_t* recall, float_t* fOneScore) {
       size_t truePos = 0;
       size_t predictPos = 0;
       size_t trueNeg = 0;
@@ -894,15 +894,15 @@ namespace SGPP {
           trueNeg += 1;
       }
 
-      *acc = double(truePos + trueNeg) / double(classValidation.getSize());
-      *sensitivity = double(truePos) / double(actualPos);
-      *specificity = double(trueNeg) / double(actualNeg);
-      *precision = double(truePos) / double(predictPos);
+      *acc = float_t(truePos + trueNeg) / float_t(classValidation.getSize());
+      *sensitivity = float_t(truePos) / float_t(actualPos);
+      *specificity = float_t(trueNeg) / float_t(actualNeg);
+      *precision = float_t(truePos) / float_t(predictPos);
       *recall = *sensitivity;
       *fOneScore = 2 * (*precision) * (*recall) / ((*precision) + (*recall));
     }
 
-    void AlgorithmAdaBoostBase::getAccuracyBL(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, double* accuracy_train, double* accuracy_test, size_t yourBaseLearner) {
+    void AlgorithmAdaBoostBase::getAccuracyBL(SGPP::base::DataMatrix& testData, SGPP::base::DataVector& testDataClass, SGPP::base::DataMatrix& algorithmValueTrain, SGPP::base::DataMatrix& algorithmValueTest, float_t* accuracy_train, float_t* accuracy_test, size_t yourBaseLearner) {
       size_t right_test = 0;
       size_t right_train = 0;
 
@@ -912,7 +912,7 @@ namespace SGPP {
           right_train = right_train + 1;
       }
 
-      *accuracy_train = double(right_train) / double(this->numData);
+      *accuracy_train = float_t(right_train) / float_t(this->numData);
 
       // for testing data
       for (size_t i = 0; i < testData.getNrows(); i++) {
@@ -920,7 +920,7 @@ namespace SGPP {
           right_test = right_test + 1;
       }
 
-      *accuracy_test = double(right_test) / double(testDataClass.getSize());
+      *accuracy_test = float_t(right_test) / float_t(testDataClass.getSize());
     }
 
     void AlgorithmAdaBoostBase::doRefinement(SGPP::base::DataVector& alpha_ada, SGPP::base::DataVector& weight_ada, size_t curBaseLearner) {
@@ -937,7 +937,7 @@ namespace SGPP {
           else
             refineNumber = this->numOfAda;
         } else if (this->refineMode == 2) {
-          refineNumber = (size_t)(this->perOfAda * (double)(this->grid->getSize()));
+          refineNumber = (size_t)(this->perOfAda * (float_t)(this->grid->getSize()));
 
           //force to refine at least one point
           if (refineNumber == 0)
@@ -963,15 +963,15 @@ namespace SGPP {
           final_ada = true;
 
           if (curBaseLearner == 1) {
-            this->maxGridPoint->set(curBaseLearner - 1, (double)gridPts);
-            this->sumGridPoint->set(curBaseLearner - 1, (double)gridPts);
+            this->maxGridPoint->set(curBaseLearner - 1, (float_t)gridPts);
+            this->sumGridPoint->set(curBaseLearner - 1, (float_t)gridPts);
           } else {
             if (gridPts > this->maxGridPoint->get(curBaseLearner - 2))
-              this->maxGridPoint->set(curBaseLearner - 1, (double)gridPts);
+              this->maxGridPoint->set(curBaseLearner - 1, (float_t)gridPts);
             else
               this->maxGridPoint->set(curBaseLearner - 1, this->maxGridPoint->get(curBaseLearner - 2));
 
-            this->sumGridPoint->set(curBaseLearner - 1, this->sumGridPoint->get(curBaseLearner - 2) + (double)gridPts);
+            this->sumGridPoint->set(curBaseLearner - 1, this->sumGridPoint->get(curBaseLearner - 2) + (float_t)gridPts);
           }
         }
 
@@ -983,7 +983,7 @@ namespace SGPP {
       }
     }
 
-    double AlgorithmAdaBoostBase::hValue(double realValue) {
+    float_t AlgorithmAdaBoostBase::hValue(float_t realValue) {
       if (realValue >= this->threshold) {
         if (labelOne > labelTwo)
           return labelOne;
@@ -1002,7 +1002,7 @@ namespace SGPP {
     }
 
     size_t AlgorithmAdaBoostBase::getMeanGridPoint(size_t baselearner) {
-      size_t mean = (size_t)(this->sumGridPoint->get(baselearner - 1) / (double)baselearner);
+      size_t mean = (size_t)(this->sumGridPoint->get(baselearner - 1) / (float_t)baselearner);
       return mean;
     }
 
