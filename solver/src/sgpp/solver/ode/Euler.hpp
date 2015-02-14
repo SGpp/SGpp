@@ -44,7 +44,7 @@ namespace SGPP {
          * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
          * @param screen possible pointer to a SGPP::base::ScreenOutput object
          */
-        Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation = false, size_t numEvalsAnimation = 20, SGPP::base::ScreenOutput* screen = NULL);
+        Euler(std::string Mode, size_t imax, float_t timestepSize, bool generateAnimation = false, size_t numEvalsAnimation = 20, SGPP::base::ScreenOutput* screen = NULL);
 
         /**
          * Std-Destructor

@@ -37,7 +37,7 @@ namespace SGPP {
          * @param timestepSize the size of one timestep
          * @param screen possible pointer to a SGPP::base::ScreenOutput object
          */
-        CrankNicolson(size_t nTimesteps, double timestepSize, SGPP::base::ScreenOutput* screen = NULL);
+        CrankNicolson(size_t nTimesteps, float_t timestepSize, SGPP::base::ScreenOutput* screen = NULL);
 
         /**
          * Std-Destructor

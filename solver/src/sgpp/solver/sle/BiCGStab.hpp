@@ -26,7 +26,7 @@ namespace SGPP {
         /**
          * Std-Constructor
          */
-        BiCGStab(size_t imax, double epsilon);
+        BiCGStab(size_t imax, float_t epsilon);
 
         /**
          * Std-Destructor
@@ -41,7 +41,7 @@ namespace SGPP {
          * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
          * http://netlib.org
          */
-        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, float_t max_threshold = -1.0);
     };
 
   }

@@ -184,12 +184,12 @@ namespace SGPP {
       return Leaf;
     }
 
-    double
+    float_t
     HashGridIndex::getCoord(size_t d) const {
       if (distr == Normal) {
         // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
-        return static_cast<double>(index[d]) /
-               static_cast<double>(static_cast<index_type>(1) << level[d]);
+        return static_cast<float_t>(index[d]) /
+               static_cast<float_t>(static_cast<index_type>(1) << level[d]);
       } else {
         return clenshawCurtisTable.getPoint(
                  static_cast<SClenshawCurtisTable::level_type>(level[d]),
@@ -197,12 +197,12 @@ namespace SGPP {
       }
     }
 
-    double
-    HashGridIndex::getCoordBB(size_t d, double q, double t) const {
+    float_t
+    HashGridIndex::getCoordBB(size_t d, float_t q, float_t t) const {
       return q * getCoord(d) + t;
     }
 
-    double
+    float_t
     HashGridIndex::getCoordStretching(size_t d, Stretching* stretch) {
       return stretch->getCoordinates(level[d], index[d], d);
     }

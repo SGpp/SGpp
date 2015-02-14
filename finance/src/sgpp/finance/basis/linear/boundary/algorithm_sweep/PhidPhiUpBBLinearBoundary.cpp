@@ -21,8 +21,8 @@ namespace SGPP {
 
     void PhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       // get boundary values
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
 
       // the following computations are independent from a bounding box
       if (!index.hint()) {

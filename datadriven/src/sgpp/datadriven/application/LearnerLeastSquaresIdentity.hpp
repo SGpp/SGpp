@@ -26,14 +26,14 @@ namespace SGPP {
      */
     class LearnerLeastSquaresIdentity: public SGPP::datadriven::LearnerBase {
       private:
-        std::vector<std::pair<size_t, double> > ExecTimeOnStep;
+        std::vector<std::pair<size_t, float_t> > ExecTimeOnStep;
 
         SGPP::base::OperationMultipleEval* kernel = nullptr;
 
         SGPP::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
       protected:
 
-        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda);
+        virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda);
 
         virtual void postProcessing(const SGPP::base::DataMatrix& trainDataset, const SGPP::solver::SLESolverType& solver,
                                     const size_t numNeededIterations);
@@ -65,9 +65,9 @@ namespace SGPP {
 
         virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
 
-        double testRegular(const SGPP::base::RegularGridConfiguration& GridConfig, SGPP::base::DataMatrix& testDataset);
+        float_t testRegular(const SGPP::base::RegularGridConfiguration& GridConfig, SGPP::base::DataMatrix& testDataset);
 
-        std::vector<std::pair<size_t, double> > getRefinementExecTimes();
+        std::vector<std::pair<size_t, float_t> > getRefinementExecTimes();
 
         void setImplementation(SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
           this->implementationConfiguration = operationConfiguration;

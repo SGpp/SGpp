@@ -14,15 +14,15 @@
 namespace SGPP {
   namespace datadriven {
 
-    OperationRegularizationDiagonalLinearBoundary::OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, double k)
+    OperationRegularizationDiagonalLinearBoundary::OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, float_t k)
       : OperationRegularizationDiagonal(storage, mode, k) {
       init();
     }
 
-    void OperationRegularizationDiagonalLinearBoundary::initHkmix (double k) {
+    void OperationRegularizationDiagonalLinearBoundary::initHkmix (float_t k) {
       size_t dim = storage->dim();
       base::GridIndex* gi;
-      double res;
+      float_t res;
 
       for (size_t i = 0; i < size; i++) {
         gi = storage->get(i);
@@ -37,10 +37,10 @@ namespace SGPP {
 
     }
 
-    void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace (double k) {
+    void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace (float_t k) {
       size_t dim = storage->dim();
       base::GridIndex* gi;
-      double res, resd;
+      float_t res, resd;
 
       for (size_t i = 0; i < size; i++) {
         gi = storage->get(i);

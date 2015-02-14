@@ -20,7 +20,7 @@ namespace SGPP {
 
   namespace finance {
 
-    Hedging::Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, double eps, bool is_log_transformed) :
+    Hedging::Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, float_t eps, bool is_log_transformed) :
       m_res(resolution), m_eps(eps), m_hedge_points(new SGPP::base::DataMatrix(1, hedge_area.getDimensions())), m_is_log_transformed(is_log_transformed) {
       SGPP::base::EvalCuboidGenerator* myEval = new SGPP::base::EvalCuboidGenerator();
       myEval->getEvaluationCuboid(*m_hedge_points, hedge_area, resolution);
@@ -61,12 +61,12 @@ namespace SGPP {
         }
 
         // get option value
-        double value = myEval->eval(alpha, curPoint);
+        float_t value = myEval->eval(alpha, curPoint);
         fileout << value << " ";
 
         // calculate derivatives
-        double delta = 0.0;
-        double gamma = 0.0;
+        float_t delta = 0.0;
+        float_t gamma = 0.0;
 
         for (size_t j = 0; j < m_hedge_points->getNcols(); j++) {
           m_hedge_points->getRow(i, left);
@@ -80,8 +80,8 @@ namespace SGPP {
             right.set(j, (right.get(j) + m_eps));
           }
 
-          double tmp_delta = ((myEval->eval(alpha, right) - myEval->eval(alpha, left)) / (2.0 * m_eps));
-          double tmp_gamma = ((myEval->eval(alpha, right) - (2.0 * value) + myEval->eval(alpha, left)) / (m_eps * m_eps));
+          float_t tmp_delta = ((myEval->eval(alpha, right) - myEval->eval(alpha, left)) / (2.0 * m_eps));
+          float_t tmp_gamma = ((myEval->eval(alpha, right) - (2.0 * value) + myEval->eval(alpha, left)) / (m_eps * m_eps));
 
           fileout << tmp_delta << " " << tmp_gamma << " ";
 

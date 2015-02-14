@@ -15,17 +15,17 @@
 namespace SGPP {
   namespace datadriven {
 
-    double OperationTestModWavelet::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+    float_t OperationTestModWavelet::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
       base::WaveletModifiedBasis<unsigned int, unsigned int> base;
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestModWavelet::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+    float_t OperationTestModWavelet::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
       base::WaveletModifiedBasis<unsigned int, unsigned int> base;
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestModWavelet::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
+    float_t OperationTestModWavelet::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
       base::WaveletModifiedBasis<unsigned int, unsigned int> base;
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
     }

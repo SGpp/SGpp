@@ -31,7 +31,7 @@ namespace SGPP {
 
       std::cout << "[";
 
-      for (i = 0; i < ((int)(((double)progress) * 0.64)); i++) {
+      for (i = 0; i < ((int)(((float_t)progress) * 0.64)); i++) {
         std::cout << '\xdb';
       }
 
@@ -60,7 +60,7 @@ namespace SGPP {
 
       std::cout << "[";
 
-      for (i = 0; i < ((int)(((double)progress) * 0.64)); i++) {
+      for (i = 0; i < ((int)(((float_t)progress) * 0.64)); i++) {
         std::cout << "=";
       }
 

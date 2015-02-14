@@ -40,20 +40,26 @@ namespace SGPP {
         /// number of algorithmic dimensions
         const size_t numAlgoDims_;
         /// pointer to DataMatrix containing source coefficients
-        double* ptr_source_;
+        float_t* ptr_source_;
         /// pointer to DataMatrix containing result coefficients
-        double* ptr_result_;
+        float_t* ptr_result_;
         /// current algorithmic dimension for the overall operator
         size_t cur_algo_dim_;
         /// stretching of basis functions in current algorithmic domain
-        double q_;
+        float_t q_;
         /// translation of basis function in current algorithmic domain
-        double t_;
+        float_t t_;
+#if 1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+        /// const. vector holding 1/2 in both components
+        const __m128d half_in_;
+#endif
+#else
 #ifdef __SSE3__
         /// const. vector holding 1/2 in both components
         const __m128d half_in_;
 #endif
-
+#endif
       public:
         /**
          * Constructor
@@ -88,8 +94,33 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void rec(double& fl, double& fr, size_t dim, grid_iterator& index);
+        void rec(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
+#if 1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+        /**
+         * recursive function for the calculation of merged-Down (L2 scalar products) without Bounding Box
+         *
+         * @param fl 2 function value on the left boundary, stored in xmm registers
+         * @param fr 2 function value on the right boundary, stored in xmm registers
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
+         */
+        void rec_LL(__m128d& fl, __m128d& fr, size_t dim, grid_iterator& index);
+#else
+        /**
+         * recursive function for the calculation of merged-Up (L2 scalar products) without Bounding Box
+         *
+         * @param fl first function value on the left boundary
+         * @param fr first function value on the right boundary
+         * @param fl2 second function value on the left boundary
+         * @param fr2 second function value on the right boundary
+         * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
+         * @param index an iterator object of the grid
+         */
+        void rec_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2, size_t dim, grid_iterator& index);
+#endif
+#else
 #ifdef __SSE3__
         /**
          * recursive function for the calculation of merged-Down (L2 scalar products) without Bounding Box
@@ -111,7 +142,8 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void rec_LL(double& fl, double& fr, double& fl2, double& fr2, size_t dim, grid_iterator& index);
+        void rec_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2, size_t dim, grid_iterator& index);
+#endif
 #endif
 
         /**
@@ -122,7 +154,7 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void rec_LG(double& fl, double& fr, size_t dim, grid_iterator& index);
+        void rec_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of merged-Up (L2 scalar product and gradient) without Bounding Box
@@ -132,7 +164,7 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void rec_GL(double& fl, double& fr, size_t dim, grid_iterator& index);
+        void rec_GL(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of Up (gradient) without Bounding Box
@@ -149,7 +181,7 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void recBB(double& fl, double& fr, size_t dim, grid_iterator& index);
+        void recBB(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of merged-Up (L2 scalar products) with Bounding Box
@@ -161,7 +193,7 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void recBB_LL(double& fl, double& fr, double& fl2, double& fr2, size_t dim, grid_iterator& index);
+        void recBB_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of merged-Up (L2 scalar product and gradient) with Bounding Box
@@ -171,7 +203,7 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void recBB_LG(double& fl, double& fr, size_t dim, grid_iterator& index);
+        void recBB_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of merged-Up (gradient and L2 scalar product) with Bounding Box
@@ -181,7 +213,7 @@ namespace SGPP {
          * @param dim current fixed dimension of the 'execution direction', here all downs are calculated
          * @param index an iterator object of the grid
          */
-        void recBB_GL(double& fl, double& fr, size_t dim, grid_iterator& index);
+        void recBB_GL(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
         /**
          * recursive function for the calculation of Up (gradient) with Bounding Box

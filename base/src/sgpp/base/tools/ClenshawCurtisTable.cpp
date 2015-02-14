@@ -12,16 +12,16 @@ namespace SGPP {
 
     template<class LT, class IT>
     ClenshawCurtisTable<LT, IT>::ClenshawCurtisTable(LT maxLevel)
-      : table(std::vector<double>((1 << (maxLevel + 1)) + maxLevel, 0.0)),
+      : table(std::vector<float_t>((1 << (maxLevel + 1)) + maxLevel, 0.0)),
         maxLevel(maxLevel) {
       size_t k = 0;
       IT hInv = 1;
 
       for (LT l = 0; l <= maxLevel; l++) {
-        const double h = 1.0 / static_cast<double>(hInv);
+        const float_t h = 1.0 / static_cast<float_t>(hInv);
 
         for (IT i = 0; i <= hInv; i++) {
-          table[k] = (cos(M_PI * (1.0 - static_cast<double>(i) * h)) + 1.0) / 2.0;
+          table[k] = (cos(M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
           k++;
         }
 

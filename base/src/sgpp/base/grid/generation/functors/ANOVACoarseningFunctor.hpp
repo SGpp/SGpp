@@ -31,7 +31,7 @@ namespace SGPP {
          * @param threshold The absolute value of the entries have to be greater or equal than the threshold
          * @param storage grid storage
          */
-        ANOVACoarseningFunctor(DataVector* alpha, size_t removements_num, double threshold, GridStorage* storage);
+        ANOVACoarseningFunctor(DataVector* alpha, size_t removements_num, float_t threshold, GridStorage* storage);
 
         /**
          * Destructor
@@ -48,14 +48,14 @@ namespace SGPP {
          *
          * @return refinement value
          */
-        virtual double operator()(GridStorage* storage, size_t seq);
+        virtual float_t operator()(GridStorage* storage, size_t seq);
 
         /**
          * This should return the initial value of coarsening criterion (e.g. alpha or error).
          *
          * @return the initial value
          */
-        virtual double start();
+        virtual float_t start();
 
 
         /**
@@ -76,7 +76,7 @@ namespace SGPP {
          *
          * @return threshold value for refinement. Default value: 0.
          */
-        double getCoarseningThreshold();
+        float_t getCoarseningThreshold();
 
 
       protected:
@@ -97,7 +97,7 @@ namespace SGPP {
         int removements_num;
 
         /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
-        double threshold;
+        float_t threshold;
 
 
 
@@ -107,8 +107,8 @@ namespace SGPP {
 
         typedef struct ANOVA_Values {
           int component_index;
-          double value;
-          double refinement_value;
+          float_t value;
+          float_t refinement_value;
           int points_num;
 
         } tANOVAValues;

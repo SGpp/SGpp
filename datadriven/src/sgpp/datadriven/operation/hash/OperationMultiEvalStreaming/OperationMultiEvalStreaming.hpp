@@ -29,7 +29,7 @@ protected:
 
 	base::GridStorage *storage;
 
-	double duration;
+	float_t duration;
 public:
 
 	OperationMultiEvalStreaming(base::Grid &grid, base::DataMatrix &dataset);
@@ -46,7 +46,7 @@ public:
 
 	void recalculateLevelAndIndex();
 
-	double getDuration();
+	float_t getDuration();
 
 private:
 	void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber, size_t* segmentStart,

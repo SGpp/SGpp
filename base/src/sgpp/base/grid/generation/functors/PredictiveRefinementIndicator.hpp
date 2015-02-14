@@ -44,7 +44,7 @@ public:
 	 * @param threshold The absolute value of the entries have to be greater or equal than the threshold
 	 */
 	PredictiveRefinementIndicator(Grid* grid, DataMatrix* dataSet,DataVector* errorVector,
-			size_t refinements_num = 1, double threshold = 0.0);
+			size_t refinements_num = 1, float_t threshold = 0.0);
 
 
 	/**
@@ -54,7 +54,7 @@ public:
 	 * @param gridPoint for which to calculate an indicator value
 	 * @return refinement value
 	 */
-	double operator()(AbstractRefinement::index_type* gridPoint);
+	float_t operator()(AbstractRefinement::index_type* gridPoint);
 
 
 	/**
@@ -63,7 +63,7 @@ public:
 	 * @param storage pointer to the grids storage object
 	 * @param seq number of data point fot which the squared residual should be returned.
 	 */
-	virtual double operator()(GridStorage* storage, size_t seq);
+	virtual float_t operator()(GridStorage* storage, size_t seq);
 
 	/**
 	 * Returns the maximal number of points that should be refined.
@@ -82,7 +82,7 @@ public:
      *
      * @return threshold value for refinement. Default value: 0.
      */
-	virtual double getRefinementThreshold();
+	virtual float_t getRefinementThreshold();
 
 	/**
 	 * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
@@ -90,7 +90,7 @@ public:
 	 *
 	 * @return lower bound
 	 */
-	virtual double start();
+	virtual float_t start();
 
 protected:
 
@@ -99,7 +99,7 @@ protected:
 	/// number of grid points to refine
 	size_t refinementsNum;
 	/// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
-	double threshold;
+	float_t threshold;
 
 	// data set that will be evaluated
 	DataMatrix* dataSet;
@@ -112,7 +112,7 @@ protected:
 	 * @param value represents the x value on which the grid should be evaluated
 	 * @return basis function of grid type evaluated at "value" on level "level" and index "index".
 	 */
-	double basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, double value);
+	float_t basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, float_t value);
 
 private:
 

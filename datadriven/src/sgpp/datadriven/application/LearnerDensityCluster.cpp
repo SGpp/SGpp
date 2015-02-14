@@ -45,6 +45,8 @@ namespace SGPP {
 
   namespace datadriven {
 
+#if USE_DOUBLE_PRECISION==1
+
   	LearnerDensityCluster::LearnerDensityCluster() : LearnerBase(false, false){
 
   	}
@@ -88,7 +90,7 @@ namespace SGPP {
 
     LearnerTiming LearnerDensityCluster::train(SGPP::base::DataMatrix& testDataset,  SGPP::base::DataVector& classes,
 					  const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-					  const double lambda){
+					  const float_t lambda){
 
 		LearnerTiming result;
 		result.timeComplete_ = 0.0;
@@ -108,7 +110,7 @@ namespace SGPP {
     }
 
     void LearnerDensityCluster::calculateGridValues(SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig,
-        			const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lambda){
+        			const SGPP::solver::SLESolverConfiguration& SolverConfig, const float_t lambda){
     	if(GridConfig.type_ == SGPP::base::Periodic){
 			grid_ = SGPP::base::Grid::createPeriodicGrid(GridConfig.dim_);
 			grid_->createGridGenerator()->regular(GridConfig.level_);
@@ -166,7 +168,7 @@ namespace SGPP {
 		myCG = NULL;
     }
 
-    bool LearnerDensityCluster::pairCompare(const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem) {
+    bool LearnerDensityCluster::pairCompare(const std::pair<int, float_t>& firstElem, const std::pair<int, float_t>& secondElem) {
       return firstElem.second > secondElem.second;
     }
 
@@ -180,11 +182,11 @@ namespace SGPP {
 		real_1d_array dist = "[]";
 
     	if(neighbors_ == NULL){
-    		double *points = new double[(GridConfig.dim_ + 2) * testDataset.getNrows()];
+    		float_t *points = new float_t[(GridConfig.dim_ + 2) * testDataset.getNrows()];
 			for(size_t i = 0; i < testDataset.getNrows();i++){
 				SGPP::base::DataVector point(GridConfig.dim_);
 				testDataset.getRow(i,point);
-				points[(GridConfig.dim_+2)*(i+1)-2] = double(i);
+				points[(GridConfig.dim_+2)*(i+1)-2] = float_t(i);
 				points[(GridConfig.dim_+2)*(i+1)-1] = (*gridVals_)[i];
 				std::copy(point.getPointer(), point.getPointer() + GridConfig.dim_, points+(i)*(GridConfig.dim_+2));
 			}
@@ -230,7 +232,7 @@ namespace SGPP {
 					kdtreequeryresultsxy(kdt, r);
 					kdtreequeryresultsdistances(kdt, dist);
 				}else{
-					double * neighbors = new double [(numberOfNeighbors+1)*(GridConfig.dim_+1)];
+					float_t * neighbors = new float_t [(numberOfNeighbors+1)*(GridConfig.dim_+1)];
 					for(int k = 0;k < numberOfNeighbors+1;k++){
 						neighbors[(GridConfig.dim_+1)*(k+1)-1] = neighbors_[i][k];
 					}
@@ -239,7 +241,7 @@ namespace SGPP {
 					delete [] neighbors;
 					neighbors = NULL;
 				}
-				std::vector<std::pair<int,double> > densityNeighbours;
+				std::vector<std::pair<int,float_t> > densityNeighbours;
 				// check the threshold
 
 				for(int j = 1; j < numberOfNeighbors+1; j++){
@@ -247,8 +249,8 @@ namespace SGPP {
 				}
 
 				std::sort(densityNeighbours.begin(), densityNeighbours.end(), (LearnerDensityCluster::pairCompare));
-				double min = densityNeighbours.at(numberOfNeighbors-1).second;
-				double max = densityNeighbours.at(0).second;
+				float_t min = densityNeighbours.at(numberOfNeighbors-1).second;
+				float_t max = densityNeighbours.at(0).second;
 
 				if(gridVals_->get(i) < min)
 					min = gridVals_->get(i);
@@ -270,7 +272,7 @@ namespace SGPP {
 				kdtreequeryresultsdistances(kdt, dist);
 			}else{
 
-				double * neighbors = new double [(numberOfNeighbors+1)*(GridConfig.dim_+1)];
+				float_t * neighbors = new float_t [(numberOfNeighbors+1)*(GridConfig.dim_+1)];
 				for(int k = 0;k < numberOfNeighbors+1;k++){
 					neighbors[(GridConfig.dim_+1)*(k+1)-1] = neighbors_[i][k];
 				}
@@ -330,7 +332,7 @@ namespace SGPP {
 		return (std::abs(gridVals_->get(i)-gridVals_->get(j)) <= eps);
 	}
 
-    SGPP::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda){
+    SGPP::datadriven::DMSystemMatrixBase* LearnerDensityCluster::createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda){
     	throw base::factory_exception("createDMSystem is not implemented yet.");
     }
 
@@ -346,7 +348,7 @@ namespace SGPP {
     }
 
     void LearnerDensityCluster::precalculateGridValues(const char * filename, SGPP::base::DataMatrix& testDataset, const SGPP::base::RegularGridConfiguration& GridConfig,
-    		const SGPP::solver::SLESolverConfiguration& SolverConfig, const double lambda){
+    		const SGPP::solver::SLESolverConfiguration& SolverConfig, const float_t lambda){
     	delete gridVals_;
     	gridVals_ = NULL;
     	calculateGridValues(testDataset, GridConfig, SolverConfig, lambda);
@@ -358,7 +360,7 @@ namespace SGPP {
     void LearnerDensityCluster::loadPrecalculatedValues(const char * filename){
 
     	int len  = 0;
-    	double * data = loadArray(filename, &len);
+    	float_t * data = loadArray(filename, &len);
     	delete gridVals_;
     	gridVals_ = NULL;
     	gridVals_ = new SGPP::base::DataVector(data, len);
@@ -369,11 +371,11 @@ namespace SGPP {
     }
 
     void LearnerDensityCluster::precalculateNeighbors(const char * filename, SGPP::base::DataMatrix& testDataset, int n){
-    	double *points = new double[(testDataset.getNcols() + 2) * testDataset.getNrows()];
+    	float_t *points = new float_t[(testDataset.getNcols() + 2) * testDataset.getNrows()];
 		for(size_t i = 0; i < testDataset.getNrows();i++){
 			SGPP::base::DataVector point(testDataset.getNcols());
 			testDataset.getRow(i,point);
-			points[(testDataset.getNcols()+2)*(i+1)-2] = double(i);
+			points[(testDataset.getNcols()+2)*(i+1)-2] = float_t(i);
 			//points[(testDataset.getNcols()+2)*(i+1)-1] = (*gridVals_)[i];
 			std::copy(point.getPointer(), point.getPointer() + testDataset.getNcols(), points+(i)*(testDataset.getNcols()+2));
 		}
@@ -429,22 +431,22 @@ namespace SGPP {
 	}
 
 
-    void LearnerDensityCluster::saveArray(const char * tFilename, int len, double data[]){
+    void LearnerDensityCluster::saveArray(const char * tFilename, int len, float_t data[]){
     	fstream f;
 		f.open(tFilename, std::ios::out);
 		f.write((char *) &len, sizeof(int));
-		f.write((char *) data, sizeof(double) * (len));
+		f.write((char *) data, sizeof(float_t) * (len));
 
 		f.close();
 
     }
 
-    double * LearnerDensityCluster::loadArray(const char * tFilename,int * len){
+    float_t * LearnerDensityCluster::loadArray(const char * tFilename,int * len){
 		fstream f;
 		f.open(tFilename, std::ios::in);
 		f.read((char *) len, sizeof(int));
-		double * data = new double[*len];
-		f.read((char *) data, sizeof(double)*(*len));
+		float_t * data = new float_t[*len];
+		f.read((char *) data, sizeof(float_t)*(*len));
 		f.close();
 		return data;
     }
@@ -535,5 +537,6 @@ namespace SGPP {
 		delete indexUnderThreshold;
 		indexUnderThreshold = NULL;
 	 }
+#endif
   }
 }

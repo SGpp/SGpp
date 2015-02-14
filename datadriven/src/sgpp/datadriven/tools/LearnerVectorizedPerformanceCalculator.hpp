@@ -23,9 +23,9 @@ namespace datadriven {
  */
 struct LearnerVectorizedPerformance {
 	/// achieved GFLOP
-	double GFlop_;
+	float_t GFlop_;
 	/// achieved GByte
-	double GByte_;
+	float_t GByte_;
 };
 
 /**

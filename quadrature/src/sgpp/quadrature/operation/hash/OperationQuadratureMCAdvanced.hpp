@@ -18,7 +18,7 @@ namespace quadrature {
 /**
  * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
  */
-typedef double (*FUNC)(int, double*, void*);
+typedef float_t (*FUNC)(int, float_t*, void*);
 
 /**
  * Quadrature on any sparse grid (that has OperationMultipleEval implemented)
@@ -55,7 +55,7 @@ public:
 	 *
 	 * @param alpha Coefficient vector for current grid
 	 */
-	virtual double doQuadrature(SGPP::base::DataVector& alpha);
+	virtual float_t doQuadrature(SGPP::base::DataVector& alpha);
 
 	/**
 	 * @brief Quadrature of an arbitrary function using
@@ -64,7 +64,7 @@ public:
 	 * @param func The function to integrate
 	 * @param clientdata Optional data to pass to FUNC
 	 */
-	double doQuadratureFunc(FUNC func, void* clientdata);
+	float_t doQuadratureFunc(FUNC func, void* clientdata);
 
 	/**
 	 * @brief Quadrature of the @f$L^2@f$-norm of the error,
@@ -76,7 +76,7 @@ public:
 	 * @param clientdata Optional data to pass to FUNC
 	 * @param alpha Coefficient vector for current grid
 	 */
-	double doQuadratureL2Error(FUNC func, void* clientdata,
+	float_t doQuadratureL2Error(FUNC func, void* clientdata,
 			SGPP::base::DataVector& alpha);
 
 	/**

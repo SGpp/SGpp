@@ -58,7 +58,7 @@ namespace SGPP {
         size_t numAssets;
 
         /// The market riskfree rate
-        double r;
+        float_t r;
 
         /// Stores if the stochastic asset data has been passed to the solver
         bool bStochasticDataAlloc;
@@ -70,10 +70,10 @@ namespace SGPP {
         bool useCoarsen;
 
         /// Threshold used to decide if a grid point should be deleted
-        double coarsenThreshold;
+        float_t coarsenThreshold;
 
         /// Threshold used to decide if a grid point should be refined
-        double refineThreshold;
+        float_t refineThreshold;
 
         /// Adaptive mode during solving Heston Equation: none, coarsen, refine, coarsenNrefine
         std::string adaptSolveMode;
@@ -94,7 +94,7 @@ namespace SGPP {
         size_t nNeededIterations;
 
         /// Variable to store the solving time
-        double dNeededTime;
+        float_t dNeededTime;
 
         /// Variable to store start grid size (Inner SGPP::base::Grid)
         size_t staInnerGridSize;
@@ -109,10 +109,10 @@ namespace SGPP {
         std::string tBoundaryType;
 
         /// Stores the current time until which the option has been solved
-        double current_time;
+        float_t current_time;
 
         /// Stores the strike of the current option
-        double dStrike;
+        float_t dStrike;
 
         /// Stores the option type of the current option
         std::string payoffType;
@@ -125,7 +125,7 @@ namespace SGPP {
          *
          * @return the call premium
          */
-        virtual double get1DEuroCallPayoffValue(double assetValue, double strike);
+        virtual float_t get1DEuroCallPayoffValue(float_t assetValue, float_t strike);
 
         /**
          * Initialises the alpha vector with a payoff function of an European call option or put option.
@@ -135,7 +135,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initCartesianGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initCartesianGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType);
 
         /**
          * Initialises the alpha vector with a payoff function of an European call option or put option
@@ -145,7 +145,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initLogTransformedGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initLogTransformedGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType);
 
       public:
         /**
@@ -182,7 +182,7 @@ namespace SGPP {
          * @param payoffType the type of payoff Function used ONLY supported: avgM
          * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
          */
-        virtual void refineInitialGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
+        virtual void refineInitialGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance);
 
         /**
          * This function tries to refine the grid such that
@@ -200,7 +200,7 @@ namespace SGPP {
          * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
          * @param maxLevel maximum level of refinement
          */
-        virtual void refineInitialGridWithPayoffToMaxLevel(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel);
+        virtual void refineInitialGridWithPayoffToMaxLevel(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel);
 
         /**
          * In order to solve the multi dimensional Heston Equation you have to provided
@@ -212,11 +212,11 @@ namespace SGPP {
          * @param rhos correlation matrix. Size needs to be twice the number of assets to handle the two Wiener processes for each asset.
          * @param r market risk-free interest rate scalar.
          */
-        virtual void setStochasticData(SGPP::base::DataVector& thetas_arg, SGPP::base::DataVector& kappas_arg, SGPP::base::DataVector& volvols_arg, SGPP::base::DataMatrix& rhos, double r);
+        virtual void setStochasticData(SGPP::base::DataVector& thetas_arg, SGPP::base::DataVector& kappas_arg, SGPP::base::DataVector& volvols_arg, SGPP::base::DataMatrix& rhos, float_t r);
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
         /**
          * Concrete implementation of the Crank-Nicholson solver. Optional use of implicit euler as a 'kickstart'.
@@ -228,7 +228,7 @@ namespace SGPP {
          * @param alpha coefficients of the sparse grid basis functions
          * @param NumImEul the number of initial implicit euler steps to take before switching to Crank-Nicholson
          */
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -237,7 +237,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType);
 
         /**
          * Inits the screen object
@@ -272,7 +272,7 @@ namespace SGPP {
          *  @param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
          *  @param refineThreshold Threshold needed to determine if a grid point should be refined
          */
-        virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+        virtual void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, float_t coarsenThreshold, float_t refineThreshold);
 
         /**
          * Evaluates the current option value
@@ -283,7 +283,7 @@ namespace SGPP {
          *
          * @return the option price at the given point
          */
-        virtual double evalOption(std::vector<double>& eval_point, SGPP::base::DataVector& alpha);
+        virtual float_t evalOption(std::vector<float_t>& eval_point, SGPP::base::DataVector& alpha);
 
         /**
          * This method transforms a point given
@@ -312,7 +312,7 @@ namespace SGPP {
          * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
          * @return number of gridpoints at money
          */
-        virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+        virtual size_t getGridPointsAtMoney(std::string payoffType, float_t strike, float_t eps = 0.0);
 
         /**
          * gets the number needed iterations to solve the Heston Equation
@@ -326,7 +326,7 @@ namespace SGPP {
          *
          * @return needed time in seconds to solve the Heston Equation, if called before solving 0 is returned
          */
-        virtual double getNeededTimeToSolve();
+        virtual float_t getNeededTimeToSolve();
 
         /**
          * gets the number of points in start grid
@@ -355,7 +355,7 @@ namespace SGPP {
          * @param alpha the vector in which to store the closed-form results
          * @param maturity the option maturity
          */
-        void EvaluateHestonExactSurface(SGPP::base::DataVector& alpha, double maturity);
+        void EvaluateHestonExactSurface(SGPP::base::DataVector& alpha, float_t maturity);
 
         /**
          * Uses the put-call parity to evaluate the exact Heston surface for a put option, based on the closed-form Heston surface for a call option.
@@ -363,7 +363,7 @@ namespace SGPP {
          * @param alpha the vector in which to store the results
          * @param maturity the option maturity
          */
-        void EvaluateHestonExactSurfacePut(SGPP::base::DataVector& alpha, double maturity);
+        void EvaluateHestonExactSurfacePut(SGPP::base::DataVector& alpha, float_t maturity);
 
         /**
          * Evaluates the Heston closed-form curve for a constant variance and varying stock price based on the provided grid.
@@ -374,7 +374,7 @@ namespace SGPP {
          * @param maturity the option maturity
          * @param v the constant variance value for evaluation
          */
-        void EvaluateHestonExact1d(SGPP::base::DataVector& alpha, SGPP::base::Grid* grid1d, SGPP::base::BoundingBox* boundingBox1d, double maturity, double v);
+        void EvaluateHestonExact1d(SGPP::base::DataVector& alpha, SGPP::base::Grid* grid1d, SGPP::base::BoundingBox* boundingBox1d, float_t maturity, float_t v);
 
         /**
          * Uses a Black-Scholes solver to evaluate the curve for a constant volatility.
@@ -385,7 +385,7 @@ namespace SGPP {
          * @param maturity the option maturity
          * @param sigma the constant volatility to use for evaluation
          */
-        void EvaluateBsExact1d(SGPP::base::DataVector& alpha, SGPP::base::Grid* grid1d, SGPP::base::BoundingBox* boundingBox1d, double maturity, double sigma);
+        void EvaluateBsExact1d(SGPP::base::DataVector& alpha, SGPP::base::Grid* grid1d, SGPP::base::BoundingBox* boundingBox1d, float_t maturity, float_t sigma);
 
         /**
          * Evaluates the closed-form Heston price for a vanilla call.
@@ -402,7 +402,7 @@ namespace SGPP {
          *
          * @return option price
          */
-        double EvaluateHestonPriceExact(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K);
+        float_t EvaluateHestonPriceExact(float_t S, float_t v, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K);
 
         /*
          * Calls the larger overload (the one with more parameters) of EvaluateHestonPriceExact with the stochastic data already saved in this instance.
@@ -410,7 +410,7 @@ namespace SGPP {
          * @param S stock price
          * @param v variance
          */
-        double EvaluateHestonPriceExact(double S, double v, double maturity);
+        float_t EvaluateHestonPriceExact(float_t S, float_t v, float_t maturity);
 
         /**
          * Evaluates the closed-form Heston price for a vanilla put.
@@ -427,7 +427,7 @@ namespace SGPP {
          *
          * @return option price
          */
-        double EvaluateHestonPriceExactPut(double S, double v, double xi, double theta, double kappa, double rho, double r, double T, double K);
+        float_t EvaluateHestonPriceExactPut(float_t S, float_t v, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K);
 
         /*
          * Calls the larger overload (the one with more parameters) of EvaluateHestonPriceExactPut with the stochastic data already saved in this instance.
@@ -435,7 +435,7 @@ namespace SGPP {
          * @param S stock price
          * @param v variance
          */
-        double EvaluateHestonPriceExactPut(double S, double v, double maturity);
+        float_t EvaluateHestonPriceExactPut(float_t S, float_t v, float_t maturity);
 
         /**
          * Evaluates the difference surface between the closed-form Heston surface and the closed-form Black-Scholes surface on the current grid.
@@ -443,7 +443,7 @@ namespace SGPP {
          * @param alpha vector in which to store the difference results
          * @param maturity the option maturity
          */
-        void CompareHestonBsExact(SGPP::base::DataVector& alpha, double maturity);
+        void CompareHestonBsExact(SGPP::base::DataVector& alpha, float_t maturity);
 
         /**
          * Prints the closed-form BS, Heston and difference curves for a constant variance (and thus constant volatility) to files.
@@ -451,7 +451,7 @@ namespace SGPP {
          * @param maturity option maturity
          * @param v variance value (from which volatility is also derived)
          */
-        void CompareHestonBs1d(double maturity, double v);
+        void CompareHestonBs1d(float_t maturity, float_t v);
 
         /**
          * Perform a single step of the Gauss-Lobatto integration for the Heston closed-form integral functions.
@@ -463,7 +463,7 @@ namespace SGPP {
          * @param fb value of the function at the upper limit (used to save an evaluation when refinement is used)
          * @param neval number of evaluations made so far
          * @param maxeval maximum number of evaluations which should not be exceeded
-         * @param acc required accuracy expressed in units of std::numeric_limits<double>::epsilon(). This allows less-than comparison by using addition and equality.
+         * @param acc required accuracy expressed in units of std::numeric_limits<float_t>::epsilon(). This allows less-than comparison by using addition and equality.
          * @param xi Heston parameter
          * @param theta Heston parameter
          * @param kappa Heston parameter
@@ -477,7 +477,7 @@ namespace SGPP {
          *
          * @return integral step value
          */
-        double GaussLobattoIntStep(double a, double b, double fa, double fb, size_t& neval, size_t maxeval, double acc, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
+        float_t GaussLobattoIntStep(float_t a, float_t b, float_t fa, float_t fb, size_t& neval, size_t maxeval, float_t acc, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type);
 
         /**
          * Perform Gauss-Lobatto integration for the Heston closed-form integral functions.
@@ -500,7 +500,7 @@ namespace SGPP {
          *
          * @return integral value
          */
-        double GaussLobattoInt(double a, double b, double abstol, size_t maxeval, double xi, double theta, double kappa, double rho, double r, double T, double K, double S, double v, int type);
+        float_t GaussLobattoInt(float_t a, float_t b, float_t abstol, size_t maxeval, float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type);
 
 
         /**
@@ -522,7 +522,7 @@ namespace SGPP {
          *
          * @return the evaluated option price
          */
-        double EvalSinglePoint1Asset(double s, double v, SGPP::base::DataVector& alphaVec);
+        float_t EvalSinglePoint1Asset(float_t s, float_t v, SGPP::base::DataVector& alphaVec);
 
         /**
          * Gets the closed-form Black-Scholes surface on the current grid. Uses the equivalent volatility of the variance values. Vanilla option only.
@@ -530,7 +530,7 @@ namespace SGPP {
          * @param alphaBS vector in which to store the exact BS solution values
          * @param maturity the option maturity
          */
-        void GetBsExactSolution(SGPP::base::DataVector& alphaBS, double maturity);
+        void GetBsExactSolution(SGPP::base::DataVector& alphaBS, float_t maturity);
 
         /**
          * Computes the difference between the a provided numerical Heston solution and the equivalent Black-Scholes solution on the current grid.
@@ -540,7 +540,7 @@ namespace SGPP {
          * @param error vector in which to store the difference values
          * @param maturity the option maturity
          */
-        void CompareHestonNumericToBsExact(SGPP::base::DataVector& alphaHestonNumeric, SGPP::base::DataVector& alphaBS, SGPP::base::DataVector& error, double maturity);
+        void CompareHestonNumericToBsExact(SGPP::base::DataVector& alphaHestonNumeric, SGPP::base::DataVector& alphaBS, SGPP::base::DataVector& error, float_t maturity);
     };
 
   }

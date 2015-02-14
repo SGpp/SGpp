@@ -9,12 +9,12 @@
 namespace SGPP {
   namespace base {
 
-    double OperationNaiveEvalHessianBsplineClenshawCurtis::evalHessian(
-      DataVector& alpha, const std::vector<double>& point, DataVector& gradient,
+    float_t OperationNaiveEvalHessianBsplineClenshawCurtis::evalHessian(
+      DataVector& alpha, const std::vector<float_t>& point, DataVector& gradient,
       DataMatrix& hessian) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
-      double result = 0.0;
+      float_t result = 0.0;
 
       gradient.resize(storage->dim());
       gradient.setAll(0.0);
@@ -27,14 +27,14 @@ namespace SGPP {
 
       for (size_t i = 0; i < n; i++) {
         const GridIndex* gp = storage->get(i);
-        double cur_val = 1.0;
+        float_t cur_val = 1.0;
         cur_gradient.setAll(alpha[i]);
         cur_hessian.setAll(alpha[i]);
 
         for (size_t t = 0; t < d; t++) {
-          double val1d = base.eval(gp->getLevel(t), gp->getIndex(t), point[t]);
-          double dx1d = base.evalDx(gp->getLevel(t), gp->getIndex(t), point[t]);
-          double dxdx1d = base.evalDxDx(gp->getLevel(t), gp->getIndex(t), point[t]);
+          float_t val1d = base.eval(gp->getLevel(t), gp->getIndex(t), point[t]);
+          float_t dx1d = base.evalDx(gp->getLevel(t), gp->getIndex(t), point[t]);
+          float_t dxdx1d = base.evalDxDx(gp->getLevel(t), gp->getIndex(t), point[t]);
 
           cur_val *= val1d;
 

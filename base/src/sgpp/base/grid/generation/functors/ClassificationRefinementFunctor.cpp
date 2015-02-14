@@ -12,14 +12,14 @@ namespace SGPP {
 namespace base {
 
 ClassificationRefinementFunctor::ClassificationRefinementFunctor(
-		DataVector* alpha, Grid* grid, size_t refinements_num, double threshold) :
+		DataVector* alpha, Grid* grid, size_t refinements_num, float_t threshold) :
 		alpha(alpha), refinements_num(refinements_num), threshold(threshold),  grid(grid), trainDataset(NULL), classes(NULL) {
 }
 
 ClassificationRefinementFunctor::~ClassificationRefinementFunctor() {
 }
 
-double ClassificationRefinementFunctor::operator()(GridStorage* storage,
+float_t ClassificationRefinementFunctor::operator()(GridStorage* storage,
 		size_t seq) {
 
 	if (trainDataset == NULL || classes == NULL) {
@@ -44,15 +44,15 @@ double ClassificationRefinementFunctor::operator()(GridStorage* storage,
 		SGPP::base::DataVector singleAlpha(alpha->getSize());
 		singleAlpha.setAll(0.0);
 		singleAlpha.set(seq, 1);
-		double phi = SGPP::op_factory::createOperationEval(*grid)->eval(
+		float_t phi = SGPP::op_factory::createOperationEval(*grid)->eval(
 				singleAlpha, row);
 
 		if (phi > 0) {
 			numSupport++;
 
 			/* evaluate grid at point x_i */
-			double val = SGPP::op_factory::createOperationEval(*grid)->eval(*alpha, row);
-			double y = classes->get(i);
+			float_t val = SGPP::op_factory::createOperationEval(*grid)->eval(*alpha, row);
+			float_t y = classes->get(i);
 
 			if ( ! ((y > 0 && val > 0) || (y < 0 && val < 0)) ) {
 				numMisclassified++;
@@ -64,10 +64,10 @@ double ClassificationRefinementFunctor::operator()(GridStorage* storage,
 		return -1; // threshold is 0.0
 	}
 
-	return (double) numMisclassified;
+	return (float_t) numMisclassified;
 }
 
-double ClassificationRefinementFunctor::start() {
+float_t ClassificationRefinementFunctor::start() {
 	return 0.0;
 }
 
@@ -75,7 +75,7 @@ size_t ClassificationRefinementFunctor::getRefinementsNum() {
 	return this->refinements_num;
 }
 
-double ClassificationRefinementFunctor::getRefinementThreshold() {
+float_t ClassificationRefinementFunctor::getRefinementThreshold() {
 	return this->threshold;
 }
 

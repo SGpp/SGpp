@@ -9,18 +9,18 @@
 namespace SGPP {
   namespace base {
 
-    double OperationNaiveEvalPartialDerivativeBsplineBoundary::evalPartialDerivative(
-      DataVector& alpha, const std::vector<double>& point, size_t deriv_dim) {
+    float_t OperationNaiveEvalPartialDerivativeBsplineBoundary::evalPartialDerivative(
+      DataVector& alpha, const std::vector<float_t>& point, size_t deriv_dim) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
-      double result = 0.0;
+      float_t result = 0.0;
 
       for (size_t i = 0; i < n; i++) {
         const GridIndex* gp = storage->get(i);
-        double cur_val = 1.0;
+        float_t cur_val = 1.0;
 
         for (size_t t = 0; t < d; t++) {
-          double val1d = ((t == deriv_dim) ?
+          float_t val1d = ((t == deriv_dim) ?
                           base.evalDx(gp->getLevel(t), gp->getIndex(t), point[t]) :
                           base.eval(gp->getLevel(t), gp->getIndex(t), point[t]));
 

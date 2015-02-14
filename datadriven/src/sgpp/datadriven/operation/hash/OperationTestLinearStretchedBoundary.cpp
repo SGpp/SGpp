@@ -14,17 +14,17 @@
 namespace SGPP {
   namespace datadriven {
 
-    double OperationTestLinearStretchedBoundary::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+    float_t OperationTestLinearStretchedBoundary::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
       base::LinearBoundaryBasis<unsigned int, unsigned int> base;
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestLinearStretchedBoundary::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+    float_t OperationTestLinearStretchedBoundary::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
       base::LinearBoundaryBasis<unsigned int, unsigned int> base;
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
+    float_t OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
       base::LinearBoundaryBasis<unsigned int, unsigned int> base;
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0);
     }

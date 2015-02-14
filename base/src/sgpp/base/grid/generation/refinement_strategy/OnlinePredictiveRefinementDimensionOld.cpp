@@ -20,7 +20,7 @@
 namespace SGPP {
 namespace base {
 
-bool doubleReverseCompare(const double firstEl, const double secondEl){
+bool float_tReverseCompare(const float_t firstEl, const float_t secondEl){
 	return firstEl > secondEl;
 }
 
@@ -58,7 +58,7 @@ void OnlinePredictiveRefinementDimensionOld::collectRefinablePoints(
 			index_t source_index;
 			level_t source_level;
 			index.get(d, source_level, source_index);
-			double error = functor->start();
+			float_t error = functor->start();
 			//errorIndicator->setActiveDim(d);
 
 			// test existence of left child
@@ -116,7 +116,7 @@ void OnlinePredictiveRefinementDimensionOld::refineGridpointsCollection(
 	//size_t max_index;
 	//PredictiveRefinementDimensionIndicator::value_type* max_values =static_cast<PredictiveRefinementDimensionIndicator::value_type*>(mv);
 	// now refine all grid points which satisfy the refinement criteria
-	double threshold = functor->getRefinementThreshold();
+	float_t threshold = functor->getRefinementThreshold();
 
 	std::vector< std::pair<key_type, value_type> > errorsVector;
 	//std::cout << "refinement collection size " << refinementCollection_.size() << std::endl;

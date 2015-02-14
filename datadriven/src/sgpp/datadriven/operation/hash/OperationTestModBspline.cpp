@@ -16,15 +16,15 @@
 namespace SGPP {
   namespace datadriven {
 
-    double OperationTestModBspline::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+    float_t OperationTestModBspline::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestModBspline::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+    float_t OperationTestModBspline::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestModBspline::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
+    float_t OperationTestModBspline::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
     }
 

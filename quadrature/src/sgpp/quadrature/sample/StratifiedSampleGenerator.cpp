@@ -28,14 +28,14 @@ namespace SGPP {
       
       // initialise local variables
       currentStrata = new size_t[dimensions];
-      sizeOfStrata = new double[dimensions];
+      sizeOfStrata = new float_t[dimensions];
       
       // set counter to the first strata for each dimension
       // compute size of strata per dimension
       for(size_t i = 0; i < dimensions; i++) {
 	if(numberOfStrata[i] < 1) numberOfStrata[i] = 1;
 	currentStrata[i] = 0;
-	sizeOfStrata[i] = 1./static_cast<double>(this->numberOfStrata[i]);
+	sizeOfStrata[i] = 1./static_cast<float_t>(this->numberOfStrata[i]);
       }
       
     }
@@ -48,7 +48,7 @@ namespace SGPP {
       // Choose a random number inside the stratum selected for this dimension
       for(size_t i = 0; i < dimensions; i++)
       {
-	dv[i] = ((double)currentStrata[i] + Random::random_double() ) * sizeOfStrata[i];
+	dv[i] = ((float_t)currentStrata[i] + Random::random_double() ) * sizeOfStrata[i];
       }
       
       // continue to the next stratum used for the next sample

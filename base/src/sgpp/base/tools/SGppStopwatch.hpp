@@ -41,7 +41,7 @@ namespace SGPP {
          *
          * @return elapsed time since the last call to start in seconds
          */
-        double stop();
+        float_t stop();
 
       protected:
         std::chrono::time_point<std::chrono::high_resolution_clock> start_time;

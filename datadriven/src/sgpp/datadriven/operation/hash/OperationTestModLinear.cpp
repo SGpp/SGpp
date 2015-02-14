@@ -15,17 +15,17 @@
 namespace SGPP {
   namespace datadriven {
 
-    double OperationTestModLinear::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+    float_t OperationTestModLinear::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
       base::LinearModifiedBasis<unsigned int, unsigned int> base;
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestModLinear::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+    float_t OperationTestModLinear::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
       base::LinearModifiedBasis<unsigned int, unsigned int> base;
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestModLinear::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
+    float_t OperationTestModLinear::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
       base::LinearModifiedBasis<unsigned int, unsigned int> base;
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
     }

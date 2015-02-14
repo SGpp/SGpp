@@ -25,7 +25,7 @@ namespace SGPP {
 
     MetaLearner::MetaLearner(SGPP::solver::SLESolverConfiguration solverConfig,
                              SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConfiguration adaptivityConfiguration,
-                             size_t baseLevel, double lambda, bool verbose) {
+                             size_t baseLevel, float_t lambda, bool verbose) {
       this->csvSep = "& ";
       this->solverConfig = solverConfig;
       this->solverFinalStep = solverFinalStep;
@@ -143,14 +143,14 @@ namespace SGPP {
       }
 
       if (!isBinaryClassification) {
-        double mse = 0.0;
+        float_t mse = 0.0;
 
         for (size_t i = 0; i < computedClasses.getSize(); i++) {
-          double diff = testClassesVector->get(i) - computedClasses.get(i);
+          float_t diff = testClassesVector->get(i) - computedClasses.get(i);
           mse += diff * diff;
         }
 
-        mse = mse / (double) testInstances;
+        mse = mse / (float_t) testInstances;
 
         if (verbose) {
           std::cout << "mse: " << mse << std::endl;
@@ -173,21 +173,21 @@ namespace SGPP {
         }
 
         if (verbose) {
-          std::cout << "hits (%): " << ((double) hits / (double) testInstances) << std::endl;
+          std::cout << "hits (%): " << ((float_t) hits / (float_t) testInstances) << std::endl;
         }
       }
     }
 
     //learn and test against the streaming implemenation
-    double MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                        std::string datasetFileName, size_t gridGranularity, double tolerance) {
+    float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                                        std::string datasetFileName, size_t gridGranularity, float_t tolerance) {
       //always do this first
       this->learn(operationConfiguration, datasetFileName);
       this->learnReference(datasetFileName);
 
       DataMatrix testTrainingData(0, this->dim);
 
-      double increment = 1.0 / static_cast<double>(gridGranularity);
+      float_t increment = 1.0 / static_cast<float_t>(gridGranularity);
 
       size_t index = 0;
       DataVector testPoint(dim);
@@ -202,7 +202,7 @@ namespace SGPP {
 
       while (index < dim) {
         // make 1.0 impossible
-        double prior = testPoint[index] + increment;
+        float_t prior = testPoint[index] + increment;
 
         if (prior < 1.0) {
 
@@ -240,10 +240,10 @@ namespace SGPP {
       DataVector referenceClasses(testTrainingData.getNrows());
       this->referenceLearner->predict(testTrainingData, referenceClasses);
 
-      double squareSum = 0.0;
+      float_t squareSum = 0.0;
 
       for (size_t i = 0; i < computedClasses.getSize(); i++) {
-        double temp = fabs(computedClasses.get(i) - referenceClasses.get(i));
+        float_t temp = fabs(computedClasses.get(i) - referenceClasses.get(i));
         temp *= temp;
         squareSum += temp;
 
@@ -263,8 +263,8 @@ namespace SGPP {
     }
 
     void MetaLearner::writeRefinementResults(std::string fileName, std::string fileHeader,
-        std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > datasetDetails,
-        std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > datasetDetailsReference,
+        std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > datasetDetails,
+        std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > datasetDetailsReference,
         bool referenceComparison) {
       std::ofstream myFile;
       myFile.open(fileName, std::ios::out);
@@ -287,8 +287,8 @@ namespace SGPP {
         bool first = true;
 
         for (size_t datasetIndex = 0; datasetIndex < datasetDetails.size(); datasetIndex++) {
-          std::pair<size_t, double> stepTuple = datasetDetails[datasetIndex].second[i];
-          double executionTime = stepTuple.second;
+          std::pair<size_t, float_t> stepTuple = datasetDetails[datasetIndex].second[i];
+          float_t executionTime = stepTuple.second;
 
           if (first) {
             // refinement steps
@@ -300,10 +300,10 @@ namespace SGPP {
           myFile << csvSep << executionTime;
 
           if (referenceComparison) {
-            std::pair<std::string, std::vector<std::pair<size_t, double> > > datasetTuple =
+            std::pair<std::string, std::vector<std::pair<size_t, float_t> > > datasetTuple =
               datasetDetailsReference[datasetIndex];
-            std::pair<size_t, double> stepTupleReference = datasetTuple.second[i];
-            double executionTimeReference = stepTupleReference.second;
+            std::pair<size_t, float_t> stepTupleReference = datasetTuple.second[i];
+            float_t executionTimeReference = stepTupleReference.second;
             myFile << csvSep << executionTimeReference;
             // speedup
             myFile << csvSep << executionTimeReference / executionTime;
@@ -321,8 +321,8 @@ namespace SGPP {
       std::vector<std::string> datasets, std::vector<std::string> experimentHeaders, std::string metaInformation,
       std::string experimentName, bool referenceComparison) {
       for (SGPP::datadriven::OperationMultipleEvalConfiguration* operationConfiguration : operationConfigurations) {
-        std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > refinementDetails;
-        std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > > refinementDetailsReference;
+        std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > refinementDetails;
+        std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > refinementDetailsReference;
 
         std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration->name;
 
@@ -398,8 +398,8 @@ namespace SGPP {
 
       for (size_t dim : dimList) {
         for (size_t level : levelList) {
-          double duration;
-          double durationReference;
+          float_t duration;
+          float_t durationReference;
           this->testRegular(operationConfiguration, dim, level, instances, duration, durationReference);
 
           myFile << dim << csvSep << level << csvSep << duration << csvSep << durationReference << csvSep;
@@ -467,13 +467,13 @@ namespace SGPP {
       myFile.close();
     }
 
-    double fRand(double fMin, double fMax) {
-      double f = (double) rand() / RAND_MAX;
+    float_t fRand(float_t fMin, float_t fMax) {
+      float_t f = (float_t) rand() / RAND_MAX;
       return fMin + f * (fMax - fMin);
     }
 
     void MetaLearner::testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, size_t dim,
-                                  size_t level, size_t instances, double& duration, double& durationReference) {
+                                  size_t level, size_t instances, float_t& duration, float_t& durationReference) {
 
       srand(static_cast<unsigned int>(time(NULL)));
       this->dim = dim;

@@ -21,53 +21,53 @@ namespace SGPP {
     StdNormalDistribution::~StdNormalDistribution() {
     }
 
-    double StdNormalDistribution::getCumulativeDensity(const double x) {
-      const double c0 = 0.2316419;
-      const double c1 = 1.330274429;
-      const double c2 = 1.821255978;
-      const double c3 = 1.781477937;
-      const double c4 = 0.356563782;
-      const double c5 = 0.319381530;
-      const double c6 = 0.398942280401;
+    float_t StdNormalDistribution::getCumulativeDensity(const float_t x) {
+      const float_t c0 = 0.2316419;
+      const float_t c1 = 1.330274429;
+      const float_t c2 = 1.821255978;
+      const float_t c3 = 1.781477937;
+      const float_t c4 = 0.356563782;
+      const float_t c5 = 0.319381530;
+      const float_t c6 = 0.398942280401;
 
-      const double negative = (x < 0 ? 1.0 : 0.0);
-      const double xPos = (x < 0.0 ? -x : x);
-      const double k = 1.0 / ( 1.0 + (c0 * xPos));
-      const double y1 = (((((((c1 * k - c2) * k) + c3) * k) - c4) * k) + c5) * k;
-      const double y2 = 1.0 - (c6 * std::exp(-0.5 * xPos * xPos) * y1);
+      const float_t negative = (x < 0 ? 1.0 : 0.0);
+      const float_t xPos = (x < 0.0 ? -x : x);
+      const float_t k = 1.0 / ( 1.0 + (c0 * xPos));
+      const float_t y1 = (((((((c1 * k - c2) * k) + c3) * k) - c4) * k) + c5) * k;
+      const float_t y2 = 1.0 - (c6 * std::exp(-0.5 * xPos * xPos) * y1);
 
       return ((1.0 - negative) * y2) + (negative * (1.0 - y2));
     }
 
 
-    double StdNormalDistribution::getDensity(const double x) {
-      const double mean = 0.0;
-      const double stddev = 1.0;
+    float_t StdNormalDistribution::getDensity(const float_t x) {
+      const float_t mean = 0.0;
+      const float_t stddev = 1.0;
 
-      const double firstTerm = 1.0 / (stddev * std::sqrt(2.0 * M_PI));
-      const double secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
-      const double result = firstTerm * std::exp(secondTerm);
-
-      return result;
-    }
-
-    double StdNormalDistribution::getDensity(const double x, const double mu, const double sigma) {
-      const double mean = mu;
-      const double stddev = sigma;
-
-      const double firstTerm = 1.0 / (stddev * std::sqrt(2.0 * M_PI));
-      const double secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
-      const double result = firstTerm * std::exp(secondTerm);
+      const float_t firstTerm = 1.0 / (stddev * std::sqrt(2.0 * M_PI));
+      const float_t secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
+      const float_t result = firstTerm * std::exp(secondTerm);
 
       return result;
     }
 
-    double StdNormalDistribution::getNormedDensity(const double x, const double mu, const double sigma) {
-      const double mean = mu;
-      const double stddev = sigma;
+    float_t StdNormalDistribution::getDensity(const float_t x, const float_t mu, const float_t sigma) {
+      const float_t mean = mu;
+      const float_t stddev = sigma;
 
-      const double secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
-      const double result = std::exp(secondTerm);
+      const float_t firstTerm = 1.0 / (stddev * std::sqrt(2.0 * M_PI));
+      const float_t secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
+      const float_t result = firstTerm * std::exp(secondTerm);
+
+      return result;
+    }
+
+    float_t StdNormalDistribution::getNormedDensity(const float_t x, const float_t mu, const float_t sigma) {
+      const float_t mean = mu;
+      const float_t stddev = sigma;
+
+      const float_t secondTerm = -( (x - mean) * (x - mean) / (2.0 * stddev * stddev) );
+      const float_t result = std::exp(secondTerm);
 
       return result;
     }

@@ -137,7 +137,7 @@ namespace SGPP {
       //std::cout << "Num refinements: "  << refinements_num << std::endl;
 
       //can refine grid on several points
-      double threshold = functor->getRefinementThreshold();
+      float_t threshold = functor->getRefinementThreshold();
 
       for (size_t i = 0; i < refinements_num; i++) {
         max_value = max_values[i];

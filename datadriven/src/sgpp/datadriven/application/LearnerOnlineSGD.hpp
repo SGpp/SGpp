@@ -42,8 +42,8 @@ struct LearnerOnlineSGDConfiguration
     std::string refinementType;
     int refinementNumPoints;
 
-    double lambda;
-    double gamma;
+    float_t lambda;
+    float_t gamma;
 
     std::string errorType;
 
@@ -54,8 +54,8 @@ struct LearnerOnlineSGDConfiguration
     size_t minibatchSize;
 
     int CG_max;
-    double CG_eps;
-    double smoothedErrorDecline;
+    float_t CG_eps;
+    float_t smoothedErrorDecline;
 
     std::string hashRefinementType;
 };
@@ -103,12 +103,12 @@ private:
     SGPP::base::OnlinePredictiveRefinementDimensionOld* online_refinement_old;
 
 
-    double getError(SGPP::base::DataMatrix* trainDataset,
+    float_t getError(SGPP::base::DataMatrix* trainDataset,
                     SGPP::base::DataVector* classes,
                     std::string errorType,
                     SGPP::base::DataVector* error, bool useEvalVectorized);
 
-    void pushMinibatch(SGPP::base::DataVector& x, double y);
+    void pushMinibatch(SGPP::base::DataVector& x, float_t y);
     void performSGDStep();
 
     /*
@@ -124,8 +124,8 @@ private:
     SGPP::base::DataVector* errorPerBasisFunction;
     SGPP::base::DataVector* alphaAvg;
 
-    std::list<double> smoothedErrorDeclineBuffer;
-    double currentGamma;
+    std::list<float_t> smoothedErrorDeclineBuffer;
+    float_t currentGamma;
     size_t currentRunIterations;
 };
 

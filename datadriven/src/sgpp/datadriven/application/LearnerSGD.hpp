@@ -38,9 +38,9 @@ namespace SGPP {
 	            SGPP::base::DataVector& classes, 
 				SGPP::base::RegularGridConfiguration& GridConfig, 
 				size_t maxIterations,
-				double eps,
-				double lambda,
-				double gamma
+				float_t eps,
+				float_t lambda,
+				float_t gamma
 				);
 
 		virtual ~LearnerSGD();

@@ -40,11 +40,11 @@ namespace SGPP {
         static int random();
 
         /**
-         * returns a random double value,
+         * returns a random float_t value,
          * like rand()/RAND_MAX
          * @see rand()
          */
-        static double random_double();
+        static float_t random_double();
 
       protected:
         // whether the RNG has aleredy been initialized.

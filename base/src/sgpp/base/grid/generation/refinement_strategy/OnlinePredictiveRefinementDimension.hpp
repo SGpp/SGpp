@@ -30,10 +30,10 @@ namespace SGPP {
       public:
 
         typedef std::pair<size_t, size_t> key_type; // gred point seq number and dimension
-        typedef double value_type; // refinement functor value
+        typedef float_t value_type; // refinement functor value
 
         typedef std::pair<size_t, unsigned int> refinement_key;
-        typedef std::map<refinement_key, double> refinement_map;
+        typedef std::map<refinement_key, float_t> refinement_map;
 
 
         OnlinePredictiveRefinementDimension(AbstractRefinement* refinement, size_t dim): RefinementDecorator(refinement), iThreshold_(0.0),
@@ -61,7 +61,7 @@ namespace SGPP {
         void setErrors(DataVector* errors_);
 
         // For the Python test case
-        double basisFunctionEvalHelper(unsigned int level, unsigned int index, double value);
+        float_t basisFunctionEvalHelper(unsigned int level, unsigned int index, float_t value);
 
       protected:
         virtual void refineGridpointsCollection(GridStorage* storage,
@@ -72,7 +72,7 @@ namespace SGPP {
                                      size_t length);
 
       private:
-        double iThreshold_;
+        float_t iThreshold_;
         std::map<key_type, value_type> refinementCollection_;
         //virtual static bool refinementPairCompare(std::pair<key_type, value_type>& firstEl, std::pair<key_type, value_type>& secondEl);
 

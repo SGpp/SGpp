@@ -23,7 +23,7 @@
 namespace SGPP {
   namespace solver {
 
-    StepsizeControlEJ::StepsizeControlEJ(std::string odesolver, size_t nTimesteps, double timestepSize, double eps, double sc, SGPP::base::ScreenOutput* screen, double gamma)
+    StepsizeControlEJ::StepsizeControlEJ(std::string odesolver, size_t nTimesteps, float_t timestepSize, float_t eps, float_t sc, SGPP::base::ScreenOutput* screen, float_t gamma)
       : StepsizeControl(nTimesteps, timestepSize, eps, sc, screen, gamma), _odesolver(odesolver) {
       std::stringstream fnsstream;
       fnsstream << "Time_" << "SCEJ" << this->myEps << "_" << this->mySC << ".gnuplot";
@@ -34,14 +34,14 @@ namespace SGPP {
     }
 
     void StepsizeControlEJ::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
-                                      double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
+                                      float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       //pred()
       dv.resize(corr.getSize());
       dv.setAll(0.0);
       dv.add(corr);
     }
 
-    void StepsizeControlEJ::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
+    void StepsizeControlEJ::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       //corr()
 
       System.setODESolver(_odesolver);
@@ -61,11 +61,11 @@ namespace SGPP {
       // end corr()
     }
 
-    double StepsizeControlEJ::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+    float_t StepsizeControlEJ::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       return maxNorm(System, dv1, dv2);
     }
 
-    double StepsizeControlEJ::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon) {
+    float_t StepsizeControlEJ::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon) {
       return tmp_timestepsize * epsilon / norm;
     }
   }

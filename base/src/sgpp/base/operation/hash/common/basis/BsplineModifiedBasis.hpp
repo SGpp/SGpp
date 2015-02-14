@@ -44,7 +44,7 @@ namespace SGPP {
          * @param p     B-spline degree
          * @return      value of modified uniform B-spline (e.g. index == 1)
          */
-        inline double modifiedBSpline(double x, size_t p) const {
+        inline float_t modifiedBSpline(float_t x, size_t p) const {
           // wrote the following by hand... nah, not really (thanks to Sage & Python!)
           switch (p) {
             case 3:
@@ -66,7 +66,7 @@ namespace SGPP {
               if ((x < 0.0) || (x >= 4.0)) {
                 return 0.0;
               } else if (x < 1.0) {
-                double result = 1.0 / 120.0;
+                float_t result = 1.0 / 120.0;
                 result *= x;
                 result *= x;
                 result *= x;
@@ -74,7 +74,7 @@ namespace SGPP {
                 result = 2.0 + result * x;
                 return result;
               } else if (x < 2.0) {
-                double result = -0.025;
+                float_t result = -0.025;
                 result = 1.0 / 6.0 + result * x;
                 result = -1.0 / 3.0 + result * x;
                 result = 1.0 / 3.0 + result * x;
@@ -82,7 +82,7 @@ namespace SGPP {
                 result = 61.0 / 30.0 + result * x;
                 return result;
               } else if (x < 3.0) {
-                double result = 0.025;
+                float_t result = 0.025;
                 result = -1.0 / 3.0 + result * x;
                 result = 5.0 / 3.0 + result * x;
                 result = -11.0 / 3.0 + result * x;
@@ -90,7 +90,7 @@ namespace SGPP {
                 result = 13.0 / 30.0 + result * x;
                 return result;
               } else {
-                double result = -1.0 / 120.0;
+                float_t result = -1.0 / 120.0;
                 result = 1.0 / 6.0 + result * x;
                 result = -4.0 / 3.0 + result * x;
                 result = 16.0 / 3.0 + result * x;
@@ -105,7 +105,7 @@ namespace SGPP {
               if ((x < 0.0) || (x >= 5.0)) {
                 return 0.0;
               } else if (x < 1.0) {
-                double result = -1.0 / 1008.0;
+                float_t result = -1.0 / 1008.0;
                 result = 1.0 / 720.0 + result * x;
                 result = 1.0 / 240.0 + result * x;
                 result = 1.0 / 144.0 + result * x;
@@ -115,7 +115,7 @@ namespace SGPP {
                 result = 10081.0 / 5040.0 + result * x;
                 return result;
               } else if (x < 2.0) {
-                double result = 1.0 / 504.0;
+                float_t result = 1.0 / 504.0;
                 result = -7.0 / 360.0 + result * x;
                 result = 1.0 / 15.0 + result * x;
                 result = -7.0 / 72.0 + result * x;
@@ -125,7 +125,7 @@ namespace SGPP {
                 result = 719.0 / 360.0 + result * x;
                 return result;
               } else if (x < 3.0) {
-                double result = -1.0 / 504.0;
+                float_t result = -1.0 / 504.0;
                 result = 13.0 / 360.0 + result * x;
                 result = -4.0 / 15.0 + result * x;
                 result = 73.0 / 72.0 + result * x;
@@ -135,7 +135,7 @@ namespace SGPP {
                 result = 6313.0 / 2520.0 + result * x;
                 return result;
               } else if (x < 4.0) {
-                double result = 1.0 / 1008.0;
+                float_t result = 1.0 / 1008.0;
                 result = -19.0 / 720.0 + result * x;
                 result = 71.0 / 240.0 + result * x;
                 result = -259.0 / 144.0 + result * x;
@@ -145,7 +145,7 @@ namespace SGPP {
                 result = -20179.0 / 5040.0 + result * x;
                 return result;
               } else {
-                double result = -1.0 / 5040.0;
+                float_t result = -1.0 / 5040.0;
                 result = 1.0 / 144.0 + result * x;
                 result = -5.0 / 48.0 + result * x;
                 result = 125.0 / 144.0 + result * x;
@@ -189,7 +189,7 @@ namespace SGPP {
                     return -x + 2.0;
                 } else if (x < 1.5)
                 {
-                    double result = 1.0/24.0;
+                    float_t result = 1.0/24.0;
                     result = -1.0/12.0 + result * x;
                     result = 0.0625 + result * x;
                     result = -49.0/48.0 + result * x;
@@ -197,7 +197,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = -1.0/12.0;
+                    float_t result = -1.0/12.0;
                     result = 2.0/3.0 + result * x;
                     result = -1.625 + result * x;
                     result = 2.0/3.0 + result * x;
@@ -205,7 +205,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/24.0;
+                    float_t result = 1.0/24.0;
                     result = -7.0/12.0 + result * x;
                     result = 3.0625 + result * x;
                     result = -343.0/48.0 + result * x;
@@ -219,7 +219,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 0.5)
                 {
-                    double result = 1.0/720.0;
+                    float_t result = 1.0/720.0;
                     result = 1.0/240.0 + result * x;
                     result = 1.0/192.0 + result * x;
                     result = 1.0/288.0 + result * x;
@@ -229,7 +229,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 1.5)
                 {
-                    double result = -1.0/180.0;
+                    float_t result = -1.0/180.0;
                     result = 0.025 + result * x;
                     result = -1.0/48.0 + result * x;
                     result = 1.0/48.0 + result * x;
@@ -239,7 +239,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = 1.0/120.0;
+                    float_t result = 1.0/120.0;
                     result = -0.1 + result * x;
                     result = 43.0/96.0 + result * x;
                     result = -11.0/12.0 + result * x;
@@ -249,7 +249,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.5)
                 {
-                    double result = -1.0/180.0;
+                    float_t result = -1.0/180.0;
                     result = 13.0/120.0 + result * x;
                     result = -41.0/48.0 + result * x;
                     result = 493.0/144.0 + result * x;
@@ -259,7 +259,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/720.0;
+                    float_t result = 1.0/720.0;
                     result = -0.0375 + result * x;
                     result = 0.421875 + result * x;
                     result = -2.53125 + result * x;
@@ -275,7 +275,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 0.5)
                 {
-                    double result = -1.0/6720.0;
+                    float_t result = -1.0/6720.0;
                     result = -1.0/2520.0 + result * x;
                     result = 1.0/2880.0 + result * x;
                     result = 1.0/288.0 + result * x;
@@ -287,7 +287,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 1.5)
                 {
-                    double result = 1.0/2688.0;
+                    float_t result = 1.0/2688.0;
                     result = -5.0/2016.0 + result * x;
                     result = 23.0/5760.0 + result * x;
                     result = -1.0/5760.0 + result * x;
@@ -299,7 +299,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = -1.0/2016.0;
+                    float_t result = -1.0/2016.0;
                     result = 1.0/126.0 + result * x;
                     result = -73.0/1440.0 + result * x;
                     result = 59.0/360.0 + result * x;
@@ -311,7 +311,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.5)
                 {
-                    double result = 1.0/2688.0;
+                    float_t result = 1.0/2688.0;
                     result = -19.0/2016.0 + result * x;
                     result = 583.0/5760.0 + result * x;
                     result = -3431.0/5760.0 + result * x;
@@ -323,7 +323,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 4.5)
                 {
-                    double result = -1.0/6720.0;
+                    float_t result = -1.0/6720.0;
                     result = 13.0/2520.0 + result * x;
                     result = -223.0/2880.0 + result * x;
                     result = 943.0/1440.0 + result * x;
@@ -335,7 +335,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/40320.0;
+                    float_t result = 1.0/40320.0;
                     result = -11.0/10080.0 + result * x;
                     result = 121.0/5760.0 + result * x;
                     result = -1331.0/5760.0 + result * x;
@@ -353,7 +353,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 1.0)
                 {
-                    double result = 1.0/17280.0;
+                    float_t result = 1.0/17280.0;
                     result = -1.0/6720.0 + result * x;
                     result = -1.0/2520.0 + result * x;
                     result *= x;
@@ -366,7 +366,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.0)
                 {
-                    double result = -1.0/10368.0;
+                    float_t result = -1.0/10368.0;
                     result = 5.0/4032.0 + result * x;
                     result = -1.0/168.0 + result * x;
                     result = 7.0/540.0 + result * x;
@@ -379,7 +379,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.0)
                 {
-                    double result = 1.0/10368.0;
+                    float_t result = 1.0/10368.0;
                     result = -1.0/448.0 + result * x;
                     result = 11.0/504.0 + result * x;
                     result = -7.0/60.0 + result * x;
@@ -392,7 +392,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 4.0)
                 {
-                    double result = -1.0/17280.0;
+                    float_t result = -1.0/17280.0;
                     result = 13.0/6720.0 + result * x;
                     result = -71.0/2520.0 + result * x;
                     result = 7.0/30.0 + result * x;
@@ -405,7 +405,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 5.0)
                 {
-                    double result = 1.0/51840.0;
+                    float_t result = 1.0/51840.0;
                     result = -17.0/20160.0 + result * x;
                     result = 41.0/2520.0 + result * x;
                     result = -49.0/270.0 + result * x;
@@ -418,7 +418,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = -1.0/362880.0;
+                    float_t result = -1.0/362880.0;
                     result = 1.0/6720.0 + result * x;
                     result = -1.0/280.0 + result * x;
                     result = 0.05 + result * x;
@@ -434,10 +434,10 @@ namespace SGPP {
             default:
               // the degree is too damn high
               // ==> calculate modified B-spline value via definition
-              double y = 0.0;
-              double x2 = x + static_cast<double>(p + 1) / 2.0 - 1.0;
+              float_t y = 0.0;
+              float_t x2 = x + static_cast<float_t>(p + 1) / 2.0 - 1.0;
 
-              if (x2 > static_cast<double>(p) + 1.0) {
+              if (x2 > static_cast<float_t>(p) + 1.0) {
                 return 0.0;
               }
 
@@ -445,7 +445,7 @@ namespace SGPP {
               // which is the same as (p + 2) / 2 written in C
               for (size_t k = 0; k <= (p + 2) / 2; k++) {
                 // x2 is chosen such that it holds: x2 = x + (p+1)/2 + k - 1
-                y += static_cast<double>(k + 1) * bsplineBasis.uniformBSpline(x2, p);
+                y += static_cast<float_t>(k + 1) * bsplineBasis.uniformBSpline(x2, p);
                 // the rounding errors induced by this method can be neglected
                 x2 += 1.0;
               }
@@ -459,7 +459,7 @@ namespace SGPP {
          * @param p     B-spline degree
          * @return      value of derivative of modified uniform B-spline (e.g. index == 1)
          */
-        inline double modifiedBSplineDx(double x, size_t p) const {
+        inline float_t modifiedBSplineDx(float_t x, size_t p) const {
           switch (p) {
             case 3:
               if ((x < 0.0) || (x >= 3.0)) {
@@ -478,28 +478,28 @@ namespace SGPP {
               if ((x < 0.0) || (x >= 4.0)) {
                 return 0.0;
               } else if (x < 1.0) {
-                double result = 1.0 / 24.0;
+                float_t result = 1.0 / 24.0;
                 result *= x;
                 result *= x;
                 result *= x;
                 result = -1.0 + result * x;
                 return result;
               } else if (x < 2.0) {
-                double result = -0.125;
+                float_t result = -0.125;
                 result = 2.0 / 3.0 + result * x;
                 result = -1.0 + result * x;
                 result = 2.0 / 3.0 + result * x;
                 result = -7.0 / 6.0 + result * x;
                 return result;
               } else if (x < 3.0) {
-                double result = 0.125;
+                float_t result = 0.125;
                 result = -4.0 / 3.0 + result * x;
                 result = 5.0 + result * x;
                 result = -22.0 / 3.0 + result * x;
                 result = 17.0 / 6.0 + result * x;
                 return result;
               } else {
-                double result = -1.0 / 24.0;
+                float_t result = -1.0 / 24.0;
                 result = 2.0 / 3.0 + result * x;
                 result = -4.0 + result * x;
                 result = 32.0 / 3.0 + result * x;
@@ -513,7 +513,7 @@ namespace SGPP {
               if ((x < 0.0) || (x >= 5.0)) {
                 return 0.0;
               } else if (x < 1.0) {
-                double result = -1.0 / 144.0;
+                float_t result = -1.0 / 144.0;
                 result = 1.0 / 120.0 + result * x;
                 result = 1.0 / 48.0 + result * x;
                 result = 1.0 / 36.0 + result * x;
@@ -522,7 +522,7 @@ namespace SGPP {
                 result = -719.0 / 720.0 + result * x;
                 return result;
               } else if (x < 2.0) {
-                double result = 1.0 / 72.0;
+                float_t result = 1.0 / 72.0;
                 result = -7.0 / 60.0 + result * x;
                 result = 1.0 / 3.0 + result * x;
                 result = -7.0 / 18.0 + result * x;
@@ -531,7 +531,7 @@ namespace SGPP {
                 result = -44.0 / 45.0 + result * x;
                 return result;
               } else if (x < 3.0) {
-                double result = -1.0 / 72.0;
+                float_t result = -1.0 / 72.0;
                 result = 13.0 / 60.0 + result * x;
                 result = -4.0 / 3.0 + result * x;
                 result = 73.0 / 18.0 + result * x;
@@ -540,7 +540,7 @@ namespace SGPP {
                 result = -124.0 / 45.0 + result * x;
                 return result;
               } else if (x < 4.0) {
-                double result = 1.0 / 144.0;
+                float_t result = 1.0 / 144.0;
                 result = -19.0 / 120.0 + result * x;
                 result = 71.0 / 48.0 + result * x;
                 result = -259.0 / 36.0 + result * x;
@@ -549,7 +549,7 @@ namespace SGPP {
                 result = 8951.0 / 720.0 + result * x;
                 return result;
               } else {
-                double result = -1.0 / 720.0;
+                float_t result = -1.0 / 720.0;
                 result = 1.0 / 24.0 + result * x;
                 result = -25.0 / 48.0 + result * x;
                 result = 125.0 / 36.0 + result * x;
@@ -606,7 +606,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 0.5)
                 {
-                    double result = 1.0/120.0;
+                    float_t result = 1.0/120.0;
                     result = 1.0/48.0 + result * x;
                     result = 1.0/48.0 + result * x;
                     result = 1.0/96.0 + result * x;
@@ -615,7 +615,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 1.5)
                 {
-                    double result = -1.0/30.0;
+                    float_t result = -1.0/30.0;
                     result = 0.125 + result * x;
                     result = -1.0/12.0 + result * x;
                     result = 0.0625 + result * x;
@@ -624,7 +624,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = 0.05;
+                    float_t result = 0.05;
                     result = -0.5 + result * x;
                     result = 43.0/24.0 + result * x;
                     result = -2.75 + result * x;
@@ -633,7 +633,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.5)
                 {
-                    double result = -1.0/30.0;
+                    float_t result = -1.0/30.0;
                     result = 13.0/24.0 + result * x;
                     result = -41.0/12.0 + result * x;
                     result = 493.0/48.0 + result * x;
@@ -642,7 +642,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/120.0;
+                    float_t result = 1.0/120.0;
                     result = -0.1875 + result * x;
                     result = 1.6875 + result * x;
                     result = -7.59375 + result * x;
@@ -657,7 +657,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 0.5)
                 {
-                    double result = -1.0/840.0;
+                    float_t result = -1.0/840.0;
                     result = -1.0/360.0 + result * x;
                     result = 1.0/480.0 + result * x;
                     result = 5.0/288.0 + result * x;
@@ -668,7 +668,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 1.5)
                 {
-                    double result = 1.0/336.0;
+                    float_t result = 1.0/336.0;
                     result = -5.0/288.0 + result * x;
                     result = 23.0/960.0 + result * x;
                     result = -1.0/1152.0 + result * x;
@@ -679,7 +679,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = -1.0/252.0;
+                    float_t result = -1.0/252.0;
                     result = 1.0/18.0 + result * x;
                     result = -73.0/240.0 + result * x;
                     result = 59.0/72.0 + result * x;
@@ -690,7 +690,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.5)
                 {
-                    double result = 1.0/336.0;
+                    float_t result = 1.0/336.0;
                     result = -19.0/288.0 + result * x;
                     result = 583.0/960.0 + result * x;
                     result = -3431.0/1152.0 + result * x;
@@ -701,7 +701,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 4.5)
                 {
-                    double result = -1.0/840.0;
+                    float_t result = -1.0/840.0;
                     result = 13.0/360.0 + result * x;
                     result = -223.0/480.0 + result * x;
                     result = 943.0/288.0 + result * x;
@@ -712,7 +712,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/5040.0;
+                    float_t result = 1.0/5040.0;
                     result = -11.0/1440.0 + result * x;
                     result = 121.0/960.0 + result * x;
                     result = -1331.0/1152.0 + result * x;
@@ -729,7 +729,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 1.0)
                 {
-                    double result = 1.0/1920.0;
+                    float_t result = 1.0/1920.0;
                     result = -1.0/840.0 + result * x;
                     result = -1.0/360.0 + result * x;
                     result *= x;
@@ -741,7 +741,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.0)
                 {
-                    double result = -1.0/1152.0;
+                    float_t result = -1.0/1152.0;
                     result = 5.0/504.0 + result * x;
                     result = -1.0/24.0 + result * x;
                     result = 7.0/90.0 + result * x;
@@ -753,7 +753,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.0)
                 {
-                    double result = 1.0/1152.0;
+                    float_t result = 1.0/1152.0;
                     result = -1.0/56.0 + result * x;
                     result = 11.0/72.0 + result * x;
                     result = -0.7 + result * x;
@@ -765,7 +765,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 4.0)
                 {
-                    double result = -1.0/1920.0;
+                    float_t result = -1.0/1920.0;
                     result = 13.0/840.0 + result * x;
                     result = -71.0/360.0 + result * x;
                     result = 1.4 + result * x;
@@ -777,7 +777,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 5.0)
                 {
-                    double result = 1.0/5760.0;
+                    float_t result = 1.0/5760.0;
                     result = -17.0/2520.0 + result * x;
                     result = 41.0/360.0 + result * x;
                     result = -49.0/45.0 + result * x;
@@ -789,7 +789,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = -1.0/40320.0;
+                    float_t result = -1.0/40320.0;
                     result = 1.0/840.0 + result * x;
                     result = -0.025 + result * x;
                     result = 0.3 + result * x;
@@ -802,15 +802,15 @@ namespace SGPP {
                 }
                 break;*/
             default:
-              double y = 0.0;
-              double x2 = x + static_cast<double>(p + 1) / 2.0 - 1.0;
+              float_t y = 0.0;
+              float_t x2 = x + static_cast<float_t>(p + 1) / 2.0 - 1.0;
 
-              if (x2 > static_cast<double>(p) + 1.0) {
+              if (x2 > static_cast<float_t>(p) + 1.0) {
                 return 0.0;
               }
 
               for (size_t k = 0; k <= (p + 2) / 2; k++) {
-                y += static_cast<double>(k + 1) * bsplineBasis.uniformBSplineDx(x2, p);
+                y += static_cast<float_t>(k + 1) * bsplineBasis.uniformBSplineDx(x2, p);
                 x2 += 1.0;
               }
 
@@ -823,7 +823,7 @@ namespace SGPP {
          * @param p     B-spline degree
          * @return      value of 2nd derivative of modified uniform B-spline (e.g. index == 1)
          */
-        inline double modifiedBSplineDxDx(double x, size_t p) const {
+        inline float_t modifiedBSplineDxDx(float_t x, size_t p) const {
           switch (p) {
             case 3:
               if ((x < 0.0) || (x >= 3.0)) {
@@ -857,7 +857,7 @@ namespace SGPP {
               if ((x < 0.0) || (x >= 5.0)) {
                 return 0.0;
               } else if (x < 1.0) {
-                double result = -1.0 / 24.0;
+                float_t result = -1.0 / 24.0;
                 result = 1.0 / 24.0 + result * x;
                 result = 1.0 / 12.0 + result * x;
                 result = 1.0 / 12.0 + result * x;
@@ -865,7 +865,7 @@ namespace SGPP {
                 result = 1.0 / 120.0 + result * x;
                 return result;
               } else if (x < 2.0) {
-                double result = 1.0 / 12.0;
+                float_t result = 1.0 / 12.0;
                 result = -7.0 / 12.0 + result * x;
                 result = 4.0 / 3.0 + result * x;
                 result = -7.0 / 6.0 + result * x;
@@ -873,7 +873,7 @@ namespace SGPP {
                 result = -7.0 / 60.0 + result * x;
                 return result;
               } else if (x < 3.0) {
-                double result = -1.0 / 12.0;
+                float_t result = -1.0 / 12.0;
                 result = 13.0 / 12.0 + result * x;
                 result = -16.0 / 3.0 + result * x;
                 result = 73.0 / 6.0 + result * x;
@@ -881,7 +881,7 @@ namespace SGPP {
                 result = 313.0 / 60.0 + result * x;
                 return result;
               } else if (x < 4.0) {
-                double result = 1.0 / 24.0;
+                float_t result = 1.0 / 24.0;
                 result = -19.0 / 24.0 + result * x;
                 result = 71.0 / 12.0 + result * x;
                 result = -259.0 / 12.0 + result * x;
@@ -889,7 +889,7 @@ namespace SGPP {
                 result = -3019.0 / 120.0 + result * x;
                 return result;
               } else {
-                double result = -1.0 / 120.0;
+                float_t result = -1.0 / 120.0;
                 result = 5.0 / 24.0 + result * x;
                 result = -25.0 / 12.0 + result * x;
                 result = 125.0 / 12.0 + result * x;
@@ -940,7 +940,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 0.5)
                 {
-                    double result = 1.0/24.0;
+                    float_t result = 1.0/24.0;
                     result = 1.0/12.0 + result * x;
                     result = 0.0625 + result * x;
                     result = 1.0/48.0 + result * x;
@@ -948,7 +948,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 1.5)
                 {
-                    double result = -1.0/6.0;
+                    float_t result = -1.0/6.0;
                     result = 0.5 + result * x;
                     result = -0.25 + result * x;
                     result = 0.125 + result * x;
@@ -956,7 +956,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = 0.25;
+                    float_t result = 0.25;
                     result = -2.0 + result * x;
                     result = 5.375 + result * x;
                     result = -5.5 + result * x;
@@ -964,7 +964,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.5)
                 {
-                    double result = -1.0/6.0;
+                    float_t result = -1.0/6.0;
                     result = 13.0/6.0 + result * x;
                     result = -10.25 + result * x;
                     result = 493.0/24.0 + result * x;
@@ -972,7 +972,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/24.0;
+                    float_t result = 1.0/24.0;
                     result = -0.75 + result * x;
                     result = 5.0625 + result * x;
                     result = -15.1875 + result * x;
@@ -986,7 +986,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 0.5)
                 {
-                    double result = -1.0/120.0;
+                    float_t result = -1.0/120.0;
                     result = -1.0/60.0 + result * x;
                     result = 1.0/96.0 + result * x;
                     result = 5.0/72.0 + result * x;
@@ -996,7 +996,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 1.5)
                 {
-                    double result = 1.0/48.0;
+                    float_t result = 1.0/48.0;
                     result = -5.0/48.0 + result * x;
                     result = 23.0/192.0 + result * x;
                     result = -1.0/288.0 + result * x;
@@ -1006,7 +1006,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.5)
                 {
-                    double result = -1.0/36.0;
+                    float_t result = -1.0/36.0;
                     result = 1.0/3.0 + result * x;
                     result = -73.0/48.0 + result * x;
                     result = 59.0/18.0 + result * x;
@@ -1016,7 +1016,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.5)
                 {
-                    double result = 1.0/48.0;
+                    float_t result = 1.0/48.0;
                     result = -19.0/48.0 + result * x;
                     result = 583.0/192.0 + result * x;
                     result = -3431.0/288.0 + result * x;
@@ -1026,7 +1026,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 4.5)
                 {
-                    double result = -1.0/120.0;
+                    float_t result = -1.0/120.0;
                     result = 13.0/60.0 + result * x;
                     result = -223.0/96.0 + result * x;
                     result = 943.0/72.0 + result * x;
@@ -1036,7 +1036,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = 1.0/720.0;
+                    float_t result = 1.0/720.0;
                     result = -11.0/240.0 + result * x;
                     result = 121.0/192.0 + result * x;
                     result = -1331.0/288.0 + result * x;
@@ -1052,7 +1052,7 @@ namespace SGPP {
                     return 0.0;
                 } else if (x < 1.0)
                 {
-                    double result = 1.0/240.0;
+                    float_t result = 1.0/240.0;
                     result = -1.0/120.0 + result * x;
                     result = -1.0/60.0 + result * x;
                     result *= x;
@@ -1063,7 +1063,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 2.0)
                 {
-                    double result = -1.0/144.0;
+                    float_t result = -1.0/144.0;
                     result = 5.0/72.0 + result * x;
                     result = -0.25 + result * x;
                     result = 7.0/18.0 + result * x;
@@ -1074,7 +1074,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 3.0)
                 {
-                    double result = 1.0/144.0;
+                    float_t result = 1.0/144.0;
                     result = -0.125 + result * x;
                     result = 11.0/12.0 + result * x;
                     result = -3.5 + result * x;
@@ -1085,7 +1085,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 4.0)
                 {
-                    double result = -1.0/240.0;
+                    float_t result = -1.0/240.0;
                     result = 13.0/120.0 + result * x;
                     result = -71.0/60.0 + result * x;
                     result = 7.0 + result * x;
@@ -1096,7 +1096,7 @@ namespace SGPP {
                     return result;
                 } else if (x < 5.0)
                 {
-                    double result = 1.0/720.0;
+                    float_t result = 1.0/720.0;
                     result = -17.0/360.0 + result * x;
                     result = 41.0/60.0 + result * x;
                     result = -49.0/9.0 + result * x;
@@ -1107,7 +1107,7 @@ namespace SGPP {
                     return result;
                 } else
                 {
-                    double result = -1.0/5040.0;
+                    float_t result = -1.0/5040.0;
                     result = 1.0/120.0 + result * x;
                     result = -0.15 + result * x;
                     result = 1.5 + result * x;
@@ -1119,15 +1119,15 @@ namespace SGPP {
                 }
                 break;*/
             default:
-              double y = 0.0;
-              double x2 = x + static_cast<double>(p + 1) / 2.0 - 1.0;
+              float_t y = 0.0;
+              float_t x2 = x + static_cast<float_t>(p + 1) / 2.0 - 1.0;
 
-              if (x2 > static_cast<double>(p) + 1.0) {
+              if (x2 > static_cast<float_t>(p) + 1.0) {
                 return 0.0;
               }
 
               for (size_t k = 0; k <= (p + 2) / 2; k++) {
-                y += static_cast<double>(k + 1) * bsplineBasis.uniformBSplineDxDx(x2, p);
+                y += static_cast<float_t>(k + 1) * bsplineBasis.uniformBSplineDxDx(x2, p);
                 x2 += 1.0;
               }
 
@@ -1141,13 +1141,13 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of modified B-spline basis function
          */
-        inline double eval(LT l, IT i, double x) {
+        inline float_t eval(LT l, IT i, float_t x) {
           if (l == 1) {
             return 1.0;
           }
 
           const IT hInv = static_cast<IT>(1) << l;
-          const double hInvDbl = static_cast<double>(hInv);
+          const float_t hInvDbl = static_cast<float_t>(hInv);
 
           if (i == hInv - 1) {
             // mirror the situation at x = 0.5
@@ -1159,8 +1159,8 @@ namespace SGPP {
             return modifiedBSpline(x * hInvDbl, bsplineBasis.getDegree());
           } else {
             return bsplineBasis.uniformBSpline(
-                     x * hInvDbl - static_cast<double>(i) +
-                     static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+                     x * hInvDbl - static_cast<float_t>(i) +
+                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
                      bsplineBasis.getDegree());
           }
         }
@@ -1171,15 +1171,15 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of derivative of modified B-spline basis function
          */
-        inline double evalDx(LT l, IT i, double x) {
+        inline float_t evalDx(LT l, IT i, float_t x) {
           if (l == 1) {
             return 0.0;
           }
 
           const IT hInv = static_cast<IT>(1) << l;
-          const double hInvDbl = static_cast<double>(hInv);
+          const float_t hInvDbl = static_cast<float_t>(hInv);
           // inner derivative
-          double dxFactor = hInvDbl;
+          float_t dxFactor = hInvDbl;
 
           if (i == hInv - 1) {
             // mirror the situation at x = 0.5 (don't forget the inner derivative!)
@@ -1192,8 +1192,8 @@ namespace SGPP {
             return dxFactor * modifiedBSplineDx(x * hInvDbl, bsplineBasis.getDegree());
           } else {
             return dxFactor * bsplineBasis.uniformBSplineDx(
-                     x * hInvDbl - static_cast<double>(i) +
-                     static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+                     x * hInvDbl - static_cast<float_t>(i) +
+                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
                      bsplineBasis.getDegree());
           }
         }
@@ -1204,15 +1204,15 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of 2nd derivative of modified B-spline basis function
          */
-        inline double evalDxDx(LT l, IT i, double x) {
+        inline float_t evalDxDx(LT l, IT i, float_t x) {
           if (l == 1) {
             return 0.0;
           }
 
           const IT hInv = static_cast<IT>(1) << l;
-          const double hInvDbl = static_cast<double>(hInv);
+          const float_t hInvDbl = static_cast<float_t>(hInv);
           // inner derivative
-          double dxFactor = hInvDbl;
+          float_t dxFactor = hInvDbl;
 
           if (i == hInv - 1) {
             // mirror the situation at x = 0.5
@@ -1224,8 +1224,8 @@ namespace SGPP {
             return dxFactor * dxFactor * modifiedBSplineDxDx(x * hInvDbl, bsplineBasis.getDegree());
           } else {
             return dxFactor * dxFactor * bsplineBasis.uniformBSplineDxDx(
-                     x * hInvDbl - static_cast<double>(i) +
-                     static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+                     x * hInvDbl - static_cast<float_t>(i) +
+                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
                      bsplineBasis.getDegree());
           }
         }

@@ -11,20 +11,20 @@
 namespace SGPP {
   namespace base {
 
-    SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num, double threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold) {
+    SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num, float_t threshold) : alpha(alpha), refinements_num(refinements_num), threshold(threshold) {
     }
 
 
     SurplusRefinementFunctor::~SurplusRefinementFunctor() {
     }
 
-    double SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
-      double val = fabs(alpha->get(seq));
+    float_t SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
+      float_t val = fabs(alpha->get(seq));
       // std::cout << seq << ", ";
       return val;
     }
 
-    double SurplusRefinementFunctor::start() {
+    float_t SurplusRefinementFunctor::start() {
       return 0.0;
     }
 
@@ -32,7 +32,7 @@ namespace SGPP {
       return this->refinements_num;
     }
 
-    double SurplusRefinementFunctor::getRefinementThreshold() {
+    float_t SurplusRefinementFunctor::getRefinementThreshold() {
       return this->threshold;
     }
 

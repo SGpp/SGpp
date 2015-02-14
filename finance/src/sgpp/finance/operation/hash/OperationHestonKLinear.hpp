@@ -29,7 +29,7 @@ namespace SGPP {
          * @param storage the grid's SGPP::base::GridStorage object
          * @param coef vector that contains the constant coefficients of this operation
          */
-        OperationHestonKLinear(SGPP::base::GridStorage* storage, double**** * coef);
+        OperationHestonKLinear(SGPP::base::GridStorage* storage, float_t**** * coef);
 
         /**
          * Destructor

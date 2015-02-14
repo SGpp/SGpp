@@ -31,7 +31,7 @@ namespace SGPP {
       this->numberOfCurrentSample = 1;
       
       // equidistant split of [0,1] in n strata -> size of one stratum = 1 / n
-      this->sizeOfStrata = 1./ (double) numberOfStrata;
+      this->sizeOfStrata = 1./ (float_t) numberOfStrata;
       
       for (size_t i = 0; i < dimensions; i++) {
 	currentStrata.push_back(std::vector<size_t>());
@@ -47,7 +47,7 @@ namespace SGPP {
       
       // compute random value inside the current stratum selected from the shuffled strata sequence
       for( size_t i = 0; i < dimensions; i++ ) {
-	dv[i] = ((double)currentStrata[i][numberOfCurrentSample-1] + Random::random_double()) * sizeOfStrata;
+	dv[i] = ((float_t)currentStrata[i][numberOfCurrentSample-1] + Random::random_double()) * sizeOfStrata;
       }
       
       // select next sample from strata sequence. If one sequence is complete shuffle strata to get a new one.

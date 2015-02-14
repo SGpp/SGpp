@@ -21,9 +21,9 @@ namespace SGPP {
   namespace finance {
 
     BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode, double dStrike, std::string option_type,
-        bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, mu, sigma, rho,
+        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode, float_t dStrike, std::string option_type,
+        bool bLogTransform, bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, mu, sigma, rho,
               r, TimestepSize, OperationMode, dStrike, option_type, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
     {}
 

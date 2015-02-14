@@ -40,12 +40,12 @@ namespace SGPP {
 
 	  for (size_t i = 0; i < gridSize; i++) {
 		for (size_t j = 0; j < gridSize; j++) {
-		  double res = 1;
+		  float_t res = 1;
 		  for (size_t k = 0; k < gridDim; k++) {
-			double lik = level.get(i, k);
-			double ljk = level.get(j, k);
-			double iik = index.get(i, k);
-			double ijk = index.get(j, k);
+			float_t lik = level.get(i, k);
+			float_t ljk = level.get(j, k);
+			float_t iik = index.get(i, k);
+			float_t ijk = index.get(j, k);
 
 			// i has always the lower level than j
 			if(lik > ljk){
@@ -65,8 +65,8 @@ namespace SGPP {
 				}
 
 				//Use formula for different overlapping ansatz functions:
-				double diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-				double temp_res = fabs(diff - (1 / ljk))
+				float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
+				float_t temp_res = fabs(diff - (1 / ljk))
 								+ fabs(diff + (1 / ljk)) - fabs(diff);
 				temp_res *= lik;
 				temp_res = (1 - temp_res) / ljk;
@@ -96,8 +96,8 @@ namespace SGPP {
 			  } else {
 				//Use formula for different overlapping ansatz functions:
 
-				double diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-				double temp_res = fabs(diff - (1 / ljk))
+				float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
+				float_t temp_res = fabs(diff - (1 / ljk))
 								+ fabs(diff + (1 / ljk)) - fabs(diff);
 				temp_res *= lik;
 				temp_res = (1 - temp_res) / ljk;
@@ -108,7 +108,7 @@ namespace SGPP {
 		  row[j] = res;
 		}
 		//Standard matrix multiplication:
-		double temp = 0.;
+		float_t temp = 0.;
 	    for (size_t j = 0; j < ncols; j++) {
 		  temp += row[j] * alpha[j];
 	    }

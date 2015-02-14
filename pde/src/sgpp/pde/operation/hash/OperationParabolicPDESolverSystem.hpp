@@ -47,9 +47,9 @@ namespace SGPP {
          */
         std::string tOperationMode;
         /// the size of one timestep used in the ODE Solver
-        double TimestepSize;
+        float_t TimestepSize;
         /// the size of the last timestep
-        double TimestepSize_old;
+        float_t TimestepSize_old;
 
         SGPP::base::DataVector* rhs;
         /// Pointer to the grid object
@@ -160,7 +160,7 @@ namespace SGPP {
          *
          * @param newTimestepSize the size of the next timestep
          */
-        void setTimestepSize(double newTimestepSize);
+        void setTimestepSize(float_t newTimestepSize);
 
         /**
          * aborts the current timestep execution

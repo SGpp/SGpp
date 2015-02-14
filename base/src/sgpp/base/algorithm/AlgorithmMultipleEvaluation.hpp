@@ -59,7 +59,7 @@ namespace SGPP {
             DataVector privateResult(result.getSize());
             privateResult.setAll(0.0);
 
-            std::vector<double> line;
+            std::vector<float_t> line;
             AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
 
             privateResult.setAll(0.0);
@@ -100,7 +100,7 @@ namespace SGPP {
 
           #pragma omp parallel
           {
-            std::vector<double> line;
+            std::vector<float_t> line;
             AlgorithmEvaluation<BASIS> AlgoEval(storage);
 
             #pragma omp for schedule (static)

@@ -33,7 +33,7 @@ namespace SGPP {
          */
         LearnerDensityBasedReg(
           SGPP::datadriven::LearnerRegularizationType& regularization,
-          double border = 0.);
+          float_t border = 0.);
 
         /**
          * Destructor
@@ -58,7 +58,7 @@ namespace SGPP {
                                     const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                     const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
                                     const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                    bool testAccDuringAdapt, const double lambda);
+                                    bool testAccDuringAdapt, const float_t lambda);
 
         /**
          * Executes a regression test for a given dataset and returns the result
@@ -86,17 +86,17 @@ namespace SGPP {
         /// regularization operator
         SGPP::base::OperationMatrix* C_;
         /// maximum value (used for de-normalization)
-        double maxValue_;
+        float_t maxValue_;
         /// minimum value (used for de-normalization)
-        double minValue_;
+        float_t minValue_;
         /// border for normalization of the class vector
-        double border_;
+        float_t border_;
 
         /**
          * inherited from LearnerBase, but not used
          */
         virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
-          SGPP::base::DataMatrix& trainDataset, double lambda);
+          SGPP::base::DataMatrix& trainDataset, float_t lambda);
 
     };
 

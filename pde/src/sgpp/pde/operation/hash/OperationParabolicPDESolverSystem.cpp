@@ -39,7 +39,7 @@ namespace SGPP {
       return this->tOperationMode;
     }
 
-    void OperationParabolicPDESolverSystem::setTimestepSize(double newTimestepSize) {
+    void OperationParabolicPDESolverSystem::setTimestepSize(float_t newTimestepSize) {
       this->TimestepSize_old = this->TimestepSize;
       this->TimestepSize = newTimestepSize;
     }

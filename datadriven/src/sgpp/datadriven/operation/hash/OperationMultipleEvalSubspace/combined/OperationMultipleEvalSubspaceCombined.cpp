@@ -6,9 +6,10 @@
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 using namespace SGPP::base;
 
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -95,7 +96,7 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector &result) {
             index[d] = curIndex;
             maxIndex[d] = 1 << curLevel;
         }
-        double surplus;
+        float_t surplus;
         bool isVirtual;
         this->getSurplus(level, maxIndex, index, surplus, isVirtual);
 
@@ -104,7 +105,7 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector &result) {
 }
 
 void OperationMultipleEvalSubspaceCombined::setSurplus(std::vector<uint32_t> &level, std::vector<uint32_t> &maxIndices, std::vector<uint32_t> &index,
-        double value) {
+        float_t value) {
     uint32_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
     uint32_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
     uint32_t subspaceIndex = this->allLevelsIndexMap.find(levelFlat)->second;
@@ -113,7 +114,7 @@ void OperationMultipleEvalSubspaceCombined::setSurplus(std::vector<uint32_t> &le
 }
 
 void OperationMultipleEvalSubspaceCombined::getSurplus(std::vector<uint32_t> &level, std::vector<uint32_t> &maxIndices, std::vector<uint32_t> &index,
-        double &value, bool &isVirtual) {
+        float_t &value, bool &isVirtual) {
     uint32_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
     uint32_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
     uint32_t subspaceIndex = this->allLevelsIndexMap.find(levelFlat)->second;

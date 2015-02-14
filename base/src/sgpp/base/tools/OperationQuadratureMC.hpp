@@ -18,7 +18,7 @@ namespace SGPP {
     /**
      * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
      */
-    typedef double (*FUNC)(int, double*, void*);
+    typedef float_t (*FUNC)(int, float_t*, void*);
 
 
     /**
@@ -46,7 +46,7 @@ namespace SGPP {
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual double doQuadrature(SGPP::base::DataVector& alpha);
+        virtual float_t doQuadrature(SGPP::base::DataVector& alpha);
 
         /**
          * Quadrature of an arbitrary function using
@@ -55,7 +55,7 @@ namespace SGPP {
          * @param func The function to integrate
          * @param clientdata Optional data to pass to FUNC
          */
-        double doQuadratureFunc(FUNC func, void* clientdata);
+        float_t doQuadratureFunc(FUNC func, void* clientdata);
 
         /**
          * Quadrature of the @f$L^2@f$-norm of the error,
@@ -67,7 +67,7 @@ namespace SGPP {
          * @param clientdata Optional data to pass to FUNC
          * @param alpha Coefficient vector for current grid
          */
-        double doQuadratureL2Error(FUNC func, void* clientdata, SGPP::base::DataVector& alpha);
+        float_t doQuadratureL2Error(FUNC func, void* clientdata, SGPP::base::DataVector& alpha);
 
       protected:
         // Pointer to the grid object

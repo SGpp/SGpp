@@ -30,7 +30,7 @@ namespace SGPP {
         delete C_;
     }
 
-    SGPP::datadriven::DMSystemMatrixBase* Learner::createDMSystem(SGPP::base::DataMatrix& trainDataset, double lambda) {
+    SGPP::datadriven::DMSystemMatrixBase* Learner::createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda) {
       if (this->grid_ == NULL)
         return NULL;
 

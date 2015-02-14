@@ -22,8 +22,8 @@ namespace SGPP {
 
       // Bounding Box handling
       SGPP::base::Stretching* stretching = this->storage->getStretching();
-      double q = stretching->getIntervalWidth(dim);
-      double Qqout = 1.0 / q;
+      float_t q = stretching->getIntervalWidth(dim);
+      float_t Qqout = 1.0 / q;
 
       // init the coefficients of the ansatz functions with boundary
       result.setAll(0.0);

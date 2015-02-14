@@ -4,18 +4,20 @@
 * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
 ******************************************************************************/
 
-%apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
+%include "base/src/sgpp/globaldef.hpp"
+
+%apply (SGPP::float_t* IN_ARRAY1, int DIM1) {(SGPP::float_t* input, int size)}
 
 namespace std {
     %template(IntVector) vector<int>;
     %template(IntIntVector) vector< vector<int> >; 
     %template(BoolVector) vector<bool>;
-    %template(DoubleVector) vector<double>;
-    %template(IndexValPair) pair<size_t, double>;
-        %template(IndexValVector) vector<pair<size_t, double> >;
+    %template(DoubleVector) vector<SGPP::float_t>;
+    %template(IndexValPair) pair<size_t, SGPP::float_t>;
+        %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
         // For OnlinePredictiveRefinementDimension
         %template(refinement_key) std::pair<size_t, unsigned int>;
-        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
+        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, SGPP::float_t>;
 
 }
 
@@ -161,8 +163,8 @@ namespace std {
 %template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 
-%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+%apply std::vector<std::pair<size_t, SGPP::float_t> > *OUTPUT { std::vector<std::pair<size_t, SGPP::float_t> >& result };
+%apply std::vector<SGPP::float_t> *INPUT { std::vector<SGPP::float_t>& point }; 
 
 %template(SGetAffectedBasisFunctions) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBase>;
 %template(SAlgorithmEvaluation) SGPP::base::AlgorithmEvaluation<SGPP::base::SLinearBase>;

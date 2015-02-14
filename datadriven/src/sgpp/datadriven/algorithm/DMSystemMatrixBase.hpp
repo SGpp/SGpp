@@ -26,15 +26,15 @@ namespace SGPP {
         /// the dataset
         SGPP::base::DataMatrix *dataset_;
         /// the lambda, the regularisation parameter
-        double lambda_;
+        float_t lambda_;
         /// time needed for Mult
-        double completeTimeMult_;
+        float_t completeTimeMult_;
         /// time needed only for the computation of mult, interesting on accelerator boards
-        double computeTimeMult_;
+        float_t computeTimeMult_;
         /// time needed for Mult transposed
-        double completeTimeMultTrans_;
+        float_t completeTimeMultTrans_;
         /// time needed only for the computation of mult transposed, interesting on accelerator boards
-        double computeTimeMultTrans_;
+        float_t computeTimeMultTrans_;
         /// Stopwatch needed to determine the durations of mult and mult transposed
         SGPP::base::SGppStopwatch* myTimer_;
 
@@ -45,7 +45,7 @@ namespace SGPP {
          * @param trainData matrix with training data
          * @param lambda the lambda, the regression parameter
          */
-        DMSystemMatrixBase(SGPP::base::DataMatrix& trainData, double lambda);
+        DMSystemMatrixBase(SGPP::base::DataMatrix& trainData, float_t lambda);
 
         /**
          * Std-Destructor
@@ -84,7 +84,7 @@ namespace SGPP {
          * @param timeMultTrans variable to store everall time needed for Mult Transposed
          * @param computeMultTrans variable to store compute time needed for Mult Transposed
          */
-        virtual void getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans);
+        virtual void getTimers(float_t& timeMult, float_t& computeMult, float_t& timeMultTrans, float_t& computeMultTrans);
     };
 
   }

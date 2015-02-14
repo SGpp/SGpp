@@ -22,14 +22,14 @@ namespace SGPP {
         /**
          * Std-Constructor
          */
-        ConjugateGradients(size_t imax, double epsilon);
+        ConjugateGradients(size_t imax, float_t epsilon);
 
         /**
          * Std-Destructor
          */
         virtual ~ConjugateGradients();
 
-        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = -1.0);
+        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, float_t max_threshold = -1.0);
 
         // Define functions for observer pattern in python
 

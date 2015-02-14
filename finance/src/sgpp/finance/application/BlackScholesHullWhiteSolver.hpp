@@ -48,7 +48,7 @@ namespace SGPP {
         /// Matrix that contains the correlations
         SGPP::base::DataMatrix* rhos;
         /// the riskfree rate
-        double r;
+        float_t r;
         /// stores if the stochastic asset data was passed to the solver
         bool bStochasticDataAlloc;
         /// screen object used in this solver
@@ -56,9 +56,9 @@ namespace SGPP {
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// Threshold used to decide if a grid point should be deleted
-        double coarsenThreshold;
+        float_t coarsenThreshold;
         /// Threshold used to decide if a grid point should be refined
-        double refineThreshold;
+        float_t refineThreshold;
         /// adaptive mode during solving Black Scholes Equation: none, coarsen, refine, coarsenNrefine
         std::string adaptSolveMode;
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
@@ -72,7 +72,7 @@ namespace SGPP {
         /// variable to store needed solving iterations
         size_t nNeededIterations;
         /// variable to store the solving time
-        double dNeededTime;
+        float_t dNeededTime;
         /// variable to store start grid size (Inner SGPP::base::Grid)
         size_t staInnerGridSize;
         /// variable to store final grid size (Inner SGPP::base::Grid)
@@ -80,14 +80,14 @@ namespace SGPP {
         /// variable to store average grid size (Inner SGPP::base::Grid)
         size_t avgInnerGridSize;
         /// Percent how many of the removable points should be tested for deletion
-        double coarsenPercent;
+        float_t coarsenPercent;
         /// denotes the number of coarsening procedures within one timestep
         size_t numExecCoarsen;
-        double theta;
+        float_t theta;
         /// the standard deviations
-        double sigma;
+        float_t sigma;
         ///
-        double a;
+        float_t a;
         /// dimension in which BS is calculated
         int dim_BS;
         /// dimension in which HW is calculated
@@ -119,7 +119,7 @@ namespace SGPP {
          * @param sigma the sigma of HullWhite PDE (vola)
          * @param a the a of HullWhite PDE (mean reversion rate)
          */
-        void setStochasticData(SGPP::base::DataVector& mus, SGPP::base::DataVector& sigmas, SGPP::base::DataMatrix& rhos, double r, double theta, double sigma, double a);
+        void setStochasticData(SGPP::base::DataVector& mus, SGPP::base::DataVector& sigmas, SGPP::base::DataMatrix& rhos, float_t r, float_t theta, float_t sigma, float_t a);
 
         /**
          *  defines the dimension of the stoch. processes (BS and HW). default is BS:0, HW:1
@@ -129,11 +129,11 @@ namespace SGPP {
          */
         void setProcessDimensions(int dim_BS, int dim_HW);
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -144,7 +144,7 @@ namespace SGPP {
          * @param a is the mean reversion rate
          * @param sigma is the volatility
          */
-        void initGridWithPayoffBSHW(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double a, double sigma);
+        void initGridWithPayoffBSHW(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t a, float_t sigma);
 
         /**
          * Inits the screen object
@@ -179,7 +179,7 @@ namespace SGPP {
          *  @param numCoarsenPoints number of points coarsened, -1 all coarsenable points are coarsened
          *  @param refineThreshold Threshold needed to determine if a grid point should be refined
          */
-        void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, double coarsenThreshold, double refineThreshold);
+        void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints, float_t coarsenThreshold, float_t refineThreshold);
 
         /**
          * gets the number of gridpoints at the money
@@ -190,7 +190,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param eps epsilon to determine the gridpoints, use if at the money is not exactly on grid
          */
-        size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+        size_t getGridPointsAtMoney(std::string payoffType, float_t strike, float_t eps = 0.0);
 
         /**
          * gets the number needed iterations to solve Black Scholes Equation
@@ -204,7 +204,7 @@ namespace SGPP {
          *
          * @return needed time in seconds to solve Black Scholes Equation, if called before solving 0 is returned
          */
-        double getNeededTimeToSolve();
+        float_t getNeededTimeToSolve();
 
         /**
          * gets the number of points in start grid

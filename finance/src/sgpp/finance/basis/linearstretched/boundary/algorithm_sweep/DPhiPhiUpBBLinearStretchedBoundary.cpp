@@ -21,8 +21,8 @@ namespace SGPP {
 
     void DPhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
       // get boundary values
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
 
       if (!index.hint()) {
         index.top(dim);

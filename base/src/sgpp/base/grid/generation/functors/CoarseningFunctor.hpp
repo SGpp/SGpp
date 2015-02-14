@@ -20,7 +20,7 @@ namespace SGPP {
      */
     class CoarseningFunctor {
       public:
-        typedef double value_type;
+        typedef float_t value_type;
 
         /**
          * Constructor
@@ -41,14 +41,14 @@ namespace SGPP {
          *
          * @return refinement value
          */
-        virtual double operator()(GridStorage* storage, size_t seq) = 0;
+        virtual float_t operator()(GridStorage* storage, size_t seq) = 0;
 
         /**
          * This should return the initial value of coarsening criterion (e.g. alpha or error).
          *
          * @return the initial value
          */
-        virtual double start() = 0;
+        virtual float_t start() = 0;
 
         /**
          * Returns the maximal number of points that should be removed.
@@ -69,7 +69,7 @@ namespace SGPP {
          *
          * @return threshold value for refinement. Default value: 0.
          */
-        virtual double getCoarseningThreshold() = 0;
+        virtual float_t getCoarseningThreshold() = 0;
     };
 
   }

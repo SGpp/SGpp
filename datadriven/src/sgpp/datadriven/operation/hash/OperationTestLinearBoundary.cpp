@@ -15,17 +15,17 @@
 namespace SGPP {
   namespace datadriven {
 
-    double OperationTestLinearBoundary::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
+    float_t OperationTestLinearBoundary::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
       base::LinearBoundaryBasis<unsigned int, unsigned int> base;
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestLinearBoundary::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
+    float_t OperationTestLinearBoundary::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
       base::LinearBoundaryBasis<unsigned int, unsigned int> base;
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestLinearBoundary::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) {
+    float_t OperationTestLinearBoundary::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) {
       base::LinearBoundaryBasis<unsigned int, unsigned int> base;
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
     }

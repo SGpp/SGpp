@@ -62,10 +62,10 @@ namespace SGPP {
          * @param refineMaxLevel max. level for refinement during solving
          */
         BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-            SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
-            double dStrike, std::string option_type, double r,
-            bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-            int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+            SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, float_t TimestepSize, std::string OperationMode,
+            float_t dStrike, std::string option_type, float_t r,
+            bool useCoarsen = false, float_t coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+            int numCoarsenPoints = -1, float_t refineThreshold = 0.0, std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
         /**
          * Std-Destructor

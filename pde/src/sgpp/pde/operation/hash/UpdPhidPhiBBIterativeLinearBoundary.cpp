@@ -21,8 +21,8 @@ namespace SGPP {
     void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
       // Bounding Box handling
       SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
-      double q = boundingBox->getIntervalWidth(dim);
-      double Qqout = 1.0 / q;
+      float_t q = boundingBox->getIntervalWidth(dim);
+      float_t Qqout = 1.0 / q;
 
       // init the coefficients of the ansatz functions with boundary
       result.setAll(0.0);

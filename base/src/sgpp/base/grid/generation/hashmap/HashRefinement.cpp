@@ -21,7 +21,7 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunc
   size_t min_idx = 0;
 
   // max value equals min value
-  RefinementFunctor::value_type max_value = -std::numeric_limits<double>::infinity();
+  RefinementFunctor::value_type max_value = -std::numeric_limits<float_t>::infinity();
 
   index_type index;
   GridStorage::grid_map_iterator end_iter = storage->end();
@@ -88,7 +88,7 @@ void HashRefinement::refineGridpointsCollection(GridStorage* storage, Refinement
   RefinementFunctor::value_type max_value;
   size_t max_index;
   // now refine all grid points which satisfy the refinement criteria
-  double threshold = functor->getRefinementThreshold();
+  float_t threshold = functor->getRefinementThreshold();
 
   for (size_t i = 0; i < refinements_num; i++) {
     max_value = max_values[i];
@@ -117,7 +117,7 @@ void HashRefinement::free_refine(GridStorage* storage, RefinementFunctor* functo
 
   // initialization
   for (size_t i = 0; i < refinements_num; i++) {
-    max_values[i] = -std::numeric_limits<double>::infinity();
+    max_values[i] = -std::numeric_limits<float_t>::infinity();
     max_indices[i] = 0;
   }
 

@@ -41,7 +41,7 @@ namespace SGPP {
     class HeatEquationSolver : public ParabolicPDESolver {
       protected:
         /// the heat coefficient
-        double a;
+        float_t a;
         /// screen object used in this solver
         SGPP::base::ScreenOutput* myScreen;
 
@@ -58,18 +58,18 @@ namespace SGPP {
 
         void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
-        virtual void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        virtual void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        virtual void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        virtual void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        virtual void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+        virtual void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * This method sets the heat coefficient of the regarded material
          *
          * @param a the heat coefficient
          */
-        void setHeatCoefficient(double a);
+        void setHeatCoefficient(float_t a);
 
         /**
          * Inits the grid with a smooth heat distribution based on the
@@ -80,7 +80,7 @@ namespace SGPP {
          * @param sigma the sigma of the normal distribution
          * @param factor a factor that is used to stretch the function values
          */
-        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma, double factor);
+        void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma, float_t factor);
 
         /**
          * Inits the screen object
@@ -95,7 +95,7 @@ namespace SGPP {
          * @param tFilename file into which the rhs is written
          * @param timestepsize the size of the timesteps
          */
-        void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename, double timestepsize);
+        void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename, float_t timestepsize);
 
         /**
          * Routine to export the solution of the inner system which
@@ -108,7 +108,7 @@ namespace SGPP {
          * @param epsilonCG the epsilon used in the C
          * @param tFilename file into which the rhs is written
          */
-        void storeInnerSolution(SGPP::base::DataVector& alpha, size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, std::string tFilename);
+        void storeInnerSolution(SGPP::base::DataVector& alpha, size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, std::string tFilename);
     };
 
   }

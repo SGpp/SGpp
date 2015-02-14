@@ -20,24 +20,24 @@ namespace SGPP {
     }
 
     void PhiPhiUpModLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
       rec(source, result, index, dim, fl, fr);
     }
 
-    void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+    void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
       size_t seq = index.seq();
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
       SGPP::base::GridStorage::index_type::level_type l;
       SGPP::base::GridStorage::index_type::index_type i;
 
       index.get(dim, l, i);
 
-      double h = 1 / pow(2.0, static_cast<int>(l));
-      double fml = 0.0;
-      double fmr = 0.0;
+      float_t h = 1 / pow(2.0, static_cast<int>(l));
+      float_t fml = 0.0;
+      float_t fmr = 0.0;
 
       if (!index.hint()) {
         index.left_child(dim);
@@ -55,7 +55,7 @@ namespace SGPP {
         index.up(dim);
       }
 
-      double fm = fml + fmr;
+      float_t fm = fml + fmr;
 
       // level 1, constant function
       if (l == 1) {

@@ -155,7 +155,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
     // cout << "largestListSubspace: " << largestListSubspace << endl;
     // cout << "numberOfListSubspaces: " << numberOfListSubspaces << endl;
     // cout << "subspaceCount: " << subspaceCount << endl;
-    // cout << "avr. points per subspace: " << ((double) nonVirtualGridPoints / (double) subspaceCount) << endl;
+    // cout << "avr. points per subspace: " << ((float_t) nonVirtualGridPoints / (float_t) subspaceCount) << endl;
 
     this->statsFile << this->refinementStep << this->csvSep;
     this->statsFile << nonVirtualGridPoints << this->csvSep;
@@ -165,10 +165,10 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
     this->statsFile << largestListSubspace << this->csvSep;
     this->statsFile << numberOfListSubspaces << this->csvSep;
     this->statsFile << subspaceCount << this->csvSep;
-    this->statsFile << ((double) nonVirtualGridPoints / (double) subspaceCount) << this->csvSep;
+    this->statsFile << ((float_t) nonVirtualGridPoints / (float_t) subspaceCount) << this->csvSep;
     size_t numberOfThreads = omp_get_max_threads();
-    this->statsFile << ((double) (this->maxGridPointsOnLevel * numberOfThreads + actualGridPoints) * 8.0) / (1024.0 * 1024.0) << this->csvSep;
-    this->statsFile << (double) (this->maxGridPointsOnLevel * numberOfThreads + actualGridPoints) / nonVirtualGridPoints << endl;
+    this->statsFile << ((float_t) (this->maxGridPointsOnLevel * numberOfThreads + actualGridPoints) * 8.0) / (1024.0 * 1024.0) << this->csvSep;
+    this->statsFile << (float_t) (this->maxGridPointsOnLevel * numberOfThreads + actualGridPoints) / nonVirtualGridPoints << endl;
     this->refinementStep += 1;
 #endif
 

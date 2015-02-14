@@ -82,7 +82,6 @@
 #include "sgpp/base/tools/SGppStopwatch.hpp"
 #include "sgpp/base/tools/EvalCuboidGenerator.hpp"
 #include "sgpp/base/tools/EvalCuboidGeneratorForStretching.hpp"
-#include "sgpp/base/tools/PrecisionConverter.hpp"
 #include "sgpp/base/tools/StdNormalDistribution.hpp"
 
 #include "sgpp/base/operation/BaseOpFactory.hpp"

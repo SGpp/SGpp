@@ -79,7 +79,7 @@ namespace SGPP {
       this->bGridConstructed = true;
     }
 
-    void HullWhiteSolver::setStochasticData(double theta, double sigma, double a) {
+    void HullWhiteSolver::setStochasticData(float_t theta, float_t sigma, float_t a) {
       this->theta = theta;
       this->sigma = sigma;
       this->a = a;
@@ -87,13 +87,13 @@ namespace SGPP {
       bStochasticDataAlloc = true;
     }
 
-    void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed && this->bStochasticDataAlloc) {
         Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
         BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
         HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ExEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
         SGppStopwatch* myStopwatch = new SGppStopwatch();
-        double execTime;
+        float_t execTime;
 
         std::cout << "Using Explicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
         myStopwatch->start();
@@ -103,8 +103,8 @@ namespace SGPP {
         std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
         std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-        std::cout << "Average Grid size: " << static_cast<double>(myHWSystem->getSumGridPointsComplete()) / static_cast<double>(numTimesteps) << std::endl;
-        std::cout << "Average Grid size (Inner): " << static_cast<double>(myHWSystem->getSumGridPointsInner()) / static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+        std::cout << "Average Grid size: " << static_cast<float_t>(myHWSystem->getSumGridPointsComplete()) / static_cast<float_t>(numTimesteps) << std::endl;
+        std::cout << "Average Grid size (Inner): " << static_cast<float_t>(myHWSystem->getSumGridPointsInner()) / static_cast<float_t>(numTimesteps) << std::endl << std::endl << std::endl;
 
         if (this->myScreen != NULL) {
           std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
@@ -121,13 +121,13 @@ namespace SGPP {
     }
 
 
-    void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed && this->bStochasticDataAlloc) {
         Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, myScreen);
         BiCGStab* myCG = new BiCGStab(maxCGIterations, epsilonCG);
         HullWhiteParabolicPDESolverSystem* myHWSystem = new HullWhiteParabolicPDESolverSystem(*this->myGrid, alpha, this->sigma, this->theta, this->a, timestepsize, "ImEul", this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints, this->refineThreshold, this->refineMode, this->refineMaxLevel);
         SGppStopwatch* myStopwatch = new SGppStopwatch();
-        double execTime;
+        float_t execTime;
 
         std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
         myStopwatch->start();
@@ -137,8 +137,8 @@ namespace SGPP {
         std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
         std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
 
-        std::cout << "Average Grid size: " << static_cast<double>(myHWSystem->getSumGridPointsComplete()) / static_cast<double>(numTimesteps) << std::endl;
-        std::cout << "Average Grid size (Inner): " << static_cast<double>(myHWSystem->getSumGridPointsInner()) / static_cast<double>(numTimesteps) << std::endl << std::endl << std::endl;
+        std::cout << "Average Grid size: " << static_cast<float_t>(myHWSystem->getSumGridPointsComplete()) / static_cast<float_t>(numTimesteps) << std::endl;
+        std::cout << "Average Grid size (Inner): " << static_cast<float_t>(myHWSystem->getSumGridPointsInner()) / static_cast<float_t>(numTimesteps) << std::endl << std::endl << std::endl;
 
         if (this->myScreen != NULL) {
           std::cout << "Time to solve: " << execTime << " seconds" << std::endl;
@@ -154,20 +154,20 @@ namespace SGPP {
       }
     }
 
-    void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul) {
+    void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, size_t NumImEul) {
       throw new application_exception("HullWhiteSolver::solveCrankNicolson : Crank-Nicolson is not supported for HullWhiteSolver!!");
     }
 
 
-    void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, double strike, std::string payoffType, double sigma, double a, double t, double T) {
-      double tmp;
+    void HullWhiteSolver::initGridWithPayoff(DataVector& alpha, float_t strike, std::string payoffType, float_t sigma, float_t a, float_t t, float_t T) {
+      float_t tmp;
 
       if (this->bGridConstructed) {
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
           coordsStream >> tmp;
-          double* dblFuncValues = new double[1];
+          float_t* dblFuncValues = new float_t[1];
 
           for (size_t j = 0; j < 1; j++) {
             coordsStream >> tmp;
@@ -182,7 +182,7 @@ namespace SGPP {
               tmp += dblFuncValues[j];
             }
 
-            alpha[i] = std::max<double>(((tmp) - strike), 0.0);
+            alpha[i] = std::max<float_t>(((tmp) - strike), 0.0);
           } else if (payoffType == "std_euro_put") {
             tmp = 0.0;
 
@@ -190,7 +190,7 @@ namespace SGPP {
               tmp += dblFuncValues[j];
             }
 
-            alpha[i] = std::max<double>(strike - ((tmp)), 0.0);
+            alpha[i] = std::max<float_t>(strike - ((tmp)), 0.0);
           } else {
             throw new application_exception("HullWhiteSolver::initGridWithPayoff : An unknown payoff-type was specified!");
           }

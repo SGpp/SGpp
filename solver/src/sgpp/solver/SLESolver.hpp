@@ -29,7 +29,7 @@ namespace SGPP {
          * @param imax number of maximum executed iterations
          * @param epsilon the final error in the iterative solver
          */
-        SLESolver(size_t imax, double epsilon) : SGSolver(imax, epsilon) {
+        SLESolver(size_t imax, float_t epsilon) : SGSolver(imax, epsilon) {
         }
 
         /**
@@ -47,7 +47,7 @@ namespace SGPP {
          * @param verbose prints information during execution of the solver
          * @param max_threshold additional abort criteria for solver, default value is 10^-9!
          */
-        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, double max_threshold = DEFAULT_RES_THRESHOLD) = 0;
+        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, float_t max_threshold = DEFAULT_RES_THRESHOLD) = 0;
     };
 
   }

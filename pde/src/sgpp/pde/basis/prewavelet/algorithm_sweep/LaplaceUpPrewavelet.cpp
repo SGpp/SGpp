@@ -32,8 +32,8 @@ namespace SGPP {
       size_t _seql1;
       size_t _seqr1;
       size_t _seqr2;
-      double _val, _vall1, _vall2, _valr1, _valr2;
-      double h;
+      float_t _val, _vall1, _vall2, _valr1, _valr2;
+      float_t h;
       bool hasChilds = false;
       //GridStorage::index_type::level_type max_level = getGridDepth(index, dim);
 

@@ -34,27 +34,27 @@ namespace SGPP {
         SGPP::base::ScreenOutput* myScreen;
 
         /// temp. Stepsize Control
-        double mySC;
+        float_t mySC;
 
         /// epsilon for the step size control
-        double myEps;
+        float_t myEps;
 
         virtual void predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
-                               double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) = 0;
-        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, double tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) = 0;
+                               float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) = 0;
+        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) = 0;
 
-        virtual double norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+        virtual float_t norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
-        virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm, double epsilon) = 0;
+        virtual float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon) = 0;
 
-        double twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+        float_t twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
-        double maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+        float_t maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
         std::string filename;
 
         /// damping factor
-        double _gamma;
+        float_t _gamma;
 
 
       public:
@@ -68,7 +68,7 @@ namespace SGPP {
          * @param screen possible pointer to a SGPP::base::ScreenOutput object
          * @param gamma damping factor
          */
-        StepsizeControl(size_t imax, double timestepSize, double eps, double sc, SGPP::base::ScreenOutput* screen = NULL, double gamma = 0.5);
+        StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc, SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.5);
 
         /**
          * Std-Destructor

@@ -74,8 +74,8 @@ namespace SGPP {
          * @param point evaluation point within the domain
          * @param result a vector to store the results in
          */
-        void operator()(BASIS& basis, std::vector<double>& point, std::vector <
-                        std::pair<size_t, double> > & result) {
+        void operator()(BASIS& basis, std::vector<float_t>& point, std::vector <
+                        std::pair<size_t, float_t> > & result) {
           GridStorage::grid_iterator working(storage);
 
           //typedef GridStorage::index_type::level_type level_type;
@@ -89,7 +89,7 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            double temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type> (temp - 1);
@@ -122,10 +122,10 @@ namespace SGPP {
          * @param source array of indices for each dimension (identifying the indices of the current grid point)
          * @param result a vector to store the results in
          */
-        void rec(BASIS& basis, std::vector<double>& point, size_t current_dim,
-                 double value, GridStorage::grid_iterator& working,
+        void rec(BASIS& basis, std::vector<float_t>& point, size_t current_dim,
+                 float_t value, GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
-                 size_t, double > > & result) {
+                 size_t, float_t > > & result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -147,7 +147,7 @@ namespace SGPP {
 
               working.get(current_dim, temp, work_index);
 
-              double new_value = basis.eval(work_level, work_index,
+              float_t new_value = basis.eval(work_level, work_index,
                                             point[current_dim]);
 
               if (current_dim == storage->dim() - 1) {
@@ -194,8 +194,8 @@ namespace SGPP {
         ~GetAffectedBasisFunctions() {
         }
 
-        void operator()(SWaveletModifiedBase& basis, std::vector<double>& point,
-                        std::vector<std::pair<size_t, double> >& result) {
+        void operator()(SWaveletModifiedBase& basis, std::vector<float_t>& point,
+                        std::vector<std::pair<size_t, float_t> >& result) {
           GridStorage::grid_iterator working(storage);
 
           //typedef GridStorage::index_type::level_type level_type;
@@ -209,7 +209,7 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            double temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type> (temp - 1);
@@ -229,15 +229,15 @@ namespace SGPP {
       protected:
         GridStorage* storage;
 
-        void rec(SWaveletModifiedBase& basis, std::vector<double>& point,
-                 size_t current_dim, double value,
+        void rec(SWaveletModifiedBase& basis, std::vector<float_t>& point,
+                 size_t current_dim, float_t value,
                  GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
-                 size_t, double > > & result) {
+                 size_t, float_t > > & result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
           //size_t i;
-          double tmpValue;
+          float_t tmpValue;
           size_t tmpSeq;
 
           // TODO: Remove 'magic' number
@@ -260,7 +260,7 @@ namespace SGPP {
               working.get(current_dim, temp, work_index);
               //std::cout <<"current dim: "<<current_dim<<" Point:"<<point[current_dim]<<" current_level: "<<work_level<<" current_Index: " << work_index << std::endl;
 
-              double new_value = basis.eval(work_level, work_index,
+              float_t new_value = basis.eval(work_level, work_index,
                                             point[current_dim]);
 
               if (current_dim == storage->dim() - 1) {
@@ -374,7 +374,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SBsplineModifiedBase& base, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result) {
+        void operator()(SBsplineModifiedBase& base, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
           GridStorage::grid_iterator working(storage);
 
 
@@ -389,7 +389,7 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            double temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type>(temp - 1);
@@ -409,11 +409,11 @@ namespace SGPP {
       protected:
         GridStorage* storage;
 
-        void rec(SBsplineModifiedBase& base, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, double> >& result) {
+        void rec(SBsplineModifiedBase& base, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
           //size_t i;
-          double tmpValue;
+          float_t tmpValue;
           size_t tmpSeq;
 
           // TODO: Remove 'magic' number
@@ -435,7 +435,7 @@ namespace SGPP {
               working.get(current_dim, temp, work_index);
               //std::cout <<"current dim: "<<current_dim<<" Point:"<<point[current_dim]<<" current_level: "<<work_level<<" current_Index: " << work_index << std::endl;
 
-              double new_value = base.eval(work_level, work_index, point[current_dim]);
+              float_t new_value = base.eval(work_level, work_index, point[current_dim]);
 
               if (current_dim == storage->dim() - 1) {
                 //for( int i=0;i < storage->dim();i++)
@@ -538,7 +538,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SLinearBoundaryBase& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result) {
+        void operator()(SLinearBoundaryBase& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
           bool useBB = false;
 
           // Check for special bounding box
@@ -562,7 +562,7 @@ namespace SGPP {
         GridStorage* storage;
         BoundingBox* BB;
 
-        void rec(SLinearBoundaryBase& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
+        void rec(SLinearBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -583,7 +583,7 @@ namespace SGPP {
               global_work_index = work_index;
 
               if (work_level > 0) {
-                double new_value = basis.eval(work_level, work_index, point[current_dim]);
+                float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq, value * new_value));
@@ -596,7 +596,7 @@ namespace SGPP {
                 // level 0, index 0
                 working.left_levelzero(current_dim);
                 size_t seq_lz_left = working.seq();
-                double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+                float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
@@ -607,7 +607,7 @@ namespace SGPP {
                 // level 0, index 1
                 working.right_levelzero(current_dim);
                 size_t seq_lz_right = working.seq();
-                double new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
+                float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
@@ -625,12 +625,12 @@ namespace SGPP {
             // this decides in which direction we should descend by evaluating the corresponding bit
             // the bits are coded from left to right starting with level 1 being in position src_level
             if (work_level > 0) {
-              double hat = 0.0;
+              float_t hat = 0.0;
               level_type h = 0;
 
               h = 1 << work_level;
 
-              hat = (1.0 / static_cast<double>(h)) * static_cast<double>(global_work_index);
+              hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
 
               if (point[current_dim] == hat)
                 break;
@@ -654,7 +654,7 @@ namespace SGPP {
         }
 
 
-        void recBB(SLinearBoundaryBase& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
+        void recBB(SLinearBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -675,7 +675,7 @@ namespace SGPP {
               global_work_index = work_index;
 
               if (work_level > 0) {
-                double new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                float_t new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq, value * new_value));
@@ -688,7 +688,7 @@ namespace SGPP {
                 // level 0, index 0
                 working.left_levelzero(current_dim);
                 size_t seq_lz_left = working.seq();
-                double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
@@ -699,7 +699,7 @@ namespace SGPP {
                 // level 0, index 1
                 working.right_levelzero(current_dim);
                 size_t seq_lz_right = working.seq();
-                double new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
@@ -717,12 +717,12 @@ namespace SGPP {
             // this decides in which direction we should descend by evaluating the corresponding bit
             // the bits are coded from left to right starting with level 1 being in position src_level
             if (work_level > 0) {
-              double hat = 0.0;
+              float_t hat = 0.0;
               level_type h = 0;
 
               h = 1 << work_level;
 
-              hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<double>(h)) * static_cast<double>(global_work_index))) + BB->getIntervalOffset(current_dim);
+              hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index))) + BB->getIntervalOffset(current_dim);
 
               if (point[current_dim] == hat)
                 break;
@@ -759,7 +759,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SLinearStretchedBoundaryBase& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result) {
+        void operator()(SLinearStretchedBoundaryBase& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
           //There's no BoundaryBox checking necessary
 
           GridStorage::grid_iterator working(storage);
@@ -776,10 +776,10 @@ namespace SGPP {
         GridStorage* storage;
         Stretching* stretch;
 
-        void recBB(SLinearStretchedBoundaryBase& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
+        void recBB(SLinearStretchedBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
-          double posl = 0, posr = 0, posc = 0;
+          float_t posl = 0, posr = 0, posc = 0;
 
           level_type work_level = 0;
 
@@ -804,8 +804,8 @@ namespace SGPP {
                 //          stretch->getAdjacentPositions(static_cast<int>(temp), static_cast<int>(work_index), current_dim,posl,posr);
                 //          posc=stretch->getCoordinates(static_cast<int>(temp), static_cast<int>(work_index), current_dim);
                 stretch->getAdjacentPositions(static_cast<int>(temp), static_cast<int>(work_index), current_dim, posc, posl, posr);
-                //double new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
-                double new_value;
+                //float_t new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                float_t new_value;
 
                 if (posc < point[current_dim]) {
                   /// calculate using the right-hand ramp
@@ -824,13 +824,13 @@ namespace SGPP {
               }
               // handle boundaries if we are on level 0
               else {
-                double left = stretch->getBoundary(current_dim).leftBoundary;
-                double right = stretch->getBoundary(current_dim).rightBoundary;
+                float_t left = stretch->getBoundary(current_dim).leftBoundary;
+                float_t right = stretch->getBoundary(current_dim).rightBoundary;
                 // level 0, index 0
                 working.left_levelzero(current_dim);
                 size_t seq_lz_left = working.seq();
-                //double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
-                double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], right, left);
+                //float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], right, left);
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
@@ -841,8 +841,8 @@ namespace SGPP {
                 // level 0, index 1
                 working.right_levelzero(current_dim);
                 size_t seq_lz_right = working.seq();
-                //double new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
-                double new_value_l_zero_right = basis.eval(0, 1,  point[current_dim], left, right);
+                //float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                float_t new_value_l_zero_right = basis.eval(0, 1,  point[current_dim], left, right);
 
                 if (current_dim == storage->dim() - 1) {
                   result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
@@ -860,10 +860,10 @@ namespace SGPP {
             // this decides in which direction we should descend by evaluating the corresponding bit
             // the bits are coded from left to right starting with level 1 being in position src_level
             if (work_level > 0) {
-              double hat = 0.0;
+              float_t hat = 0.0;
               //        level_type h = 0;
               //        h = 1<<work_level;
-              //        hat = (stretch->getIntervalWidth(current_dim)*((1.0/static_cast<double>(h))*static_cast<double>(global_work_index))) + stretch->getIntervalOffset(current_dim);
+              //        hat = (stretch->getIntervalWidth(current_dim)*((1.0/static_cast<float_t>(h))*static_cast<float_t>(global_work_index))) + stretch->getIntervalOffset(current_dim);
               hat = stretch->getCoordinates(static_cast<int>(work_level), static_cast<int>(global_work_index), current_dim);
 
 
@@ -922,8 +922,8 @@ namespace SGPP {
          * @param point evaluation point within the domain
          * @param result a vector to store the results in
          */
-        void operator()(SPrewaveletBase& basis, std::vector<double>& point,
-                        std::vector<std::pair<size_t, double> >& result) {
+        void operator()(SPrewaveletBase& basis, std::vector<float_t>& point,
+                        std::vector<std::pair<size_t, float_t> >& result) {
 
           GridStorage::grid_iterator iter(storage);
           result.clear();
@@ -950,12 +950,12 @@ namespace SGPP {
          * @param result a vector to store the results in
          */
 
-        void rec(SPrewaveletBase& basis, std::vector<double>& point,
+        void rec(SPrewaveletBase& basis, std::vector<float_t>& point,
                  size_t current_dim, GridStorage::grid_iterator& iter, std::vector <
-                 std::pair<size_t, double> > & result) {
+                 std::pair<size_t, float_t> > & result) {
 
           //First, save this point
-          double value = 1.0;
+          float_t value = 1.0;
 
           for (size_t d = 0; d < storage->dim(); ++d) {
             index_type current_index;
@@ -1027,7 +1027,7 @@ namespace SGPP {
 
 		~GetAffectedBasisFunctions() {}
 
-		void operator()(SLinearPeriodicBasis& basis, std::vector<double>& point, std::vector<std::pair<size_t, double> >& result) {
+		void operator()(SLinearPeriodicBasis& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
 		  GridStorage::grid_iterator working(storage);
 
 		  working.resetToLevelZero();
@@ -1040,7 +1040,7 @@ namespace SGPP {
 	  protected:
 		GridStorage* storage;
 
-		void rec(SLinearPeriodicBasis& basis, std::vector<double>& point, size_t current_dim, double value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, double> >& result) {
+		void rec(SLinearPeriodicBasis& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
 		  typedef GridStorage::index_type::level_type level_type;
 		  typedef GridStorage::index_type::index_type index_type;
 
@@ -1061,7 +1061,7 @@ namespace SGPP {
 			  global_work_index = work_index;
 
 			  if (work_level > 0) {
-				double new_value = basis.eval(work_level, work_index, point[current_dim]);
+				float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
 
 				if (current_dim == storage->dim() - 1) {
 				  result.push_back(std::make_pair(seq, value * new_value));
@@ -1074,7 +1074,7 @@ namespace SGPP {
 				// level 0, index 0
 				working.left_levelzero(current_dim);
 				size_t seq_lz_left = working.seq();
-				double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+				float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
 				if (current_dim == storage->dim() - 1) {
 				  result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
@@ -1092,12 +1092,12 @@ namespace SGPP {
 			// this decides in which direction we should descend by evaluating the corresponding bit
 			// the bits are coded from left to right starting with level 1 being in position src_level
 			if (work_level > 0) {
-			  double hat = 0.0;
+			  float_t hat = 0.0;
 			  level_type h = 0;
 
 			  h = 1 << work_level;
 
-			  hat = (1.0 / static_cast<double>(h)) * static_cast<double>(global_work_index);
+			  hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
 
 			  if (point[current_dim] == hat)
 				break;

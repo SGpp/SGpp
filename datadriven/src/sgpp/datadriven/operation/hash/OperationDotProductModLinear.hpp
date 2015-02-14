@@ -29,7 +29,7 @@ namespace SGPP {
          */
         virtual ~OperationDotProductModLinear() {}
 
-        virtual double eval(SGPP::base::DataVector& x1, SGPP::base::DataVector& x2);
+        virtual float_t eval(SGPP::base::DataVector& x1, SGPP::base::DataVector& x2);
 
       protected:
         /// Pointer to the grid's GridStorage object

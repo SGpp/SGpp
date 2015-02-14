@@ -17,8 +17,8 @@ namespace SGPP {
     class DatasetGenerator {
       public:
         virtual ~DatasetGenerator();
-        virtual double uniform(double a, double b);
-        virtual double normal(double mean, double stddev);
+        virtual float_t uniform(float_t a, float_t b);
+        virtual float_t normal(float_t mean, float_t stddev);
         virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trainingData, SGPP::base::DataVector& classes) = 0;
         virtual size_t getDims() = 0;
     };

@@ -41,13 +41,13 @@ namespace SGPP {
     class HullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
       private:
         ///  the theta value
-        double theta;
+        float_t theta;
         /// the sigma value
-        double sigma;
+        float_t sigma;
         /// the a value
-        double a;
+        float_t a;
         /// the current time
-        //double t;
+        //float_t t;
         /// stores if the stochastic asset data was passed to the solver
         bool bStochasticDataAlloc;
         /// screen object used in this solver
@@ -55,9 +55,9 @@ namespace SGPP {
         /// use coarsening between timesteps in order to reduce gridsize
         bool useCoarsen;
         /// Threshold used to decide if a grid point should be deleted
-        double coarsenThreshold;
+        float_t coarsenThreshold;
         /// Threshold used to decide if a grid point should be refined
-        double refineThreshold;
+        float_t refineThreshold;
         /// adaptive mode during solving Black Scholes Equation: none, coarsen, refine, coarsenNrefine
         std::string adaptSolveMode;
         /// refine mode during solving Black Scholes Equation: classic or maxLevel
@@ -82,14 +82,14 @@ namespace SGPP {
 
         void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
-        void setStochasticData(double theta, double sigma, double a);
+        void setStochasticData(float_t theta, float_t sigma, float_t a);
 
 
-        void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
+        void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false, bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-        void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+        void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option
@@ -102,7 +102,7 @@ namespace SGPP {
          * @param t the current time
          * @param T the maturity time
          */
-        void initGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double sigma, double a, double t, double T);
+        void initGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t sigma, float_t a, float_t t, float_t T);
 
         /**
          * Inits the screen object

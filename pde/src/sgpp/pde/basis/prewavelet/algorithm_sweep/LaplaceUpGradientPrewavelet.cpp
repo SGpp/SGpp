@@ -33,9 +33,9 @@ namespace SGPP {
       size_t _seql;
       size_t _seqr;
 
-      double _vall, _valr;
+      float_t _vall, _valr;
 
-      double h;
+      float_t h;
 
       if (l == 1)
         return;
@@ -44,7 +44,7 @@ namespace SGPP {
       _seqr = index.seq();
       _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
 
-      double* temp_current = new double[(1 << (l - 1)) - 1];
+      float_t* temp_current = new float_t[(1 << (l - 1)) - 1];
 
       for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
         _seql = _seqr;

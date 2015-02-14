@@ -26,11 +26,11 @@ namespace SGPP {
       rec(source, result, index, dim, 0.0, 0.0);
     }
 
-    void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       // current position on the grid
       size_t seq = index.seq();
       // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      double fm = source[seq];
+      float_t fm = source[seq];
 
       // recursive calls for the right and left side of the current node
       if (index.hint() == false) {
@@ -57,7 +57,7 @@ namespace SGPP {
       GridStorage::index_type::index_type current_index;
       index.get(dim, current_level, current_index);
 
-      double posl = 0, posr = 0, posc = 0;
+      float_t posl = 0, posr = 0, posc = 0;
 
       if ((static_cast<int>(current_level)) == 0) {
         std::cout << "printing fl and fr " << fl << " " << fr << std::endl;
@@ -67,7 +67,7 @@ namespace SGPP {
       stretch->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, posc, posl, posr );
 
 
-      double fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
+      float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
       result[seq] = fm - fcurr;
 
     }

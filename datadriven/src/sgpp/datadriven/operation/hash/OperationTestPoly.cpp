@@ -15,15 +15,15 @@
 namespace SGPP {
   namespace datadriven {
 
-    double OperationTestPoly::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
+    float_t OperationTestPoly::test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
       return test_dataset(this->storage, base, alpha, data, classes);
     }
 
-    double OperationTestPoly::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
+    float_t OperationTestPoly::testMSE(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
       return test_dataset_mse(this->storage, base, alpha, data, refValues);
     }
 
-    double OperationTestPoly::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) {
+    float_t OperationTestPoly::testWithCharacteristicNumber(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers) {
       return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0.0);
     }
 

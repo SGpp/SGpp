@@ -18,11 +18,11 @@ namespace SGPP {
      * DataVector object
      *
      * The space required by a DataVector object is:
-     * (size+unused)*sizeof(double)
+     * (size+unused)*sizeof(float_t)
      */
     struct DataVectorDefinition {
       /// Array to store the data
-      double* data;
+      float_t* data;
       /// Number of elements of the data vector
       size_t size;
       /// Number of additional rows for which memory has already been reserved

@@ -16,13 +16,13 @@
 namespace SGPP {
   namespace solver {
 
-    ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SLESolver(imax, epsilon) {
+    ConjugateGradients::ConjugateGradients(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {
     }
 
     ConjugateGradients::~ConjugateGradients() {
     }
 
-    void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
+    void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse, bool verbose, float_t max_threshold) {
       this->starting();
 
       if (verbose == true) {
@@ -30,7 +30,7 @@ namespace SGPP {
       }
 
       // needed for residuum calculation
-      double epsilonSquared = this->myEpsilon * this->myEpsilon;
+      float_t epsilonSquared = this->myEpsilon * this->myEpsilon;
       // number off current iterations
       this->nIterations = 0;
 
@@ -39,11 +39,11 @@ namespace SGPP {
       SGPP::base::DataVector q(alpha.getSize());
       SGPP::base::DataVector r(b);
 
-      double delta_0 = 0.0;
-      double delta_old = 0.0;
-      double delta_new = 0.0;
-      double beta = 0.0;
-      double a = 0.0;
+      float_t delta_0 = 0.0;
+      float_t delta_old = 0.0;
+      float_t delta_new = 0.0;
+      float_t beta = 0.0;
+      float_t a = 0.0;
 
       if (verbose == true) {
         std::cout << "All temp variables used in CG have been initialized" << std::endl;

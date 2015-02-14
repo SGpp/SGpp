@@ -40,7 +40,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initCartesianGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initCartesianGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -50,7 +50,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initLogTransformedGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initLogTransformedGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType);
 
         /**
          * This function calculates for every grid point the value
@@ -63,7 +63,7 @@ namespace SGPP {
          * @param norm_mu the expected values of the normal distribution for every grid dimension
          * @param norm_sigma the standard deviation of the normal distribution for every grid dimension
          */
-        virtual void getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma);
+        virtual void getGridNormalDistribution(SGPP::base::DataVector& alpha, std::vector<float_t>& norm_mu, std::vector<float_t>& norm_sigma);
 
       public:
         /**
@@ -97,7 +97,7 @@ namespace SGPP {
          * @param payoffType the type of payoff Function used ONLY supported: avgM
          * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
          */
-        virtual void refineInitialGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance);
+        virtual void refineInitialGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance);
 
         /**
          * This function tries to refine the grid such that
@@ -115,7 +115,7 @@ namespace SGPP {
          * @param dStrikeDistance the max. distance from "at the money" a point is allowed to have in order to get refined
          * @param maxLevel maximum level of refinement
          */
-        virtual void refineInitialGridWithPayoffToMaxLevel(SGPP::base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel);
+        virtual void refineInitialGridWithPayoffToMaxLevel(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel);
 
         /**
          * Inits the alpha vector with a payoff function of an European call option or put option
@@ -124,7 +124,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          */
-        virtual void initGridWithPayoff(SGPP::base::DataVector& alpha, double strike, std::string payoffType);
+        virtual void initGridWithPayoff(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType);
 
         /**
          *  computes the relative error between the solution and the exact analytic solution for the 1-dimensional Black-Schoesl equation
@@ -135,7 +135,7 @@ namespace SGPP {
          *  @param payoffType specifies the type of the combined payoff function; std_euro_call or std_euro_put are available
          *  @param hierarchized flag whether values should be hierarchized (true=hierarchized, false=dehierarchized)
          */
-        virtual void getAnalyticAlpha1D(SGPP::base::DataVector& alpha_analytic, double strike, double t, std::string payoffType, bool hierarchized);
+        virtual void getAnalyticAlpha1D(SGPP::base::DataVector& alpha_analytic, float_t strike, float_t t, std::string payoffType, bool hierarchized);
 
         /**
          * Inits the screen object
@@ -154,7 +154,7 @@ namespace SGPP {
          * @param numTestpoints Number of equal distribute testpoints at the money
          * @param strike the option's strike
          */
-        virtual void printPayoffInterpolationError2D(SGPP::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, double strike);
+        virtual void printPayoffInterpolationError2D(SGPP::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, float_t strike);
 
         /**
          * gets the number of gridpoints at money
@@ -165,7 +165,7 @@ namespace SGPP {
          * @param strike the option's strike
          * @param eps epsilon to determine the gridpoints, use if at money is not exactly on grid
          */
-        virtual size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
+        virtual size_t getGridPointsAtMoney(std::string payoffType, float_t strike, float_t eps = 0.0);
 
 
         /**

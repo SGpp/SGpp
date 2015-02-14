@@ -23,13 +23,13 @@ namespace SGPP {
       
       base_vektor = new int[dimensions];
 
-      f_vektor = new double[dimensions];
-      i_vektor = new double[dimensions];
-      result_vektor = new double[dimensions];
+      f_vektor = new float_t[dimensions];
+      i_vektor = new float_t[dimensions];
+      result_vektor = new float_t[dimensions];
 
       for(size_t i = 0; i < dimensions; i++) {
         base_vektor[i] = basePrimes[Random::random() % 15];
-        f_vektor[i] = 1. / ((double)base_vektor[i]);
+        f_vektor[i] = 1. / ((float_t)base_vektor[i]);
 
         index = 1;
         result_vektor[i] = 0.;
@@ -41,12 +41,12 @@ namespace SGPP {
       for(size_t i = 0; i < dimensions; i++) {
 
 	      result_vektor[i] = 0.;
-	      f_vektor[i] = 1. / ((double)base_vektor[i]);
+	      f_vektor[i] = 1. / ((float_t)base_vektor[i]);
 	      i_vektor[i] = index;
 	      while(i_vektor[i] > 0) {
-          result_vektor[i] = result_vektor[i] + f_vektor[i] * ((double)((int)i_vektor[i] % base_vektor[i]));
-          i_vektor[i] = floor(((double)i_vektor[i]) / ((double)base_vektor[i]));
-          f_vektor[i] = f_vektor[i] / ((double)base_vektor[i]);
+          result_vektor[i] = result_vektor[i] + f_vektor[i] * ((float_t)((int)i_vektor[i] % base_vektor[i]));
+          i_vektor[i] = floor(((float_t)i_vektor[i]) / ((float_t)base_vektor[i]));
+          f_vektor[i] = f_vektor[i] / ((float_t)base_vektor[i]);
 	      }
         dv[i] = result_vektor[i];
       }

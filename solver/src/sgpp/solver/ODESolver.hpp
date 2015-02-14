@@ -27,7 +27,7 @@ namespace SGPP {
          * @param imax number of maximum executed iterations
          * @param timestepSize the size of one timestep
          */
-        ODESolver(size_t imax, double timestepSize) : SGSolver(imax, timestepSize) {
+        ODESolver(size_t imax, float_t timestepSize) : SGSolver(imax, timestepSize) {
         }
 
         /**

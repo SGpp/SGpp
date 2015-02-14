@@ -33,7 +33,7 @@ LearnerLeastSquaresIdentity::~LearnerLeastSquaresIdentity() {
 }
 
 SGPP::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSystem(SGPP::base::DataMatrix& trainDataset,
-        double lambda) {
+        float_t lambda) {
     if (this->grid_ == NULL)
         return NULL;
 
@@ -46,7 +46,7 @@ SGPP::datadriven::DMSystemMatrixBase* LearnerLeastSquaresIdentity::createDMSyste
 void LearnerLeastSquaresIdentity::postProcessing(const SGPP::base::DataMatrix& trainDataset,
         const SGPP::solver::SLESolverType& solver, const size_t numNeededIterations) {
     LearnerVectorizedPerformance currentPerf = LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(*this->grid_,
-            trainDataset.getNrows(), solver, numNeededIterations, sizeof(double));
+            trainDataset.getNrows(), solver, numNeededIterations, sizeof(float_t));
 
     this->GFlop_ += currentPerf.GFlop_;
     this->GByte_ += currentPerf.GByte_;
@@ -71,7 +71,7 @@ SGPP::base::DataVector LearnerLeastSquaresIdentity::predict(SGPP::base::DataMatr
     return classesComputed;
 }
 
-double LearnerLeastSquaresIdentity::testRegular(const SGPP::base::RegularGridConfiguration& GridConfig,
+float_t LearnerLeastSquaresIdentity::testRegular(const SGPP::base::RegularGridConfiguration& GridConfig,
         SGPP::base::DataMatrix& testDataset) {
 
     InitializeGrid(GridConfig);
@@ -90,7 +90,7 @@ double LearnerLeastSquaresIdentity::testRegular(const SGPP::base::RegularGridCon
 
     //TODO could be wrong
     MultEval->mult(*alpha_, classesComputed);
-    double stopTime = myStopwatch->stop();
+    float_t stopTime = myStopwatch->stop();
     this->execTime_ += stopTime;
     std::cout << "execution duration: " << this->execTime_ << std::endl;
     delete MultEval;
@@ -98,7 +98,7 @@ double LearnerLeastSquaresIdentity::testRegular(const SGPP::base::RegularGridCon
     return stopTime;
 }
 
-std::vector<std::pair<size_t, double> > LearnerLeastSquaresIdentity::getRefinementExecTimes() {
+std::vector<std::pair<size_t, float_t> > LearnerLeastSquaresIdentity::getRefinementExecTimes() {
     return this->ExecTimeOnStep;
 }
 

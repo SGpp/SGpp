@@ -10,6 +10,7 @@
 #include <map>
 #include "omp.h"
 #include <immintrin.h>
+#include <assert.h>
 
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp"
 #include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedSubspaceNode.hpp"
@@ -50,17 +51,17 @@ private:
 
     void prepareSubspaceIterator();
 
-    void listMultInner(size_t dim, const double * const datasetPtr, SGPP::base::DataVector &alpha, size_t dataIndexBase,
-                       size_t end_index_data, SubspaceNodeCombined &subspace, double *levelArrayContinuous,
+    void listMultInner(size_t dim, const float_t * const datasetPtr, SGPP::base::DataVector &alpha, size_t dataIndexBase,
+                       size_t end_index_data, SubspaceNodeCombined &subspace, float_t *levelArrayContinuous,
                        size_t validIndicesCount, size_t *validIndices, size_t *levelIndices,
                        //size_t *nextIterationToRecalcReferences, size_t nextIterationToRecalc,
-                       double *evalIndexValuesAll, uint32_t *intermediatesAll);
+                       float_t *evalIndexValuesAll, uint32_t *intermediatesAll);
 
-    void uncachedMultTransposeInner(size_t dim, const double * const datasetPtr, size_t dataIndexBase,
-                                    size_t end_index_data, SubspaceNodeCombined &subspace, double *levelArrayContinuous,
+    void uncachedMultTransposeInner(size_t dim, const float_t * const datasetPtr, size_t dataIndexBase,
+                                    size_t end_index_data, SubspaceNodeCombined &subspace, float_t *levelArrayContinuous,
                                     size_t validIndicesCount, size_t *validIndices, size_t *levelIndices,
                                     //size_t *nextIterationToRecalcReferences,
-                                    double *componentResults, double *evalIndexValuesAll, uint32_t *intermediatesAll);
+                                    float_t *componentResults, float_t *evalIndexValuesAll, uint32_t *intermediatesAll);
 
     void setCoefficients(SGPP::base::DataVector &surplusVector);
 
@@ -69,10 +70,10 @@ private:
     static uint32_t flattenIndex(size_t dim, std::vector<uint32_t> &maxIndices, std::vector<uint32_t> &index);
 
     void setSurplus(std::vector<uint32_t> &level, std::vector<uint32_t> &maxIndices, std::vector<uint32_t> &index,
-                    double value);
+                    float_t value);
 
     void getSurplus(std::vector<uint32_t> &level, std::vector<uint32_t> &maxIndices, std::vector<uint32_t> &index,
-                    double &value, bool &isVirtual);
+                    float_t &value, bool &isVirtual);
 
     uint32_t flattenLevel(size_t dim, size_t maxLevel, std::vector<uint32_t> &level);
 

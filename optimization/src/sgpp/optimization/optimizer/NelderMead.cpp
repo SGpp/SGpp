@@ -42,7 +42,7 @@ namespace SGPP {
 
         // construct starting simplex
         for (size_t t = 0; t < d; t++) {
-          points[t + 1][t] = std::min(points[t + 1][t] + STARTING_SIMPLEX_EDGE_LENGTH, 1.0);
+          points[t + 1][t] = std::min(points[t + 1][t] + STARTING_SIMPLEX_EDGE_LENGTH, float_t(1.0));
           fPoints[t + 1] = f->eval(points[t + 1]);
         }
 

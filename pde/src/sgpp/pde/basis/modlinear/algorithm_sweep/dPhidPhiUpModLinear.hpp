@@ -62,7 +62,7 @@ namespace SGPP {
          * @param dim the dimension in which the operation is executed
          * @param f function value in the middle
          */
-        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& f);
+        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& f);
     };
 
 

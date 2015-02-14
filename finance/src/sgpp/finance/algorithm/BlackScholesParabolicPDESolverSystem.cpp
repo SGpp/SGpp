@@ -18,10 +18,10 @@ namespace SGPP {
   namespace finance {
 
     BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-        double dStrike, std::string option_type,
-        bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
+        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode,
+        float_t dStrike, std::string option_type,
+        bool bLogTransform, bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
       this->BoundGrid = &SparseGrid;
       this->alpha_complete = &alpha;
 
@@ -62,7 +62,7 @@ namespace SGPP {
         }
       }
 
-      // test if there are double algorithmic dimensions
+      // test if there are float_t algorithmic dimensions
       std::vector<size_t> tempAlgoDims(this->BSalgoDims);
 
       for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
@@ -75,7 +75,7 @@ namespace SGPP {
         }
 
         if (dimCount > 1) {
-          throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : There is minimum one doubled algorithmic dimension!");
+          throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : There is minimum one float_td algorithmic dimension!");
         }
       }
 
@@ -270,7 +270,7 @@ namespace SGPP {
 
     void BlackScholesParabolicPDESolverSystem::buildDeltaCoefficients() {
       size_t dim = this->BSalgoDims.size();
-      double covar_sum = 0.0;
+      float_t covar_sum = 0.0;
 
       for (size_t i = 0; i < dim; i++) {
         covar_sum = 0.0;

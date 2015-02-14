@@ -26,11 +26,11 @@ namespace SGPP {
       rec(source, result, index, dim, 0.0, 0.0);
     }
 
-    void HierarchisationModLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, double fl, double fr) {
+    void HierarchisationModLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
       // current position on the grid
       size_t seq = index.seq();
       // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      double fm = source[seq];
+      float_t fm = source[seq];
 
       GridStorage::index_type::level_type l;
       GridStorage::index_type::index_type i;
@@ -39,8 +39,8 @@ namespace SGPP {
 
       // recursive calls for the right and left side of the current node
       if (index.hint() == false) {
-        double fltemp = fl;
-        double frtemp = fr;
+        float_t fltemp = fl;
+        float_t frtemp = fr;
 
         // When we descend the hierarchical basis we have to modify the boundary values
         // in case the index is 1 or (2^l)-1 or we are on the first level
@@ -52,13 +52,13 @@ namespace SGPP {
         }
         // left boundary
         else if (i == 1) {
-          double ftemp;
+          float_t ftemp;
           ftemp = fr - fm;
           fltemp = fm - ftemp;
         }
         // right boundary
         else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
-          double ftemp;
+          float_t ftemp;
           ftemp = fl - fm;
           frtemp = fm - ftemp;
         }

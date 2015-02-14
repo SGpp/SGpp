@@ -11,7 +11,7 @@
 namespace SGPP {
 namespace datadriven {
 
-DMSystemMatrixBase::DMSystemMatrixBase(SGPP::base::DataMatrix& trainData, double lambda)
+DMSystemMatrixBase::DMSystemMatrixBase(SGPP::base::DataMatrix& trainData, float_t lambda)
     : dataset_(&trainData), lambda_(lambda), completeTimeMult_(0.0), computeTimeMult_(0.0),
       completeTimeMultTrans_(0.0), computeTimeMultTrans_(0.0) {
     myTimer_ = new SGPP::base::SGppStopwatch();
@@ -31,7 +31,7 @@ void DMSystemMatrixBase::resetTimers() {
     computeTimeMultTrans_ = 0.0;
 }
 
-void DMSystemMatrixBase::getTimers(double& timeMult, double& computeMult, double& timeMultTrans, double& computeMultTrans) {
+void DMSystemMatrixBase::getTimers(float_t& timeMult, float_t& computeMult, float_t& timeMultTrans, float_t& computeMultTrans) {
     timeMult = completeTimeMult_;
     computeMult = computeTimeMult_;
     timeMultTrans = completeTimeMultTrans_;

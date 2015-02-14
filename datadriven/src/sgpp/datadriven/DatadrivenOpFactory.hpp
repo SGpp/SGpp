@@ -49,7 +49,7 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid);
  * @param k Parameter for @f$H^k@f$
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
-base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k);
+base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, float_t k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.

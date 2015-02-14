@@ -12,15 +12,15 @@
 namespace SGPP {
   namespace base {
 
-    double OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
-      double res = 0;
+    float_t OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
+      float_t res = 0;
       GridStorage::index_type index;
       GridStorage::grid_map_iterator end_iter = storage->end();
 
       for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++) {
         //    index = *(iter->first);
-        //    std::cout << iter->second << " " << iter->first->getLevelSum() << " " << pow(2.0, -static_cast<double>(iter->first->getLevelSum())) << std::endl;
-        res += pow(2.0, -static_cast<double>(iter->first->getLevelSum())) * alpha.get(iter->second);
+        //    std::cout << iter->second << " " << iter->first->getLevelSum() << " " << pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) << std::endl;
+        res += pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) * alpha.get(iter->second);
       }
 
       return res;

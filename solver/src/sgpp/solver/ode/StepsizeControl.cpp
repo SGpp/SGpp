@@ -19,7 +19,7 @@
 namespace SGPP {
   namespace solver {
 
-    StepsizeControl::StepsizeControl(size_t imax, double timestepSize, double eps, double sc, SGPP::base::ScreenOutput* screen, double gamma)
+    StepsizeControl::StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc, SGPP::base::ScreenOutput* screen, float_t gamma)
       : ODESolver(imax, timestepSize), myScreen(screen), _gamma(gamma) {
       this->residuum = 0.0;
       this->myEps = eps;
@@ -31,28 +31,28 @@ namespace SGPP {
     StepsizeControl::~StepsizeControl() {
     }
 
-    double StepsizeControl::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+    float_t StepsizeControl::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       return twoNorm(System, dv1, dv2);
     }
 
-    double StepsizeControl::twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+    float_t StepsizeControl::twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       dv1.sub(dv2);
 
       return sqrt(dv1.dotProduct(dv1));
     }
 
-    double StepsizeControl::maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& YkImEul, SGPP::base::DataVector& YkImEulOld) {
-      double max = 0.0;
-      double sc = this->mySC;
+    float_t StepsizeControl::maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& YkImEul, SGPP::base::DataVector& YkImEulOld) {
+      float_t max = 0.0;
+      float_t sc = this->mySC;
 
-      double* OldData = YkImEulOld.getPointer();
-      double* Data = YkImEul.getPointer();
+      float_t* OldData = YkImEulOld.getPointer();
+      float_t* Data = YkImEul.getPointer();
 
       // calculate the max norm
       if (!useCoarsen) {
         for (size_t j = 0; j < System.getGridCoefficientsForCG()->getSize(); j++) {
-          double t2 = std::max(fabs(Data[j]), fabs(OldData[j]));
-          double tmpData = fabs(Data[j] - OldData[j]) / std::max(sc, t2);
+          float_t t2 = std::max(fabs(Data[j]), fabs(OldData[j]));
+          float_t tmpData = fabs(Data[j] - OldData[j]) / std::max(sc, t2);
 
           if (max < fabs(tmpData))
             max = fabs(tmpData);
@@ -73,8 +73,8 @@ namespace SGPP {
             long unsigned int i = p->second;
             long unsigned int j = q->second;
             //  std::cout <<time<< " "<< (p->first)->toString() << " "<<i<<" " << Data[i]<< " " << (q->first)->toString() <<" "<<j<< " "<< OldData[j] << std::endl;
-            double t2 = std::max(fabs(Data[i]), fabs(OldData[j]));
-            double tmpData = fabs(Data[i] - OldData[j]) / std::max(sc, t2);
+            float_t t2 = std::max(fabs(Data[i]), fabs(OldData[j]));
+            float_t tmpData = fabs(Data[i] - OldData[j]) / std::max(sc, t2);
 
             if (max < fabs(tmpData)) {
 
@@ -96,16 +96,16 @@ namespace SGPP {
       SGPP::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
       SGPP::base::DataVector YkImEul(System.getGridCoefficients()->getSize());
 
-      double tmp_timestepsize = this->myEpsilon;
-      double tmp_timestepsize_old = tmp_timestepsize;
-      double tmp_timestepsize_new = tmp_timestepsize;
-      double epsilon = this->myEps;
+      float_t tmp_timestepsize = this->myEpsilon;
+      float_t tmp_timestepsize_old = tmp_timestepsize;
+      float_t tmp_timestepsize_new = tmp_timestepsize;
+      float_t epsilon = this->myEps;
 
-      double maxTimestep = static_cast<double> (this->nMaxIterations) * tmp_timestepsize;
+      float_t maxTimestep = static_cast<float_t> (this->nMaxIterations) * tmp_timestepsize;
 
       size_t maxIter = this->nMaxIterations * 10000;
 
-      double time = 0.0;
+      float_t time = 0.0;
 
       std::ofstream fileout;
 
@@ -128,7 +128,7 @@ namespace SGPP {
 
         corrector(LinearSystemSolver, System, tmp_timestepsize, YkImEul, rhs);
 
-        double tmp  = norm(System, YkImEul, YkAdBas);
+        float_t tmp  = norm(System, YkImEul, YkAdBas);
 
         tmp_timestepsize_new = nextTimestep(tmp_timestepsize, tmp_timestepsize_old, tmp, epsilon);
 
@@ -158,7 +158,7 @@ namespace SGPP {
             soutput << " Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
             if (i < this->nMaxIterations - 1) {
-              myScreen->update((size_t)(((double)(time) * 100.0) / ((double)maxTimestep)), soutput.str());
+              myScreen->update((size_t)(((float_t)(time) * 100.0) / ((float_t)maxTimestep)), soutput.str());
             } else {
               myScreen->update(100, soutput.str());
             }

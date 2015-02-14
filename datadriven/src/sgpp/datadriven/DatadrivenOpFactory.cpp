@@ -79,7 +79,7 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
         throw base::factory_exception("OperationTest is not implemented for this grid type.");
 }
 
-base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, double k) {
+base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, float_t k) {
     if (strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearBoundary") == 0
             || strcmp(grid.getType(), "linearTruncatedBoundary") == 0 || strcmp(grid.getType(), "modlinear") == 0) {
         return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode, k);

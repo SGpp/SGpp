@@ -36,7 +36,7 @@ namespace SGPP {
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual double doQuadrature(DataVector& alpha);
+        virtual float_t doQuadrature(DataVector& alpha);
 
       protected:
         // Pointer to the grid's GridStorage object

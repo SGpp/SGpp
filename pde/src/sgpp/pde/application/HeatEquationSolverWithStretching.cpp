@@ -53,14 +53,14 @@ namespace SGPP {
       std::cout << "I'm not supposed to be here, me is constructGrid\n";
     }
 
-    void HeatEquationSolverWithStretching::setHeatCoefficient(double a) {
+    void HeatEquationSolverWithStretching::setHeatCoefficient(float_t a) {
       this->a = a;
     }
 
-    void HeatEquationSolverWithStretching::solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HeatEquationSolverWithStretching::solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed) {
         this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        double dNeededTime;
+        float_t dNeededTime;
         Euler* myEuler = new Euler("ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
@@ -87,10 +87,10 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolverWithStretching::solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
+    void HeatEquationSolverWithStretching::solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, bool verbose, bool generateAnimation, size_t numEvalsAnimation) {
       if (this->bGridConstructed) {
         this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        double dNeededTime;
+        float_t dNeededTime;
         Euler* myEuler = new Euler("ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
@@ -118,10 +118,10 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolverWithStretching::solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations, double epsilonCG, DataVector& alpha, size_t NumImEul) {
+    void HeatEquationSolverWithStretching::solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations, float_t epsilonCG, DataVector& alpha, size_t NumImEul) {
       if (this->bGridConstructed) {
         this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-        double dNeededTime;
+        float_t dNeededTime;
         ConjugateGradients* myCG = new ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
         HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver = new HeatEquationParabolicPDESolverSystemParallelOMP(*this->myGrid, alpha, this->a, timestepsize, "CrNic");
@@ -168,10 +168,10 @@ namespace SGPP {
       }
     }
 
-    void HeatEquationSolverWithStretching::initGridWithSmoothHeat(DataVector& alpha, double mu, double sigma, double factor) {
+    void HeatEquationSolverWithStretching::initGridWithSmoothHeat(DataVector& alpha, float_t mu, float_t sigma, float_t factor) {
       if (this->bGridConstructed) {
-        double tmp;
-        double* dblFuncValues = new double[this->dim];
+        float_t tmp;
+        float_t* dblFuncValues = new float_t[this->dim];
 
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
@@ -207,16 +207,16 @@ namespace SGPP {
       this->myScreen->writeTitle("SGpp - Heat Equation Solver With Stretching, 1.0.1", "Alexander Heinecke, Sarpkan Selcuk (C) 2009-2011");
     }
 
-    void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, double PointesPerDimension, std::string tfilename) const {
+    void HeatEquationSolverWithStretching::printGrid(DataVector& alpha, float_t PointesPerDimension, std::string tfilename) const {
       GridPrinterForStretching myPrinter(*this->myGrid);
       myPrinter.printGrid(alpha, tfilename, static_cast<size_t>(PointesPerDimension));
     }
 
-    void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, double PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const {
+    void HeatEquationSolverWithStretching::printGridDomain(DataVector& alpha, float_t PointesPerDimension, BoundingBox& GridArea, std::string tfilename) const {
       throw new application_exception("HeatEquationSolverWithStretching::printGridDomain : BoundingBox not supported with this solver, use printGridDomainStretching instead ");
     }
 
-    void HeatEquationSolverWithStretching::printGridDomainStretching(DataVector& alpha, double PointesPerDimension, Stretching& GridArea, std::string tfilename) const {
+    void HeatEquationSolverWithStretching::printGridDomainStretching(DataVector& alpha, float_t PointesPerDimension, Stretching& GridArea, std::string tfilename) const {
       GridPrinterForStretching myPrinter(*this->myGrid);
       myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, static_cast<size_t>(PointesPerDimension));
     }

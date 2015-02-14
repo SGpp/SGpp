@@ -35,7 +35,7 @@ namespace base {
 
 class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
   public:
-    typedef std::pair<size_t, double> value_type;
+    typedef std::pair<size_t, float_t> value_type;
 
     typedef AbstractRefinement::index_type counter_key_type;
     typedef long unsigned int counter_value_type;
@@ -54,7 +54,7 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
      * for refinement.
      */
     PredictiveRefinementDimensionIndicator(Grid* grid, DataMatrix* dataSet, DataVector* errorVector,
-                                           size_t refinements_num = 1, double threshold = 0.0, long unsigned int minSupportPoints = 0);
+                                           size_t refinements_num = 1, float_t threshold = 0.0, long unsigned int minSupportPoints = 0);
 
 
     /**
@@ -64,9 +64,9 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
      * @param gridPoint for which to calculate an indicator value
      * @return refinement value
      */
-    double operator()(AbstractRefinement::index_type* gridPoint);
+    float_t operator()(AbstractRefinement::index_type* gridPoint);
 
-    double runOperator(GridStorage* storage, size_t seq);
+    float_t runOperator(GridStorage* storage, size_t seq);
 
     /**
      * Returns the squared residual for each point in the dataset
@@ -74,7 +74,7 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
      * @param storage pointer to the grids storage object
      * @param seq number of data point fot which the squared residual should be returned.
      */
-    virtual double operator()(GridStorage* storage, size_t seq);
+    virtual float_t operator()(GridStorage* storage, size_t seq);
 
     /**
      * Returns the maximal number of points that should be refined.
@@ -93,10 +93,10 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
      *
      * @return threshold value for refinement. Default value: 0.
      */
-    virtual double getRefinementThreshold();
+    virtual float_t getRefinementThreshold();
 
 
-    virtual double start();
+    virtual float_t start();
 
     /**
      * Returns the lower bound of refinement criterion (e.g., alpha or error
@@ -119,7 +119,7 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
     /// number of grid points to refine
     size_t refinementsNum;
     /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
-    double threshold;
+    float_t threshold;
 
     // data set that will be evaluated
     DataMatrix* dataSet;
@@ -132,7 +132,7 @@ class PredictiveRefinementDimensionIndicator: public RefinementFunctor {
      * @param value represents the x value on which the grid should be evaluated
      * @return basis function of grid type evaluated at "value" on level "level" and index "index".
      */
-    double basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, double value);
+    float_t basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, float_t value);
 
     void setActiveDim(size_t dim) {
       activeDim = dim;

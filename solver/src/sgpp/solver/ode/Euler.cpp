@@ -19,7 +19,7 @@
 namespace SGPP {
   namespace solver {
 
-    Euler::Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation, size_t numEvalsAnimation, SGPP::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode), myScreen(screen) {
+    Euler::Euler(std::string Mode, size_t imax, float_t timestepSize, bool generateAnimation, size_t numEvalsAnimation, SGPP::base::ScreenOutput* screen) : ODESolver(imax, timestepSize), bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode), myScreen(screen) {
       this->residuum = 0.0;
 
       if (Mode != "ExEul" && Mode != "ImEul") {
@@ -76,7 +76,7 @@ namespace SGPP {
           soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter << ")";
 
           if (i < this->nMaxIterations - 1) {
-            myScreen->update((size_t)(((double)(i + 1) * 100.0) / ((double)this->nMaxIterations)), soutput.str());
+            myScreen->update((size_t)(((float_t)(i + 1) * 100.0) / ((float_t)this->nMaxIterations)), soutput.str());
           } else {
             myScreen->update(100, soutput.str());
           }

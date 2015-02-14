@@ -13,7 +13,7 @@
 namespace SGPP {
   namespace datadriven {
 
-    OperationRegularizationDiagonal::OperationRegularizationDiagonal(base::GridStorage* storage, int mode, double k) : mode(mode), k(k), size(storage->size()), storage(storage), diagonal(storage->size()) {
+    OperationRegularizationDiagonal::OperationRegularizationDiagonal(base::GridStorage* storage, int mode, float_t k) : mode(mode), k(k), size(storage->size()), storage(storage), diagonal(storage->size()) {
 
       // remember size of grid to check for changes in grid
       this->size = storage->size();
@@ -52,7 +52,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < size; i++) {
         gi = storage->get(i);
-        diagonal[i] = 1.0 / (gi->getLevelMax() - gi->getLevelMin() + 1) * (double)dim;
+        diagonal[i] = 1.0 / (gi->getLevelMax() - gi->getLevelMin() + 1) * (float_t)dim;
       }
     }
     void OperationRegularizationDiagonal::initAnisotropicPenalty() {
@@ -62,7 +62,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < size; i++) {
         gi = storage->get(i);
-        diagonal[i] = 0.5 * log(1. + gi->getLevelMax() / std::max(static_cast<int>(gi->getLevelMin()), 1) * (double)dim);
+        diagonal[i] = 0.5 * log(1. + gi->getLevelMax() / std::max(static_cast<int>(gi->getLevelMin()), 1) * (float_t)dim);
       }
     }
 

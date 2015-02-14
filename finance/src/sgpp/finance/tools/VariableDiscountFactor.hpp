@@ -47,7 +47,7 @@ namespace SGPP {
          *@param factor the vector that should be calculated to multiply with another vector
          *@param T timestepsize
          */
-        void getDiscountFactor(SGPP::base::DataVector& factor, double T);
+        void getDiscountFactor(SGPP::base::DataVector& factor, float_t T);
 
     };
 

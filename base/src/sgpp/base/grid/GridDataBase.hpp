@@ -26,7 +26,7 @@ namespace SGPP {
      * retrieving grid points. Internally, a hash_map is used.
      *
      * Note: GridDataBase currently supports only to store pairs of
-     * (grid point -> double).
+     * (grid point -> float_t).
      */
     class GridDataBase {
       private:
@@ -35,14 +35,14 @@ namespace SGPP {
         /*
 #ifndef USETRONE
 #ifndef LARRABEENATIVE
-        typedef std::hash_map<index_pointer, double, SGPP::base::hash<index_pointer>, SGPP::base::eqIndex<index_pointer> > grid_map;
+        typedef std::hash_map<index_pointer, float_t, SGPP::base::hash<index_pointer>, SGPP::base::eqIndex<index_pointer> > grid_map;
 #endif
 #ifdef LARRABEENATIVE
-        typedef std::hash_map<index_pointer, double, LRBSGHasher<index_pointer> > grid_map;
+        typedef std::hash_map<index_pointer, float_t, LRBSGHasher<index_pointer> > grid_map;
 #endif
 #endif
 #ifdef USETRONE
-        typedef std::tr1::unordered_map<index_pointer, double, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+        typedef std::tr1::unordered_map<index_pointer, float_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
 */
         typedef HashGridStorage::grid_map grid_map;
@@ -134,7 +134,7 @@ namespace SGPP {
          * @param gi a grid index
          * @param value the value to store
          */
-        void set(GridIndex* gi, double value);
+        void set(GridIndex* gi, float_t value);
 
         /**
          * Set values for given grid from stored ones in database.
@@ -167,7 +167,7 @@ namespace SGPP {
          * @param gi a grid index
          * @return value
          */
-        double get(GridIndex* gi);
+        float_t get(GridIndex* gi);
 
         /**
          * Remove grid point from database. Do nothing, if not in database.
@@ -192,7 +192,7 @@ namespace SGPP {
         void load(const std::string filename);
 
         /**
-         * Return iterator to beginning. Entries are of type pair<GridIndex, double>.
+         * Return iterator to beginning. Entries are of type pair<GridIndex, float_t>.
          * @return iterator to beginning.
          */
         grid_map_iterator begin();

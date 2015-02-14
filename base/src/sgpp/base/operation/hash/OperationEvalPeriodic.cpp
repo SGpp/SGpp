@@ -16,8 +16,8 @@
 namespace SGPP {
   namespace base {
 
-    double OperationEvalPeriodic::eval(DataVector& alpha, std::vector<double>& point) {
-      typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    float_t OperationEvalPeriodic::eval(DataVector& alpha, std::vector<float_t>& point) {
+      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
 
       IndexValVector vec;
@@ -26,7 +26,7 @@ namespace SGPP {
 
       ga(base, point, vec);
 
-      double result = 0.0;
+      float_t result = 0.0;
 
       for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
         result += iter->second * alpha[iter->first];

@@ -13,7 +13,7 @@
 namespace SGPP {
   namespace datadriven {
 
-    DMWeightMatrix::DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda, SGPP::base::DataVector& w) {
+    DMWeightMatrix::DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambda, SGPP::base::DataVector& w) {
       // create the operations needed in ApplyMatrix
       this->C = &C;
       this->lamb = lambda;

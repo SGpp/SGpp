@@ -24,10 +24,11 @@ using namespace SGPP::base;
 
 
 int main() {
+#if USE_DOUBLE_PRECISION==1
 
   SGPP::datadriven::LearnerDensityCluster* clust = new SGPP::datadriven::LearnerDensityCluster(false);
 
-  double raw_data[] = { 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5};
+  float_t raw_data[] = { 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5};
   DataMatrix data(raw_data, 10, 1);
 
   DataVector classes(14);
@@ -55,4 +56,7 @@ int main() {
   DataVector res = clust->getClusterAssignments();
   delete clust;
   std::cout << res.toString() << std::endl;
+#else
+  std::cout << __FILE__ << ": This example only builds if SG++ uses double precision floating point numbers." << std::endl;
+#endif
 }

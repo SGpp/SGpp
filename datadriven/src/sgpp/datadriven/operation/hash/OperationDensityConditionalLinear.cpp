@@ -13,7 +13,7 @@
 namespace SGPP {
   namespace datadriven {
 
-    void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim, double xbar) {
+    void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim, float_t xbar) {
       /**
        * Assume: mdim = 1
        * Compute vector with values
@@ -25,15 +25,15 @@ namespace SGPP {
 
       for (size_t seqNr = 0; seqNr < alpha.getSize(); seqNr++) {
         gp = gs->get(seqNr);
-        zeta[seqNr] = std::max(1. - fabs(xbar * pow(2.0, static_cast<double>(gp->getLevel(mdim))) - static_cast<double>(gp->getIndex(mdim))), 0.);
+        zeta[seqNr] = std::max(1. - fabs(xbar * pow(2.0, static_cast<float_t>(gp->getLevel(mdim))) - static_cast<float_t>(gp->getIndex(mdim))), 0.);
       }
 
       /**
        * Compute
        * theta = theta + alpha_{l,i}*zeta_{l,i}*int{phi_{l2, i_2}}
        */
-      double theta = 0;
-      double tmpint = 0;
+      float_t theta = 0;
+      float_t tmpint = 0;
 
       for (size_t seqNr = 0; seqNr < gs->size(); seqNr++) {
         gp = gs->get(seqNr);
@@ -41,7 +41,7 @@ namespace SGPP {
 
         for (unsigned int d = 0; d < gs->dim(); d++) {
           if (d != mdim)
-            tmpint *= pow(2.0, -static_cast<double>(gp->getLevel(d)));
+            tmpint *= pow(2.0, -static_cast<float_t>(gp->getLevel(d)));
         }
 
         theta += alpha[seqNr] * zeta[seqNr] * tmpint;

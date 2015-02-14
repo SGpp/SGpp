@@ -15,7 +15,7 @@ using namespace SGPP::op_factory;
 namespace SGPP {
   namespace pde {
 
-    HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode) {
+    HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, float_t a, float_t TimestepSize, std::string OperationMode) {
       this->a = a;
       this->tOperationMode = OperationMode;
       this->TimestepSize = TimestepSize;

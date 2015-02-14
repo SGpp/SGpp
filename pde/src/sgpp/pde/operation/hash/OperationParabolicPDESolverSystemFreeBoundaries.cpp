@@ -48,8 +48,8 @@ namespace SGPP {
 
         applyMassMatrix(alpha, result);
       } else if (this->tOperationMode == "BDF2") {
-        double tDiff = this->TimestepSize / this->TimestepSize_old;
-        double alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
+        float_t tDiff = this->TimestepSize / this->TimestepSize_old;
+        float_t alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
         result.setAll(0.0);
 
         SGPP::base::DataVector temp(alpha.getSize());
@@ -63,8 +63,8 @@ namespace SGPP {
         result.axpy((-1.0)*this->TimestepSize, temp);
       } else if (this->tOperationMode == "F23") {
         result.setAll(0.0);
-        double tDiff = this->TimestepSize / this->TimestepSize_old;
-        double alpha0 = 1.0 / (1.0 + tDiff);
+        float_t tDiff = this->TimestepSize / this->TimestepSize_old;
+        float_t alpha0 = 1.0 / (1.0 + tDiff);
 
         applyMassMatrix(alpha, result);
         result.mult(alpha0);
@@ -127,24 +127,24 @@ namespace SGPP {
 
         applyMassMatrix(*this->alpha_complete, temp);
 
-        double tDiff = this->TimestepSize / this->TimestepSize_old;
+        float_t tDiff = this->TimestepSize / this->TimestepSize_old;
 
-        double alpha1 = tDiff + 1.0;
+        float_t alpha1 = tDiff + 1.0;
         temp.mult(alpha1);
         rhs_complete.add(temp);
 
         SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
         applyMassMatrix(*this->alpha_complete_old, temp_old);
 
-        double alpha2 = tDiff * tDiff / (1.0 + tDiff);
+        float_t alpha2 = tDiff * tDiff / (1.0 + tDiff);
         temp_old.mult(alpha2);
         rhs_complete.sub(temp_old);
       } else if (this->tOperationMode == "F23") {
         rhs_complete.setAll(0.0);
-        double tDiff = this->TimestepSize / this->TimestepSize_old;
-        double alpha0 = (1.0 + tDiff);
-        double alpha1 = alpha0 * (tDiff - 1.0);
-        double alpha2 = -alpha0 * (tDiff * tDiff / (tDiff + 1.0));
+        float_t tDiff = this->TimestepSize / this->TimestepSize_old;
+        float_t alpha0 = (1.0 + tDiff);
+        float_t alpha1 = alpha0 * (tDiff - 1.0);
+        float_t alpha2 = -alpha0 * (tDiff * tDiff / (tDiff + 1.0));
 
 
         SGPP::base::DataVector temp(this->alpha_complete->getSize());

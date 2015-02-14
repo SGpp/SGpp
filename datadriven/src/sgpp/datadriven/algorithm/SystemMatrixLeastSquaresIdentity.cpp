@@ -19,7 +19,7 @@ namespace SGPP {
 namespace datadriven {
 
 SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& grid,
-        SGPP::base::DataMatrix& trainData, double lambda) :
+        SGPP::base::DataMatrix& trainData, float_t lambda) :
     DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0), grid(grid) {
 
     this->dataset_ = new SGPP::base::DataMatrix(trainData);
@@ -48,7 +48,7 @@ void SystemMatrixLeastSquaresIdentity::mult(SGPP::base::DataVector& alpha, SGPP:
     this->B->multTranspose(temp, result);
     this->completeTimeMultTrans_ += this->myTimer_->stop();
 
-    result.axpy(static_cast<double>(this->instances) * this->lambda_, alpha);
+    result.axpy(static_cast<float_t>(this->instances) * this->lambda_, alpha);
 
 }
 

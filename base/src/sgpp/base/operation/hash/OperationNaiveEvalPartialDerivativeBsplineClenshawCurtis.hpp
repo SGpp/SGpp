@@ -46,8 +46,8 @@ namespace SGPP {
          * @param deriv_dim dimension in which the partial derivative should be taken
          * @return          value of the partial derivative of the linear combination
          */
-        virtual double evalPartialDerivative(DataVector& alpha,
-                                             const std::vector<double>& point,
+        virtual float_t evalPartialDerivative(DataVector& alpha,
+                                             const std::vector<float_t>& point,
                                              size_t deriv_dim);
 
       protected:

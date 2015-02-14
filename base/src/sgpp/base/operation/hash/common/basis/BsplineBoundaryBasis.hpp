@@ -45,11 +45,11 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of boundary B-spline basis function
          */
-        inline double eval(LT l, IT i, double x) {
-          const double hInv = static_cast<double>(static_cast<IT>(1) << l);
+        inline float_t eval(LT l, IT i, float_t x) {
+          const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
-          return bsplineBasis.uniformBSpline(x * hInv - static_cast<double>(i) +
-                                             static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          return bsplineBasis.uniformBSpline(x * hInv - static_cast<float_t>(i) +
+                                             static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
                                              bsplineBasis.getDegree());
         }
 
@@ -59,11 +59,11 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of derivative of boundary B-spline basis function
          */
-        inline double evalDx(LT l, IT i, double x) {
-          const double hInv = static_cast<double>(static_cast<IT>(1) << l);
+        inline float_t evalDx(LT l, IT i, float_t x) {
+          const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
-          return hInv * bsplineBasis.uniformBSplineDx(x * hInv - static_cast<double>(i) +
-                 static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          return hInv * bsplineBasis.uniformBSplineDx(x * hInv - static_cast<float_t>(i) +
+                 static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
                  bsplineBasis.getDegree());
         }
 
@@ -73,11 +73,11 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of 2nd derivative of boundary B-spline basis function
          */
-        inline double evalDxDx(LT l, IT i, double x) {
-          const double hInv = static_cast<double>(static_cast<IT>(1) << l);
+        inline float_t evalDxDx(LT l, IT i, float_t x) {
+          const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
-          return hInv * hInv * bsplineBasis.uniformBSplineDxDx(x * hInv - static_cast<double>(i) +
-                 static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
+          return hInv * hInv * bsplineBasis.uniformBSplineDxDx(x * hInv - static_cast<float_t>(i) +
+                 static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
                  bsplineBasis.getDegree());
         }
 

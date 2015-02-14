@@ -66,10 +66,10 @@ namespace SGPP {
         throw SGPP::base::data_exception("Dimensions do not match!");
       }
 
-      double* data = m_->getPointer();
+      float_t* data = m_->getPointer();
 
       //Standard matrix multiplication:
-      double temp = 0.;
+      float_t temp = 0.;
       size_t acc = 0;
 
       for (size_t i = 0; i < nrows; i++) {

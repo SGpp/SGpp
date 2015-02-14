@@ -20,8 +20,8 @@ namespace SGPP {
     }
 
     void SqrtXPhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      double q = boundingBox->getIntervalWidth(dim);
-      double t = boundingBox->getIntervalOffset(dim);
+      float_t q = boundingBox->getIntervalWidth(dim);
+      float_t t = boundingBox->getIntervalOffset(dim);
 
       bool useBB = false;
 
@@ -30,8 +30,8 @@ namespace SGPP {
       }
 
       // get boundary values
-      double fl = 0.0;
-      double fr = 0.0;
+      float_t fl = 0.0;
+      float_t fr = 0.0;
 
       if (useBB) {
         recBB(source, result, index, dim, fl, fr, q, t);
@@ -40,12 +40,12 @@ namespace SGPP {
       }
     }
 
-    void SqrtXPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr) {
+    void SqrtXPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
-      double fml = 0.0;
-      double fmr = 0.0;
+      float_t fml = 0.0;
+      float_t fmr = 0.0;
 
       SGPP::base::GridStorage::index_type::level_type current_level;
       SGPP::base::GridStorage::index_type::index_type current_index;
@@ -68,23 +68,23 @@ namespace SGPP {
 
       index.get(dim, current_level, current_index);
 
-      double fm = fml + fmr;
+      float_t fm = fml + fmr;
 
-      double alpha_value = source[seq];
+      float_t alpha_value = source[seq];
 
-      double i = static_cast<double>(current_index);
-      double h = (1.0 / static_cast<double>(1 << current_level));
+      float_t i = static_cast<float_t>(current_index);
+      float_t h = (1.0 / static_cast<float_t>(1 << current_level));
 
-      double c = sqrt(i * h + h);
-      double d = sqrt(i * h);
-      double e = sqrt(i * h - h);
+      float_t c = sqrt(i * h + h);
+      float_t d = sqrt(i * h);
+      float_t e = sqrt(i * h - h);
 
-      double hSq = pow(h, 2);
-      double hCu = pow(h, 3);
-      double iSq = pow(i, 2);
-      double iCu = pow(i, 3);
+      float_t hSq = pow(h, 2);
+      float_t hCu = pow(h, 3);
+      float_t iSq = pow(i, 2);
+      float_t iCu = pow(i, 3);
 
-      double flTemp = 2 * c * hCu
+      float_t flTemp = 2 * c * hCu
                       - 4 * d * iCu * hCu
                       - 8 * e * hCu * i
                       + 2 * e * iCu * hCu
@@ -95,7 +95,7 @@ namespace SGPP {
 
       flTemp = (4.0 / 105.0) * (1 / (hSq)) * flTemp;
 
-      double frTemp = 5 * c * hCu
+      float_t frTemp = 5 * c * hCu
                       + 4 * d * iCu * hCu - 7 * d * iSq * hCu
                       - 6 * e * hCu * i
                       - 2 * e * iCu * hCu + 6 * e * iSq * hCu
@@ -112,12 +112,12 @@ namespace SGPP {
       result[seq] = fm;
     }
 
-    void SqrtXPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, double& fl, double& fr, double q, double t) {
+    void SqrtXPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q, float_t t) {
       size_t seq = index.seq();
 
       fl = fr = 0.0;
-      double fml = 0.0;
-      double fmr = 0.0;
+      float_t fml = 0.0;
+      float_t fmr = 0.0;
 
       SGPP::base::GridStorage::index_type::level_type current_level;
       SGPP::base::GridStorage::index_type::index_type current_index;
@@ -140,30 +140,30 @@ namespace SGPP {
 
       index.get(dim, current_level, current_index);
 
-      double fm = fml + fmr;
+      float_t fm = fml + fmr;
 
-      double alpha_value = source[seq];
-      double h = (1.0 / static_cast<double>(1 << current_level));
+      float_t alpha_value = source[seq];
+      float_t h = (1.0 / static_cast<float_t>(1 << current_level));
 
       // transposed operations:
       result[seq] = fm;
 
-      double i = static_cast<double>(current_index);
+      float_t i = static_cast<float_t>(current_index);
 
-      double c = sqrt(i * h * q + t + q * h);
-      double d = sqrt(i * h * q + t);
-      double e = sqrt(i * h * q + t - q * h);
+      float_t c = sqrt(i * h * q + t + q * h);
+      float_t d = sqrt(i * h * q + t);
+      float_t e = sqrt(i * h * q + t - q * h);
 
-      double qSq = pow(q, 2);
-      double qCu = pow(q, 3);
-      double hSq = pow(h, 2);
-      double hCu = pow(h, 3);
-      double tSq = pow(t, 2);
-      double tCu = pow(t, 3);
-      double iSq = pow(i, 2);
-      double iCu = pow(i, 3);
+      float_t qSq = pow(q, 2);
+      float_t qCu = pow(q, 3);
+      float_t hSq = pow(h, 2);
+      float_t hCu = pow(h, 3);
+      float_t tSq = pow(t, 2);
+      float_t tCu = pow(t, 3);
+      float_t iSq = pow(i, 2);
+      float_t iCu = pow(i, 3);
 
-      double flTemp = 2 * c * qCu * hCu - 14 * d * i * hSq * qSq * t
+      float_t flTemp = 2 * c * qCu * hCu - 14 * d * i * hSq * qSq * t
                       + 6 * c * tSq * i * h * q + 6 * c * iSq * hSq * qSq * t
                       + 12 * c * i * hSq * qSq * t
                       + 2 * e * tCu - 4 * d * tCu
@@ -182,7 +182,7 @@ namespace SGPP {
 
       flTemp = (4.0 / 105.0) * (1 / (qSq * hSq)) * flTemp;
 
-      double frTemp = 5 * c * qCu * hCu
+      float_t frTemp = 5 * c * qCu * hCu
                       - 6 * c * tSq * i * h * q
                       - 6 * c * iSq * hSq * qSq * t + 2 * c * i * hSq * qSq * t
                       - 2 * e * tCu + 4 * d * tCu

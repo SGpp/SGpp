@@ -15,19 +15,19 @@ namespace base
 class RefinementFunctor
 {
 public:
-	typedef double value_type;
+	typedef float_t value_type;
 
-	virtual double operator()(SGPP::base::GridStorage* storage, size_t seq) = 0;
-	virtual double start() = 0;	
+	virtual float_t operator()(SGPP::base::GridStorage* storage, size_t seq) = 0;
+	virtual float_t start() = 0;	
 };
 
 class CoarseningFunctor
 {
 public:
-	typedef double value_type;
+	typedef float_t value_type;
 
-	virtual double operator()(SGPP::base::GridStorage* storage, size_t seq) = 0;
-	virtual double start() = 0;	
+	virtual float_t operator()(SGPP::base::GridStorage* storage, size_t seq) = 0;
+	virtual float_t start() = 0;	
 };
 
 class GridGenerator
@@ -69,31 +69,31 @@ public:
 class OperationEval
 {
 public:
-	virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
+	virtual float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
 };
 
 class OperationNaiveEval
 {
 public:
-    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
+    virtual float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point) = 0;
 };
 
 class OperationNaiveEvalGradient
 {
 public:
-    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, SGPP::base::DataVector& gradient) = 0;
+    virtual float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, SGPP::base::DataVector& gradient) = 0;
 };
 
 class OperationNaiveEvalHessian
 {
 public:
-    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, SGPP::base::DataVector& gradient, SGPP::base::DataMatrix& hessian) = 0;
+    virtual float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, SGPP::base::DataVector& gradient, SGPP::base::DataMatrix& hessian) = 0;
 };
 
 class OperationNaiveEvalPartialDerivative
 {
 public:
-    virtual double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, size_t deriv_dim) = 0;
+    virtual float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point, size_t deriv_dim) = 0;
 };
 
 class OperationHierarchisation
@@ -110,7 +110,7 @@ namespace base {
 class OperationQuadrature
 {
 public:
-	virtual double doQuadrature(SGPP::base::DataVector& alpha) = 0;
+	virtual float_t doQuadrature(SGPP::base::DataVector& alpha) = 0;
 };
 
 }

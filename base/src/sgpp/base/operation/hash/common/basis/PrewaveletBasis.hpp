@@ -38,10 +38,10 @@ namespace SGPP {
     class PrewaveletBasis: public Basis<LT, IT> {
       private:
 
-        static const double normal_stamp[];
-        static const double border_stamp[];
+        static const float_t normal_stamp[];
+        static const float_t border_stamp[];
 
-        double inline evalNormalHat(LT level, IT index, double p) {
+        float_t inline evalNormalHat(LT level, IT index, float_t p) {
           return 1.0 - fabs((1 << level) * p - index);
         }
 
@@ -51,7 +51,7 @@ namespace SGPP {
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
          */
-        double eval(LT level, IT index, double p) {
+        float_t eval(LT level, IT index, float_t p) {
           /* A prewavelet is simply the sum of neighboring hat functions with a certain
            * stamp. So we have to figure out, which of the 5 hat functions is the one
            * "hit" by p, modify the index and use the normal hat-function calculation.
@@ -115,11 +115,11 @@ namespace SGPP {
     };
 
     template<class LT, class IT>
-    const double PrewaveletBasis<LT, IT>::normal_stamp[] =
+    const float_t PrewaveletBasis<LT, IT>::normal_stamp[] =
     { 0.1, -0.6, 1.0, -0.6, 0.1 };
 
     template<class LT, class IT>
-    const double PrewaveletBasis<LT, IT>::border_stamp[] =
+    const float_t PrewaveletBasis<LT, IT>::border_stamp[] =
     { 0.9, -0.6, 0.1 };
 
     // default type-def (unsigned int for level and index)

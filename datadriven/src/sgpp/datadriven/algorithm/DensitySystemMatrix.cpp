@@ -18,7 +18,7 @@
 namespace SGPP {
   namespace datadriven {
 
-    DensitySystemMatrix::DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda) {
+    DensitySystemMatrix::DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambda) {
       this->data = &trainData;
       this->lambda = lambda;
 
@@ -49,7 +49,7 @@ namespace SGPP {
       // Bt * 1
       this->B->multTranspose(y, rhs);
       // 1 / 2M * Bt * 1
-      rhs.mult(1. / (double)this->data->getNrows());
+      rhs.mult(1. / (float_t)this->data->getNrows());
     }
 
     DensitySystemMatrix::~DensitySystemMatrix() {

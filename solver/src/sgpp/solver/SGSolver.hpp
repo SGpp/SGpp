@@ -28,9 +28,9 @@ namespace SGPP {
         /// Number of maximum iterations for cg
         size_t nMaxIterations;
         /// residuum
-        double residuum;
+        float_t residuum;
         /// epsilon needed in the, e.g. final error in the iterative solver, or a timestep
-        double myEpsilon;
+        float_t myEpsilon;
 
       public:
         /**
@@ -39,7 +39,7 @@ namespace SGPP {
          * @param nMaximumIterations number of maximum executed iterations
          * @param epsilon the final error in the iterative solver, or the size of one timestep
          */
-        SGSolver(size_t nMaximumIterations, double epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon) {
+        SGSolver(size_t nMaximumIterations, float_t epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon) {
           nIterations = 0;
           residuum = 0.0;
         }
@@ -64,7 +64,7 @@ namespace SGPP {
          *
          * @return the residuum
          */
-        double getResiduum() {
+        float_t getResiduum() {
           return residuum;
         }
 
@@ -82,7 +82,7 @@ namespace SGPP {
          *
          * @param eps the new value of epsilon
          */
-        void setEpsilon(double eps) {
+        void setEpsilon(float_t eps) {
           myEpsilon = eps;
         }
 
@@ -91,7 +91,7 @@ namespace SGPP {
          *
          * @return the epsilon, used in the solver
          */
-        double getEpsilon() {
+        float_t getEpsilon() {
           return myEpsilon;
         }
     };

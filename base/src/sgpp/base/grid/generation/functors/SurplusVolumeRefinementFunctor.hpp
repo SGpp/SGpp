@@ -31,20 +31,20 @@ namespace SGPP {
          * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points), default: 1
          * @param threshold The absolute value of the entries have to be greater or equal than the threshold, default: 0.0
          */
-        SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num = 1, double threshold = 0.0);
+        SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num = 1, float_t threshold = 0.0);
 
         /**
          * Destructor
          */
         virtual ~SurplusVolumeRefinementFunctor();
 
-        virtual double operator()(GridStorage* storage, size_t seq);
+        virtual float_t operator()(GridStorage* storage, size_t seq);
 
-        virtual double start();
+        virtual float_t start();
 
         size_t getRefinementsNum();
 
-        double getRefinementThreshold();
+        float_t getRefinementThreshold();
 
       protected:
         /// pointer to the vector that stores the alpha values
@@ -54,7 +54,7 @@ namespace SGPP {
         size_t refinements_num;
 
         /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
-        double threshold;
+        float_t threshold;
     };
 
   }

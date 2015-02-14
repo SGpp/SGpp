@@ -23,7 +23,7 @@ namespace SGPP {
       samples = new base::DataMatrix(num_samples, num_dims); //output samples
 
       size_t SEARCH_MAX = 100000; //find the approximated maximum of function with 100000 points
-      double maxValue = 0; //the approximated maximum value of function
+      float_t maxValue = 0; //the approximated maximum value of function
 
       //search for (approx.) maximum of function
       base::DataMatrix* tmp = new base::DataMatrix(SEARCH_MAX, num_dims);
@@ -32,19 +32,19 @@ namespace SGPP {
       #pragma omp parallel
       {
 #ifdef _OPENMP
-        unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (omp_get_thread_num() + 1));
+        unsigned int seedp = (unsigned int)(static_cast<float_t>(time(NULL)) * (omp_get_thread_num() + 1));
 #else
-        unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) * (1 + 1));
+        unsigned int seedp = (unsigned int)(static_cast<float_t>(time(NULL)) * (1 + 1));
 #endif
         #pragma omp for
 
         for (size_t i = 0; i < SEARCH_MAX; i++) {
           for (size_t j = 0; j < num_dims; j++)
 #ifdef _WIN32
-            tmp->set(i, j, (double)rand() / RAND_MAX);
+            tmp->set(i, j, (float_t)rand() / RAND_MAX);
 
 #else
-            tmp->set(i, j, (double)rand_r(&seedp) / RAND_MAX);
+            tmp->set(i, j, (float_t)rand_r(&seedp) / RAND_MAX);
 #endif
         }
       }
@@ -66,7 +66,7 @@ namespace SGPP {
         unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
 #endif
         base::DataVector p(num_dims);
-        double fhat = 0.0;
+        float_t fhat = 0.0;
         base::OperationEval* opEval = op_factory::createOperationEval(*grid);
 
         #pragma omp for schedule(dynamic)
@@ -80,10 +80,10 @@ namespace SGPP {
             // pick a random data point "p"
             for (size_t d = 0; d < num_dims; d++)
 #ifdef _WIN32
-              p[d] = static_cast<double>(rand()) / RAND_MAX;
+              p[d] = static_cast<float_t>(rand()) / RAND_MAX;
 
 #else
-              p[d] = static_cast<double>(rand_r(&seedp)) / RAND_MAX;
+              p[d] = static_cast<float_t>(rand_r(&seedp)) / RAND_MAX;
 #endif
 
             // evaluate at this point "p"
@@ -91,10 +91,10 @@ namespace SGPP {
 
 #ifdef _WIN32
 
-            if ((static_cast<double>(rand()) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
+            if ((static_cast<float_t>(rand()) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
 #else
 
-            if ((static_cast<double>(rand_r(&seedp)) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
+            if ((static_cast<float_t>(rand_r(&seedp)) / RAND_MAX * maxValue < fhat) && (fhat > maxValue * 0.01)) {
 #endif
               samples->setRow(i, p);
               break;

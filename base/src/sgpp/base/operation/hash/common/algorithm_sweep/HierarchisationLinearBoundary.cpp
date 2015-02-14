@@ -20,8 +20,8 @@ namespace SGPP {
     }
 
     void HierarchisationLinearBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      double left_boundary;
-      double right_boundary;
+      float_t left_boundary;
+      float_t right_boundary;
       size_t seq;
 
       // left boundary

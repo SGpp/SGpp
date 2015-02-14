@@ -33,17 +33,17 @@ namespace SGPP {
       index_type init_index;
       size_t _seq;
       size_t _seq_temp;
-      double _val = 0.0;
-      double* temp_current = 0;
-      double* temp_old = 0;
+      float_t _val = 0.0;
+      float_t* temp_current = 0;
+      float_t* temp_old = 0;
 
 
       index.get(dim, init_level, init_index);
 
       for (; level > 1; --level) {
         if (level == max_level) {
-          temp_current = new double[1 << level];
-          temp_old = new double[1 << (level + 1)];
+          temp_current = new float_t[1 << level];
+          temp_old = new float_t[1 << (level + 1)];
 
           for (int t = 0; t < (1 << (level + 1)); t++) {
             temp_old[t] = 0;
@@ -63,7 +63,7 @@ namespace SGPP {
         } else {
           delete[] temp_old;
           temp_old = temp_current;
-          temp_current = new double[(1 << level)];
+          temp_current = new float_t[(1 << level)];
 
           for (int t = 2; t < (1 << level); t = t + 2) {
             index.set(dim, level, t - 1);
@@ -83,8 +83,8 @@ namespace SGPP {
         index.set(dim, level, 1);
         _seq = index.seq();
         _val = storage->end(_seq) ? 0.0 : source[_seq];
-        double current_value = _val;
-        double left_value = 0;
+        float_t current_value = _val;
+        float_t left_value = 0;
 
         if (!storage->end(_seq))
           result[_seq] = 0.9 * current_value;

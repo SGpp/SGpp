@@ -184,7 +184,7 @@ namespace SGPP {
          *
          * @return the coordinate in the given dimension
          */
-        double getCoord(size_t d) const;
+        float_t getCoord(size_t d) const;
 
         /**
          * determines the coordinate in a given dimension
@@ -195,7 +195,7 @@ namespace SGPP {
          *
          * @return the coordinate in the given dimension
          */
-        double getCoordBB(size_t d, double q, double t) const;
+        float_t getCoordBB(size_t d, float_t q, float_t t) const;
 
         /**
          * determines the coordinate in a given dimension
@@ -205,7 +205,7 @@ namespace SGPP {
          *
          * @return the coordinate in the given dimension
          */
-        double getCoordStretching(size_t d, Stretching* stretch);
+        float_t getCoordStretching(size_t d, Stretching* stretch);
 
         /**
          * determines if the grid point is an inner grid point

@@ -24,7 +24,7 @@ using namespace SGPP::base;
 using namespace SGPP::pde;
 
 // function to interpolate
-double f(double x0, double x1) {
+float_t f(float_t x0, float_t x1) {
   return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
 }
 

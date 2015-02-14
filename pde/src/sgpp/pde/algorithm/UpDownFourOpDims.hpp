@@ -37,7 +37,7 @@ namespace SGPP {
          * @param storage the grid's SGPP::base::GridStorage object
          * @param coef 4d tensor that contains the constant coefficients of this operation
          */
-        UpDownFourOpDims(SGPP::base::GridStorage* storage, double**** * coef);
+        UpDownFourOpDims(SGPP::base::GridStorage* storage, float_t**** * coef);
 
         /**
          * Constructor
@@ -63,7 +63,7 @@ namespace SGPP {
         /// Pointer to the grid's storage object
         SGPP::base::GridStorage* storage;
         /// Pointer to the coefficients of this bilinear form
-        double**** coefs;
+        float_t**** coefs;
         /// algorithmic dimensions, operator is applied in this dimensions
         const std::vector<size_t> algoDims;
         /// number of algorithmic dimensions

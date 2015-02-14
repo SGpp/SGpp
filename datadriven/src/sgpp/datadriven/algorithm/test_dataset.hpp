@@ -31,16 +31,16 @@ namespace SGPP {
      * @param classes the reference classes
      */
     template<class BASIS>
-    double test_dataset( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
-      typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    float_t test_dataset( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
+      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
-      double correct = 0;
+      float_t correct = 0;
 
       #pragma omp parallel shared(correct)
       {
         size_t size = data.getNrows();
 
-        std::vector<double> point;
+        std::vector<float_t> point;
 
         base::GetAffectedBasisFunctions<BASIS> ga(storage);
 
@@ -49,7 +49,7 @@ namespace SGPP {
         for (size_t i = 0; i < size; i++) {
 
           IndexValVector vec;
-          double result = 0;
+          float_t result = 0;
 
           data.getRow(i, point);
 
@@ -81,15 +81,15 @@ namespace SGPP {
      * @param refValues the function values at the evaluation points
      */
     template<class BASIS>
-    double test_dataset_mse( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
-      typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    float_t test_dataset_mse( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
+      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
       base::DataVector result(refValues.getSize());
-      double mse = 0;
+      float_t mse = 0;
 
       #pragma omp parallel shared(result)
       {
         size_t size = data.getNrows();
-        std::vector<double> point;
+        std::vector<float_t> point;
         base::GetAffectedBasisFunctions<BASIS> ga(storage);
 
         #pragma omp for schedule(static)
@@ -97,7 +97,7 @@ namespace SGPP {
         for (size_t i = 0; i < size; i++) {
 
           IndexValVector vec;
-          double res = 0;
+          float_t res = 0;
 
           data.getRow(i, point);
 
@@ -114,7 +114,7 @@ namespace SGPP {
       result.sub(refValues);
       result.sqr();
       mse = result.sum();
-      mse /= static_cast<double>(result.getSize());
+      mse /= static_cast<float_t>(result.getSize());
 
       return mse;
     }
@@ -131,20 +131,20 @@ namespace SGPP {
      * @param threshold threshold which decides if an instance belongs a given class
      */
     template<class BASIS>
-    double test_datasetWithCharacteristicNumber( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, double threshold) {
-      typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    float_t test_datasetWithCharacteristicNumber( base::GridStorage* storage, BASIS& basis, base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes, base::DataVector& charaNumbers, float_t threshold) {
+      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
-      double correct = 0;
-      double tp = 0;
-      double tn = 0;
-      double fp = 0;
-      double fn = 0;
+      float_t correct = 0;
+      float_t tp = 0;
+      float_t tn = 0;
+      float_t fp = 0;
+      float_t fn = 0;
 
       #pragma omp parallel shared(correct, tp, tn, fp, fn)
       {
         size_t size = data.getNrows();
 
-        std::vector<double> point;
+        std::vector<float_t> point;
 
         base::GetAffectedBasisFunctions<BASIS> ga(storage);
 
@@ -153,7 +153,7 @@ namespace SGPP {
         for (size_t i = 0; i < size; i++) {
 
           IndexValVector vec;
-          double result = 0;
+          float_t result = 0;
 
           data.getRow(i, point);
 
@@ -225,10 +225,10 @@ namespace SGPP {
       for (size_t i = 0; i < num_points; i++) {
         test_datasetWithCharacteristicNumber( storage, basis, alpha, data, classes, charNum, thresholds.get(i));
 
-        double tp = charNum.get(0);
-        double tn = charNum.get(1);
-        double fp = charNum.get(2);
-        double fn = charNum.get(3);
+        float_t tp = charNum.get(0);
+        float_t tn = charNum.get(1);
+        float_t fp = charNum.get(2);
+        float_t fn = charNum.get(3);
 
         // 1-spec.
         ROC_curve.set(i, 0, (fp / (fp + tn)));

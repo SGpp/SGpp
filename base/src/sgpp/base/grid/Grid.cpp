@@ -307,7 +307,7 @@ namespace SGPP {
 
     OperationEval* Grid::evalOp(NULL);
 
-    double Grid::eval(DataVector& alpha, DataVector& point) {
+    float_t Grid::eval(DataVector& alpha, DataVector& point) {
       if (this->evalOp == NULL) this->evalOp = SGPP::op_factory::createOperationEval(*this);
 
       return this->evalOp->eval(alpha, point);

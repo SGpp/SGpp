@@ -26,16 +26,16 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of boundary wavelet basis function
          */
-        inline double eval(LT l, IT i, double x) {
-          const double hinv = static_cast<double>(1 << l);
-          const double t = x * hinv - static_cast<double>(i);
+        inline float_t eval(LT l, IT i, float_t x) {
+          const float_t hinv = static_cast<float_t>(1 << l);
+          const float_t t = x * hinv - static_cast<float_t>(i);
 
           if ((t >= 2.0) || (t <= -2.0)) {
             // out of support (cut-off)
             return 0.0;
           }
 
-          const double t2 = t * t;
+          const float_t t2 = t * t;
           return (1.0 - t2) * std::exp(-t2);
         }
 
@@ -45,16 +45,16 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of derivative of boundary wavelet basis function
          */
-        inline double evalDx(LT l, IT i, double x) {
-          const double hinv = static_cast<double>(1 << l);
-          const double t = x * hinv - static_cast<double>(i);
+        inline float_t evalDx(LT l, IT i, float_t x) {
+          const float_t hinv = static_cast<float_t>(1 << l);
+          const float_t t = x * hinv - static_cast<float_t>(i);
 
           if ((t >= 2.0) || (t <= -2.0)) {
             // out of support (cut-off)
             return 0.0;
           }
 
-          const double t2 = t * t;
+          const float_t t2 = t * t;
           return 2.0 * t * (t2 - 2.0) * std::exp(-t2) * hinv;
         }
 
@@ -64,16 +64,16 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of 2nd derivative of boundary wavelet basis function
          */
-        inline double evalDxDx(LT l, IT i, double x) {
-          const double hinv = static_cast<double>(1 << l);
-          const double t = x * hinv - static_cast<double>(i);
+        inline float_t evalDxDx(LT l, IT i, float_t x) {
+          const float_t hinv = static_cast<float_t>(1 << l);
+          const float_t t = x * hinv - static_cast<float_t>(i);
 
           if ((t >= 2.0) || (t <= -2.0)) {
             // out of support (cut-off)
             return 0.0;
           }
 
-          const double t2 = t * t;
+          const float_t t2 = t * t;
           return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) * std::exp(-t2) * hinv * hinv;
         }
     };

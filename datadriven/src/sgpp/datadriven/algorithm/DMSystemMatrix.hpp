@@ -43,7 +43,7 @@ namespace SGPP {
          * @param C the regression functional
          * @param lambda the lambda, the regression parameter
          */
-        DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, double lambda);
+        DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambda);
 
         /**
          * Std-Destructor

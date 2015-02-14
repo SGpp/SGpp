@@ -56,7 +56,7 @@ namespace std
 
   %enddef  
      
-  specialize_std_complex(double);
+  specialize_std_complex(float_t);
   specialize_std_complex(float);
 }
   

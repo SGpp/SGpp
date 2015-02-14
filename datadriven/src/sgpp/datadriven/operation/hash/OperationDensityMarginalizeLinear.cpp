@@ -84,7 +84,7 @@ namespace SGPP {
          * type of basis is used!
          */
         //update corresponding coefficient
-        malpha[mseqNr] += alpha[seqNr] * pow(2.0, -static_cast<double>(mdimLevel));
+        malpha[mseqNr] += alpha[seqNr] * pow(2.0, -static_cast<float_t>(mdimLevel));
       }
     }
   }

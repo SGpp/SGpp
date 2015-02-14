@@ -66,13 +66,13 @@ namespace SGPP {
       /// number of refinements
       size_t numRefinements_;
       /// refinement threshold for surpluses
-      double threshold_;
+      float_t threshold_;
       /// refinement type: false: classic, true: maxLevel
       bool maxLevelType_;
       /// max. number of points to be refined
       size_t noPoints_;
       /// max. percent of points to be refined
-      double percent_;
+      float_t percent_;
     };
 
     /**
@@ -374,7 +374,7 @@ namespace SGPP {
          * @param alpha DataVector alpha vector of the grid
          * @param point DataVector point where the function should be evaluated
          */
-        double eval(DataVector& alpha, DataVector& point);
+        float_t eval(DataVector& alpha, DataVector& point);
 
         /**
          * Insert one point to the grid

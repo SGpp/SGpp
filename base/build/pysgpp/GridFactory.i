@@ -122,7 +122,7 @@ public:
 	virtual const SBasis& getBasis() = 0;
 	virtual void serialize(std::string& ostr);
 	void refine(SGPP::base::DataVector* vector, int num);
-	double eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
+	float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
 	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
 	int getSize();
 	

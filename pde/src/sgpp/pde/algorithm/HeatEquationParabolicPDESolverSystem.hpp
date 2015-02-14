@@ -23,7 +23,7 @@ namespace SGPP {
     class HeatEquationParabolicPDESolverSystem : public OperationParabolicPDESolverSystemDirichlet {
       private:
         /// the heat coefficient
-        double a;
+        float_t a;
         /// the Laplace Operation (Stiffness Matrix), on boundary grid
         SGPP::base::OperationMatrix* OpLaplaceBound;
         /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
@@ -52,7 +52,7 @@ namespace SGPP {
          * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
          *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
          */
-        HeatEquationParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, double a, double TimestepSize, std::string OperationMode = "ExEul");
+        HeatEquationParabolicPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, float_t a, float_t TimestepSize, std::string OperationMode = "ExEul");
 
         /**
          * Std-Destructor

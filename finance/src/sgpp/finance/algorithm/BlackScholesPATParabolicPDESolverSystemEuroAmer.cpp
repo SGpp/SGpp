@@ -19,10 +19,10 @@ namespace SGPP {
   namespace finance {
 
     BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-        SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize, std::string OperationMode,
-        double dStrike, std::string option_type, double r,
-        bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
+        SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, float_t TimestepSize, std::string OperationMode,
+        float_t dStrike, std::string option_type, float_t r,
+        bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
       this->BoundGrid = &SparseGrid;
       this->alpha_complete = &alpha;
 
@@ -64,7 +64,7 @@ namespace SGPP {
         }
       }
 
-      // test if there are double algorithmic dimensions
+      // test if there are float_t algorithmic dimensions
       std::vector<size_t> tempAlgoDims(this->BSalgoDims);
 
       for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
@@ -77,7 +77,7 @@ namespace SGPP {
         }
 
         if (dimCount > 1) {
-          throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
+          throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one float_td algorithmic dimension!");
         }
       }
 
@@ -189,21 +189,21 @@ namespace SGPP {
 
       // check if we are doing an American put -> handle early exercise
       if (this->option_type == "std_amer_put") {
-        double current_time = static_cast<double>(this->nExecTimesteps) * this->TimestepSize;
+        float_t current_time = static_cast<float_t>(this->nExecTimesteps) * this->TimestepSize;
 
         SGPP::base::OperationHierarchisation* myHierarchisation = SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
         myHierarchisation->doDehierarchisation(*this->alpha_complete);
         size_t dim = this->BoundGrid->getStorage()->dim();
         SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
 
-        double* coords_val = new double[dim];
+        float_t* coords_val = new float_t[dim];
 
         for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
-          std::vector<double> eval_point_coord;
+          std::vector<float_t> eval_point_coord;
           std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
           std::stringstream coordsStream(coords);
 
-          double tmp;
+          float_t tmp;
 
           // read coordinates
           for (size_t j = 0; j < dim; j++) {
@@ -215,7 +215,7 @@ namespace SGPP {
           tmp = 0.0;
 
           for (size_t j = 0; j < dim; j++) {
-            double inner_tmp = 0.0;
+            float_t inner_tmp = 0.0;
 
             for (size_t l = 0; l < dim; l++) {
               inner_tmp += this->eigenvecs->get(j, l) * (coords_val[l] - (current_time * this->mu_hat->get(l)));
@@ -224,10 +224,10 @@ namespace SGPP {
             tmp += exp(inner_tmp);
           }
 
-          double payoff = std::max<double>(this->dStrike - (tmp / static_cast<double>(dim)), 0.0);
-          double discounted_value = ((*this->alpha_complete)[i]) * exp(((-1.0) * (this->r * this->TimestepSize)));
+          float_t payoff = std::max<float_t>(this->dStrike - (tmp / static_cast<float_t>(dim)), 0.0);
+          float_t discounted_value = ((*this->alpha_complete)[i]) * exp(((-1.0) * (this->r * this->TimestepSize)));
 
-          (*this->alpha_complete)[i] = std::max<double>(payoff, discounted_value);
+          (*this->alpha_complete)[i] = std::max<float_t>(payoff, discounted_value);
         }
 
         delete[] coords_val;

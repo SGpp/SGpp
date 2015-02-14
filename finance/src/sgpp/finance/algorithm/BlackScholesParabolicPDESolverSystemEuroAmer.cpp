@@ -19,10 +19,10 @@ namespace SGPP {
   namespace finance {
 
     BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode,
-        double dStrike, std::string option_type,
-        bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
-        int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type xLevel) {
+        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize, std::string OperationMode,
+        float_t dStrike, std::string option_type,
+        bool bLogTransform, bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode,
+        int numCoarsenPoints, float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type xLevel) {
       this->BoundGrid = &SparseGrid;
       this->alpha_complete = &alpha;
 
@@ -67,7 +67,7 @@ namespace SGPP {
         }
       }
 
-      // test if there are double algorithmic dimensions
+      // test if there are float_t algorithmic dimensions
       std::vector<size_t> tempAlgoDims(this->BSalgoDims);
 
       for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
@@ -80,7 +80,7 @@ namespace SGPP {
         }
 
         if (dimCount > 1) {
-          throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled algorithmic dimension!");
+          throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropean::BlackScholesParabolicPDESolverSystemEuropean : There is minimum one float_td algorithmic dimension!");
         }
       }
 
@@ -148,12 +148,12 @@ namespace SGPP {
 
       for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
         if (bLogTransform == true) {
-          double interval_width = exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
-          double hedge_offset = (interval_width - (interval_width * HEDGE_WIDTH_PERCENT)) / 2.0;
+          float_t interval_width = exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
+          float_t hedge_offset = (interval_width - (interval_width * HEDGE_WIDTH_PERCENT)) / 2.0;
           myBoundaries[d].leftBoundary = exp(grid_bb->getBoundary(d).leftBoundary) + hedge_offset;
           myBoundaries[d].rightBoundary = exp(grid_bb->getBoundary(d).rightBoundary) - hedge_offset;
         } else {
-          double hedge_offset = (grid_bb->getIntervalWidth(d) - (grid_bb->getIntervalWidth(d) * HEDGE_WIDTH_PERCENT)) / 2.0;
+          float_t hedge_offset = (grid_bb->getIntervalWidth(d) - (grid_bb->getIntervalWidth(d) * HEDGE_WIDTH_PERCENT)) / 2.0;
           myBoundaries[d].leftBoundary = grid_bb->getBoundary(d).leftBoundary + hedge_offset;
           myBoundaries[d].rightBoundary = grid_bb->getBoundary(d).rightBoundary - hedge_offset;
         }
@@ -289,13 +289,13 @@ namespace SGPP {
         size_t dim = this->BoundGrid->getStorage()->dim();
         SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
 
-        double* dblFuncValues = new double[dim];
+        float_t* dblFuncValues = new float_t[dim];
 
         for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
           std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
           std::stringstream coordsStream(coords);
 
-          double tmp;
+          float_t tmp;
 
           // read coordinates
           for (size_t j = 0; j < dim; j++) {
@@ -316,8 +316,8 @@ namespace SGPP {
             }
           }
 
-          //      (*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0))*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize))));
-          (*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike - ((tmp / static_cast<double>(dim))), 0.0)));
+          //      (*this->alpha_complete)[i] = std::max<float_t>((*this->alpha_complete)[i], (std::max<float_t>(this->dStrike-((tmp/static_cast<float_t>(dim))), 0.0))*exp(((-1.0)*(this->r*static_cast<float_t>(this->nExecTimesteps)*this->TimestepSize))));
+          (*this->alpha_complete)[i] = std::max<float_t>((*this->alpha_complete)[i], (std::max<float_t>(this->dStrike - ((tmp / static_cast<float_t>(dim))), 0.0)));
         }
 
         delete[] dblFuncValues;
@@ -418,7 +418,7 @@ namespace SGPP {
 
     void BlackScholesParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients() {
       size_t dim = this->BSalgoDims.size();
-      double covar_sum = 0.0;
+      float_t covar_sum = 0.0;
 
       for (size_t i = 0; i < dim; i++) {
         covar_sum = 0.0;

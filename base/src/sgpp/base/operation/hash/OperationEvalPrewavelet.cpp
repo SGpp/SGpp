@@ -16,9 +16,9 @@
 namespace SGPP {
   namespace base {
 
-    double OperationEvalPrewavelet::eval(DataVector& alpha,
-                                         std::vector<double>& point) {
-      typedef std::vector<std::pair<size_t, double> > IndexValVector;
+    float_t OperationEvalPrewavelet::eval(DataVector& alpha,
+                                         std::vector<float_t>& point) {
+      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
       IndexValVector vec;
       PrewaveletBasis<unsigned int, unsigned int> base;
@@ -27,7 +27,7 @@ namespace SGPP {
 
       ga(base, point, vec);
 
-      double result = 0.0;
+      float_t result = 0.0;
 
       for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
         result += iter->second * alpha[iter->first];
@@ -36,16 +36,16 @@ namespace SGPP {
       return result;
     }
 
-    double OperationEvalPrewavelet::test(DataVector& alpha, DataVector& data,
+    float_t OperationEvalPrewavelet::test(DataVector& alpha, DataVector& data,
                                          DataVector& classes) {
       return 0;
     }
 
-    double OperationEvalPrewavelet::integrate(DataVector& alpha) {
-      double result = 0.0;
+    float_t OperationEvalPrewavelet::integrate(DataVector& alpha) {
+      float_t result = 0.0;
 
       for (size_t i = 0; i < storage->size(); i++) {
-        double temp_result = 1;
+        float_t temp_result = 1;
 
         for (size_t d = 0; d < storage->dim(); d++) {
           GridStorage::index_type::level_type level;
