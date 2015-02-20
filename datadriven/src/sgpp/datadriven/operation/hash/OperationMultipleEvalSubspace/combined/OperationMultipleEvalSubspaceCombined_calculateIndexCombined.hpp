@@ -3,9 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_GLOBALDEF_HPP_
-#include <sgpp/globaldef.h>
-#endif
+#include <sgpp/globaldef.hpp>
 
 static inline void calculateIndexCombined(size_t dim, size_t nextIterationToRecalc,
 		const SGPP::float_t * const (&dataTuplePtr)[4], std::vector<uint32_t> &hInversePtr, uint32_t *(&intermediates)[4],
