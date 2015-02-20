@@ -160,7 +160,7 @@ class TestDataVector(unittest.TestCase):
             # if numpy not installed, ignore this test
             return
         
-        x = DataVector([1.0,2.0,3.0],3)
+        x = DataVector([1.0,2.0,3.0])
         y = array([1,2,3])
         a = x.array()
         
