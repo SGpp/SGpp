@@ -19,15 +19,19 @@ namespace base {
 	//this refinement algorithm uses the predictive refinement indicator.
 	//dynamic casting is used to maintain the signature of the algorithm, but still be able to use the
 	//predictive refinement indicator with it.
-	PredictiveRefinementIndicator* errorIndicator = dynamic_cast<PredictiveRefinementIndicator*>(functor);
+	//unused
+//	 PredictiveRefinementIndicator* errorIndicator = dynamic_cast<PredictiveRefinementIndicator*>(functor);
 
-	size_t min_idx = 0;
+	 //unused
+//	size_t min_idx = 0;
 
 	// max value equals min value
-	RefinementFunctor::value_type max_value = max_values[min_idx];
+	//unused
+//	RefinementFunctor::value_type max_value = max_values[min_idx];
 
 	index_type index;
-	GridStorage::grid_map_iterator end_iter = storage->end();
+	//unused
+//	GridStorage::grid_map_iterator end_iter = storage->end();
 
 	// TODO Valeriy: find less intrusive mechanism to handle the error contribution
 //	// start iterating over whole grid

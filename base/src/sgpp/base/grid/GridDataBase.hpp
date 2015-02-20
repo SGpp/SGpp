@@ -45,7 +45,8 @@ namespace SGPP {
         typedef std::tr1::unordered_map<index_pointer, float_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
 #endif
 */
-        typedef HashGridStorage::grid_map grid_map;
+//        typedef HashGridStorage::grid_map grid_map;
+        typedef std::unordered_map<index_pointer, float_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor > grid_map;
 
         // the hash_map
         grid_map _map;
