@@ -16,7 +16,8 @@ namespace SGPP {
   namespace optimization {
 
     /**
-     * Hierarchisation operation for wavelet basis functions on Boundary grids.
+     * Hierarchisation operation for wavelet basis functions on
+     * Boundary grids.
      */
     class OperationMultipleHierarchisationWaveletBoundary :
       public OperationMultipleHierarchisation {
@@ -26,7 +27,8 @@ namespace SGPP {
          *
          * @param grid      grid
          */
-        OperationMultipleHierarchisationWaveletBoundary(base::WaveletTruncatedBoundaryGrid& grid) :
+        OperationMultipleHierarchisationWaveletBoundary(
+            base::WaveletTruncatedBoundaryGrid& grid) :
           grid(grid) {
         }
 
@@ -37,16 +39,20 @@ namespace SGPP {
         }
 
         /**
-         * @param[in,out] nodeValues    before: vector of function values at the grid points,
-         *                              after: vector of hierarchical coefficients
+         * @param[in,out] nodeValues before: vector of function values at
+         *                           the grid points,
+         *                           after: vector of hierarchical coefficients
          */
-        virtual void doHierarchisation(std::vector<base::DataVector*> nodeValues);
+        virtual void doHierarchisation(
+            std::vector<base::DataVector*> nodeValues);
 
         /**
-         * @param[in,out] alpha         before: vector of hierarchical coefficients,
-         *                              after: vector of function values at the grid points
+         * @param[in,out] alpha before: vector of hierarchical coefficients,
+         *                      after: vector of function values at
+         *                      the grid points
          */
-        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha);
+        virtual void doDehierarchisation(
+            std::vector<base::DataVector*> alpha);
 
       protected:
         /// storage of the sparse grid
@@ -56,4 +62,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONWAVELETBOUNDARY_HPP */

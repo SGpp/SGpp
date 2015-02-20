@@ -27,20 +27,23 @@ namespace SGPP {
            * Constructor.
            * By default, Nelder-Mead is used as optimization algorithm.
            *
-           * @param f                     objective function
-           * @param maxFcnEvalCount       maximal number of function evaluations
-           * @param populationSize       number of individual points (default: \f$\min(10d, 100)\f$)
+           * @param f               objective function
+           * @param maxFcnEvalCount maximal number of function evaluations
+           * @param populationSize  number of individual points
+           *                        (default: \f$\min(10d, 100)\f$)
            */
-          RandomSearch(function::Objective& f,
+          RandomSearch(ObjectiveFunction& f,
                        size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                        size_t populationSize = 0);
 
           /**
            * Constructor with custom optimization algorithm.
            *
-           * @param optimizer             optimization algorithm and objective function
-           * @param maxFcnEvalCount       maximal number of function evaluations
-           * @param populationSize        number of individual points (default: \f$\min(10d, 100)\f$)
+           * @param optimizer        optimization algorithm and
+           *                         objective function
+           * @param maxFcnEvalCount  maximal number of function evaluations
+           * @param populationSize   number of individual points
+           *                         (default: \f$\min(10d, 100)\f$)
            */
           RandomSearch(Optimizer& optimizer,
                        size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
@@ -49,7 +52,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(Optimizer*& clone);
+          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @param[out] xOpt optimal point
@@ -87,4 +90,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_RANDOMSEARCH_HPP */

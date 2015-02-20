@@ -9,22 +9,23 @@
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalBsplineBoundary.hpp>
-#include <sgpp/optimization/sle/system/Hierarchisation.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
 namespace SGPP {
   namespace optimization {
 
     void OperationMultipleHierarchisationBsplineBoundary::doHierarchisation(
       std::vector<base::DataVector*> nodeValues) {
-      sle::system::Hierarchisation system(grid);
-      sle::solver::Auto solver;
-      std::vector<std::vector<float_t> > B;
-      std::vector<std::vector<float_t> > X;
+      HierarchisationSLE system(grid);
+      sle_solver::Auto solver;
+      std::vector<std::vector<float_t>> B;
+      std::vector<std::vector<float_t>> X;
 
       for (size_t i = 0; i < nodeValues.size(); i++) {
-        B.push_back(std::vector<float_t>(nodeValues[i]->getPointer(),
-                                        nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
+        B.push_back(std::vector<float_t>(
+            nodeValues[i]->getPointer(),
+            nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
       }
 
       if (solver.solve(system, B, X)) {
@@ -39,7 +40,8 @@ namespace SGPP {
       std::vector<base::DataVector*> alpha) {
       base::GridStorage* storage = grid.getStorage();
       const size_t d = storage->dim();
-      base::OperationNaiveEvalBsplineBoundary op_eval(storage, grid.getDegree());
+      base::OperationNaiveEvalBsplineBoundary op_eval(storage,
+                                                      grid.getDegree());
       std::vector<float_t> nodeValuesVector(storage->size(), 0.0);
       std::vector<float_t> x(d, 0.0);
 
@@ -54,7 +56,8 @@ namespace SGPP {
           nodeValuesVector[j] = op_eval.eval(*alpha[i], x);
         }
 
-        std::copy(nodeValuesVector.begin(), nodeValuesVector.begin() + alpha[i]->getSize(),
+        std::copy(nodeValuesVector.begin(),
+                  nodeValuesVector.begin() + alpha[i]->getSize(),
                   alpha[i]->getPointer());
       }
     }

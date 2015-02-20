@@ -15,15 +15,18 @@ namespace SGPP {
   namespace op_factory {
 
     /**
-     * Creates a OperationMultipleHierarchisation for the given SGPP::optimization grid .
+     * Creates a OperationMultipleHierarchisation for the given
+     * SGPP::optimization grid.
      * Don't forget to delete the object after use.
      *
      * @param grid  sparse grid
-     * @return      pointer to a OperationMultipleHierarchisation object for the grid
+     * @return      pointer to a OperationMultipleHierarchisation object
+     *              for the grid
      */
-    optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchisation(base::Grid& grid);
+    optimization::OperationMultipleHierarchisation*
+    createOperationMultipleHierarchisation(base::Grid& grid);
 
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPERATION_OPERATIONOPFACTORY_HPP */

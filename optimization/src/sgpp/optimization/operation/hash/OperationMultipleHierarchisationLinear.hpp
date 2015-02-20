@@ -16,7 +16,8 @@ namespace SGPP {
   namespace optimization {
 
     /**
-     * Hierarchisation operation for linear basis functions on Noboundary grids.
+     * Hierarchisation operation for linear basis functions on
+     * Noboundary grids.
      */
     class OperationMultipleHierarchisationLinear :
       public OperationMultipleHierarchisation {
@@ -26,7 +27,8 @@ namespace SGPP {
          *
          * @param grid      grid
          */
-        OperationMultipleHierarchisationLinear(base::LinearGrid& grid) : grid(grid) {
+        OperationMultipleHierarchisationLinear(base::LinearGrid& grid) :
+          grid(grid) {
         }
 
         /**
@@ -36,16 +38,20 @@ namespace SGPP {
         }
 
         /**
-         * @param[in,out] nodeValues    before: vector of function values at the grid points,
-         *                              after: vector of hierarchical coefficients
+         * @param[in,out] nodeValues before: vector of function values at
+         *                           the grid points,
+         *                           after: vector of hierarchical coefficients
          */
-        virtual void doHierarchisation(std::vector<base::DataVector*> nodeValues);
+        virtual void doHierarchisation(
+          std::vector<base::DataVector*> nodeValues);
 
         /**
-         * @param[in,out] alpha         before: vector of hierarchical coefficients,
-         *                              after: vector of function values at the grid points
+         * @param[in,out] alpha before: vector of hierarchical coefficients,
+         *                      after: vector of function values at
+         *                      the grid points
          */
-        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha);
+        virtual void doDehierarchisation(
+          std::vector<base::DataVector*> alpha);
 
       protected:
         /// storage of the sparse grid
@@ -55,4 +61,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONLINEAR_HPP */

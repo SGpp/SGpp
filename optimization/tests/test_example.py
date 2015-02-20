@@ -49,7 +49,7 @@ class TestExample(unittest.TestCase):
             op_hier.doHierarchisation(alpha)
             
             # create interpolant, gradient and Hessian
-            ft = pysgpp.OptInterpolant(d, grid, alpha)
+            ft = pysgpp.OptInterpolantFunction(d, grid, alpha)
             ft_gradient = pysgpp.OptInterpolantGradient(d, grid, alpha)
             ft_hessian = pysgpp.OptInterpolantHessian(d, grid, alpha)
             

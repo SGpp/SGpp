@@ -10,8 +10,8 @@
 
 #include <sgpp/optimization/optimizer/Optimizer.hpp>
 #include <sgpp/optimization/function/ObjectiveHessian.hpp>
-#include <sgpp/optimization/sle/solver/Solver.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
+#include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -24,8 +24,8 @@ namespace SGPP {
        * Gradient-based nonlinear conjugate gradient method.
        *
        * The method is restarted with the steepest descent direction
-       * if the inner product of negated gradient and search direction is not big enough
-       * (criterion depending on three parameters).
+       * if the inner product of negated gradient and search direction is
+       * not big enough (criterion depending on three parameters).
        */
       class Newton : public Optimizer {
         public:
@@ -46,7 +46,8 @@ namespace SGPP {
 
           /**
            * Constructor.
-           * By default, the BiCGStab method is used to solve the linear systems.
+           * By default, the BiCGStab method is used to solve the
+           * linear systems.
            *
            * @param f                 objective function
            * @param fHessian          objective function Hessian
@@ -59,8 +60,8 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          Newton(const function::Objective& f,
-                 const function::ObjectiveHessian& fHessian,
+          Newton(const ObjectiveFunction& f,
+                 const ObjectiveHessian& fHessian,
                  size_t maxItCount = DEFAULT_N,
                  float_t beta = DEFAULT_BETA,
                  float_t gamma = DEFAULT_GAMMA,
@@ -84,11 +85,12 @@ namespace SGPP {
            * @param alpha1            steepest descent restart parameter 1
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
-           * @param sleSolver         reference to linear solver for solving the linear systems
+           * @param sleSolver         reference to linear solver for solving
+           *                          the linear systems
            *                          (Hessian as coefficient matrix)
            */
-          Newton(const function::Objective& f,
-                 const function::ObjectiveHessian& fHessian,
+          Newton(const ObjectiveFunction& f,
+                 const ObjectiveHessian& fHessian,
                  size_t maxItCount,
                  float_t beta,
                  float_t gamma,
@@ -97,7 +99,7 @@ namespace SGPP {
                  float_t alpha1,
                  float_t alpha2,
                  float_t p,
-                 const sle::solver::Solver& sleSolver);
+                 const sle_solver::SLESolver& sleSolver);
 
           /**
            * @param[out] xOpt optimal point
@@ -108,12 +110,12 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(Optimizer*& clone);
+          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return objective function Hessian
            */
-          function::ObjectiveHessian& getObjectiveHessian() const;
+          ObjectiveHessian& getObjectiveHessian() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -187,7 +189,7 @@ namespace SGPP {
 
         protected:
           /// objective function Hessian
-          std::unique_ptr<function::ObjectiveHessian> fHessian;
+          std::unique_ptr<ObjectiveHessian> fHessian;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)
@@ -203,9 +205,9 @@ namespace SGPP {
           /// steepest descent restart exponent
           float_t p;
           /// default linear solver
-          const sle::solver::BiCGStab defaultSleSolver;
+          const sle_solver::BiCGStab defaultSleSolver;
           /// linear solver
-          const sle::solver::Solver& sleSolver;
+          const sle_solver::SLESolver& sleSolver;
 
           /**
            * Internal function for initializing the member variables.
@@ -219,8 +221,9 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          void initialize(const function::ObjectiveHessian& fHessian,
-                          float_t beta, float_t gamma, float_t tolerance, float_t epsilon,
+          void initialize(const ObjectiveHessian& fHessian,
+                          float_t beta, float_t gamma, float_t tolerance,
+                          float_t epsilon,
                           float_t alpha1, float_t alpha2, float_t p);
       };
 
@@ -228,4 +231,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_NEWTON_HPP */

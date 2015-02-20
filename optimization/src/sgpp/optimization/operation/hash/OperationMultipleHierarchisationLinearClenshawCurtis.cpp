@@ -9,18 +9,18 @@
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalLinearClenshawCurtis.hpp>
-#include <sgpp/optimization/sle/system/Hierarchisation.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
 namespace SGPP {
 namespace optimization {
 
 void OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
     std::vector<base::DataVector*> nodeValues) {
-  sle::system::Hierarchisation system(grid);
-  sle::solver::Auto solver;
-  std::vector<std::vector<float_t> > B;
-  std::vector<std::vector<float_t> > X;
+  HierarchisationSLE system(grid);
+  sle_solver::Auto solver;
+  std::vector<std::vector<float_t>> B;
+  std::vector<std::vector<float_t>> X;
 
   for (size_t i = 0; i < nodeValues.size(); i++) {
     B.push_back(

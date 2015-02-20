@@ -8,18 +8,18 @@
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
 
-class TitleFunction : public SGPP::optimization::function::Objective {
+class TitleFunction : public SGPP::optimization::ObjectiveFunction {
   public:
-    TitleFunction() : Objective(2) {
+    TitleFunction() : ObjectiveFunction(2) {
     }
 
     SGPP::float_t eval(const std::vector<SGPP::float_t>& x) {
       // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
-      return std::sin(8 * x[0]) + std::sin(7 * x[1]);
+      return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
     }
 
-    virtual void clone(Objective*& clone) const {
-      clone = new TitleFunction(*this);
+    virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
+      clone = std::unique_ptr<ObjectiveFunction>(new TitleFunction(*this));
     }
 };
 
@@ -33,7 +33,7 @@ int main(int argc, const char* argv[]) {
   (void)argv;
 
   std::cout << "SGPP::optimization example program started.\n\n";
-  SGPP::optimization::tools::printer.setVerbosity(2);
+  SGPP::optimization::printer.setVerbosity(2);
 
   TitleFunction f;
   const size_t d = 2;
@@ -42,11 +42,12 @@ int main(int argc, const char* argv[]) {
   const SGPP::float_t alpha = 0.95;
 
   SGPP::base::ModBsplineGrid grid(d, p);
-  SGPP::optimization::gridgen::IterativeGridGeneratorRitterNovak gridGen(f, grid, N, alpha);
+  SGPP::optimization::IterativeGridGeneratorRitterNovak gridGen(
+    f, grid, N, alpha);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // GRID GENERATION
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   printLine();
   std::cout << "Generating grid...\n\n";
@@ -56,21 +57,22 @@ int main(int argc, const char* argv[]) {
     return 1;
   }
 
-  //SGPP::optimization::tools::printer.printGridToFile("data/grid.dat", grid_gen);
+  //SGPP::optimization::printer.printGridToFile(
+  //    "data/grid.dat", grid_gen);
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // HIERARCHISATION
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   printLine();
   std::cout << "Hierarchising...\n\n";
   std::vector<SGPP::float_t> coeffs;
-  SGPP::optimization::sle::system::Hierarchisation hierSystem(grid);
-  SGPP::optimization::sle::solver::Auto sleSolver;
-  //SGPP::optimization::tools::printer.printSLE(hier_system);
+  SGPP::optimization::HierarchisationSLE hierSLE(grid);
+  SGPP::optimization::sle_solver::Auto sleSolver;
+  //SGPP::optimization::printer.printSLE(hier_system);
 
   // solve linear system
-  if (!sleSolver.solve(hierSystem, gridGen.getFunctionValues(), coeffs)) {
+  if (!sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs)) {
     std::cout << "Solving failed, exiting.\n";
     return 1;
   }
@@ -78,14 +80,15 @@ int main(int argc, const char* argv[]) {
   // convert std::vector to SGPP::base::DataVector
   SGPP::base::DataVector coeffsDV(&coeffs[0], coeffs.size());
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // OPTIMIZATION OF THE SMOOTH INTERPOLANT
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
-  SGPP::optimization::function::Interpolant ft(d, grid, coeffsDV);
-  SGPP::optimization::function::InterpolantGradient ftGradient(d, grid, coeffsDV);
+  SGPP::optimization::InterpolantFunction ft(d, grid, coeffsDV);
+  SGPP::optimization::InterpolantGradient
+  ftGradient(d, grid, coeffsDV);
   SGPP::optimization::optimizer::GradientMethod gradientMethod(ft, ftGradient);
   std::vector<SGPP::float_t> x0(d, 0.0);
   SGPP::float_t fX0;
@@ -94,15 +97,18 @@ int main(int argc, const char* argv[]) {
   // determine best grid point as starting point
   {
     const size_t d = f.getDimension();
-    const std::vector<SGPP::float_t>& functionValues = gridGen.getFunctionValues();
-    SGPP::base::GridStorage* gridStorage = gridGen.getGrid().getStorage();
+    const std::vector<SGPP::float_t>& functionValues =
+      gridGen.getFunctionValues();
+    SGPP::base::GridStorage& gridStorage = *gridGen.getGrid().getStorage();
 
     // index of grid point with minimal function value
-    size_t x0Index = std::distance(functionValues.begin(),
-                                   std::min_element(functionValues.begin(), functionValues.end()));
+    size_t x0Index = std::distance(
+                       functionValues.begin(),
+                       std::min_element(functionValues.begin(),
+                                        functionValues.end()));
 
     for (size_t t = 0; t < d; t++) {
-      x0[t] = gridStorage->get(x0Index)->getCoord(t);
+      x0[t] = gridStorage.get(x0Index)->getCoord(t);
     }
 
     fX0 = functionValues[x0Index];
@@ -113,16 +119,16 @@ int main(int argc, const char* argv[]) {
   std::cout << "f(x0) = " << fX0 << ", ft(x0) = " << ftX0 << "\n\n";
 
   gradientMethod.setStartingPoint(x0);
-  std::vector<SGPP::float_t> x_opt;
-  const SGPP::float_t ftXOpt = gradientMethod.optimize(x_opt);
-  const SGPP::float_t fXOpt = f.eval(x_opt);
+  std::vector<SGPP::float_t> xOpt;
+  const SGPP::float_t ftXOpt = gradientMethod.optimize(xOpt);
+  const SGPP::float_t fXOpt = f.eval(xOpt);
 
-  SGPP::optimization::operator<<(std::cout << "\nx_opt = ", x_opt) << "\n";
-  std::cout << "f(x_opt) = " << fXOpt << ", ft(x_opt) = " << ftXOpt << "\n\n";
+  SGPP::optimization::operator<<(std::cout << "\nxOpt = ", xOpt) << "\n";
+  std::cout << "f(xOpt) = " << fXOpt << ", ft(xOpt) = " << ftXOpt << "\n\n";
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // NELDER-MEAD OPTIMIZATION OF OBJECTIVE FUNCTION
-  //////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   printLine();
   std::cout << "Optimizing objective function (for comparison)...\n\n";
@@ -132,8 +138,9 @@ int main(int argc, const char* argv[]) {
   const SGPP::float_t fXOptNM = nelderMead.optimize(xOptNM);
   const SGPP::float_t ftXOptNM = ft.eval(xOptNM);
 
-  SGPP::optimization::operator<<(std::cout << "\nx_opt_nm = ", xOptNM) << "\n";
-  std::cout << "f(x_opt_nm) = " << fXOptNM << ", ft(x_opt_nm) = " << ftXOptNM << "\n\n";
+  SGPP::optimization::operator<<(std::cout << "\nxOptNM = ", xOptNM) << "\n";
+  std::cout << "f(xOptNM) = " << fXOptNM <<
+            ", ft(xOptNM) = " << ftXOptNM << "\n\n";
 
   printLine();
   std::cout << "\nSGPP::optimization example program terminated.\n";

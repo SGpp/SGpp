@@ -58,7 +58,7 @@ class TestSLE(unittest.TestCase):
         # default solvers
         solvers = [pysgpp.OptBiCGStab(),
                    pysgpp.OptGaussianElimination(),
-                   pysgpp.OptAutoSolver()]
+                   pysgpp.OptAutoSLESolver()]
         
         # additional solvers if SGPP::opt was compiled with them
         if pysgpp.cvar.ARMADILLO_ENABLED:
@@ -82,7 +82,7 @@ class TestSLE(unittest.TestCase):
                     A.set(i, j, random.uniform(-1.0, 1.0))
             
             # full SLE
-            system = pysgpp.OptFullSystem(A)
+            system = pysgpp.OptFullSLE(A)
             
             #print "n = " + str(n)
             #print "A = [",
@@ -123,7 +123,7 @@ class TestSLE(unittest.TestCase):
         l = 4
         
         f = objective_functions.TitleFunction()
-        solver = pysgpp.OptAutoSolver()
+        solver = pysgpp.OptAutoSLESolver()
         
         # Test All The Grids!
         grids = [pysgpp.Grid.createBsplineGrid(d, 3),
@@ -154,7 +154,7 @@ class TestSLE(unittest.TestCase):
                 function_values[i] = f.eval(x)
             
             # create hierarchisation system
-            system = pysgpp.OptHierarchisationSystem(grid)
+            system = pysgpp.OptHierarchisationSLE(grid)
             alpha = pysgpp.DoubleVector(n)
             # solve system
             self.assertTrue(solver.solve(system, function_values, alpha))
@@ -165,7 +165,7 @@ class TestSLE(unittest.TestCase):
             testSLESolution(self, A, alpha, function_values)
             
             # create interpolant
-            ft = pysgpp.OptInterpolant(d, grid, pysgpp.DataVector(alpha))
+            ft = pysgpp.OptInterpolantFunction(d, grid, pysgpp.DataVector(alpha))
             for i in range(100):
                 # don't go near the boundary (should suffice)
                 x = pysgpp.DoubleVector([random.uniform(0.2, 0.8) for t in range(d)])

@@ -7,8 +7,7 @@
 #define SGPP_OPTIMIZATION_SLE_SOLVER_UMFPACK_HPP
 
 #include <sgpp/globaldef.hpp>
-
-#include <sgpp/optimization/sle/solver/Solver.hpp>
+#include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <vector>
@@ -16,35 +15,36 @@
 
 namespace SGPP {
   namespace optimization {
-    namespace sle {
-      namespace solver {
+    namespace sle_solver {
 
-        /**
-         * Linear system solver using UMFPACK (direct sparse solver).
-         */
-        class UMFPACK : public Solver {
-          public:
-            /**
-             * @param       system  system to be solved
-             * @param       b       right-hand side
-             * @param[out]  x       solution to the system
-             * @return              whether all went well (false if errors occurred)
-             */
-            bool solve(system::System& system, const std::vector<float_t>& b, std::vector<float_t>& x) const;
+      /**
+       * Linear system solver using UMFPACK (direct sparse solver).
+       */
+      class UMFPACK : public SLESolver {
+        public:
+          /**
+           * @param       system  system to be solved
+           * @param       b       right-hand side
+           * @param[out]  x       solution to the system
+           * @return              whether all went well
+           *                      (false if errors occurred)
+           */
+          bool solve(SLE& system, const std::vector<float_t>& b,
+                     std::vector<float_t>& x) const;
 
-            /**
-             * @param       system  system to be solved
-             * @param       B       vector of right-hand sides
-             * @param[out]  X       vector of solutions to the systems
-             * @return              whether all went well (false if errors occurred)
-             */
-            bool solve(system::System& system, const std::vector<std::vector<float_t> >& B,
-                       std::vector<std::vector<float_t> >& X) const;
-        };
+          /**
+           * @param       system  system to be solved
+           * @param       B       vector of right-hand sides
+           * @param[out]  X       vector of solutions to the systems
+           * @return              whether all went well
+           *                      (false if errors occurred)
+           */
+          bool solve(SLE& system, const std::vector<std::vector<float_t>>& B,
+                     std::vector<std::vector<float_t>>& X) const;
+      };
 
-      }
     }
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_SLE_SOLVER_UMFPACK_HPP */

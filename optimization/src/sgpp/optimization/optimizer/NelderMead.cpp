@@ -22,8 +22,9 @@ namespace SGPP {
       const float_t NelderMead::DEFAULT_DELTA = 0.5;
       const float_t NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
-      NelderMead::NelderMead(const function::Objective& f,
-                             size_t maxFcnEvalCount, float_t alpha, float_t beta, float_t gamma, float_t delta) :
+      NelderMead::NelderMead(const ObjectiveFunction& f,
+                             size_t maxFcnEvalCount, float_t alpha,
+                             float_t beta, float_t gamma, float_t delta) :
         Optimizer(f, maxFcnEvalCount),
         alpha(alpha),
         beta(beta),
@@ -32,17 +33,19 @@ namespace SGPP {
       }
 
       float_t NelderMead::optimize(std::vector<float_t>& xOpt) {
-        tools::printer.printStatusBegin("Optimizing (Nelder-Mead)...");
+        printer.printStatusBegin("Optimizing (Nelder-Mead)...");
 
         size_t d = f->getDimension();
-        std::vector<std::vector<float_t> > points(d + 1, x0);
-        std::vector<std::vector<float_t> > pointsNew(d + 1, x0);
+        std::vector<std::vector<float_t>> points(d + 1, x0);
+        std::vector<std::vector<float_t>> pointsNew(d + 1, x0);
         std::vector<float_t> fPoints(d + 1, 0.0);
         std::vector<float_t> fPointsNew(d + 1, 0.0);
 
         // construct starting simplex
         for (size_t t = 0; t < d; t++) {
-          points[t + 1][t] = std::min(points[t + 1][t] + STARTING_SIMPLEX_EDGE_LENGTH, float_t(1.0));
+          points[t + 1][t] = std::min(points[t + 1][t] +
+                                      STARTING_SIMPLEX_EDGE_LENGTH,
+                                      float_t(1.0));
           fPoints[t + 1] = f->eval(points[t + 1]);
         }
 
@@ -64,7 +67,7 @@ namespace SGPP {
           }
 
           {
-            tools::Permuter<float_t> permuter(fPoints);
+            Permuter<float_t> permuter(fPoints);
             std::sort(index.begin(), index.end(), permuter);
           }
 
@@ -175,7 +178,8 @@ namespace SGPP {
               bool in_domain = true;
 
               for (size_t t = 0; t < d; t++) {
-                points[i][t] = points[0][t] + delta * (points[i][t] - points[0][t]);
+                points[i][t] = points[0][t] +
+                               delta * (points[i][t] - points[0][t]);
 
                 if ((points[i][t] < 0.0) || (points[i][t] > 1.0)) {
                   in_domain = false;
@@ -190,8 +194,8 @@ namespace SGPP {
 
           // status printing
           if (k % 10 == 0) {
-            tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " +
-                                             toString(fPoints[0]));
+            printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                                      std::to_string(fPoints[0]));
           }
 
           if (numberOfFcnEvals + (d + 2) > N) {
@@ -203,14 +207,16 @@ namespace SGPP {
 
         xOpt = points[0];
 
-        tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fPoints[0]));
-        tools::printer.printStatusEnd();
+        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                                  std::to_string(fPoints[0]));
+        printer.printStatusEnd();
 
         return fPoints[0];
       }
 
-      void NelderMead::clone(Optimizer*& clone) {
-        clone = new NelderMead(*f, N, alpha, beta, gamma, delta);
+      void NelderMead::clone(std::unique_ptr<Optimizer>& clone) const {
+        clone = std::unique_ptr<Optimizer>(new NelderMead(*f, N, alpha, beta,
+                                           gamma, delta));
         clone->setStartingPoint(x0);
       }
 

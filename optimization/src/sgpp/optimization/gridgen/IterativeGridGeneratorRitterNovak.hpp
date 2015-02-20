@@ -15,86 +15,90 @@
 
 namespace SGPP {
   namespace optimization {
-    namespace gridgen {
 
-      /**
-       * Iterative grid generation based on Ritter/Novak's refinement criterion.
-       * Caution: This class uses HashRefinementMultiple, so it generates grids that don't meet
-       * the "hierarchical ancestors" requirement!
-       *
-       * Literature: Erich Novak, Klaus Ritter: Global Optimization Using Hyperbolic Cross Points.
-       * In: Christodoulos A. Floudas, Panos M. Pardalos (eds.): State of the Art in Global Optimization,
-       * Computational Methods and Applications, Vol. 7. Springer 1996. DOI: 10.1007/978-1-4613-3437-8_2
-       *
-       * @see HashRefinementMultiple
-       */
-      class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
-        public:
-          /// default adaptivity
-          static const float_t DEFAULT_ALPHA;
-          /// default maximal level of grid points
-          static const size_t DEFAULT_MAX_LEVEL = 15;
+    /**
+     * Iterative grid generation based on Ritter/Novak's refinement criterion.
+     * Caution: This class uses HashRefinementMultiple, so it generates grids
+     * that don't meet the "hierarchical ancestors" requirement!
+     *
+     * Literature: Erich Novak, Klaus Ritter: Global Optimization Using
+     * Hyperbolic Cross Points.
+     * In: Christodoulos A. Floudas, Panos M. Pardalos (eds.): State of the
+     * Art in Global Optimization,
+     * Computational Methods and Applications, Vol. 7. Springer 1996.
+     * DOI: 10.1007/978-1-4613-3437-8_2
+     *
+     * @see HashRefinementMultiple
+     */
+    class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
+      public:
+        /// default adaptivity
+        static const float_t DEFAULT_ALPHA;
+        /// default maximal level of grid points
+        static const size_t DEFAULT_MAX_LEVEL = 15;
 
-          /// exponentiation methods
-          enum PowMethod {
-            STD_POW, FAST_POW
-          };
+        /// exponentiation methods
+        enum PowMethod {
+          STD_POW, FAST_POW
+        };
 
-          /**
-           * Constructor.
-           * Do not destruct the grid before this object!
-           *
-           * @param f             objective function
-           * @param grid          grid (should be empty)
-           * @param N             maximal number of grid points
-           * @param alpha         adaptivity
-           * @param maxLevel      maximal level of grid points
-           * @param powMethod     exponentiation method
-           *                      (fastPow is faster than std::pow, but only approximative)
-           */
-          IterativeGridGeneratorRitterNovak(function::Objective& f, base::Grid& grid, size_t N,
-                                            float_t alpha = DEFAULT_ALPHA,
-                                            size_t maxLevel = DEFAULT_MAX_LEVEL,
-                                            PowMethod powMethod = STD_POW);
+        /**
+         * Constructor.
+         * Do not destruct the grid before this object!
+         *
+         * @param f             objective function
+         * @param grid          grid (should be empty)
+         * @param N             maximal number of grid points
+         * @param alpha         adaptivity
+         * @param maxLevel      maximal level of grid points
+         * @param powMethod     exponentiation method
+         *                      (fastPow is faster than std::pow,
+         *                      but only approximative)
+         */
+        IterativeGridGeneratorRitterNovak(ObjectiveFunction& f,
+                                          base::Grid& grid,
+                                          size_t N,
+                                          float_t alpha = DEFAULT_ALPHA,
+                                          size_t maxLevel = DEFAULT_MAX_LEVEL,
+                                          PowMethod powMethod = STD_POW);
 
-          /**
-           * Generate the grid.
-           *
-           * @return true on success, otherwise false
-           */
-          bool generate();
+        /**
+         * Generate the grid.
+         *
+         * @return true on success, otherwise false
+         */
+        bool generate();
 
-          /**
-           * @return      adaptivity
-           */
-          float_t getAlpha() const;
+        /**
+         * @return      adaptivity
+         */
+        float_t getAlpha() const;
 
-          /**
-           * @param alpha adaptivity
-           */
-          void setAlpha(float_t alpha);
+        /**
+         * @param alpha adaptivity
+         */
+        void setAlpha(float_t alpha);
 
-          /**
-           * @return          maximal level of grid points
-           */
-          size_t getMaxLevel() const;
+        /**
+         * @return          maximal level of grid points
+         */
+        size_t getMaxLevel() const;
 
-          /**
-           * @param maxLevel  maximal level of grid points
-           */
-          void setMaxLevel(size_t maxLevel);
+        /**
+         * @param maxLevel  maximal level of grid points
+         */
+        void setMaxLevel(size_t maxLevel);
 
-        protected:
-          /// adaptivity
-          float_t alpha;
-          /// maximal level of grid points
-          size_t maxLevel;
-          /// exponentiation method
-          PowMethod powMethod;
-      };
+      protected:
+        /// adaptivity
+        float_t alpha;
+        /// maximal level of grid points
+        size_t maxLevel;
+        /// exponentiation method
+        PowMethod powMethod;
+    };
 
-    }
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP */

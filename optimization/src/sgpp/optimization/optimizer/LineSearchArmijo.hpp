@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/function/Objective.hpp>
+#include <sgpp/optimization/function/ObjectiveFunction.hpp>
 
 #include <cstddef>
 #include <cmath>
@@ -19,16 +19,20 @@ namespace SGPP {
     namespace optimizer {
 
       /**
-       * Line search (1D optimization on a line) with Armijo's rule used in gradient-based optimization.
+       * Line search (1D optimization on a line) with Armijo's rule used in
+       * gradient-based optimization.
        *
-       * Armijo's rule calculates \f$\sigma = \beta^k\f$ for \f$k = 0, 1, \dotsc\f$
-       * for a fixed \f$\beta \in (0, 1)\f$ and checks if \f$\vec{y} = \vec{x} + \sigma\vec{s}\f$
+       * Armijo's rule calculates \f$\sigma = \beta^k\f$ for
+       * \f$k = 0, 1, \dotsc\f$ for a fixed \f$\beta \in (0, 1)\f$ and checks
+       * if \f$\vec{y} = \vec{x} + \sigma\vec{s}\f$
        * lies in \f$[0, 1]^d\f$ and whether
        * the objective function value improvement meets the condition
-       * \f$f(\vec{x}) - f(\vec{y}) \ge \gamma\sigma (-\nabla f(\vec{x}) \cdot \vec{s})\f$
+       * \f$f(\vec{x}) - f(\vec{y}) \ge
+       * \gamma\sigma (-\nabla f(\vec{x}) \cdot \vec{s})\f$
        * for \f$\gamma \in (0, 1)\f$ fixed.
        *
-       * The return value states whether the relative improvement (depending on two tolerances)
+       * The return value states whether the relative improvement
+       * (depending on two tolerances)
        * is big enough to continue the optimization algorithm.
        *
        * @param       f       objective function
@@ -40,13 +44,18 @@ namespace SGPP {
        * @param       fx      objective function value in x
        * @param       gradFx  objective function gradient in x
        * @param       s       search direction (should be normalized)
-       * @param[out]  y       new point, must have the same size as x before calling this function
-       * @return              whether the new point reaches an acceptable improvement
+       * @param[out]  y       new point, must have the same size as x before
+       *                      calling this function
+       * @return              whether the new point reaches an acceptable
+       *                      improvement
        */
-      inline bool lineSearchArmijo(function::Objective& f, float_t beta, float_t gamma,
+      inline bool lineSearchArmijo(ObjectiveFunction& f, float_t beta,
+                                   float_t gamma,
                                    float_t tol, float_t eps,
-                                   const std::vector<float_t>& x, float_t fx, base::DataVector& gradFx,
-                                   const std::vector<float_t>& s, std::vector<float_t>& y) {
+                                   const std::vector<float_t>& x, float_t fx,
+                                   base::DataVector& gradFx,
+                                   const std::vector<float_t>& s,
+                                   std::vector<float_t>& y) {
         const size_t d = x.size();
         float_t sigma = 1.0;
         float_t ip = 0.0;
@@ -79,7 +88,8 @@ namespace SGPP {
 
             // check if the absolute improvement is big enough
             if (improvement >= rhs) {
-              return (std::abs(fx - fy) >= tol * (std::abs(fx) + std::abs(fy) + eps));
+              return (std::abs(fx - fy) >=
+                  tol * (std::abs(fx) + std::abs(fy) + eps));
             }
           }
 
@@ -94,4 +104,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_LINESEARCHARMIJO_HPP */
