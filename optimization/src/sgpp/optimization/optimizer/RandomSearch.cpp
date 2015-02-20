@@ -7,7 +7,7 @@
 
 #include <sgpp/optimization/optimizer/RandomSearch.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RNG.hpp>
+#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -17,7 +17,7 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      RandomSearch::RandomSearch(function::Objective& f,
+      RandomSearch::RandomSearch(ObjectiveFunction& f,
                                  size_t maxFcnEvalCount,
                                  size_t populationSize) :
         Optimizer(f, maxFcnEvalCount),
@@ -37,48 +37,52 @@ namespace SGPP {
 
       void RandomSearch::initialize(size_t populationSize) {
         if (populationSize == 0) {
-          this->populationSize = std::min(10 * f->getDimension(), static_cast<size_t>(100));
+          this->populationSize = std::min(10 * f->getDimension(),
+                                          static_cast<size_t>(100));
         } else {
           this->populationSize = populationSize;
         }
       }
 
       float_t RandomSearch::optimize(std::vector<float_t>& xOpt) {
-        tools::printer.printStatusBegin("Optimizing (random search)...");
+        printer.printStatusBegin("Optimizing (random search)...");
 
         size_t d = f->getDimension();
-        std::vector<std::vector<float_t> > x0(populationSize, std::vector<float_t>(d, 0.0));
+        std::vector<std::vector<float_t>> x0(populationSize,
+                                             std::vector<float_t>(d, 0.0));
         std::vector<size_t> roundN(populationSize, 0);
         size_t remainingN = N;
 
         // split the number of function evaluations evenly up for all points,
         // generate pseudorandom starting points
         for (size_t k = 0; k < populationSize; k++) {
-          roundN[k] = static_cast<size_t>(std::ceil(static_cast<float_t>(remainingN) /
-                                          static_cast<float_t>(populationSize - k)));
+          roundN[k] = static_cast<size_t>(
+              std::ceil(static_cast<float_t>(remainingN) /
+                        static_cast<float_t>(populationSize - k)));
           remainingN -= roundN[k];
 
           for (size_t t = 0; t < d; t++) {
-            x0[k][t] = SGPP::optimization::tools::rng.getUniformRN();
+            x0[k][t] = randomNumberGenerator.getUniformRN();
           }
         }
 
         float_t fOpt = INFINITY;
 
-        tools::printer.disableStatusPrinting();
+        printer.disableStatusPrinting();
 
-        #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt, tools::printer) default(none)
+        #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt, printer) \
+        default(none)
         {
           Optimizer* curOptimizerPtr = &optimizer;
 #ifdef _OPENMP
           std::unique_ptr<Optimizer> curOptimizer;
 
           if (omp_get_max_threads() > 1) {
-            optimizer.clone(curOptimizerPtr);
-            curOptimizer = std::unique_ptr<Optimizer>(curOptimizerPtr);
+            optimizer.clone(curOptimizer);
+            curOptimizerPtr = curOptimizer.get();
           }
 
-#endif
+#endif /* _OPENMP */
 
           std::vector<float_t> curXOpt(d, 0.0);
           float_t curFOpt;
@@ -107,26 +111,28 @@ namespace SGPP {
             {
               char str[10];
               snprintf(str, 10, "%.1f%%",
-                       static_cast<float_t>(k) / static_cast<float_t>(populationSize) * 100.0);
-              tools::printer.getMutex().lock();
-              tools::printer.enableStatusPrinting();
-              tools::printer.printStatusUpdate(std::string(str) +
-                                               ", f(x) = " + toString(fOpt));
-              tools::printer.disableStatusPrinting();
-              tools::printer.getMutex().unlock();
+                       static_cast<float_t>(k) /
+                       static_cast<float_t>(populationSize) * 100.0);
+              printer.getMutex().lock();
+              printer.enableStatusPrinting();
+              printer.printStatusUpdate(std::string(str) +
+                                        ", f(x) = " + std::to_string(fOpt));
+              printer.disableStatusPrinting();
+              printer.getMutex().unlock();
             }
           }
         }
 
-        tools::printer.enableStatusPrinting();
-        tools::printer.printStatusUpdate("100.0%, f(x) = " + toString(fOpt));
-        tools::printer.printStatusEnd();
+        printer.enableStatusPrinting();
+        printer.printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
+        printer.printStatusEnd();
 
         return fOpt;
       }
 
-      void RandomSearch::clone(Optimizer*& clone) {
-        clone = new RandomSearch(optimizer, N, populationSize);
+      void RandomSearch::clone(std::unique_ptr<Optimizer>& clone) const {
+        clone = std::unique_ptr<Optimizer>(new RandomSearch(optimizer, N,
+                                                            populationSize));
         clone->setStartingPoint(x0);
       }
 

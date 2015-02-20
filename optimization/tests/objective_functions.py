@@ -6,7 +6,7 @@
 import pysgpp
 import math
 
-class TitleFunction(pysgpp.OptObjective):
+class TitleFunction(pysgpp.OptObjectiveFunction):
     """Example objective function from the title of my Master's thesis."""
     def __init__(self):
         super(TitleFunction, self).__init__(2)

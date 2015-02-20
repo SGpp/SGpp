@@ -34,16 +34,18 @@ namespace SGPP {
 
           /**
            * Constructor.
-           * The starting point is set to \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
+           * The starting point is set to
+           * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
            *
            * @param f                     objective function
-           * @param maxFcnEvalCount       maximal number of function evaluations
+           * @param maxFcnEvalCount       maximal number of
+           *                              function evaluations
            * @param alpha                 reflection coefficient
            * @param beta                  expansion coefficient
            * @param gamma                 contraction coefficient
            * @param delta                 shrinking coefficient
            */
-          NelderMead(const function::Objective& f,
+          NelderMead(const ObjectiveFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      float_t alpha = DEFAULT_ALPHA,
                      float_t beta = DEFAULT_BETA,
@@ -59,7 +61,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(Optimizer*& clone);
+          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return          reflection coefficient
@@ -116,4 +118,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_NELDERMEAD_HPP */

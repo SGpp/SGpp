@@ -17,10 +17,11 @@ namespace SGPP {
   namespace optimization {
 
     /**
-     * Abstract operation for hierarchisation and dehierarchisation for multiple sets
-     * of function values at the grid nodes.
+     * Abstract operation for hierarchisation and dehierarchisation for
+     * multiple sets of function values at the grid nodes.
      */
-    class OperationMultipleHierarchisation : public base::OperationHierarchisation {
+    class OperationMultipleHierarchisation :
+      public base::OperationHierarchisation {
       public:
         /**
          * Constructor.
@@ -36,10 +37,12 @@ namespace SGPP {
 
         /**
          * Virtual method for hierarchising for one set of function values.
-         * Defaults to calling the other doHierarchisation() by doing two copy operations.
+         * Defaults to calling the other doHierarchisation() by doing two
+         * copy operations.
          *
-         * @param[in,out] nodeValues    before: vector of function values at the grid points,
-         *                              after: vector of hierarchical coefficients
+         * @param[in,out] nodeValues before: vector of function values at
+         *                           the grid points,
+         *                           after: vector of hierarchical coefficients
          */
         virtual void doHierarchisation(base::DataVector& nodeValues) {
           std::vector<base::DataVector*> nodeValuesVec;
@@ -49,10 +52,12 @@ namespace SGPP {
 
         /**
          * Virtual method for dehierarchising for one set of function values.
-         * Defaults to calling the other doDehierarchisation() by doing two copy operations.
+         * Defaults to calling the other doDehierarchisation() by doing two
+         * copy operations.
          *
-         * @param[in,out] alpha         before: vector of hierarchical coefficients,
-         *                              after: vector of function values at the grid points
+         * @param[in,out] alpha before: vector of hierarchical coefficients,
+         *                      after: vector of function values at
+         *                      the grid points
          */
         virtual void doDehierarchisation(base::DataVector& alpha) {
           std::vector<base::DataVector*> alphaVec;
@@ -61,23 +66,29 @@ namespace SGPP {
         }
 
         /**
-         * Pure virtual method for hierarchising for multiple sets of function values.
+         * Pure virtual method for hierarchising for multiple sets of
+         * function values.
          *
-         * @param[in,out] nodeValues    before: vector of function values at the grid points,
-         *                              after: vector of hierarchical coefficients
+         * @param[in,out] nodeValues before: vector of function values at
+         *                           the grid points,
+         *                           after: vector of hierarchical coefficients
          */
-        virtual void doHierarchisation(std::vector<base::DataVector*> nodeValues) = 0;
+        virtual void doHierarchisation(
+          std::vector<base::DataVector*> nodeValues) = 0;
 
         /**
-         * Pure virtual method for dehierarchising for multiple sets of coefficients.
+         * Pure virtual method for dehierarchising for multiple sets of
+         * coefficients.
          *
-         * @param[in,out] alpha         before: vector of hierarchical coefficients,
-         *                              after: vector of function values at the grid points
+         * @param[in,out] alpha before: vector of hierarchical coefficients,
+         *                      after: vector of function values at
+         *                      the grid points
          */
-        virtual void doDehierarchisation(std::vector<base::DataVector*> alpha) = 0;
+        virtual void doDehierarchisation(
+          std::vector<base::DataVector*> alpha) = 0;
     };
 
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATION_HPP */

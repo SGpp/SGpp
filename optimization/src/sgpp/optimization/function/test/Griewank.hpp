@@ -8,78 +8,78 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/test/Test.hpp>
+#include <sgpp/optimization/function/test/TestFunction.hpp>
 
 #include <cmath>
 
 namespace SGPP {
   namespace optimization {
-    namespace function {
-      namespace test {
+    namespace test_functions {
 
-        /**
-         * Griewank test function.
-         *
-         * Definition:
-         * \f$f(\vec{x}) := 1 + \frac{\lVert \vec{x} \rVert_2^2}{4000}
-         *                    - \prod_{t=1}^d \cos\!\left(\frac{x_t}{\sqrt{t}}\right)\f$,
-         * \f$\vec{x} \in [-600, 600]^d\f$,
-         * \f$\vec{x}_{\text{opt}} = \vec{0}\f$,
-         * \f$f_{\text{opt}} = 0\f$
-         * (domain scaled to \f$[0, 1]^d\f$)
-         */
-        class Griewank : public Test {
-          public:
-            /**
-             * Constructor.
-             *
-             * @param d     dimension of the domain
-             */
-            Griewank(size_t d) : Test(d) {
+      /**
+       * Griewank test function.
+       *
+       * Definition:
+       * \f$f(\vec{x}) := 1 + \frac{\lVert \vec{x} \rVert_2^2}{4000}
+       * - \prod_{t=1}^d \cos\!\left(\frac{x_t}{\sqrt{t}}\right)\f$,
+       * \f$\vec{x} \in [-600, 600]^d\f$,
+       * \f$\vec{x}_{\text{opt}} = \vec{0}\f$,
+       * \f$f_{\text{opt}} = 0\f$
+       * (domain scaled to \f$[0, 1]^d\f$)
+       */
+      class Griewank : public TestFunction {
+        public:
+          /**
+           * Constructor.
+           *
+           * @param d     dimension of the domain
+           */
+          Griewank(size_t d) : TestFunction(d) {
+          }
+
+          /**
+           * Evaluates the test function.
+           *
+           * @param x     point \f$\vec{x} \in [0, 1]^d\f$
+           * @return      \f$f(\vec{x})\f$
+           */
+          float_t evalUndisplaced(const std::vector<float_t>& x) {
+            float_t result = 1.0;
+            float_t tmp = 1.0;
+
+            for (size_t t = 0; t < d; t++) {
+              const float_t xt = 1200.0 * x[t] - 600.0;
+              result += xt * xt / 4000.0;
+              tmp *= cos(xt / sqrt(static_cast<float_t>(t + 1)));
             }
 
-            /**
-             * Evaluates the test function.
-             *
-             * @param x     point \f$\vec{x} \in [0, 1]^d\f$
-             * @return      \f$f(\vec{x})\f$
-             */
-            float_t evalUndisplaced(const std::vector<float_t>& x) {
-              float_t result = 1.0;
-              float_t tmp = 1.0;
+            result -= tmp;
+            return result;
+          }
 
-              for (size_t t = 0; t < d; t++) {
-                const float_t xt = 1200.0 * x[t] - 600.0;
-                result += xt * xt / 4000.0;
-                tmp *= cos(xt / sqrt(static_cast<float_t>(t + 1)));
-              }
+          /**
+           * Returns minimal point and function value of the test function.
+           *
+           * @param[out] x minimal point
+           *               \f$\vec{x}_{\text{opt}} \in [0, 1]^d\f$
+           * @return       minimal function value
+           *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
+           */
+          float_t getOptimalPointUndisplaced(std::vector<float_t>& x) {
+            x = std::vector<float_t>(d, 0.5);
+            return 0.0;
+          }
 
-              result -= tmp;
-              return result;
-            }
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
+            clone = std::unique_ptr<ObjectiveFunction>(new Griewank(*this));
+          }
+      };
 
-            /**
-             * Returns minimal point and function value of the test function.
-             *
-             * @param[out] x    minimal point \f$\vec{x}_{\text{opt}} \in [0, 1]^d\f$
-             * @return          minimal function value \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
-             */
-            float_t getOptimalPointUndisplaced(std::vector<float_t>& x) {
-              x = std::vector<float_t>(d, 0.5);
-              return 0.0;
-            }
-
-            /**
-             * @param[out] clone pointer to cloned object
-             */
-            virtual void clone(Objective*& clone) const {
-              clone = new Griewank(*this);
-            }
-        };
-
-      }
     }
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_FUNCTION_TEST_GRIEWANK_HPP */

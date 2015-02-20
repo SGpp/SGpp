@@ -6,22 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_HPP
 #define SGPP_OPTIMIZATION_HPP
 
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
-
-#include <sgpp/optimization/function/Interpolant.hpp>
+#include <sgpp/optimization/function/InterpolantFunction.hpp>
 #include <sgpp/optimization/function/InterpolantGradient.hpp>
 #include <sgpp/optimization/function/InterpolantHessian.hpp>
-#include <sgpp/optimization/function/Objective.hpp>
+#include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/optimization/function/ObjectiveGradient.hpp>
 #include <sgpp/optimization/function/ObjectiveHessian.hpp>
 #include <sgpp/optimization/function/test/Ackley.hpp>
@@ -42,7 +30,7 @@
 #include <sgpp/optimization/function/test/SHCB.hpp>
 #include <sgpp/optimization/function/test/Schwefel.hpp>
 #include <sgpp/optimization/function/test/Sphere.hpp>
-#include <sgpp/optimization/function/test/Test.hpp>
+#include <sgpp/optimization/function/test/TestFunction.hpp>
 
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
@@ -51,6 +39,17 @@
 
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
 #include <sgpp/optimization/optimizer/DifferentialEvolution.hpp>
 #include <sgpp/optimization/optimizer/GradientMethod.hpp>
@@ -67,17 +66,18 @@
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/Gmmpp.hpp>
-#include <sgpp/optimization/sle/solver/Solver.hpp>
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
-#include <sgpp/optimization/sle/system/Cloneable.hpp>
-#include <sgpp/optimization/sle/system/Full.hpp>
-#include <sgpp/optimization/sle/system/Hierarchisation.hpp>
-#include <sgpp/optimization/sle/system/System.hpp>
+#include <sgpp/optimization/sle/system/CloneableSLE.hpp>
+#include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/sle/system/SLE.hpp>
 
+#include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
 #include <sgpp/optimization/tools/Permuter.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RNG.hpp>
+#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/tools/ScopedLock.hpp>
+#include <sgpp/optimization/sle/solver/SLESolver.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
 #endif /* SGPP_OPTIMIZATION_HPP */

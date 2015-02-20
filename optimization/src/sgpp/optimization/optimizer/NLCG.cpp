@@ -21,22 +21,22 @@ namespace SGPP {
       const float_t NLCG::DEFAULT_EPSILON = 1e-18;
       const float_t NLCG::DEFAULT_RESTART_THRESHOLD = 0.1;
 
-      NLCG::NLCG(const function::Objective& f, const function::ObjectiveGradient& fGradient,
+      NLCG::NLCG(const ObjectiveFunction& f,
+                 const ObjectiveGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,
-                 float_t tolerance, float_t epsilon, float_t restartThreshold) :
+                 float_t tolerance, float_t epsilon,
+                 float_t restartThreshold) :
         Optimizer(f, maxItCount),
         beta(beta),
         gamma(gamma),
         tol(tolerance),
         eps(epsilon),
         alpha(restartThreshold) {
-        function::ObjectiveGradient* fGradientPtr;
-        fGradient.clone(fGradientPtr);
-        this->fGradient.reset(fGradientPtr);
+        fGradient.clone(this->fGradient);
       }
 
       float_t NLCG::optimize(std::vector<float_t>& xOpt) {
-        tools::printer.printStatusBegin("Optimizing (NLCG)...");
+        printer.printStatusBegin("Optimizing (NLCG)...");
 
         size_t d = f->getDimension();
         std::vector<float_t> x(x0);
@@ -66,16 +66,19 @@ namespace SGPP {
           }
 
           // normalize search direction
-          float_t s_norm = std::sqrt(std::inner_product(s.begin(), s.end(), s.begin(), 0.0));
+          float_t s_norm = std::sqrt(std::inner_product(s.begin(), s.end(),
+                                     s.begin(), 0.0));
 
           for (size_t t = 0; t < d; t++) {
             sNormalized[t] = s[t] / s_norm;
           }
 
           // line search
-          if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, sNormalized, y)) {
+          if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx,
+                                gradFx, sNormalized, y)) {
             // line search failed ==> exit
-            // (either a "real" error occured or the improvement achieved is too small)
+            // (either a "real" error occured or the improvement achieved is
+            // too small)
             break;
           }
 
@@ -85,8 +88,10 @@ namespace SGPP {
 
           float_t beta = 0.0;
 
-          // the method is restarted (beta = 0), if the following criterion is *not* met
-          if (std::abs(gradFy.dotProduct(gradFx)) / (gradFyNorm * gradFyNorm) < alpha) {
+          // the method is restarted (beta = 0), if the following criterion
+          // is *not* met
+          if (std::abs(gradFy.dotProduct(gradFx)) /
+              (gradFyNorm * gradFyNorm) < alpha) {
             // Polak-Ribiere coefficient
             for (size_t t = 0; t < d; t++) {
               beta += gradFy[t] * (gradFy[t] - gradFx[t]);
@@ -101,7 +106,8 @@ namespace SGPP {
           }
 
           // status printing
-          tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fx));
+          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                                    std::to_string(fx));
 
           x = y;
           fx = fy;
@@ -111,18 +117,20 @@ namespace SGPP {
 
         xOpt = x;
 
-        tools::printer.printStatusUpdate(toString(k) + " steps, f(x) = " + toString(fx));
-        tools::printer.printStatusEnd();
+        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                                  std::to_string(fx));
+        printer.printStatusEnd();
 
         return fx;
       }
 
-      void NLCG::clone(Optimizer*& clone) {
-        clone = new NLCG(*f, *fGradient, N, beta, gamma, tol, eps, alpha);
+      void NLCG::clone(std::unique_ptr<Optimizer>& clone) const {
+        clone = std::unique_ptr<Optimizer>(new NLCG(*f, *fGradient, N, beta,
+                                           gamma, tol, eps, alpha));
         clone->setStartingPoint(x0);
       }
 
-      function::ObjectiveGradient& NLCG::getObjectiveGradient() const {
+      ObjectiveGradient& NLCG::getObjectiveGradient() const {
         return *fGradient;
       }
 

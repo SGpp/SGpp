@@ -37,7 +37,8 @@
 namespace SGPP {
   namespace op_factory {
 
-    optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchisation(base::Grid& grid) {
+    optimization::OperationMultipleHierarchisation*
+    createOperationMultipleHierarchisation(base::Grid& grid) {
       if (std::strcmp(grid.getType(), "linear") == 0) {
         return new optimization::OperationMultipleHierarchisationLinear(
                  dynamic_cast<base::LinearGrid&>(grid));

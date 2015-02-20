@@ -11,70 +11,69 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/Objective.hpp>
+#include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 namespace SGPP {
   namespace optimization {
-    namespace gridgen {
 
-      /**
-       * Abstract base class for iterative grid generation methods.
-       */
-      class IterativeGridGenerator {
-        public:
-          /**
-           * Constructor.
-           * Do not destruct the grid before this object!
-           *
-           * @param f     objective function
-           * @param grid  grid (should be empty)
-           * @param N     maximal number of grid points
-           */
-          IterativeGridGenerator(function::Objective& f, base::Grid& grid, size_t N) :
-            f(f), grid(grid), N(N) {
-          }
+    /**
+     * Abstract base class for iterative grid generation methods.
+     */
+    class IterativeGridGenerator {
+      public:
+        /**
+         * Constructor.
+         * Do not destruct the grid before this object!
+         *
+         * @param f     objective function
+         * @param grid  grid (should be empty)
+         * @param N     maximal number of grid points
+         */
+        IterativeGridGenerator(ObjectiveFunction& f,
+                               base::Grid& grid, size_t N) :
+          f(f), grid(grid), N(N) {
+        }
 
-          /**
-           * Virtual destructor.
-           */
-          virtual ~IterativeGridGenerator() {
-          }
+        /**
+         * Virtual destructor.
+         */
+        virtual ~IterativeGridGenerator() {
+        }
 
-          /**
-           * Pure virtual method for iterative grid generation.
-           *
-           * @return true on success, otherwise false
-           */
-          virtual bool generate() = 0;
+        /**
+         * Pure virtual method for iterative grid generation.
+         *
+         * @return true on success, otherwise false
+         */
+        virtual bool generate() = 0;
 
-          /**
-           * @return underlying grid
-           */
-          base::Grid& getGrid() const {
-            return grid;
-          }
+        /**
+         * @return underlying grid
+         */
+        base::Grid& getGrid() const {
+          return grid;
+        }
 
-          /**
-           * @return vector of function values at the grid points
-           */
-          const std::vector<float_t>& getFunctionValues() const {
-            return functionValues;
-          }
+        /**
+         * @return vector of function values at the grid points
+         */
+        const std::vector<float_t>& getFunctionValues() const {
+          return functionValues;
+        }
 
-        protected:
-          /// objective function
-          function::Objective& f;
-          /// underlying grid
-          base::Grid& grid;
-          /// maximal number of grid points
-          size_t N;
-          /// vector of function values at the grid points
-          std::vector<float_t> functionValues;
-      };
+      protected:
+        /// objective function
+        ObjectiveFunction& f;
+        /// underlying grid
+        base::Grid& grid;
+        /// maximal number of grid points
+        size_t N;
+        /// vector of function values at the grid points
+        std::vector<float_t> functionValues;
+    };
 
-    }
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP */

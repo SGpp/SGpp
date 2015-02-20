@@ -44,8 +44,8 @@ namespace SGPP {
            * @param tolerance     tolerance (parameter for Armijo's rule)
            * @param epsilon       epsilon (parameter for Armijo's rule)
            */
-          GradientMethod(const function::Objective& f,
-                         const function::ObjectiveGradient& fGradient,
+          GradientMethod(const ObjectiveFunction& f,
+                         const ObjectiveGradient& fGradient,
                          size_t maxItCount = DEFAULT_MAX_IT_COUNT,
                          float_t beta = DEFAULT_BETA,
                          float_t gamma = DEFAULT_GAMMA,
@@ -61,12 +61,12 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(Optimizer*& clone);
+          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return objective function gradient
            */
-          function::ObjectiveGradient& getObjectiveGradient() const;
+          ObjectiveGradient& getObjectiveGradient() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -110,7 +110,7 @@ namespace SGPP {
 
         protected:
           /// objective function gradient
-          std::unique_ptr<function::ObjectiveGradient> fGradient;
+          std::unique_ptr<ObjectiveGradient> fGradient;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)
@@ -125,4 +125,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTMETHOD_HPP */

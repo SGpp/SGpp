@@ -17,66 +17,72 @@
 
 namespace SGPP {
   namespace optimization {
-    namespace function {
 
-      /**
-       * Abstract base class for objective functions \f$f\colon [0, 1]^d \to \mathbb{R}\f$
-       * together with their gradients \f$\nabla f\colon [0, 1]^d \to \mathbb{R}^d\f$
-       * and Hessians \f$H_f\colon [0, 1]^d \to \mathbb{R}^{d \times d}\f$.
-       * They're used in optimization.
-       */
-      class ObjectiveHessian {
-        public:
-          /**
-           * Constructor.
-           *
-           * @param d     dimension of the domain
-           */
-          ObjectiveHessian(size_t d) : d(d) {
-          }
+    /**
+     * Abstract base class for objective functions
+     * \f$f\colon [0, 1]^d \to \mathbb{R}\f$
+     * together with their gradients
+     * \f$\nabla f\colon [0, 1]^d \to \mathbb{R}^d\f$
+     * and Hessians
+     * \f$H_f\colon [0, 1]^d \to \mathbb{R}^{d \times d}\f$.
+     * They're used in optimization.
+     */
+    class ObjectiveHessian {
+      public:
+        /**
+         * Constructor.
+         *
+         * @param d     dimension of the domain
+         */
+        ObjectiveHessian(size_t d) : d(d) {
+        }
 
-          /**
-           * Virtual destructor.
-           */
-          virtual ~ObjectiveHessian() {
-          }
+        /**
+         * Virtual destructor.
+         */
+        virtual ~ObjectiveHessian() {
+        }
 
-          /**
-           * Pure virtual method for calculating \f$f(\vec{x})\f$ together with \f$\nabla f(\vec{x})\f$
-           * and \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$.
-           *
-           * @param      x            point \f$\vec{x} \in \mathbb{R}^d\f$
-           * @param[out] gradient     gradient \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
-           * @param[out] hessian      Hessian matrix \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
-           * @return                  \f$f(\vec{x})\f$
-           */
-          virtual float_t evalHessian(const std::vector<float_t>& x,
-                                      base::DataVector& gradient, base::DataMatrix& hessian) = 0;
+        /**
+         * Pure virtual method for calculating \f$f(\vec{x})\f$ together with
+         * \f$\nabla f(\vec{x})\f$ and
+         * \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$.
+         *
+         * @param      x        point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param[out] gradient gradient
+         *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
+         * @param[out] hessian  Hessian matrix
+         *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
+         * @return              \f$f(\vec{x})\f$
+         */
+        virtual float_t evalHessian(const std::vector<float_t>& x,
+                                    base::DataVector& gradient,
+                                    base::DataMatrix& hessian) = 0;
 
-          /**
-           * @return dimension \f$d\f$ of the domain
-           */
-          size_t getDimension() const {
-            return d;
-          }
+        /**
+         * @return dimension \f$d\f$ of the domain
+         */
+        size_t getDimension() const {
+          return d;
+        }
 
-          /**
-           * Pure virtual method for cloning the objective Hessian.
-           * It should generate a pointer to the cloned object and
-           * it's used for parallel computations
-           * (the evalHessian() method might not be thread-safe).
-           *
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(ObjectiveHessian*& clone) const = 0;
+        /**
+         * Pure virtual method for cloning the objective Hessian.
+         * It should generate a pointer to the cloned object and
+         * it's used for parallel computations
+         * (the evalHessian() method might not be thread-safe).
+         *
+         * @param[out] clone pointer to cloned object
+         */
+        virtual void clone(
+          std::unique_ptr<ObjectiveHessian>& clone) const = 0;
 
-        protected:
-          /// dimension of the domain
-          size_t d;
-      };
+      protected:
+        /// dimension of the domain
+        size_t d;
+    };
 
-    }
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_FUNCTION_OBJECTIVEHESSIAN_HPP */

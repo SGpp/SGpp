@@ -34,22 +34,31 @@ namespace SGPP {
            * Constructor.
            *
            * @param f                         objective function
-           * @param maxFcnEvalCount           maximal number of function evaluations
-           * @param populationSize            number of individuals (default: \f$10d\f$)
+           * @param maxFcnEvalCount           maximal number of
+           *                                  function evaluations
+           * @param populationSize            number of individuals
+           *                                  (default: \f$10d\f$)
            * @param crossoverProbability      crossover probability
            * @param scalingFactor             crossover scaling factor
            * @param idleGenerationsCount      stopping criterion parameter 1
            * @param avgImprovementThreshold   stopping criterion parameter 2
            * @param maxDistanceThreshold      stopping criterion parameter 3
            */
-          DifferentialEvolution(const function::Objective& f,
-                                size_t maxFcnEvalCount = DEFAULT_N,
-                                size_t populationSize = 0,
-                                float_t crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
-                                float_t scalingFactor = DEFAULT_SCALING_FACTOR,
-                                size_t idleGenerationsCount = DEFAULT_IDLE_GENERATIONS_COUNT,
-                                float_t avgImprovementThreshold = DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
-                                float_t maxDistanceThreshold = DEFAULT_MAX_DISTANCE_THRESHOLD);
+          DifferentialEvolution(const ObjectiveFunction& f,
+                                size_t maxFcnEvalCount =
+                                  DEFAULT_N,
+                                size_t populationSize =
+                                  0,
+                                float_t crossoverProbability =
+                                  DEFAULT_CROSSOVER_PROBABILITY,
+                                float_t scalingFactor =
+                                  DEFAULT_SCALING_FACTOR,
+                                size_t idleGenerationsCount =
+                                  DEFAULT_IDLE_GENERATIONS_COUNT,
+                                float_t avgImprovementThreshold =
+                                  DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
+                                float_t maxDistanceThreshold =
+                                  DEFAULT_MAX_DISTANCE_THRESHOLD);
 
           /**
            * @param[out] xOpt optimal point
@@ -60,7 +69,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(Optimizer*& clone);
+          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return                  number of individuals
@@ -99,4 +108,4 @@ namespace SGPP {
   }
 }
 
-#endif
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_DIFFERENTIALEVOLUTION_HPP */
