@@ -73,7 +73,9 @@ $1 = PySequence_Check($input) ? 1 : 0;
         // Constructors
   DataVector(size_t size);
   DataVector(DataVector& vec);
-  DataVector(SGPP::float_t *input, int size);
+  DataVector(SGPP::float_t *input, size_t size);
+  DataVector(std::vector<SGPP::float_t> input);
+  DataVector(SGPP::base::DataVectorDefinition& DataVectorDef);
 
   void resize(size_t size);
   void resizeZero(size_t size);
