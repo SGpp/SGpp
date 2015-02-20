@@ -115,14 +115,6 @@ namespace SGPP {
           return gridStorage;
         }
 
-        /**
-         * @param gridStorage   grid storage
-         *                      (do not destruct before this object!)
-         */
-        void setGridStorage(base::GridStorage& gridStorage) {
-          this->gridStorage = gridStorage;
-        }
-
         size_t getDimension() const {
           return gridStorage.size();
         }
