@@ -14,7 +14,7 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from bin.data.ARFFAdapter import ARFFAdapter
-from pysgpp import DataVector, DataMatrix
+from pysgpp import DataVector, DataMatrix, cvar
 
 
 ##
@@ -72,7 +72,10 @@ class TestARFFAdapter(unittest.TestCase):
         for rowIdx in xrange(size):
             points.getRow(rowIdx, testVector)
             for colIdx in xrange(dim):
-                self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
+                if cvar.USING_DOUBLE_PRECISION:
+                    self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
+                else:
+                    self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[colIdx], testValues[colIdx])
         
     
@@ -102,7 +105,10 @@ class TestARFFAdapter(unittest.TestCase):
         for rowIdx in xrange(size):
             points.getRow(rowIdx, testVector)
             for colIdx in xrange(dim):
-                self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
+                if cvar.USING_DOUBLE_PRECISION:
+                    self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
+                else:
+                    self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[colIdx], testValues[colIdx])
         
 

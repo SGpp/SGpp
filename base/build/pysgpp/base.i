@@ -6,6 +6,15 @@
 
 %include "base/src/sgpp/globaldef.hpp"
 
+const bool USING_DOUBLE_PRECISION;
+%{
+#if USE_DOUBLE_PRECISION == 1
+    const bool USING_DOUBLE_PRECISION = true;
+#else
+    const bool USING_DOUBLE_PRECISION = false;
+#endif /* USE_DOUBLE_PRECISION */
+%}
+
 %apply (SGPP::float_t* IN_ARRAY1, int DIM1) {(SGPP::float_t* input, int size)}
 
 namespace std {

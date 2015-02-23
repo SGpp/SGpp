@@ -118,7 +118,10 @@ class TestOperationNaiveEval(unittest.TestCase):
                         # test gradient evaluation
                         self.assertAlmostEqual(dfx[t], dfx2[t], places=2)
                         # test partial derivative evaluation
-                        self.assertAlmostEqual(op_pdx.evalPartialDerivative(alpha, x, t), dfx[t])
+                        if pysgpp.cvar.USING_DOUBLE_PRECISION:
+                            self.assertAlmostEqual(op_pdx.evalPartialDerivative(alpha, x, t), dfx[t])
+                        else:
+                            self.assertAlmostEqual(op_pdx.evalPartialDerivative(alpha, x, t), dfx[t], places=4)
                     
                     dfx2 = pysgpp.DataVector(d)
                     ddfx2 = pysgpp.DataMatrix(d, d)

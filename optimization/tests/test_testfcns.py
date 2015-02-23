@@ -66,7 +66,11 @@ class TestTestFunctions(unittest.TestCase):
             for t in range(d):
                 self.assertGreaterEqual(xopt[t], 0.0)
                 self.assertLessEqual(xopt[t], 1.0)
-            self.assertAlmostEqual(fopt, testfcn.eval(xopt))
+            
+            if pysgpp.cvar.USING_DOUBLE_PRECISION:
+                self.assertAlmostEqual(fopt, testfcn.eval(xopt))
+            else:
+                self.assertAlmostEqual(fopt, testfcn.eval(xopt), places=6)
             
             # test if xopt is minimal point for a sample of random points
             for i in range(1000):

@@ -25,10 +25,16 @@ def testSLESystem(test_case, system, x, b):
             # test isMatrixEntryNonZero
             test_case.assertEqual(system.isMatrixEntryNonZero(i, j), Aij != 0)
     
-    # A*x calculated by SGPP::opt
+    # A*x calculated by SGPP::optimization
     Ax2 = pysgpp.DoubleVector()
     system.matrixVectorMultiplication(x, Ax2)
-    for i in range(n): test_case.assertAlmostEqual(Ax[i], Ax2[i])
+    
+    for i in range(n):
+        if pysgpp.cvar.USING_DOUBLE_PRECISION:
+            test_case.assertAlmostEqual(Ax[i], Ax2[i])
+        else:
+            test_case.assertAlmostEqual(Ax[i], Ax2[i], places=4)
+    
     return A
 
 def testSLESolution(test_case, A, x, b):
@@ -36,13 +42,18 @@ def testSLESolution(test_case, A, x, b):
     n = len(x)
     r_norm_squared = 0.0
     b_norm_squared = 0.0
+    
     for i in range(n):
         ri = b[i]
         for j in range(n): ri -= A.get(i, j) * x[j]
         r_norm_squared += ri*ri
         b_norm_squared += b[i]*b[i]
+    
     # test relative residual
-    test_case.assertLess(math.sqrt(r_norm_squared / b_norm_squared), 1e-6)
+    if pysgpp.cvar.USING_DOUBLE_PRECISION:
+        test_case.assertLess(math.sqrt(r_norm_squared / b_norm_squared), 1e-6)
+    else:
+        test_case.assertLess(math.sqrt(r_norm_squared / b_norm_squared), 1e-4)
 
 class TestSLE(unittest.TestCase):
     def setUp(self):
@@ -100,11 +111,17 @@ class TestSLE(unittest.TestCase):
             #print "]"
             
             for solver in solvers:
-                if (type(solver) is pysgpp.OptBiCGStab) and (n > 20):
+                if (type(solver) is pysgpp.OptBiCGStab) and \
+                   (n > (20 if pysgpp.cvar.USING_DOUBLE_PRECISION else 8)):
                     # BiCGStab is really weak and can't solve bigger systems
-                    # (maybe there's a bug in there, but it should only be used for Newton's
+                    # (a bug in the implementation is unlikely as MATLAB
+                    # shows the same result, but BiCGStab should only be used for Newton's
                     # method of optimization - for hierarchisation, only external solvers should
                     # be used)
+                    continue
+                if (type(solver) is pysgpp.OptGmmpp) and \
+                   (not pysgpp.cvar.USING_DOUBLE_PRECISION) and (n == 200):
+                    # Gmm++ doesn't converge using single precision for larger systems
                     continue
                 
                 x = pysgpp.DoubleVector(n)

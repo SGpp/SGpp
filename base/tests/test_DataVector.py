@@ -22,7 +22,7 @@ class TestDataVector(unittest.TestCase):
     # Set up, create random DataVector and corresponding Python data structures.
     # @test DataVector::get(), DataVector::set()
     def setUp(self):
-        from pysgpp import DataVector
+        from pysgpp import DataVector, cvar
         import random
 
         ## number of rows
@@ -50,7 +50,10 @@ class TestDataVector(unittest.TestCase):
             self.d_rand[i] = self.l_rand_total[i]
 
         for i in xrange(self.N):
-            self.assertEqual(self.d_rand[i], self.l_rand_total[i])
+            if cvar.USING_DOUBLE_PRECISION:
+                self.assertEqual(self.d_rand[i], self.l_rand_total[i])
+            else:
+                self.assertAlmostEqual(self.d_rand[i], self.l_rand_total[i])
 
     ##
     # Constructors4.
@@ -92,23 +95,34 @@ class TestDataVector(unittest.TestCase):
 #            self.assertEqual(ma, maxj)
 
         # test global min, max
-        self.assertEqual(self.d_rand.min(), min(self.l_rand_total))
-        self.assertEqual(self.d_rand.max(), max(self.l_rand_total))
+        from pysgpp import cvar
+        if cvar.USING_DOUBLE_PRECISION:
+            self.assertEqual(self.d_rand.min(), min(self.l_rand_total))
+            self.assertEqual(self.d_rand.max(), max(self.l_rand_total))
+        else:
+            self.assertAlmostEqual(self.d_rand.min(), min(self.l_rand_total))
+            self.assertAlmostEqual(self.d_rand.max(), max(self.l_rand_total))
    
 
     ##
     # Operations on DataVectors.
     # @test DataVector::sum(), DataVector::sqr(), DataVector::abs(), DataVector::componentwise_mult(), DataVector::componentwise_div()
     def testOps(self):
-        from pysgpp import DataVector
+        from pysgpp import DataVector, cvar
         # sum
-        self.assertAlmostEqual(self.d_rand.sum(), sum(self.l_rand_total))
+        if cvar.USING_DOUBLE_PRECISION:
+            self.assertAlmostEqual(self.d_rand.sum(), sum(self.l_rand_total))
+        else:
+            self.assertAlmostEqual(self.d_rand.sum(), sum(self.l_rand_total), places=5)
 
         # sqr
         d = DataVector(self.d_rand)
         d.sqr()
         for i in xrange(self.N):
-            self.assertEqual(self.d_rand[i]**2, d[i])
+            if cvar.USING_DOUBLE_PRECISION:
+                self.assertEqual(self.d_rand[i]**2, d[i])
+            else:
+                self.assertAlmostEqual(self.d_rand[i]**2, d[i])
 
         # abs
         d = DataVector(self.d_rand)
@@ -124,7 +138,10 @@ class TestDataVector(unittest.TestCase):
             d2[i] = i
 	d.componentwise_mult(d2)
         for i in xrange(self.N):
-            self.assertEqual(self.d_rand[i]*i, d[i])
+            if cvar.USING_DOUBLE_PRECISION:
+                self.assertEqual(self.d_rand[i]*i, d[i])
+            else:
+                self.assertAlmostEqual(self.d_rand[i]*i, d[i], places=5)
 
         # componentwise_div
         d = DataVector(self.d_rand)
@@ -132,7 +149,10 @@ class TestDataVector(unittest.TestCase):
             d2[i] = i+1
 	d.componentwise_div(d2)
         for i in xrange(self.N):
-            self.assertEqual(self.d_rand[i]/(i+1), d[i])
+            if cvar.USING_DOUBLE_PRECISION:
+                self.assertEqual(self.d_rand[i]/(i+1), d[i])
+            else:
+                self.assertAlmostEqual(self.d_rand[i]/(i+1), d[i])
 
     ##
     # Vector-Operations

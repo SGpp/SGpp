@@ -5,7 +5,7 @@
 
 import unittest
 import re
-from pysgpp import DataVector, createOperationEval, createOperationHierarchisation
+from pysgpp import DataVector, createOperationEval, createOperationHierarchisation, cvar
 
 #-------------------------------------------------------------------------------
 ## tests the correctness of the hierarchisation and dehierachisation
@@ -35,6 +35,8 @@ def testHierarchisationDehierarchisation(obj, grid, level, function):
     points = None
     p = None
 
+    places = 7 if cvar.USING_DOUBLE_PRECISION else 4
+
     # generate a regular test grid
     generator = grid.createGridGenerator()
     generator.regular(level)
@@ -56,15 +58,15 @@ def testHierarchisationDehierarchisation(obj, grid, level, function):
     evalOp = createOperationEval(grid)
     for n in xrange(storage.size()):
         storage.get(n).getCoords(p)
-        obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
-                                  node_values[n])
+        obj.assertAlmostEqual(evalOp.eval(alpha, p), node_values[n],
+                              places=places)
         
     # do dehierarchisation
     node_values_back = doDehierarchisation(alpha, grid)
 
     # test dehierarchisation
-    obj.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),
-                              0.0)
+    obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
+                          0.0, places=places)
 
 #-------------------------------------------------------------------------------
 ## Hierarchise and dechierarchise a regular sparse grid for a given function and test
@@ -79,6 +81,8 @@ def testHierarchisationDehierarchisationStretching(obj, grid, level, function):
     alpha = None
     points = None
     p = None
+
+    places = 7 if cvar.USING_DOUBLE_PRECISION else 4
 
     # generate a regular test grid
     generator = grid.createGridGenerator()
@@ -101,15 +105,15 @@ def testHierarchisationDehierarchisationStretching(obj, grid, level, function):
     evalOp = createOperationEval(grid)
     for n in xrange(storage.size()):
         storage.get(n).getCoordsStretching(p,stretch)
-        obj.failUnlessAlmostEqual(evalOp.eval(alpha, p), 
-                                  node_values[n])
+        obj.assertAlmostEqual(evalOp.eval(alpha, p), node_values[n],
+                              places=places)
         
     # do dehierarchisation
     node_values_back = doDehierarchisation(alpha, grid)
 
     # test dehierarchisation
-    obj.failUnlessAlmostEqual(testHierarchisationResults(node_values, node_values_back),
-                              0.0)
+    obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
+                          0.0, places=places)
 
 #-------------------------------------------------------------------------------
 ## hierarchisation of the node base values on a grid
