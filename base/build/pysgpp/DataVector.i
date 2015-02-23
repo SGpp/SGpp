@@ -134,7 +134,11 @@ $1 = PySequence_Check($input) ? 1 : 0;
       npy_intp dims[1] = {n};
       
       // Create a ndarray with data from vec
+#if USE_DOUBLE_PRECISION == 1
       PyObject* arr = PyArray_SimpleNewFromData(1,dims, NPY_DOUBLE, vec);
+#else
+      PyObject* arr = PyArray_SimpleNewFromData(1,dims, NPY_FLOAT, vec);
+#endif /* USE_DOUBLE_PRECISION */
       
       // Let the array base point on the original data, free_array is a additional destructor for our ndarray, 
       // since we need to DECREF DataVector object

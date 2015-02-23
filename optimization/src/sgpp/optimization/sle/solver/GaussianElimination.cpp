@@ -40,18 +40,18 @@ namespace SGPP {
           W.set(i, n, b[i]);
         }
 
-        // in the l-th iteration, W should be of the form
+        // at the beginning of the l-th iteration, W should be of the form
         // +-----------------------------------------+
         // |  (1     * - *  |  *)   \                |
-        // |  (  \   | . |  |  *)    | (l-1) rows    |
+        // |  (  \   | . |  |  *)    | l rows        |
         // |  (    1 * - *  |  *)   /                |
         // |  (0 - 0 * - *  |  *)   \                |
-        // |  (|   | | - |  |  *)    | (n-l+1) rows  |
+        // |  (|   | | - |  |  *)    | (n-l) rows    |
         // |  (0 - 0 * - *  |  *)   /                |
         // |                                         |
         // |  \----/ \---/    \-/                    |
-        // |  (l-1) (n-l+1)    1    column(s)        |
-        // +-----------------------------------------|
+        // |    l    (n-l)     1    column(s)        |
+        // +-----------------------------------------+
         for (size_t l = 0; l < n; l++) {
           printer.printStatusUpdate("k = " + std::to_string(l));
 

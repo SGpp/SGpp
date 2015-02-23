@@ -143,7 +143,9 @@ def readDataVector(filename):
 # differently. Uses heuristics, e.g. whether the diagonal elements
 # and row and column sums match.
 def compareBBTMatrices(testCaseClass, m1, m2):
-    from pysgpp import DataVector
+    from pysgpp import DataVector, cvar
+
+    places = 5 if cvar.USING_DOUBLE_PRECISION else 3
 
     # check dimensions
     testCaseClass.assertEqual(m1.getNrows(), m1.getNcols())
@@ -162,7 +164,7 @@ def compareBBTMatrices(testCaseClass, m1, m2):
         values_ref.append(m2.get(i, i))
     values_ref.sort()
     for i in range(n):
-        testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Diagonal %f != %f" % (values[i], values_ref[i]))
+        testCaseClass.assertAlmostEqual(values[i], values_ref[i], places=places, msg="Diagonal %f != %f" % (values[i], values_ref[i]))
 
     # check row sum
     v = DataVector(n)
@@ -178,7 +180,7 @@ def compareBBTMatrices(testCaseClass, m1, m2):
     values_ref.sort()
     for i in range(n):
         # print values_ref[i], values[i]
-        testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Row sum %f != %f" % (values[i], values_ref[i]))
+        testCaseClass.assertAlmostEqual(values[i], values_ref[i], places=places, msg="Row sum %f != %f" % (values[i], values_ref[i]))
 
     # check col sum
     v = DataVector(n)
@@ -193,7 +195,7 @@ def compareBBTMatrices(testCaseClass, m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        testCaseClass.assertAlmostEqual(values[i], values_ref[i], 5, msg="Col sum %f != %f" % (values[i], values_ref[i]))
+        testCaseClass.assertAlmostEqual(values[i], values_ref[i], places=places, msg="Col sum %f != %f" % (values[i], values_ref[i]))
 
 
 

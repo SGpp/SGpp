@@ -35,16 +35,34 @@ namespace SGPP {
        */
       bool solveInternal(void* numeric, const std::vector<sslong>& Ap,
                          const std::vector<sslong>& Ai,
-                         const std::vector<float_t>& Ax,
+                         const std::vector<double>& Ax,
                          const std::vector<float_t>& b,
                          std::vector<float_t>& x) {
         const size_t n = b.size();
-        x = std::vector<float_t>(n, 0.0);
+
+#if USE_DOUBLE_PRECISION == 1
+        x = std::vector<double>(n, 0.0);
 
         sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
                                          &Ax[0], &x[0], &b[0],
                                          numeric, NULL, NULL);
         return (result == UMFPACK_OK);
+#else
+        std::vector<double> bDbl(b.begin(), b.end());
+        std::vector<double> xDbl(n, 0.0);
+
+        sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
+                                         &Ax[0], &xDbl[0], &bDbl[0],
+                                         numeric, NULL, NULL);
+
+        if (result == UMFPACK_OK) {
+          x = std::vector<float>(xDbl.begin(), xDbl.end());
+          return true;
+        } else {
+          return false;
+        }
+
+#endif /* USE_DOUBLE_PRECISION */
       }
 #endif /* USEUMFPACK */
 
@@ -75,7 +93,7 @@ namespace SGPP {
         size_t nnz = 0;
         std::vector<uint32_t> Ti;
         std::vector<uint32_t> Tj;
-        std::vector<float_t> Tx;
+        std::vector<double> Tx;
 
         // parallelize only if the system is cloneable
         #pragma omp parallel if (system.isCloneable()) \
@@ -140,7 +158,7 @@ namespace SGPP {
 
         std::vector<sslong> Ap(n + 1, 0);
         std::vector<sslong> Ai(nnz, 0);
-        std::vector<float_t> Ax(nnz, 0.0);
+        std::vector<double> Ax(nnz, 0.0);
 
         sslong result;
 

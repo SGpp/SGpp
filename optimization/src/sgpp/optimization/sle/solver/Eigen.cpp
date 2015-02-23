@@ -21,6 +21,15 @@ namespace SGPP {
     namespace sle_solver {
 
 #ifdef USEEIGEN
+
+#if USE_DOUBLE_PRECISION == 1
+      typedef ::Eigen::VectorXd EigenVector;
+      typedef ::Eigen::MatrixXd EigenMatrix;
+#else
+      typedef ::Eigen::VectorXf EigenVector;
+      typedef ::Eigen::MatrixXf EigenMatrix;
+#endif
+
       /**
        * @param       A     coefficient matrix
        * @param       A_QR  Householder QR decomposition of coefficient matrix
@@ -29,13 +38,13 @@ namespace SGPP {
        * @return            whether all went well (false if errors occurred)
        */
       bool solveInternal(
-        const ::Eigen::MatrixXd& A,
-        const ::Eigen::HouseholderQR< ::Eigen::MatrixXd>& A_QR,
+        const EigenMatrix& A,
+        const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
         const std::vector<float_t>& b,
         std::vector<float_t>& x) {
         // solve system
-        ::Eigen::VectorXd bEigen = ::Eigen::VectorXd::Map(&b[0], b.size());
-        ::Eigen::VectorXd xEigen = A_QR.solve(bEigen);
+        EigenVector bEigen = EigenVector::Map(&b[0], b.size());
+        EigenVector xEigen = A_QR.solve(bEigen);
 
         // check solution
         if ((A * xEigen).isApprox(bEigen)) {
@@ -69,7 +78,7 @@ namespace SGPP {
         printer.printStatusBegin("Solving linear system (Eigen)...");
 
         const size_t n = system.getDimension();
-        ::Eigen::MatrixXd A = ::Eigen::MatrixXd::Zero(n, n);
+        EigenMatrix A = EigenMatrix::Zero(n, n);
         size_t nnz = 0;
 
         // parallelize only if the system is cloneable
@@ -132,7 +141,7 @@ namespace SGPP {
 
         // calculate QR factorization of system matrix
         printer.printStatusUpdate("step 1: Householder QR factorization");
-        ::Eigen::HouseholderQR< ::Eigen::MatrixXd> A_QR = A.householderQr();
+        ::Eigen::HouseholderQR<EigenMatrix> A_QR = A.householderQr();
 
         std::vector<float_t> x;
         X.clear();
