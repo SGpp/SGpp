@@ -13,7 +13,7 @@
 namespace SGPP {
   namespace base {
 
-            HashGridStorage::HashGridStorage(size_t dim) :
+    HashGridStorage::HashGridStorage(size_t dim) :
       //  GridStorage(dim),
       DIM(dim)
       , list()
@@ -349,7 +349,7 @@ namespace SGPP {
     }
 
     HashGridIndex*
-    HashGridStorage::get(size_t seq) {
+    HashGridStorage::get(size_t seq) const {
       return list[seq];
     }
 

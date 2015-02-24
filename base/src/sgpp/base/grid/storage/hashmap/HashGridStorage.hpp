@@ -203,7 +203,7 @@ public:
    *
    * @return gridindex object (pointer)
    */
-  HashGridIndex* get(size_t seq);
+  HashGridIndex* get(size_t seq) const;
 
   /**
    * insert a new index into map
