@@ -100,10 +100,15 @@ const bool UMFPACK_ENABLED;
 %rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
 %rename(OptRandomSearch)            SGPP::optimization::optimizer::RandomSearch;
 
-%rename(OptFileIO)          SGPP::optimization::file_io;
-%rename(OptMutexType)       SGPP::optimization::MutexType;
-%rename(OptPrinter)         SGPP::optimization::Printer;
-%rename(OptPrinterInstance) SGPP::optimization::printer;
+%rename(OptFileIOWriteGrid)         SGPP::optimization::file_io::writeGrid;
+%rename(OptFileIOReadGrid)          SGPP::optimization::file_io::readGrid;
+%rename(OptFileIOWriteMatrix)       SGPP::optimization::file_io::writeMatrix;
+%rename(OptFileIOReadMatrix)        SGPP::optimization::file_io::readMatrix;
+%rename(OptFileIOWriteVector)       SGPP::optimization::file_io::writeVector;
+%rename(OptFileIOReadVector)        SGPP::optimization::file_io::readVector;
+%rename(OptMutexType)               SGPP::optimization::MutexType;
+%rename(OptPrinter)                 SGPP::optimization::Printer;
+%rename(OptPrinterInstance)         SGPP::optimization::printer;
 
 // classes with director interface
 %feature("director") SGPP::optimization::ObjectiveFunction;
@@ -193,4 +198,13 @@ const bool UMFPACK_ENABLED;
 
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
+%include "optimization/src/sgpp/optimization/tools/Permuter.hpp"
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
+
+// templates
+%apply size_t *OUTPUT { size_t& m, size_t& n };
+%template(OptPermuter)               SGPP::optimization::Permuter<SGPP::float_t>;
+%template(OptFileIOWriteMatrix)      SGPP::optimization::file_io::writeMatrix<SGPP::float_t>;
+%template(OptFileIOReadMatrix)       SGPP::optimization::file_io::readMatrix<SGPP::float_t>;
+%template(OptFileIOWriteVector)      SGPP::optimization::file_io::writeVector<SGPP::float_t>;
+%template(OptFileIOReadVector)       SGPP::optimization::file_io::readVector<SGPP::float_t>;
