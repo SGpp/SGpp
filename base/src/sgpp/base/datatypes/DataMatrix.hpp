@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef DATAMATRIX_H_
@@ -58,7 +58,7 @@ namespace SGPP {
 
 
         /**
-         * Resizes the DataVector to size elements.
+         * Resizes the DataMatrix to nrows rows.
          * All new additional entries are uninitialized.
          * If nrows is smaller than the current number of rows,
          * all superfluous entries are removed.
@@ -66,6 +66,17 @@ namespace SGPP {
          * @param nrows New number of rows of the DataMatrix
          */
         void resize(size_t nrows);
+
+        /**
+         * Resizes the DataMatrix to nrows rows and ncols columns.
+         * All new additional entries are uninitialized.
+         * If nrows*ncols is smaller than the current number of entries,
+         * all superfluous entries are removed.
+         *
+         * @param nrows New number of rows of the DataMatrix
+         * @param ncols New number of columns of the DataMatrix
+         */
+        void resize(size_t nrows, size_t ncols);
 
         /**
          * Resizes the DataMatrix to nrows rows.
@@ -76,6 +87,17 @@ namespace SGPP {
          * @param nrows New number of rows of the DataMatrix
          */
         void resizeZero(size_t nrows);
+
+        /**
+         * Resizes the DataMatrix to nrows rows and ncols columns.
+         * All new additional entries are set to zero.
+         * If nrows*ncols is smaller than the current number of entries,
+         * all superfluous entries are removed.
+         *
+         * @param nrows New number of rows of the DataMatrix
+         * @param ncols New number of columns of the DataMatrix
+         */
+        void resizeZero(size_t nrows, size_t ncols);
 
         /**
          * Reserves memory for potentially inc_nrows new rows;

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef DATAMATRIXSP_HPP
@@ -62,7 +62,7 @@ namespace SGPP {
 
 
         /**
-         * Resizes the DataVectorSP to size elements.
+         * Resizes the DataMatrixSP to nrows rows.
          * All new additional entries are uninitialized.
          * If nrows is smaller than the current number of rows,
          * all superfluous entries are removed.
@@ -70,6 +70,17 @@ namespace SGPP {
          * @param nrows New number of rows of the DataMatrixSP
          */
         void resize(size_t nrows);
+
+        /**
+         * Resizes the DataMatrixSP to nrows rows and ncols columns.
+         * All new additional entries are uninitialized.
+         * If nrows*ncols is smaller than the current number of entries,
+         * all superfluous entries are removed.
+         *
+         * @param nrows New number of rows of the DataMatrixSP
+         * @param ncols New number of columns of the DataMatrixSP
+         */
+        void resize(size_t nrows, size_t ncols);
 
         /**
          * Resizes the DataMatrixSP to nrows rows.
@@ -80,6 +91,17 @@ namespace SGPP {
          * @param nrows New number of rows of the DataMatrixSP
          */
         void resizeZero(size_t nrows);
+
+        /**
+         * Resizes the DataMatrixSP to nrows rows and ncols columns.
+         * All new additional entries are set to zero.
+         * If nrows*ncols is smaller than the current number of entries,
+         * all superfluous entries are removed.
+         *
+         * @param nrows New number of rows of the DataMatrixSP
+         * @param ncols New number of columns of the DataMatrixSP
+         */
+        void resizeZero(size_t nrows, size_t ncols);
 
         /**
          * Reserves memory for potentially inc_nrows new rows;

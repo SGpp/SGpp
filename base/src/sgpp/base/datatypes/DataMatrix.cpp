@@ -63,31 +63,55 @@ namespace SGPP {
      **/
 
     void DataMatrix::resize(size_t nrows) {
-      // don't do anyhing, if vector already has the correct size
+      // don't do anything, if matrix already has the correct size
       if (nrows == this->nrows) {
         return;
       }
 
-      // create new vector
+      // create new matrix
       float_t* newdata = new float_t[nrows * this->ncols];
-      // copy entries of old vector
+      // copy entries of old matrix
       memcpy(newdata, this->data, std::min(this->nrows, nrows) * this->ncols
              * sizeof(float_t));
       delete[] this->data;
 
       this->data = newdata;
       this->nrows = nrows;
+      this->unused = 0;
+    }
+
+    void DataMatrix::resize(size_t nrows, size_t ncols) {
+      // don't do anything, if matrix already has the correct size
+      if ((nrows == this->nrows) && (ncols == this->ncols)) {
+        return;
+      }
+
+      // don't copy data, if matrix already has the correct number of entries
+      if (this->nrows * this->ncols != nrows * ncols) {
+        // create new matrix
+        float_t* newdata = new float_t[nrows * ncols];
+        // copy entries of old matrix
+        memcpy(newdata, this->data,
+               std::min(this->nrows * this->ncols, nrows * ncols)
+               * sizeof(float_t));
+        delete[] this->data;
+        this->data = newdata;
+      }
+
+      this->nrows = nrows;
+      this->ncols = ncols;
+      this->unused = 0;
     }
 
     void DataMatrix::resizeZero(size_t nrows) {
-      // don't do anyhing, if vector already has the correct size
+      // don't do anything, if matrix already has the correct size
       if (nrows == this->nrows) {
         return;
       }
 
-      // create new vector
+      // create new matrix
       float_t* newdata = new float_t[nrows * this->ncols];
-      // copy entries of old vector
+      // copy entries of old matrix
       memcpy(newdata, this->data, std::min(this->nrows, nrows) * this->ncols
              * sizeof(float_t));
 
@@ -101,6 +125,37 @@ namespace SGPP {
 
       this->data = newdata;
       this->nrows = nrows;
+      this->unused = 0;
+    }
+
+    void DataMatrix::resizeZero(size_t nrows, size_t ncols) {
+      // don't do anything, if matrix already has the correct size
+      if ((nrows == this->nrows) && (ncols == this->ncols)) {
+        return;
+      }
+
+      // don't copy data, if matrix already has the correct number of entries
+      if (this->nrows * this->ncols != nrows * ncols) {
+        // create new matrix
+        float_t* newdata = new float_t[nrows * ncols];
+        // copy entries of old matrix
+        memcpy(newdata, this->data,
+               std::min(this->nrows * this->ncols, nrows * ncols)
+               * sizeof(float_t));
+
+        // set new elements to zero
+        for (size_t i = std::min(this->nrows * this->ncols, nrows * ncols);
+             i < nrows * ncols; i++) {
+          newdata[i] = 0.0;
+        }
+
+        delete[] this->data;
+        this->data = newdata;
+      }
+
+      this->nrows = nrows;
+      this->ncols = ncols;
+      this->unused = 0;
     }
 
     void DataMatrix::addSize(size_t inc_nrows) {
@@ -142,6 +197,7 @@ namespace SGPP {
       size_t tmpRows = nrows;
       nrows = ncols;
       ncols = tmpRows;
+      unused = 0;
     }
 
     size_t DataMatrix::appendRow(DataVector& vec) {
