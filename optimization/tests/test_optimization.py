@@ -10,6 +10,7 @@ import test_gridgen
 import test_optimizer
 import test_sle
 import test_example
+import test_tools
 
 if __name__ == "__main__": 
     sys.stdout.write("Running unit tests.")
@@ -19,27 +20,11 @@ if __name__ == "__main__":
             unittest.defaultTestLoader.loadTestsFromModule(test_gridgen),
             unittest.defaultTestLoader.loadTestsFromModule(test_optimizer),
             unittest.defaultTestLoader.loadTestsFromModule(test_sle),
-            unittest.defaultTestLoader.loadTestsFromModule(test_example)
+            unittest.defaultTestLoader.loadTestsFromModule(test_example),
+            unittest.defaultTestLoader.loadTestsFromModule(test_tools)
             ])
     
     result = unittest.TextTestRunner(verbosity=9).run(alltests)
     
     if not result.wasSuccessful():
         sys.exit(1)
-
-# import math
-# import pysgpp
-# import random
-# import unittest
-# 
-# class TestSGOpt(unittest.TestCase):
-#     """Test SGPP::opt classes and methods."""
-#     def setUp(self):
-#         """Initialize the test case."""
-#         # clear global clones list
-#         global sg_opt_clones
-#         sg_opt_clones = []
-#         # disable status output
-#         pysgpp.cvar.OptPrinterInstance.setVerbosity(-1)
-#         # disable multi-threading
-#         pysgpp.omp_set_num_threads(1)
