@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
@@ -58,6 +58,7 @@ namespace SGPP {
 
       this->data = newdata;
       this->size = remainingIndex.size();
+      this->unused = 0;
     }
 
     void DataVectorSP::resize(size_t size) {
@@ -75,6 +76,7 @@ namespace SGPP {
 
       this->data = newdata;
       this->size = size;
+      this->unused = 0;
     }
 
     void DataVectorSP::resizeZero(size_t size) {
@@ -97,6 +99,7 @@ namespace SGPP {
 
       this->data = newdata;
       this->size = size;
+      this->unused = 0;
     }
 
     void DataVectorSP::addSize(size_t add) {
