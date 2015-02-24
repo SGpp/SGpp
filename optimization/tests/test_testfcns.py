@@ -16,7 +16,7 @@ class TestTestFunctions(unittest.TestCase):
         pysgpp.omp_set_num_threads(1)
     
     def testTestFunctions(self):
-        """Test SGPP::optimization::function::test::Test."""
+        """Test SGPP::optimization::test_functions::TestFunction."""
         random.seed(42)
         pysgpp.cvar.OptRNGInstance.setSeed(42)
         
