@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <fstream>
+#include <stdexcept>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -24,28 +25,61 @@ namespace SGPP {
     namespace file_io {
       /**
        * Write bytes of entry representation to output stream
-       * (called by printMatrixToFile()).
+       * (called by writeMatrix()).
        *
        * @param f         output stream to be written to
        * @param entry     entry to be written
        */
       template <class T>
-      void writeEntryToFile(std::ofstream& f, const T& entry) {
+      void writeEntry(std::ofstream& f, const T& entry) {
         f.write(reinterpret_cast<const char*>(&entry), sizeof(T));
       }
 
       /**
-       * Write string to output stream (called by printMatrixToFile()).
+       * Write string to output stream (called by writeMatrix()).
        *
        * @param f         output stream to be written to
        * @param entry     entry to be written
        */
       template <>
-      void writeEntryToFile(std::ofstream& f, const std::string& entry) {
+      void writeEntry(std::ofstream& f, const std::string& entry) {
         // write string terminated by null character
         const char null_char[1] = {'\0'};
         f << entry;
         f.write(null_char, 1);
+      }
+
+      /**
+       * Read bytes of entry representation from input stream
+       * (called by readMatrix()).
+       *
+       * @param f           input stream to be read
+       * @param[out] entry  entry to be read
+       */
+      template <class T>
+      void readEntry(std::ifstream& f, T& entry) {
+        f.read(reinterpret_cast<char*>(&entry), sizeof(T));
+      }
+
+      /**
+       * Read string from input stream (called by readMatrix()).
+       *
+       * @param f           input stream to be read
+       * @param[out] entry  entry to be read
+       */
+      template <>
+      void readEntry(std::ifstream& f, std::string& entry) {
+        char ch;
+        entry = "";
+
+        // read until null character
+        while (f.get(ch)) {
+          if (ch != '\0') {
+            entry += ch;
+          } else {
+            break;
+          }
+        }
       }
 
       /**
@@ -120,6 +154,17 @@ namespace SGPP {
         return "string          ";
       }
 
+      /*
+       * Write a grid (only grid points) to a file.
+       * The format is the same as the version with functions values
+       * with all function values set to zero.
+       *
+       * @param filename        filename of the file to be written
+       * @param gridStorage     grid storage containing the grid points
+       */
+      void writeGrid(const std::string& filename,
+                     const base::GridStorage& gridStorage);
+
       /**
        * Write a grid (grid points and function values) to a file.
        *
@@ -138,12 +183,35 @@ namespace SGPP {
        * end
        * </pre>
        *
-       * @param filename      filename of the file to be written
-       * @param gridGen       iterative grid generator containing the
-       *                      grid points and function values
+       * @param filename        filename of the file to be written
+       * @param gridStorage     grid storage containing the grid points
+       * @param functionValues  vector of function values
        */
-      void writeGridToFile(const std::string& filename,
-                           const IterativeGridGenerator& gridGen);
+      void writeGrid(const std::string& filename,
+                     const base::GridStorage& gridStorage,
+                     const std::vector<float_t>& functionValues);
+
+      /**
+       * Read a grid (only grid points) from a file.
+       * The format is as in writeGrid (discarding function values).
+       *
+       * @param filename              filename of the file to be read
+       * @param[out] gridStorage      grid storage containing the grid points
+       */
+      void readGrid(const std::string& filename,
+                    base::GridStorage& gridStorage);
+
+      /**
+       * Read a grid (grid points and function values) from a file.
+       * The format is as in writeGrid.
+       *
+       * @param filename              filename of the file to be read
+       * @param[out] gridStorage      grid storage containing the grid points
+       * @param[out] functionValues   vector of function values
+       */
+      void readGrid(const std::string& filename,
+                    base::GridStorage& gridStorage,
+                    std::vector<float_t>& functionValues);
 
       /**
        * Write a base::DataMatrix to a file.
@@ -151,7 +219,7 @@ namespace SGPP {
        * @param filename      filename of the file to be written
        * @param A             matrix
        */
-      void writeMatrixToFile(const std::string& filename, base::DataMatrix& A);
+      void writeMatrix(const std::string& filename, base::DataMatrix& A);
 
       /**
        * Write a matrix (stored row-wise in a std::vector) to a file.
@@ -176,14 +244,13 @@ namespace SGPP {
        * @param n             number of columns
        */
       template <class T>
-      void writeMatrixToFile(const std::string& filename,
-                             const std::vector<T>& A,
-                             size_t m, size_t n) {
+      void writeMatrix(const std::string& filename,
+                       const std::vector<T>& A, size_t m, size_t n) {
         std::ofstream f;
         f.exceptions(std::ofstream::failbit | std::ofstream::badbit);
         const char* type = getTypeString(A);
 
-        f.open(filename.c_str(), std::ios::binary);
+        f.open(filename.c_str(), std::ios::out | std::ios::binary);
 
         // header (size and type)
         f.write(reinterpret_cast<const char*>(&m), sizeof(m));
@@ -192,54 +259,102 @@ namespace SGPP {
 
         // entries
         for (size_t i = 0; i < m * n; i++) {
-          writeEntryToFile(f, A[i]);
+          writeEntry(f, A[i]);
         }
-
-        f.close();
       }
 
       /**
-       * Write a matrix (stored as a vector of row vectors) to a file.
-       * Copies the matrix and calls the other version with the
-       * vectorized matrix.
+       * Read a matrix from a file.
+       * The format is as in writeMatrix.
+       *
+       * @param filename      filename of the file to be read
+       * @param[out] A        matrix
+       */
+      void readMatrix(const std::string& filename, base::DataMatrix& A);
+
+      /**
+       * Read a matrix (stored row-wise in a std::vector) from a file.
+       * The format is as in writeMatrix.
        *
        * @param filename      filename of the file to be written
-       * @param A             matrix
+       * @param[out] A        matrix
+       * @param[out] m        number of rows
+       * @param[out] n        number of columns
        */
       template <class T>
-      void writeMatrixToFile(const std::string& filename,
-                             const std::vector<std::vector<T>>& A) {
-        size_t m = A.size();
-        size_t n = (A.empty() ? 0 : A[0].size());
-        std::vector<T> B(m * n);
+      void readMatrix(const std::string& filename,
+                      std::vector<T>& A, size_t& m, size_t& n) {
+        std::ifstream f;
+        f.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+        const char* type = getTypeString(A);
 
-        for (size_t i = 0; i < m; i++) {
-          std::copy(A[i].begin(), A[i].end(), B.begin() + i * n);
+        f.open(filename.c_str(), std::ios::in | std::ios::binary);
+
+        // header (size and type)
+        f.read(reinterpret_cast<char*>(&m), sizeof(m));
+        f.read(reinterpret_cast<char*>(&n), sizeof(n));
+
+        char type2[17];
+        f.read(type2, 16);
+        type2[16] = 0;
+
+        if (std::string(type) != std::string(type2)) {
+          throw std::invalid_argument("The type of the entries in the file "
+                                      "differ from the type of the "
+                                      "entries of A.");
         }
 
-        writeMatrixToFile(filename, B, m, n);
+        A.empty();
+
+        // entries
+        for (size_t i = 0; i < m * n; i++) {
+          T entry;
+          readEntry(f, entry);
+          A.push_back(entry);
+        }
       }
 
       /**
        * Write a base::DataVector to a file.
-       * It's printMatrixToFile with the vector as one column.
+       * It's writeMatrix with the vector as one row.
        *
        * @param filename      filename of the file to be written
        * @param x             vector
        */
-      void writeVectorToFile(const std::string& filename, base::DataVector& x);
+      void writeVector(const std::string& filename, base::DataVector& x);
 
       /**
        * Write a std::vector to a file.
-       * It's printMatrixToFile with the vector as one column.
+       * It's writeMatrix with the vector as one row.
        *
        * @param filename      filename of the file to be written
        * @param x             vector
        */
       template <class T>
-      void writeVectorToFile(const std::string& filename,
-                             const std::vector<T>& x) {
-        writeMatrixToFile(filename, x, x.size(), 1);
+      void writeVector(const std::string& filename, const std::vector<T>& x) {
+        writeMatrix(filename, x, 1, x.size());
+      }
+
+      /**
+       * Read a base::DataVector from a file.
+       * It's readMatrix with the vector as one row.
+       *
+       * @param filename      filename of the file to be read
+       * @param[out] x        vector
+       */
+      void readVector(const std::string& filename, base::DataVector& x);
+
+      /**
+       * Read a std::vector from a file.
+       * It's readMatrix with the vector as one row.
+       *
+       * @param filename      filename of the file to be read
+       * @param[out] x        vector
+       */
+      template <class T>
+      void readVector(const std::string& filename, std::vector<T>& x) {
+        size_t m, n;
+        readMatrix(filename, x, m, n);
       }
 
     }
