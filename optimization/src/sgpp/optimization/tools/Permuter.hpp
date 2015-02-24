@@ -7,6 +7,7 @@
 #define SGPP_OPTIMIZATION_TOOLS_PERMUTER_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <iostream>
 
 namespace SGPP {
   namespace optimization {
@@ -41,7 +42,6 @@ namespace SGPP {
       public:
         /**
          * Constructor.
-         * Don't destruct vec before this object!
          *
          * @param vec   reference to \f$\vec{b}\f$
          */
@@ -60,8 +60,8 @@ namespace SGPP {
         }
 
       protected:
-        /// reference to \f$\vec{b}\f$
-        const std::vector<T>& vec;
+        /// \f$\vec{b}\f$
+        const std::vector<T> vec;
     };
 
   }
