@@ -10,7 +10,7 @@ import random
 import math
 
 def testSLESystem(test_case, system, x, b):
-    """Test SGPP::optimization::sle::system::getMatrixEntry, isMatrixEntryNonZero and
+    """Test SGPP::optimization::SLE::getMatrixEntry, isMatrixEntryNonZero and
     matrixVectorMultiplication. Returns system matrix as pysgpp.DataMatrix.
     """
     n = len(x)
@@ -64,7 +64,7 @@ class TestSLE(unittest.TestCase):
         pysgpp.omp_set_num_threads(1)
     
     def testSolvers(self):
-        """Test SGPP::optimization::sle::solver with SGPP::opt::sle::system::Full."""
+        """Test SGPP::optimization::sle_solver with SGPP::optimization::FullSLE."""
         random.seed(42)
         # default solvers
         solvers = [pysgpp.OptBiCGStab(),
@@ -134,7 +134,7 @@ class TestSLE(unittest.TestCase):
             testSLESystem(self, system, x, b)
     
     def testHierarchisation(self):
-        """Test SGPP::optimization::sle::system::Hierarchisation."""
+        """Test SGPP::optimization::HierarchisationSLE."""
         random.seed(42)
         d = 2
         l = 4

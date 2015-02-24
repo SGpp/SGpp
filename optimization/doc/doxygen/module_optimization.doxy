@@ -51,15 +51,8 @@
  */
 
 /**
- * \namespace SGPP::optimization::function::test
+ * \namespace SGPP::optimization::test_functions
  * Namespace containing analytical test functions.
- *
- * See \ref module_optimization for more details and an example.
- */
-
-/**
- * \namespace SGPP::optimization::gridgen
- * Namespace containing iterative grid generators.
  *
  * See \ref module_optimization for more details and an example.
  */
@@ -72,29 +65,8 @@
  */
 
 /**
- * \namespace SGPP::optimization::sle
- * Namespace for solving linear systems.
- *
- * See \ref module_optimization for more details and an example.
- */
-
-/**
- * \namespace SGPP::optimization::sle::solver
+ * \namespace SGPP::optimization::sle_solver
  * Namespace containing classes for solving linear systems.
- *
- * See \ref module_optimization for more details and an example.
- */
-
-/**
- * \namespace SGPP::optimization::sle::system
- * Namespace containing classes representing linear systems.
- *
- * See \ref module_optimization for more details and an example.
- */
-
-/**
- * \namespace SGPP::optimization::tools
- * Namespace containing various helper classes for SGPP::optimization.
  *
  * See \ref module_optimization for more details and an example.
  */

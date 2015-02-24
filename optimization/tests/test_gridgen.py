@@ -15,7 +15,7 @@ class TestGridGen(unittest.TestCase):
         pysgpp.omp_set_num_threads(1)
     
     def testIterativeGridGenerators(self):
-        """Test SGPP::optimization::gridgen."""
+        """Test SGPP::optimization iterative grid generators."""
         pysgpp.cvar.OptRNGInstance.setSeed(42)
         d = 2
         N = 200
