@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef GRIDSTORAGE_HPP
@@ -14,23 +14,23 @@
 
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-typedef unsigned int level_t;
-typedef unsigned int index_t;
+    typedef unsigned int level_t;
+    typedef unsigned int index_t;
 
-/**
- * Main typedef for GridIndex
- */
-//typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
-typedef HashGridIndex GridIndex;
+    /**
+     * Main typedef for GridIndex
+     */
+    //typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
+    typedef HashGridIndex GridIndex;
 
-/**
- * Main typedef for GridStorage
- */
-typedef HashGridStorage GridStorage;
+    /**
+     * Main typedef for GridStorage
+     */
+    typedef HashGridStorage GridStorage;
 
-}
+  }
 }
 
 #endif /* GRIDSTORAGE_HPP */

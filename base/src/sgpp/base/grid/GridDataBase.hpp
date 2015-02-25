@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef GRIDDATABASE_HPP
@@ -33,19 +33,19 @@ namespace SGPP {
         typedef GridIndex index_type;
         typedef GridIndex* index_pointer;
         /*
-#ifndef USETRONE
-#ifndef LARRABEENATIVE
+        #ifndef USETRONE
+        #ifndef LARRABEENATIVE
         typedef std::hash_map<index_pointer, float_t, SGPP::base::hash<index_pointer>, SGPP::base::eqIndex<index_pointer> > grid_map;
-#endif
-#ifdef LARRABEENATIVE
+        #endif
+        #ifdef LARRABEENATIVE
         typedef std::hash_map<index_pointer, float_t, LRBSGHasher<index_pointer> > grid_map;
-#endif
-#endif
-#ifdef USETRONE
+        #endif
+        #endif
+        #ifdef USETRONE
         typedef std::tr1::unordered_map<index_pointer, float_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
-#endif
-*/
-//        typedef HashGridStorage::grid_map grid_map;
+        #endif
+        */
+        //        typedef HashGridStorage::grid_map grid_map;
         typedef std::unordered_map<index_pointer, float_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor > grid_map;
 
         // the hash_map

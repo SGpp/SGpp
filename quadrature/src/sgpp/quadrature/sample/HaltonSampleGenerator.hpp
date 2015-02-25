@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef HALTONSAMPLEGENERATOR_HPP
@@ -16,14 +16,14 @@ namespace SGPP {
   namespace quadrature {
 
     /**
-     * 
+     *
      */
     class HaltonSampleGenerator : public SampleGenerator {
 
       public:
 
         /**
-         * Standard constructor 
+         * Standard constructor
          *
          * @param dimension number of dimensions used for sample generation
          */
@@ -38,11 +38,11 @@ namespace SGPP {
         virtual void getSample(SGPP::base::DataVector& sample);
 
       private:
-	int index;
+        int index;
         int* base_vektor;
-	float_t* i_vektor;
-	float_t* f_vektor;
-	float_t* result_vektor;
+        float_t* i_vektor;
+        float_t* f_vektor;
+        float_t* result_vektor;
 
     };
 

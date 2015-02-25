@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef REFINEMENTANOVASTRATEGY_HPP_
@@ -31,8 +31,8 @@ namespace SGPP {
          * @param refinement object implementing the core functionality (e.g.
          * refinement with or without boundaries).
          */
-        ANOVARefinement(AbstractRefinement* refinement): RefinementDecorator(refinement)
-        {}
+        ANOVARefinement(AbstractRefinement* refinement): RefinementDecorator(refinement) {
+        }
         ;
 
         /**

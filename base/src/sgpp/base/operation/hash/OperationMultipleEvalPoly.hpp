@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONMULTIPLEEVALPOLY_HPP
@@ -28,7 +28,7 @@ namespace SGPP {
          * @param degree the polynom's max. degree
          * @param dataset Dataset
          */
-        OperationMultipleEvalPoly(Grid &grid, size_t degree, DataMatrix &dataset) : OperationMultipleEval(grid, dataset), base(degree) {
+        OperationMultipleEvalPoly(Grid& grid, size_t degree, DataMatrix& dataset) : OperationMultipleEval(grid, dataset), base(degree) {
           this->storage = storage;
         }
 

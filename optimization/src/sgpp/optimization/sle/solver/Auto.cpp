@@ -40,7 +40,7 @@ namespace SGPP {
         // add solver if it's supported and not already in the vector
         if ((supports.at(solver)) &&
             (std::find(solvers.begin(), solvers.end(), solver) ==
-                solvers.end())) {
+             solvers.end())) {
           solvers.push_back(solver);
         }
       }
@@ -63,7 +63,7 @@ namespace SGPP {
       bool Auto::solve(SLE& system, const std::vector<std::vector<float_t>>& B,
                        std::vector<std::vector<float_t>>& X) const {
         printer.printStatusBegin(
-            "Solving linear system (automatic method)...");
+          "Solving linear system (automatic method)...");
 
         Armadillo solverArmadillo;
         Eigen solverEigen;
@@ -128,7 +128,7 @@ namespace SGPP {
           // calculate estimate ratio nonzero entries
           float_t nnzRatio = static_cast<float_t>(nnz) /
                              (static_cast<float_t>(nrows) *
-                                 static_cast<float_t>(n));
+                              static_cast<float_t>(n));
 
           // print ratio
           {
@@ -174,12 +174,12 @@ namespace SGPP {
             printer.printStatusEnd();
             return true;
           } else if ((solvers[i] == &solverGmmpp) &&
-              (n > MAX_DIM_FOR_FULL)) {
+                     (n > MAX_DIM_FOR_FULL)) {
             // don't use full solvers and return approximative solution
             printer.printStatusEnd(
-                "warning: using non-converged solution of iterative "
-                "solver, residual can be large "
-                "(matrix too large to try other solvers)");
+              "warning: using non-converged solution of iterative "
+              "solver, residual can be large "
+              "(matrix too large to try other solvers)");
             return true;
           }
         }

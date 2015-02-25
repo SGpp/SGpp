@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
@@ -17,7 +17,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationEvalPrewavelet::eval(DataVector& alpha,
-                                         std::vector<float_t>& point) {
+                                          std::vector<float_t>& point) {
       typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
       IndexValVector vec;
@@ -37,7 +37,7 @@ namespace SGPP {
     }
 
     float_t OperationEvalPrewavelet::test(DataVector& alpha, DataVector& data,
-                                         DataVector& classes) {
+                                          DataVector& classes) {
       return 0;
     }
 

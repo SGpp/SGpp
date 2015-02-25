@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
@@ -40,13 +40,13 @@ namespace SGPP {
       return "modlinearstencil";
     }
 
-    const SBasis& ModLinearGridStencil::getBasis(){
-		throw new factory_exception("Not implemented");
-		// it should never get so far, code just for compilation reasons
-		// If there will be a meaningful basis, this following lines should be changed
-		static SLinearModifiedBase basis;
-		return basis;
-	}
+    const SBasis& ModLinearGridStencil::getBasis() {
+      throw new factory_exception("Not implemented");
+      // it should never get so far, code just for compilation reasons
+      // If there will be a meaningful basis, this following lines should be changed
+      static SLinearModifiedBase basis;
+      return basis;
+    }
 
     Grid* ModLinearGridStencil::unserialize(std::istream& istr) {
       return new ModLinearGridStencil(istr);

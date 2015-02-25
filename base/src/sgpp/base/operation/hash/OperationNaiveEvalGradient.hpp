@@ -39,7 +39,7 @@ namespace SGPP {
          * @return                  value of the linear combination
          */
         virtual float_t evalGradient(base::DataVector& alpha, const std::vector<float_t>& point,
-                                    base::DataVector& gradient) = 0;
+                                     base::DataVector& gradient) = 0;
 
         /**
          * Convenience function for using base::DataVector as points.
@@ -50,7 +50,7 @@ namespace SGPP {
          * @return                  value of the linear combination
          */
         virtual float_t evalGradient(base::DataVector& alpha, base::DataVector& point,
-                                    base::DataVector& gradient) {
+                                     base::DataVector& gradient) {
           const std::vector<float_t> p(point.getPointer(), point.getPointer() + point.getSize());
           return evalGradient(alpha, p, gradient);
         }

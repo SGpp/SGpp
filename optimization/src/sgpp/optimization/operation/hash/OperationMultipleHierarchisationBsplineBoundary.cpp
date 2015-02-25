@@ -24,8 +24,8 @@ namespace SGPP {
 
       for (size_t i = 0; i < nodeValues.size(); i++) {
         B.push_back(std::vector<float_t>(
-            nodeValues[i]->getPointer(),
-            nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
+                      nodeValues[i]->getPointer(),
+                      nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
       }
 
       if (solver.solve(system, B, X)) {
@@ -41,7 +41,7 @@ namespace SGPP {
       base::GridStorage* storage = grid.getStorage();
       const size_t d = storage->dim();
       base::OperationNaiveEvalBsplineBoundary op_eval(storage,
-                                                      grid.getDegree());
+          grid.getDegree());
       std::vector<float_t> nodeValuesVector(storage->size(), 0.0);
       std::vector<float_t> x(d, 0.0);
 

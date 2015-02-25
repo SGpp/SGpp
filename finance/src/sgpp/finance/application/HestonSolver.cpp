@@ -1062,7 +1062,7 @@ namespace SGPP {
       // Both the 4-point and 7-point rule integrals are evaluted
       const float_t integral2 = (h / 6) * (fa + fb + 5 * (fml + fmr));
       const float_t integral1 = (h / 1470) * (77 * (fa + fb)
-                                             + 432 * (fmll + fmrr) + 625 * (fml + fmr) + 672 * fm);
+                                              + 432 * (fmll + fmrr) + 625 * (fml + fmr) + 672 * fm);
 
       // The difference betwen the 4-point and 7-point integrals is the
       // estimate of the accuracy
@@ -1092,9 +1092,9 @@ namespace SGPP {
     }
 
     float_t HestonSolver::GaussLobattoInt(float_t a, float_t b,
-                                         float_t abstol,
-                                         size_t maxeval
-                                         , float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type) {
+                                          float_t abstol,
+                                          size_t maxeval
+                                          , float_t xi, float_t theta, float_t kappa, float_t rho, float_t r, float_t T, float_t K, float_t S, float_t v, int type) {
       const float_t tol_epsunit = abstol / std::numeric_limits<float_t>::epsilon();
       size_t neval = 0;
       return GaussLobattoIntStep(a, b,

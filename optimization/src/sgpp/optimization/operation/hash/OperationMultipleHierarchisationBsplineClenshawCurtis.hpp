@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid      grid
          */
         OperationMultipleHierarchisationBsplineClenshawCurtis(
-            base::BsplineClenshawCurtisGrid& grid) : grid(grid) {
+          base::BsplineClenshawCurtisGrid& grid) : grid(grid) {
         }
 
         /**

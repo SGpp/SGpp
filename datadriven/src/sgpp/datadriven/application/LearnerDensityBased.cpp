@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "LearnerDensityBased.hpp"
@@ -138,7 +138,7 @@ namespace SGPP {
           SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
       } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
         myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
-                                        SolverConfigRefine.eps_);
+                                          SolverConfigRefine.eps_);
       } else {
         throw base::application_exception(
           "LearnerDensityBased::train: An unsupported SLE solver type was chosen!");

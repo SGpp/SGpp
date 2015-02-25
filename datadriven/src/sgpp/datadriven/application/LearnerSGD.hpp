@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef LEARNERSGD_HPP
@@ -23,35 +23,35 @@ namespace SGPP {
       public:
         LearnerSGD(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
-		/*
-		 * Implements stochastic gradient descent.
-		 *
-		 * @param trainDataset training dataset: x values
-		 * @param classes training dataset: y values
-		 * @param maxIterations stops after maxIterations
-		 * @param eps stop if alpha_i < eps for all i
-		 * @param lambda regularization factor
-		 * @param gamma step width
-		 * */
-		virtual void train(
-	            SGPP::base::DataMatrix& trainDataset, 
-	            SGPP::base::DataVector& classes, 
-				SGPP::base::RegularGridConfiguration& GridConfig, 
-				size_t maxIterations,
-				float_t eps,
-				float_t lambda,
-				float_t gamma
-				);
+        /*
+         * Implements stochastic gradient descent.
+         *
+         * @param trainDataset training dataset: x values
+         * @param classes training dataset: y values
+         * @param maxIterations stops after maxIterations
+         * @param eps stop if alpha_i < eps for all i
+         * @param lambda regularization factor
+         * @param gamma step width
+         * */
+        virtual void train(
+          SGPP::base::DataMatrix& trainDataset,
+          SGPP::base::DataVector& classes,
+          SGPP::base::RegularGridConfiguration& GridConfig,
+          size_t maxIterations,
+          float_t eps,
+          float_t lambda,
+          float_t gamma
+        );
 
-		virtual ~LearnerSGD();
+        virtual ~LearnerSGD();
 
-		SGPP::base::DataVector* getAlpha();
-		SGPP::base::Grid* getGrid();
+        SGPP::base::DataVector* getAlpha();
+        SGPP::base::Grid* getGrid();
 
       private:
-		int getRandom(int limit);
-		
-	};
+        int getRandom(int limit);
+
+    };
   }
 }
 

@@ -57,8 +57,8 @@ namespace SGPP {
         // generate pseudorandom starting points
         for (size_t k = 0; k < populationSize; k++) {
           roundN[k] = static_cast<size_t>(
-              std::ceil(static_cast<float_t>(remainingN) /
-                        static_cast<float_t>(populationSize - k)));
+                        std::ceil(static_cast<float_t>(remainingN) /
+                                  static_cast<float_t>(populationSize - k)));
           remainingN -= roundN[k];
 
           for (size_t t = 0; t < d; t++) {
@@ -132,7 +132,7 @@ namespace SGPP {
 
       void RandomSearch::clone(std::unique_ptr<Optimizer>& clone) const {
         clone = std::unique_ptr<Optimizer>(new RandomSearch(optimizer, N,
-                                                            populationSize));
+                                           populationSize));
         clone->setStartingPoint(x0);
       }
 

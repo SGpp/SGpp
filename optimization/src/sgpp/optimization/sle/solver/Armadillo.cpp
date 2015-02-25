@@ -100,7 +100,7 @@ namespace SGPP {
           char str[10];
           float_t nnzRatio = static_cast<float_t>(nnz) /
                              (static_cast<float_t>(n) *
-                                 static_cast<float_t>(n));
+                              static_cast<float_t>(n));
           snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
           printer.printStatusUpdate("nnz ratio: " + std::string(str));
           printer.printStatusNewLine();
@@ -116,7 +116,7 @@ namespace SGPP {
           if (arma::solve(x_armadillo, A, b_armadillo)) {
             X.clear();
             X.push_back(
-                arma::conv_to<std::vector<float_t>>::from(x_armadillo));
+              arma::conv_to<std::vector<float_t>>::from(x_armadillo));
             printer.printStatusEnd();
             return true;
           } else {
@@ -142,7 +142,7 @@ namespace SGPP {
             // convert solutions to std::vector
             for (arma::uword i = 0; i < B_count; i++) {
               X.push_back(arma::conv_to<std::vector<float_t>>::from(
-                  XArmadillo.col(i)));
+                            XArmadillo.col(i)));
             }
 
             printer.printStatusEnd();

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
@@ -19,10 +19,10 @@
 namespace SGPP {
   namespace base {
 
-  PeriodicGridGenerator::PeriodicGridGenerator(GridStorage* storage) : storage(storage) {
+    PeriodicGridGenerator::PeriodicGridGenerator(GridStorage* storage) : storage(storage) {
     }
 
-  PeriodicGridGenerator::~PeriodicGridGenerator() {
+    PeriodicGridGenerator::~PeriodicGridGenerator() {
     }
 
     void PeriodicGridGenerator::regular(int level) {
@@ -53,7 +53,7 @@ namespace SGPP {
 
     void PeriodicGridGenerator::cliques(int level, size_t clique_size) {
       if (level < 0) {
-      throw generation_exception("Grid level value is negative");
+        throw generation_exception("Grid level value is negative");
       }
 
       HashGenerator gen;

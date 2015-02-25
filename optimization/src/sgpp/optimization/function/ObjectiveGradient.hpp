@@ -68,7 +68,7 @@ namespace SGPP {
          * @param[out] clone pointer to cloned object
          */
         virtual void clone(
-            std::unique_ptr<ObjectiveGradient>& clone) const = 0;
+          std::unique_ptr<ObjectiveGradient>& clone) const = 0;
 
       protected:
         /// dimension of the domain

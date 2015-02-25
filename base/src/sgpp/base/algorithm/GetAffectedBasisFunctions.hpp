@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef GETAFFECTEDBASISFUNCTIONS_HPP
@@ -125,7 +125,7 @@ namespace SGPP {
         void rec(BASIS& basis, std::vector<float_t>& point, size_t current_dim,
                  float_t value, GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
-                 size_t, float_t > > & result) {
+                 size_t, float_t > >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -148,7 +148,7 @@ namespace SGPP {
               working.get(current_dim, temp, work_index);
 
               float_t new_value = basis.eval(work_level, work_index,
-                                            point[current_dim]);
+                                             point[current_dim]);
 
               if (current_dim == storage->dim() - 1) {
                 result.push_back(std::make_pair(seq, value * new_value));
@@ -233,7 +233,7 @@ namespace SGPP {
                  size_t current_dim, float_t value,
                  GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
-                 size_t, float_t > > & result) {
+                 size_t, float_t > >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
           //size_t i;
@@ -261,7 +261,7 @@ namespace SGPP {
               //std::cout <<"current dim: "<<current_dim<<" Point:"<<point[current_dim]<<" current_level: "<<work_level<<" current_Index: " << work_index << std::endl;
 
               float_t new_value = basis.eval(work_level, work_index,
-                                            point[current_dim]);
+                                             point[current_dim]);
 
               if (current_dim == storage->dim() - 1) {
                 //for( int i=0;i < storage->dim();i++)
@@ -1016,110 +1016,110 @@ namespace SGPP {
 
 
     /**
-	 * Template Specialization for PeriodicBasis basis.
-	 */
-	template<>
-	class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> > {
-		typedef LinearPeriodicBasis<unsigned int, unsigned int> SLinearPeriodicBasis;
-	  public:
-		GetAffectedBasisFunctions(GridStorage* storage) : storage(storage) {
-		}
+    * Template Specialization for PeriodicBasis basis.
+    */
+    template<>
+    class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> > {
+        typedef LinearPeriodicBasis<unsigned int, unsigned int> SLinearPeriodicBasis;
+      public:
+        GetAffectedBasisFunctions(GridStorage* storage) : storage(storage) {
+        }
 
-		~GetAffectedBasisFunctions() {}
+        ~GetAffectedBasisFunctions() {}
 
-		void operator()(SLinearPeriodicBasis& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
-		  GridStorage::grid_iterator working(storage);
+        void operator()(SLinearPeriodicBasis& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
+          GridStorage::grid_iterator working(storage);
 
-		  working.resetToLevelZero();
-		  result.clear();
-
-
-		  rec(basis, point, 0, 1.0, working, result);
-		}
-
-	  protected:
-		GridStorage* storage;
-
-		void rec(SLinearPeriodicBasis& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
-		  typedef GridStorage::index_type::level_type level_type;
-		  typedef GridStorage::index_type::index_type index_type;
-
-		  level_type work_level = 0;
-
-		  while (true) {
-			size_t seq = working.seq();
-			index_type global_work_index = 0;
+          working.resetToLevelZero();
+          result.clear();
 
 
-			if (storage->end(seq)) {
-			  break;
-			} else {
-			  index_type work_index;
-			  level_type temp;
+          rec(basis, point, 0, 1.0, working, result);
+        }
 
-			  working.get(current_dim, temp, work_index);
-			  global_work_index = work_index;
+      protected:
+        GridStorage* storage;
 
-			  if (work_level > 0) {
-				float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
+        void rec(SLinearPeriodicBasis& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+          typedef GridStorage::index_type::level_type level_type;
+          typedef GridStorage::index_type::index_type index_type;
 
-				if (current_dim == storage->dim() - 1) {
-				  result.push_back(std::make_pair(seq, value * new_value));
-				} else {
-				  rec(basis, point, current_dim + 1, value * new_value, working, result);
-				}
-			  }
-			  // handle boundaries if we are on level 0
-			  else {
-				// level 0, index 0
-				working.left_levelzero(current_dim);
-				size_t seq_lz_left = working.seq();
-				float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+          level_type work_level = 0;
 
-				if (current_dim == storage->dim() - 1) {
-				  result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
-				} else {
-				  rec(basis, point, current_dim + 1, value * new_value_l_zero_left, working, result);
-				}
-			  }
-			}
+          while (true) {
+            size_t seq = working.seq();
+            index_type global_work_index = 0;
 
-			// there are no levels left
-			if (working.hint()) {
-			  break;
-			}
 
-			// this decides in which direction we should descend by evaluating the corresponding bit
-			// the bits are coded from left to right starting with level 1 being in position src_level
-			if (work_level > 0) {
-			  float_t hat = 0.0;
-			  level_type h = 0;
+            if (storage->end(seq)) {
+              break;
+            } else {
+              index_type work_index;
+              level_type temp;
 
-			  h = 1 << work_level;
+              working.get(current_dim, temp, work_index);
+              global_work_index = work_index;
 
-			  hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
+              if (work_level > 0) {
+                float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
 
-			  if (point[current_dim] == hat)
-				break;
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq, value * new_value));
+                } else {
+                  rec(basis, point, current_dim + 1, value * new_value, working, result);
+                }
+              }
+              // handle boundaries if we are on level 0
+              else {
+                // level 0, index 0
+                working.left_levelzero(current_dim);
+                size_t seq_lz_left = working.seq();
+                float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
-			  if (point[current_dim] < hat) {
-				working.left_child(current_dim);
-			  } else {
-				working.right_child(current_dim);
-			  }
-			} else {
-			  if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
-				break;
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
+                } else {
+                  rec(basis, point, current_dim + 1, value * new_value_l_zero_left, working, result);
+                }
+              }
+            }
 
-			  working.top(current_dim);
-			}
+            // there are no levels left
+            if (working.hint()) {
+              break;
+            }
 
-			++work_level;
-		  }
+            // this decides in which direction we should descend by evaluating the corresponding bit
+            // the bits are coded from left to right starting with level 1 being in position src_level
+            if (work_level > 0) {
+              float_t hat = 0.0;
+              level_type h = 0;
 
-		  working.left_levelzero(current_dim);
-		}
-	};
+              h = 1 << work_level;
+
+              hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
+
+              if (point[current_dim] == hat)
+                break;
+
+              if (point[current_dim] < hat) {
+                working.left_child(current_dim);
+              } else {
+                working.right_child(current_dim);
+              }
+            } else {
+              if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
+                break;
+
+              working.top(current_dim);
+            }
+
+            ++work_level;
+          }
+
+          working.left_levelzero(current_dim);
+        }
+    };
   }
 }
 

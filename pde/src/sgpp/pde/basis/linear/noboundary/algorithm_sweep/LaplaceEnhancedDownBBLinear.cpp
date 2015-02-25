@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/pde/basis/linear/noboundary/algorithm_sweep/LaplaceEnhancedDownBBLinear.hpp>
@@ -95,6 +95,7 @@ namespace SGPP {
           __m128d fr_xmm = _mm_set1_pd(0.0);
 #endif
 #endif
+
           if (dim == i) {
             rec_GL(fl, fr, i, index);
           } else if (dim == i + 1) {
@@ -113,7 +114,7 @@ namespace SGPP {
             rec_LL(fl, fr, fl, fr, i, index);
 #endif
 #endif
-            }
+          }
         }
 
         for ( ; i < this->numAlgoDims_; i++) {
@@ -270,9 +271,9 @@ namespace SGPP {
         if (!storage->end(index.seq())) {
 #if 1
 #if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
-		rec_LL(fl, new_fm, dim, index);
+          rec_LL(fl, new_fm, dim, index);
 #else
-		rec_LL(fl, fm, fl2, fm2, dim, index);
+          rec_LL(fl, fm, fl2, fm2, dim, index);
 #endif
 #else
 #ifdef __SSE3__

@@ -89,7 +89,7 @@ namespace SGPP {
             // check if the absolute improvement is big enough
             if (improvement >= rhs) {
               return (std::abs(fx - fy) >=
-                  tol * (std::abs(fx) + std::abs(fy) + eps));
+                      tol * (std::abs(fx) + std::abs(fy) + eps));
             }
           }
 

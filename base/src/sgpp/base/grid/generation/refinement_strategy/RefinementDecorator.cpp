@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
@@ -41,35 +41,34 @@ namespace SGPP {
       this->decorated_refinement_->refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
     }
 
-    bool RefinementDecorator::checkAdmissibility(GridStorage* storage, index_type& index)
-    {
-    	bool isAdmissible = true;
-    	/* TODO
-    	index_type gridPoint = index;
+    bool RefinementDecorator::checkAdmissibility(GridStorage* storage, index_type& index) {
+      bool isAdmissible = true;
+      /* TODO
+      index_type gridPoint = index;
 
-    	size_t dim = 0;
-    	level_t parentLevel = 0;
-    	index_t parentIndex = 0;
+      size_t dim = 0;
+      level_t parentLevel = 0;
+      index_t parentIndex = 0;
 
-    	//go through all dimensions and check if all parents are availabe
-    	while(dim < gridPoint.dim() && isAdmissible)
-    	{
-    		//get the parent index
-    		index.getParentLevelAndIndex(&parentLevel,&parentIndex,dim);
-    		gridPoint.set(dim,parentLevel,parentIndex);
+      //go through all dimensions and check if all parents are availabe
+      while(dim < gridPoint.dim() && isAdmissible)
+      {
+        //get the parent index
+        index.getParentLevelAndIndex(&parentLevel,&parentIndex,dim);
+        gridPoint.set(dim,parentLevel,parentIndex);
 
-    		if(parentLevel!=0)
-    		{
-    			//if we can not find the parent in the grid, the child is not admissible;
-    			isAdmissible = (storage->find(&gridPoint) != storage->end());
-    		}
+        if(parentLevel!=0)
+        {
+          //if we can not find the parent in the grid, the child is not admissible;
+          isAdmissible = (storage->find(&gridPoint) != storage->end());
+        }
 
-    		gridPoint = index;
-    		++dim;
-    	}
-    	*/
+        gridPoint = index;
+        ++dim;
+      }
+      */
 
-    	return isAdmissible;
+      return isAdmissible;
 
     }
 

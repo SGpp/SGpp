@@ -47,8 +47,8 @@ namespace SGPP {
          * @return          value of the partial derivative of the linear combination
          */
         virtual float_t evalPartialDerivative(DataVector& alpha,
-                                             const std::vector<float_t>& point,
-                                             size_t deriv_dim);
+                                              const std::vector<float_t>& point,
+                                              size_t deriv_dim);
 
       protected:
         /// storage of the sparse grid

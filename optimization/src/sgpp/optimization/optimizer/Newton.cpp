@@ -110,7 +110,7 @@ namespace SGPP {
 
           // norm of solution
           float_t dkNorm = sqrt(std::inner_product(dk.begin(), dk.end(),
-                                                   dk.begin(), 0.0));
+                                dk.begin(), 0.0));
 
           // acceptance criterion
           if (lsSolved && (std::inner_product(s.begin(), s.end(),

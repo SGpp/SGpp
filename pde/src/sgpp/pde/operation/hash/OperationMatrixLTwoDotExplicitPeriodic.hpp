@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONMATRIXLTWODOTEXPLICITPERIODIC_HPP
@@ -28,13 +28,13 @@ namespace SGPP {
          * @param m pointer to datamatrix of size (number of grid point) x (number of grid points)
          * @param grid the sparse grid
          */
-    	OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::DataMatrix* m, SGPP::base::Grid* grid);
+        OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::DataMatrix* m, SGPP::base::Grid* grid);
         /**
          * Constructor that creates an own matrix
          *
          * @param grid the sparse grid
          */
-    	OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::Grid* grid);
+        OperationMatrixLTwoDotExplicitPeriodic(SGPP::base::Grid* grid);
 
         /**
          * Destructor

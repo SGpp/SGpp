@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid      grid
          */
         OperationMultipleHierarchisationBsplineBoundary(
-            base::BsplineTruncatedBoundaryGrid& grid) :
+          base::BsplineTruncatedBoundaryGrid& grid) :
           grid(grid) {
         }
 

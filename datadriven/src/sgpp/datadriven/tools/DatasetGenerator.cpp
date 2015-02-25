@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "DatasetGenerator.hpp"
@@ -51,9 +51,9 @@ namespace SGPP {
         }
 
         float_t cls = 10.0 * sin(M_PI * trData.get(i, 0) * trData.get(i, 1))
-                     + 20.0 * (trData.get(i, 2) - 0.5) * (trData.get(i, 2) - 0.5)
-                     + 10.0 * trData.get(i, 3)
-                     + 5.0 * trData.get(i, 4) + normal(0.0, 1.0);
+                      + 20.0 * (trData.get(i, 2) - 0.5) * (trData.get(i, 2) - 0.5)
+                      + 10.0 * trData.get(i, 3)
+                      + 5.0 * trData.get(i, 4) + normal(0.0, 1.0);
         classes.set(i, cls);
       }
     }
