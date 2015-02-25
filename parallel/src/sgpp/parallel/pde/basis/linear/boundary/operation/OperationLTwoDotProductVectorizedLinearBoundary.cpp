@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifdef USE_MPI
@@ -451,7 +451,7 @@ namespace SGPP {
       double res_two = temp_res * overlap; // Now mask result
 
       // mask with lid != 1, since we have to avoid the "up" part.
-      return (res_one * (lid == ljd) + res_two * (lid != ljd)) * *(lcl_q_->getPointer() + dim);
+      return (res_one * (lid == ljd) + res_two * (lid != ljd))** (lcl_q_->getPointer() + dim);
     }
 
     void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
@@ -1016,7 +1016,7 @@ namespace SGPP {
 #endif
 
           for (size_t j = 0 ; j < storage->size() ; ++j) {
-            element += alpha[j] * *(operation_result_dest_ptr + j);
+            element += alpha[j]** (operation_result_dest_ptr + j);
           }
 
           result_boundary_filtered_ptr[ii] = element;

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONMULTIPLEEVALPERIODIC_HPP
@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid grid
          * @param dataset the dataset that should be evaluated
          */
-    	OperationMultipleEvalPeriodic(Grid &grid, DataMatrix &dataset) : OperationMultipleEval(grid, dataset) {
+        OperationMultipleEvalPeriodic(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
           this->storage = grid.getStorage();
         }
 

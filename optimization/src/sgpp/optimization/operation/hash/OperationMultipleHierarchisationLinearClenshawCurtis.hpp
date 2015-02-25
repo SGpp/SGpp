@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid      grid
          */
         OperationMultipleHierarchisationLinearClenshawCurtis(
-            base::LinearClenshawCurtisGrid& grid) :
+          base::LinearClenshawCurtisGrid& grid) :
           grid(grid) {
         }
 

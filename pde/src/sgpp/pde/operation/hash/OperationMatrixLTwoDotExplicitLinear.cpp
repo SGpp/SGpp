@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "OperationMatrixLTwoDotExplicitLinear.hpp"
@@ -26,7 +26,7 @@ namespace SGPP {
     OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(SGPP::base::Grid* grid) :
       ownsMatrix_(true) {
       m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(),
-                                    grid->getStorage()->size());
+                                      grid->getStorage()->size());
       buildMatrix(grid);
     }
 
@@ -69,14 +69,14 @@ namespace SGPP {
                 if (lik > ljk) { //Phi_i_k is the "smaller" ansatz function
                   float_t diff = (iik / lik) - (ijk / ljk); // x_i_k - x_j_k
                   float_t temp_res = fabs(diff - (1 / lik))
-                                    + fabs(diff + (1 / lik)) - fabs(diff);
+                                     + fabs(diff + (1 / lik)) - fabs(diff);
                   temp_res *= ljk;
                   temp_res = (1 - temp_res) / lik;
                   res *= temp_res;
                 } else { //Phi_j_k is the "smaller" ansatz function
                   float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
                   float_t temp_res = fabs(diff - (1 / ljk))
-                                    + fabs(diff + (1 / ljk)) - fabs(diff);
+                                     + fabs(diff + (1 / ljk)) - fabs(diff);
                   temp_res *= lik;
                   temp_res = (1 - temp_res) / ljk;
                   res *= temp_res;

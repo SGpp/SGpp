@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifdef USE_MPI
@@ -383,7 +383,7 @@ namespace SGPP {
 #endif
       double res_two = temp_res * overlap; // Now mask result
 
-      return (res_one * (lid == ljd) + res_two * (lid != ljd)) * *(lcl_q_->getPointer() + dim);
+      return (res_one * (lid == ljd) + res_two * (lid != ljd))** (lcl_q_->getPointer() + dim);
     }
 
     void OperationLTwoDotProductVectorizedLinear::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
@@ -886,7 +886,7 @@ namespace SGPP {
 #endif
 
           for (size_t j = 0 ; j < storage->size() ; ++j) {
-            element += alpha[j] * *(operation_result_dest_ptr + j);
+            element += alpha[j]** (operation_result_dest_ptr + j);
           }
 
           result[i] = element;

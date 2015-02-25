@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef DMSYSTEMMATRIXBASE_HPP
@@ -24,7 +24,7 @@ namespace SGPP {
     class DMSystemMatrixBase : public SGPP::base::OperationMatrix {
       protected:
         /// the dataset
-        SGPP::base::DataMatrix *dataset_;
+        SGPP::base::DataMatrix* dataset_;
         /// the lambda, the regularisation parameter
         float_t lambda_;
         /// time needed for Mult

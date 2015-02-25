@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include "MetaLearner.hpp"
@@ -180,7 +180,7 @@ namespace SGPP {
 
     //learn and test against the streaming implemenation
     float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                        std::string datasetFileName, size_t gridGranularity, float_t tolerance) {
+                                         std::string datasetFileName, size_t gridGranularity, float_t tolerance) {
       //always do this first
       this->learn(operationConfiguration, datasetFileName);
       this->learnReference(datasetFileName);

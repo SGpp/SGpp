@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef STRATIFIEDSAMPLEGENERATOR_HPP
@@ -13,7 +13,7 @@
 
 namespace SGPP {
   namespace quadrature {
-    
+
     /**
      * The class StratifiedSampleGenerator subdivides every dimension in a given
      * number of strata. For each strata one sample point is generated. In case
@@ -25,7 +25,7 @@ namespace SGPP {
       public:
 
         /**
-         * Standard constructor 
+         * Standard constructor
          *
          * @param dimensions number of dimensions used for sample generation
          * @param strataPerDimension array holding the number of strata used to
@@ -43,21 +43,21 @@ namespace SGPP {
          */
 
         void getSample(SGPP::base::DataVector& sample);
-        
+
       private:
         // Array containing the number of strata per dimension
         size_t* numberOfStrata;
         // Array containing the current strata number for every dimension
         size_t* currentStrata;
-        
+
         // total number of samples which can be generated for given strata configuration
         size_t numberOfSamples;
-	      // index number of current sample [0..numberOfSamples-1]
+        // index number of current sample [0..numberOfSamples-1]
         size_t numberOfCurrentSample;
-        
-        // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]	
+
+        // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]
         float_t* sizeOfStrata;
-        
+
         /**
          * This method computes in which strata the next sample should be generated.
          * Dimension after dimension each stratum is used to generate one sample point. As soon
@@ -66,9 +66,9 @@ namespace SGPP {
          */
 
         void getNextStrata();
-  
+
     };
-    
+
   }
 }
 

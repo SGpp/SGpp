@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef ALGORITHMMULTIPLEEVALUATION_HPP
@@ -50,7 +50,7 @@ namespace SGPP {
          * @param result the result vector of the matrix vector multiplication
          */
         void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source,
-        		DataMatrix& x, DataVector& result) {
+                            DataMatrix& x, DataVector& result) {
           result.setAll(0.0);
           size_t source_size = source.getSize();
 

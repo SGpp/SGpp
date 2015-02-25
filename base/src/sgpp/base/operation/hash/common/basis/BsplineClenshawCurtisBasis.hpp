@@ -53,7 +53,7 @@ namespace SGPP {
          *              \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
          */
         inline float_t nonUniformBSpline(float_t x, size_t p, size_t k,
-                                        const std::vector<float_t>& xi) const {
+                                         const std::vector<float_t>& xi) const {
           if (p == 0) {
             // characteristic function of [xi[k], xi[k+1])
             return (((x >= xi[k]) && (x < xi[k + 1])) ? 1.0 : 0.0);
@@ -78,7 +78,7 @@ namespace SGPP {
          *              \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
          */
         inline float_t nonUniformBSplineDx(float_t x, size_t p, size_t k,
-                                          const std::vector<float_t>& xi) const {
+                                           const std::vector<float_t>& xi) const {
           if (p == 0) {
             return 0.0;
           } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
@@ -101,7 +101,7 @@ namespace SGPP {
          *              \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
          */
         inline float_t nonUniformBSplineDxDx(float_t x, size_t p, size_t k,
-                                            const std::vector<float_t>& xi) const {
+                                             const std::vector<float_t>& xi) const {
           if (p <= 1) {
             return 0.0;
           } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {

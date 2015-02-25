@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
@@ -28,8 +28,8 @@ namespace SGPP {
         SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize, std::string OperationMode, double dStrike, std::string option_type,
         bool bLogTransform, bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode,
         int numCoarsenPoints, double refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) : BlackScholesParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, mu, sigma, rho,
-              r, TimestepSize, OperationMode, dStrike, option_type, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel)
-    {}
+              r, TimestepSize, OperationMode, dStrike, option_type, bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode, refineMaxLevel) {
+    }
 
     BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::~BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI() {
     }

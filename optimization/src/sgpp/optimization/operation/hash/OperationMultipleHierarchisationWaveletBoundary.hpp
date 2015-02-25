@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid      grid
          */
         OperationMultipleHierarchisationWaveletBoundary(
-            base::WaveletTruncatedBoundaryGrid& grid) :
+          base::WaveletTruncatedBoundaryGrid& grid) :
           grid(grid) {
         }
 
@@ -44,7 +44,7 @@ namespace SGPP {
          *                           after: vector of hierarchical coefficients
          */
         virtual void doHierarchisation(
-            std::vector<base::DataVector*> nodeValues);
+          std::vector<base::DataVector*> nodeValues);
 
         /**
          * @param[in,out] alpha before: vector of hierarchical coefficients,
@@ -52,7 +52,7 @@ namespace SGPP {
          *                      the grid points
          */
         virtual void doDehierarchisation(
-            std::vector<base::DataVector*> alpha);
+          std::vector<base::DataVector*> alpha);
 
       protected:
         /// storage of the sparse grid

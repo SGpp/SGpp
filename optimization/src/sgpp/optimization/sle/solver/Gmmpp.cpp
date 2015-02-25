@@ -28,9 +28,9 @@ namespace SGPP {
        */
       void callback(const gmm::iteration& iter) {
         printer.printStatusUpdate(
-            "solving with Gmm++ (k = " +
-            std::to_string(iter.get_iteration()) +
-            ", residual norm = " + std::to_string(iter.get_res()) + ")");
+          "solving with Gmm++ (k = " +
+          std::to_string(iter.get_iteration()) +
+          ", residual norm = " + std::to_string(iter.get_res()) + ")");
       }
 
       /**
@@ -65,9 +65,9 @@ namespace SGPP {
           if (iter.converged() && (res < 1e3)) {
             // GMRES converged
             printer.printStatusUpdate(
-                "solving with Gmm++ (k = " +
-                std::to_string(iter.get_iteration()) +
-                ", residual norm = " + std::to_string(res) + ")");
+              "solving with Gmm++ (k = " +
+              std::to_string(iter.get_iteration()) +
+              ", residual norm = " + std::to_string(res) + ")");
             printer.printStatusEnd();
             return true;
           } else {
@@ -85,9 +85,9 @@ namespace SGPP {
 
             if (iter.converged() && (res < 1e3)) {
               printer.printStatusUpdate(
-                  "solving with Gmm++ (k = " +
-                  std::to_string(iter.get_iteration()) +
-                  ", residual norm = " + std::to_string(res) + ")");
+                "solving with Gmm++ (k = " +
+                std::to_string(iter.get_iteration()) +
+                ", residual norm = " + std::to_string(res) + ")");
               printer.printStatusEnd();
               return true;
             } else {
@@ -176,7 +176,7 @@ namespace SGPP {
           char str[10];
           float_t nnz_ratio = static_cast<float_t>(nnz) /
                               (static_cast<float_t>(n) *
-                                  static_cast<float_t>(n));
+                               static_cast<float_t>(n));
           snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
           printer.printStatusUpdate("nnz ratio: " + std::string(str));
           printer.printStatusNewLine();

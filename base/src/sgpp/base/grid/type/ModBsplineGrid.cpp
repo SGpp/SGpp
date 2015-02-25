@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -29,21 +29,22 @@ namespace SGPP {
     }
 
     ModBsplineGrid::~ModBsplineGrid() {
-    	if (basis_ != NULL){
-			delete basis_;
-		}
+      if (basis_ != NULL) {
+        delete basis_;
+      }
     }
 
     const char* ModBsplineGrid::getType() {
       return "modBspline";
     }
 
-    const SBasis& ModBsplineGrid::getBasis(){
-    	if (basis_ == NULL){
-			basis_ = new SBsplineModifiedBase(degree);
-		}
-		return *basis_;
-	}
+    const SBasis& ModBsplineGrid::getBasis() {
+      if (basis_ == NULL) {
+        basis_ = new SBsplineModifiedBase(degree);
+      }
+
+      return *basis_;
+    }
 
     size_t ModBsplineGrid::getDegree() {
       return this->degree;

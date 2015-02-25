@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef NAIVESAMPLEGENERATOR_HPP
@@ -26,11 +26,11 @@ namespace SGPP {
       public:
 
         /**
-         * Standard constructor 
+         * Standard constructor
          *
          * @param dimension number of dimensions used for sample generation
          */
-        NaiveSampleGenerator(size_t dimension): SampleGenerator(dimension){};
+        NaiveSampleGenerator(size_t dimension): SampleGenerator(dimension) {};
 
         /**
          * This method generates one sample .

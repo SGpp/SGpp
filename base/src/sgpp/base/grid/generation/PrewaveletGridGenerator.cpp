@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
@@ -39,13 +39,13 @@ namespace SGPP {
     }
 
     void PrewaveletGridGenerator::cliques(int level, size_t clique_size) {
-	  if (level < 0) {
-		throw generation_exception("Grid level value is negative");
-	  }
+      if (level < 0) {
+        throw generation_exception("Grid level value is negative");
+      }
 
-	  HashGenerator gen;
-	  gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
-	}
+      HashGenerator gen;
+      gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
+    }
 
     void PrewaveletGridGenerator::full(int level) {
       if (level < 0) {

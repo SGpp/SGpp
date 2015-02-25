@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
@@ -97,19 +97,20 @@ namespace SGPP {
 
 
     void BoundingBox::toString(std::string& text) {
-    	std::stringstream str;
-    	for(size_t d =0; d < nDim; d++ ){
-    		str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
-    				<< "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
-    	}
+      std::stringstream str;
 
-    	text = str.str();
+      for (size_t d = 0; d < nDim; d++ ) {
+        str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
+            << "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
+      }
+
+      text = str.str();
     }
 
     std::string BoundingBox::toString() {
-		std::string str;
-		toString(str);
-		return str;
+      std::string str;
+      toString(str);
+      return str;
     }
 
   }

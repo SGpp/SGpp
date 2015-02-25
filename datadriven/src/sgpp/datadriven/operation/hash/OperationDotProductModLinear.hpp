@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef OPERATIONDOTPRODUCTMODLINEAR_HPP
@@ -22,7 +22,7 @@ namespace SGPP {
          *
          * @param storage Pointer to the grid's gridstorage obejct
          */
-    	OperationDotProductModLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
+        OperationDotProductModLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
 
         /**
          * Destructor

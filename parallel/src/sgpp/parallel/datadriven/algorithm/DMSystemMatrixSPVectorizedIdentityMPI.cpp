@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
@@ -54,7 +54,7 @@ namespace SGPP {
                  _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank],
                  _mpi_data_offsets[mpi_rank],
                  _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]
-                                                                        );
+                                                                          );
       waitting_time = 0.0;
     }
 

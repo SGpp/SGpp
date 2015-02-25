@@ -24,8 +24,8 @@ namespace SGPP {
 
       for (size_t i = 0; i < nodeValues.size(); i++) {
         B.push_back(std::vector<float_t>(
-            nodeValues[i]->getPointer(),
-            nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
+                      nodeValues[i]->getPointer(),
+                      nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
       }
 
       if (solver.solve(system, B, X)) {

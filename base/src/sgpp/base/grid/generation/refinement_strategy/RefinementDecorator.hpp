@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef REFINEMENTSTRATEGY_HPP_
@@ -35,8 +35,8 @@ namespace SGPP {
         RefinementDecorator(AbstractRefinement* refinement) {
           decorated_refinement_ = refinement;
         };
-        ~RefinementDecorator()
-        {}
+        ~RefinementDecorator() {
+        }
         ;
 
         /**
@@ -77,7 +77,7 @@ namespace SGPP {
          */
         virtual void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
 
-        bool checkAdmissibility(GridStorage* storage,index_type& subspace);
+        bool checkAdmissibility(GridStorage* storage, index_type& subspace);
 
       protected:
 

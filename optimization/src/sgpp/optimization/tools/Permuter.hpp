@@ -7,7 +7,6 @@
 #define SGPP_OPTIMIZATION_TOOLS_PERMUTER_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <iostream>
 
 namespace SGPP {
   namespace optimization {

@@ -47,8 +47,8 @@ namespace SGPP {
          * @return                  value of linear combination
          */
         virtual float_t evalGradient(DataVector& alpha,
-                                    const std::vector<float_t>& point,
-                                    DataVector& gradient);
+                                     const std::vector<float_t>& point,
+                                     DataVector& gradient);
 
       protected:
         /// storage of the sparse grid

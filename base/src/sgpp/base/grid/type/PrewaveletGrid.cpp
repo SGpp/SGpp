@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -34,10 +34,10 @@ namespace SGPP {
       return "prewavelet";
     }
 
-    const SBasis& PrewaveletGrid::getBasis(){
-		static SPrewaveletBase basis;
-		return basis;
-	}
+    const SBasis& PrewaveletGrid::getBasis() {
+      static SPrewaveletBase basis;
+      return basis;
+    }
 
     Grid* PrewaveletGrid::unserialize(std::istream& istr) {
       return new PrewaveletGrid(istr);

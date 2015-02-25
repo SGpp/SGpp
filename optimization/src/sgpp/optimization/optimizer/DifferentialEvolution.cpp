@@ -95,8 +95,8 @@ namespace SGPP {
         size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
 
         std::vector<std::vector<size_t>> a(maxK, std::vector<size_t>(
-            populationSize, 0)),
-                b = a, c = a, j = a;
+                                             populationSize, 0)),
+                                                             b = a, c = a, j = a;
         std::vector<std::vector<std::vector<float_t>>> prob(maxK,
             std::vector<std::vector<float_t>>(populationSize,
                                               std::vector<float_t>(d, 0)));

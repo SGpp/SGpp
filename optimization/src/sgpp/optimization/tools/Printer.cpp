@@ -168,10 +168,10 @@ namespace SGPP {
     }
 
     void Printer::printIterativeGridGenerator(
-        const IterativeGridGenerator& grid_gen) const {
+      const IterativeGridGenerator& grid_gen) const {
       base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
       const std::vector<float_t>& functionValues =
-          grid_gen.getFunctionValues();
+        grid_gen.getFunctionValues();
 
       for (size_t i = 0; i < gridStorage.size(); i++) {
         if (i > 0) {

@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef LATINHYPERCUBESAMPLEGENERATOR_HPP
@@ -16,7 +16,7 @@
 
 namespace SGPP {
   namespace quadrature {
-    
+
     /**
      * The class NaiveSampleGenerator implements a simple MonteCarlo sample
      * generator. A sample is generated using the standard random number
@@ -28,7 +28,7 @@ namespace SGPP {
       public:
 
         /**
-         * Standard constructor 
+         * Standard constructor
          *
          * @param dimensions number of dimensions used for sample generation
          * @param numberOfSamples number of samples to be drawn
@@ -44,7 +44,7 @@ namespace SGPP {
          */
 
         void getSample(SGPP::base::DataVector& sample);
-        
+
       private:
 
         /**
@@ -57,20 +57,20 @@ namespace SGPP {
         //
         size_t numberOfStrata;
 
-        //       
+        //
         size_t numberOfCurrentSample;
 
         //
         size_t numberOfSamples;
-        
+
         //
         float_t sizeOfStrata;
-  
-        //      
+
+        //
         std::vector< std::vector<size_t> > currentStrata;
-      
+
     };
-    
+
   }
 }
 

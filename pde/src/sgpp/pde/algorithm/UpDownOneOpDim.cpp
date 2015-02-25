@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
@@ -128,8 +128,8 @@ namespace SGPP {
     void UpDownOneOpDim::specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t op_dim) {
       size_t curNumAlgoDims = this->numAlgoDims_;
       size_t curMaxParallelDims = this->maxParallelDims_;
- 
-     //Unidirectional scheme
+
+      //Unidirectional scheme
       if (dim > 0) {
         // Reordering ups and downs
         SGPP::base::DataVector temp(alpha.getSize());

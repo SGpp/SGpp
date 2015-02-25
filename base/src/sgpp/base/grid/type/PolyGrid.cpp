@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
@@ -27,21 +27,22 @@ namespace SGPP {
     }
 
     PolyGrid::~PolyGrid() {
-    	if (basis_ != NULL){
-    	    		delete basis_;
-    	    	}
+      if (basis_ != NULL) {
+        delete basis_;
+      }
     }
 
     const char* PolyGrid::getType() {
       return "poly";
     }
 
-    const SBasis& PolyGrid::getBasis(){
-    	if (basis_ == NULL){
-			basis_ = new SPolyBase(degree);
-		}
-		return *basis_;
-	}
+    const SBasis& PolyGrid::getBasis() {
+      if (basis_ == NULL) {
+        basis_ = new SPolyBase(degree);
+      }
+
+      return *basis_;
+    }
 
     size_t PolyGrid::getDegree() const {
       return this->degree;

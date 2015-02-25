@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #ifndef LINEARPERIODICBASE_HPP
@@ -33,7 +33,7 @@ namespace SGPP {
          */
         float_t eval(LT level, IT index, float_t p) {
           if (level == 0) {
-        	return fabs(2 * p - 1);
+            return fabs(2 * p - 1);
           } else {
             return 1.0 - fabs((1 << level) * p - index);
           }
@@ -54,7 +54,7 @@ namespace SGPP {
          */
         float_t eval(LT level, IT index, float_t p, float_t q, float_t t) {
           if (level == 0) {
-        	return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
+            return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
           } else {
             return 1.0 - ((1.0 / q) * (fabs(((1 << level) * (p - t)) - (q * index))));
           }
