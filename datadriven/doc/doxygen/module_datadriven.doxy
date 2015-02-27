@@ -1,0 +1,9 @@
+/**
+@page module_datadriven Module SGPP::datadriven
+
+- operations depending on datasets
+- data mining support
+- specialized regularization
+- vectorization of evaluation of multiple on x86
+
+**/

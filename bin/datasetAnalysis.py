@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
 # This file is part of SGClass, a program package making use of spatially adaptive sparse grids to solve numerical problems
 #
 # Copyright (C) 2007 Dirk Pflueger (pflueged@in.tum.de)

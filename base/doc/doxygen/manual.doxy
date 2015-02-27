@@ -1,0 +1,11 @@
+/**
+@page manual Manual
+
+@image html SG++_XS_wcrop.png
+
+<!-- ############################################################# -->
+@section manual__overview Overview
+- @subpage installation
+- @subpage modules
+- @subpage examples
+**/
