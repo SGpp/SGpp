@@ -1,0 +1,38 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+import os
+
+Import('env')
+Import('BUILD_DIR')
+Import('PYSGPP_BUILD_PATH')
+Import('moduleFolders')
+Import('libraryTargetList')
+Import('installTargetList')
+
+# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+if os.path.exists("pysgpp_wrap.cc"):
+    os.remove("pysgpp_wrap.cc")
+
+py_env = env.Clone()
+
+py_env.AppendUnique(CPPFLAGS=['-w'])
+if env['PLATFORM'] == 'cygwin':
+    py_env.Append(LIBS=['python2.7'])    
+elif env['PLATFORM'] == 'darwin':
+    py_env['SHLIBSUFFIX'] = '.so'
+
+# build python module with swig
+py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']])
+libPython = py_env.SharedLibrary(target='pysgpp',
+                     source=["pysgpp.i"],
+                     SHLIBPREFIX='_',
+                     LIBPATH=[BUILD_DIR],
+                     LIBS=['sgpp' + moduleFolder for moduleFolder in moduleFolders if moduleFolder != "pysgpp"])
+#TODO libs are set hacky!
+
+installLibPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), libPython)
+installLibWrapperPython = py_env.Install(os.path.join('#', PYSGPP_BUILD_PATH), "pysgpp.py")
+py_env.Depends(installLibPython, installLibWrapperPython)
+installTargetList.append(installLibPython)

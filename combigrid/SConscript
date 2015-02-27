@@ -1,0 +1,38 @@
+# Copyright (C) 2008-today The SG++ Project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
+import os
+import fnmatch
+
+Import('env')
+Import('BUILD_DIR')
+Import('PYSGPP_BUILD_PATH')
+Import('moduleName')
+Import('libraryTargetList')
+Import('installTargetList')
+
+objs = []
+for currentFolder, subdirNames, fileNames in os.walk("src"):
+    if currentFolder.startswith("src/sgpp/combigrid/test") or currentFolder.startswith("src/sgpp/combigrid/tests") or currentFolder.startswith  ("src/sgpp/combigrid/multigridFG/test"):
+        continue
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        sourceFile = os.path.join(currentFolder, fileName)
+        objs.append(env.SharedObject(sourceFile))
+
+lib = env.SharedLibrary(target="sgpp%s" % moduleName,
+                        source=objs,
+                        LIBPATH=BUILD_DIR,
+                        LIBS=['sgppbase'])
+env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+libInstall = env.Install(BUILD_DIR, lib)
+
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  Import('testTargetList')
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
+  testTargetList.append(moduleTest)
+
+libraryTargetList.append(lib)
+installTargetList.append(libInstall)
