@@ -32,8 +32,8 @@ int main() {
   /*print the combined subspaces and coefficients*/
   std::cout << "combined subspaces: " << std::endl;
 
-  for (int i = 0; i < coeffs.size(); i++) {
-    for (int j = 0; j < levels[i].size(); j++) {
+  for (size_t i = 0; i < coeffs.size(); i++) {
+    for (size_t j = 0; j < levels[i].size(); j++) {
       std::cout << levels[i][j] << '\t';
     }
 
