@@ -8,17 +8,16 @@
 //#include "sgpp_base.hpp"
 
 // Or, better!, include only those that are required
-#include "base/datatypes/DataVector.hpp"
-#include "base/datatypes/DataMatrix.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "datadriven/application/LearnerDensityCluster.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/application/LearnerDensityCluster.hpp>
 
 using namespace std;
-using namespace SGPP;
 using namespace SGPP::base;
 
 
@@ -28,7 +27,7 @@ int main() {
 
   SGPP::datadriven::LearnerDensityCluster* clust = new SGPP::datadriven::LearnerDensityCluster(false);
 
-  float_t raw_data[] = { 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5};
+  SGPP::float_t raw_data[] = { 0.01, 0, 0.3, 0.7, 0.2, 0.78,  0.6, 0.82,  0.71, 0.18, 0.5};
   DataMatrix data(raw_data, 10, 1);
 
   DataVector classes(14);
@@ -53,9 +52,9 @@ int main() {
   clust->setClusterConfiguration(clustConf);
   clust->train(data, classes, gridConf, solvConf, 0.01);
 
-  DataVector res = clust->getClusterAssignments();
+  DataVector* res = clust->getClusterAssignments();
   delete clust;
-  std::cout << res.toString() << std::endl;
+  std::cout << res->toString() << std::endl;
 #else
   std::cout << __FILE__ << ": This example only builds if SG++ uses double precision floating point numbers." << std::endl;
 #endif

@@ -8,10 +8,12 @@ import fnmatch
 
 Import("env")
 Import("BUILD_DIR")
+Import("EXAMPLE_DIR")
 Import("PYSGPP_BUILD_PATH")
 Import("moduleName")
 Import("libraryTargetList")
 Import("installTargetList")
+Import("exampleTargetList")
 
 
 
@@ -75,6 +77,15 @@ if not env["NO_UNIT_TESTS"] and env["SG_PYTHON"]:
     moduleTest = env.Test(os.path.join("tests", "test_%s.py" % moduleName))
     env.Requires(moduleTest, libInstall)
     testTargetList.append(moduleTest)
+
+for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*.cpp"):
+        example = env.Program(source=os.path.join("examples", fileName),
+                              LIBPATH=BUILD_DIR,
+                              LIBS=libs + ["sgpp%s" % moduleName])
+        env.Requires(example, libInstall)
+        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
+        exampleTargetList.append(example)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

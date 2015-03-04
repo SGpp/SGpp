@@ -110,8 +110,8 @@ PYSGPP_BUILD_DIR = Dir(PYSGPP_BUILD_PATH)
 Export('PYSGPP_BUILD_DIR')
 JAVASGPP_BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
 Export('JAVASGPP_BUILD_DIR')
-TEST_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'tests'))
-Export('TEST_DIR')
+EXAMPLE_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'bin', 'examples'))
+Export('EXAMPLE_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
@@ -147,9 +147,11 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 libraryTargetList = []
 installTargetList = []
 testTargetList = []
+exampleTargetList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
 env.Export('testTargetList')
+env.Export('exampleTargetList')
 
 # compile selected modules
 for moduleFolder in moduleFolders:
@@ -177,20 +179,24 @@ if env['SG_JAVA']:
 #########################################################################
 
 # necessary to enforce an order on the final steps of the building of the wrapper    
+dependency = None
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   # serialize tests and move them at the end of the build
-  dependency = None
   for testTarget in testTargetList:
     env.Requires(testTarget, installTargetList)
 
-    if dependency == None:
+    if dependency is None:
       #print testTarget, 'depends on nothing'
       dependency = testTarget
     else:
       #print testTarget, 'depends on', dependency
       env.Depends(testTarget, dependency)
       dependency = testTarget
-      
-# used to execute the unittests at the very end
-if env['SG_PYTHON'] and env['SG_JAVA']:
-  env.Requires(pysgppInstall, jsgppInstall)
+
+for exampleTarget in exampleTargetList:
+  env.Requires(exampleTarget, installTargetList)
+  if dependency is None:
+    dependency = exampleTarget
+  else:
+    env.Depends(exampleTarget, dependency)
+    dependency = exampleTarget
