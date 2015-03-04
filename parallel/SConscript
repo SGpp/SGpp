@@ -8,6 +8,7 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
+Import('EXAMPLE_DIR')
 Import('moduleName')
 
 env_parallel = env.Clone()
@@ -93,6 +94,8 @@ MICOnlyFiles = [
     "SPMICKernelImpl.cpp"       
 ]
 
+libs = ['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppsolver']
+
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./src/sgpp/parallel/exampleApplication"):
@@ -111,12 +114,31 @@ objs = []
 for sourceFile in srcs:
     objs.append(env_parallel.SharedObject(sourceFile))
 
-lib = env_parallel.SharedLibrary(target="sgpp" + moduleName, source=objs, LIBPATH=BUILD_DIR, LIBS=['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppsolver'])
+lib = env_parallel.SharedLibrary(target="sgpp" + moduleName,
+                                 source=objs,
+                                 LIBPATH=BUILD_DIR,
+                                 LIBS=libs)
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppdatadriven.so")
 env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
 libInstall = env_parallel.Install(BUILD_DIR, lib)
+
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  Import('testTargetList')
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
+  testTargetList.append(moduleTest)
+
+Import('exampleTargetList')
+for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*.cpp"):
+        example = env.Program(source=os.path.join("examples", fileName),
+                              LIBPATH=BUILD_DIR,
+                              LIBS=libs + ["sgpp%s" % moduleName])
+        env.Requires(example, libInstall)
+        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
+        exampleTargetList.append(example)
 
 Import('libraryTargetList')
 Import('installTargetList')

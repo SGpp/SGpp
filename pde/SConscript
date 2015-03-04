@@ -8,10 +8,14 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
+Import('EXAMPLE_DIR')
 Import('PYSGPP_BUILD_PATH')
 Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
+Import('exampleTargetList')
+
+libs = ['sgppbase']
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
@@ -26,7 +30,7 @@ for sourceFile in srcs:
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         LIBPATH=BUILD_DIR,
-                        LIBS=['sgppbase'])
+                        LIBS=libs)
 
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 libInstall = env.Install(BUILD_DIR, lib)
@@ -36,6 +40,15 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   env.Requires(moduleTest, libInstall)
   testTargetList.append(moduleTest)
+
+for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*.cpp"):
+        example = env.Program(source=os.path.join("examples", fileName),
+                              LIBPATH=BUILD_DIR,
+                              LIBS=libs + ["sgpp%s" % moduleName])
+        env.Requires(example, libInstall)
+        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
+        exampleTargetList.append(example)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

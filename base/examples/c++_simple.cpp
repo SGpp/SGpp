@@ -8,35 +8,34 @@
 //#include "sgpp_base.hpp"
 
 // Or, better!, include only those that are required
-#include "base/datatypes/DataVector.hpp"
-#include "base/grid/Grid.hpp"
-#include "base/grid/GridStorage.hpp"
-#include "base/grid/generation/GridGenerator.hpp"
-#include "base/operation/OperationEval.hpp"
-#include "base/operation/BaseOpFactory.hpp"
-#include "pde/operation/PdeOpFactory.hpp"
-#include "base/operation/OperationMatrix.hpp"
-#include "pde/basis/periodic/operation/OperationMatrixLTwoDotExplicitPeriodic.hpp"
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 
 using namespace std;
-using namespace SGPP;
 using namespace SGPP::base;
 using namespace SGPP::pde;
 
 // function to interpolate
-float_t f(float_t x0, float_t x1) {
+SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
   return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
 }
 
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  Grid* grid = Grid::createPeriodicGrid(dim);
+  Grid* grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
   cout << "dimensionality:         " << gridStorage->dim() << endl;
 
   // create regular grid, level 3
-  int level = 1;
+  int level = 3;
   GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   cout << "number of grid points:  " << gridStorage->size() << endl;
@@ -45,16 +44,26 @@ int main() {
   DataVector alpha(gridStorage->size());
   alpha.setAll(0.0);
   cout << "length of alpha-vector: " << alpha.getSize() << endl;
+  // set function values in alpha
+  GridIndex* gp;
 
+  for (size_t i = 0; i < gridStorage->size(); i++) {
+    gp = gridStorage->get(i);
+    alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
+  }
 
-  OperationMatrixLTwoDotExplicitPeriodic op = OperationMatrixLTwoDotExplicitPeriodic(grid);
+  cout << alpha.toString() << endl;
 
-  alpha[0] = 1;
+  // hierarchize
+  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  cout << alpha.toString() << endl;
 
-  DataVector res(alpha.getSize());
-  op.mult(alpha, res);
-
-  cout << res.toString() << endl;
+  // evaluate
+  DataVector p(dim);
+  p[0] = 0.52;
+  p[1] = 0.73;
+  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+  cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
 
   delete grid;
 }

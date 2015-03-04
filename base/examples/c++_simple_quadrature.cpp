@@ -8,15 +8,14 @@
 #include "sgpp_base.hpp"
 
 using namespace std;
-using namespace SGPP;
 using namespace SGPP::base;
 
 // function to interpolate
-float_t f(int dim, float_t* x, void* clientdata) {
-  float_t res = 1.0;
+SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
+  SGPP::float_t res = 1.0;
 
   for (int i = 0; i < dim; i++) {
-    res *= 4 * x[i] * (1 - x[i]);
+    res *= 4.0 * x[i] * (1.0 - x[i]);
   }
 
   return res;
@@ -38,20 +37,20 @@ int main() {
   // create coefficient vector
   DataVector alpha(gridStorage->size());
   GridIndex* gp;
-  float_t p[2];
+  SGPP::float_t p[2];
 
-  for (int i = 0; i < gridStorage->size(); i++) {
+  for (size_t i = 0; i < gridStorage->size(); i++) {
     gp = gridStorage->get(i);
     p[0] = gp->getCoord(0);
     p[1] = gp->getCoord(1);
     alpha[i] = f(2, p, NULL);
   }
 
-  op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
   // direct quadrature
-  OperationQuadrature* opQ = op_factory::createOperationQuadrature(*grid);
-  float_t res = opQ->doQuadrature(alpha);
+  OperationQuadrature* opQ = SGPP::op_factory::createOperationQuadrature(*grid);
+  SGPP::float_t res = opQ->doQuadrature(alpha);
   cout << "exact integral value:  " << res << endl;
   delete opQ;
 
