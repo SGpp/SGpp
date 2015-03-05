@@ -1,23 +1,10 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
 #############################################################################
-# This file is part of pysgpp, a program package making use of spatially    #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2009 Alexander Heinecke (Alexander.Heinecke@mytum.de)       #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU Lesser General Public License as published  #
-# by the Free Software Foundation; either version 3 of the License, or      #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU Lesser General Public License  #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
+                                    #
 #############################################################################
 
 from optparse import OptionParser
@@ -147,7 +134,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
 # @param resolution the number of testpoints in every dimension
-def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTestPrintND(dim, level, resolution):
+def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND(dim, level, resolution):
     node_values = None
     node_values_back = None
     alpha = None
@@ -159,7 +146,7 @@ def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTestPrintND
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     
@@ -319,7 +306,7 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
 ## tests the hierarchisation and dehierarchisation routine of sgpp with a sparse
 # @param dim the dimension of the test grid
 # @param level the max. level of the test sparse grid
-def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTest(dim, level):
+def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, level):
     node_values = None
     node_values_back = None
     alpha = None
@@ -332,7 +319,7 @@ def runHierarchisationDehierarchisationLinearTrapezoidBoundaryRegularTest(dim, l
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     

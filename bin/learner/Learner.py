@@ -1,25 +1,7 @@
-##############################################################################
-# This file is part of pysgpp, a program package making use of spatially    #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU General Public License as published by      #
-# the Free Software Foundation; either version 3 of the License, or         #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU General Public License         #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
-
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 
 from pysgpp import *
@@ -56,6 +38,8 @@ import types
 #
 # Observer can also want to retrieve the process information from LinearSolver. 
 # See documentation of@link bin.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+#
+# @todo Right now it is not tested if the datasets were transposed for use with the vectorized algorithms. If the intereset will be present, the feature will be implemented.
 class Learner(object):
     
     ##list of object listening to the learning events
@@ -104,11 +88,13 @@ class Learner(object):
     testingOverall = None    
     
     ##List of numbers of point on grid for different refinement iterations
-    numberPoints = None       
+    numberPoints = None    
+    
     
     __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer', 
                                  'stopPolicy', 'specification', 'grid', 
-                                 'knowledge','foldingPolicy', 'solver']
+                                 'knowledge','foldingPolicy', 'solver' 
+                                 ]
     
     
     ## Constructor
@@ -130,7 +116,7 @@ class Learner(object):
     def learnDataWithTest(self, dataset = None):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
-                  self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+              self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         
         if dataset == None: dataset = self.dataContainer
         
@@ -173,7 +159,9 @@ class Learner(object):
     def applyData(self, points):
         self.notifyEventControllers(LearnerEvents.APPLICATION_STARTED)
         # if learner is restored from checkpoint, you need to create new B Operator
+         
         if self.specification.getBOperator() == None:
+            # FIXME: createOperationB() does not exist
             self.specification.setBOperator(self.grid.createOperationB())
         size = points.getNrows()
         dim = points.getNcols()
@@ -192,7 +180,7 @@ class Learner(object):
     def learnData(self):
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
-                    self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+                self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
         
         while True: #repeat until policy says "stop"
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_STARTED)
@@ -216,6 +204,7 @@ class Learner(object):
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_FOLDING_STARTED)
+        
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
                   self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
      
@@ -233,12 +222,21 @@ class Learner(object):
     # @return: DataVector alpha vector
     def doLearningIteration(self, set):
         #initialize values
-        self.linearSystem = DMSystemMatrix(self.grid,
+        # if C Operator is Identity: use the single precision vectorized version
+        if self.specification.getCOperatorType() == 'identity' \
+            and self.specification.getVectorizationType() != None:
+            self.linearSystem = DMSystemMatrixVectorizedIdentity(self.grid,
+                                               set.getPoints(),
+                                               self.specification.getL(), 
+                                               self.specification.getVectorizationType())
+        else: 
+            self.linearSystem = DMSystemMatrix(self.grid,
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())
         size =  self.grid.getStorage().size() 
         # Reuse data from old alpha vector increasing its dimension
+        self.solver.getReuse()
         if self.solver.getReuse() and self.alpha != None:
             alpha = DataVector(self.alpha)
             alpha.resize(size)
@@ -249,8 +247,8 @@ class Learner(object):
         b = DataVector(size)
         self.linearSystem.generateb(set.getValues(), b)
         #calculates alphas
-        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), 
-                          False, self.solver.getThreshold())
+        self.solver.getReuse()
+        self.solver.solve(self.linearSystem, alpha, b, self.solver.getReuse(), False, self.solver.getThreshold())
         return alpha
 
 

@@ -1,26 +1,7 @@
-##############################################################################
-# This file is part of pysgpp, a program package making use of spatially    #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU General Public License as published by      #
-# the Free Software Foundation; either version 3 of the License, or         #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU General Public License         #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
-
-
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 import types
 
@@ -35,6 +16,7 @@ class TrainingSpecification(object):
     __cOperator = None      #C operator
     __bOperator = None      #B operator
     __cOperatorType = None  #Type of the c operator as a string
+    __vecType = None
     
     ## Returns the type of the C operator
     # @return: the type of the C operator as a string
@@ -94,8 +76,10 @@ class TrainingSpecification(object):
     ## Setter for B operator
     #
     # @param value: OperationB
-    def setBOperator(self, value):
-        self.__bOperator = value
+    # @param name: operator identifier
+    def setBOperator(self, value, name="train"):
+        if self.__bOperator == None: self.__bOperator = {}
+        self.__bOperator[name] = value
 
 
     ## Getter for Number of points to refine
@@ -128,9 +112,20 @@ class TrainingSpecification(object):
 
     ## Getter for B operator
     #
+    # @param name: operator identifier
     # @return: OperationB
-    def getBOperator(self):
-        return self.__bOperator
+    def getBOperator(self, name="train"):
+        if self.__bOperator != None:
+            return self.__bOperator[name]
+        else: return None
+        
+        
+    def getVectorizationType(self):
+        return self.__vecType
+    
+    
+    def setVectorizationType(self, vecType):
+        self.__vecType = vecType
     
     
     ## Calculates the number of points which should be refined
@@ -184,10 +179,11 @@ class TrainingSpecification(object):
             specification.__adaptRate = jsonObject['_TrainingSpecification__adaptRate']
         if jsonObject.has_key('_TrainingSpecification__adaptThreshold'):
             specification.__adaptThreshold = jsonObject['_TrainingSpecification__adaptThreshold']
+        if jsonObject.has_key('_TrainingSpecification__vecType'):
+            specification.__vecType = jsonObject['_TrainingSpecification__vecType']
         specification.__cOperator = None
         specification.__bOperator = None
         return specification
-
 
 
 

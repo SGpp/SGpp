@@ -1,7 +1,9 @@
 #!/usr/bin/python
-# Copyright (C) 2009 Technische Universitaet Muenchen
+
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 ## @package classifier
 # @ingroup bin
@@ -18,6 +20,7 @@ if os.environ.has_key("SGPP"):
     sys.path.append(os.path.join(os.environ["SGPP"], "bin"))
 from tools import *
 from pysgpp import *
+from pysgpp.datadriven import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
 from math import ceil
@@ -145,8 +148,8 @@ def constructGrid(dim):
                 sys.exit(1)
             if options.trapezoidboundary == True:
                 if options.verbose:
-                    print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
-                grid = Grid.createLinearTrapezoidBoundaryGrid(dim)            
+                    print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
+                grid = Grid.createLinearTruncatedBoundaryGrid(dim)            
             if options.completeboundary == True:
                 if options.verbose:
                     print "LinearBoundaryGrid, l=%s" % (options.level)
@@ -173,8 +176,8 @@ def constructGrid(dim):
                     sys.exit(1)
                 else:
                     if options.verbose:
-                        print "LinearTrapezoidBoundaryGrid, l=%s" % (options.level)
-                    grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+                        print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
             # more grid points on boundary?
             elif options.boundary == 2:
                 if options.polynom > 1:
