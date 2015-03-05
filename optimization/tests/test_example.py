@@ -28,7 +28,7 @@ class TestExample(unittest.TestCase):
         fs = [objective_functions.TitleFunction(), pysgpp.OptSphere(d)]
         f_gradients = [objective_functions.TitleFunctionGradient(), objective_functions.SphereFunctionGradient(d)]
         f_hessians = [objective_functions.TitleFunctionHessian(), objective_functions.SphereFunctionHessian(d)]
-        # minimas
+        # minima
         real_xopts = [[3.0/16.0 * math.pi, 3.0/14.0 * math.pi], [0.1, 0.1]]
         real_fopts = [-2.0, 0.0]
         # difference of global maximum/minimum

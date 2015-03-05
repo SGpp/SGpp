@@ -1,0 +1,85 @@
+/**
+\page code_examples_optimization Short Code Examples: Optimization
+
+On this page, we look at an example application of the SGPP::optimization
+module.
+The example is written in C++.
+However, as the module is also incorporated in pysgpp, one can also use
+the Python interface.
+For example programs in Python, please refer to the optimization/tests/
+directory, e.g. optimization/tests/test_example.py.
+
+Below, you can find the whole C++ example.
+The example minimizes a specific function \f$f\colon [0, 1]^2 \to \mathbb{R}\f$
+using sparse grids and the SGPP::optimization module.
+For the basic structure of the optimization, please see
+\ref module_optimization.
+
+\include example_optimization.cpp
+
+We will now discuss the example in some detail line by line.
+
+\dontinclude example_optimization.cpp
+\until sgpp_optimization.hpp
+
+We need to include the headers for the SGPP::base and the SGPP::optimization
+module.
+
+\until };
+
+The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
+is called "objective function" and has to derive from
+SGPP::optimization::ObjectiveFunction.
+In the constructor, we give the dimensionality of the domain
+(in this case \f$d = 2\f$).
+The eval method evaluates the objective function and returns the function
+value \f$f(\vec{x})\f$ for a given point \f$\vec{x} \in [0, 1]^d\f$.
+The clone method returns a std::unique_ptr to a clone of the object
+and is used for parallelization (in case eval is not thread-safe).
+
+\until f, grid, N, gamma
+
+First, we define a grid with modified B-spline basis functions and
+an iterative grid generator, which can generate the grid adaptively.
+
+\until }
+
+With the iterative grid generator, we generate adaptively a sparse grid.
+
+\until coeffsDV
+
+Then, we hierarchize the function values to get hierarchical B-spline
+coefficients of the B-spline sparse grid interpolant
+\f$\tilde{f}\colon [0, 1]^d \to \mathbb{R}\f$.
+
+\until ftX0
+
+We define the interpolant \f$\tilde{f}\f$ and its gradient
+\f$\nabla\tilde{f}\f$ for use with the gradient method (steepest descent).
+Of course, one can also use other optimization algorithms from
+SGPP::optimization::optimizer.
+
+\until ft(x0)
+
+The gradient method needs a starting point.
+We use a point of our adaptively generated sparse grid as starting point.
+More specifically, we use the point with the smallest
+(most promising) function value and save it in x0.
+
+\until ft(xOpt)
+
+We apply the gradient method and print the results.
+
+\until }
+
+For comparison, we apply the classical gradient-free Nelder-Mead method
+directly to the objective function \f$f\f$.
+
+The example program outputs the following results:
+\include example_optimization_output.txt
+
+We see that both the gradient-based optimization of the smooth sparse grid
+interpolant and the gradient-free optimization of the objective function
+find reasonable approximations of the minimum, which lies at
+\f$(3\pi/16, 3\pi/14) \approx (0.58904862, 0.67319843)\f$.
+*/

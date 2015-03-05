@@ -35,15 +35,20 @@ int main(int argc, const char* argv[]) {
   std::cout << "SGPP::optimization example program started.\n\n";
   SGPP::optimization::printer.setVerbosity(2);
 
+  // objective function
   TitleFunction f;
-  const size_t d = 2;
+  // dimension of domain
+  const size_t d = f.getDimension();
+  // B-spline degree
   const size_t p = 3;
+  // maximal number of grid points
   const size_t N = 30;
-  const SGPP::float_t alpha = 0.95;
+  // adaptivity of grid generation
+  const SGPP::float_t gamma = 0.95;
 
-  SGPP::base::ModBsplineGrid grid(d, p);
+  SGPP::base::ModBsplineGrid grid(f.getDimension(), p);
   SGPP::optimization::IterativeGridGeneratorRitterNovak gridGen(
-    f, grid, N, alpha);
+    f, grid, N, gamma);
 
   /////////////////////////////////////////////////////////////////////////////
   // GRID GENERATION
@@ -57,11 +62,8 @@ int main(int argc, const char* argv[]) {
     return 1;
   }
 
-  //SGPP::optimization::printer.printGridToFile(
-  //    "data/grid.dat", grid_gen);
-
   /////////////////////////////////////////////////////////////////////////////
-  // HIERARCHISATION
+  // HIERARCHIZATION
   /////////////////////////////////////////////////////////////////////////////
 
   printLine();
@@ -69,7 +71,6 @@ int main(int argc, const char* argv[]) {
   std::vector<SGPP::float_t> coeffs;
   SGPP::optimization::HierarchisationSLE hierSLE(grid);
   SGPP::optimization::sle_solver::Auto sleSolver;
-  //SGPP::optimization::printer.printSLE(hier_system);
 
   // solve linear system
   if (!sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs)) {
@@ -87,8 +88,8 @@ int main(int argc, const char* argv[]) {
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
   SGPP::optimization::InterpolantFunction ft(d, grid, coeffsDV);
-  SGPP::optimization::InterpolantGradient
-  ftGradient(d, grid, coeffsDV);
+  SGPP::optimization::InterpolantGradient ftGradient(
+    d, grid, coeffsDV);
   SGPP::optimization::optimizer::GradientMethod gradientMethod(ft, ftGradient);
   std::vector<SGPP::float_t> x0(d, 0.0);
   SGPP::float_t fX0;
@@ -96,7 +97,6 @@ int main(int argc, const char* argv[]) {
 
   // determine best grid point as starting point
   {
-    const size_t d = f.getDimension();
     const std::vector<SGPP::float_t>& functionValues =
       gridGen.getFunctionValues();
     SGPP::base::GridStorage& gridStorage = *gridGen.getGrid().getStorage();
