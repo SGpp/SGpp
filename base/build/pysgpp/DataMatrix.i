@@ -1,9 +1,7 @@
-/******************************************************************************
-* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-******************************************************************************/
-// @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 %include "base/src/sgpp/globaldef.hpp"
 
@@ -172,12 +170,10 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
 
 
-///******************************************************************************
-//* Copyright (C) 2009 Technische Universitaet Muenchen                         *
-//* This file is part of the SG++ project. For conditions of distribution and   *
-//* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-//******************************************************************************/
-//// @author Dirk Pflueger (Dirk.Pflueger@in.tum.de)
+//// Copyright (C) 2008-today The SG++ project
+//// This file is part of the SG++ project. For conditions of distribution and
+//// use, please see the copyright notice provided with SG++ or at
+//// sgpp.sparsegrids.org
 //
 //
 //%include "base/src/sgpp/globaldef.hpp"
