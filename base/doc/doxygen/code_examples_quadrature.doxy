@@ -1,0 +1,50 @@
+/**
+@page code_examples_quadrature Short Code Examples: Quadrature
+
+The following example shows how to integrate in SG++, using both
+direct integration of a sparse grid function and the use of
+Monte Carlo integration.
+
+Again, we deal with the function
+@f[ f(x_0,x_1) := 16 * (x_0-1)*x_0 * (x_1-1)*x_1 @f]
+which we first interpolate. We then integrate the interpolant, then
+the function itself using 100000 Monte Carlo points, and we then 
+compute the L2-error.
+@see @ref code_examples_quick_start
+
+@section code_examples_quadrature__overview Overview
+- @ref code_examples_quadrature__python
+- @ref code_examples_quadrature__cpp
+
+@section code_examples_quadrature__python Python
+
+First, the example in Python. The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has one parameter, a sequence (C++ provides a tuple) with the coordinates of the grid point @f$\in[0,1]^d@f$.
+
+@include python_simple_quadrature.py
+which can be executed by
+@code
+> python python_simple_quadrature.py
+@endcode 
+in the directory @c examples/.
+
+This results in the output
+@include all_simple_quadrature.output.txt
+
+
+@section code_examples_quadrature__cpp C++
+
+Now, the very same in C++.
+The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has three parameters. First, the dimensionality (int), then a double* with the coordinates of the grid point @f$\in[0,1]^d@f$, and finally a void* with clientdata for the function, see @ref SGPP::base::FUNC .
+
+@include c++_simple_quadrature.cpp
+which can be executed by
+@code
+> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple_quadrature c++_simple_quadrature.cpp -lsgppbase
+> ./c++_simple_quadrature
+@endcode 
+in the directory @c examples/.
+
+This results in the output
+@include all_simple_quadrature.output.txt
+
+*/

@@ -1,25 +1,7 @@
-##############################################################################
-# This file is part of pysgpp, a program package making use of spatially    #
-# adaptive sparse grids to solve numerical problems                         #
-#                                                                           #
-# Copyright (C) 2009 Valeriy Khakhutskyy (khakhutv@in.tum.de)               #
-#                                                                           #
-# pysgpp is free software; you can redistribute it and/or modify            #
-# it under the terms of the GNU General Public License as published by      #
-# the Free Software Foundation; either version 3 of the License, or         #
-# (at your option) any later version.                                       #
-#                                                                           #
-# pysgpp is distributed in the hope that it will be useful,                 #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of            #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
-# GNU Lesser General Public License for more details.                       #
-#                                                                           #
-# You should have received a copy of the GNU General Public License         #
-# along with pysgpp; if not, write to the Free Software                     #
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA #
-# or see <http://www.gnu.org/licenses/>.                                    #
-#############################################################################
-
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 from bin.learner.LearnedKnowledge import LearnedKnowledge
 from bin.learner.Classifier import Classifier
@@ -248,7 +230,12 @@ class LearnerBuilder(object):
             self.__specificationDescriptor == LearnerBuilder.SpecificationDescriptor(self)
         if self.__learner.specification.getBOperator() == None:
             self.__learner.specification.setBOperator(
-            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)), DataContainer.TRAIN_CATEGORY)
+            try:
+                self.__learner.specification.setBOperator(
+            createOperationMultipleEval(self.__learner.grid, self.__learner.dataContainer.getPoints(DataContainer.TEST_CATEGORY)), DataContainer.TEST_CATEGORY)
+            except:
+                pass 
 
         return self.__learner
 
@@ -335,8 +322,8 @@ class LearnerBuilder(object):
         return self
     
     
-    def withTestingDataFromNumPyArray(self, points, values, name="train"):
-        return self.withTestingDataFromNumPyArray(self, points, values, "test")
+    def withTestingDataFromNumPyArray(self, points, values, name="test"):
+        return self.withTrainingDataFromNumPyArray(points, values, "test")
     
     
     ## 
@@ -453,7 +440,7 @@ class LearnerBuilder(object):
                     raise AttributeError, "Not all attributes assigned to create grid"                
                 if self.__border != None: 
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
-                        grid = Grid.createLinearTrapezoidBoundaryGrid(self.__dim)            
+                        grid = Grid.createLinearTruncatedBoundaryGrid(self.__dim)            
                     elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim)            
                     else:
@@ -662,8 +649,8 @@ class LearnerBuilder(object):
             # if method called is not a object method of this Descriptor, most probably it's a method of
             # LearnerBuilder so we try to call the method from our builder 
             if self.__specification.getCOperator() == None: #use laplace operator default
-                self.__specification.setCOperator(createOperationLaplace(self.__builder.getLearner().grid))
-                self.__specification.setCOperatorType('laplace')
+                self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
+                self.__specification.setCOperatorType('identity')
             self.__builder.getLearner().setSpecification(self.__specification)
             return getattr(self.__builder, attr)
         
@@ -728,6 +715,12 @@ class LearnerBuilder(object):
             self.__specification.setCOperator(createOperationIdentity(self.__builder.getLearner().grid))
             self.__specification.setCOperatorType('identity')
             return self
+        
+        
+        def withVectorizationType(self, vecType):
+            self.__specification.setVectorizationType(vecType)
+            return self
+            
         
     
     ##
@@ -852,13 +845,13 @@ class LearnerBuilder(object):
             if self.__level == None:
                 raise Exception("Folding level has to be defined")
             
-            if self.__type == FoldingDescriptor.SEQUENTIAL:
+            if self.__type == self.SEQUENTIAL:
                 self.__policy = SequentialFoldingPolicy(dataContainer, self.__level)
-            elif self.__type == FoldingDescriptor.RANDOM:
+            elif self.__type == self.RANDOM:
                 self.__policy = RandomFoldingPolicy(dataContainer, self.__level, self.__seed)
-            elif self.__type == FoldingDescriptor.STRATIFIED:
+            elif self.__type == self.STRATIFIED:
                 self.__policy = StratifiedFoldingPolicy(dataContainer, self.__level, self.__seed)
-            elif self.__type == FoldingDescriptor.FILES:
+            elif self.__type == self.FILES:
                 self.__policy = FilesFoldingPolicy(dataContainer, self.__level)
             else:
                 raise Exception("Folding type is not defined or is unproper")

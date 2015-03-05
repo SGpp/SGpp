@@ -1,0 +1,7 @@
+/**
+@page module_quadrature Module SGPP::quadrature
+
+- Quadrature operations
+- Support for basic Monte Carlo quadrature
+
+**/

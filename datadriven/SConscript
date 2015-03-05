@@ -1,0 +1,73 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
+import os
+import fnmatch
+
+Import('env')
+Import('BUILD_DIR')
+Import('EXAMPLE_DIR')
+Import('PYSGPP_BUILD_PATH')
+Import('moduleName')
+Import('libraryTargetList')
+Import('installTargetList')
+Import('exampleTargetList')
+
+avxFolders = ['src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', 'src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
+
+avx_env = env.Clone()
+avxCPPFLAGS = filter(lambda flag: flag != '-msse3', avx_env['CPPFLAGS'])
+avx_env['CPPFLAGS'] = avxCPPFLAGS
+#avx_env.Remove(CPPFLAGS = '-msse3')
+avx_env.Append(CPPFLAGS = '-mavx')
+
+def isAVXFolder(folder):
+    for avxFolder in avxFolders:
+        if folder.startswith(avxFolder):
+            return True
+    return False
+
+libs = ['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde']
+
+objs = []
+for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
+  if os.path.exists(os.path.join(currentFolder, "SConscript")):
+    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    objs += objsSubmodule
+    # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
+    subdirNames[:] = []
+  else:
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+      sourceFile = os.path.join(currentFolder, fileName)
+      objs.append(env.SharedObject(sourceFile))
+                                
+lib = env.SharedLibrary(target="sgpp%s" % moduleName,
+                        source=objs,
+                        LIBPATH = [BUILD_DIR, '#/lib/alglib'],
+                        LIBS=libs)
+env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
+env.Depends(lib, "#/lib/alglib" + "/libalglib.so")
+libInstall = env.Install(BUILD_DIR, lib)
+
+if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  Import('testTargetList')
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
+  testTargetList.append(moduleTest)
+
+for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*.cpp"):
+        example = env.Program(source=os.path.join("examples", fileName),
+                              LIBPATH=[BUILD_DIR, "#/lib/alglib"],
+                              LIBS=libs + ["sgpp%s" % moduleName])
+        env.Requires(example, libInstall)
+        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
+        exampleTargetList.append(example)
+
+Import('libraryTargetList')
+Import('installTargetList')
+libraryTargetList.append(lib)
+installTargetList.append(libInstall)

@@ -1,0 +1,42 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
+import os
+
+# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+if os.path.exists("jsgpp_wrap.cc"):
+    os.remove("jsgpp_wrap.cc")
+
+srcs = Split("""
+jsgpp.i
+""")
+
+Import('env')
+Import('BUILD_DIR')
+Import('JAVASGPP_BUILD_DIR')
+Import('moduleFolders')
+
+j_env = env.Clone()
+
+# remove compiler warnings caused by swig (as we cannot do anything against them, 
+# and as they confuse jenkins):
+j_env.AppendUnique(CPPFLAGS=['-w'])
+
+defines = ['-D'+c for c in j_env['CPPDEFINES']]
+swigIncludePaths = ['-I' + module + '/src/' for module in moduleFolders] + defines
+j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'] + swigIncludePaths)
+j_env.AppendUnique(CPPPATH=['#/src/sgpp'])
+j_env.AppendUnique(CPPFLAGS=['-fno-strict-aliasing'])
+
+j_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
+
+jsgpp = j_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid', 'sgppparallel']) # 
+jsgppInstall = j_env.Install(JAVASGPP_BUILD_DIR, jsgpp)
+
+from glob import glob
+files = glob('*.java')
+env.Install('#/lib/jsgpp/sgpp/', files)
+
+Return('jsgpp')

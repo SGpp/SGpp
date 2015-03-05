@@ -1,11 +1,10 @@
-#!/usr/bin/python
-# Copyright (C) 2009 Technische Universitaet Muenchen
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
 
 ## @package tools
 # @ingroup bin
-# @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief A collection of helper functions.
 # @version $CURR$
 
@@ -819,6 +818,8 @@ def checkData(data):
 # perform sequential(!) split of dataset in num_partitions partitions for n-fold-cv
 # split data into folds,
 # return ([data1,data2,...,datan], [classes1,classes2,...,classesn])
+# @param data Dataset 
+# @param num_partitions The number of n partitions to split in.
 #-------------------------------------------------------------------------------
 def split_n_folds_sequential(data, num_partitions):
     dim = len(data["data"])
@@ -1000,7 +1001,7 @@ CModes = {
 ## base function types
 base_types = {
 #    "linear" : {"base" : SLinearBase, "b" : SGridOperationB, "t" : test_dataset_linear, "laplace" : SGridOperationLaplace},
-#    "modlinear" : {"base" : SModLinearBase, "b" : SGridModOperationB, "t" : test_dataset_modlin},
+#    "modlinear" : {"base" : SLinearModifiedBase, "b" : SGridModOperationB, "t" : test_dataset_modlin},
 #    "poly" : {"base" : "SPolyBase", },
               }
 

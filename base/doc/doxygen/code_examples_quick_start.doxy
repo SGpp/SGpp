@@ -1,0 +1,403 @@
+/**
+@page code_examples_quick_start Quick-Start: Short Code Examples
+
+To be able to quickly start with a toolkit, it is often advantageous
+(not only for the impatient users), to look at some code examples
+first. As SG++ can be used from within different programming
+languages, we provide a short example for some of them. They show
+nicely the differences between the different types of usage. Sooner or
+later they will be extended to additional functionality and more
+programming languages.
+
+To this end, we create a regular sparse grid with level three in two dimensions
+using piecewise linear basis functions without gridpoints on the
+boundary. We then interpolate the function 
+@f[ f(x_0,x_1) := 16 * (x_0-1)*x_0 * (x_1-1)*x_1 @f]
+with
+@f[ u(x_0,x_1) := \sum_{j=1}^N \alpha_j \varphi_j(x_0,x_1) @f]
+by setting the coefficients @f$\alpha_j@f$ to the function values of
+@f$f@f$ at the corresponding grid points. Then we hierarchize it,
+transforming the function values at the grid points into hierarchical
+coefficients. Finally, we evaluate the sparse grid function @f$u@f$ at
+@f$(0.52,0.73)@f$.
+
+
+
+@section code_examples__overview Overview
+- \ref code_examples__python
+ - \ref code_examples__python_linebyline
+- \ref code_examples__cpp
+ - \ref code_examples__cpp_linebyline
+- \ref code_examples__java
+ - \ref code_examples__java_linebyline
+- \ref code_examples__matlab
+ - \ref code_examples__matlab_linebyline
+
+
+
+@section code_examples__python Python
+
+First, the whole code of file python_simple.py at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include python_simple.py
+which can be executed by
+@code
+> python python_simple.py
+@endcode 
+in the directory @c examples/.
+
+This results in the output
+@include all_simple.output.txt
+It can be clearly seen that the surplusses decay with a factor of 1/4:
+On the first level, we obtain 1, on the second 1/4, and on the third
+1/16 as surplusses.
+
+
+@subsection code_examples__python_linebyline Explanations line by line
+
+@dontinclude python_simple.py
+@until pysgpp
+This includes the typicial python header. Then, the module sys is
+imported. The list @c sys.path includes the search paths for modules. To
+be able to import the module pysgpp, we have to add the directory
+<tt>../lib/pysgpp</tt> to the search path. After that, we import the two classes
+DataVector and @link SGPP::base::Grid Grid() @endlink, which we require afterwards.
+
+@until dimensionality
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+@link SGPP::base::Grid.createLinearGrid() Grid.createLinearGrid()
+@endlink. Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until number
+Here, we use a @link SGPP::base::GridGenerator GridGenerator() @endlink to
+create a regular sparse grid of level 
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until length
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until print alpha
+Here, the function @f$f@f$, which we want to interpolate, is
+defined. The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+
+@until print alpha
+An objectOperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
+
+
+
+@section code_examples__cpp C++
+
+Again, we first show the whole code of file c++_simple.cpp at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include c++_simple.cpp
+
+which can be compiled and executed by
+@code
+> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple c++_simple.cpp -lsgppbase
+> ./c++_simple
+@endcode 
+in the directory @c examples/. Note that you might have to set the library path 
+environment variable to be able to use the shared libraries:
+@code
+> export LD_LIBRARY_PATH=path_to_SGpp/lib/sgpp
+@endcode 
+
+This results in the same output as before,
+@include all_simple.output.txt
+
+
+@subsection code_examples__cpp_linebyline Explanations line by line
+
+@dontinclude c++_simple.cpp
+@until SGPP::base;
+Apart from iostream, we have to include the header files of all
+classes we are using. Finally, we import the namespaces std, sg, and (to
+simplify the example) SGPP::base.
+
+@until }
+defines the function @f$f@f$ we want to interpolate.
+
+@until dimensionality
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+SGPP::Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until number
+Here, we use a SGPP::GridGenerator to create a regular sparse grid of level
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until length
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until cout << alpha
+The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+
+@until cout << alpha
+An object SGPP::OperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
+
+
+
+@section code_examples__java Java
+
+Again, we first show the whole code of file java_simple.java at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include java_simple.java
+
+For the compilation, we first have to create a .jar file, which holds all java classes
+@code
+>cd /Path/to/SGpp/trunk/lib/jsgpp/sgpp
+>javac -d . *.java
+>jar cf "Name".jar ./sgpp/*.class
+@endcode
+First, we change to the sgpp directory holding all @c .java files. 
+Next all @c .java files are compiled to @c .class files in the automatically created directory @c ./sgpp.
+At last, we pack all @c .class files to a @c .jar file with the name @c "Name".jar.
+We can now change to the directory @c examples/ and compile and run the java_simple example
+@code
+> cd /Path/To/SGpp/trunk/examples
+> javac -d . -cp .:/Path/To/SGpp/trunk/lib/jsgpp/sgpp/ *.java
+> java -cp .:/Path/To/SGpp/trunk/lib/jsgpp/sgpp/ java_simple
+@endcode 
+Hereby @c -cp gives the path to the previously builded @c "Name".jar file.
+Note that you might have to set the library path 
+environment variable to be able to use the shared libraries:
+@code
+> export LD_LIBRARY_PATH=/Path/To/SGpp/trunk/lib/jsgpp
+@endcode 
+
+This results in the same output as before,
+@include all_simple.output.txt
+
+
+@subsection code_examples__java_linebyline Explanations line by line
+
+@dontinclude java_simple.java
+@until sgpp.OperationEval;
+We can import the whole @c .jar file as in the second line or ,better, just import the class files we use. 
+
+@until }
+defines the function @f$f@f$ we want to interpolate.
+
+@until loadLibrary
+Two possibilities of loading the libjsgpp.so shared object library file, which is needed to find the methods.
+
+@until dimensionality
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+sgpp.Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until number
+Here, we use a sgpp.GridGenerator to create a regular sparse grid of level 
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until length
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until alpha.toString
+The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+
+@until alpha.toString
+An object sgpp.jsgpp.OperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
+
+
+
+@section code_examples__matlab Matlab
+
+As in the previous sections, we first show the whole code of file matlab_simple.m at once, as it can be
+found in the directory @c examples/, which we then discuss line by line.
+
+@include matlab_simple.m
+
+Matlab can use SGpp via Java, i.e. we use the Java library of SGpp and import it to Matlab. 
+In Java we have to use the call @c System.loadLibrary("jsgpp") to load the jsgpp.so library. In Matlab, this call cannot be executed
+directly, but a method has to be called, which then calls @c System.loadLibrary("jsgpp").
+For this to work, we have to first create a Java class in the directory which holds the .java files of SGpp, which we will later pack 
+to the .jar archive, just as in the java_simple example.
+First change to the directory
+@code
+>cd /Path/To/SGpp/trunk/lib/jsgpp/sgpp
+@endcode
+and create the file "Name".java with the editor you prefer, here vim. Here the class is named LoadJSGPPLib.java
+@code
+>vim LoadJSGPPLib.java
+@endcode
+and add the following lines to the file
+@code
+package sgpp;
+
+public class LoadJSGPPLib {
+    public static void loadJSGPPLib() {
+      try {
+	 System.loadLibrary("jsgpp");
+      } catch (UnsatisfiedLinkError error) {
+	 System.out.println("Error loading library");
+      }
+    }
+}
+@endcode
+Thus, we created a class, which just calls the @c System.loadLibrary() method, loading the libjsgpp.so file.
+
+Now, as in the java_simple example, we create the .jar file, which holds all java classes plus the newly created
+LoadJSGPPLib class
+@code
+>javac -d . *.java
+>jar cf "Name".jar ./sgpp/*.class
+@endcode
+All @c .java files are compiled to @c .class files in the automatically created directory @c ./sgpp.
+Then, we pack all @c .class files to a @c .jar file with the name @c "Name".jar.
+Note that you might have to set the library path environment variable to be able to use the shared libraries:
+@code
+> export LD_LIBRARY_PATH=/Path/To/SGpp/trunk/lib/jsgpp
+@endcode 
+
+Before we can use these methods in Matlab, we have to add the path to the @c libjsgpp.so file to the librarypath.txt file of Matlab.
+(Hint: Typing @c matlabroot in Matlab returns the path to your matlab installation)
+@code
+>cd /Path/To/Matlab/toolbox/local
+>vim librarypath.txt
+@endcode
+Add the following line at the end
+@code
+/Path/To/SGpp/trunk/lib/jsgpp
+@endcode
+After adding this line, we can start Matlab.
+In Matlab, we have to add the newly created "Name".jar file, doing this with the command
+@code
+>>javaaddpath('/Path/To/SGpp/trunk/lib/jsgpp/sgpp/"Name".jar')
+@endcode
+We can now change to the directory @c examples/ and run the matlab_simple example
+@code
+>>matlab_simple
+@endcode 
+
+This results in a similar output as before, only in Matlab,
+@include matlab_simple.output.txt
+
+Hints:
+@code
+"javaaddpath('path/x.jar')" adds dynamic path. For static path, change the classpath.txt file in /Path/To/Matlab/toolbox/local, so you do not have to use javaaddpath any longer
+use ">>javaclasspath" to see the loaded jar files (upper part static, lower part dynamic; our SGPP.jar should be in there)
+">>import sgpp.*" in Matlab to not have to write sgpp. in front of every method
+call ">>methods('sgpp.Classname')" to see methods of class "Classname"
+
+The methods itself can now also be called like Java methods in the Matlab command window, e.g.
+>> dataVector = sgpp.DataVector(10)
+>> dataVector.setAll(0)
+>> dataVector
+@endcode
+
+@subsection code_examples__matlab_linebyline Explanations line by line
+
+@dontinclude matlab_simple.m
+@until sgpp.OperationEval;
+We can import the whole @c .jar file as in the second line or ,better, just import the class files we use. 
+
+@until x1
+defines the function @f$f@f$ we want to interpolate.
+
+@until loadJSGPPLib()
+Method to call the previously created method in class LoadJSGPPLib which loads the libjsgpp.so library. As you can see, the methods are called in Java syntax
+
+@until display
+creates a two-dimensional grid object with piecewise bi-linear basis
+functions with the help of the factory method
+sgpp.Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
+GridStorage-object, which allows us, e.g., to access grid
+points, to obtain the dimensionality (which we print) and the
+number of grid points. 
+
+@until display
+Here, we use a sgpp.GridGenerator to create a regular sparse grid of level 
+3. Thus, @c gridStorage.size() returns 17, the number of grid points
+of a two-dimensional regular sparse grid of level 3.
+
+@until display
+Now we create an object of type DataVector which has as many entries
+as there are grid points. It serves as a coefficient vector for the
+sparse grid interpolant we want to construct. As the entries of a
+freshly created DataVector are not initialized, we set them to
+0.0. (This is superflous here as we initialize them in the
+next few lines anyway.)
+
+@until alpha.toString
+The for-loop iterates over all grid points: For each grid
+point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by @c abs(dim).
+The current coefficient vector is then printed.
+Attention has to be laid on the different syntax in indexing the array between Matlab and Java.
+Java starts with 0, Matlab with 1!
+
+@until alpha.toString
+An object sgpp.jsgpp.OperationHierarchisation is created and used to hierarchize 
+the coefficient vector, which we print.
+
+@until u(
+Finally, a second DataVector is created which is used as a point to
+evaluate the sparse grid function. An object is obtained which
+provides an evaluation operation, and the sparse grid interpolant is
+evaluated close to (but not exactly at) a grid point.
+
+
+
+*/
