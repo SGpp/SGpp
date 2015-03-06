@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+%include "std_string.i"
 
 %newobject SGPP::base::Grid::createLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearStretchedGrid(size_t dim);
@@ -34,8 +35,8 @@
 %include "stl.i"
 %include "typemaps.i"
 
-%apply std::string *OUTPUT { std::string& ostr };
-%apply std::string *INPUT { std::string& istr };
+//%apply std::string *OUTPUT { std::string& ostr };
+//%apply std::string *INPUT { std::string& istr };
 
 
 using namespace SGPP;
@@ -43,37 +44,6 @@ namespace SGPP
 {
 namespace base
 {
-struct RegularGridConfiguration {
-      /// Grid Type, see enum
-      SGPP::base::GridType type_;
-      /// number of dimensions
-      size_t dim_;
-      /// number of levels
-      int level_;
-    };
-    
-typedef enum mail_ {
-    Linear = 0,
-    LinearStretched = 1,
-    LinearBoundary = 2,
-    LinearTruncatedBoundary = 3,
-    LinearStretchedTruncatedBoundary = 4,
-    ModLinear = 5,
-    Poly = 6,
-    ModPoly = 7,
-    ModWavelet = 8,
-    ModBspline = 9,
-    Prewavelet = 10,
-    SquareRoot = 11,
-    LinearGeneralizedTruncatedBoundary = 12,
-    Periodic = 13,
-    LinearClenshawCurtis = 14,
-    Bspline = 15,
-    BsplineTruncatedBoundary = 16,
-    BsplineClenshawCurtis = 17,
-    Wavelet = 18,
-    WaveletTruncatedBoundary = 19
-} GridType;
 
 class Grid
 {

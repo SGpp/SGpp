@@ -1,6 +1,8 @@
 %INTERFACEJAVA Summary of this function goes here
 %   Detailed explanation goes here
 
+sgpp.LoadJSGPPLib.loadJSGPPLib();
+
 %import all packages
 %import sgpp.*;
 
@@ -15,8 +17,6 @@ import sgpp.OperationEval;
 
 % define the function f
 f = @(x0,x1) (16.0*(x0-1)*x0 * (x1-1)*x1);
-
-sgpp.LoadJSGPPLib.loadJSGPPLib();
 
 % create a two-dimensional piecewise bi- linear grid
 dim = 2
@@ -41,7 +41,7 @@ display(print);
 % set function values in alpha
 for i = 0 : gridStorage.size()-1
     gp = gridStorage.get(i);
-    alpha.set(i,f(gp.abs(0),gp.abs(1)));
+    alpha.set(i,f(gp.getCoord(0), gp.getCoord(1)));
 end
 
 display(alpha.toString());
@@ -53,9 +53,9 @@ display(alpha.toString());
 
 % evaluate
 p = DataVector(dim);
-p.set(0,0.52);
-p.set(1,0.73);
+p.set(0, 0.52);
+p.set(1, 0.73);
 opEval = jsgpp.createOperationEval(grid);
 
-print = ['u(0.52,0.73) = ', num2str(opEval.eval(alpha,p))];
+print = ['u(0.52, 0.73) = ', num2str(opEval.eval(alpha,p))];
 display(print);
