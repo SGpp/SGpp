@@ -5,7 +5,7 @@
 
 #include <iostream>
 // All SG++ headers
-//#include "sgpp_base.hpp"
+//#include <sgpp_base.hpp>
 
 // Or, better!, include only those that are required
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -14,13 +14,9 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 
 using namespace std;
 using namespace SGPP::base;
-using namespace SGPP::pde;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
@@ -28,7 +24,7 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
 }
 
 int main() {
-  // create a two-dimensional piecewise bi-linear grid
+  // create a two-dimensional piecewise bilinear grid
   int dim = 2;
   Grid* grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
@@ -43,7 +39,8 @@ int main() {
   // create coefficient vector
   DataVector alpha(gridStorage->size());
   alpha.setAll(0.0);
-  cout << "length of alpha-vector: " << alpha.getSize() << endl;
+  cout << "length of alpha vector: " << alpha.getSize() << endl;
+  
   // set function values in alpha
   GridIndex* gp;
 
@@ -52,11 +49,11 @@ int main() {
     alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
   }
 
-  cout << alpha.toString() << endl;
+  cout << "alpha before hierarchization: " << alpha.toString() << endl;
 
   // hierarchize
   SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
-  cout << alpha.toString() << endl;
+  cout << "alpha after hierarchization:  " << alpha.toString() << endl;
 
   // evaluate
   DataVector p(dim);

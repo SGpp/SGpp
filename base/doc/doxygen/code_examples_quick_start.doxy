@@ -38,14 +38,18 @@ coefficients. Finally, we evaluate the sparse grid function @f$u@f$ at
 @section code_examples__python Python
 
 First, the whole code of file python_simple.py at once, as it can be
-found in the directory @c examples/, which we then discuss line by line.
+found in the directory @c base/examples/, which we then discuss line by line.
 
 @include python_simple.py
 which can be executed by
 @code
-> python python_simple.py
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib"
+export PYTHONPATH="/path/to/SGpp/trunk/lib/pysgpp"
+python python_simple.py
 @endcode 
-in the directory @c examples/.
+in the directory @c base/examples/.
+Keep in mind that you need to seed the @c LD_LIBRARY_PATH and @c PYTHONPATH
+environment variables correctly, allowing Python to find pysgpp and SG++.
 
 This results in the output
 @include all_simple.output.txt
@@ -54,49 +58,48 @@ On the first level, we obtain 1, on the second 1/4, and on the third
 1/16 as surplusses.
 
 
+
 @subsection code_examples__python_linebyline Explanations line by line
 
 @dontinclude python_simple.py
 @until pysgpp
-This includes the typicial python header. Then, the module sys is
-imported. The list @c sys.path includes the search paths for modules. To
-be able to import the module pysgpp, we have to add the directory
-<tt>../lib/pysgpp</tt> to the search path. After that, we import the two classes
-DataVector and @link SGPP::base::Grid Grid() @endlink, which we require afterwards.
+We import the pysgpp classes which we require afterwards,
+with the most important being SGPP::base::DataVector and SGPP::base::Grid.
 
 @until dimensionality
-creates a two-dimensional grid object with piecewise bi-linear basis
+creates a two-dimensional grid object with piecewise bilinear basis
 functions with the help of the factory method
-@link SGPP::base::Grid.createLinearGrid() Grid.createLinearGrid()
-@endlink. Then we obtain a reference to the Grid's 
-GridStorage-object, which allows us, e.g., to access grid
+SGPP::base::Grid.createLinearGrid().
+Then we obtain a reference to the Grid's 
+GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
-number of grid points. 
+number of grid points.
 
 @until number
-Here, we use a @link SGPP::base::GridGenerator GridGenerator() @endlink to
-create a regular sparse grid of level 
-3. Thus, @c gridStorage.size() returns 17, the number of grid points
+Here, we use a SGPP::base::GridGenerator to
+create a regular sparse grid of level 3.
+Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
 
 @until length
-Now we create an object of type DataVector which has as many entries
-as there are grid points. It serves as a coefficient vector for the
+Now we create an object of type SGPP::base::DataVector which has as many
+entries as there are grid points. It serves as a coefficient vector for the
 sparse grid interpolant we want to construct. As the entries of a
 freshly created DataVector are not initialized, we set them to
-0.0. (This is superflous here as we initialize them in the
+0.0. (This is superfluous here as we initialize them in the
 next few lines anyway.)
 
-@until print alpha
-Here, the function @f$f@f$, which we want to interpolate, is
-defined. The for-loop iterates over all grid points: For each grid
-point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
-function value at the grid point's coordinates which are obtained by @c abs(dim).
+@until alpha before hierarchization
+Here, the function @f$f@f$, which we want to interpolate, is defined.
+The @c for loop iterates over all grid points: For each grid
+point @c gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by
+@c getCoord(dim).
 The current coefficient vector is then printed.
 
-@until print alpha
-An objectOperationHierarchisation is created and used to hierarchize 
-the coefficient vector, which we print.
+@until alpha after hierarchization
+An object SGPP::base::OperationHierarchisation is created and used to
+hierarchize the coefficient vector, which we print.
 
 @until u(
 Finally, a second DataVector is created which is used as a point to
@@ -108,24 +111,27 @@ evaluated close to (but not exactly at) a grid point.
 
 @section code_examples__cpp C++
 
-Again, we first show the whole code of file c++_simple.cpp at once, as it can be
-found in the directory @c examples/, which we then discuss line by line.
+Again, we first show the whole code of file c++_simple.cpp at once,
+as it can be found in the directory @c base/examples/, which we then discuss
+line by line.
 
 @include c++_simple.cpp
 
-which can be compiled and executed by
+The example can be compiled, linked, and executed by
 @code
-> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple c++_simple.cpp -lsgppbase
-> ./c++_simple
-@endcode 
-in the directory @c examples/. Note that you might have to set the library path 
-environment variable to be able to use the shared libraries:
-@code
-> export LD_LIBRARY_PATH=path_to_SGpp/lib/sgpp
-@endcode 
+g++ -o c++_simple.o -c -std=c++11 -I../src c++_simple.cpp
+g++ -o c++_simple -fopenmp c++_simple.o -L/path/to/SGpp/trunk/lib/sgpp -lsgppbase
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
+./c++_simple
+@endcode
+running in the directory @c base/examples/.
+Note that you have to set the @c LD_LIBRARY_PATH
+environment variable to be able to use the shared library.
 
-This results in the same output as before,
+This results in the same output as before:
+
 @include all_simple.output.txt
+
 
 
 @subsection code_examples__cpp_linebyline Explanations line by line
@@ -133,42 +139,45 @@ This results in the same output as before,
 @dontinclude c++_simple.cpp
 @until SGPP::base;
 Apart from iostream, we have to include the header files of all
-classes we are using. Finally, we import the namespaces std, sg, and (to
+classes we are using. Finally, we import the namespaces @c std and (to
 simplify the example) SGPP::base.
 
 @until }
 defines the function @f$f@f$ we want to interpolate.
 
 @until dimensionality
-creates a two-dimensional grid object with piecewise bi-linear basis
+creates a two-dimensional grid object with piecewise bilinear basis
 functions with the help of the factory method
-SGPP::Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
-GridStorage-object, which allows us, e.g., to access grid
+SGPP::base::Grid.createLinearGrid().
+Then we obtain a reference to the Grid's 
+GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
-number of grid points. 
+number of grid points.
 
 @until number
-Here, we use a SGPP::GridGenerator to create a regular sparse grid of level
-3. Thus, @c gridStorage.size() returns 17, the number of grid points
+Here, we use a SGPP::base::GridGenerator to
+create a regular sparse grid of level 3.
+Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
 
 @until length
-Now we create an object of type DataVector which has as many entries
-as there are grid points. It serves as a coefficient vector for the
+Now we create an object of type SGPP::base::DataVector which has as many
+entries as there are grid points. It serves as a coefficient vector for the
 sparse grid interpolant we want to construct. As the entries of a
 freshly created DataVector are not initialized, we set them to
-0.0. (This is superflous here as we initialize them in the
+0.0. (This is superfluous here as we initialize them in the
 next few lines anyway.)
 
-@until cout << alpha
-The for-loop iterates over all grid points: For each grid
-point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
-function value at the grid point's coordinates which are obtained by @c abs(dim).
+@until alpha before hierarchization
+The @c for loop iterates over all grid points: For each grid
+point @c gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by
+@c getCoord(dim).
 The current coefficient vector is then printed.
 
-@until cout << alpha
-An object SGPP::OperationHierarchisation is created and used to hierarchize 
-the coefficient vector, which we print.
+@until alpha after hierarchization
+An object SGPP::base::OperationHierarchisation is created and used to
+hierarchize the coefficient vector, which we print.
 
 @until u(
 Finally, a second DataVector is created which is used as a point to
@@ -180,79 +189,75 @@ evaluated close to (but not exactly at) a grid point.
 
 @section code_examples__java Java
 
-Again, we first show the whole code of file java_simple.java at once, as it can be
-found in the directory @c examples/, which we then discuss line by line.
+Again, we first show the whole code of file java_simple.java at once, as it
+can be
+found in the directory @c base/examples/, which we then discuss line by line.
 
 @include java_simple.java
 
-For the compilation, we first have to create a .jar file, which holds all java classes
+For the compilation and execution of the example,
+we change to the directory @c base/examples/ and run
 @code
->cd /Path/to/SGpp/trunk/lib/jsgpp/sgpp
->javac -d . *.java
->jar cf "Name".jar ./sgpp/*.class
-@endcode
-First, we change to the sgpp directory holding all @c .java files. 
-Next all @c .java files are compiled to @c .class files in the automatically created directory @c ./sgpp.
-At last, we pack all @c .class files to a @c .jar file with the name @c "Name".jar.
-We can now change to the directory @c examples/ and compile and run the java_simple example
-@code
-> cd /Path/To/SGpp/trunk/examples
-> javac -d . -cp .:/Path/To/SGpp/trunk/lib/jsgpp/sgpp/ *.java
-> java -cp .:/Path/To/SGpp/trunk/lib/jsgpp/sgpp/ java_simple
+javac -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar java_simple.java
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
+java -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar java_simple
 @endcode 
-Hereby @c -cp gives the path to the previously builded @c "Name".jar file.
-Note that you might have to set the library path 
-environment variable to be able to use the shared libraries:
-@code
-> export LD_LIBRARY_PATH=/Path/To/SGpp/trunk/lib/jsgpp
-@endcode 
+Note that you have to set the @c LD_LIBRARY_PATH
+environment variable to be able to use the shared library.
 
-This results in the same output as before,
+This results in (nearly) the same output as before:
+
 @include all_simple.output.txt
+
 
 
 @subsection code_examples__java_linebyline Explanations line by line
 
 @dontinclude java_simple.java
 @until sgpp.OperationEval;
-We can import the whole @c .jar file as in the second line or ,better, just import the class files we use. 
+We can import the whole @c .jar file as in the second line or, better,
+just import the class files we use.
 
 @until }
 defines the function @f$f@f$ we want to interpolate.
 
-@until loadLibrary
-Two possibilities of loading the libjsgpp.so shared object library file, which is needed to find the methods.
+@until loadJSGPPLib
+Two possibilities of loading the libjsgpp.so shared object library file,
+which is needed to find the methods.
 
 @until dimensionality
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
-sgpp.Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
-GridStorage-object, which allows us, e.g., to access grid
+SGPP::base::Grid.createLinearGrid().
+Then we obtain a reference to the Grid's 
+GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
-number of grid points. 
+number of grid points.
 
 @until number
-Here, we use a sgpp.GridGenerator to create a regular sparse grid of level 
-3. Thus, @c gridStorage.size() returns 17, the number of grid points
+Here, we use a SGPP::base::GridGenerator to
+create a regular sparse grid of level 3.
+Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
 
 @until length
-Now we create an object of type DataVector which has as many entries
-as there are grid points. It serves as a coefficient vector for the
+Now we create an object of type SGPP::base::DataVector which has as many
+entries as there are grid points. It serves as a coefficient vector for the
 sparse grid interpolant we want to construct. As the entries of a
 freshly created DataVector are not initialized, we set them to
-0.0. (This is superflous here as we initialize them in the
+0.0. (This is superfluous here as we initialize them in the
 next few lines anyway.)
 
-@until alpha.toString
-The for-loop iterates over all grid points: For each grid
-point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
-function value at the grid point's coordinates which are obtained by @c abs(dim).
+@until alpha before hierarchization
+The @c for loop iterates over all grid points: For each grid
+point @c gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by
+@c getCoord(dim).
 The current coefficient vector is then printed.
 
-@until alpha.toString
-An object sgpp.jsgpp.OperationHierarchisation is created and used to hierarchize 
-the coefficient vector, which we print.
+@until alpha after hierarchization
+An object sgpp.jsgpp.OperationHierarchisation is created and used to
+hierarchize the coefficient vector, which we print.
 
 @until u(
 Finally, a second DataVector is created which is used as a point to
@@ -262,142 +267,172 @@ evaluated close to (but not exactly at) a grid point.
 
 
 
-@section code_examples__matlab Matlab
+@section code_examples__matlab MATLAB
 
-As in the previous sections, we first show the whole code of file matlab_simple.m at once, as it can be
-found in the directory @c examples/, which we then discuss line by line.
+As in the previous sections, we first show the whole code of file
+matlab_simple.m at once, as it can be
+found in the directory @c base/examples/, which we then discuss line by line.
 
 @include matlab_simple.m
 
-Matlab can use SGpp via Java, i.e. we use the Java library of SGpp and import it to Matlab. 
-In Java we have to use the call @c System.loadLibrary("jsgpp") to load the jsgpp.so library. In Matlab, this call cannot be executed
-directly, but a method has to be called, which then calls @c System.loadLibrary("jsgpp").
-For this to work, we have to first create a Java class in the directory which holds the .java files of SGpp, which we will later pack 
-to the .jar archive, just as in the java_simple example.
-First change to the directory
+MATLAB can use SGpp via Java, i.e. we use the Java library of SGpp and import
+it to MATLAB.
+Before we can use these methods in MATLAB, we have to add the path to the
+@c libjsgpp.so file to the librarypath.txt file of MATLAB.
+(Hint: Typing @c matlabroot in MATLAB returns the path to your MATLAB
+installation.)
+Open the file /path/to/MATLAB/toolbox/local/librarypath.txt in a text editor
+and add the line
 @code
->cd /Path/To/SGpp/trunk/lib/jsgpp/sgpp
+/path/to/SGpp/trunk/lib/jsgpp
 @endcode
-and create the file "Name".java with the editor you prefer, here vim. Here the class is named LoadJSGPPLib.java
+at the end of the file.
+After adding this line, we can start MATLAB.
+However, we have to set the environment variables @c LD_LIBRARY_PATH and
+@c LD_PRELOAD:
 @code
->vim LoadJSGPPLib.java
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
+export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
+matlab
 @endcode
-and add the following lines to the file
+The variable @c LD_LIBRARY_PATH has to be set to allow MATLAB to find
+the shared libraries.
+However, MATLAB ships its own version of @c libstdc++
+(usually in @c /path/to/MATLAB/sys/os/glnxa64) and adds its location
+to MATLAB's internal @c LD_LIBRARY_PATH.
+Since this version of @c libstdc++ is most likely incompatible with the
+version used to compile SG++, you will get errors like this
+when executing matlab_simple in MATLAB:
 @code
-package sgpp;
+Error using matlab_simple (line 5)
+Java exception occurred:
+java.lang.UnsatisfiedLinkError: /path/to/SGpp/trunk/lib/jsgpp/libjsgpp.so:
+/path/to/MATLAB/bin/glnxa64/libstdc++.so.6: version
+`GLIBCXX_3.4.20' not found (required by /path/to/SGpp/trunk/lib/jsgpp/libjsgpp.so)
+        at java.lang.ClassLoader$NativeLibrary.load(Native Method)
+        at java.lang.ClassLoader.loadLibrary1(Unknown Source)
+        at java.lang.ClassLoader.loadLibrary0(Unknown Source)
+        at java.lang.ClassLoader.loadLibrary(Unknown Source)
+        at java.lang.Runtime.loadLibrary0(Unknown Source)
+        at java.lang.System.loadLibrary(Unknown Source)
+        at sgpp.LoadJSGPPLib.loadJSGPPLib(LoadJSGPPLib.java:10)
+@endcode
+To work around this issue, set the @c LD_PRELOAD variable
+to load the correct version @c libstdc++ before calling MATLAB.
+You can find the correct version by examining the output of
+@code
+ldd /path/to/SGpp/trunk/lib/jsgpp/libjsgpp.so
+@endcode
+and searching for a line containing @c libstdc++.
+On my Ubuntu system, it was located in
+@c /usr/lib/x86_64-linux-gnu/libstdc++.so.6,
+but it can differ on other systems.
 
-public class LoadJSGPPLib {
-    public static void loadJSGPPLib() {
-      try {
-	 System.loadLibrary("jsgpp");
-      } catch (UnsatisfiedLinkError error) {
-	 System.out.println("Error loading library");
-      }
-    }
-}
-@endcode
-Thus, we created a class, which just calls the @c System.loadLibrary() method, loading the libjsgpp.so file.
-
-Now, as in the java_simple example, we create the .jar file, which holds all java classes plus the newly created
-LoadJSGPPLib class
+In MATLAB, we have to add the newly created "Name".jar file, doing this with
+the command
 @code
->javac -d . *.java
->jar cf "Name".jar ./sgpp/*.class
+javaaddpath('/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar')
 @endcode
-All @c .java files are compiled to @c .class files in the automatically created directory @c ./sgpp.
-Then, we pack all @c .class files to a @c .jar file with the name @c "Name".jar.
-Note that you might have to set the library path environment variable to be able to use the shared libraries:
+We can now change to the directory @c base/examples/ and run the matlab_simple
+example with
 @code
-> export LD_LIBRARY_PATH=/Path/To/SGpp/trunk/lib/jsgpp
+matlab_simple
 @endcode 
 
-Before we can use these methods in Matlab, we have to add the path to the @c libjsgpp.so file to the librarypath.txt file of Matlab.
-(Hint: Typing @c matlabroot in Matlab returns the path to your matlab installation)
-@code
->cd /Path/To/Matlab/toolbox/local
->vim librarypath.txt
-@endcode
-Add the following line at the end
-@code
-/Path/To/SGpp/trunk/lib/jsgpp
-@endcode
-After adding this line, we can start Matlab.
-In Matlab, we have to add the newly created "Name".jar file, doing this with the command
-@code
->>javaaddpath('/Path/To/SGpp/trunk/lib/jsgpp/sgpp/"Name".jar')
-@endcode
-We can now change to the directory @c examples/ and run the matlab_simple example
-@code
->>matlab_simple
-@endcode 
+This results in the same output as before:
 
-This results in a similar output as before, only in Matlab,
-@include matlab_simple.output.txt
+@include all_simple.output.txt
 
-Hints:
+
+
+@subsection code_examples__matlab_hints Hints
 @code
-"javaaddpath('path/x.jar')" adds dynamic path. For static path, change the classpath.txt file in /Path/To/Matlab/toolbox/local, so you do not have to use javaaddpath any longer
-use ">>javaclasspath" to see the loaded jar files (upper part static, lower part dynamic; our SGPP.jar should be in there)
-">>import sgpp.*" in Matlab to not have to write sgpp. in front of every method
-call ">>methods('sgpp.Classname')" to see methods of class "Classname"
-
-The methods itself can now also be called like Java methods in the Matlab command window, e.g.
->> dataVector = sgpp.DataVector(10)
->> dataVector.setAll(0)
->> dataVector
+javaaddpath('/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar')
 @endcode
+adds the path to the dynamic Java path.
+To add it to the static Java path (thus permanently),
+change the @c /path/To/MATLAB/toolbox/local/classpath.txt file,
+so you do not have to use @c javaaddpath any longer.
+Use
+@code
+javaclasspath
+@endcode
+to see the loaded jar files (upper part static, lower
+part dynamic; our jsgpp.jar should be in there).
+Write
+@code
+import sgpp.*
+@endcode
+in MATLAB to not have to write @c sgpp. in front of every method
+Call
+@code
+methods('sgpp.Classname')
+@endcode
+to see all methods of the class "Classname" (e.g. @c Grid).
+The methods itself can now also be called like Java methods in the MATLAB
+command window, e.g.
+@code
+dataVector = sgpp.DataVector(10)
+dataVector.setAll(0)
+dataVector
+@endcode
+
+
 
 @subsection code_examples__matlab_linebyline Explanations line by line
 
 @dontinclude matlab_simple.m
+@until loadJSGPPLib
+Method to load the libjsgpp.so library.
+As you can see, the methods are called in Java syntax.
+
 @until sgpp.OperationEval;
-We can import the whole @c .jar file as in the second line or ,better, just import the class files we use. 
+We can import the whole @c .jar file as in the second line or, better,
+just import the class files we use.
 
 @until x1
 defines the function @f$f@f$ we want to interpolate.
 
-@until loadJSGPPLib()
-Method to call the previously created method in class LoadJSGPPLib which loads the libjsgpp.so library. As you can see, the methods are called in Java syntax
-
-@until display
+@until dimensionality
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
-sgpp.Grid.createLinearGrid(). Then we obtain a reference to the Grid's 
-GridStorage-object, which allows us, e.g., to access grid
+SGPP::base::Grid.createLinearGrid().
+Then we obtain a reference to the Grid's 
+GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
-number of grid points. 
+number of grid points.
 
-@until display
-Here, we use a sgpp.GridGenerator to create a regular sparse grid of level 
-3. Thus, @c gridStorage.size() returns 17, the number of grid points
+@until number
+Here, we use a sgpp.GridGenerator to
+create a regular sparse grid of level 3.
+Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
 
-@until display
-Now we create an object of type DataVector which has as many entries
-as there are grid points. It serves as a coefficient vector for the
+@until length
+Now we create an object of type SGPP::base::DataVector which has as many
+entries as there are grid points. It serves as a coefficient vector for the
 sparse grid interpolant we want to construct. As the entries of a
 freshly created DataVector are not initialized, we set them to
-0.0. (This is superflous here as we initialize them in the
+0.0. (This is superfluous here as we initialize them in the
 next few lines anyway.)
 
-@until alpha.toString
-The for-loop iterates over all grid points: For each grid
-point gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
-function value at the grid point's coordinates which are obtained by @c abs(dim).
+@until alpha before hierarchization
+The @c for loop iterates over all grid points: For each grid
+point @c gp, the corresponding coefficient @f$\alpha_j@f$ is set to the
+function value at the grid point's coordinates which are obtained by
+@c getCoord(dim).
 The current coefficient vector is then printed.
-Attention has to be laid on the different syntax in indexing the array between Matlab and Java.
-Java starts with 0, Matlab with 1!
+Attention has to be paid on the different syntax in indexing the array between
+MATLAB and Java.
+Java starts with 0, MATLAB with 1!
 
-@until alpha.toString
-An object sgpp.jsgpp.OperationHierarchisation is created and used to hierarchize 
-the coefficient vector, which we print.
+@until alpha after hierarchization
+An object sgpp.jsgpp.OperationHierarchisation is created and used to
+hierarchize the coefficient vector, which we print.
 
 @until u(
 Finally, a second DataVector is created which is used as a point to
 evaluate the sparse grid function. An object is obtained which
 provides an evaluation operation, and the sparse grid interpolant is
 evaluated close to (but not exactly at) a grid point.
-
-
-
 */
