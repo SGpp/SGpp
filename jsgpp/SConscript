@@ -3,40 +3,56 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
+import fnmatch
 import os
 
-# as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
+Import("env")
+Import("BUILD_DIR")
+Import("JSGPP_BUILD_PATH")
+Import("moduleFolders")
+Import("moduleName")
+Import("libraryTargetList")
+Import("installTargetList")
+
+# as the dependency tracking for swig is buggy in scons,
+# always trigger a "reswig" by removing the swig wrapper
 if os.path.exists("jsgpp_wrap.cc"):
     os.remove("jsgpp_wrap.cc")
 
-srcs = Split("""
-jsgpp.i
-""")
-
-Import('env')
-Import('BUILD_DIR')
-Import('JAVASGPP_BUILD_DIR')
-Import('moduleFolders')
+# clear jsgpp/java/*.java files
+for filename in os.listdir("java"):
+    if fnmatch.fnmatch(filename, "*.java"):
+        os.remove(os.path.join("java", filename))
 
 j_env = env.Clone()
 
-# remove compiler warnings caused by swig (as we cannot do anything against them, 
-# and as they confuse jenkins):
-j_env.AppendUnique(CPPFLAGS=['-w'])
+# remove compiler warnings caused by swig
+# (as we cannot do anything against them and as they confuse jenkins)
+j_env.AppendUnique(CPPFLAGS=["-w"])
 
-defines = ['-D'+c for c in j_env['CPPDEFINES']]
-swigIncludePaths = ['-I' + module + '/src/' for module in moduleFolders] + defines
-j_env.AppendUnique(SWIGFLAGS=['-c++','-java', '-package', 'sgpp'] + swigIncludePaths)
-j_env.AppendUnique(CPPPATH=['#/src/sgpp'])
-j_env.AppendUnique(CPPFLAGS=['-fno-strict-aliasing'])
+defines = ["-D" + c for c in j_env["CPPDEFINES"]]
+#swigIncludePaths = ["-I" + module + "/src/" for module in moduleFolders]
+swigIncludePaths = []
+j_env.AppendUnique(SWIGFLAGS=["-c++", "-java", "-package", "sgpp",
+                              "-outdir", os.path.join(moduleName, "java")] +
+                             swigIncludePaths + defines)
 
-j_env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
+#j_env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 
-jsgpp = j_env.SharedLibrary(target="pysgpp", source = srcs, SHLIBPREFIX = '_', LIBPATH = BUILD_DIR, LIBS=['sgppbase', 'sgppdatadriven', 'sgppsolver', 'sgpppde', 'sgppmisc', 'sgppfinance', 'sgppcombigrid', 'sgppparallel']) # 
-jsgppInstall = j_env.Install(JAVASGPP_BUILD_DIR, jsgpp)
+libJava = j_env.SharedLibrary(target="jsgpp",
+                              source=["jsgpp.i"],
+                              SHLIBPREFIX="lib",
+                              LIBPATH=BUILD_DIR,
+                              LIBS=["sgpp" + moduleFolder
+                                    for moduleFolder in moduleFolders])
+#TODO libs are set hacky!
+installLibJava = j_env.Install(JSGPP_BUILD_PATH, libJava)
+installTargetList.append(installLibJava)
 
-from glob import glob
-files = glob('*.java')
-env.Install('#/lib/jsgpp/sgpp/', files)
-
-Return('jsgpp')
+# do javac compilation and jar packing in separate SCons process
+# (see SConstruct_jsgpp_jar for more details)
+jar = j_env.Command(target="jsgpp.jar",
+                    source=installLibJava,
+                    action="scons JSGPP_BUILD_PATH=\"{}\" -C \"{}\" -f \"{}\"".
+                        format(JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
+j_env.AlwaysBuild(jar)

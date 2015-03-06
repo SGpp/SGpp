@@ -17,7 +17,9 @@ EnsurePythonVersion(2, 7)
 EnsureSConsVersion(2, 0)
 print "Using SCons", SCons.__version__
 
-ignoreFolders = ['tests', 'jsgpp'] #, 'pysgpp'
+# to ignore folders containing a SConscript file, do the following:
+# ignoreFolders = ["jsgpp"]
+ignoreFolders = []
 
 # find all modules
 moduleFolders, languageSupport = getModules(ignoreFolders)
@@ -104,12 +106,10 @@ vars.GenerateHelpText(env))
 # adds trailing slashes were required and if not present
 BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_BUILD_PATH = os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp')
+PYSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp'))
 Export('PYSGPP_BUILD_PATH')
-PYSGPP_BUILD_DIR = Dir(PYSGPP_BUILD_PATH)
-Export('PYSGPP_BUILD_DIR')
-JAVASGPP_BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
-Export('JAVASGPP_BUILD_DIR')
+JSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
+Export('JSGPP_BUILD_PATH')
 EXAMPLE_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'bin', 'examples'))
 Export('EXAMPLE_DIR')
 
@@ -162,18 +162,10 @@ for moduleFolder in moduleFolders:
   env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
 
 if env['SG_PYTHON']:
-  env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': moduleFolder})
+  env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
 
 if env['SG_JAVA']:
-  env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': moduleFolder})
-
-# build java lib
-if env['SG_JAVA']:
-    libjsgpp = env.SConscript('#/jsgpp/SConscript',
-                              variant_dir='tmp/build_jsgpp', duplicate=0)
-    # install
-    jinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'),
-                        [libjsgpp])
+  env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': "jsgpp"})
 
 # Unit tests
 #########################################################################
