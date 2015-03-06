@@ -76,7 +76,7 @@ For comparison, we apply the classical gradient-free Nelder-Mead method
 directly to the objective function \f$f\f$.
 
 The example program outputs the following results:
-\verbinclude example_optimization_output.txt
+\verbinclude example_optimization.output.txt
 
 We see that both the gradient-based optimization of the smooth sparse grid
 interpolant and the gradient-free optimization of the objective function
