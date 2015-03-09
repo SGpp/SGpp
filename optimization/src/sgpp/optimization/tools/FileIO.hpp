@@ -44,9 +44,7 @@ namespace SGPP {
       template <>
       void writeEntry(std::ofstream& f, const std::string& entry) {
         // write string terminated by null character
-        const char null_char[1] = {'\0'};
-        f << entry;
-        f.write(null_char, 1);
+        f << entry << '\0';
       }
 
       /**
