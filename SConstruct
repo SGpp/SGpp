@@ -66,7 +66,20 @@ vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 
 # initialize environment
-env = Environment(variables=vars, ENV=os.environ)
+allDefines = None
+for key, value in ARGLIST:
+  if key == 'CPPDEFINES':
+    allDefines = value
+    break
+allDefines = allDefines.split(" ")
+print allDefines
+# allDefinesMap = {}
+# for define in allDefines:
+#   splitted = define.split("=")
+#   allDefinesMap[splitted[0]] = splitted[1]
+# print allDefinesMap
+
+env = Environment(variables=vars, ENV=os.environ, CPPDEFINES = allDefines)
 env.Export('moduleNames')
 env.Export('moduleFolders')
 
@@ -164,6 +177,7 @@ for moduleFolder in moduleFolders:
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': moduleFolder})
 
+#TODO: ask julian
 if env['SG_JAVA']:
   env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': moduleFolder})
 
