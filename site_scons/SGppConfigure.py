@@ -20,20 +20,24 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
 
+    print config.env['CPPFLAGS']
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
         sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-        Exit(1)
+        sys.exit(1) #TODO: exist undefined, fix
     config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
-    if not env['SSE3_FALLBACK']:
-        # check avx support
-        if not config.CheckFlag("-mavx"):
-            sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
-            Exit(1)
-        config.env.AppendUnique(CPPFLAGS="-mavx")
+    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS']:
+      print "architecture set from outside"
     else:
-        config.env.AppendUnique(CPPFLAGS="-msse3")
+      if not env['SSE3_FALLBACK']:
+          # check avx support
+          if not config.CheckFlag("-mavx"):
+              sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
+              sys.exit(1)
+          config.env.AppendUnique(CPPFLAGS="-mavx")
+      else:
+          config.env.AppendUnique(CPPFLAGS="-msse3")
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
@@ -51,7 +55,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         # check whether swig installed
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
-            Exit(1)
+            sys.exit(1)
 
         print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0]
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
@@ -61,13 +65,13 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
             sys.stderr.write("Error: Python.h not found, but required for SG_PYTHON. Check path to Python include files: "
                          + distutils.sysconfig.get_python_inc() + "\n")
             sys.stderr.write("Hint: You might have to install package python-dev\n")
-            Exit(1)
+            sys.exit(1)
 
         if not config.CheckCXXHeader('pyconfig.h'):
             sys.stderr.write("Error: pyconfig.h not found, but required for SG_PYTHON. Check path to Python include files: "
                          + distutils.sysconfig.get_python_inc() + "\n")
             sys.stderr.write("Hint: You might have to install package python-dev\n")
-            Exit(1)
+            sys.exit(1)
 
         try:
             import numpy
@@ -89,11 +93,11 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         # check whether javac installed
         if not config.CheckExec('javac'):
             sys.stderr.write("Error: javac cannot be found, but required by SG_JAVA. Check PATH environment variable!\n")
-            Exit(1)
+            sys.exit(1)
         # check whether javac installed
         if not config.CheckExec('java'):
             sys.stderr.write("Warning: java cannot be found, but required by SG_JAVA. Check PATH environment variable!\n")
-            Exit(1)
+            sys.exit(1)
 
         # check for JNI headers
         if os.environ.get('JNI_CPPINCLUDE'):
@@ -105,7 +109,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                  + "Please set JAVA_HOME environment variable "
                                  + "with $JAVA_HOME/bin/javac, $JAVA_HOME/include/jni.h\n"
                                  + "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
-                Exit(1)
+                sys.exit(1)
     else:
         print "Info: Compiling without java support"
 
@@ -167,7 +171,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     else:
         print "You must specify a valid value for TARGETCPU."
         print "Available configurations are: ICC"
-        Exit(1)
+        sys.exit(1)
 
     # special treatment for different platforms
     if env['PLATFORM'] == 'darwin':
