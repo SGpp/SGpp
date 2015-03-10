@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
-%module jsgpp
+%module(directors="1") jsgpp
 
 %include "base/src/sgpp/globaldef.hpp"
 

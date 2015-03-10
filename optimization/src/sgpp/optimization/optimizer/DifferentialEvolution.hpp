@@ -44,7 +44,7 @@ namespace SGPP {
            * @param avgImprovementThreshold   stopping criterion parameter 2
            * @param maxDistanceThreshold      stopping criterion parameter 3
            */
-          DifferentialEvolution(const ObjectiveFunction& f,
+          DifferentialEvolution(ObjectiveFunction& f,
                                 size_t maxFcnEvalCount =
                                   DEFAULT_N,
                                 size_t populationSize =
@@ -65,11 +65,6 @@ namespace SGPP {
            * @return          optimal objective function value
            */
           float_t optimize(std::vector<float_t>& xOpt);
-
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return                  number of individuals

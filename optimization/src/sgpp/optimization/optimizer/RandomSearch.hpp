@@ -50,11 +50,6 @@ namespace SGPP {
                        size_t populationSize = 0);
 
           /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
-
-          /**
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */

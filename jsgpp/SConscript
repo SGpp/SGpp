@@ -56,3 +56,4 @@ jar = j_env.Command(target="jsgpp.jar",
                     action="scons JSGPP_BUILD_PATH=\"{}\" -C \"{}\" -f \"{}\"".
                         format(JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
 j_env.AlwaysBuild(jar)
+installTargetList.append(jar)

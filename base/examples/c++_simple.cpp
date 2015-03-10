@@ -40,7 +40,7 @@ int main() {
   DataVector alpha(gridStorage->size());
   alpha.setAll(0.0);
   cout << "length of alpha vector: " << alpha.getSize() << endl;
-  
+
   // set function values in alpha
   GridIndex* gp;
 

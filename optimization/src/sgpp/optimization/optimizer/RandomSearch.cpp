@@ -30,14 +30,14 @@ namespace SGPP {
                                  size_t maxFcnEvalCount,
                                  size_t populationSize) :
         Optimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
-        defaultOptimizer(NelderMead(*f)),
+        defaultOptimizer(NelderMead(f)),
         optimizer(optimizer) {
         initialize(populationSize);
       }
 
       void RandomSearch::initialize(size_t populationSize) {
         if (populationSize == 0) {
-          this->populationSize = std::min(10 * f->getDimension(),
+          this->populationSize = std::min(10 * f.getDimension(),
                                           static_cast<size_t>(100));
         } else {
           this->populationSize = populationSize;
@@ -47,7 +47,7 @@ namespace SGPP {
       float_t RandomSearch::optimize(std::vector<float_t>& xOpt) {
         printer.printStatusBegin("Optimizing (random search)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
         std::vector<std::vector<float_t>> x0(populationSize,
                                              std::vector<float_t>(d, 0.0));
         std::vector<size_t> roundN(populationSize, 0);
@@ -68,13 +68,13 @@ namespace SGPP {
 
         float_t fOpt = INFINITY;
 
-        printer.disableStatusPrinting();
+        /*printer.disableStatusPrinting();
 
         #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt, printer) \
         default(none)
         {
           Optimizer* curOptimizerPtr = &optimizer;
-#ifdef _OPENMP
+        #ifdef _OPENMP
           std::unique_ptr<Optimizer> curOptimizer;
 
           if (omp_get_max_threads() > 1) {
@@ -82,7 +82,7 @@ namespace SGPP {
             curOptimizerPtr = curOptimizer.get();
           }
 
-#endif /* _OPENMP */
+        #endif ** _OPENMP **
 
           std::vector<float_t> curXOpt(d, 0.0);
           float_t curFOpt;
@@ -123,17 +123,40 @@ namespace SGPP {
           }
         }
 
-        printer.enableStatusPrinting();
+        printer.enableStatusPrinting();*/
+
+        std::vector<float_t> curXOpt(d, 0.0);
+        float_t curFOpt;
+
+        for (size_t k = 0; k < populationSize; k++) {
+          // optimize with k-th starting point
+          optimizer.setStartingPoint(x0[k]);
+          optimizer.setN(roundN[k]);
+          optimizer.optimize(curXOpt);
+
+          curFOpt = f.eval(curXOpt);
+
+          if (curFOpt < fOpt) {
+            // this point is the best so far
+            fOpt = curFOpt;
+            xOpt = curXOpt;
+          }
+
+          // status printing
+          {
+            char str[10];
+            snprintf(str, 10, "%.1f%%",
+                     static_cast<float_t>(k) /
+                     static_cast<float_t>(populationSize) * 100.0);
+            printer.printStatusUpdate(std::string(str) +
+                                      ", f(x) = " + std::to_string(fOpt));
+          }
+        }
+
         printer.printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
         printer.printStatusEnd();
 
         return fOpt;
-      }
-
-      void RandomSearch::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new RandomSearch(optimizer, N,
-                                           populationSize));
-        clone->setStartingPoint(x0);
       }
 
       size_t RandomSearch::getPopulationSize() const {

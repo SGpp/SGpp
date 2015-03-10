@@ -19,22 +19,22 @@ namespace SGPP {
       const float_t GradientMethod::DEFAULT_EPSILON = 1e-18;
 
       GradientMethod::GradientMethod(
-        const ObjectiveFunction& f,
-        const ObjectiveGradient& fGradient,
+        ObjectiveFunction& f,
+        ObjectiveGradient& fGradient,
         size_t N, float_t beta, float_t gamma, float_t tolerance,
         float_t epsilon) :
         Optimizer(f, N),
+        fGradient(fGradient),
         beta(beta),
         gamma(gamma),
         tol(tolerance),
         eps(epsilon) {
-        fGradient.clone(this->fGradient);
       }
 
       float_t GradientMethod::optimize(std::vector<float_t>& xOpt) {
         printer.printStatusBegin("Optimizing (gradient method)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
         std::vector<float_t> x(x0);
         float_t fx = 0.0;
 
@@ -45,7 +45,7 @@ namespace SGPP {
 
         for (k = 0; k < N; k++) {
           // calculate gradient and norm
-          fx = fGradient->evalGradient(x, gradFx);
+          fx = fGradient.evalGradient(x, gradFx);
           float_t gradFxNorm = gradFx.l2Norm();
 
           // exit if norm small enough
@@ -63,7 +63,7 @@ namespace SGPP {
                                     std::to_string(fx));
 
           // line search
-          if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx,
+          if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
                                 gradFx, s, y)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement
@@ -83,15 +83,8 @@ namespace SGPP {
         return fx;
       }
 
-      void GradientMethod::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new GradientMethod(*f, *fGradient,
-                                           N, beta, gamma,
-                                           tol, eps));
-        clone->setStartingPoint(x0);
-      }
-
       ObjectiveGradient& GradientMethod::getObjectiveGradient() const {
-        return *fGradient;
+        return fGradient;
       }
 
       float_t GradientMethod::getBeta() const {

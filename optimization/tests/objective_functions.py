@@ -6,19 +6,19 @@
 import pysgpp
 import math
 
-class TitleFunction(pysgpp.OptObjectiveFunction):
+class ExampleFunction(pysgpp.OptObjectiveFunction):
     """Example objective function from the title of my Master's thesis."""
     def __init__(self):
-        super(TitleFunction, self).__init__(2)
+        super(ExampleFunction, self).__init__(2)
     
     def eval(self, x):
         """Evaluates the function."""
         return math.sin(8.0 * x[0]) + math.sin(7.0 * x[1])
 
-class TitleFunctionGradient(pysgpp.OptObjectiveGradient):
-    """Gradient of TitleFunction."""
+class ExampleFunctionGradient(pysgpp.OptObjectiveGradient):
+    """Gradient of ExampleFunction."""
     def __init__(self):
-        super(TitleFunctionGradient, self).__init__(2)
+        super(ExampleFunctionGradient, self).__init__(2)
     
     def evalGradient(self, x, gradient):
         """Evaluates the function gradient."""
@@ -26,10 +26,10 @@ class TitleFunctionGradient(pysgpp.OptObjectiveGradient):
         gradient[1] = 7.0 * math.cos(7.0 * x[1])
         return math.sin(8.0 * x[0]) + math.sin(7.0 * x[1])
 
-class TitleFunctionHessian(pysgpp.OptObjectiveHessian):
-    """Gradient/Hessian of TitleFunction."""
+class ExampleFunctionHessian(pysgpp.OptObjectiveHessian):
+    """Gradient/Hessian of ExampleFunction."""
     def __init__(self):
-        super(TitleFunctionHessian, self).__init__(2)
+        super(ExampleFunctionHessian, self).__init__(2)
     
     def evalHessian(self, x, gradient, hessian):
         """Evaluates the function Hessian."""

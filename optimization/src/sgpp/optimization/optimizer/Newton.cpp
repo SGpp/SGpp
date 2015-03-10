@@ -28,37 +28,37 @@ namespace SGPP {
       const float_t Newton::DEFAULT_P = 0.1;
 
       Newton::Newton(
-        const ObjectiveFunction& f,
-        const ObjectiveHessian& fHessian,
+        ObjectiveFunction& f,
+        ObjectiveHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
         Optimizer(f, max_it_count),
+        fHessian(fHessian),
         defaultSleSolver(sle_solver::BiCGStab()),
         sleSolver(defaultSleSolver) {
-        initialize(fHessian, beta, gamma, tolerance, epsilon,
+        initialize(beta, gamma, tolerance, epsilon,
                    alpha1, alpha2, p);
       }
 
       Newton::Newton(
-        const ObjectiveFunction& f,
-        const ObjectiveHessian& fHessian,
+        ObjectiveFunction& f,
+        ObjectiveHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p,
         const sle_solver::SLESolver& sleSolver) :
         Optimizer(f, max_it_count),
+        fHessian(fHessian),
         defaultSleSolver(sle_solver::BiCGStab()),
         sleSolver(sleSolver) {
-        initialize(fHessian, beta, gamma, tolerance, epsilon,
+        initialize(beta, gamma, tolerance, epsilon,
                    alpha1, alpha2, p);
       }
 
-      void Newton::initialize(const ObjectiveHessian& fHessian,
-                              float_t beta, float_t gamma,
+      void Newton::initialize(float_t beta, float_t gamma,
                               float_t tolerance, float_t epsilon,
                               float_t alpha1, float_t alpha2, float_t p) {
-        fHessian.clone(this->fHessian);
         this->beta = beta;
         this->gamma = gamma;
         this->tol = tolerance;
@@ -71,7 +71,7 @@ namespace SGPP {
       float_t Newton::optimize(std::vector<float_t>& xOpt) {
         printer.printStatusBegin("Optimizing (Newton)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
         std::vector<float_t> x = x0;
         float_t fx = INFINITY;
 
@@ -89,7 +89,7 @@ namespace SGPP {
 
         for (k = 0; k < N; k++) {
           // calculate gradient, Hessian and gradient norm
-          fx = fHessian->evalHessian(x, grad_fx, hessianFx);
+          fx = fHessian.evalHessian(x, grad_fx, hessianFx);
           float_t gradFxNorm = grad_fx.l2Norm();
 
           // exit if norm small enough
@@ -134,7 +134,7 @@ namespace SGPP {
                                     std::to_string(fx));
 
           // line search
-          if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx,
+          if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
                                 grad_fx, s, y)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement
@@ -154,15 +154,8 @@ namespace SGPP {
         return fx;
       }
 
-      void Newton::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(
-                  new Newton(*f, *fHessian, N, beta, gamma, tol, eps,
-                             alpha1, alpha2, p, sleSolver));
-        clone->setStartingPoint(x0);
-      }
-
       ObjectiveHessian& Newton::getObjectiveHessian() const {
-        return *fHessian;
+        return fHessian;
       }
 
       float_t Newton::getBeta() const {
