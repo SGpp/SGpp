@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import subprocess
 import shlex
 import os
@@ -26,6 +28,8 @@ class VectorParameter(AbstractParameter):
     return False
   
   def getIndex(self):
+    if len(self.values) == 1:
+      return "0.5"
     return str(float(self.index) / len(self.values));
   
   def getValue(self):
@@ -37,7 +41,7 @@ class VectorParameter(AbstractParameter):
 class CoresParameter(AbstractParameter):
   def __init__(self):
     self.min = 1
-    self.max = 3
+    self.max = 1
     self.step = 1
     self.value = self.min
   
@@ -59,6 +63,8 @@ class CoresParameter(AbstractParameter):
     return ("OMP_NUM_THREADS", str(self.value))
   
   def getIndex(self):
+    if self.max == self.min:
+      return "0.5"
     return str(float(self.value - self.min) / (self.max - self.min));
   
   def next(self):
@@ -67,7 +73,7 @@ class CoresParameter(AbstractParameter):
 class BlocksizeParameter(AbstractParameter):
   def __init__(self):
     self.min = 1
-    self.max = 3
+    self.max = 1
     self.step = 1
     self.value = self.min
     
@@ -93,6 +99,8 @@ class BlocksizeParameter(AbstractParameter):
     return "BLOCKSIZE=" + str(self.value)
 
   def getIndex(self):
+    if self.max == self.min:
+      return "0.5"
     return str(float(self.value - self.min) / (self.max - self.min));
   
   def next(self):
@@ -132,25 +140,32 @@ class Sampler:
     
     # setup environment
     my_env = os.environ.copy()
+    my_env['LD_LIBRARY_PATH'] = 'lib/sgpp:lib/alglib'
+    my_env['PYTHONPATH'] = 'lib/pysgpp'
+
     for envParameter in envParameters:
       keyValue = envParameter.getValue()
       my_env[keyValue[0]] = keyValue[1]
     
     # compile
     command = "scons CPPFLAGS=\"" + ''.join([option.getValue() + " " for option in optionParameters]) + \
-      "\" VERBOSE=1 -j4 NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
-      "".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\""
+      "\" VERBOSE=1 -j32 NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
+      "".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\" " + \
+      "SG_PYTHON=0 CXX=g++-4.8 CC=g++-4.8"
+    print command
     # command = ["./execTest.py"]
     print "origC:", command
     splittedCmd = shlex.split(command)
     print "split:", splittedCmd
     p = subprocess.Popen(splittedCmd, env=my_env) #stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
+    p.wait()
     stdout, stderr = p.communicate()
     
     # execute
     command = ["datadriven/examples/sampler"]
     startTimestamp = time.time()
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=my_env)
+    p = subprocess.Popen(command, shell=True, env=my_env)
+    p.wait()
     stdout, stderr = p.communicate()
     duration = time.time() - startTimestamp
     print "duration:", duration
@@ -158,7 +173,7 @@ class Sampler:
     # extract runtime information
     dataTuple = [parameter.getIndex() for parameter in optionParameters + envParameters + defineParameters]
     print "dataTuple:", dataTuple
-    self.resultFile.write(", ".join(dataTuple) + ", " + str(duration))
+    self.resultFile.write(", ".join(dataTuple) + ", " + str(duration) + "\n")
     
   def sample(self):
     self.resultFile = open(self.resultFileName, "w")
@@ -180,7 +195,6 @@ class Sampler:
           print "error"
           
       self.execute(optionParameters, envParameters, defineParameters)
-      
     self.resultFile.close()
 
 resultFileName = "samples.dat"

@@ -66,20 +66,33 @@ vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 
 # initialize environment
-allDefines = None
-for key, value in ARGLIST:
-  if key == 'CPPDEFINES':
-    allDefines = value
-    break
-allDefines = allDefines.split(" ")
-print allDefines
+# print "ARGUMENTS:", ARGUMENTS
+# allDefines = ''
+# for key, value in ARGLIST:
+#   if key == 'CPPDEFINES':
+#     allDefines = value
+# allDefines = allDefines.split(" ")
+# print allDefines
 # allDefinesMap = {}
 # for define in allDefines:
 #   splitted = define.split("=")
 #   allDefinesMap[splitted[0]] = splitted[1]
 # print allDefinesMap
 
-env = Environment(variables=vars, ENV=os.environ, CPPDEFINES = allDefines)
+#env = Environment(variables=vars, ENV=os.environ, CPPDEFINES = allDefines)
+env = Environment(variables=vars)
+# for key, value in os.environ.iteritems():
+#   env[key] = value
+if 'CXX' in ARGUMENTS:
+  env['CXX'] = ARGUMENTS['CXX']
+if 'CC' in ARGUMENTS:
+  env['CC'] = ARGUMENTS['CC']
+if 'CPPFLAGS' in ARGUMENTS:
+  env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(" ")
+if 'CFLAGS' in ARGUMENTS:
+  env['CFLAGS'] = ARGUMENTS['CFLAGS']
+if 'CPPDEFINES' in ARGUMENTS:
+  env['CPPDEFINES'] = ARGUMENTS['CPPDEFINES']
 env.Export('moduleNames')
 env.Export('moduleFolders')
 

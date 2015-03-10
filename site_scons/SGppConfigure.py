@@ -19,8 +19,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
-
-    print config.env['CPPFLAGS']
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
         sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
@@ -141,7 +139,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         #     ensure you also compile with -fno-strict-aliasing"
         env.Append(CPPFLAGS=allWarnings + [
                              # '-Wall', '-Wextra',
-                             '-std=c++11',  # '-Wno-long-long', '-Wno-deprecated',
+                             #'-std=c++11',  # '-Wno-long-long', '-Wno-deprecated',
                              # '-Werror',
                              '-Wno-unused-parameter',
                              # '-Wconversion',
