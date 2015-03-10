@@ -26,12 +26,10 @@
 namespace SGPP {
   namespace optimization {
 
-    const float_t IterativeGridGeneratorLinearSurplus::DEFAULT_ALPHA = 0.2;
-
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t alpha) :
+      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t gamma) :
       IterativeGridGenerator(f, grid, N),
-      alpha(alpha) {
+      gamma(gamma) {
       if ((std::strcmp(grid.getType(),
                        "bspline") == 0) ||
           (std::strcmp(grid.getType(),
@@ -68,12 +66,12 @@ namespace SGPP {
       }
     }
 
-    float_t IterativeGridGeneratorLinearSurplus::getAlpha() const {
-      return alpha;
+    float_t IterativeGridGeneratorLinearSurplus::getGamma() const {
+      return gamma;
     }
 
-    void IterativeGridGeneratorLinearSurplus::setAlpha(float_t alpha) {
-      this->alpha = alpha;
+    void IterativeGridGeneratorLinearSurplus::setGamma(float_t gamma) {
+      this->gamma = gamma;
     }
 
     bool IterativeGridGeneratorLinearSurplus::generate() {
@@ -222,7 +220,7 @@ namespace SGPP {
         refinablePtsCount =
           abstractRefinement->getNumberOfRefinablePoints(&gridStorage);
         ptsToBeRefinedCount =
-          static_cast<int>(1.0 + refineFactor * alpha *
+          static_cast<int>(1.0 + refineFactor * gamma *
                            static_cast<float_t>(refinablePtsCount));
 
         // refine

@@ -72,13 +72,6 @@ namespace SGPP {
           Optimizer& optimizer;
           /// number of individual points
           size_t populationSize;
-
-          /**
-           * Internal function for initializing the member variables.
-           *
-           * @param populationSize    number of individual points
-           */
-          void initialize(size_t populationSize);
       };
 
     }

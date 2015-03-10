@@ -22,11 +22,6 @@ namespace SGPP {
       class GaussianElimination : public SLESolver {
         public:
           /**
-           * Constructor.
-           */
-          GaussianElimination();
-
-          /**
            * @param       system  system to be solved
            * @param       b       right-hand side
            * @param[out]  x       solution to the system

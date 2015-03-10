@@ -25,13 +25,13 @@ namespace SGPP {
           /// default maximal number of iterations
           static const size_t DEFAULT_MAX_IT_COUNT = 2000;
           /// default beta (parameter for Armijo's rule)
-          static const float_t DEFAULT_BETA;
+          static constexpr float_t DEFAULT_BETA = 0.5;
           /// default gamma (parameter for Armijo's rule)
-          static const float_t DEFAULT_GAMMA;
+          static constexpr float_t DEFAULT_GAMMA = 1e-2;
           /// default tolerance (parameter for Armijo's rule)
-          static const float_t DEFAULT_TOLERANCE;
+          static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
           /// default epsilon (parameter for Armijo's rule)
-          static const float_t DEFAULT_EPSILON;
+          static constexpr float_t DEFAULT_EPSILON = 1e-18;
 
           /**
            * Constructor.

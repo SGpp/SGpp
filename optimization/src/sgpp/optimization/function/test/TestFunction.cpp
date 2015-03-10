@@ -16,8 +16,6 @@ namespace SGPP {
   namespace optimization {
     namespace test_functions {
 
-      const float_t TestFunction::DEFAULT_STANDARD_DEVIATION = 0.01;
-
       TestFunction::TestFunction(size_t d) :
         ObjectiveFunction(d),
         stdDev(0.0),

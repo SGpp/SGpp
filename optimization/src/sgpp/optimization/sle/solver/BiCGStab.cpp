@@ -15,13 +15,9 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-      const float_t BiCGStab::DEFAULT_TOLERANCE = 1e-10;
-
       BiCGStab::BiCGStab() :
-        SLESolver(),
-        N(DEFAULT_MAX_IT_COUNT),
-        tol(DEFAULT_TOLERANCE),
-        x0(std::vector<float_t>()) {
+        BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE,
+                 std::vector<float_t>()) {
       }
 
       BiCGStab::BiCGStab(size_t maxItCount, float_t tolerance,

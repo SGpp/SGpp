@@ -16,8 +16,6 @@
 namespace SGPP {
   namespace optimization {
 
-    const float_t IterativeGridGeneratorRitterNovak::DEFAULT_ALPHA = 0.85;
-
     /**
      * Fast and approximative version of std::pow.
      * Source: http://martin.ankerl.com/2012/01/25/optimized-approximative-pow-in-c-and-cpp/
@@ -40,19 +38,19 @@ namespace SGPP {
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
       ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t alpha, size_t maxLevel, PowMethod powMethod) :
+      float_t gamma, size_t maxLevel, PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
-      alpha(alpha),
+      gamma(gamma),
       maxLevel(maxLevel),
       powMethod(powMethod) {
     }
 
-    float_t IterativeGridGeneratorRitterNovak::getAlpha() const {
-      return alpha;
+    float_t IterativeGridGeneratorRitterNovak::getGamma() const {
+      return gamma;
     }
 
-    void IterativeGridGeneratorRitterNovak::setAlpha(float_t alpha) {
-      this->alpha = alpha;
+    void IterativeGridGeneratorRitterNovak::setGamma(float_t gamma) {
+      this->gamma = gamma;
     }
 
     size_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
@@ -108,11 +106,11 @@ namespace SGPP {
       // criterion won't be evaluated
       std::vector<bool> ignore(fX.size(), false);
 
-      // refinement_alpha will be a standard basis vector
-      // (e.g. refinement_alpha[i] == 1.0 for exactly one i) to refine
+      // refinement_gamma will be a standard basis vector
+      // (e.g. refinement_gamma[i] == 1.0 for exactly one i) to refine
       // exactly one grid point
-      base::DataVector refinementAlpha(currentN);
-      refinementAlpha.setAll(0.0);
+      base::DataVector refinementGamma(currentN);
+      refinementGamma.setAll(0.0);
 
       for (size_t i = 0; i < currentN; i++) {
         base::GridIndex& gp = *gridStorage.get(i);
@@ -206,12 +204,12 @@ namespace SGPP {
 
           if (powMethod == STD_POW) {
             g = std::pow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
-                         alpha) *
-                std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - alpha);
+                         gamma) *
+                std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
           } else {
             g = fastPow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
-                        alpha) *
-                fastPow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - alpha);
+                        gamma) *
+                fastPow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
           }
 
           if (g < gBest) {
@@ -282,8 +280,8 @@ namespace SGPP {
 
         // refine point no. i_best
         degree[iBest]++;
-        refinementAlpha[iBest] = 1.0;
-        base::SurplusRefinementFunctor refineFunc(&refinementAlpha, 1);
+        refinementGamma[iBest] = 1.0;
+        base::SurplusRefinementFunctor refineFunc(&refinementGamma, 1);
         refinement.free_refine(&gridStorage, &refineFunc);
 
         // new grid size
@@ -311,14 +309,14 @@ namespace SGPP {
 
         // resize refinement vector and set to all zeros
         // (in the following loop)
-        refinementAlpha.resize(newN);
-        refinementAlpha[iBest] = 0.0;
+        refinementGamma.resize(newN);
+        refinementGamma[iBest] = 0.0;
 
         for (size_t i = currentN; i < newN; i++) {
           base::GridIndex& gp = *gridStorage.get(i);
           // set point distribution accordingly to normal/Clenshaw-Curtis grids
           gp.setPointDistribution(distr);
-          refinementAlpha[i] = 0.0;
+          refinementGamma[i] = 0.0;
 
           // calculate sum of levels
           for (size_t t = 0; t < d; t++) {

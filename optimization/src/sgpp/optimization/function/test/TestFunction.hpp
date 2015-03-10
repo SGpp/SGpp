@@ -34,7 +34,7 @@ namespace SGPP {
       class TestFunction : public ObjectiveFunction {
         public:
           /// default standard deviation
-          static const float_t DEFAULT_STANDARD_DEVIATION;
+          static constexpr float_t DEFAULT_STANDARD_DEVIATION = 0.01;
 
           /**
            * Constructor.

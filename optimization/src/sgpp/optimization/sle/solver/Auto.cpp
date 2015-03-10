@@ -22,10 +22,6 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-      const float_t Auto::MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
-      const float_t Auto::MAX_NNZ_RATIO_FOR_GMMPP = 0.05;
-      const float_t Auto::ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
-
       /**
        * Add a solver to the vector of solvers, if the solver is supported
        * (e.g. SG++ configured and compiled for use with the solve) and

@@ -15,12 +15,6 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t NLCG::DEFAULT_BETA = 0.5;
-      const float_t NLCG::DEFAULT_GAMMA = 1e-2;
-      const float_t NLCG::DEFAULT_TOLERANCE = 1e-8;
-      const float_t NLCG::DEFAULT_EPSILON = 1e-18;
-      const float_t NLCG::DEFAULT_RESTART_THRESHOLD = 0.1;
-
       NLCG::NLCG(ObjectiveFunction& f,
                  ObjectiveGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,

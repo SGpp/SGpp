@@ -16,12 +16,6 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t NelderMead::DEFAULT_ALPHA = 1.0;
-      const float_t NelderMead::DEFAULT_BETA = 2.0;
-      const float_t NelderMead::DEFAULT_GAMMA = 0.5;
-      const float_t NelderMead::DEFAULT_DELTA = 0.5;
-      const float_t NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
-
       NelderMead::NelderMead(ObjectiveFunction& f,
                              size_t maxFcnEvalCount, float_t alpha,
                              float_t beta, float_t gamma, float_t delta) :

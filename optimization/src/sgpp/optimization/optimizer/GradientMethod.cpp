@@ -13,11 +13,6 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t GradientMethod::DEFAULT_BETA = 0.5;
-      const float_t GradientMethod::DEFAULT_GAMMA = 1e-2;
-      const float_t GradientMethod::DEFAULT_TOLERANCE = 1e-8;
-      const float_t GradientMethod::DEFAULT_EPSILON = 1e-18;
-
       GradientMethod::GradientMethod(
         ObjectiveFunction& f,
         ObjectiveGradient& fGradient,
