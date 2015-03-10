@@ -75,8 +75,11 @@ namespace SGPP {
 
           /**
            * Initializes populationSize.
+           *
+           * @param populationSize     number of individual points
+           *                           (zero to use default value)
            */
-          void initialize();
+          void initialize(size_t populationSize);
       };
 
     }
