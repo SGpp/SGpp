@@ -12,45 +12,25 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
-
-      const float_t DifferentialEvolution::DEFAULT_CROSSOVER_PROBABILITY = 0.5;
-      const float_t DifferentialEvolution::DEFAULT_SCALING_FACTOR = 0.6;
-      const float_t DifferentialEvolution::DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
-      const float_t DifferentialEvolution::DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
       DifferentialEvolution::DifferentialEvolution(ObjectiveFunction& f,
           size_t maxFcnEvalCount, size_t populationSize,
           float_t crossoverProbability, float_t scalingFactor,
           size_t idleGenerationsCount, float_t avgImprovementThreshold,
           float_t maxDistanceThreshold) :
-        Optimizer(f, maxFcnEvalCount) {
-        initialize(populationSize, crossoverProbability, scalingFactor,
-                   idleGenerationsCount, avgImprovementThreshold,
-                   maxDistanceThreshold);
-      }
-
-      void DifferentialEvolution::initialize(
-        size_t populationSize,
-        float_t crossoverProbability,
-        float_t scalingFactor,
-        size_t idleGenerationsCount,
-        float_t avgImprovementThreshold,
-        float_t maxDistanceThreshold) {
-        if (populationSize == 0) {
-          this->populationSize = 10 * f.getDimension();
-        } else {
-          this->populationSize = populationSize;
-        }
-
-        this->crossoverProbability = crossoverProbability;
-        this->scalingFactor = scalingFactor;
-        this->idleGenerationsCount = idleGenerationsCount;
-        this->avgImprovementThreshold = avgImprovementThreshold;
-        this->maxDistanceThreshold = maxDistanceThreshold;
+        Optimizer(f, maxFcnEvalCount),
+        populationSize((populationSize > 0) ? populationSize :
+                       10 * f.getDimension()),
+        crossoverProbability(crossoverProbability),
+        scalingFactor(scalingFactor),
+        idleGenerationsCount(idleGenerationsCount),
+        avgImprovementThreshold(avgImprovementThreshold),
+        maxDistanceThreshold(maxDistanceThreshold) {
       }
 
       float_t DifferentialEvolution::optimize(std::vector<float_t>& xOpt) {

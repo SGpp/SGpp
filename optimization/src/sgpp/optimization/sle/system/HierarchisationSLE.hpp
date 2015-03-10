@@ -51,11 +51,7 @@ namespace SGPP {
          * @param grid              sparse grid
          */
         HierarchisationSLE(base::Grid& grid)
-          : CloneableSLE(),
-            grid(grid),
-            gridStorage(*grid.getStorage()),
-            basisType(INVALID) {
-          initialize();
+          : HierarchisationSLE(grid, *grid.getStorage()) {
         }
 
         /**
@@ -72,7 +68,65 @@ namespace SGPP {
             grid(grid),
             gridStorage(gridStorage),
             basisType(INVALID) {
-          initialize();
+          // initialize the correct basis (according to the grid)
+          if (strcmp(grid.getType(), "bspline") == 0) {
+            bsplineBasis = std::unique_ptr<base::SBsplineBase>(
+                             new base::SBsplineBase(
+                               dynamic_cast<base::BsplineGrid&>(grid).
+                               getDegree()));
+            basisType = BSPLINE;
+          } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+            bsplineBoundaryBasis =
+              std::unique_ptr<base::SBsplineBoundaryBase>(
+                new base::SBsplineBoundaryBase(
+                  dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid)
+                  .getDegree()));
+            basisType = BSPLINE_BOUNDARY;
+          } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+            bsplineClenshawCurtisBasis =
+              std::unique_ptr<base::SBsplineClenshawCurtisBase>(
+                new base::SBsplineClenshawCurtisBase(
+                  dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).
+                  getDegree()));
+            basisType = BSPLINE_CLENSHAW_CURTIS;
+          } else if (strcmp(grid.getType(), "modBspline") == 0) {
+            modBsplineBasis = std::unique_ptr<base::SBsplineModifiedBase>(
+                                new base::SBsplineModifiedBase(
+                                  dynamic_cast<base::ModBsplineGrid&>(grid).
+                                  getDegree()));
+            basisType = BSPLINE_MODIFIED;
+          } else if (strcmp(grid.getType(), "linear") == 0) {
+            linearBasis = std::unique_ptr<base::SLinearBase>(
+                            new base::SLinearBase());
+            basisType = LINEAR;
+          } else if (strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
+            linearBoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
+                                    new base::SLinearBoundaryBase());
+            basisType = LINEAR_BOUNDARY;
+          } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
+            linearClenshawCurtisBasis =
+              std::unique_ptr<base::SLinearClenshawCurtisBase>(
+                new base::SLinearClenshawCurtisBase());
+            basisType = LINEAR_CLENSHAW_CURTIS;
+          } else if (strcmp(grid.getType(), "modlinear") == 0) {
+            modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(
+                               new base::SLinearModifiedBase());
+            basisType = LINEAR_MODIFIED;
+          } else if (strcmp(grid.getType(), "wavelet") == 0) {
+            waveletBasis = std::unique_ptr<base::SWaveletBase>(
+                             new base::SWaveletBase());
+            basisType = WAVELET;
+          } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+            waveletBoundaryBasis = std::unique_ptr<base::SWaveletBoundaryBase>(
+                                     new base::SWaveletBoundaryBase());
+            basisType = WAVELET_BOUNDARY;
+          } else if (strcmp(grid.getType(), "modWavelet") == 0) {
+            modWaveletBasis = std::unique_ptr<base::SWaveletModifiedBase>(
+                                new base::SWaveletModifiedBase());
+            basisType = WAVELET_MODIFIED;
+          } else {
+            throw std::invalid_argument("Grid type not supported.");
+          }
         }
 
         /**
@@ -173,70 +227,6 @@ namespace SGPP {
           WAVELET_BOUNDARY,
           WAVELET_MODIFIED
         } basisType;
-
-        /**
-         * Initialize the correct basis (according to the grid).
-         */
-        void initialize() {
-          if (strcmp(grid.getType(), "bspline") == 0) {
-            bsplineBasis = std::unique_ptr<base::SBsplineBase>(
-                             new base::SBsplineBase(
-                               dynamic_cast<base::BsplineGrid&>(grid).
-                               getDegree()));
-            basisType = BSPLINE;
-          } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
-            bsplineBoundaryBasis =
-              std::unique_ptr<base::SBsplineBoundaryBase>(
-                new base::SBsplineBoundaryBase(
-                  dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid)
-                  .getDegree()));
-            basisType = BSPLINE_BOUNDARY;
-          } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
-            bsplineClenshawCurtisBasis =
-              std::unique_ptr<base::SBsplineClenshawCurtisBase>(
-                new base::SBsplineClenshawCurtisBase(
-                  dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).
-                  getDegree()));
-            basisType = BSPLINE_CLENSHAW_CURTIS;
-          } else if (strcmp(grid.getType(), "modBspline") == 0) {
-            modBsplineBasis = std::unique_ptr<base::SBsplineModifiedBase>(
-                                new base::SBsplineModifiedBase(
-                                  dynamic_cast<base::ModBsplineGrid&>(grid).
-                                  getDegree()));
-            basisType = BSPLINE_MODIFIED;
-          } else if (strcmp(grid.getType(), "linear") == 0) {
-            linearBasis = std::unique_ptr<base::SLinearBase>(
-                            new base::SLinearBase());
-            basisType = LINEAR;
-          } else if (strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
-            linearBoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
-                                    new base::SLinearBoundaryBase());
-            basisType = LINEAR_BOUNDARY;
-          } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
-            linearClenshawCurtisBasis =
-              std::unique_ptr<base::SLinearClenshawCurtisBase>(
-                new base::SLinearClenshawCurtisBase());
-            basisType = LINEAR_CLENSHAW_CURTIS;
-          } else if (strcmp(grid.getType(), "modlinear") == 0) {
-            modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(
-                               new base::SLinearModifiedBase());
-            basisType = LINEAR_MODIFIED;
-          } else if (strcmp(grid.getType(), "wavelet") == 0) {
-            waveletBasis = std::unique_ptr<base::SWaveletBase>(
-                             new base::SWaveletBase());
-            basisType = WAVELET;
-          } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
-            waveletBoundaryBasis = std::unique_ptr<base::SWaveletBoundaryBase>(
-                                     new base::SWaveletBoundaryBase());
-            basisType = WAVELET_BOUNDARY;
-          } else if (strcmp(grid.getType(), "modWavelet") == 0) {
-            modWaveletBasis = std::unique_ptr<base::SWaveletModifiedBase>(
-                                new base::SWaveletModifiedBase());
-            basisType = WAVELET_MODIFIED;
-          } else {
-            throw std::invalid_argument("Grid type not supported.");
-          }
-        }
 
         /**
          * @param basisI    basis function index

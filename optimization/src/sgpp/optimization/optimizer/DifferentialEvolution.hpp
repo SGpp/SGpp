@@ -20,15 +20,15 @@ namespace SGPP {
       class DifferentialEvolution : public Optimizer {
         public:
           /// default crossover probability
-          static const float_t DEFAULT_CROSSOVER_PROBABILITY;
+          static constexpr float_t DEFAULT_CROSSOVER_PROBABILITY = 0.5;
           /// default crossover scaling factor
-          static const float_t DEFAULT_SCALING_FACTOR;
+          static constexpr float_t DEFAULT_SCALING_FACTOR = 0.6;
           /// default stopping criterion parameter 1
           static const size_t DEFAULT_IDLE_GENERATIONS_COUNT = 20;
           /// default stopping criterion parameter 2
-          static const float_t DEFAULT_AVG_IMPROVEMENT_THRESHOLD;
+          static constexpr float_t DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
           /// default stopping criterion parameter 3
-          static const float_t DEFAULT_MAX_DISTANCE_THRESHOLD;
+          static constexpr float_t DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
           /**
            * Constructor.
@@ -89,14 +89,6 @@ namespace SGPP {
           float_t avgImprovementThreshold;
           /// stopping criterion parameter 3
           float_t maxDistanceThreshold;
-
-          void initialize(
-            size_t populationSize,
-            float_t crossoverProbability,
-            float_t scalingFactor,
-            size_t idleGenerationsCount,
-            float_t avgImprovementThreshold,
-            float_t maxDistanceThreshold);
       };
 
     }

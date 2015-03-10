@@ -24,7 +24,7 @@ namespace SGPP {
           /// default maximal number of iterations
           static const size_t DEFAULT_MAX_IT_COUNT = 1000;
           /// default tolerance
-          static const float_t DEFAULT_TOLERANCE;
+          static constexpr float_t DEFAULT_TOLERANCE = 1e-10;
 
           /**
            * Constructor.

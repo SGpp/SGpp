@@ -19,26 +19,14 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t Newton::DEFAULT_BETA = 0.5;
-      const float_t Newton::DEFAULT_GAMMA = 1e-2;
-      const float_t Newton::DEFAULT_TOLERANCE = 1e-8;
-      const float_t Newton::DEFAULT_EPSILON = 1e-18;
-      const float_t Newton::DEFAULT_ALPHA1 = 1e-6;
-      const float_t Newton::DEFAULT_ALPHA2 = 1e-6;
-      const float_t Newton::DEFAULT_P = 0.1;
-
       Newton::Newton(
         ObjectiveFunction& f,
         ObjectiveHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
-        Optimizer(f, max_it_count),
-        fHessian(fHessian),
-        defaultSleSolver(sle_solver::BiCGStab()),
-        sleSolver(defaultSleSolver) {
-        initialize(beta, gamma, tolerance, epsilon,
-                   alpha1, alpha2, p);
+        Newton(f, fHessian, max_it_count, beta, gamma, tolerance, epsilon,
+               alpha1, alpha2, p, defaultSleSolver) {
       }
 
       Newton::Newton(
@@ -50,22 +38,15 @@ namespace SGPP {
         const sle_solver::SLESolver& sleSolver) :
         Optimizer(f, max_it_count),
         fHessian(fHessian),
+        beta(beta),
+        gamma(gamma),
+        tol(tolerance),
+        eps(epsilon),
+        alpha1(alpha1),
+        alpha2(alpha2),
+        p(p),
         defaultSleSolver(sle_solver::BiCGStab()),
         sleSolver(sleSolver) {
-        initialize(beta, gamma, tolerance, epsilon,
-                   alpha1, alpha2, p);
-      }
-
-      void Newton::initialize(float_t beta, float_t gamma,
-                              float_t tolerance, float_t epsilon,
-                              float_t alpha1, float_t alpha2, float_t p) {
-        this->beta = beta;
-        this->gamma = gamma;
-        this->tol = tolerance;
-        this->eps = epsilon;
-        this->alpha1 = alpha1;
-        this->alpha2 = alpha2;
-        this->p = p;
       }
 
       float_t Newton::optimize(std::vector<float_t>& xOpt) {
