@@ -25,8 +25,17 @@ namespace SGPP {
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
-        Newton(f, fHessian, max_it_count, beta, gamma, tolerance, epsilon,
-               alpha1, alpha2, p, defaultSleSolver) {
+        Optimizer(f, max_it_count),
+        fHessian(fHessian),
+        beta(beta),
+        gamma(gamma),
+        tol(tolerance),
+        eps(epsilon),
+        alpha1(alpha1),
+        alpha2(alpha2),
+        p(p),
+        defaultSleSolver(sle_solver::BiCGStab()),
+        sleSolver(defaultSleSolver) {
       }
 
       Newton::Newton(

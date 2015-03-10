@@ -72,6 +72,11 @@ namespace SGPP {
           Optimizer& optimizer;
           /// number of individual points
           size_t populationSize;
+
+          /**
+           * Initializes populationSize.
+           */
+          void initialize();
       };
 
     }
