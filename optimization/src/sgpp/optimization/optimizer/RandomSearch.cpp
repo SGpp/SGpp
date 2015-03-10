@@ -23,7 +23,7 @@ namespace SGPP {
         Optimizer(f, maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(defaultOptimizer) {
-        initialize();
+        initialize(populationSize);
       }
 
       RandomSearch::RandomSearch(Optimizer& optimizer,
@@ -32,13 +32,13 @@ namespace SGPP {
         Optimizer(f, maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(optimizer) {
-        initialize();
+        initialize(populationSize);
       }
 
-      void RandomSearch::initialize() {
-        populationSize = (populationSize > 0) ? populationSize :
-                         std::min(10 * f.getDimension(),
-                                  static_cast<size_t>(100));
+      void RandomSearch::initialize(size_t populationSize) {
+        this->populationSize = (populationSize > 0) ? populationSize :
+                               std::min(10 * f.getDimension(),
+                                        static_cast<size_t>(100));
       }
 
       float_t RandomSearch::optimize(std::vector<float_t>& xOpt) {

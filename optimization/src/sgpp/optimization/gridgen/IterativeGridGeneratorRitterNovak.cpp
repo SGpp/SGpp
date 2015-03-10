@@ -106,11 +106,11 @@ namespace SGPP {
       // criterion won't be evaluated
       std::vector<bool> ignore(fX.size(), false);
 
-      // refinement_gamma will be a standard basis vector
-      // (e.g. refinement_gamma[i] == 1.0 for exactly one i) to refine
+      // refinementAlpha will be a standard basis vector
+      // (e.g. refinementAlpha[i] == 1.0 for exactly one i) to refine
       // exactly one grid point
-      base::DataVector refinementGamma(currentN);
-      refinementGamma.setAll(0.0);
+      base::DataVector refinementAlpha(currentN);
+      refinementAlpha.setAll(0.0);
 
       for (size_t i = 0; i < currentN; i++) {
         base::GridIndex& gp = *gridStorage.get(i);
@@ -280,8 +280,8 @@ namespace SGPP {
 
         // refine point no. i_best
         degree[iBest]++;
-        refinementGamma[iBest] = 1.0;
-        base::SurplusRefinementFunctor refineFunc(&refinementGamma, 1);
+        refinementAlpha[iBest] = 1.0;
+        base::SurplusRefinementFunctor refineFunc(&refinementAlpha, 1);
         refinement.free_refine(&gridStorage, &refineFunc);
 
         // new grid size
@@ -309,14 +309,14 @@ namespace SGPP {
 
         // resize refinement vector and set to all zeros
         // (in the following loop)
-        refinementGamma.resize(newN);
-        refinementGamma[iBest] = 0.0;
+        refinementAlpha.resize(newN);
+        refinementAlpha[iBest] = 0.0;
 
         for (size_t i = currentN; i < newN; i++) {
           base::GridIndex& gp = *gridStorage.get(i);
           // set point distribution accordingly to normal/Clenshaw-Curtis grids
           gp.setPointDistribution(distr);
-          refinementGamma[i] = 0.0;
+          refinementAlpha[i] = 0.0;
 
           // calculate sum of levels
           for (size_t t = 0; t < d; t++) {
