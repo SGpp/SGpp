@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+// to disable OpenMP multi-threading within Java
+void omp_set_num_threads(int num_threads);
+
 // global variables for the support of SLE solver libaries (set at compile-time)
 const bool ARMADILLO_ENABLED;
 const bool EIGEN_ENABLED;
@@ -113,23 +116,23 @@ const bool UMFPACK_ENABLED;
 %feature("director") SGPP::optimization::sle_solver::SLESolver;
 
 // dirty hack to override SWIG's generated director method for "clone"
-%typemap(directorin) std::unique_ptr<SGPP::optimization::ObjectiveFunction>& {
+/*%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveFunction_t;") std::unique_ptr<SGPP::optimization::ObjectiveFunction>& {
     clone = std::unique_ptr<SGPP::optimization::ObjectiveFunction>(
         new SwigDirector_OptObjectiveFunction(*this));
     return;
 }
 
-%typemap(directorin) std::unique_ptr<SGPP::optimization::ObjectiveGradient>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveGradient_t;") std::unique_ptr<SGPP::optimization::ObjectiveGradient>& {
     clone = std::unique_ptr<SGPP::optimization::ObjectiveGradient>(
         new SwigDirector_OptObjectiveGradient(*this));
     return;
 }
 
-%typemap(directorin) std::unique_ptr<SGPP::optimization::ObjectiveHessian>& {
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sg__optimization__ObjectiveHessian_t;") std::unique_ptr<SGPP::optimization::ObjectiveHessian>& {
     clone = std::unique_ptr<SGPP::optimization::ObjectiveHessian>(
         new SwigDirector_OptObjectiveHessian(*this));
     return;
-}
+}*/
 
 // includes
 %include "optimization/src/sgpp/optimization/function/ObjectiveFunction.hpp"
@@ -194,7 +197,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
 %rename(operatorParentheses) SGPP::optimization::Permuter::operator();
 %include "optimization/src/sgpp/optimization/tools/Permuter.hpp"
-%rename(operatorInsertion) SGPP::optimization::operator<<;
+%rename(optOperatorInsertion) SGPP::optimization::operator<<;
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
 
 // templates

@@ -139,7 +139,7 @@ class TestSLE(unittest.TestCase):
         d = 2
         l = 4
         
-        f = objective_functions.TitleFunction()
+        f = objective_functions.ExampleFunction()
         solver = pysgpp.OptAutoSLESolver()
         
         # Test All The Grids!

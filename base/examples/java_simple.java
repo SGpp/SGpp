@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 // import all packages
 //import sgpp.*;
 
@@ -13,7 +18,7 @@ import sgpp.OperationEval;
 
 public class java_simple {
   private static double f(double x0, double x1) {
-      return 16.0*(x0-1.0)*x0 * (x1-1.0)*x1;
+    return 16.0*(x0-1.0)*x0 * (x1-1.0)*x1;
   }
 
   public static void main(String[] args) {
@@ -24,12 +29,12 @@ public class java_simple {
     // create a two-dimensional piecewise bilinear grid
     int dim = 2;
     Grid grid = Grid.createLinearGrid(dim);
-    GridStorage gridStorage = grid.getStorage();    
+    GridStorage gridStorage = grid.getStorage();
     System.out.println("dimensionality:         " + gridStorage.dim());
 
     // create regular grid, level 3
     int level = 3;
-    GridGenerator gridGen = grid.createGridGenerator();    
+    GridGenerator gridGen = grid.createGridGenerator();
     gridGen.regular(level);
 
     System.out.println("number of grid points:  " + gridStorage.size());
@@ -42,9 +47,9 @@ public class java_simple {
     // set function values in alpha
     GridIndex gp = new GridIndex();
 
-    for(int i = 0; i < gridStorage.size(); i++){
-        gp = gridStorage.get(i);
-        alpha.set(i, f(gp.getCoord(0), gp.getCoord(1)));
+    for (int i = 0; i < gridStorage.size(); i++) {
+      gp = gridStorage.get(i);
+      alpha.set(i, f(gp.getCoord(0), gp.getCoord(1)));
     }
     System.out.println("alpha before hierarchization: " + alpha.toString());
 
@@ -54,8 +59,8 @@ public class java_simple {
 
     // evaluate
     DataVector p = new DataVector(dim);
-    p.set(0,0.52);
-    p.set(1,0.73);
+    p.set(0, 0.52);
+    p.set(1, 0.73);
     OperationEval opEval = jsgpp.createOperationEval(grid);
 
     System.out.println("u(0.52, 0.73) = " + opEval.eval(alpha,p));

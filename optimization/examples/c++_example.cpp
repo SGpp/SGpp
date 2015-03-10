@@ -8,9 +8,9 @@
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
 
-class TitleFunction : public SGPP::optimization::ObjectiveFunction {
+class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
   public:
-    TitleFunction() : ObjectiveFunction(2) {
+    ExampleFunction() : ObjectiveFunction(2) {
     }
 
     SGPP::float_t eval(const std::vector<SGPP::float_t>& x) {
@@ -19,13 +19,13 @@ class TitleFunction : public SGPP::optimization::ObjectiveFunction {
     }
 
     virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-      clone = std::unique_ptr<ObjectiveFunction>(new TitleFunction(*this));
+      clone = std::unique_ptr<ObjectiveFunction>(new ExampleFunction(*this));
     }
 };
 
 void printLine() {
   std::cout << "----------------------------------------"
-            << "----------------------------------------\n";
+            "----------------------------------------\n";
 }
 
 int main(int argc, const char* argv[]) {
@@ -36,7 +36,7 @@ int main(int argc, const char* argv[]) {
   SGPP::optimization::printer.setVerbosity(2);
 
   // objective function
-  TitleFunction f;
+  ExampleFunction f;
   // dimension of domain
   const size_t d = f.getDimension();
   // B-spline degree
@@ -46,7 +46,7 @@ int main(int argc, const char* argv[]) {
   // adaptivity of grid generation
   const SGPP::float_t gamma = 0.95;
 
-  SGPP::base::ModBsplineGrid grid(f.getDimension(), p);
+  SGPP::base::ModBsplineGrid grid(d, p);
   SGPP::optimization::IterativeGridGeneratorRitterNovak gridGen(
     f, grid, N, gamma);
 
@@ -67,7 +67,7 @@ int main(int argc, const char* argv[]) {
   // //////////////////////////////////////////////////////////////////////////
 
   printLine();
-  std::cout << "Hierarchising...\n\n";
+  std::cout << "Hierarchizing...\n\n";
   std::vector<SGPP::float_t> coeffs;
   SGPP::optimization::HierarchisationSLE hierSLE(grid);
   SGPP::optimization::sle_solver::Auto sleSolver;
@@ -99,7 +99,7 @@ int main(int argc, const char* argv[]) {
   {
     const std::vector<SGPP::float_t>& functionValues =
       gridGen.getFunctionValues();
-    SGPP::base::GridStorage& gridStorage = *gridGen.getGrid().getStorage();
+    SGPP::base::GridStorage& gridStorage = *grid.getStorage();
 
     // index of grid point with minimal function value
     size_t x0Index = std::distance(
@@ -126,9 +126,9 @@ int main(int argc, const char* argv[]) {
   SGPP::optimization::operator<<(std::cout << "\nxOpt = ", xOpt) << "\n";
   std::cout << "f(xOpt) = " << fXOpt << ", ft(xOpt) = " << ftXOpt << "\n\n";
 
-  /////////////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////////
   // NELDER-MEAD OPTIMIZATION OF OBJECTIVE FUNCTION
-  /////////////////////////////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////////////////////
 
   printLine();
   std::cout << "Optimizing objective function (for comparison)...\n\n";

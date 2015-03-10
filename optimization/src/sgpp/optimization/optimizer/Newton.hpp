@@ -60,8 +60,8 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          Newton(const ObjectiveFunction& f,
-                 const ObjectiveHessian& fHessian,
+          Newton(ObjectiveFunction& f,
+                 ObjectiveHessian& fHessian,
                  size_t maxItCount = DEFAULT_N,
                  float_t beta = DEFAULT_BETA,
                  float_t gamma = DEFAULT_GAMMA,
@@ -89,8 +89,8 @@ namespace SGPP {
            *                          the linear systems
            *                          (Hessian as coefficient matrix)
            */
-          Newton(const ObjectiveFunction& f,
-                 const ObjectiveHessian& fHessian,
+          Newton(ObjectiveFunction& f,
+                 ObjectiveHessian& fHessian,
                  size_t maxItCount,
                  float_t beta,
                  float_t gamma,
@@ -106,11 +106,6 @@ namespace SGPP {
            * @return          optimal objective function value
            */
           float_t optimize(std::vector<float_t>& xOpt);
-
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return objective function Hessian
@@ -189,7 +184,7 @@ namespace SGPP {
 
         protected:
           /// objective function Hessian
-          std::unique_ptr<ObjectiveHessian> fHessian;
+          ObjectiveHessian& fHessian;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)
@@ -212,7 +207,6 @@ namespace SGPP {
           /**
            * Internal function for initializing the member variables.
            *
-           * @param fHessian          objective function Hessian
            * @param beta              beta (parameter for Armijo's rule)
            * @param gamma             gamma (parameter for Armijo's rule)
            * @param tolerance         tolerance (parameter for Armijo's rule)
@@ -221,8 +215,7 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          void initialize(const ObjectiveHessian& fHessian,
-                          float_t beta, float_t gamma, float_t tolerance,
+          void initialize(float_t beta, float_t gamma, float_t tolerance,
                           float_t epsilon,
                           float_t alpha1, float_t alpha2, float_t p);
       };

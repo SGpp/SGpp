@@ -21,24 +21,24 @@ namespace SGPP {
       const float_t NLCG::DEFAULT_EPSILON = 1e-18;
       const float_t NLCG::DEFAULT_RESTART_THRESHOLD = 0.1;
 
-      NLCG::NLCG(const ObjectiveFunction& f,
-                 const ObjectiveGradient& fGradient,
+      NLCG::NLCG(ObjectiveFunction& f,
+                 ObjectiveGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon,
                  float_t restartThreshold) :
         Optimizer(f, maxItCount),
+        fGradient(fGradient),
         beta(beta),
         gamma(gamma),
         tol(tolerance),
         eps(epsilon),
         alpha(restartThreshold) {
-        fGradient.clone(this->fGradient);
       }
 
       float_t NLCG::optimize(std::vector<float_t>& xOpt) {
         printer.printStatusBegin("Optimizing (NLCG)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
         std::vector<float_t> x(x0);
         float_t fx;
         float_t fy;
@@ -50,7 +50,7 @@ namespace SGPP {
         std::vector<float_t> y(d, 0.0);
         size_t k;
 
-        fx = fGradient->evalGradient(x0, gradFx);
+        fx = fGradient.evalGradient(x0, gradFx);
         float_t gradFxNorm = gradFx.l2Norm();
         float_t gradFyNorm = 0.0;
 
@@ -74,7 +74,7 @@ namespace SGPP {
           }
 
           // line search
-          if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx,
+          if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
                                 gradFx, sNormalized, y)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement achieved is
@@ -83,7 +83,7 @@ namespace SGPP {
           }
 
           // calculate gradient and norm
-          fy = fGradient->evalGradient(y, gradFy);
+          fy = fGradient.evalGradient(y, gradFy);
           gradFyNorm = gradFy.l2Norm();
 
           float_t beta = 0.0;
@@ -124,14 +124,8 @@ namespace SGPP {
         return fx;
       }
 
-      void NLCG::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new NLCG(*f, *fGradient, N, beta,
-                                           gamma, tol, eps, alpha));
-        clone->setStartingPoint(x0);
-      }
-
       ObjectiveGradient& NLCG::getObjectiveGradient() const {
-        return *fGradient;
+        return fGradient;
       }
 
       float_t NLCG::getBeta() const {

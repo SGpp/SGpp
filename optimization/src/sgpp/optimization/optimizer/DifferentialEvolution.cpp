@@ -22,7 +22,7 @@ namespace SGPP {
       const float_t DifferentialEvolution::DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
       const float_t DifferentialEvolution::DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
-      DifferentialEvolution::DifferentialEvolution(const ObjectiveFunction& f,
+      DifferentialEvolution::DifferentialEvolution(ObjectiveFunction& f,
           size_t maxFcnEvalCount, size_t populationSize,
           float_t crossoverProbability, float_t scalingFactor,
           size_t idleGenerationsCount, float_t avgImprovementThreshold,
@@ -41,7 +41,7 @@ namespace SGPP {
         float_t avgImprovementThreshold,
         float_t maxDistanceThreshold) {
         if (populationSize == 0) {
-          this->populationSize = 10 * f->getDimension();
+          this->populationSize = 10 * f.getDimension();
         } else {
           this->populationSize = populationSize;
         }
@@ -56,7 +56,7 @@ namespace SGPP {
       float_t DifferentialEvolution::optimize(std::vector<float_t>& xOpt) {
         printer.printStatusBegin("Optimizing (differential evolution)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
 
         // vector of individuals
         std::vector<std::vector<float_t>> x1(populationSize,
@@ -78,7 +78,7 @@ namespace SGPP {
             (*xOld)[i][t] = randomNumberGenerator.getUniformRN();
           }
 
-          fx[i] = f->eval((*xOld)[i]);
+          fx[i] = f.eval((*xOld)[i]);
         }
 
         // smallest function value in the population
@@ -141,15 +141,15 @@ namespace SGPP {
           const std::vector<std::vector<float_t>>& prob_k = prob[k];
 
           #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
-          xOld, d, fx, fOpt, xOptIndex, xNew) default(none)
+          xOld, fx, fOpt, xOptIndex, xNew) default(none)
           {
             std::vector<float_t> y(d, 0.0);
-            ObjectiveFunction* curFPtr = f.get();
+            ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
             std::unique_ptr<ObjectiveFunction> curF;
 
             if (omp_get_max_threads() > 1) {
-              f->clone(curF);
+              f.clone(curF);
               curFPtr = curF.get();
             }
 
@@ -273,18 +273,6 @@ namespace SGPP {
         printer.printStatusEnd();
 
         return fOpt;
-      }
-
-      void DifferentialEvolution::clone(
-        std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new DifferentialEvolution(
-                                             *f, N, populationSize,
-                                             crossoverProbability,
-                                             scalingFactor,
-                                             idleGenerationsCount,
-                                             avgImprovementThreshold,
-                                             maxDistanceThreshold));
-        clone->setStartingPoint(x0);
       }
 
       size_t DifferentialEvolution::getPopulationSize() const {

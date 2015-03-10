@@ -6,8 +6,10 @@ module.
 The example is written in C++.
 However, as the module is also incorporated in pysgpp, one can also use
 the Python interface.
-For example programs in Python, please refer to the optimization/tests/
-directory, e.g. optimization/tests/test_example.py.
+Via the Java interface (jsgpp), the module should be usable in MATLAB
+(see below for instructions).
+
+\section code_examples_optimization_cpp C++
 
 Below, you can find the whole C++ example.
 The example minimizes a specific function \f$f\colon [0, 1]^2 \to \mathbb{R}\f$
@@ -15,11 +17,11 @@ using sparse grids and the SGPP::optimization module.
 For the basic structure of the optimization, please see
 \ref module_optimization.
 
-\include example_optimization.cpp
+\include c++_example.cpp
 
 We will now discuss the example in some detail line by line.
 
-\dontinclude example_optimization.cpp
+\dontinclude c++_example.cpp
 \until sgpp_optimization.hpp
 
 We need to include the headers for the SGPP::base and the SGPP::optimization
@@ -76,10 +78,92 @@ For comparison, we apply the classical gradient-free Nelder-Mead method
 directly to the objective function \f$f\f$.
 
 The example program outputs the following results:
-\verbinclude example_optimization.output.txt
+\verbinclude all_example.output.txt
 
 We see that both the gradient-based optimization of the smooth sparse grid
 interpolant and the gradient-free optimization of the objective function
 find reasonable approximations of the minimum, which lies at
 \f$(3\pi/16, 3\pi/14) \approx (0.58904862, 0.67319843)\f$.
+
+To compile and run the C++ example, you need to set some
+compiler/linker flags and you also have to adjust the environment
+variable \c LD_LIBRARY_PATH accordingly
+(see \link code_examples_quick_start \endlink).
+
+\section code_examples_optimization_python Python
+
+The C++ code can be translated into the following Python code:
+\include python_example.py
+
+To compile run the Python example, you need to adjust the environment
+variables \c LD_LIBRARY_PATH and \c PYTHONPATH accordingly
+(see \link code_examples_quick_start \endlink).
+When run, the example gives (nearly) the same output as the C++ example.
+
+\section code_examples_optimization_java Java
+
+The C++ code can be translated into the following Java code:
+\include java_example.java
+
+The Java and MATLAB examples use this external class:
+\include ExampleFunction.java
+
+To run the Java example, you need to adjust the environment
+variable \c LD_LIBRARY_PATH accordingly
+(see \link code_examples_quick_start \endlink).
+When run, the example gives (nearly) the same output as the C++ example.
+
+\section code_examples_optimization_matlab MATLAB
+
+The C++ code can be translated into the following MATLAB code:
+\include matlab_example.m
+
+To run the MATLAB example, you first need to compile to \c ExampleFunction
+into a @c .jar file:
+\code{.unparsed}
+javac -cp .:/home/valentjn/svn/SGpp/trunk/lib/jsgpp/jsgpp.jar ExampleFunction.java
+jar -cf ExampleFunction.jar ExampleFunction.class
+\endcode
+
+Second, you need to adjust @c /path/to/MATLAB/toolbox/local/librarypath.txt
+to include the @c /path/to/SGpp/trunk/lib/jsgpp directory.
+
+Third, you need to set environment variables to specific values
+(actual values may be different on your system):
+\code{.unparsed}
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
+export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
+export BLAS_VERSION="/usr/lib/libblas.so.3"
+export LAPACK_VERSION="/usr/lib/liblapack.so.3"
+\endcode
+The first line tells MATLAB where to find the necessary libraries.
+The second line causes loading the system version of \c libstdc++
+and not MATLAB's version
+(for more info on the first two lines,
+see \link code_examples_quick_start \endlink).
+The third and fourth lines are new.
+SGPP::optimization uses external linear algebra libraries to enable faster
+solutions of linear systems.
+These libraries (e.g. Armadillo) use, in turn, LAPACK and BLAS installed
+on the system.
+MATLAB uses instead MKL versions of LAPACK and BLAS
+with different pointer sizes (64 bits).
+Therefore, you have to override these versions to use the ones of the system
+(otherwise MATLAB segfaults randomly).
+The exact filenames can be found by examining the output of
+\code
+ldd /path/to/SGpp/trunk/lib/sgpp/libsgppoptimization.so
+\endcode
+
+Fourth, after setting the environment variables, you can start MATLAB.
+In MATLAB, run
+\code
+javaaddpath('/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar');
+javaaddpath('/path/to/SGpp/trunk/optimization/examples/ExampleFunction.jar');
+\endcode
+to add both the jsgpp library and our example objective function to
+MATLAB's Java search path.
+Now, you should be able to run the MATLAB example.
+When run, the example gives (nearly) the same output as the C++ example.
+
 */

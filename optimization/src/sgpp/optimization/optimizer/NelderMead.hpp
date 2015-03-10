@@ -45,7 +45,7 @@ namespace SGPP {
            * @param gamma                 contraction coefficient
            * @param delta                 shrinking coefficient
            */
-          NelderMead(const ObjectiveFunction& f,
+          NelderMead(ObjectiveFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      float_t alpha = DEFAULT_ALPHA,
                      float_t beta = DEFAULT_BETA,
@@ -57,11 +57,6 @@ namespace SGPP {
            * @return          optimal objective function value
            */
           float_t optimize(std::vector<float_t>& xOpt);
-
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
 
           /**
            * @return          reflection coefficient

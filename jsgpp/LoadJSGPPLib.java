@@ -7,6 +7,7 @@ package sgpp;
 
 public class LoadJSGPPLib {
   public static void loadJSGPPLib() {
+    // load jsgpp library
     System.loadLibrary("jsgpp");
   }
 }

@@ -22,7 +22,7 @@ namespace SGPP {
       const float_t NelderMead::DEFAULT_DELTA = 0.5;
       const float_t NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
-      NelderMead::NelderMead(const ObjectiveFunction& f,
+      NelderMead::NelderMead(ObjectiveFunction& f,
                              size_t maxFcnEvalCount, float_t alpha,
                              float_t beta, float_t gamma, float_t delta) :
         Optimizer(f, maxFcnEvalCount),
@@ -35,7 +35,7 @@ namespace SGPP {
       float_t NelderMead::optimize(std::vector<float_t>& xOpt) {
         printer.printStatusBegin("Optimizing (Nelder-Mead)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
         std::vector<std::vector<float_t>> points(d + 1, x0);
         std::vector<std::vector<float_t>> pointsNew(d + 1, x0);
         std::vector<float_t> fPoints(d + 1, 0.0);
@@ -46,10 +46,10 @@ namespace SGPP {
           points[t + 1][t] = std::min(points[t + 1][t] +
                                       STARTING_SIMPLEX_EDGE_LENGTH,
                                       float_t(1.0));
-          fPoints[t + 1] = f->eval(points[t + 1]);
+          fPoints[t + 1] = f.eval(points[t + 1]);
         }
 
-        fPoints[0] = f->eval(points[0]);
+        fPoints[0] = f.eval(points[0]);
 
         std::vector<size_t> index(d + 1, 0);
         std::vector<float_t> pointO(d, 0.0);
@@ -100,7 +100,7 @@ namespace SGPP {
             }
           }
 
-          float_t fPointR = (inDomain ? f->eval(pointR) : INFINITY);
+          float_t fPointR = (inDomain ? f.eval(pointR) : INFINITY);
           numberOfFcnEvals++;
 
           if ((fPoints[0] <= fPointR) && (fPointR < fPoints[d - 1])) {
@@ -118,7 +118,7 @@ namespace SGPP {
               }
             }
 
-            float_t f_point_e = (inDomain ? f->eval(pointE) : INFINITY);
+            float_t f_point_e = (inDomain ? f.eval(pointE) : INFINITY);
             numberOfFcnEvals++;
 
             if (f_point_e < fPointR) {
@@ -140,7 +140,7 @@ namespace SGPP {
               }
             }
 
-            float_t fPointOC = (in_domain ? f->eval(pointOC) : INFINITY);
+            float_t fPointOC = (in_domain ? f.eval(pointOC) : INFINITY);
             numberOfFcnEvals++;
 
             if (fPointOC <= fPointR) {
@@ -161,7 +161,7 @@ namespace SGPP {
               }
             }
 
-            float_t fPointIC = (in_domain ? f->eval(pointIC) : INFINITY);
+            float_t fPointIC = (in_domain ? f.eval(pointIC) : INFINITY);
             numberOfFcnEvals++;
 
             if (fPointIC < fPoints[d]) {
@@ -186,7 +186,7 @@ namespace SGPP {
                 }
               }
 
-              fPoints[i] = (in_domain ? f->eval(points[i]) : INFINITY);
+              fPoints[i] = (in_domain ? f.eval(points[i]) : INFINITY);
             }
 
             numberOfFcnEvals += d;
@@ -212,12 +212,6 @@ namespace SGPP {
         printer.printStatusEnd();
 
         return fPoints[0];
-      }
-
-      void NelderMead::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new NelderMead(*f, N, alpha, beta,
-                                           gamma, delta));
-        clone->setStartingPoint(x0);
       }
 
       float_t NelderMead::getAlpha() const {

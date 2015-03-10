@@ -19,9 +19,9 @@ class TestOptimizer(unittest.TestCase):
     
     def testOptimizers(self):
         """Test SGPP::optimization::optimizer."""
-        f = objective_functions.TitleFunction()
-        f_gradient = objective_functions.TitleFunctionGradient()
-        f_hessian = objective_functions.TitleFunctionHessian()
+        f = objective_functions.ExampleFunction()
+        f_gradient = objective_functions.ExampleFunctionGradient()
+        f_hessian = objective_functions.ExampleFunctionHessian()
         
         # Test All The Optimizers!
         N = 1000
