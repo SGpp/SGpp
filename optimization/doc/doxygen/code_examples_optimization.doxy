@@ -119,18 +119,18 @@ The C++ code can be translated into the following MATLAB code:
 \include matlab_example.m
 
 To run the MATLAB example, you first need to compile to \c ExampleFunction
-into a @c .jar file:
-\code{.unparsed}
+into a \c .jar file:
+\code
 javac -cp .:/home/valentjn/svn/SGpp/trunk/lib/jsgpp/jsgpp.jar ExampleFunction.java
 jar -cf ExampleFunction.jar ExampleFunction.class
 \endcode
 
-Second, you need to adjust @c /path/to/MATLAB/toolbox/local/librarypath.txt
-to include the @c /path/to/SGpp/trunk/lib/jsgpp directory.
+Second, you need to adjust \c /path/to/MATLAB/toolbox/local/librarypath.txt
+to include the \c /path/to/SGpp/trunk/lib/jsgpp directory.
 
 Third, you need to set environment variables to specific values
 (actual values may be different on your system):
-\code{.unparsed}
+\code
 export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
 export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
 export BLAS_VERSION="/usr/lib/libblas.so.3"
