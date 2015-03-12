@@ -27,22 +27,21 @@ namespace SGPP {
       this->data = new float[nrows * ncols];
     }
 
+    DataMatrixSP::DataMatrixSP(size_t nrows, size_t ncols, float value) :
+      DataMatrixSP(nrows, ncols) {
+      setAll(value);
+    }
+
     DataMatrixSP::DataMatrixSP(const DataMatrixSP& matr) :
-      unused(0), inc_rows(100) {
-      this->nrows = matr.nrows;
-      this->ncols = matr.ncols;
-      // create new vector
-      this->data = new float[nrows * ncols];
+      DataMatrixSP(matr.nrows, matr.ncols) {
       // copy data
-      memcpy(this->data, matr.data, nrows * ncols * sizeof(float));
+      std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float));
     }
 
     DataMatrixSP::DataMatrixSP(float* input, size_t nrows, size_t ncols) :
-      nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
-      // create new vector
-      this->data = new float[nrows * ncols];
+      DataMatrixSP(nrows, ncols) {
       // copy data
-      memcpy(this->data, input, nrows * ncols * sizeof(float));
+      std::memcpy(this->data, input, nrows * ncols * sizeof(float));
     }
 
     void DataMatrixSP::resize(size_t nrows) {
@@ -54,8 +53,8 @@ namespace SGPP {
       // create new matrix
       float* newdata = new float[nrows * this->ncols];
       // copy entries of old matrix
-      memcpy(newdata, this->data, std::min(this->nrows, nrows) * this->ncols
-             * sizeof(float));
+      std::memcpy(newdata, this->data, std::min(this->nrows, nrows)
+                  * this->ncols * sizeof(float));
       delete[] this->data;
 
       this->data = newdata;
@@ -74,9 +73,9 @@ namespace SGPP {
         // create new matrix
         float* newdata = new float[nrows * ncols];
         // copy entries of old matrix
-        memcpy(newdata, this->data,
-               std::min(this->nrows * this->ncols, nrows * ncols)
-               * sizeof(float));
+        std::memcpy(newdata, this->data,
+                    std::min(this->nrows * this->ncols, nrows * ncols)
+                    * sizeof(float));
         delete[] this->data;
         this->data = newdata;
       }
@@ -95,8 +94,8 @@ namespace SGPP {
       // create new matrix
       float* newdata = new float[nrows * this->ncols];
       // copy entries of old matrix
-      memcpy(newdata, this->data, std::min(this->nrows, nrows) * this->ncols
-             * sizeof(float));
+      std::memcpy(newdata, this->data, std::min(this->nrows, nrows)
+                  * this->ncols * sizeof(float));
 
       // set new elements to zero
       for (size_t i = std::min(this->nrows, nrows) * this->ncols; i < nrows
@@ -122,9 +121,9 @@ namespace SGPP {
         // create new matrix
         float* newdata = new float[nrows * ncols];
         // copy entries of old matrix
-        memcpy(newdata, this->data,
-               std::min(this->nrows * this->ncols, nrows * ncols)
-               * sizeof(float));
+        std::memcpy(newdata, this->data,
+                    std::min(this->nrows * this->ncols, nrows * ncols)
+                    * sizeof(float));
 
         // set new elements to zero
         for (size_t i = std::min(this->nrows * this->ncols, nrows * ncols);
@@ -145,7 +144,8 @@ namespace SGPP {
       // create new vector
       float* newdata = new float[(this->nrows + inc_rows) * this->ncols];
       // copy entries of old vector
-      memcpy(newdata, this->data, this->nrows * this->ncols * sizeof(float));
+      std::memcpy(newdata, this->data, this->nrows * this->ncols
+                  * sizeof(float));
 
       delete[] this->data;
 
@@ -191,8 +191,8 @@ namespace SGPP {
 
       size_t x = appendRow();
       // copy data
-      memcpy(&this->data[x * this->ncols], vec.getPointer(), this->ncols
-             * sizeof(float));
+      std::memcpy(&this->data[x * this->ncols], vec.getPointer(), this->ncols
+                  * sizeof(float));
       return x;
     }
 
@@ -204,7 +204,7 @@ namespace SGPP {
       }
     }
 
-    void DataMatrixSP::getRow(size_t row, DataVectorSP& vec) {
+    void DataMatrixSP::getRow(size_t row, DataVectorSP& vec) const {
       if (vec.getSize() != this->ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrixSP::getRow : Dimensions do not match");
@@ -215,7 +215,7 @@ namespace SGPP {
       }
     }
 
-    void DataMatrixSP::getRow(size_t row, std::vector<float>& vec) {
+    void DataMatrixSP::getRow(size_t row, std::vector<float>& vec) const {
       vec.clear();
 
       for (size_t i = 0; i < this->ncols; i++) {
@@ -223,18 +223,18 @@ namespace SGPP {
       }
     }
 
-    void DataMatrixSP::setRow(size_t row, DataVectorSP& vec) {
+    void DataMatrixSP::setRow(size_t row, const DataVectorSP& vec) {
       if (vec.getSize() != this->ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrixSP::setRow : Dimensions do not match");
       }
 
       for (size_t i = 0; i < this->ncols; i++) {
-        this->data[row * ncols + i] = vec[i];
+        this->data[row * ncols + i] = vec.get(i);
       }
     }
 
-    void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) {
+    void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) const {
       if (vec.getSize() != this->nrows) {
         throw new SGPP::base::data_exception(
           "DataMatrixSP::getColumn : Dimensions do not match");
@@ -245,14 +245,14 @@ namespace SGPP {
       }
     }
 
-    void DataMatrixSP::setColumn(size_t col, DataVectorSP& vec) {
+    void DataMatrixSP::setColumn(size_t col, const DataVectorSP& vec) {
       if (vec.getSize() != this->nrows) {
         throw new SGPP::base::data_exception(
           "DataMatrixSP::setColumn : Dimensions do not match");
       }
 
       for (size_t j = 0; j < this->nrows; j++) {
-        data[j * ncols + col] = vec[j];
+        data[j * ncols + col] = vec.get(j);
       }
     }
 
@@ -270,7 +270,9 @@ namespace SGPP {
        this->data = new float[nrows * ncols];
        }
        */
-      memcpy(this->data, matr.data, std::min(this->nrows * this->ncols, matr.nrows * matr.ncols) * sizeof(float));
+      std::memcpy(this->data, matr.data,
+                  std::min(this->nrows * this->ncols, matr.nrows * matr.ncols)
+                  * sizeof(float));
     }
 
     DataMatrixSP& DataMatrixSP::operator=(const DataMatrixSP& matr) {
@@ -283,7 +285,7 @@ namespace SGPP {
           "DataMatrixSP::= : Dimensions do not match");
       }
 
-      memcpy(this->data, matr.data, nrows * ncols * sizeof(float));
+      std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float));
       return *this;
     }
 
@@ -402,7 +404,7 @@ namespace SGPP {
       }
     }
 
-    float DataMatrixSP::sum() {
+    float DataMatrixSP::sum() const {
       size_t n = nrows * ncols;
       float result = 0.0;
 
@@ -442,7 +444,7 @@ namespace SGPP {
       }
     }
 
-    void DataMatrixSP::toString(std::string& text) {
+    void DataMatrixSP::toString(std::string& text) const {
       std::stringstream str;
       str << "[";
 
@@ -468,13 +470,13 @@ namespace SGPP {
       text = str.str();
     }
 
-    std::string DataMatrixSP::toString() {
+    std::string DataMatrixSP::toString() const {
       std::string str;
       toString(str);
       return str;
     }
 
-    float DataMatrixSP::min(size_t d) {
+    float DataMatrixSP::min(size_t d) const {
       size_t n = nrows * ncols;
       float min = data[d];
 
@@ -487,7 +489,7 @@ namespace SGPP {
       return min;
     }
 
-    float DataMatrixSP::min() {
+    float DataMatrixSP::min() const {
       size_t n = nrows * ncols;
       float min = data[0];
 
@@ -500,7 +502,7 @@ namespace SGPP {
       return min;
     }
 
-    float DataMatrixSP::max(size_t d) {
+    float DataMatrixSP::max(size_t d) const {
       size_t n = nrows * ncols;
       float max = data[d];
 
@@ -513,7 +515,7 @@ namespace SGPP {
       return max;
     }
 
-    float DataMatrixSP::max() {
+    float DataMatrixSP::max() const {
       size_t n = nrows * ncols;
       float max = data[0];
 
@@ -526,7 +528,7 @@ namespace SGPP {
       return max;
     }
 
-    void DataMatrixSP::minmax(size_t col, float* min, float* max) {
+    void DataMatrixSP::minmax(size_t col, float* min, float* max) const {
       size_t n = nrows * ncols;
 
       if (ncols <= col) {
@@ -552,7 +554,7 @@ namespace SGPP {
       (*max) = max_t;
     }
 
-    void DataMatrixSP::minmax(float* min, float* max) {
+    void DataMatrixSP::minmax(float* min, float* max) const {
       size_t n = nrows * ncols;
 
       if (n == 0) {
@@ -585,7 +587,7 @@ namespace SGPP {
       delete[] data;
     }
 
-    size_t DataMatrixSP::getNumberNonZero() {
+    size_t DataMatrixSP::getNumberNonZero() const {
       size_t n = nrows * ncols;
       size_t nonZero = 0;
 

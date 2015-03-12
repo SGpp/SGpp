@@ -27,12 +27,12 @@ namespace base
 %apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
 %apply std::string *OUTPUT { std::string& text };
 
-%rename(__str__) DataVector::toString;
+%rename(__str__) DataVector::toString const;
 
 %rename(__getitem__) DataVector::get(size_t i) const;
 %rename(__setitem__) DataVector::set(size_t i, SGPP::float_t value);
 %rename(assign) DataVector::operator=;
-%rename(__len__) DataVector::getSize;
+%rename(__len__) DataVector::getSize const;
 
 
     
@@ -70,6 +70,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 */
         // Constructors
   DataVector(size_t size);
+  DataVector(size_t size, float_t value);
   DataVector(DataVector& vec);
   DataVector(SGPP::float_t *input, size_t size);
   DataVector(std::vector<SGPP::float_t> input);
@@ -98,28 +99,28 @@ $1 = PySequence_Check($input) ? 1 : 0;
   void sqr();
   void sqrt();
   void abs();
-  SGPP::float_t sum();
-  SGPP::float_t min();
-  SGPP::float_t max();
-  void minmax(SGPP::float_t* min, SGPP::float_t* max);
-  SGPP::float_t maxNorm();
-  SGPP::float_t RMSNorm();
-  SGPP::float_t l2Norm();
-  SGPP::float_t dotProduct(DataVector& vec);
+  SGPP::float_t sum() const;
+  SGPP::float_t min() const;
+  SGPP::float_t max() const;
+  void minmax(SGPP::float_t* min, SGPP::float_t* max) const;
+  SGPP::float_t maxNorm() const;
+  SGPP::float_t RMSNorm() const;
+  SGPP::float_t l2Norm() const;
+  SGPP::float_t dotProduct(const DataVector& vec) const;
   
   void axpy(SGPP::float_t alpha, DataVector& x);
   
-  size_t getSize();
-  size_t getUnused();
-  size_t getInc();
+  size_t getSize() const;
+  size_t getUnused() const;
+  size_t getInc() const;
   void setInc(size_t inc_elems);
-  size_t getNumberNonZero();  
+  size_t getNumberNonZero() const;
     
   void partitionClasses(SGPP::float_t border);
   void normalize();
   void normalize(SGPP::float_t border);
   
-  std::string toString();
+  std::string toString() const;
   
   %extend {
     // Create a ndarray view from the DataVector data

@@ -43,11 +43,11 @@ namespace std {
 
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];
-%ignore SGPP::base::DataVectorSP::toString(std::string& text);
+%ignore SGPP::base::DataVectorSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %ignore SGPP::base::DataMatrixSP::operator=;
 %ignore SGPP::base::DataMatrixSP::operator[];
-%ignore SGPP::base::DataMatrixSP::toString(std::string& text);
+%ignore SGPP::base::DataMatrixSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications

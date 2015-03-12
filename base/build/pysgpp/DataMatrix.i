@@ -13,12 +13,12 @@ namespace base
 
 %apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
 %apply std::string *OUTPUT { std::string& text };
-%rename(__str__) DataMatrix::toString;
+%rename(__str__) DataMatrix::toString const;
 
 //%rename(__getitem__) DataMatrix::get(size_t row, size_t col) const;
 //%rename(__setitem__) DataMatrix::set(int i, SGPP::float_t value);
 //%rename(assign) DataMatrix::operator=;
-//%rename(__len__) DataMatrix::getSize;
+//%rename(__len__) DataMatrix::getSize const;
 
 
 
@@ -73,6 +73,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
     // Constructors
     DataMatrix(size_t nrows, size_t ncols);
+    DataMatrix(size_t nrows, size_t ncols, float_t value);
     DataMatrix(const DataMatrix& matr);
     DataMatrix(SGPP::float_t* input, int nrows, int ncols);
 
@@ -94,10 +95,10 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //      };
 //    }     
 
-    void getRow(size_t row, DataVector& vec);
-    void setRow(size_t row, DataVector& vec);
-    void getColumn(size_t col, DataVector& vec);
-    void setColumn(size_t col, DataVector& vec);
+    void getRow(size_t row, DataVector& vec) const;
+    void setRow(size_t row, const DataVector& vec);
+    void getColumn(size_t col, DataVector& vec) const;
+    void setColumn(size_t col, const DataVector& vec);
     SGPP::float_t* getPointer();
 
     void add(DataMatrix& matr);
@@ -108,28 +109,28 @@ $1 = PySequence_Check($input) ? 1 : 0;
     void sqr();
     void sqrt();
     void abs();
-    SGPP::float_t sum();
+    SGPP::float_t sum() const;
 
-    size_t getSize();
-    size_t getUnused();
-    size_t getNumberNonZero();
-    size_t getNrows();
-    size_t getNcols();
-    size_t getInc();
+    size_t getSize() const;
+    size_t getUnused() const;
+    size_t getNumberNonZero() const;
+    size_t getNrows() const;
+    size_t getNcols() const;
+    size_t getInc() const;
     void setInc(size_t inc_rows);
 
     void normalizeDimension(size_t d);
     void normalizeDimension(size_t d, SGPP::float_t border);
 
-    SGPP::float_t min(size_t col);
-    SGPP::float_t min();
-    SGPP::float_t max(size_t col);
-    SGPP::float_t max();
-    void minmax(size_t col, SGPP::float_t* min, SGPP::float_t* max);
-    void minmax(SGPP::float_t* min, SGPP::float_t* max);
+    SGPP::float_t min(size_t col) const;
+    SGPP::float_t min() const;
+    SGPP::float_t max(size_t col) const;
+    SGPP::float_t max() const;
+    void minmax(size_t col, SGPP::float_t* min, SGPP::float_t* max) const;
+    void minmax(SGPP::float_t* min, SGPP::float_t* max) const;
 
-//    void toString(std::string& text); // otherwise overloaded duplicate
-    std::string toString();
+//    void toString(std::string& text) const; // otherwise overloaded duplicate
+    std::string toString() const;
     
     %extend {
     // Create a ndarray view from the DataMatrix data
