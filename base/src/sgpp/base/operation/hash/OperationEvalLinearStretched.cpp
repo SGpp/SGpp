@@ -16,7 +16,7 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationEvalLinearStretched::eval(DataVector& alpha, std::vector<float_t>& point) {
+    float_t OperationEvalLinearStretched::eval(DataVector& alpha, DataVector& point) {
       LinearStretchedBasis<unsigned int, unsigned int> base;
       AlgorithmEvaluation<LinearStretchedBasis<unsigned int, unsigned int> > AlgoEval(storage);
 

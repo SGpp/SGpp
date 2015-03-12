@@ -33,7 +33,7 @@ class TestOptimizer(unittest.TestCase):
                       pysgpp.OptDifferentialEvolution(f, N)]
         
         for optimizer in optimizers:
-            xopt = pysgpp.DoubleVector()
+            xopt = pysgpp.DataVector(0)
             # optimize
             fopt = optimizer.optimize(xopt)
             

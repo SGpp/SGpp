@@ -6,11 +6,11 @@
 #ifndef CLENSHAWCURTISTABLE_HPP
 #define CLENSHAWCURTISTABLE_HPP
 
-#include <vector>
 #include <cmath>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
   namespace base {
@@ -42,7 +42,7 @@ namespace SGPP {
          */
         inline float_t getPoint(LT l, IT i) const {
           if (l <= maxLevel) {
-            return table[(1 << l) + l + i - 1];
+            return table.get((1 << l) + l + i - 1);
           } else {
             const float_t h = 1.0 / static_cast<float_t>(1 << l);
             return (cos(M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
@@ -51,7 +51,7 @@ namespace SGPP {
 
       protected:
         /// lookup table
-        std::vector<float_t> table;
+        DataVector table;
         /// maximal level
         LT maxLevel;
     };

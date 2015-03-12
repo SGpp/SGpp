@@ -74,7 +74,7 @@ namespace SGPP {
          * @param point evaluation point within the domain
          * @param result a vector to store the results in
          */
-        void operator()(BASIS& basis, std::vector<float_t>& point, std::vector <
+        void operator()(BASIS& basis, DataVector& point, std::vector <
                         std::pair<size_t, float_t> > & result) {
           GridStorage::grid_iterator working(storage);
 
@@ -122,7 +122,7 @@ namespace SGPP {
          * @param source array of indices for each dimension (identifying the indices of the current grid point)
          * @param result a vector to store the results in
          */
-        void rec(BASIS& basis, std::vector<float_t>& point, size_t current_dim,
+        void rec(BASIS& basis, DataVector& point, size_t current_dim,
                  float_t value, GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
                  size_t, float_t > >& result) {
@@ -194,7 +194,7 @@ namespace SGPP {
         ~GetAffectedBasisFunctions() {
         }
 
-        void operator()(SWaveletModifiedBase& basis, std::vector<float_t>& point,
+        void operator()(SWaveletModifiedBase& basis, DataVector& point,
                         std::vector<std::pair<size_t, float_t> >& result) {
           GridStorage::grid_iterator working(storage);
 
@@ -229,7 +229,7 @@ namespace SGPP {
       protected:
         GridStorage* storage;
 
-        void rec(SWaveletModifiedBase& basis, std::vector<float_t>& point,
+        void rec(SWaveletModifiedBase& basis, DataVector& point,
                  size_t current_dim, float_t value,
                  GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
@@ -374,7 +374,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SBsplineModifiedBase& base, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
+        void operator()(SBsplineModifiedBase& base, DataVector& point, std::vector<std::pair<size_t, float_t> >& result) {
           GridStorage::grid_iterator working(storage);
 
 
@@ -409,7 +409,7 @@ namespace SGPP {
       protected:
         GridStorage* storage;
 
-        void rec(SBsplineModifiedBase& base, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, float_t> >& result) {
+        void rec(SBsplineModifiedBase& base, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
           //size_t i;
@@ -538,7 +538,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SLinearBoundaryBase& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
+        void operator()(SLinearBoundaryBase& basis, DataVector& point, std::vector<std::pair<size_t, float_t> >& result) {
           bool useBB = false;
 
           // Check for special bounding box
@@ -562,7 +562,7 @@ namespace SGPP {
         GridStorage* storage;
         BoundingBox* BB;
 
-        void rec(SLinearBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+        void rec(SLinearBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -654,7 +654,7 @@ namespace SGPP {
         }
 
 
-        void recBB(SLinearBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+        void recBB(SLinearBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -759,7 +759,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SLinearStretchedBoundaryBase& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
+        void operator()(SLinearStretchedBoundaryBase& basis, DataVector& point, std::vector<std::pair<size_t, float_t> >& result) {
           //There's no BoundaryBox checking necessary
 
           GridStorage::grid_iterator working(storage);
@@ -776,7 +776,7 @@ namespace SGPP {
         GridStorage* storage;
         Stretching* stretch;
 
-        void recBB(SLinearStretchedBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+        void recBB(SLinearStretchedBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
           float_t posl = 0, posr = 0, posc = 0;
@@ -922,7 +922,7 @@ namespace SGPP {
          * @param point evaluation point within the domain
          * @param result a vector to store the results in
          */
-        void operator()(SPrewaveletBase& basis, std::vector<float_t>& point,
+        void operator()(SPrewaveletBase& basis, DataVector& point,
                         std::vector<std::pair<size_t, float_t> >& result) {
 
           GridStorage::grid_iterator iter(storage);
@@ -950,7 +950,7 @@ namespace SGPP {
          * @param result a vector to store the results in
          */
 
-        void rec(SPrewaveletBase& basis, std::vector<float_t>& point,
+        void rec(SPrewaveletBase& basis, DataVector& point,
                  size_t current_dim, GridStorage::grid_iterator& iter, std::vector <
                  std::pair<size_t, float_t> > & result) {
 
@@ -1027,7 +1027,7 @@ namespace SGPP {
 
         ~GetAffectedBasisFunctions() {}
 
-        void operator()(SLinearPeriodicBasis& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result) {
+        void operator()(SLinearPeriodicBasis& basis, DataVector& point, std::vector<std::pair<size_t, float_t> >& result) {
           GridStorage::grid_iterator working(storage);
 
           working.resetToLevelZero();
@@ -1040,7 +1040,7 @@ namespace SGPP {
       protected:
         GridStorage* storage;
 
-        void rec(SLinearPeriodicBasis& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+        void rec(SLinearPeriodicBasis& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 

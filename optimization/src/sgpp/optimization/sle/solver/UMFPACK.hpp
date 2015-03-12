@@ -29,8 +29,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, const std::vector<float_t>& b,
-                     std::vector<float_t>& x) const;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
 
           /**
            * @param       system  system to be solved
@@ -39,8 +39,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, const std::vector<std::vector<float_t>>& B,
-                     std::vector<std::vector<float_t>>& X) const;
+          bool solve(SLE& system, std::vector<base::DataVector>& B,
+                     std::vector<base::DataVector>& X) const;
       };
 
     }

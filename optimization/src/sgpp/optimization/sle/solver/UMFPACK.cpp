@@ -36,27 +36,30 @@ namespace SGPP {
       bool solveInternal(void* numeric, const std::vector<sslong>& Ap,
                          const std::vector<sslong>& Ai,
                          const std::vector<double>& Ax,
-                         const std::vector<float_t>& b,
-                         std::vector<float_t>& x) {
-        const size_t n = b.size();
+                         base::DataVector& b,
+                         base::DataVector& x) {
+        const size_t n = b.getSize();
 
 #if USE_DOUBLE_PRECISION == 1
         x = std::vector<double>(n, 0.0);
 
         sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
-                                         &Ax[0], &x[0], &b[0],
+                                         &Ax[0], x.getPointer(), b.getPointer(),
                                          numeric, NULL, NULL);
         return (result == UMFPACK_OK);
 #else
-        std::vector<double> bDbl(b.begin(), b.end());
-        std::vector<double> xDbl(n, 0.0);
+        std::vector<double> bDbl(b.getPointer(), b.getPointer() + b.getSize());
+        std::vector<double> xDbl(n);
 
         sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
                                          &Ax[0], &xDbl[0], &bDbl[0],
                                          numeric, NULL, NULL);
 
         if (result == UMFPACK_OK) {
-          x = std::vector<float>(xDbl.begin(), xDbl.end());
+          for (size_t i = 0; i < xDbl.getSize(); i++) {
+            x[i] = static_cast<float>(xDbl[i]);
+          }
+
           return true;
         } else {
           return false;
@@ -66,15 +69,15 @@ namespace SGPP {
       }
 #endif /* USEUMFPACK */
 
-      bool UMFPACK::solve(SLE& system, const std::vector<float_t>& b,
-                          std::vector<float_t>& x) const {
+      bool UMFPACK::solve(SLE& system, base::DataVector& b,
+                          base::DataVector& x) const {
         // place RHS in its own vector
-        std::vector<std::vector<float_t>> B;
-        std::vector<std::vector<float_t>> X;
-        B.push_back(b);
+        std::vector<base::DataVector> B = {b};
+        std::vector<base::DataVector> X;
 
         // call version for multiple RHSs
         if (solve(system, B, X)) {
+          x.resize(X[0].getSize());
           x = X[0];
           return true;
         } else {
@@ -83,8 +86,8 @@ namespace SGPP {
       }
 
       bool UMFPACK::solve(SLE& system,
-                          const std::vector<std::vector<float_t>>& B,
-                          std::vector<std::vector<float_t>>& X) const {
+                          std::vector<base::DataVector>& B,
+                          std::vector<base::DataVector>& X) const {
 #ifdef USEUMFPACK
         printer.printStatusBegin("Solving linear system (UMFPACK)...");
 
@@ -222,12 +225,12 @@ namespace SGPP {
 
         umfpack_dl_free_symbolic(&symbolic);
 
-        std::vector<float_t> x;
+        base::DataVector x(n);
         X.clear();
 
         // call umfpack_dl_solve for each RHS
         for (size_t i = 0; i < B.size(); i++) {
-          const std::vector<float_t>& b = B[i];
+          base::DataVector& b = B[i];
           printer.printStatusNewLine();
 
           if (B.size() == 1) {

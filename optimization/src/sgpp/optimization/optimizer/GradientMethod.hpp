@@ -56,7 +56,7 @@ namespace SGPP {
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */
-          float_t optimize(std::vector<float_t>& xOpt);
+          float_t optimize(base::DataVector& xOpt);
 
           /**
            * @return objective function gradient

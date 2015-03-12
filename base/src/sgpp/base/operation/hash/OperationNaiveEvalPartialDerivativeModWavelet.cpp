@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalPartialDerivativeModWavelet::evalPartialDerivative(
-      DataVector& alpha, const std::vector<float_t>& point, size_t deriv_dim) {
+      DataVector& alpha, DataVector& point, size_t derivDim) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;
@@ -20,7 +20,7 @@ namespace SGPP {
         float_t cur_val = 1.0;
 
         for (size_t t = 0; t < d; t++) {
-          float_t val1d = ((t == deriv_dim) ?
+          float_t val1d = ((t == derivDim) ?
                            base.evalDx(gp->getLevel(t), gp->getIndex(t), point[t]) :
                            base.eval(gp->getLevel(t), gp->getIndex(t), point[t]));
 

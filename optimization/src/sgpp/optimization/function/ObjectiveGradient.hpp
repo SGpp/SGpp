@@ -8,7 +8,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <vector>
 #include <cstddef>
 #include <memory>
 
@@ -49,7 +48,7 @@ namespace SGPP {
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @return              \f$f(\vec{x})\f$
          */
-        virtual float_t evalGradient(const std::vector<float_t>& x,
+        virtual float_t evalGradient(const base::DataVector& x,
                                      base::DataVector& gradient) = 0;
 
         /**

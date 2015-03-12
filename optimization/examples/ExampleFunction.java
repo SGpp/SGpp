@@ -8,7 +8,7 @@ public class ExampleFunction extends sgpp.OptObjectiveFunction {
     super(2);
   }
 
-  public double eval(sgpp.DoubleVector x) {
+  public double eval(sgpp.DataVector x) {
     return Math.sin(8.0 * x.get(0)) + Math.sin(7.0 * x.get(1));
   }
 }

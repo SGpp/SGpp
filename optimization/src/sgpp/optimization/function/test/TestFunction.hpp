@@ -6,7 +6,6 @@
 #ifndef SGPP_OPTIMIZATION_FUNCTION_TEST_TESTFUNCTION_HPP
 #define SGPP_OPTIMIZATION_FUNCTION_TEST_TESTFUNCTION_HPP
 
-#include <vector>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
@@ -57,7 +56,7 @@ namespace SGPP {
            * @return  \f$f(\vec{x} + \vec{d})\f$
            *          with displacement \f$\vec{d}\f$
            */
-          float_t eval(const std::vector<float_t>& x);
+          float_t eval(const base::DataVector& x);
 
           /**
            * Pure virtual method for evaluating the undisplaced function.
@@ -65,7 +64,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
            * @return      \f$f(\vec{x})\f$
            */
-          virtual float_t evalUndisplaced(const std::vector<float_t>& x) = 0;
+          virtual float_t evalUndisplaced(const base::DataVector& x) = 0;
 
           /**
            * Returns the minimal point of the displaced function.
@@ -75,7 +74,7 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPoint(std::vector<float_t>& x);
+          float_t getOptimalPoint(base::DataVector& x);
 
           /**
            * Pure virtual method returning the minimal point
@@ -86,8 +85,7 @@ namespace SGPP {
            * @return          minimal function value
            *                  \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          virtual float_t getOptimalPointUndisplaced(
-            std::vector<float_t>& x) = 0;
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) = 0;
 
           /**
            * Generate normally distributed pseudorandom displacement with
@@ -110,14 +108,14 @@ namespace SGPP {
            *
            * @param[in,out] x     vector to be displaced
            */
-          void displaceVector(std::vector<float_t>& x) const;
+          void displaceVector(base::DataVector& x) const;
 
           /**
            * Subtract the displacement from a vector.
            *
            * @param[in,out] x     vector to be reverse displaced
            */
-          void reverseDisplaceVector(std::vector<float_t>& x) const;
+          void reverseDisplaceVector(base::DataVector& x) const;
 
           /**
            * @return standard deviation of the displacement
@@ -127,13 +125,13 @@ namespace SGPP {
           /**
            * @param[out] displacement     currently used displacement
            */
-          void getDisplacement(std::vector<float_t>& displacement) const;
+          void getDisplacement(base::DataVector& displacement) const;
 
         protected:
           /// standard deviation
           float_t stdDev;
           /// vector displacement
-          std::vector<float_t> displacement;
+          base::DataVector displacement;
       };
 
     }

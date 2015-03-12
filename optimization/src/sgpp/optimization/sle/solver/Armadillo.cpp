@@ -20,15 +20,15 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-      bool Armadillo::solve(SLE& system, const std::vector<float_t>& b,
-                            std::vector<float_t>& x) const {
+      bool Armadillo::solve(SLE& system, base::DataVector& b,
+                            base::DataVector& x) const {
         // place RHS in its own vector
-        std::vector<std::vector<float_t>> B;
-        std::vector<std::vector<float_t>> X;
-        B.push_back(b);
+        std::vector<base::DataVector> B = {b};
+        std::vector<base::DataVector> X;
 
         // call version for multiple RHSs
         if (solve(system, B, X)) {
+          x.resize(X[0].getSize());
           x = X[0];
           return true;
         } else {
@@ -37,8 +37,8 @@ namespace SGPP {
       }
 
       bool Armadillo::solve(SLE& system,
-                            const std::vector<std::vector<float_t>>& B,
-                            std::vector<std::vector<float_t>>& X) const {
+                            std::vector<base::DataVector>& B,
+                            std::vector<base::DataVector>& X) const {
 #ifdef USEARMADILLO
         printer.printStatusBegin("Solving linear system (Armadillo)...");
 
@@ -108,15 +108,14 @@ namespace SGPP {
 
         if (B.size() == 1) {
           // only one RHS ==> use vector version of arma::solve
-          arma::vec b_armadillo = arma::conv_to<arma::vec>::from(B[0]);
+          arma::vec b_armadillo(B[0].getPointer(), n);
           arma::vec x_armadillo(n);
 
           printer.printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(x_armadillo, A, b_armadillo)) {
             X.clear();
-            X.push_back(
-              arma::conv_to<std::vector<float_t>>::from(x_armadillo));
+            X.push_back(base::DataVector(x_armadillo.memptr(), n));
             printer.printStatusEnd();
             return true;
           } else {
@@ -131,7 +130,7 @@ namespace SGPP {
 
           // copy RHSs to Armadillo matrix
           for (arma::uword i = 0; i < B_count; i++) {
-            BArmadillo.col(i) = arma::conv_to<arma::vec>::from(B[i]);
+            BArmadillo.col(i) = arma::vec(B[i].getPointer(), n);
           }
 
           printer.printStatusUpdate("solving with Armadillo");
@@ -139,10 +138,9 @@ namespace SGPP {
           if (arma::solve(XArmadillo, A, BArmadillo)) {
             X.clear();
 
-            // convert solutions to std::vector
+            // convert solutions to base::DataVector
             for (arma::uword i = 0; i < B_count; i++) {
-              X.push_back(arma::conv_to<std::vector<float_t>>::from(
-                            XArmadillo.col(i)));
+              X.push_back(base::DataVector(XArmadillo.colptr(i), n));
             }
 
             printer.printStatusEnd();

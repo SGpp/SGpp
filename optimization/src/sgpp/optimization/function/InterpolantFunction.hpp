@@ -13,7 +13,6 @@
 #include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <vector>
 #include <cstring>
 #include <memory>
 
@@ -57,10 +56,10 @@ namespace SGPP {
          * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
          * @return      \f$f(\vec{x})\f$
          */
-        inline float_t eval(const std::vector<float_t>& x) {
+        inline float_t eval(const base::DataVector& x) {
           // copy x, necessary due to non-existing const correctness
           // in SGPP::base
-          std::vector<float_t> y = x;
+          base::DataVector y(x);
           return opEval->eval(alpha, y);
         }
 

@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cstddef>
 #include <vector>
@@ -37,7 +38,7 @@ namespace SGPP {
            * @param startingPoint     starting vector
            */
           BiCGStab(size_t maxItCount, float_t tolerance,
-                   const std::vector<float_t>& startingPoint);
+                   const base::DataVector& startingPoint);
 
           /**
            * @param       system  system to be solved
@@ -46,8 +47,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, const std::vector<float_t>& b,
-                     std::vector<float_t>& x) const;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
 
           /**
            * @return              maximal number of iterations
@@ -72,12 +73,12 @@ namespace SGPP {
           /**
            * @return                  starting vector
            */
-          const std::vector<float_t>& getStartingPoint() const;
+          const base::DataVector& getStartingPoint() const;
 
           /**
            * @param startingPoint     starting vector
            */
-          void setStartingPoint(const std::vector<float_t>& startingPoint);
+          void setStartingPoint(const base::DataVector& startingPoint);
 
         protected:
           /// maximal number of iterations
@@ -85,7 +86,7 @@ namespace SGPP {
           /// tolerance
           float_t tol;
           /// starting vector
-          std::vector<float_t> x0;
+          base::DataVector x0;
       };
 
     }

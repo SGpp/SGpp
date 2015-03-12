@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalGradientBsplineBoundary::evalGradient(
-      DataVector& alpha, const std::vector<float_t>& point, DataVector& gradient) {
+      DataVector& alpha, DataVector& point, DataVector& gradient) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;

@@ -13,8 +13,6 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessian.hpp>
 
-#include <vector>
-
 namespace SGPP {
   namespace optimization {
 
@@ -51,12 +49,12 @@ namespace SGPP {
          *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline float_t evalHessian(const std::vector<float_t>& x,
+        inline float_t evalHessian(const base::DataVector& x,
                                    base::DataVector& gradient,
                                    base::DataMatrix& hessian) {
           // copy x, necessary due to non-existing const correctness
           // in SGPP::base
-          std::vector<float_t> y = x;
+          base::DataVector y(x);
           return opEvalHessian->evalHessian(alpha, y, gradient, hessian);
         }
 

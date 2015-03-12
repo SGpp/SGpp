@@ -41,12 +41,11 @@ namespace SGPP {
                                         static_cast<size_t>(100));
       }
 
-      float_t RandomSearch::optimize(std::vector<float_t>& xOpt) {
+      float_t RandomSearch::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (random search)...");
 
         const size_t d = f.getDimension();
-        std::vector<std::vector<float_t>> x0(populationSize,
-                                             std::vector<float_t>(d, 0.0));
+        std::vector<base::DataVector> x0(populationSize, base::DataVector(d));
         std::vector<size_t> roundN(populationSize, 0);
         size_t remainingN = N;
 
@@ -81,7 +80,7 @@ namespace SGPP {
 
         #endif ** _OPENMP **
 
-          std::vector<float_t> curXOpt(d, 0.0);
+          base::DataVector curXOpt(d);
           float_t curFOpt;
 
           #pragma omp for ordered schedule(dynamic)
@@ -122,8 +121,10 @@ namespace SGPP {
 
         printer.enableStatusPrinting();*/
 
-        std::vector<float_t> curXOpt(d, 0.0);
+        base::DataVector curXOpt(d);
         float_t curFOpt;
+
+        xOpt.resize(d);
 
         for (size_t k = 0; k < populationSize; k++) {
           // optimize with k-th starting point

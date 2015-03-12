@@ -26,16 +26,16 @@ namespace SGPP {
         eps(epsilon) {
       }
 
-      float_t GradientMethod::optimize(std::vector<float_t>& xOpt) {
+      float_t GradientMethod::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (gradient method)...");
 
         const size_t d = f.getDimension();
-        std::vector<float_t> x(x0);
+        base::DataVector x(x0);
         float_t fx = 0.0;
 
         base::DataVector gradFx(d);
-        std::vector<float_t> s(d, 0.0);
-        std::vector<float_t> y(d, 0.0);
+        base::DataVector s(d);
+        base::DataVector y(d);
         size_t k;
 
         for (k = 0; k < N; k++) {
@@ -69,6 +69,7 @@ namespace SGPP {
           x = y;
         }
 
+        xOpt.resize(d);
         xOpt = x;
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +

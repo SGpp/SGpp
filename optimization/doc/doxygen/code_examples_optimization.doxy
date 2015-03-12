@@ -88,7 +88,7 @@ find reasonable approximations of the minimum, which lies at
 To compile and run the C++ example, you need to set some
 compiler/linker flags and you also have to adjust the environment
 variable \c LD_LIBRARY_PATH accordingly
-(see \link code_examples_quick_start \endlink).
+(see \ref code_examples_quick_start).
 
 \section code_examples_optimization_python Python
 
@@ -97,7 +97,7 @@ The C++ code can be translated into the following Python code:
 
 To compile run the Python example, you need to adjust the environment
 variables \c LD_LIBRARY_PATH and \c PYTHONPATH accordingly
-(see \link code_examples_quick_start \endlink).
+(see \ref code_examples_quick_start).
 When run, the example gives (nearly) the same output as the C++ example.
 
 \section code_examples_optimization_java Java
@@ -110,7 +110,7 @@ The Java and MATLAB examples use this external class:
 
 To run the Java example, you need to adjust the environment
 variable \c LD_LIBRARY_PATH accordingly
-(see \link code_examples_quick_start \endlink).
+(see \ref code_examples_quick_start).
 When run, the example gives (nearly) the same output as the C++ example.
 
 \section code_examples_optimization_matlab MATLAB
@@ -121,7 +121,7 @@ The C++ code can be translated into the following MATLAB code:
 To run the MATLAB example, you first need to compile to \c ExampleFunction
 into a \c .jar file:
 \code
-javac -cp .:/home/valentjn/svn/SGpp/trunk/lib/jsgpp/jsgpp.jar ExampleFunction.java
+javac -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar ExampleFunction.java
 jar -cf ExampleFunction.jar ExampleFunction.class
 \endcode
 
@@ -140,7 +140,7 @@ The first line tells MATLAB where to find the necessary libraries.
 The second line causes loading the system version of \c libstdc++
 and not MATLAB's version
 (for more info on the first two lines,
-see \link code_examples_quick_start \endlink).
+see \ref code_examples_quick_start).
 The third and fourth lines are new.
 SGPP::optimization uses external linear algebra libraries to enable faster
 solutions of linear systems.

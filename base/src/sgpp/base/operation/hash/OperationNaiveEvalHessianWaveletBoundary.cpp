@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalHessianWaveletBoundary::evalHessian(
-      DataVector& alpha, const std::vector<float_t>& point,
+      DataVector& alpha, DataVector& point,
       DataVector& gradient, DataMatrix& hessian) {
       const size_t n = storage->size();
       const size_t d = storage->dim();

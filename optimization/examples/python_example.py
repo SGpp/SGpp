@@ -61,7 +61,8 @@ if not gridGen.generate():
 
 printLine()
 print "Hierarchizing...\n"
-coeffs = pysgpp.DoubleVector()
+functionValues = gridGen.getFunctionValues()
+coeffs = pysgpp.DataVector(len(functionValues))
 hierSLE = pysgpp.OptHierarchisationSLE(grid)
 sleSolver = pysgpp.OptAutoSLESolver()
 
@@ -70,42 +71,42 @@ if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
     print "Solving failed, exiting."
     sys.exit(1)
 
-# convert pysgpp.DoubleVector to pysgpp.DataVector
-coeffsDV = pysgpp.DataVector(coeffs)
-
 # #############################################################################
 # OPTIMIZATION OF THE SMOOTH INTERPOLANT
 # #############################################################################
 
 printLine()
 print "Optimizing smooth interpolant...\n"
-ft = pysgpp.OptInterpolantFunction(d, grid, coeffsDV)
-ftGradient = pysgpp.OptInterpolantGradient(d, grid, coeffsDV)
+ft = pysgpp.OptInterpolantFunction(d, grid, coeffs)
+ftGradient = pysgpp.OptInterpolantGradient(d, grid, coeffs)
 gradientMethod = pysgpp.OptGradientMethod(ft, ftGradient)
-x0 = pysgpp.DoubleVector(d)
+x0 = pysgpp.DataVector(d)
 
 # determine best grid point as starting point
-functionValues = gridGen.getFunctionValues()
 gridStorage = gridGen.getGrid().getStorage()
 
 # index of grid point with minimal function value
-fX0 = min(functionValues)
-x0Index = functionValues.index(fX0)
+x0Index = 0
+fX0 = functionValues[0]
+for i in range(1, len(functionValues)):
+    if functionValues[i] < fX0:
+        fX0 = functionValues[i]
+        x0Index = i
 
 for t in range(d):
     x0[t] = gridStorage.get(x0Index).getCoord(t)
 
 ftX0 = ft.eval(x0)
 
-print "x0 = {}".format(pysgpp.DataVector(x0))
+print "x0 = {}".format(x0)
 print "f(x0) = {:.6g}, ft(x0) = {:.6g}\n".format(fX0, ftX0)
 
 gradientMethod.setStartingPoint(x0)
-xOpt = pysgpp.DoubleVector()
+xOpt = pysgpp.DataVector(d)
 ftXOpt = gradientMethod.optimize(xOpt)
 fXOpt = f.eval(xOpt)
 
-print "\nxOpt = {}".format(pysgpp.DataVector(xOpt))
+print "\nxOpt = {}".format(xOpt)
 print "f(xOpt) = {:.6g}, ft(xOpt) = {:.6g}\n".format(fXOpt, ftXOpt)
 
 # #############################################################################
@@ -115,11 +116,11 @@ print "f(xOpt) = {:.6g}, ft(xOpt) = {:.6g}\n".format(fXOpt, ftXOpt)
 printLine()
 print "Optimizing objective function (for comparison)...\n"
 nelderMead = pysgpp.OptNelderMead(f, 1000)
-xOptNM = pysgpp.DoubleVector()
+xOptNM = pysgpp.DataVector(d)
 fXOptNM = nelderMead.optimize(xOptNM)
 ftXOptNM = ft.eval(xOptNM)
 
-print "\nxOptNM = {}".format(pysgpp.DataVector(xOptNM))
+print "\nxOptNM = {}".format(xOptNM)
 print "f(xOptNM) = {:.6g}, ft(xOptNM) = {:.6g}\n".format(fXOptNM, ftXOptNM)
 
 printLine()

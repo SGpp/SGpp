@@ -58,6 +58,6 @@ class TestGridGen(unittest.TestCase):
                 self.assertEqual(n, len(function_values))
                 
                 for i in range(n):
-                    x = pysgpp.DoubleVector([grid.getStorage().get(i).getCoord(t) for t in range(d)])
+                    x = pysgpp.DataVector([grid.getStorage().get(i).getCoord(t) for t in range(d)])
                     # test function value
                     self.assertAlmostEqual(function_values[i], f.eval(x)) 

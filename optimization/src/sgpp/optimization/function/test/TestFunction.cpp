@@ -19,20 +19,20 @@ namespace SGPP {
       TestFunction::TestFunction(size_t d) :
         ObjectiveFunction(d),
         stdDev(0.0),
-        displacement(std::vector<float_t>(d, 0.0)) {
+        displacement(base::DataVector(d, 0.0)) {
       }
 
       TestFunction::~TestFunction() {
       }
 
-      float_t TestFunction::eval(const std::vector<float_t>& x) {
+      float_t TestFunction::eval(const base::DataVector& x) {
         // displace vector before evaluation
-        std::vector<float_t> x_displaced = x;
+        base::DataVector x_displaced(x);
         displaceVector(x_displaced);
         return evalUndisplaced(x_displaced);
       }
 
-      float_t TestFunction::getOptimalPoint(std::vector<float_t>& x) {
+      float_t TestFunction::getOptimalPoint(base::DataVector& x) {
         // reverse displace optimal point
         float_t fx = getOptimalPointUndisplaced(x);
         reverseDisplaceVector(x);
@@ -46,38 +46,34 @@ namespace SGPP {
       void TestFunction::generateDisplacement(float_t stdDev) {
         this->stdDev = stdDev;
 
-        displacement = std::vector<float_t>(d, 0.0);
-
         for (size_t t = 0; t < d; t++) {
           // every component is normally distributed
           displacement[t] = randomNumberGenerator.getGaussianRN(stdDev);
         }
       }
 
-      void TestFunction::displaceVector(std::vector<float_t>& x) const {
-        if (x.size() != d) {
+      void TestFunction::displaceVector(base::DataVector& x) const {
+        if (x.getSize() != d) {
           // one could use exceptions for that...
-          x.clear();
           std::cerr << "TestFunction::displaceVector: x doesn't match size\n";
           return;
         }
 
         for (size_t t = 0; t < d; t++) {
-          x[t] += displacement[t];
+          x[t] += displacement.get(t);
         }
       }
 
-      void TestFunction::reverseDisplaceVector(std::vector<float_t>& x) const {
-        if (x.size() != d) {
+      void TestFunction::reverseDisplaceVector(base::DataVector& x) const {
+        if (x.getSize() != d) {
           // one could use exceptions for that...
-          x.clear();
           std::cerr << "TestFunction::reverseDisplaceVector: "
                     << "x doesn't match size\n";
           return;
         }
 
         for (size_t t = 0; t < d; t++) {
-          x[t] -= displacement[t];
+          x[t] -= displacement.get(t);
         }
       }
 
@@ -85,8 +81,8 @@ namespace SGPP {
         return stdDev;
       }
 
-      void TestFunction::getDisplacement(
-        std::vector<float_t>& displacement) const {
+      void TestFunction::getDisplacement(base::DataVector& displacement) const {
+        displacement.resize(d);
         displacement = this->displacement;
       }
 
