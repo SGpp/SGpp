@@ -25,11 +25,20 @@ namespace SGPP {
     class DataVector {
       public:
         /**
-         * Create a DataVector with @em size elements.
+         * Create a DataVector with @em size elements (uninitialized values).
          *
          * @param size Number of elements
          */
         DataVector(size_t size);
+
+        /**
+         * Create a DataVector with @em size elements and initializes
+         * all elements with the same value.
+         *
+         * @param size Number of elements
+         * @param value Value for all entries
+         */
+        DataVector(size_t size, float_t value);
 
         /**
          * Create a new DataVector that is a copy of vec.
@@ -139,6 +148,16 @@ namespace SGPP {
          * @return Index of new element
          */
         size_t append(float_t value);
+
+        /**
+         * Inserts a new element at the given index.
+         * If the new element does not fit into the reserved memory,
+         * reserves memory for getInc() additional elements.
+         *
+         * @param index Index of new element
+         * @param value Value of new element
+         */
+        void insert(size_t index, float_t value);
 
         /**
          * Sets all values of DataVector to value
@@ -274,14 +293,14 @@ namespace SGPP {
          *
          * @return The sum of all elements
          */
-        float_t sum();
+        float_t sum() const;
 
         /**
          * calculates the vector's max norm
          *
          * @return the vector's max norm
          */
-        float_t maxNorm();
+        float_t maxNorm() const;
 
         /**
          * Returns the vector's root mean square (RMS)-norm, i.e.,
@@ -291,7 +310,7 @@ namespace SGPP {
          *
          * @return The vector's root mean square-norm.
          */
-        float_t RMSNorm();
+        float_t RMSNorm() const;
 
         /**
          * Returns the vector's @f$l^2@f$-norm, i.e.,
@@ -299,21 +318,21 @@ namespace SGPP {
          *
          * @return The vector's @f$l^2@f$-norm.
          */
-        float_t l2Norm();
+        float_t l2Norm() const;
 
         /**
          * Returns the minimum over all entries.
          *
          * @return Minimal value
          */
-        float_t min();
+        float_t min() const;
 
         /**
          * Returns the maximum over all entries.
          *
          * @return global maximum
          */
-        float_t max();
+        float_t max() const;
 
         /**
          * Determines minimum and maximum over all entries.
@@ -321,7 +340,7 @@ namespace SGPP {
          * @param min Reference variable for the minimum
          * @param max Reference variable for the maximum
          */
-        void minmax(float_t* min, float_t* max);
+        void minmax(float_t* min, float_t* max) const;
 
         /**
          * Adds a*x to current vector.
@@ -339,7 +358,7 @@ namespace SGPP {
          *
          * @return The dot-product
          */
-        float_t dotProduct(DataVector& vec);
+        float_t dotProduct(const DataVector& vec) const;
 
         /**
          * gets a pointer to the data array
@@ -363,7 +382,7 @@ namespace SGPP {
          *
          * @return number of unused elements
          */
-        inline size_t getUnused() {
+        inline size_t getUnused() const {
           return unused;
         }
         ;
@@ -373,11 +392,11 @@ namespace SGPP {
          *
          * @return The number of non-zero elements
          */
-        size_t getNumberNonZero();
+        size_t getNumberNonZero() const;
 
         /**
          * Get the current number of elements by which the DataVector is extended,
-         * if append() is called and no unused rows are left
+         * if append() or insert() is called and no unused rows are left
          *
          * @return Increment
          */
@@ -387,7 +406,7 @@ namespace SGPP {
 
         /**
          * Sets the current number of elements by which the DataVector is extended,
-         * if append() is called and no unused elements are left.
+         * if append() or insert() is called and no unused elements are left.
          * Defaults to 100.
          *
          * @param inc_elems Increment
@@ -421,14 +440,14 @@ namespace SGPP {
          *
          * @param text string to which the data is written
          */
-        void toString(std::string& text);
+        void toString(std::string& text) const;
 
         /**
          * Returns a description of the DataVector as a string.
          *
          * @returns string of the DataVector
          */
-        std::string toString();
+        std::string toString() const;
 
         /**
          * Destructor
