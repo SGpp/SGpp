@@ -6,7 +6,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/NelderMead.hpp>
-#include <sgpp/optimization/tools/Permuter.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <algorithm>
@@ -26,14 +25,14 @@ namespace SGPP {
         delta(delta) {
       }
 
-      float_t NelderMead::optimize(std::vector<float_t>& xOpt) {
+      float_t NelderMead::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (Nelder-Mead)...");
 
         const size_t d = f.getDimension();
-        std::vector<std::vector<float_t>> points(d + 1, x0);
-        std::vector<std::vector<float_t>> pointsNew(d + 1, x0);
-        std::vector<float_t> fPoints(d + 1, 0.0);
-        std::vector<float_t> fPointsNew(d + 1, 0.0);
+        std::vector<base::DataVector> points(d + 1, x0);
+        std::vector<base::DataVector> pointsNew(d + 1, x0);
+        base::DataVector fPoints(d + 1);
+        base::DataVector fPointsNew(d + 1);
 
         // construct starting simplex
         for (size_t t = 0; t < d; t++) {
@@ -46,11 +45,11 @@ namespace SGPP {
         fPoints[0] = f.eval(points[0]);
 
         std::vector<size_t> index(d + 1, 0);
-        std::vector<float_t> pointO(d, 0.0);
-        std::vector<float_t> pointR(d, 0.0);
-        std::vector<float_t> pointE(d, 0.0);
-        std::vector<float_t> pointIC(d, 0.0);
-        std::vector<float_t> pointOC(d, 0.0);
+        base::DataVector pointO(d);
+        base::DataVector pointR(d);
+        base::DataVector pointE(d);
+        base::DataVector pointIC(d);
+        base::DataVector pointOC(d);
         size_t k = 0;
         size_t numberOfFcnEvals = d + 1;
 
@@ -60,10 +59,10 @@ namespace SGPP {
             index[i] = i;
           }
 
-          {
-            Permuter<float_t> permuter(fPoints);
-            std::sort(index.begin(), index.end(), permuter);
-          }
+          std::sort(index.begin(), index.end(),
+          [&](size_t a, size_t b) {
+            return (fPoints[a] < fPoints[b]);
+          });
 
           // that could be solved more efficiently, but it suffices for now
           for (size_t i = 0; i < d + 1; i++) {
@@ -199,6 +198,7 @@ namespace SGPP {
           k++;
         }
 
+        xOpt.resize(d);
         xOpt = points[0];
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +

@@ -12,7 +12,7 @@ namespace SGPP {
 
     template<class LT, class IT>
     ClenshawCurtisTable<LT, IT>::ClenshawCurtisTable(LT maxLevel)
-      : table(std::vector<float_t>((1 << (maxLevel + 1)) + maxLevel, 0.0)),
+      : table((1 << (maxLevel + 1)) + maxLevel),
         maxLevel(maxLevel) {
       size_t k = 0;
       IT hInv = 1;

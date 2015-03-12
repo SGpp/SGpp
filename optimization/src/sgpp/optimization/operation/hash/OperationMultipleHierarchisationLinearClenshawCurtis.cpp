@@ -16,49 +16,64 @@ namespace SGPP {
   namespace optimization {
 
     void OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
-      std::vector<base::DataVector*> nodeValues) {
+      base::DataVector& nodeValues) {
       HierarchisationSLE system(grid);
       sle_solver::Auto solver;
-      std::vector<std::vector<float_t>> B;
-      std::vector<std::vector<float_t>> X;
-
-      for (size_t i = 0; i < nodeValues.size(); i++) {
-        B.push_back(
-          std::vector<float_t>(
-            nodeValues[i]->getPointer(),
-            nodeValues[i]->getPointer() + nodeValues[i]->getSize()));
-      }
-
-      if (solver.solve(system, B, X)) {
-        for (size_t i = 0; i < nodeValues.size(); i++) {
-          std::copy(X[i].begin(), X[i].begin() + nodeValues[i]->getSize(),
-                    nodeValues[i]->getPointer());
-        }
-      }
+      base::DataVector b(nodeValues);
+      solver.solve(system, b, nodeValues);
     }
 
     void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
-      std::vector<base::DataVector*> alpha) {
-      base::GridStorage* storage = grid.getStorage();
-      const size_t d = storage->dim();
-      base::OperationNaiveEvalLinearClenshawCurtis op_eval(storage);
-      std::vector<float_t> nodeValuesVector(storage->size(), 0.0);
-      std::vector<float_t> x(d, 0.0);
+      base::DataVector& alpha) {
+      base::GridStorage& storage = *grid.getStorage();
+      const size_t d = storage.dim();
+      base::OperationNaiveEvalLinearClenshawCurtis opNaiveEval(&storage);
+      base::DataVector nodeValues(storage.size());
+      base::DataVector x(d, 0.0);
 
-      for (size_t i = 0; i < storage->size(); i++) {
-        for (size_t j = 0; j < storage->size(); j++) {
-          base::GridIndex* gp = storage->get(j);
+      for (size_t j = 0; j < storage.size(); j++) {
+        const base::GridIndex& gp = *storage.get(j);
 
-          for (size_t t = 0; t < d; t++) {
-            x[t] = gp->getCoord(t);
-          }
-
-          nodeValuesVector[j] = op_eval.eval(*alpha[i], x);
+        for (size_t t = 0; t < d; t++) {
+          x[t] = gp.getCoord(t);
         }
 
-        std::copy(nodeValuesVector.begin(),
-                  nodeValuesVector.begin() + alpha[i]->getSize(),
-                  alpha[i]->getPointer());
+        nodeValues[j] = opNaiveEval.eval(alpha, x);
+      }
+
+      alpha.resize(storage.size());
+      alpha = nodeValues;
+    }
+
+    void OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
+      std::vector<base::DataVector>& nodeValues) {
+      HierarchisationSLE system(grid);
+      sle_solver::Auto solver;
+      std::vector<base::DataVector> B(nodeValues);
+      solver.solve(system, B, nodeValues);
+    }
+
+    void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
+      std::vector<base::DataVector>& alpha) {
+      base::GridStorage& storage = *grid.getStorage();
+      const size_t d = storage.dim();
+      base::OperationNaiveEvalLinearClenshawCurtis opNaiveEval(&storage);
+      base::DataVector nodeValues(storage.size(), 0.0);
+      base::DataVector x(d, 0.0);
+
+      for (size_t i = 0; i < storage.size(); i++) {
+        for (size_t j = 0; j < storage.size(); j++) {
+          const base::GridIndex& gp = storage.get(j);
+
+          for (size_t t = 0; t < d; t++) {
+            x[t] = gp.getCoord(t);
+          }
+
+          nodeValues[j] = opNaiveEval.eval(alpha[i], x);
+        }
+
+        alpha[i].resize(storage.size());
+        alpha[i] = nodeValues;
       }
     }
 

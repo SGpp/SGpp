@@ -17,13 +17,13 @@ namespace SGPP {
     namespace sle_solver {
 
       bool GaussianElimination::solve(SLE& system,
-                                      const std::vector<float_t>& b,
-                                      std::vector<float_t>& x) const {
+                                      base::DataVector& b,
+                                      base::DataVector& x) const {
         printer.printStatusBegin(
           "Solving linear system (Gaussian elimination)...");
 
         // size of the system
-        const size_t n = b.size();
+        const size_t n = b.getSize();
         // working matrix
         base::DataMatrix W(n, n + 1);
 
@@ -102,11 +102,8 @@ namespace SGPP {
         }
 
         // x is the last column (right side of the augmented matrix)
-        x = std::vector<float_t>(n);
-
-        for (size_t j = 0; j < n; j++) {
-          x[j] = W.get(j, n);
-        }
+        x.resize(n);
+        W.getColumn(n, x);
 
         printer.printStatusUpdate("k = " + std::to_string(n));
         printer.printStatusEnd();

@@ -52,26 +52,21 @@ namespace SGPP {
       inline bool lineSearchArmijo(ObjectiveFunction& f, float_t beta,
                                    float_t gamma,
                                    float_t tol, float_t eps,
-                                   const std::vector<float_t>& x, float_t fx,
+                                   const base::DataVector& x, float_t fx,
                                    base::DataVector& gradFx,
-                                   const std::vector<float_t>& s,
-                                   std::vector<float_t>& y) {
-        const size_t d = x.size();
+                                   const base::DataVector& s,
+                                   base::DataVector& y) {
+        const size_t d = x.getSize();
         float_t sigma = 1.0;
-        float_t ip = 0.0;
+        const float_t ip = gradFx.dotProduct(s);
         float_t fy = fx;
-
-        // inner product between grad_fx and s
-        for (size_t t = 0; t < d; t++) {
-          ip += gradFx[t] * s[t];
-        }
 
         for (size_t k = 0; k < 100; k++) {
           bool y_in_domain = true;
 
           // calculate new point
           for (size_t t = 0; t < d; t++) {
-            y[t] = x[t] + sigma * s[t];
+            y[t] = x.get(t) + sigma * s.get(t);
 
             if ((y[t] < 0.0) || (y[t] > 1.0)) {
               y_in_domain = false;

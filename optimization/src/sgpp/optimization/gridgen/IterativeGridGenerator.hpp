@@ -6,12 +6,12 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
 
-#include <vector>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/function/ObjectiveFunction.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 namespace SGPP {
@@ -32,7 +32,7 @@ namespace SGPP {
          */
         IterativeGridGenerator(ObjectiveFunction& f,
                                base::Grid& grid, size_t N) :
-          f(f), grid(grid), N(N) {
+          f(f), grid(grid), N(N), functionValues(0) {
         }
 
         /**
@@ -58,7 +58,7 @@ namespace SGPP {
         /**
          * @return vector of function values at the grid points
          */
-        const std::vector<float_t>& getFunctionValues() const {
+        const base::DataVector& getFunctionValues() const {
           return functionValues;
         }
 
@@ -70,7 +70,7 @@ namespace SGPP {
         /// maximal number of grid points
         size_t N;
         /// vector of function values at the grid points
-        std::vector<float_t> functionValues;
+        base::DataVector functionValues;
     };
 
   }

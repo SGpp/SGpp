@@ -13,7 +13,6 @@
 #include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
 #include <sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp>
 
-#include <vector>
 #include <utility>
 #include <iostream>
 
@@ -59,7 +58,7 @@ namespace SGPP {
             DataVector privateResult(result.getSize());
             privateResult.setAll(0.0);
 
-            std::vector<float_t> line;
+            DataVector line(x.getNcols());
             AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
 
             privateResult.setAll(0.0);
@@ -100,7 +99,7 @@ namespace SGPP {
 
           #pragma omp parallel
           {
-            std::vector<float_t> line;
+            DataVector line(x.getNcols());
             AlgorithmEvaluation<BASIS> AlgoEval(storage);
 
             #pragma omp for schedule (static)

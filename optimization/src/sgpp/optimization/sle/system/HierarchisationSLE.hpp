@@ -30,7 +30,6 @@
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 
-#include <vector>
 #include <cstddef>
 #include <cstring>
 #include <stdexcept>

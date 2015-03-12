@@ -46,14 +46,15 @@ class TestTools(unittest.TestCase):
             
             self.gridEqualityTest(grid1, grid2)
             
-            functionValues1 = [random.uniform(0.0, 1.0)
-                               for k in range(grid1.getStorage().size())]
+            functionValues1 = pysgpp.DataVector(
+                    [random.uniform(0.0, 1.0)
+                     for k in range(grid1.getStorage().size())])
             
             with tempfile.NamedTemporaryFile() as f:
                 pysgpp.OptFileIOWriteGrid(f.name, grid1.getStorage(),
                                           functionValues1)
                 grid2 = pysgpp.Grid.createLinearGrid(d)
-                functionValues2 = pysgpp.DoubleVector()
+                functionValues2 = pysgpp.DataVector(0)
                 pysgpp.OptFileIOReadGrid(f.name, grid2.getStorage(),
                                          functionValues2)
             
@@ -138,14 +139,6 @@ class TestTools(unittest.TestCase):
         self.assertEqual(len(v1), len(v2))
         for i in range(n):
             self.assertEqual(v1[i], v2[i])
-    
-    def testPermuter(self):
-        """Test SGPP::optimization::Permuter."""
-        a = [5.7, 6.9, 4.2, 3.7]
-        permuter = pysgpp.OptPermuter(a)
-        for i in range(len(a)):
-            for j in range(len(a)):
-                self.assertEqual(permuter(i, j), a[i] < a[j])
     
     def testRandomNumberGenerator(self):
         """Test SGPP::optimization::RandomNumberGenerator."""

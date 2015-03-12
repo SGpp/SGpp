@@ -73,7 +73,6 @@
 
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
-#include <sgpp/optimization/tools/Permuter.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/tools/ScopedLock.hpp>

@@ -29,19 +29,19 @@ namespace SGPP {
         alpha(restartThreshold) {
       }
 
-      float_t NLCG::optimize(std::vector<float_t>& xOpt) {
+      float_t NLCG::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (NLCG)...");
 
         const size_t d = f.getDimension();
-        std::vector<float_t> x(x0);
+        base::DataVector x(x0);
         float_t fx;
         float_t fy;
 
         base::DataVector gradFx(d);
         base::DataVector gradFy(d);
-        std::vector<float_t> s(d, 0.0);
-        std::vector<float_t> sNormalized(d, 0.0);
-        std::vector<float_t> y(d, 0.0);
+        base::DataVector s(d);
+        base::DataVector sNormalized(d);
+        base::DataVector y(d);
         size_t k;
 
         fx = fGradient.evalGradient(x0, gradFx);
@@ -60,11 +60,10 @@ namespace SGPP {
           }
 
           // normalize search direction
-          float_t s_norm = std::sqrt(std::inner_product(s.begin(), s.end(),
-                                     s.begin(), 0.0));
+          const float_t sNorm = s.l2Norm();
 
           for (size_t t = 0; t < d; t++) {
-            sNormalized[t] = s[t] / s_norm;
+            sNormalized[t] = s[t] / sNorm;
           }
 
           // line search
@@ -109,6 +108,7 @@ namespace SGPP {
           gradFxNorm = gradFyNorm;
         }
 
+        xOpt.resize(d);
         xOpt = x;
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +

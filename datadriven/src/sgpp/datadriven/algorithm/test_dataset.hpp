@@ -40,7 +40,7 @@ namespace SGPP {
       {
         size_t size = data.getNrows();
 
-        std::vector<float_t> point;
+        base::DataVector point(data.getNcols());
 
         base::GetAffectedBasisFunctions<BASIS> ga(storage);
 
@@ -89,7 +89,7 @@ namespace SGPP {
       #pragma omp parallel shared(result)
       {
         size_t size = data.getNrows();
-        std::vector<float_t> point;
+        base::DataVector point(data.getNcols());
         base::GetAffectedBasisFunctions<BASIS> ga(storage);
 
         #pragma omp for schedule(static)
@@ -144,7 +144,7 @@ namespace SGPP {
       {
         size_t size = data.getNrows();
 
-        std::vector<float_t> point;
+        base::DataVector point(data.getNcols());
 
         base::GetAffectedBasisFunctions<BASIS> ga(storage);
 

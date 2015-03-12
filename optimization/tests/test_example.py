@@ -55,7 +55,7 @@ class TestExample(unittest.TestCase):
             
             for i in range(100):
                 # don't go near the boundary (should suffice)
-                x = pysgpp.DoubleVector([random.uniform(0.2, 0.8) for t in range(d)])
+                x = pysgpp.DataVector([random.uniform(0.2, 0.8) for t in range(d)])
                 # test infinity norm of difference roughly
                 self.assertLess(abs(f.eval(x) - ft.eval(x)), 0.25)
             
@@ -74,13 +74,13 @@ class TestExample(unittest.TestCase):
                           pysgpp.OptDifferentialEvolution(ft)]
             
             for optimizer in optimizers:
-                xopt = pysgpp.DoubleVector()
+                xopt = pysgpp.DataVector(0)
                 fopt = optimizer.optimize(xopt)
                 self.assertEqual(len(xopt), d)
                 # test distance of xopt in infinity norm
                 for t in range(d): self.assertLessEqual(abs(xopt[t] - real_xopt[t]), 0.1)
                 # test optimal function value
                 self.assertAlmostEqual(fopt,
-                        optimizer.getObjectiveFunction().eval(pysgpp.DoubleVector(xopt)))
+                        optimizer.getObjectiveFunction().eval(pysgpp.DataVector(xopt)))
                 # allow 1% deviation of difference global maximum/minimum
                 self.assertLessEqual(fopt - real_fopt, function_range / 100.0) 

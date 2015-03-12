@@ -18,17 +18,17 @@ namespace SGPP {
       void writeGrid(const std::string& filename,
                      const base::GridStorage& gridStorage) {
         const size_t N = gridStorage.size();
-        const std::vector<float_t> functionValues(N, 0.0);
+        const base::DataVector functionValues(N, 0.0);
         writeGrid(filename, gridStorage, functionValues);
       }
 
       void writeGrid(const std::string& filename,
                      const base::GridStorage& gridStorage,
-                     const std::vector<float_t>& functionValues) {
+                     const base::DataVector& functionValues) {
         const size_t N = gridStorage.size();
         const size_t d = gridStorage.dim();
 
-        if (functionValues.size() != N) {
+        if (functionValues.getSize() != N) {
           throw std::invalid_argument("functionValues must have as many "
                                       "elements as there are grid "
                                       "points in gridStorage.");
@@ -43,10 +43,10 @@ namespace SGPP {
         f.write(reinterpret_cast<const char*>(&d), sizeof(d));
 
         for (size_t j = 0; j < N; j++) {
-          base::GridIndex& gp = *gridStorage.get(j);
+          const base::GridIndex& gp = *gridStorage.get(j);
 
           for (size_t t = 0; t < d; t++) {
-            float_t x = gp.getCoord(t);
+            const float_t x = gp.getCoord(t);
             base::GridIndex::level_type l = gp.getLevel(t);
             base::GridIndex::index_type i = gp.getIndex(t);
 
@@ -57,20 +57,20 @@ namespace SGPP {
           }
 
           // function value at the current grid point
-          f.write(reinterpret_cast<const char*>(&functionValues[j]),
-                  sizeof(float_t));
+          const float_t fX = functionValues.get(j);
+          f.write(reinterpret_cast<const char*>(&fX), sizeof(float_t));
         }
       }
 
       void readGrid(const std::string& filename,
                     base::GridStorage& gridStorage) {
-        std::vector<float_t> functionValues;
+        base::DataVector functionValues(0);
         readGrid(filename, gridStorage, functionValues);
       }
 
       void readGrid(const std::string& filename,
                     base::GridStorage& gridStorage,
-                    std::vector<float_t>& functionValues) {
+                    base::DataVector& functionValues) {
         std::ifstream f;
         f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         f.open(filename.c_str(), std::ios::in | std::ios::binary);
@@ -80,25 +80,24 @@ namespace SGPP {
         f.read(reinterpret_cast<char*>(&d), sizeof(d));
 
         gridStorage.emptyStorage();
-        functionValues.clear();
-
+        functionValues.resize(N);
         base::GridIndex gp(d);
-        float_t x;
-        base::GridIndex::level_type l;
-        base::GridIndex::index_type i;
-        float_t functionValue;
 
         for (size_t j = 0; j < N; j++) {
           for (size_t t = 0; t < d; t++) {
+            float_t x;
+            base::GridIndex::level_type l;
+            base::GridIndex::index_type i;
             f.read(reinterpret_cast<char*>(&x), sizeof(x));
             f.read(reinterpret_cast<char*>(&l), sizeof(l));
             f.read(reinterpret_cast<char*>(&i), sizeof(i));
             gp.set(t, l, i);
           }
 
+          float_t functionValue;
           f.read(reinterpret_cast<char*>(&functionValue), sizeof(functionValue));
           gridStorage.insert(gp);
-          functionValues.push_back(functionValue);
+          functionValues[j] = functionValue;
         }
       }
 

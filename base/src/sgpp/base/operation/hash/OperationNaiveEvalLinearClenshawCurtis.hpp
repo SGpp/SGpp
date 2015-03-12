@@ -38,7 +38,7 @@ namespace SGPP {
          * @param point     evaluation point
          * @return          value of linear combination
          */
-        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point);
+        virtual float_t eval(DataVector& alpha, DataVector& point);
 
       protected:
         /// storage of the sparse grid

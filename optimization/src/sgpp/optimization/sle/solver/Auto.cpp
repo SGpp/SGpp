@@ -41,14 +41,13 @@ namespace SGPP {
         }
       }
 
-      bool Auto::solve(SLE& system, const std::vector<float_t>& b,
-                       std::vector<float_t>& x) const {
-        std::vector<std::vector<float_t>> B;
-        std::vector<std::vector<float_t>> X;
-        B.push_back(b);
-        X.push_back(x);
+      bool Auto::solve(SLE& system, base::DataVector& b,
+                       base::DataVector& x) const {
+        std::vector<base::DataVector> B = {b};
+        std::vector<base::DataVector> X = {x};
 
         if (solve(system, B, X)) {
+          x.resize(X[0].getSize());
           x = X[0];
           return true;
         } else {
@@ -56,8 +55,8 @@ namespace SGPP {
         }
       }
 
-      bool Auto::solve(SLE& system, const std::vector<std::vector<float_t>>& B,
-                       std::vector<std::vector<float_t>>& X) const {
+      bool Auto::solve(SLE& system, std::vector<base::DataVector>& B,
+                       std::vector<base::DataVector>& X) const {
         printer.printStatusBegin(
           "Solving linear system (automatic method)...");
 

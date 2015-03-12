@@ -32,7 +32,7 @@ namespace SGPP {
          */
         virtual ~OperationEvalPrewavelet() {}
 
-        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point);
+        virtual float_t eval(DataVector& alpha, DataVector& point);
         virtual float_t test(DataVector& alpha, DataVector& data, DataVector& classes);
         virtual float_t integrate(DataVector& alpha);
 

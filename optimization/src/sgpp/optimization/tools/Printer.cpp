@@ -6,8 +6,9 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/optimization/tools/ScopedLock.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
 
@@ -170,7 +171,7 @@ namespace SGPP {
     void Printer::printIterativeGridGenerator(
       const IterativeGridGenerator& grid_gen) const {
       base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
-      const std::vector<float_t>& functionValues =
+      const base::DataVector& functionValues =
         grid_gen.getFunctionValues();
 
       for (size_t i = 0; i < gridStorage.size(); i++) {
@@ -179,7 +180,7 @@ namespace SGPP {
         }
 
         // print grid point and function value
-        std::cout << *gridStorage.get(i) << ", " << functionValues[i];
+        std::cout << *gridStorage.get(i) << ", " << functionValues.get(i);
       }
     }
 

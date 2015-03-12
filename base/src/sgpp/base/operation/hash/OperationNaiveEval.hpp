@@ -24,8 +24,6 @@ namespace SGPP {
      * In contrast to OperationEval, implementations of OperationNaiveEval should
      * use a "naive" method for evaluating sparse grid functions, e.g. evaluate
      * all basis functions by brute force.
-     *
-     * @todo (pflueged) Use eval(DataVector& alpha, DataVector& point) as default
      */
     class OperationNaiveEval {
       public:
@@ -45,7 +43,10 @@ namespace SGPP {
          * @param alpha The coefficients of the sparse grid's basis functions
          * @param point The coordinates of the evaluation point
          */
-        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point) = 0;
+        float_t eval(DataVector& alpha, std::vector<float_t>& point) {
+          DataVector p(point);
+          return eval(alpha, p);
+        }
 
         /**
          * Evaluates the sparse grid function at a given point.
@@ -53,15 +54,7 @@ namespace SGPP {
          * @param alpha The coefficients of the sparse grid's basis functions
          * @param point The coordinates of the evaluation point
          */
-        float_t eval(DataVector& alpha, DataVector& point) {
-          std::vector<float_t> p;
-
-          for (size_t i = 0; i < point.getSize(); i++) {
-            p.push_back(point[i]);
-          }
-
-          return eval(alpha, p);
-        }
+        virtual float_t eval(DataVector& alpha, DataVector& point) = 0;
     };
 
   }
