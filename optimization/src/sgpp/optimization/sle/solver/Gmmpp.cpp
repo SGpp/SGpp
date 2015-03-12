@@ -40,11 +40,13 @@ namespace SGPP {
        * @return          whether all went well (false if errors occurred)
        */
       bool solveInternal(const gmm::csr_matrix<float_t>& A,
-                         const std::vector<float_t>& b,
-                         std::vector<float_t>& x) {
+                         base::DataVector& b,
+                         base::DataVector& x) {
         // allow warnings
         gmm::warning_level::level(1);
-        x.assign(b.size(), 0.0);
+        const size_t n = b.getSize();
+        std::vector<float_t> bVec(b.getPointer(), b.getPointer() + n);
+        std::vector<float_t> xVec(n, 0.0);
 
         // ILU preconditioning
         printer.printStatusUpdate("constructing preconditioner");
@@ -58,12 +60,13 @@ namespace SGPP {
 
         try {
           // call GMRES
-          gmm::gmres(A, x, b, P, 50, iter);
+          gmm::gmres(A, xVec, bVec, P, 50, iter);
 
           float_t res = iter.get_res();
 
           if (iter.converged() && (res < 1e3)) {
             // GMRES converged
+            x = base::DataVector(xVec);
             printer.printStatusUpdate(
               "solving with Gmm++ (k = " +
               std::to_string(iter.get_iteration()) +
@@ -80,10 +83,11 @@ namespace SGPP {
             printer.printStatusNewLine();
 
             // call GMRES again
-            gmm::gmres(A, x, b, P, 50, iter);
+            gmm::gmres(A, xVec, bVec, P, 50, iter);
             res = iter.get_res();
 
             if (iter.converged() && (res < 1e3)) {
+              x = base::DataVector(xVec);
               printer.printStatusUpdate(
                 "solving with Gmm++ (k = " +
                 std::to_string(iter.get_iteration()) +
@@ -106,8 +110,8 @@ namespace SGPP {
       }
 #endif /* USEGMMPP */
 
-      bool Gmmpp::solve(SLE& system, const std::vector<float_t>& b,
-                        std::vector<float_t>& x) const {
+      bool Gmmpp::solve(SLE& system, base::DataVector& b,
+                        base::DataVector& x) const {
 #ifdef USEGMMPP
         printer.printStatusBegin("Solving linear system (Gmm++)...");
 
@@ -182,6 +186,7 @@ namespace SGPP {
           printer.printStatusNewLine();
         }
 
+        x.resize(n);
         bool result = solveInternal(A2, b, x);
         return result;
 #else

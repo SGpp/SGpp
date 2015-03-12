@@ -28,12 +28,22 @@ namespace SGPP {
       public:
         /**
          * Create a two-dimensional DataMatrix with @em nrows rows and
-         * @em ncols columns.
+         * @em ncols columns (uninitialized values).
          *
          * @param nrows Number of rows
          * @param ncols Number of columns
          */
         DataMatrix(size_t nrows, size_t ncols);
+
+        /**
+         * Create a two-dimensional DataMatrix with @em nrows rows and
+         * @em ncols columns and initializes all elements with the same value.
+         *
+         * @param nrows Number of rows
+         * @param ncols Number of columns
+         * @param value Value for all entries
+         */
+        DataMatrix(size_t nrows, size_t ncols, float_t value);
 
         /**
          * Create a new DataMatrix that is a copy of matr.
@@ -200,7 +210,7 @@ namespace SGPP {
          * @param row The row
          * @param vec DataVector into which the data is written
          */
-        void getRow(size_t row, DataVector& vec);
+        void getRow(size_t row, DataVector& vec) const;
 
         /**
          * Copies the values of a row to the std::vector vec.
@@ -208,7 +218,7 @@ namespace SGPP {
          * @param row The row
          * @param vec std::vector into which the data is written
          */
-        void getRow(size_t row, std::vector<float_t>& vec);
+        void getRow(size_t row, std::vector<float_t>& vec) const;
 
         /**
          * Sets a row of the DataMatrix to the values of a DataVector vec.
@@ -216,7 +226,7 @@ namespace SGPP {
          * @param row The row which is to be overwritten
          * @param vec DataVector containing the data of the row
          */
-        void setRow(size_t row, DataVector& vec);
+        void setRow(size_t row, const DataVector& vec);
 
         /**
            * Copies the values of a column to the DataVector vec.
@@ -224,7 +234,7 @@ namespace SGPP {
          * @param col The column
          * @param vec DataVector into which the data is written
          */
-        void getColumn(size_t col, DataVector& vec);
+        void getColumn(size_t col, DataVector& vec) const;
 
         /**
            * Sets a column of the DataMatrix to the values of a DataVector vec.
@@ -232,7 +242,7 @@ namespace SGPP {
          * @param col The column which is to be overwritten
          * @param vec DataVector containing the data of the column
          */
-        void setColumn(size_t col, DataVector& vec);
+        void setColumn(size_t col, const DataVector& vec);
 
 
         /**
@@ -332,7 +342,7 @@ namespace SGPP {
          *
          * @return The sum of all elements
          */
-        float_t sum();
+        float_t sum() const;
 
         /**
          * Returns the minimum value of column col.
@@ -341,14 +351,14 @@ namespace SGPP {
          *
          * @return Minimum value
          */
-        float_t min(size_t col);
+        float_t min(size_t col) const;
 
         /**
         * Returns the minimum over all entries.
         *
         * @return Minimal value of all entries
         */
-        float_t min();
+        float_t min() const;
 
         /**
         * Returns the maximum value of column col.
@@ -357,14 +367,14 @@ namespace SGPP {
         *
         * @return Maximum value
         */
-        float_t max(size_t col);
+        float_t max(size_t col) const;
 
         /**
         * Returns the maximum over all entries.
         *
         * @return Maximal value of all entries
         */
-        float_t max();
+        float_t max() const;
 
         /**
         * Determines minimum and maximum of column col.
@@ -373,7 +383,7 @@ namespace SGPP {
         * @param min Reference variable for the minimum
         * @param max Reference variable for the maximum
         */
-        void minmax(size_t col, float_t* min, float_t* max);
+        void minmax(size_t col, float_t* min, float_t* max) const;
 
         /**
          * Determines minimum and maximum over all entries.
@@ -381,7 +391,7 @@ namespace SGPP {
          * @param min Reference variable for the minimum
          * @param max Reference variable for the maximum
          */
-        void minmax(float_t* min, float_t* max);
+        void minmax(float_t* min, float_t* max) const;
 
 
         /**
@@ -396,7 +406,7 @@ namespace SGPP {
          *
          * @return Number of elements stored in the matrix
          */
-        inline size_t getSize() {
+        inline size_t getSize() const {
           return ncols * nrows;
         };
 
@@ -405,7 +415,7 @@ namespace SGPP {
          *
          * @return number of unused rows
          */
-        inline size_t getUnused() {
+        inline size_t getUnused() const {
           return unused;
         };
 
@@ -414,7 +424,7 @@ namespace SGPP {
         *
         * @return The number of non-zero elements
         */
-        size_t getNumberNonZero();
+        size_t getNumberNonZero() const;
 
         /**
          * Returns the number of rows of the DataMatrix.
@@ -481,14 +491,14 @@ namespace SGPP {
         *
         * @param text String to which the data is written
         */
-        void toString(std::string& text);
+        void toString(std::string& text) const;
 
         /**
         * Returns a description of the DataMatrix as a string.
         *
         * @returns string of the DataMatrix
         */
-        std::string toString();
+        std::string toString() const;
 
         /**
         * Destructor

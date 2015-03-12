@@ -18,17 +18,17 @@ class TestExample(unittest.TestCase):
         pysgpp.omp_set_num_threads(1)
     
     def testExample(self):
-        """Test full example similar to example_optimization.cpp."""
+        """Test full example similar to c++_example.cpp."""
         random.seed(42)
         d = 2
         p = 3
         N = 100
         
         # test two simple objective functions
-        fs = [objective_functions.TitleFunction(), pysgpp.OptSphere(d)]
-        f_gradients = [objective_functions.TitleFunctionGradient(), objective_functions.SphereFunctionGradient(d)]
-        f_hessians = [objective_functions.TitleFunctionHessian(), objective_functions.SphereFunctionHessian(d)]
-        # minimas
+        fs = [objective_functions.ExampleFunction(), pysgpp.OptSphere(d)]
+        f_gradients = [objective_functions.ExampleFunctionGradient(), objective_functions.SphereFunctionGradient(d)]
+        f_hessians = [objective_functions.ExampleFunctionHessian(), objective_functions.SphereFunctionHessian(d)]
+        # minima
         real_xopts = [[3.0/16.0 * math.pi, 3.0/14.0 * math.pi], [0.1, 0.1]]
         real_fopts = [-2.0, 0.0]
         # difference of global maximum/minimum
@@ -55,7 +55,7 @@ class TestExample(unittest.TestCase):
             
             for i in range(100):
                 # don't go near the boundary (should suffice)
-                x = pysgpp.DoubleVector([random.uniform(0.2, 0.8) for t in range(d)])
+                x = pysgpp.DataVector([random.uniform(0.2, 0.8) for t in range(d)])
                 # test infinity norm of difference roughly
                 self.assertLess(abs(f.eval(x) - ft.eval(x)), 0.25)
             
@@ -74,13 +74,13 @@ class TestExample(unittest.TestCase):
                           pysgpp.OptDifferentialEvolution(ft)]
             
             for optimizer in optimizers:
-                xopt = pysgpp.DoubleVector()
+                xopt = pysgpp.DataVector(0)
                 fopt = optimizer.optimize(xopt)
                 self.assertEqual(len(xopt), d)
                 # test distance of xopt in infinity norm
                 for t in range(d): self.assertLessEqual(abs(xopt[t] - real_xopt[t]), 0.1)
                 # test optimal function value
                 self.assertAlmostEqual(fopt,
-                        optimizer.getObjectiveFunction().eval(pysgpp.DoubleVector(xopt)))
+                        optimizer.getObjectiveFunction().eval(pysgpp.DataVector(xopt)))
                 # allow 1% deviation of difference global maximum/minimum
                 self.assertLessEqual(fopt - real_fopt, function_range / 100.0) 

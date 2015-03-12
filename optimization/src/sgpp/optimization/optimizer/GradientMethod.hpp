@@ -25,13 +25,13 @@ namespace SGPP {
           /// default maximal number of iterations
           static const size_t DEFAULT_MAX_IT_COUNT = 2000;
           /// default beta (parameter for Armijo's rule)
-          static const float_t DEFAULT_BETA;
+          static constexpr float_t DEFAULT_BETA = 0.5;
           /// default gamma (parameter for Armijo's rule)
-          static const float_t DEFAULT_GAMMA;
+          static constexpr float_t DEFAULT_GAMMA = 1e-2;
           /// default tolerance (parameter for Armijo's rule)
-          static const float_t DEFAULT_TOLERANCE;
+          static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
           /// default epsilon (parameter for Armijo's rule)
-          static const float_t DEFAULT_EPSILON;
+          static constexpr float_t DEFAULT_EPSILON = 1e-18;
 
           /**
            * Constructor.
@@ -44,8 +44,8 @@ namespace SGPP {
            * @param tolerance     tolerance (parameter for Armijo's rule)
            * @param epsilon       epsilon (parameter for Armijo's rule)
            */
-          GradientMethod(const ObjectiveFunction& f,
-                         const ObjectiveGradient& fGradient,
+          GradientMethod(ObjectiveFunction& f,
+                         ObjectiveGradient& fGradient,
                          size_t maxItCount = DEFAULT_MAX_IT_COUNT,
                          float_t beta = DEFAULT_BETA,
                          float_t gamma = DEFAULT_GAMMA,
@@ -56,12 +56,7 @@ namespace SGPP {
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */
-          float_t optimize(std::vector<float_t>& xOpt);
-
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
+          float_t optimize(base::DataVector& xOpt);
 
           /**
            * @return objective function gradient
@@ -110,7 +105,7 @@ namespace SGPP {
 
         protected:
           /// objective function gradient
-          std::unique_ptr<ObjectiveGradient> fGradient;
+          ObjectiveGradient& fGradient;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)

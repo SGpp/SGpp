@@ -44,9 +44,7 @@ namespace SGPP {
       template <>
       void writeEntry(std::ofstream& f, const std::string& entry) {
         // write string terminated by null character
-        const char null_char[1] = {'\0'};
-        f << entry;
-        f.write(null_char, 1);
+        f << entry << '\0';
       }
 
       /**
@@ -189,7 +187,7 @@ namespace SGPP {
        */
       void writeGrid(const std::string& filename,
                      const base::GridStorage& gridStorage,
-                     const std::vector<float_t>& functionValues);
+                     const base::DataVector& functionValues);
 
       /**
        * Read a grid (only grid points) from a file.
@@ -211,7 +209,7 @@ namespace SGPP {
        */
       void readGrid(const std::string& filename,
                     base::GridStorage& gridStorage,
-                    std::vector<float_t>& functionValues);
+                    base::DataVector& functionValues);
 
       /**
        * Write a base::DataMatrix to a file.

@@ -12,65 +12,45 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t DifferentialEvolution::DEFAULT_CROSSOVER_PROBABILITY = 0.5;
-      const float_t DifferentialEvolution::DEFAULT_SCALING_FACTOR = 0.6;
-      const float_t DifferentialEvolution::DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
-      const float_t DifferentialEvolution::DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
-
-      DifferentialEvolution::DifferentialEvolution(const ObjectiveFunction& f,
+      DifferentialEvolution::DifferentialEvolution(ObjectiveFunction& f,
           size_t maxFcnEvalCount, size_t populationSize,
           float_t crossoverProbability, float_t scalingFactor,
           size_t idleGenerationsCount, float_t avgImprovementThreshold,
           float_t maxDistanceThreshold) :
-        Optimizer(f, maxFcnEvalCount) {
-        initialize(populationSize, crossoverProbability, scalingFactor,
-                   idleGenerationsCount, avgImprovementThreshold,
-                   maxDistanceThreshold);
+        Optimizer(f, maxFcnEvalCount),
+        populationSize((populationSize > 0) ? populationSize :
+                       10 * f.getDimension()),
+        crossoverProbability(crossoverProbability),
+        scalingFactor(scalingFactor),
+        idleGenerationsCount(idleGenerationsCount),
+        avgImprovementThreshold(avgImprovementThreshold),
+        maxDistanceThreshold(maxDistanceThreshold) {
       }
 
-      void DifferentialEvolution::initialize(
-        size_t populationSize,
-        float_t crossoverProbability,
-        float_t scalingFactor,
-        size_t idleGenerationsCount,
-        float_t avgImprovementThreshold,
-        float_t maxDistanceThreshold) {
-        if (populationSize == 0) {
-          this->populationSize = 10 * f->getDimension();
-        } else {
-          this->populationSize = populationSize;
-        }
-
-        this->crossoverProbability = crossoverProbability;
-        this->scalingFactor = scalingFactor;
-        this->idleGenerationsCount = idleGenerationsCount;
-        this->avgImprovementThreshold = avgImprovementThreshold;
-        this->maxDistanceThreshold = maxDistanceThreshold;
-      }
-
-      float_t DifferentialEvolution::optimize(std::vector<float_t>& xOpt) {
+      float_t DifferentialEvolution::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (differential evolution)...");
 
-        size_t d = f->getDimension();
+        const size_t d = f.getDimension();
 
         // vector of individuals
-        std::vector<std::vector<float_t>> x1(populationSize,
-                                             std::vector<float_t>(d, 0.0));
+        std::vector<base::DataVector> x1(populationSize,
+                                         base::DataVector(d, 0.0));
         // another vector for the new population
-        std::vector<std::vector<float_t>> x2 = x1;
+        std::vector<base::DataVector> x2(x1);
 
         // pointers for swapping both vectors at the end of each iterations
-        std::vector<std::vector<float_t>>* xOld = &x1;
-        std::vector<std::vector<float_t>>* xNew = &x2;
+        std::vector<base::DataVector>* xOld = &x1;
+        std::vector<base::DataVector>* xNew = &x2;
 
         // function values at the points of the populations
         // (no need to swape those)
-        std::vector<float_t> fx(populationSize, 0.0);
+        base::DataVector fx(populationSize);
 
         // initial pseudorandom points
         for (size_t i = 0; i < populationSize; i++) {
@@ -78,7 +58,7 @@ namespace SGPP {
             (*xOld)[i][t] = randomNumberGenerator.getUniformRN();
           }
 
-          fx[i] = f->eval((*xOld)[i]);
+          fx[i] = f.eval((*xOld)[i]);
         }
 
         // smallest function value in the population
@@ -97,9 +77,9 @@ namespace SGPP {
         std::vector<std::vector<size_t>> a(maxK, std::vector<size_t>(
                                              populationSize, 0)),
                                                              b = a, c = a, j = a;
-        std::vector<std::vector<std::vector<float_t>>> prob(maxK,
-            std::vector<std::vector<float_t>>(populationSize,
-                                              std::vector<float_t>(d, 0)));
+        std::vector<std::vector<base::DataVector>> prob(maxK,
+                                                std::vector<base::DataVector>(populationSize,
+                                                    base::DataVector(d, 0)));
 
         // pregenerate all pseudorandom numbers because the
         // real algorithm is parallelized
@@ -138,18 +118,18 @@ namespace SGPP {
           // abbreviations
           const std::vector<size_t>& a_k = a[k], &b_k = b[k], &c_k = c[k];
           const std::vector<size_t>& j_k = j[k];
-          const std::vector<std::vector<float_t>>& prob_k = prob[k];
+          const std::vector<base::DataVector>& prob_k = prob[k];
 
           #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
-          xOld, d, fx, fOpt, xOptIndex, xNew) default(none)
+          xOld, fx, fOpt, xOptIndex, xNew) default(none)
           {
-            std::vector<float_t> y(d, 0.0);
-            ObjectiveFunction* curFPtr = f.get();
+            base::DataVector y(d);
+            ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
             std::unique_ptr<ObjectiveFunction> curF;
 
             if (omp_get_max_threads() > 1) {
-              f->clone(curF);
+              f.clone(curF);
               curFPtr = curF.get();
             }
 
@@ -161,12 +141,12 @@ namespace SGPP {
             for (size_t i = 0; i < populationSize; i++) {
               const size_t& cur_a = a_k[i], &cur_b = b_k[i], &cur_c = c_k[i];
               const size_t& cur_j = j_k[i];
-              const std::vector<float_t>& prob_ki = prob_k[i];
+              const base::DataVector& prob_ki = prob_k[i];
               bool inDomain = true;
 
               // for each dimension
               for (size_t t = 0; t < d; t++) {
-                const float_t& curProb = prob_ki[t];
+                const float_t& curProb = prob_ki.get(t);
 
                 if ((t == cur_j) || (curProb < crossoverProbability)) {
                   // mutate point in this dimension
@@ -266,6 +246,7 @@ namespace SGPP {
         }
 
         // optimal point
+        xOpt.resize(d);
         xOpt = (*xOld)[xOptIndex];
 
         printer.printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
@@ -273,18 +254,6 @@ namespace SGPP {
         printer.printStatusEnd();
 
         return fOpt;
-      }
-
-      void DifferentialEvolution::clone(
-        std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new DifferentialEvolution(
-                                             *f, N, populationSize,
-                                             crossoverProbability,
-                                             scalingFactor,
-                                             idleGenerationsCount,
-                                             avgImprovementThreshold,
-                                             maxDistanceThreshold));
-        clone->setStartingPoint(x0);
       }
 
       size_t DifferentialEvolution::getPopulationSize() const {

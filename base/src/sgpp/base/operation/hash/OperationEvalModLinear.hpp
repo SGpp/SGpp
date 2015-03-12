@@ -34,7 +34,7 @@ namespace SGPP {
          */
         virtual ~OperationEvalModLinear() {}
 
-        virtual float_t eval(DataVector& alpha, std::vector<float_t>& point);
+        virtual float_t eval(DataVector& alpha, DataVector& point);
 
       protected:
         /// Pointer to GridStorage object

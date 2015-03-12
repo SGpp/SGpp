@@ -14,7 +14,7 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationEvalModBspline::eval(DataVector& alpha, std::vector<float_t>& point) {
+    float_t OperationEvalModBspline::eval(DataVector& alpha, DataVector& point) {
       typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
       IndexValVector vec;

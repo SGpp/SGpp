@@ -43,11 +43,11 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^d\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const std::vector<float_t>& x) {
+          float_t evalUndisplaced(const base::DataVector& x) {
             float_t result = 10.0 * static_cast<float_t>(d);
 
             for (size_t t = 0; t < d; t++) {
-              const float_t xt = 10.0 * x[t] - 2.0;
+              const float_t xt = 10.0 * x.get(t) - 2.0;
               result += xt * xt - 10.0 * cos(2 * M_PI * xt);
             }
 
@@ -62,8 +62,9 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(std::vector<float_t>& x) {
-            x = std::vector<float_t>(d, 0.2);
+          float_t getOptimalPointUndisplaced(base::DataVector& x) {
+            x.resize(d);
+            x.setAll(0.2);
             return 0.0;
           }
 

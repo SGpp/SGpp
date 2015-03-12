@@ -23,11 +23,11 @@ namespace SGPP {
           /// maximal matrix dimension to allow use of full solvers
           static const size_t MAX_DIM_FOR_FULL = 30000;
           /// maximal ratio of non-zero entries for sparse solvers
-          static const float_t MAX_NNZ_RATIO_FOR_SPARSE;
+          static constexpr float_t MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
           /// maximal ratio of non-zero entries to prefer Gmm++ over UMFPACK
-          static const float_t MAX_NNZ_RATIO_FOR_GMMPP;
+          static constexpr float_t MAX_NNZ_RATIO_FOR_GMMPP = 0.05;
           /// ratio of the rows (e.g. 0.1 = 10%) to use for sparsity estimation
-          static const float_t ESTIMATE_NNZ_ROWS_SAMPLE_SIZE;
+          static constexpr float_t ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
 
           /**
            * @param       system  system to be solved
@@ -36,8 +36,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, const std::vector<float_t>& b,
-                     std::vector<float_t>& x) const;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
 
           /**
            * @param       system  system to be solved
@@ -46,8 +46,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, const std::vector<std::vector<float_t>>& B,
-                     std::vector<std::vector<float_t>>& X) const;
+          bool solve(SLE& system, std::vector<base::DataVector>& B,
+                     std::vector<base::DataVector>& X) const;
       };
 
     }

@@ -15,35 +15,32 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-      const float_t BiCGStab::DEFAULT_TOLERANCE = 1e-10;
-
       BiCGStab::BiCGStab() :
-        SLESolver(),
-        N(DEFAULT_MAX_IT_COUNT),
-        tol(DEFAULT_TOLERANCE),
-        x0(std::vector<float_t>()) {
+        BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE,
+                 base::DataVector(0)) {
       }
 
       BiCGStab::BiCGStab(size_t maxItCount, float_t tolerance,
-                         const std::vector<float_t>& x0) :
+                         const base::DataVector& x0) :
         SLESolver(),
         N(maxItCount),
         tol(tolerance),
         x0(x0) {
       }
 
-      bool BiCGStab::solve(SLE& system, const std::vector<float_t>& b,
-                           std::vector<float_t>& x) const {
+      bool BiCGStab::solve(SLE& system, base::DataVector& b,
+                           base::DataVector& x) const {
         printer.printStatusBegin("Solving linear system (BiCGStab)...");
 
-        const size_t n = b.size();
-        std::vector<float_t> r(n, 0.0);
+        const size_t n = b.getSize();
+        base::DataVector r(n, 0.0);
 
         if (n == 1) {
           const float_t A = system.getMatrixEntry(0, 0);
 
           if (A != 0.0) {
-            x = std::vector<float_t>(1, b[0] / A);
+            x.resize(1);
+            x[0] = b.get(0) / A;
             printer.printStatusEnd();
             return true;
           } else {
@@ -52,33 +49,34 @@ namespace SGPP {
           }
         }
 
-        if (x0.size() == n) {
+        x.resize(n);
+
+        if (x0.getSize() == n) {
           x = x0;
         } else {
-          x = std::vector<float_t>(n, 0.0);
+          x.setAll(0.0);
         }
 
         system.matrixVectorMultiplication(x, r);
 
         for (size_t i = 0; i < n; i++) {
-          r[i] = b[i] - r[i];
+          r[i] = b.get(i) - r[i];
         }
 
-        std::vector<float_t> r0Hat(r);
+        base::DataVector r0Hat(r);
         float_t rho = 1.0;
         float_t alpha = 1.0;
         float_t omega = 1.0;
-        std::vector<float_t> v(n, 0.0);
-        std::vector<float_t> p(n, 0.0);
-        std::vector<float_t> s(n, 0.0);
-        std::vector<float_t> t(n, 0.0);
+        base::DataVector v(n, 0.0);
+        base::DataVector p(n, 0.0);
+        base::DataVector s(n, 0.0);
+        base::DataVector t(n, 0.0);
         float_t rNormSquared = 0.0;
         size_t k = 0;
 
         for (k = 0; k < N; k++) {
           float_t last_rho = rho;
-          rho = std::inner_product(r0Hat.begin(), r0Hat.end(),
-                                   r.begin(), 0.0);
+          rho = r0Hat.dotProduct(r);
           float_t beta = (rho / last_rho) * (alpha / omega);
 
           for (size_t i = 0; i < n; i++) {
@@ -86,16 +84,14 @@ namespace SGPP {
           }
 
           system.matrixVectorMultiplication(p, v);
-          alpha = rho / std::inner_product(r0Hat.begin(), r0Hat.end(),
-                                           v.begin(), 0.0);
+          alpha = rho / r0Hat.dotProduct(v);
 
           for (size_t i = 0; i < n; i++) {
             s[i] = r[i] - alpha * v[i];
           }
 
           system.matrixVectorMultiplication(s, t);
-          omega = std::inner_product(t.begin(), t.end(), s.begin(), 0.0) /
-                  std::inner_product(t.begin(), t.end(), t.begin(), 0.0);
+          omega = t.dotProduct(s) / t.dotProduct(t);
 
           if (std::isnan(omega)) {
             printer.printStatusEnd("error: could not solve linear system!");
@@ -107,8 +103,7 @@ namespace SGPP {
             r[i] = s[i] - omega * t[i];
           }
 
-          rNormSquared = std::inner_product(r.begin(), r.end(),
-                                            r.begin(), 0.0);
+          rNormSquared = r.dotProduct(r);
 
           printer.printStatusUpdate("k = " + std::to_string(k) +
                                     ", residual norm = " +
@@ -142,12 +137,11 @@ namespace SGPP {
         tol = tolerance;
       }
 
-      const std::vector<float_t>& BiCGStab::getStartingPoint() const {
+      const base::DataVector& BiCGStab::getStartingPoint() const {
         return x0;
       }
 
-      void BiCGStab::setStartingPoint(
-        const std::vector<float_t>& startingPoint) {
+      void BiCGStab::setStartingPoint(const base::DataVector& startingPoint) {
         x0 = startingPoint;
       }
 

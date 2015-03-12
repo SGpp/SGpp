@@ -6,7 +6,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/NelderMead.hpp>
-#include <sgpp/optimization/tools/Permuter.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <algorithm>
@@ -16,13 +15,7 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t NelderMead::DEFAULT_ALPHA = 1.0;
-      const float_t NelderMead::DEFAULT_BETA = 2.0;
-      const float_t NelderMead::DEFAULT_GAMMA = 0.5;
-      const float_t NelderMead::DEFAULT_DELTA = 0.5;
-      const float_t NelderMead::STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
-
-      NelderMead::NelderMead(const ObjectiveFunction& f,
+      NelderMead::NelderMead(ObjectiveFunction& f,
                              size_t maxFcnEvalCount, float_t alpha,
                              float_t beta, float_t gamma, float_t delta) :
         Optimizer(f, maxFcnEvalCount),
@@ -32,31 +25,31 @@ namespace SGPP {
         delta(delta) {
       }
 
-      float_t NelderMead::optimize(std::vector<float_t>& xOpt) {
+      float_t NelderMead::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (Nelder-Mead)...");
 
-        size_t d = f->getDimension();
-        std::vector<std::vector<float_t>> points(d + 1, x0);
-        std::vector<std::vector<float_t>> pointsNew(d + 1, x0);
-        std::vector<float_t> fPoints(d + 1, 0.0);
-        std::vector<float_t> fPointsNew(d + 1, 0.0);
+        const size_t d = f.getDimension();
+        std::vector<base::DataVector> points(d + 1, x0);
+        std::vector<base::DataVector> pointsNew(d + 1, x0);
+        base::DataVector fPoints(d + 1);
+        base::DataVector fPointsNew(d + 1);
 
         // construct starting simplex
         for (size_t t = 0; t < d; t++) {
           points[t + 1][t] = std::min(points[t + 1][t] +
                                       STARTING_SIMPLEX_EDGE_LENGTH,
                                       float_t(1.0));
-          fPoints[t + 1] = f->eval(points[t + 1]);
+          fPoints[t + 1] = f.eval(points[t + 1]);
         }
 
-        fPoints[0] = f->eval(points[0]);
+        fPoints[0] = f.eval(points[0]);
 
         std::vector<size_t> index(d + 1, 0);
-        std::vector<float_t> pointO(d, 0.0);
-        std::vector<float_t> pointR(d, 0.0);
-        std::vector<float_t> pointE(d, 0.0);
-        std::vector<float_t> pointIC(d, 0.0);
-        std::vector<float_t> pointOC(d, 0.0);
+        base::DataVector pointO(d);
+        base::DataVector pointR(d);
+        base::DataVector pointE(d);
+        base::DataVector pointIC(d);
+        base::DataVector pointOC(d);
         size_t k = 0;
         size_t numberOfFcnEvals = d + 1;
 
@@ -66,10 +59,10 @@ namespace SGPP {
             index[i] = i;
           }
 
-          {
-            Permuter<float_t> permuter(fPoints);
-            std::sort(index.begin(), index.end(), permuter);
-          }
+          std::sort(index.begin(), index.end(),
+          [&](size_t a, size_t b) {
+            return (fPoints[a] < fPoints[b]);
+          });
 
           // that could be solved more efficiently, but it suffices for now
           for (size_t i = 0; i < d + 1; i++) {
@@ -100,7 +93,7 @@ namespace SGPP {
             }
           }
 
-          float_t fPointR = (inDomain ? f->eval(pointR) : INFINITY);
+          float_t fPointR = (inDomain ? f.eval(pointR) : INFINITY);
           numberOfFcnEvals++;
 
           if ((fPoints[0] <= fPointR) && (fPointR < fPoints[d - 1])) {
@@ -118,7 +111,7 @@ namespace SGPP {
               }
             }
 
-            float_t f_point_e = (inDomain ? f->eval(pointE) : INFINITY);
+            float_t f_point_e = (inDomain ? f.eval(pointE) : INFINITY);
             numberOfFcnEvals++;
 
             if (f_point_e < fPointR) {
@@ -140,7 +133,7 @@ namespace SGPP {
               }
             }
 
-            float_t fPointOC = (in_domain ? f->eval(pointOC) : INFINITY);
+            float_t fPointOC = (in_domain ? f.eval(pointOC) : INFINITY);
             numberOfFcnEvals++;
 
             if (fPointOC <= fPointR) {
@@ -161,7 +154,7 @@ namespace SGPP {
               }
             }
 
-            float_t fPointIC = (in_domain ? f->eval(pointIC) : INFINITY);
+            float_t fPointIC = (in_domain ? f.eval(pointIC) : INFINITY);
             numberOfFcnEvals++;
 
             if (fPointIC < fPoints[d]) {
@@ -186,7 +179,7 @@ namespace SGPP {
                 }
               }
 
-              fPoints[i] = (in_domain ? f->eval(points[i]) : INFINITY);
+              fPoints[i] = (in_domain ? f.eval(points[i]) : INFINITY);
             }
 
             numberOfFcnEvals += d;
@@ -205,6 +198,7 @@ namespace SGPP {
           k++;
         }
 
+        xOpt.resize(d);
         xOpt = points[0];
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
@@ -212,12 +206,6 @@ namespace SGPP {
         printer.printStatusEnd();
 
         return fPoints[0];
-      }
-
-      void NelderMead::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new NelderMead(*f, N, alpha, beta,
-                                           gamma, delta));
-        clone->setStartingPoint(x0);
       }
 
       float_t NelderMead::getAlpha() const {

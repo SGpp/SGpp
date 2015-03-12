@@ -15,42 +15,36 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      const float_t NLCG::DEFAULT_BETA = 0.5;
-      const float_t NLCG::DEFAULT_GAMMA = 1e-2;
-      const float_t NLCG::DEFAULT_TOLERANCE = 1e-8;
-      const float_t NLCG::DEFAULT_EPSILON = 1e-18;
-      const float_t NLCG::DEFAULT_RESTART_THRESHOLD = 0.1;
-
-      NLCG::NLCG(const ObjectiveFunction& f,
-                 const ObjectiveGradient& fGradient,
+      NLCG::NLCG(ObjectiveFunction& f,
+                 ObjectiveGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon,
                  float_t restartThreshold) :
         Optimizer(f, maxItCount),
+        fGradient(fGradient),
         beta(beta),
         gamma(gamma),
         tol(tolerance),
         eps(epsilon),
         alpha(restartThreshold) {
-        fGradient.clone(this->fGradient);
       }
 
-      float_t NLCG::optimize(std::vector<float_t>& xOpt) {
+      float_t NLCG::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (NLCG)...");
 
-        size_t d = f->getDimension();
-        std::vector<float_t> x(x0);
+        const size_t d = f.getDimension();
+        base::DataVector x(x0);
         float_t fx;
         float_t fy;
 
         base::DataVector gradFx(d);
         base::DataVector gradFy(d);
-        std::vector<float_t> s(d, 0.0);
-        std::vector<float_t> sNormalized(d, 0.0);
-        std::vector<float_t> y(d, 0.0);
+        base::DataVector s(d);
+        base::DataVector sNormalized(d);
+        base::DataVector y(d);
         size_t k;
 
-        fx = fGradient->evalGradient(x0, gradFx);
+        fx = fGradient.evalGradient(x0, gradFx);
         float_t gradFxNorm = gradFx.l2Norm();
         float_t gradFyNorm = 0.0;
 
@@ -66,15 +60,14 @@ namespace SGPP {
           }
 
           // normalize search direction
-          float_t s_norm = std::sqrt(std::inner_product(s.begin(), s.end(),
-                                     s.begin(), 0.0));
+          const float_t sNorm = s.l2Norm();
 
           for (size_t t = 0; t < d; t++) {
-            sNormalized[t] = s[t] / s_norm;
+            sNormalized[t] = s[t] / sNorm;
           }
 
           // line search
-          if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx,
+          if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
                                 gradFx, sNormalized, y)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement achieved is
@@ -83,7 +76,7 @@ namespace SGPP {
           }
 
           // calculate gradient and norm
-          fy = fGradient->evalGradient(y, gradFy);
+          fy = fGradient.evalGradient(y, gradFy);
           gradFyNorm = gradFy.l2Norm();
 
           float_t beta = 0.0;
@@ -115,6 +108,7 @@ namespace SGPP {
           gradFxNorm = gradFyNorm;
         }
 
+        xOpt.resize(d);
         xOpt = x;
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
@@ -124,14 +118,8 @@ namespace SGPP {
         return fx;
       }
 
-      void NLCG::clone(std::unique_ptr<Optimizer>& clone) const {
-        clone = std::unique_ptr<Optimizer>(new NLCG(*f, *fGradient, N, beta,
-                                           gamma, tol, eps, alpha));
-        clone->setStartingPoint(x0);
-      }
-
       ObjectiveGradient& NLCG::getObjectiveGradient() const {
-        return *fGradient;
+        return fGradient;
       }
 
       float_t NLCG::getBeta() const {

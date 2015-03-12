@@ -4,19 +4,17 @@
 // sgpp.sparsegrids.org
 
 #include <cstring>
+#include <iterator>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
-#include <sgpp/optimization/tools/Permuter.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 namespace SGPP {
   namespace optimization {
-
-    const float_t IterativeGridGeneratorRitterNovak::DEFAULT_ALPHA = 0.85;
 
     /**
      * Fast and approximative version of std::pow.
@@ -40,19 +38,19 @@ namespace SGPP {
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
       ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t alpha, size_t maxLevel, PowMethod powMethod) :
+      float_t gamma, size_t maxLevel, PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
-      alpha(alpha),
+      gamma(gamma),
       maxLevel(maxLevel),
       powMethod(powMethod) {
     }
 
-    float_t IterativeGridGeneratorRitterNovak::getAlpha() const {
-      return alpha;
+    float_t IterativeGridGeneratorRitterNovak::getGamma() const {
+      return gamma;
     }
 
-    void IterativeGridGeneratorRitterNovak::setAlpha(float_t alpha) {
-      this->alpha = alpha;
+    void IterativeGridGeneratorRitterNovak::setGamma(float_t gamma) {
+      this->gamma = gamma;
     }
 
     size_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
@@ -90,26 +88,27 @@ namespace SGPP {
 
       // abbreviation (functionValues is a member variable of
       // IterativeGridGenerator)
-      std::vector<float_t>& fX = functionValues;
+      base::DataVector& fX = functionValues;
       // fX_sorted is fX sorted ascendingly
-      std::vector<float_t> fXSorted(currentN, 0);
+      base::DataVector fXSorted(currentN, 0);
       // fX_order fulfills fX_sorted[i] = fX[fX_order[i]]
       std::vector<size_t> fXOrder(currentN, 0);
 
-      fX.assign(std::max(N, currentN), 0.0);
+      fX.resize(std::max(N, currentN));
+      fX.setAll(0.0);
       // degree[i] is the number of times the i-th grid point was
       // chosen for refinement
-      std::vector<size_t> degree(fX.size(), 0);
+      std::vector<size_t> degree(fX.getSize(), 0);
       // level_sum[i] is the 1-norm of the level vector of the i-th grid point
-      std::vector<size_t> levelSum(fX.size(), 0);
+      std::vector<size_t> levelSum(fX.getSize(), 0);
       // rank fulfills rank[i] = #{j | fX[j] <= fX[i]}
-      std::vector<size_t> rank(fX.size(), 0);
+      std::vector<size_t> rank(fX.getSize(), 0);
       // for those grid points with ignore[i] == true the refinement
       // criterion won't be evaluated
-      std::vector<bool> ignore(fX.size(), false);
+      std::vector<bool> ignore(fX.getSize(), false);
 
-      // refinement_alpha will be a standard basis vector
-      // (e.g. refinement_alpha[i] == 1.0 for exactly one i) to refine
+      // refinementAlpha will be a standard basis vector
+      // (e.g. refinementAlpha[i] == 1.0 for exactly one i) to refine
       // exactly one grid point
       base::DataVector refinementAlpha(currentN);
       refinementAlpha.setAll(0.0);
@@ -130,7 +129,7 @@ namespace SGPP {
       // parallel evaluation of f in the initial grid points
       #pragma omp parallel shared(fX, currentN, gridStorage) default(none)
       {
-        std::vector<float_t> x(d, 0.0);
+        base::DataVector x(d);
         ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
         std::unique_ptr<ObjectiveFunction> curF;
@@ -163,14 +162,14 @@ namespace SGPP {
       }
 
       // determine fX_order and rank (prepared above)
-      // (C++11 would eliminate the need of Permuter.)
-      {
-        Permuter<float_t> permuter1(fX);
-        std::sort(fXOrder.begin(), fXOrder.end(), permuter1);
-
-        Permuter<size_t> permuter2(fXOrder);
-        std::sort(rank.begin(), rank.end(), permuter2);
-      }
+      std::sort(fXOrder.begin(), fXOrder.end(),
+      [&](size_t a, size_t b) {
+        return (fX.get(a) < fX.get(b));
+      });
+      std::sort(rank.begin(), rank.end(),
+      [&](size_t a, size_t b) {
+        return (fXOrder[a] < fXOrder[b]);
+      });
 
       // determine fX_sorted
       for (size_t i = 0; i < currentN; i++) {
@@ -206,12 +205,12 @@ namespace SGPP {
 
           if (powMethod == STD_POW) {
             g = std::pow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
-                         alpha) *
-                std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - alpha);
+                         gamma) *
+                std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
           } else {
             g = fastPow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
-                        alpha) *
-                fastPow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - alpha);
+                        gamma) *
+                fastPow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
           }
 
           if (g < gBest) {
@@ -330,7 +329,7 @@ namespace SGPP {
         #pragma omp parallel shared(fX, currentN, newN, gridStorage) \
         default(none)
         {
-          std::vector<float_t> x(d, 0.0);
+          base::DataVector x(d);
           ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
           std::unique_ptr<ObjectiveFunction> curF;
@@ -369,7 +368,7 @@ namespace SGPP {
             if (fXSorted[j] < fX[i]) {
               // new function value is bigger as current one ==> insert here
               fXOrder.insert(fXOrder.begin() + (j + 1), i);
-              fXSorted.insert(fXSorted.begin() + (j + 1), fX[i]);
+              fXSorted.insert(j + 1, fX[i]);
               rank[i] = j + 1;
               break;
             } else {
@@ -383,7 +382,7 @@ namespace SGPP {
             // of the previous ones
             // ==> insert at the beginning of fX_order, rank = 0
             fXOrder.insert(fXOrder.begin(), i);
-            fXSorted.insert(fXSorted.begin(), fX[i]);
+            fXSorted.insert(0, fX[i]);
             rank[i] = 0;
           }
         }
@@ -394,7 +393,7 @@ namespace SGPP {
       }
 
       // delete superfluous entries in fX
-      fX.erase(fX.begin() + currentN, fX.end());
+      fX.resize(currentN);
 
       if (result) {
         printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) +

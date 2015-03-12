@@ -12,8 +12,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradient.hpp>
 
-#include <vector>
-
 namespace SGPP {
   namespace optimization {
 
@@ -47,11 +45,11 @@ namespace SGPP {
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline float_t evalGradient(const std::vector<float_t>& x,
+        inline float_t evalGradient(const base::DataVector& x,
                                     base::DataVector& gradient) {
           // copy x, necessary due to non-existing const correctness
           // in SGPP::base
-          std::vector<float_t> y = x;
+          base::DataVector y(x);
           return opEvalGradient->evalGradient(alpha, y, gradient);
         }
 

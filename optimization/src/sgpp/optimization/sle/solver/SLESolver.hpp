@@ -42,8 +42,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          virtual bool solve(SLE& system, const std::vector<float_t>& b,
-                             std::vector<float_t>& x) const = 0;
+          virtual bool solve(SLE& system, base::DataVector& b,
+                             base::DataVector& x) const = 0;
 
           /**
            * Virtual method for solving multiple linear systems with
@@ -58,15 +58,13 @@ namespace SGPP {
            *                      (false if errors occurred)
            */
           virtual bool solve(SLE& system,
-                             const std::vector<std::vector<float_t>>& B,
-                             std::vector<std::vector<float_t>>& X) const {
-            std::vector<float_t> x;
+                             std::vector<base::DataVector>& B,
+                             std::vector<base::DataVector>& X) const {
+            base::DataVector x(system.getDimension());
             X.clear();
 
             for (size_t i = 0; i < B.size(); i++) {
-              const std::vector<float_t>& b = B[i];
-
-              if (solve(system, b, x)) {
+              if (solve(system, B[i], x)) {
                 X.push_back(x);
               } else {
                 X.clear();

@@ -16,7 +16,7 @@ def testSLESystem(test_case, system, x, b):
     n = len(x)
     A = pysgpp.DataMatrix(n, n)
     # A*x calculated directly
-    Ax = pysgpp.DoubleVector(n, 0.0)
+    Ax = pysgpp.DataVector(n, 0.0)
     for i in range(n):
         for j in range(n):
             Aij = system.getMatrixEntry(i, j)
@@ -26,7 +26,7 @@ def testSLESystem(test_case, system, x, b):
             test_case.assertEqual(system.isMatrixEntryNonZero(i, j), Aij != 0)
     
     # A*x calculated by SGPP::optimization
-    Ax2 = pysgpp.DoubleVector()
+    Ax2 = pysgpp.DataVector(0)
     system.matrixVectorMultiplication(x, Ax2)
     
     for i in range(n):
@@ -39,9 +39,10 @@ def testSLESystem(test_case, system, x, b):
 
 def testSLESolution(test_case, A, x, b):
     """Test A*x = b."""
-    n = len(x)
+    n = len(b)
     r_norm_squared = 0.0
     b_norm_squared = 0.0
+    test_case.assertEqual(len(x), n)
     
     for i in range(n):
         ri = b[i]
@@ -85,7 +86,7 @@ class TestSLE(unittest.TestCase):
         for n in (list(range(1, 11)) + [20, 50, 100, 200]):
             # generate random matrix and RHS
             A = pysgpp.DataMatrix(n, n)
-            b = pysgpp.DoubleVector(n)
+            b = pysgpp.DataVector(n)
             
             for i in range(n):
                 b[i] = random.uniform(-1.0, 1.0)
@@ -124,7 +125,7 @@ class TestSLE(unittest.TestCase):
                     # Gmm++ doesn't converge using single precision for larger systems
                     continue
                 
-                x = pysgpp.DoubleVector(n)
+                x = pysgpp.DataVector(0)
                 # solve system
                 self.assertTrue(solver.solve(system, b, x))
                 # test solution
@@ -139,7 +140,7 @@ class TestSLE(unittest.TestCase):
         d = 2
         l = 4
         
-        f = objective_functions.TitleFunction()
+        f = objective_functions.ExampleFunction()
         solver = pysgpp.OptAutoSLESolver()
         
         # Test All The Grids!
@@ -159,7 +160,7 @@ class TestSLE(unittest.TestCase):
             # generate regular sparse grid
             grid.createGridGenerator().regular(l)
             n = grid.getSize()
-            function_values = pysgpp.DoubleVector(n)
+            function_values = pysgpp.DataVector(n)
             
             for i in range(n):
                 gp = grid.getStorage().get(i)
@@ -167,12 +168,12 @@ class TestSLE(unittest.TestCase):
                 # (currently not done automatically)
                 if grid.getType() in ["bsplineClenshawCurtis", "linearClenshawCurtis"]:
                     gp.setPointDistribution(pysgpp.HashGridIndex.ClenshawCurtis)
-                x = pysgpp.DoubleVector([gp.getCoord(t) for t in range(d)])
+                x = pysgpp.DataVector([gp.getCoord(t) for t in range(d)])
                 function_values[i] = f.eval(x)
             
             # create hierarchisation system
             system = pysgpp.OptHierarchisationSLE(grid)
-            alpha = pysgpp.DoubleVector(n)
+            alpha = pysgpp.DataVector(0)
             # solve system
             self.assertTrue(solver.solve(system, function_values, alpha))
             
@@ -185,6 +186,6 @@ class TestSLE(unittest.TestCase):
             ft = pysgpp.OptInterpolantFunction(d, grid, pysgpp.DataVector(alpha))
             for i in range(100):
                 # don't go near the boundary (should suffice)
-                x = pysgpp.DoubleVector([random.uniform(0.2, 0.8) for t in range(d)])
+                x = pysgpp.DataVector([random.uniform(0.2, 0.8) for t in range(d)])
                 # test infinity norm of difference roughly
                 self.assertLess(abs(f.eval(x) - ft.eval(x)), 0.3)

@@ -56,7 +56,7 @@ namespace SGPP {
           {
             size_t source_size = source.getSize();
             DataVector privateResult(result);
-            std::vector<float_t> line;
+            DataVector line(x.getNcols());
             IndexValVector vec;
             GetAffectedBasisFunctions<BASIS> ga(storage);
 
@@ -105,7 +105,7 @@ namespace SGPP {
           {
             size_t result_size = result.getSize();
 
-            std::vector<float_t> line;
+            DataVector line(x.getNcols());
             IndexValVector vec;
 
             GetAffectedBasisFunctions<BASIS> ga(storage);

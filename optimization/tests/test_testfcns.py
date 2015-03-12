@@ -47,19 +47,18 @@ class TestTestFunctions(unittest.TestCase):
             testfcn.generateDisplacement()
             
             # generate random point, displace and reverse
-            xl1 = [random.uniform(0.0, 1.0) for t in range(d)]
-            x = pysgpp.DoubleVector(xl1)
+            xl = [random.uniform(0.0, 1.0) for t in range(d)]
+            x = pysgpp.DataVector(xl)
             testfcn.displaceVector(x)
             f1 = testfcn.evalUndisplaced(x)
             testfcn.reverseDisplaceVector(x)
             f2 = testfcn.eval(x)
-            xl2 = list(x)
             # test displaceVector/reverseDisplaceVector
-            for t in range(d): self.assertAlmostEqual(xl1[t], xl2[t])
+            for t in range(d): self.assertAlmostEqual(xl[t], x[t])
             # test eval/evalUndisplaced
             self.assertAlmostEqual(f1, f2)
             
-            xopt = pysgpp.DoubleVector()
+            xopt = pysgpp.DataVector(0)
             fopt = testfcn.getOptimalPoint(xopt)
             # test minimal point
             self.assertEqual(len(xopt), d)
@@ -74,6 +73,6 @@ class TestTestFunctions(unittest.TestCase):
             
             # test if xopt is minimal point for a sample of random points
             for i in range(1000):
-                x = [random.uniform(0.0, 1.0) for t in range(d)]
+                x = pysgpp.DataVector([random.uniform(0.0, 1.0) for t in range(d)])
                 f = testfcn.eval(x)
                 self.assertGreaterEqual(f, fopt)

@@ -9,7 +9,7 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationNaiveEvalModBspline::eval(DataVector& alpha, std::vector<float_t>& point) {
+    float_t OperationNaiveEvalModBspline::eval(DataVector& alpha, DataVector& point) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;

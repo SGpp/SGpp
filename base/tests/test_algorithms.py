@@ -372,7 +372,7 @@ class TestBase(unittest.TestCase):
         
 class TestFunctions(unittest.TestCase):
   def testGetAffected(self):
-    from pysgpp import HashGridIndex, HashGridStorage, SLinearBase
+    from pysgpp import HashGridIndex, HashGridStorage, SLinearBase, DataVector
     from pysgpp import SGetAffectedBasisFunctions
     
     i = HashGridIndex(1)
@@ -385,14 +385,14 @@ class TestFunctions(unittest.TestCase):
     
     ga = SGetAffectedBasisFunctions(s)
     
-    x = ga(b, [0.25])
+    x = ga(b, DataVector([0.25]))
     
     self.failUnlessEqual(x[0][0], 0)
     self.failUnlessEqual(x[0][1], 0.5)
         
         
   def testGetAffectedBoundaries(self):
-    from pysgpp import HashGridIndex, HashGridStorage, SLinearBoundaryBase
+    from pysgpp import HashGridIndex, HashGridStorage, SLinearBoundaryBase, DataVector
     from pysgpp import SGetAffectedBasisFunctionsBoundaries
     
     i = HashGridIndex(1)
@@ -409,7 +409,7 @@ class TestFunctions(unittest.TestCase):
     
     ga = SGetAffectedBasisFunctionsBoundaries(s)
     
-    x = ga(b, [0.5])
+    x = ga(b, DataVector([0.5]))
     
     self.failUnlessEqual(x[0][0], 0)
     self.failUnlessEqual(x[0][1], 0.5)
@@ -419,7 +419,7 @@ class TestFunctions(unittest.TestCase):
     self.failUnlessEqual(x[2][1], 1.0)   
 
   def testGetAffectedLinearStretched(self):
-    from pysgpp import HashGridIndex, HashGridStorage, SLinearStretchedBoundaryBase
+    from pysgpp import HashGridIndex, HashGridStorage, SLinearStretchedBoundaryBase, DataVector
     from pysgpp import SGetAffectedBasisFunctionsLinearStretchedBoundaries
     from pysgpp import Stretching, Stretching1D, DimensionBoundary
     from pysgpp import cvar
@@ -447,7 +447,7 @@ class TestFunctions(unittest.TestCase):
     
     ga = SGetAffectedBasisFunctionsLinearStretchedBoundaries(s)
       
-    x = ga(b, [0.25])
+    x = ga(b, DataVector([0.25]))
       
     self.assertEqual(x[0][0], 0)
     if cvar.USING_DOUBLE_PRECISION:

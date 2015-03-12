@@ -7,8 +7,8 @@
 #define SGPP_OPTIMIZATION_FUNCTION_OBJECTIVEFUNCTION_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <vector>
 #include <cstddef>
 #include <memory>
 
@@ -42,7 +42,7 @@ namespace SGPP {
          * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
          * @return      \f$f(\vec{x})\f$
          */
-        virtual float_t eval(const std::vector<float_t>& x) = 0;
+        virtual float_t eval(const base::DataVector& x) = 0;
 
         /**
          * @return dimension \f$d\f$ of the domain

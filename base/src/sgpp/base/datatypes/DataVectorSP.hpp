@@ -29,11 +29,20 @@ namespace SGPP {
     class DataVectorSP {
       public:
         /**
-         * Create a DataVector with @em size elements.
+         * Create a DataVector with @em size elements (uninitialized values).
          *
          * @param size Number of elements
          */
         DataVectorSP(size_t size);
+
+        /**
+         * Create a DataVector with @em size elements and initializes
+         * all elements with the same value.
+         *
+         * @param size Number of elements
+         * @param value Value for all entries
+         */
+        DataVectorSP(size_t size, float value);
 
         /**
          * Create a new DataVector that is a copy of vec.
@@ -45,7 +54,7 @@ namespace SGPP {
         /**
          * Create a new DataVector from a float array with size elements.
          *
-         * @param input float_t array that contains the data
+         * @param input float array that contains the data
          * @param size number of elements
          */
         DataVectorSP(float* input, size_t size);
@@ -110,6 +119,15 @@ namespace SGPP {
          */
         size_t append(float value);
 
+        /**
+         * Inserts a new element at the given index.
+         * If the new element does not fit into the reserved memory,
+         * reserves memory for getInc() additional elements.
+         *
+         * @param index Index of new element
+         * @param value Value of new element
+         */
+        void insert(size_t index, float value);
 
         /**
          * Sets all values of DataVector to value
@@ -235,14 +253,14 @@ namespace SGPP {
          *
          * @return The sum of all elements
          */
-        float sum();
+        float sum() const;
 
         /**
          * calculates the vector's max norm
          *
          * @return the vector's max norm
          */
-        float maxNorm();
+        float maxNorm() const;
 
         /**
          * calculates the vectors L two norm
@@ -250,28 +268,28 @@ namespace SGPP {
          *
          * @return the vector's L two norm
          */
-        float RMSNorm();
+        float RMSNorm() const;
 
         /**
          * calculates the vectors two norm
          *
          * @return the vector's two norm
          */
-        float l2Norm();
+        float l2Norm() const;
 
         /**
          * Returns the minimum over all entries.
          *
          * @return global minimum
          */
-        float min();
+        float min() const;
 
         /**
          * Returns the maximum over all entries.
          *
          * @return global maximum
          */
-        float max();
+        float max() const;
 
         /**
            * Determines minimum and maximum over all entries.
@@ -279,7 +297,7 @@ namespace SGPP {
            * @param min Reference variable for the minimum
            * @param max Reference variable for the maximum
          */
-        void minmax(float* min, float* max);
+        void minmax(float* min, float* max) const;
 
         /**
          * Adds a*x to current vector.
@@ -297,7 +315,7 @@ namespace SGPP {
          *
          * @return The dot-product
          */
-        float dotProduct(DataVectorSP& vec);
+        float dotProduct(DataVectorSP& vec) const;
 
 
         /**
@@ -321,7 +339,7 @@ namespace SGPP {
          *
          * @return number of unused elements
          */
-        inline size_t getUnused() {
+        inline size_t getUnused() const {
           return unused;
         };
 
@@ -330,7 +348,7 @@ namespace SGPP {
          *
          * @return The number of non-zero elements
          */
-        size_t getNumberNonZero();
+        size_t getNumberNonZero() const;
 
         /**
          * Get the current number of elements by which the DataVector is extended,
@@ -378,14 +396,14 @@ namespace SGPP {
          *
          * @param text string to which the data is written
          */
-        void toString(std::string& text);
+        void toString(std::string& text) const;
 
         /**
          * Returns a description of the DataVectorSP as a string.
          *
          * @returns string of the DataVectorSP
          */
-        std::string toString();
+        std::string toString() const;
 
         /**
          * Destructor

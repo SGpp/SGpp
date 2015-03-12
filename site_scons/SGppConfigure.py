@@ -18,6 +18,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
+    
 
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
@@ -48,6 +49,17 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
     else:
         print "Using " + commands.getoutput('dot -V').splitlines()[0]
+        
+        
+    config.env.AppendUnique(CPPPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-sdk-4.6.0.92/include/")
+    if not config.CheckCXXHeader('CL/cl.h'):
+      sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL")
+      sys.exit(1)
+      
+    config.env.AppendUnique(LIBPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/")
+    if not config.CheckLib('OpenCL'):
+      sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
+      sys.exit(1)
 
     if env["SG_PYTHON"]:
         # check whether swig installed

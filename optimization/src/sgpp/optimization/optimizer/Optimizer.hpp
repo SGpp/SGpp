@@ -9,8 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/function/ObjectiveFunction.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <vector>
 #include <cstddef>
 #include <memory>
 
@@ -35,17 +35,8 @@ namespace SGPP {
            * @param N     maximal number of iterations or function evaluations
            *              (depending on the implementation)
            */
-          Optimizer(const ObjectiveFunction& f, size_t N = DEFAULT_N) :
-            N(N), x0(std::vector<float_t>(f.getDimension(), 0.5)) {
-            f.clone(this->f);
-          }
-
-          /**
-           * Copy constructor.
-           */
-          Optimizer(const Optimizer& other) :
-            N(other.N), x0(other.x0) {
-            other.f->clone(this->f);
+          Optimizer(ObjectiveFunction& f, size_t N = DEFAULT_N) :
+            f(f), N(N), x0(f.getDimension(), 0.5) {
           }
 
           /**
@@ -60,22 +51,13 @@ namespace SGPP {
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */
-          virtual float_t optimize(std::vector<float_t>& xOpt) = 0;
-
-          /**
-           * Pure virtual method for cloning the optimizer.
-           * It should generate a pointer to the cloned object and it's used
-           * for parallel computations.
-           *
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<Optimizer>& clone) const = 0;
+          virtual float_t optimize(base::DataVector& xOpt) = 0;
 
           /**
            * @return objective function
            */
           ObjectiveFunction& getObjectiveFunction() const {
-            return *f;
+            return f;
           }
 
           /**
@@ -95,24 +77,24 @@ namespace SGPP {
           /**
            * @return                  starting point
            */
-          const std::vector<float_t>& getStartingPoint() const {
+          const base::DataVector& getStartingPoint() const {
             return x0;
           }
 
           /**
            * @param startingPoint     starting point
            */
-          void setStartingPoint(const std::vector<float_t>& startingPoint) {
+          void setStartingPoint(const base::DataVector& startingPoint) {
             this->x0 = startingPoint;
           }
 
         protected:
           /// objective function
-          std::unique_ptr<ObjectiveFunction> f;
+          ObjectiveFunction& f;
           /// maximal number of iterations or function evaluations
           size_t N;
           /// starting point
-          std::vector<float_t> x0;
+          base::DataVector x0;
       };
 
     }

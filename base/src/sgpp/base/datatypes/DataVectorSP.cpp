@@ -6,7 +6,6 @@
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <string.h>
 #include <sstream>
 #include <cmath>
 #include <algorithm>
@@ -25,22 +24,21 @@ namespace SGPP {
       this->data = new float[size];
     }
 
+    DataVectorSP::DataVectorSP(size_t size, float value) :
+      DataVectorSP(size) {
+      setAll(value);
+    }
+
     DataVectorSP::DataVectorSP(const DataVectorSP& vec) :
-      unused(0), inc_elems(100) {
-      this->size = vec.size;
-      // create new vector
-      this->data = new float[size];
+      DataVectorSP(vec.size) {
       // copy data
-      memcpy(this->data, vec.data, size * sizeof(float));
+      std::memcpy(this->data, vec.data, size * sizeof(float));
     }
 
     DataVectorSP::DataVectorSP(float* input, size_t size) :
-      unused(0), inc_elems(100) {
-      this->size = size;
-      // create new vector
-      this->data = new float[size];
+      DataVectorSP(size) {
       // copy data
-      memcpy(this->data, input, size * sizeof(float));
+      std::memcpy(this->data, input, size * sizeof(float));
     }
 
     void DataVectorSP::restructure(std::vector<size_t>& remainingIndex) {
@@ -70,7 +68,8 @@ namespace SGPP {
       // create new vector
       float* newdata = new float[size];
       // copy entries of old vector
-      memcpy(newdata, this->data, std::min(this->size, size) * sizeof(float));
+      std::memcpy(newdata, this->data, std::min(this->size, size)
+                  * sizeof(float));
 
       delete[] this->data;
 
@@ -88,7 +87,8 @@ namespace SGPP {
       // create new vector
       float* newdata = new float[size];
       // copy entries of old vector
-      memcpy(newdata, this->data, std::min(this->size, size) * sizeof(float));
+      std::memcpy(newdata, this->data, std::min(this->size, size)
+                  * sizeof(float));
 
       // set new elements to zero
       for (size_t i = std::min(this->size, size); i < size; i++) {
@@ -106,7 +106,7 @@ namespace SGPP {
       // create new vector
       float* newdata = new float[(size + add)];
       // copy entries of old vector
-      memcpy(newdata, this->data, this->size * sizeof(float));
+      std::memcpy(newdata, this->data, this->size * sizeof(float));
 
       delete[] this->data;
 
@@ -133,6 +133,17 @@ namespace SGPP {
       return x;
     }
 
+    void DataVectorSP::insert(size_t index, float value) {
+      if (index > size) {
+        throw new SGPP::base::data_exception(
+          "DataVectorSP::insert : index out of bounds");
+      }
+
+      append();
+      std::memmove(data + index + 1, data + index, size - index);
+      data[index] = value;
+    }
+
     void DataVectorSP::setAll(float value) {
       for (size_t i = 0; i < size; i++) {
         data[i] = value;
@@ -149,7 +160,8 @@ namespace SGPP {
         return;
       }
 
-      memcpy(this->data, vec.data, std::min(size, vec.size) * sizeof(float));
+      std::memcpy(this->data, vec.data, std::min(size, vec.size)
+                  * sizeof(float));
     }
 
     DataVectorSP& DataVectorSP::operator=(const DataVectorSP& vec) {
@@ -162,7 +174,7 @@ namespace SGPP {
           "DataVectorSP::add : Dimensions do not match");
       }
 
-      memcpy(this->data, vec.data, size * sizeof(float));
+      std::memcpy(this->data, vec.data, size * sizeof(float));
       return *this;
     }
 
@@ -210,7 +222,7 @@ namespace SGPP {
       }
     }
 
-    float DataVectorSP::dotProduct(DataVectorSP& vec) {
+    float DataVectorSP::dotProduct(DataVectorSP& vec) const {
       float sum = 0.0;
 
       for (size_t i = 0; i < size; i++) {
@@ -244,7 +256,7 @@ namespace SGPP {
       }
     }
 
-    float DataVectorSP::sum() {
+    float DataVectorSP::sum() const {
       float result = 0.0f;
 
       for (size_t i = 0; i < size; i++) {
@@ -254,7 +266,7 @@ namespace SGPP {
       return result;
     }
 
-    float DataVectorSP::maxNorm() {
+    float DataVectorSP::maxNorm() const {
       float max = 0.0f;
 
       for (size_t i = 0; i < size; i++) {
@@ -266,7 +278,7 @@ namespace SGPP {
       return max;
     }
 
-    float DataVectorSP::RMSNorm() {
+    float DataVectorSP::RMSNorm() const {
       float l2Norm;
       DataVectorSP temp(*this);
 
@@ -278,7 +290,7 @@ namespace SGPP {
       return l2Norm;
     }
 
-    float DataVectorSP::l2Norm() {
+    float DataVectorSP::l2Norm() const {
       float l2Norm;
       DataVectorSP temp(*this);
 
@@ -323,7 +335,7 @@ namespace SGPP {
       }
     }
 
-    void DataVectorSP::toString(std::string& text) {
+    void DataVectorSP::toString(std::string& text) const {
       std::stringstream str;
 
       str << "[";
@@ -340,13 +352,13 @@ namespace SGPP {
       text = str.str();
     }
 
-    std::string DataVectorSP::toString() {
+    std::string DataVectorSP::toString() const {
       std::string str;
       toString(str);
       return str;
     }
 
-    float DataVectorSP::min() {
+    float DataVectorSP::min() const {
       float min = data[0];
 
       for (size_t i = 1; i < size; i++) {
@@ -358,7 +370,7 @@ namespace SGPP {
       return min;
     }
 
-    float DataVectorSP::max() {
+    float DataVectorSP::max() const {
       float max = data[0];
 
       for (size_t i = 1; i < size; i++) {
@@ -370,7 +382,7 @@ namespace SGPP {
       return max;
     }
 
-    void DataVectorSP::minmax(float* min, float* max) {
+    void DataVectorSP::minmax(float* min, float* max) const {
       float min_t = data[0];
       float max_t = data[0];
 
@@ -396,7 +408,7 @@ namespace SGPP {
       delete[] data;
     }
 
-    size_t DataVectorSP::getNumberNonZero() {
+    size_t DataVectorSP::getNumberNonZero() const {
       size_t nonZero = 0;
 
       for (size_t i = 0; i < size; i++) {

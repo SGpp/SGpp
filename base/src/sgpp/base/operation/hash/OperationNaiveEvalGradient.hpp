@@ -38,22 +38,23 @@ namespace SGPP {
          * @param[out]  gradient    gradient vector of the linear combination
          * @return                  value of the linear combination
          */
-        virtual float_t evalGradient(base::DataVector& alpha, const std::vector<float_t>& point,
-                                     base::DataVector& gradient) = 0;
+        float_t evalGradient(DataVector& alpha,
+                             std::vector<float_t>& point,
+                             DataVector& gradient) {
+          DataVector p(point);
+          return evalGradient(alpha, p, gradient);
+        }
 
         /**
-         * Convenience function for using base::DataVector as points.
+         * Convenience function for using DataVector as points.
          *
          * @param       alpha       coefficient vector
          * @param       point       evaluation point
          * @param[out]  gradient    gradient vector of the linear combination
          * @return                  value of the linear combination
          */
-        virtual float_t evalGradient(base::DataVector& alpha, base::DataVector& point,
-                                     base::DataVector& gradient) {
-          const std::vector<float_t> p(point.getPointer(), point.getPointer() + point.getSize());
-          return evalGradient(alpha, p, gradient);
-        }
+        virtual float_t evalGradient(DataVector& alpha, DataVector& point,
+                                     DataVector& gradient) = 0;
     };
 
   }
