@@ -40,16 +40,15 @@ namespace SGPP {
       bool solveInternal(
         const EigenMatrix& A,
         const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
-        const std::vector<float_t>& b,
-        std::vector<float_t>& x) {
+        base::DataVector& b,
+        base::DataVector& x) {
         // solve system
-        EigenVector bEigen = EigenVector::Map(&b[0], b.size());
+        EigenVector bEigen = EigenVector::Map(b.getPointer(), b.getSize());
         EigenVector xEigen = A_QR.solve(bEigen);
 
         // check solution
         if ((A * xEigen).isApprox(bEigen)) {
-          x = std::vector<float_t>(xEigen.data(),
-                                   xEigen.data() + xEigen.size());
+          x = base::DataVector(xEigen.data(), xEigen.size());
           return true;
         } else {
           return false;
@@ -57,13 +56,15 @@ namespace SGPP {
       }
 #endif /* USEEIGEN */
 
-      bool Eigen::solve(SLE& system, const std::vector<float_t>& b,
-                        std::vector<float_t>& x) const {
-        std::vector<std::vector<float_t>> B;
-        std::vector<std::vector<float_t>> X;
-        B.push_back(b);
+      bool Eigen::solve(SLE& system, base::DataVector& b,
+                        base::DataVector& x) const {
+        // place RHS in its own vector
+        std::vector<base::DataVector> B = {b};
+        std::vector<base::DataVector> X;
 
+        // call version for multiple RHSs
         if (solve(system, B, X)) {
+          x.resize(X[0].getSize());
           x = X[0];
           return true;
         } else {
@@ -72,8 +73,8 @@ namespace SGPP {
       }
 
       bool Eigen::solve(SLE& system,
-                        const std::vector<std::vector<float_t>>& B,
-                        std::vector<std::vector<float_t>>& X) const {
+                        std::vector<base::DataVector>& B,
+                        std::vector<base::DataVector>& X) const {
 #ifdef USEEIGEN
         printer.printStatusBegin("Solving linear system (Eigen)...");
 
@@ -143,12 +144,12 @@ namespace SGPP {
         printer.printStatusUpdate("step 1: Householder QR factorization");
         ::Eigen::HouseholderQR<EigenMatrix> A_QR = A.householderQr();
 
-        std::vector<float_t> x;
+        base::DataVector x(n);
         X.clear();
 
         // solve system for each RHS
         for (size_t i = 0; i < B.size(); i++) {
-          const std::vector<float_t>& b = B[i];
+          base::DataVector& b = B[i];
           printer.printStatusNewLine();
 
           if (B.size() == 1) {

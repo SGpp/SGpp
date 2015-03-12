@@ -20,17 +20,17 @@ namespace SGPP {
       class NelderMead : public Optimizer {
         public:
           /// default reflection coefficient
-          static const float_t DEFAULT_ALPHA;
+          static constexpr float_t DEFAULT_ALPHA = 1.0;
           /// default expansion coefficient
-          static const float_t DEFAULT_BETA;
+          static constexpr float_t DEFAULT_BETA = 2.0;
           /// default contraction coefficient
-          static const float_t DEFAULT_GAMMA;
+          static constexpr float_t DEFAULT_GAMMA = 0.5;
           /// default shrinking coefficient
-          static const float_t DEFAULT_DELTA;
+          static constexpr float_t DEFAULT_DELTA = 0.5;
           /// default maximal number of function evaluations
           static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 1000;
           /// edge length of starting simplex
-          static const float_t STARTING_SIMPLEX_EDGE_LENGTH;
+          static constexpr float_t STARTING_SIMPLEX_EDGE_LENGTH = 0.4;
 
           /**
            * Constructor.
@@ -45,7 +45,7 @@ namespace SGPP {
            * @param gamma                 contraction coefficient
            * @param delta                 shrinking coefficient
            */
-          NelderMead(const ObjectiveFunction& f,
+          NelderMead(ObjectiveFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      float_t alpha = DEFAULT_ALPHA,
                      float_t beta = DEFAULT_BETA,
@@ -56,12 +56,7 @@ namespace SGPP {
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */
-          float_t optimize(std::vector<float_t>& xOpt);
-
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
+          float_t optimize(base::DataVector& xOpt);
 
           /**
            * @return          reflection coefficient

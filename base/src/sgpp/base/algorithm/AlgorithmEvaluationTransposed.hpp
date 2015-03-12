@@ -12,7 +12,6 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
-#include <vector>
 #include <utility>
 
 #include <sgpp/globaldef.hpp>
@@ -48,7 +47,7 @@ namespace SGPP {
          * @param alpha the coefficient of the regarded ansatzfunction
          * @param result vector that will contain the local support of the given ansatzfuction for all evaluations points
          */
-        void operator()(BASIS& basis, std::vector<float_t>& point, float_t alpha, DataVector& result) {
+        void operator()(BASIS& basis, DataVector& point, float_t alpha, DataVector& result) {
           GridStorage::grid_iterator working(storage);
 
           //typedef GridStorage::index_type::level_type level_type;
@@ -119,7 +118,7 @@ namespace SGPP {
          * @param alpha the coefficient of current ansatzfunction
          * @param result vector that will contain the local support of the given ansatzfuction for all evaluations points
          */
-        void rec(BASIS& basis, std::vector<float_t>& point, size_t current_dim,
+        void rec(BASIS& basis, DataVector& point, size_t current_dim,
                  float_t value, GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, float_t alpha, DataVector& result) {
           typedef GridStorage::index_type::level_type level_type;
@@ -190,7 +189,7 @@ namespace SGPP {
     //    ~GetAffectedBasisFunctions() {
     //    }
     //
-    //    void operator()(SWaveletModifiedBase& basis, std::vector<float_t>& point,
+    //    void operator()(SWaveletModifiedBase& basis, DataVector& point,
     //            std::vector<std::pair<size_t, float_t> >& result) {
     //        GridStorage::grid_iterator working(storage);
     //
@@ -224,7 +223,7 @@ namespace SGPP {
     //protected:
     //    GridStorage* storage;
     //
-    //    void rec(SWaveletModifiedBase& basis, std::vector<float_t>& point,
+    //    void rec(SWaveletModifiedBase& basis, DataVector& point,
     //            size_t current_dim, float_t value,
     //            GridStorage::grid_iterator& working,
     //            GridStorage::index_type::index_type* source, std::vector<std::pair<
@@ -366,7 +365,7 @@ namespace SGPP {
     //
     //    ~GetAffectedBasisFunctions() {}
     //
-    //    void operator()(SBsplineModifiedBase& base, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result)
+    //    void operator()(SBsplineModifiedBase& base, DataVector& point, std::vector<std::pair<size_t, float_t> >& result)
     //    {
     //        GridStorage::grid_iterator working(storage);
     //
@@ -409,7 +408,7 @@ namespace SGPP {
     //     * Example implementation of storage agnostic algorithm.
     //     * Returns all affected base functions
     //     */
-    //    void rec(SBsplineModifiedBase& base, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, float_t> >& result)
+    //    void rec(SBsplineModifiedBase& base, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, GridStorage::index_type::index_type* source, std::vector<std::pair<size_t, float_t> >& result)
     //    {
     //        typedef GridStorage::index_type::level_type level_type;
     //        typedef GridStorage::index_type::index_type index_type;
@@ -546,7 +545,7 @@ namespace SGPP {
     //
     //  ~GetAffectedBasisFunctions() {}
     //
-    //  void operator()(SLinearBoundaryBase& basis, std::vector<float_t>& point, std::vector<std::pair<size_t, float_t> >& result)
+    //  void operator()(SLinearBoundaryBase& basis, DataVector& point, std::vector<std::pair<size_t, float_t> >& result)
     //  {
     //    bool useBB = false;
     //
@@ -574,7 +573,7 @@ namespace SGPP {
     //  GridStorage* storage;
     //  BoundingBox* BB;
     //
-    //  void rec(SLinearBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result)
+    //  void rec(SLinearBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result)
     //  {
     //    typedef GridStorage::index_type::level_type level_type;
     //    typedef GridStorage::index_type::index_type index_type;
@@ -688,7 +687,7 @@ namespace SGPP {
     //  }
     //
     //
-    //  void recBB(SLinearBoundaryBase& basis, std::vector<float_t>& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result)
+    //  void recBB(SLinearBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result)
     //  {
     //    typedef GridStorage::index_type::level_type level_type;
     //    typedef GridStorage::index_type::index_type index_type;

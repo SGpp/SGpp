@@ -78,53 +78,51 @@ typedef enum mail_ {
 class Grid
 {
 public:
-	static Grid* createLinearGrid(size_t dim);
-	static Grid* createLinearStretchedGrid(size_t dim);
-    static Grid* createLinearBoundaryGrid(size_t dim);
-    static Grid* createLinearClenshawCurtisGrid(size_t dim);
-	static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
-	static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
-	static Grid* createModLinearGrid(size_t dim);
-	static Grid* createPolyGrid(size_t dim, size_t degree);
-	static Grid* createModPolyGrid(size_t dim, size_t degree);
-    static Grid* createWaveletGrid(size_t dim);
-    static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
-    static Grid* createModWaveletGrid(size_t dim);
-    static Grid* createBsplineGrid(size_t dim, size_t degree);
-    static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
-    static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
-    static Grid* createModBsplineGrid(size_t dim, size_t degree);
-    static Grid* createSquareRootGrid(size_t dim);
-	static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
-	static Grid* createPrewaveletGrid(size_t dim);
-	static Grid* createLinearGridStencil(size_t dim);
-	static Grid* createModLinearGridStencil(size_t dim);
-	static Grid* createPeriodicGrid(size_t dim);
+  static Grid* createLinearGrid(size_t dim);
+  static Grid* createLinearStretchedGrid(size_t dim);
+  static Grid* createLinearBoundaryGrid(size_t dim);
+  static Grid* createLinearClenshawCurtisGrid(size_t dim);
+  static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
+  static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+  static Grid* createModLinearGrid(size_t dim);
+  static Grid* createPolyGrid(size_t dim, size_t degree);
+  static Grid* createModPolyGrid(size_t dim, size_t degree);
+  static Grid* createWaveletGrid(size_t dim);
+  static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
+  static Grid* createModWaveletGrid(size_t dim);
+  static Grid* createBsplineGrid(size_t dim, size_t degree);
+  static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createModBsplineGrid(size_t dim, size_t degree);
+  static Grid* createSquareRootGrid(size_t dim);
+  static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
+  static Grid* createPrewaveletGrid(size_t dim);
+  static Grid* createLinearGridStencil(size_t dim);
+  static Grid* createModLinearGridStencil(size_t dim);
+  static Grid* createPeriodicGrid(size_t dim);
 	
-	static Grid* unserialize(std::string& istr);
+  static Grid* unserialize(std::string& istr);
 	
 protected:
-	Grid();
-	Grid(Grid& o);
+  Grid();
+  Grid(Grid& o);
 
 public:
-	virtual ~Grid();
+  virtual ~Grid();
 
 public:	
-	virtual SGPP::base::GridGenerator* createGridGenerator() = 0;
-	virtual SGPP::base::GridStorage* getStorage();
-	virtual SGPP::base::BoundingBox* getBoundingBox();
-	virtual SGPP::base::Stretching* getStretching();
+  virtual SGPP::base::GridGenerator* createGridGenerator() = 0;
+  virtual SGPP::base::GridStorage* getStorage();
+  virtual SGPP::base::BoundingBox* getBoundingBox();
+  virtual SGPP::base::Stretching* getStretching();
 
-	virtual const char* getType() = 0;	
-	virtual const SBasis& getBasis() = 0;
-	virtual void serialize(std::string& ostr);
-	void refine(SGPP::base::DataVector* vector, int num);
-	float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
-	void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
-	int getSize();
-	
-	
+  virtual const char* getType() = 0;
+  virtual const SBasis& getBasis() = 0;
+  virtual void serialize(std::string& ostr);
+  void refine(SGPP::base::DataVector* vector, int num);
+  float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
+  void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
+  int getSize();
 };
 }
 }

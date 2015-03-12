@@ -37,27 +37,27 @@ namespace SGPP {
          *
          * @param alpha     coefficient vector
          * @param point     evaluation point
-         * @param deriv_dim dimension in which the partial derivative should be taken (0, ..., d-1)
+         * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
          * @return          value of the partial derivative of the linear combination
          */
-        virtual float_t evalPartialDerivative(base::DataVector& alpha,
-                                              const std::vector<float_t>& point,
-                                              size_t deriv_dim) = 0;
+        float_t evalPartialDerivative(DataVector& alpha,
+                                      std::vector<float_t>& point,
+                                      size_t derivDim) {
+          DataVector p(point);
+          return evalPartialDerivative(alpha, p, derivDim);
+        }
 
         /**
-         * Convenience function for using base::DataVector as points.
+         * Convenience function for using DataVector as points.
          *
          * @param alpha     coefficient vector
          * @param point     evaluation point
-         * @param deriv_dim dimension in which the partial derivative should be taken (0, ..., d-1)
+         * @param derivDim  dimension in which the partial derivative should be taken (0, ..., d-1)
          * @return          value of the partial derivative of the linear combination
          */
-        virtual float_t evalPartialDerivative(base::DataVector& alpha,
-                                              base::DataVector& point,
-                                              size_t deriv_dim) {
-          const std::vector<float_t> p(point.getPointer(), point.getPointer() + point.getSize());
-          return evalPartialDerivative(alpha, p, deriv_dim);
-        }
+        virtual float_t evalPartialDerivative(DataVector& alpha,
+                                              DataVector& point,
+                                              size_t derivDim) = 0;
     };
 
   }

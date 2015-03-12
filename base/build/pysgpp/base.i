@@ -43,11 +43,11 @@ namespace std {
 
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];
-%ignore SGPP::base::DataVectorSP::toString(std::string& text);
+%ignore SGPP::base::DataVectorSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %ignore SGPP::base::DataMatrixSP::operator=;
 %ignore SGPP::base::DataMatrixSP::operator[];
-%ignore SGPP::base::DataMatrixSP::toString(std::string& text);
+%ignore SGPP::base::DataMatrixSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
@@ -57,9 +57,9 @@ namespace std {
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
 %ignore sg::base::HashGridIndex::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
-%include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %ignore sg::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
+%include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
 
 %include "base/src/sgpp/base/grid/generation/functors/RefinementFunctor.hpp"
@@ -180,3 +180,4 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearStretchedBoundaryBase>;
 %template(DimensionBoundaryVector) std::vector<SGPP::base::DimensionBoundary>;
 %template(Stretching1DVector) std::vector<SGPP::base::Stretching1D>;
+

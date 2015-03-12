@@ -10,7 +10,6 @@
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
-#include <vector>
 
 namespace SGPP {
   namespace optimization {
@@ -22,19 +21,14 @@ namespace SGPP {
       class GaussianElimination : public SLESolver {
         public:
           /**
-           * Constructor.
-           */
-          GaussianElimination();
-
-          /**
            * @param       system  system to be solved
            * @param       b       right-hand side
            * @param[out]  x       solution to the system
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, const std::vector<float_t>& b,
-                     std::vector<float_t>& x) const;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
       };
 
     }

@@ -17,7 +17,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationEvalPrewavelet::eval(DataVector& alpha,
-                                          std::vector<float_t>& point) {
+                                          DataVector& point) {
       typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
       IndexValVector vec;

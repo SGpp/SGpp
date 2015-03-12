@@ -50,15 +50,10 @@ namespace SGPP {
                        size_t populationSize = 0);
 
           /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
-
-          /**
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */
-          float_t optimize(std::vector<float_t>& xOpt);
+          float_t optimize(base::DataVector& xOpt);
 
           /**
            * @return                  number of individual points
@@ -79,9 +74,10 @@ namespace SGPP {
           size_t populationSize;
 
           /**
-           * Internal function for initializing the member variables.
+           * Initializes populationSize.
            *
-           * @param populationSize    number of individual points
+           * @param populationSize     number of individual points
+           *                           (zero to use default value)
            */
           void initialize(size_t populationSize);
       };

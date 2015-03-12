@@ -6,7 +6,6 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
 
-#include <vector>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
@@ -33,7 +32,7 @@ namespace SGPP {
     class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
       public:
         /// default adaptivity
-        static const float_t DEFAULT_ALPHA;
+        static constexpr float_t DEFAULT_GAMMA = 0.85;
         /// default maximal level of grid points
         static const size_t DEFAULT_MAX_LEVEL = 15;
 
@@ -49,7 +48,7 @@ namespace SGPP {
          * @param f             objective function
          * @param grid          grid (should be empty)
          * @param N             maximal number of grid points
-         * @param alpha         adaptivity
+         * @param gamma         adaptivity
          * @param maxLevel      maximal level of grid points
          * @param powMethod     exponentiation method
          *                      (fastPow is faster than std::pow,
@@ -58,7 +57,7 @@ namespace SGPP {
         IterativeGridGeneratorRitterNovak(ObjectiveFunction& f,
                                           base::Grid& grid,
                                           size_t N,
-                                          float_t alpha = DEFAULT_ALPHA,
+                                          float_t gamma = DEFAULT_GAMMA,
                                           size_t maxLevel = DEFAULT_MAX_LEVEL,
                                           PowMethod powMethod = STD_POW);
 
@@ -72,12 +71,12 @@ namespace SGPP {
         /**
          * @return      adaptivity
          */
-        float_t getAlpha() const;
+        float_t getGamma() const;
 
         /**
-         * @param alpha adaptivity
+         * @param gamma adaptivity
          */
-        void setAlpha(float_t alpha);
+        void setGamma(float_t gamma);
 
         /**
          * @return          maximal level of grid points
@@ -91,7 +90,7 @@ namespace SGPP {
 
       protected:
         /// adaptivity
-        float_t alpha;
+        float_t gamma;
         /// maximal level of grid points
         size_t maxLevel;
         /// exponentiation method

@@ -1,27 +1,23 @@
+#!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-#!/usr/bin/python
-
 # import modules
-import sys
-# append trunk/bin to search path for modules
-sys.path.append('../lib/pysgpp')
-from pysgpp import *
+from pysgpp import DataVector, Grid, createOperationHierarchisation, SurplusRefinementFunctor
 
 # create a two-dimensional piecewise bi-linear grid
 dim = 2
 grid = Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
-print "dimensionality:         %d" % (dim)
+print "dimensionality:                   {}".format(dim)
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
-print "Start: number of grid points:  %d" % (gridStorage.size())
+print "number of initial grid points:    {}".format(gridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1*x1
@@ -40,7 +36,7 @@ for refnum in range(5):
 
     # refine a single grid point each time
     gridGen.refine(SurplusRefinementFunctor(alpha, 1))
-    print "Refinement step %d, new grid size: %d" % (refnum+1, gridStorage.size())
+    print "refinement step {}, new grid size: {}".format(refnum+1, gridStorage.size())
 
     # extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage.size())

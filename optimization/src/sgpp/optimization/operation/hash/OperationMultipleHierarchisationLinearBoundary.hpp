@@ -43,8 +43,22 @@ namespace SGPP {
          *                           the grid points,
          *                           after: vector of hierarchical coefficients
          */
+        virtual void doHierarchisation(base::DataVector& nodeValues);
+
+        /**
+         * @param[in,out] alpha before: vector of hierarchical coefficients,
+         *                      after: vector of function values at
+         *                      the grid points
+         */
+        virtual void doDehierarchisation(base::DataVector& alpha);
+
+        /**
+         * @param[in,out] nodeValues before: vector of function values at
+         *                           the grid points,
+         *                           after: vector of hierarchical coefficients
+         */
         virtual void doHierarchisation(
-          std::vector<base::DataVector*> nodeValues);
+          std::vector<base::DataVector>& nodeValues);
 
         /**
          * @param[in,out] alpha before: vector of hierarchical coefficients,
@@ -52,7 +66,7 @@ namespace SGPP {
          *                      the grid points
          */
         virtual void doDehierarchisation(
-          std::vector<base::DataVector*> alpha);
+          std::vector<base::DataVector>& alpha);
 
       protected:
         /// storage of the sparse grid

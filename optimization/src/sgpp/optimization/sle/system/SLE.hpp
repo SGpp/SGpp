@@ -6,10 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_SLE_SYSTEM_SLE_HPP
 #define SGPP_OPTIMIZATION_SLE_SYSTEM_SLE_HPP
 
-#include <vector>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -58,14 +58,15 @@ namespace SGPP {
          * @param       x   vector to be multiplied
          * @param[out]  y   \f$y = Ax\f$
          */
-        virtual void matrixVectorMultiplication(const std::vector<float_t>& x,
-                                                std::vector<float_t>& y) {
+        virtual void matrixVectorMultiplication(const base::DataVector& x,
+                                                base::DataVector& y) {
           const size_t n = getDimension();
-          y = std::vector<float_t>(n, 0.0);
+          y.resize(n);
+          y.setAll(0.0);
 
           for (size_t i = 0; i < n; i++) {
             for (size_t j = 0; j < n; j++) {
-              y[i] += getMatrixEntry(i, j) * x[j];
+              y[i] += getMatrixEntry(i, j) * x.get(j);
             }
           }
         }

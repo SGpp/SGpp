@@ -30,19 +30,19 @@ namespace SGPP {
       class Newton : public Optimizer {
         public:
           /// default beta (parameter for Armijo's rule)
-          static const float_t DEFAULT_BETA;
+          static constexpr float_t DEFAULT_BETA = 0.5;
           /// default gamma (parameter for Armijo's rule)
-          static const float_t DEFAULT_GAMMA;
+          static constexpr float_t DEFAULT_GAMMA = 1e-2;
           /// default tolerance (parameter for Armijo's rule)
-          static const float_t DEFAULT_TOLERANCE;
+          static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
           /// default epsilon (parameter for Armijo's rule)
-          static const float_t DEFAULT_EPSILON;
+          static constexpr float_t DEFAULT_EPSILON = 1e-18;
           /// default steepest descent restart parameter 1
-          static const float_t DEFAULT_ALPHA1;
+          static constexpr float_t DEFAULT_ALPHA1 = 1e-6;
           /// default steepest descent restart parameter 2
-          static const float_t DEFAULT_ALPHA2;
+          static constexpr float_t DEFAULT_ALPHA2 = 1e-6;
           /// default steepest descent restart exponent
-          static const float_t DEFAULT_P;
+          static constexpr float_t DEFAULT_P = 0.1;
 
           /**
            * Constructor.
@@ -60,8 +60,8 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          Newton(const ObjectiveFunction& f,
-                 const ObjectiveHessian& fHessian,
+          Newton(ObjectiveFunction& f,
+                 ObjectiveHessian& fHessian,
                  size_t maxItCount = DEFAULT_N,
                  float_t beta = DEFAULT_BETA,
                  float_t gamma = DEFAULT_GAMMA,
@@ -89,8 +89,8 @@ namespace SGPP {
            *                          the linear systems
            *                          (Hessian as coefficient matrix)
            */
-          Newton(const ObjectiveFunction& f,
-                 const ObjectiveHessian& fHessian,
+          Newton(ObjectiveFunction& f,
+                 ObjectiveHessian& fHessian,
                  size_t maxItCount,
                  float_t beta,
                  float_t gamma,
@@ -105,12 +105,7 @@ namespace SGPP {
            * @param[out] xOpt optimal point
            * @return          optimal objective function value
            */
-          float_t optimize(std::vector<float_t>& xOpt);
-
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<Optimizer>& clone) const;
+          float_t optimize(base::DataVector& xOpt);
 
           /**
            * @return objective function Hessian
@@ -189,7 +184,7 @@ namespace SGPP {
 
         protected:
           /// objective function Hessian
-          std::unique_ptr<ObjectiveHessian> fHessian;
+          ObjectiveHessian& fHessian;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)
@@ -208,23 +203,6 @@ namespace SGPP {
           const sle_solver::BiCGStab defaultSleSolver;
           /// linear solver
           const sle_solver::SLESolver& sleSolver;
-
-          /**
-           * Internal function for initializing the member variables.
-           *
-           * @param fHessian          objective function Hessian
-           * @param beta              beta (parameter for Armijo's rule)
-           * @param gamma             gamma (parameter for Armijo's rule)
-           * @param tolerance         tolerance (parameter for Armijo's rule)
-           * @param epsilon           epsilon (parameter for Armijo's rule)
-           * @param alpha1            steepest descent restart parameter 1
-           * @param alpha2            steepest descent restart parameter 2
-           * @param p                 steepest descent restart exponent
-           */
-          void initialize(const ObjectiveHessian& fHessian,
-                          float_t beta, float_t gamma, float_t tolerance,
-                          float_t epsilon,
-                          float_t alpha1, float_t alpha2, float_t p);
       };
 
     }

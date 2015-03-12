@@ -55,7 +55,7 @@ namespace SGPP {
          *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
          * @return              \f$f(\vec{x})\f$
          */
-        virtual float_t evalHessian(const std::vector<float_t>& x,
+        virtual float_t evalHessian(const base::DataVector& x,
                                     base::DataVector& gradient,
                                     base::DataMatrix& hessian) = 0;
 

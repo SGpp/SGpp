@@ -19,9 +19,9 @@ class TestOptimizer(unittest.TestCase):
     
     def testOptimizers(self):
         """Test SGPP::optimization::optimizer."""
-        f = objective_functions.TitleFunction()
-        f_gradient = objective_functions.TitleFunctionGradient()
-        f_hessian = objective_functions.TitleFunctionHessian()
+        f = objective_functions.ExampleFunction()
+        f_gradient = objective_functions.ExampleFunctionGradient()
+        f_hessian = objective_functions.ExampleFunctionHessian()
         
         # Test All The Optimizers!
         N = 1000
@@ -33,7 +33,7 @@ class TestOptimizer(unittest.TestCase):
                       pysgpp.OptDifferentialEvolution(f, N)]
         
         for optimizer in optimizers:
-            xopt = pysgpp.DoubleVector()
+            xopt = pysgpp.DataVector(0)
             # optimize
             fopt = optimizer.optimize(xopt)
             

@@ -26,12 +26,10 @@
 namespace SGPP {
   namespace optimization {
 
-    const float_t IterativeGridGeneratorLinearSurplus::DEFAULT_ALPHA = 0.2;
-
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t alpha) :
+      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t gamma) :
       IterativeGridGenerator(f, grid, N),
-      alpha(alpha) {
+      gamma(gamma) {
       if ((std::strcmp(grid.getType(),
                        "bspline") == 0) ||
           (std::strcmp(grid.getType(),
@@ -68,12 +66,12 @@ namespace SGPP {
       }
     }
 
-    float_t IterativeGridGeneratorLinearSurplus::getAlpha() const {
-      return alpha;
+    float_t IterativeGridGeneratorLinearSurplus::getGamma() const {
+      return gamma;
     }
 
-    void IterativeGridGeneratorLinearSurplus::setAlpha(float_t alpha) {
-      this->alpha = alpha;
+    void IterativeGridGeneratorLinearSurplus::setGamma(float_t gamma) {
+      this->gamma = gamma;
     }
 
     bool IterativeGridGeneratorLinearSurplus::generate() {
@@ -129,9 +127,10 @@ namespace SGPP {
       base::DataVector coeffs(currentN);
       // abbreviation (functionValues is a member variable of
       // IterativeGridGenerator)
-      std::vector<float_t>& fX = functionValues;
+      base::DataVector& fX = functionValues;
 
-      fX.assign(std::max(N, currentN), 0.0);
+      fX.resize(std::max(N, currentN));
+      fX.setAll(0.0);
 
       for (size_t i = 0; i < currentN; i++) {
         // set correct point distribution
@@ -142,7 +141,7 @@ namespace SGPP {
       #pragma omp parallel shared(fX, coeffs, currentN, gridStorage) \
       default(none)
       {
-        std::vector<float_t> x(d, 0.0);
+        base::DataVector x(d);
         ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
         std::unique_ptr<ObjectiveFunction> curF;
@@ -179,17 +178,13 @@ namespace SGPP {
 
       // initial hierarchisation
       if (currentN > 1) {
-        std::vector<float_t> fXCutoff(fX.begin(), fX.begin() + currentN);
-        std::vector<float_t> coeffsVec;
+        base::DataVector fXCutoff(fX.getPointer(), currentN);
         sle_solver::BiCGStab sleSolver;
 
         // solve system
         printer.disableStatusPrinting();
-        sleSolver.solve(hierSLE, fXCutoff, coeffsVec);
+        sleSolver.solve(hierSLE, fXCutoff, coeffs);
         printer.enableStatusPrinting();
-
-        // convert std::vector to base::DataVector
-        coeffs = base::DataVector(&coeffsVec[0], currentN);
       }
 
       // iteration counter
@@ -222,7 +217,7 @@ namespace SGPP {
         refinablePtsCount =
           abstractRefinement->getNumberOfRefinablePoints(&gridStorage);
         ptsToBeRefinedCount =
-          static_cast<int>(1.0 + refineFactor * alpha *
+          static_cast<int>(1.0 + refineFactor * gamma *
                            static_cast<float_t>(refinablePtsCount));
 
         // refine
@@ -267,7 +262,7 @@ namespace SGPP {
         #pragma omp parallel shared(fX, currentN, newN, gridStorage, distr) \
         default(none)
         {
-          std::vector<float_t> x(d, 0.0);
+          base::DataVector x(d);
           ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
           std::unique_ptr<ObjectiveFunction> curF;
@@ -318,7 +313,7 @@ namespace SGPP {
       }
 
       // delete superfluous entries in fX
-      fX.erase(fX.begin() + currentN, fX.end());
+      fX.resize(currentN);
 
       if (result) {
         printer.printStatusUpdate("100.0% (N = " +

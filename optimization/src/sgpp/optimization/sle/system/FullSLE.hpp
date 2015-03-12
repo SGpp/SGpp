@@ -11,7 +11,6 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-#include <vector>
 #include <cstddef>
 
 namespace SGPP {
