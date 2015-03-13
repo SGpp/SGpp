@@ -48,7 +48,7 @@ namespace SGPP {
 
             for (size_t t = 0; t < d; t++) {
               const float_t xt = 10.0 * x.get(t) - 2.0;
-              result += xt * xt - 10.0 * cos(2 * M_PI * xt);
+              result += xt * xt - 10.0 * std::cos(2 * M_PI * xt);
             }
 
             return result;

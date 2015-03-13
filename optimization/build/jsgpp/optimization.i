@@ -111,6 +111,7 @@ const bool UMFPACK_ENABLED;
 %feature("director") SGPP::optimization::ObjectiveFunction;
 %feature("director") SGPP::optimization::ObjectiveGradient;
 %feature("director") SGPP::optimization::ObjectiveHessian;
+%feature("director") SGPP::optimization::test_functions::TestFunction;
 %feature("director") SGPP::optimization::IterativeGridGenerator;
 %feature("director") SGPP::optimization::SLE;
 %feature("director") SGPP::optimization::sle_solver::SLESolver;

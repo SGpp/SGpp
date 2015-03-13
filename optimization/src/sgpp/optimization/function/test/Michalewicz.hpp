@@ -43,8 +43,9 @@ namespace SGPP {
             const float_t x1 = 5.0 * x.get(0);
             const float_t x2 = 5.0 * x.get(1);
 
-            return -sin(x1) * std::pow(std::sin(x1 * x1 / M_PI), 20.0) -
-                   sin(x2) * std::pow(std::sin(2.0 * x2 * x2 / M_PI), 20.0);
+            return -std::sin(x1) * std::pow(std::sin(x1 * x1 / M_PI), 20.0) -
+                   std::sin(x2) * std::pow(std::sin(2.0 * x2 * x2 / M_PI),
+                                           20.0);
           }
 
           /**
