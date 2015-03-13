@@ -108,14 +108,14 @@ namespace SGPP {
 
         if (B.size() == 1) {
           // only one RHS ==> use vector version of arma::solve
-          arma::vec b_armadillo(B[0].getPointer(), n);
-          arma::vec x_armadillo(n);
+          arma::vec bArmadillo(B[0].getPointer(), n);
+          arma::vec xArmadillo(n);
 
           printer.printStatusUpdate("solving with Armadillo");
 
-          if (arma::solve(x_armadillo, A, b_armadillo)) {
+          if (arma::solve(xArmadillo, A, bArmadillo)) {
             X.clear();
-            X.push_back(base::DataVector(x_armadillo.memptr(), n));
+            X.push_back(base::DataVector(xArmadillo.memptr(), n));
             printer.printStatusEnd();
             return true;
           } else {

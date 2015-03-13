@@ -28,8 +28,7 @@ printLine();
 fprintf('Generating grid...\n\n');
 
 if ~gridGen.generate()
-    fprintf('Grid generation failed, exiting.\n');
-    return;
+    error('Grid generation failed, exiting.');
 end
 
 %% HIERARCHIZATION
@@ -43,21 +42,17 @@ hierSLE = sgpp.OptHierarchisationSLE(grid);
 sleSolver = sgpp.OptAutoSLESolver();
 
 % solve linear system
-if ~sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs)
-    fprintf('Solving failed, exiting.\n');
-    return;
+if ~sleSolver.solve(hierSLE, functionValues, coeffs)
+    error('Solving failed, exiting.');
 end
-
-% convert std::vector to sgpp.DataVector
-coeffsDV = sgpp.DataVector(coeffs);
 
 %% OPTIMIZATION OF THE SMOOTH INTERPOLANT
 %  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 printLine();
 fprintf('Optimizing smooth interpolant...\n\n');
-ft = sgpp.OptInterpolantFunction(d, grid, coeffsDV);
-ftGradient = sgpp.OptInterpolantGradient(d, grid, coeffsDV);
+ft = sgpp.OptInterpolantFunction(d, grid, coeffs);
+ftGradient = sgpp.OptInterpolantGradient(d, grid, coeffs);
 gradientMethod = sgpp.OptGradientMethod(ft, ftGradient);
 x0 = sgpp.DataVector(d);
 
