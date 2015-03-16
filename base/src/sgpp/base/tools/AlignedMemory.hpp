@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/*
+
 #ifndef ALIGNEDMEMORY_HPP
 #define ALIGNEDMEMORY_HPP
 
@@ -64,4 +66,6 @@
 // */
 //void operator delete[] (void* p) throw();
 
-#endif /* ALIGNEDMEMORY_HPP */
+/*
+#endif
+*/

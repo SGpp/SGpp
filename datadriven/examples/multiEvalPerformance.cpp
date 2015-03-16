@@ -25,12 +25,12 @@ int main(int argc, char **argv) {
 	SGPP::base::DataMatrix *trainingData = dataset.getTrainingData();
 
 	// create a two-dimensional piecewise bi-linear grid
-	int dim = dataset.getDimension();
+	size_t dim = dataset.getDimension();
 	SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
 	SGPP::base::GridStorage* gridStorage = grid->getStorage();
 	std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 	// create regular grid, level 3
-	int level = 2;
+	uint32_t level = 2;
 	SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
 	gridGen->regular(level);
 	std::cout << "number of grid points: " << gridStorage->size() << std::endl;
@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
 	SGPP::base::DataVector result(dataset.getNumberInstances());
 
 	eval->eval(alpha, result);
-
 
 //	std::cout << "result: ";
 //	for (size_t i = 0; i < result.getSize(); i++) {
@@ -97,7 +96,7 @@ int main(int argc, char **argv) {
 	for (size_t i = 0; i < result.getSize(); i++) {
 		mse += (result[i] - resultCompare[i]) * (result[i] - resultCompare[i]);
 	}
-	mse = sqrt(mse);
+	mse = mse / static_cast<double>(result.getSize());
 	std::cout << "mse: " << mse << std::endl;
 }
 

@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/*
 #include <sgpp/base/tools/AlignedMemory.hpp>
 
 void* operator new (size_t size)
@@ -93,3 +94,5 @@ void operator delete (void* p) throw () {
 void operator delete[] (void* p) throw() {
   aligned_free(p);
 }
+
+*/

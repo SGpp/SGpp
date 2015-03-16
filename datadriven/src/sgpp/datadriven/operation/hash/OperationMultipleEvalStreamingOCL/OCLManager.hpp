@@ -7,6 +7,7 @@
 
 #pragma once
 
+//define required for clCreateCommandQueue on platforms that don't support OCL2.0 yet
 #include <CL/cl.h>
 
 #include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
@@ -273,7 +274,7 @@ public:
 #ifndef NO_OCL_OPTS
 		build_opts = "-cl-finite-math-only -cl-fast-relaxed-math ";
 #else
-		build_opts = "-cl-opt-disable ";
+		build_opts = "-cl-opt-disable -g ";
 #endif
 
 		// compiling the program
