@@ -81,7 +81,8 @@ SGPP::base::DataVector& result) {
 	result.setAll(0.0);
 
 	size_t gridFrom = 0;
-	size_t gridTo = grid.getStorage()->size();
+	//size_t gridTo = grid.getStorage()->size();
+	size_t gridTo = this->level_->getNrows();
 	size_t datasetFrom = 0;
 	size_t datasetTo = this->preparedDataset.getNcols();
 
@@ -100,12 +101,25 @@ void OperationMultiEvalStreamingOCL::recalculateLevelAndIndex() {
 	if (this->index_ != nullptr)
 		delete this->index_;
 
-	this->level_ = new SGPP::base::DataMatrix(this->storage->size(),
+	uint32_t localWorkSize = this->manager.getOCLLocalSize();
+
+	size_t remainder = this->storage->size() % localWorkSize;
+	size_t padding = localWorkSize - remainder;
+	size_t paddedSize = this->storage->size() + padding;
+
+	this->level_ = new SGPP::base::DataMatrix(paddedSize,
 			this->storage->dim());
-	this->index_ = new SGPP::base::DataMatrix(this->storage->size(),
+	this->index_ = new SGPP::base::DataMatrix(paddedSize,
 			this->storage->dim());
 
 	this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+
+	for (size_t i = this->storage->size(); i < paddedSize; i++) {
+		for (size_t j = 0; j < this->storage->dim(); j++) {
+			this->level_->set(i, j, 1.0);
+			this->index_->set(i, j, 1.0);
+		}
+	}
 }
 
 //TODO: fix for OpenCL

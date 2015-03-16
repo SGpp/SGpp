@@ -65,28 +65,29 @@ OCLKernelImpl::OCLKernelImpl(OCLManager &manager): manager(manager) {
 	this->device_ids = manager.device_ids;
 	this->OCLLocalSize = manager.getOCLLocalSize();
 
-	clData = new cl_mem[num_devices];
-	clLevel = new cl_mem[num_devices];
-	clIndex = new cl_mem[num_devices];
-	clDevGrid = new cl_mem[num_devices];
-	clDevTmp = new cl_mem[num_devices];
-	clPinnedGrid = NULL;
-	clPinnedTmp = NULL;
+	this->clData = new cl_mem[num_devices];
+	this->clLevel = new cl_mem[num_devices];
+	this->clIndex = new cl_mem[num_devices];
+	this->clDevGrid = new cl_mem[num_devices];
+	this->clDevTmp = new cl_mem[num_devices];
+	this->clPinnedGrid = nullptr;
+	this->pinnedTmp = nullptr;
+	this->clPinnedTmp = nullptr;
 
-	kernel_mult = new cl_kernel[num_devices];
-	kernel_multTrans = new cl_kernel[num_devices];
+	this->kernel_mult = new cl_kernel[num_devices];
+	this->kernel_multTrans = new cl_kernel[num_devices];
 
 	// initialize arrays
 	for (size_t i = 0; i < num_devices; i++) {
-		clData[i] = NULL;
-		clLevel[i] = NULL;
-		clIndex[i] = NULL;
+		this->clData[i] = nullptr;
+		this->clLevel[i] = nullptr;
+		this->clIndex[i] = nullptr;
 
-		clDevGrid[i] = NULL;
-		clDevTmp[i] = NULL;
+		this->clDevGrid[i] = nullptr;
+		this->clDevTmp[i] = nullptr;
 
-		kernel_mult[i] = NULL;
-		kernel_multTrans[i] = NULL;
+		this->kernel_mult[i] = nullptr;
+		this->kernel_multTrans[i] = nullptr;
 	}
 }
 
@@ -124,23 +125,23 @@ void OCLKernelImpl::releaseGridBuffers() {
 	for (size_t i = 0; i < num_devices; i++) {
 		if (clLevel[i]) {
 			clReleaseMemObject(clLevel[i]);
-			clLevel[i] = NULL;
+			clLevel[i] = nullptr;
 		}
 
 		if (clIndex[i]) {
 			clReleaseMemObject(clIndex[i]);
-			clIndex[i] = NULL;
+			clIndex[i] = nullptr;
 		}
 
 		if (clDevGrid[i]) {
 			clReleaseMemObject(clDevGrid[i]);
-			clDevGrid[i] = NULL;
+			clDevGrid[i] = nullptr;
 		}
 	}
 
 	if (clPinnedGrid) {
 		clReleaseMemObject(clPinnedGrid);
-		clPinnedGrid = NULL;
+		clPinnedGrid = nullptr;
 	}
 }
 
@@ -148,18 +149,18 @@ void OCLKernelImpl::releaseDataBuffers() {
 	for (size_t i = 0; i < num_devices; i++) {
 		if (clData[i]) {
 			clReleaseMemObject(clData[i]);
-			clData[i] = NULL;
+			clData[i] = nullptr;
 		}
 
 		if (clDevTmp[i]) {
 			clReleaseMemObject(clDevTmp[i]);
-			clDevTmp[i] = NULL;
+			clDevTmp[i] = nullptr;
 		}
 	}
 
 	if (clPinnedTmp) {
 		clReleaseMemObject(clPinnedTmp);
-		clPinnedTmp = NULL;
+		clPinnedTmp = nullptr;
 	}
 }
 
@@ -167,12 +168,12 @@ void OCLKernelImpl::releaseKernelsAndPrograms() {
 	for (size_t i = 0; i < num_devices; i++) {
 		if (kernel_mult[i]) {
 			clReleaseKernel(kernel_mult[i]);
-			kernel_mult[i] = NULL;
+			kernel_mult[i] = nullptr;
 		}
 
 		if (kernel_multTrans[i]) {
 			clReleaseKernel(kernel_multTrans[i]);
-			kernel_multTrans[i] = NULL;
+			kernel_multTrans[i] = nullptr;
 		}
 	}
 }

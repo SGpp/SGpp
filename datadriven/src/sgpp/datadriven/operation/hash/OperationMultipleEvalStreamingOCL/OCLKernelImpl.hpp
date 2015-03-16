@@ -310,6 +310,12 @@ public:
 					&gpu_end_index_grid[gpu_num], OCLLocalSize);
 		}
 
+		/*
+        size_t range = end_index_grid - start_index_grid;
+        size_t numWGs = range / m_oclkernel.getChunkGridPoints();
+        size_t end_index_grid_gpu = start_index_grid + numWGs *  m_oclkernel.getChunkGridPoints();
+*/
+
 		// set kernel arguments
 		cl_uint clSourceSize = (cl_uint) sourceSize;
 		cl_uint gpu_start_data = (cl_uint) start_index_data;
