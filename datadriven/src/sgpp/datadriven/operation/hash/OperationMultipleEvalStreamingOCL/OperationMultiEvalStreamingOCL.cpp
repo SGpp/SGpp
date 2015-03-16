@@ -39,6 +39,7 @@ OperationMultiEvalStreamingOCL::~OperationMultiEvalStreamingOCL() {
 
 void OperationMultiEvalStreamingOCL::mult(SGPP::base::DataVector& alpha,
 SGPP::base::DataVector& result) {
+	std::cout << "in mult" << std::endl;
 	this->myTimer_.start();
 
 	this->recalculateLevelAndIndex();
@@ -64,6 +65,7 @@ SGPP::base::DataVector& result) {
 void OperationMultiEvalStreamingOCL::multTranspose(
 SGPP::base::DataVector& source,
 SGPP::base::DataVector& result) {
+	std::cout << "in multTranspose" << std::endl;
 	this->myTimer_.start();
 	this->recalculateLevelAndIndex();
 
@@ -110,7 +112,7 @@ void OperationMultiEvalStreamingOCL::recalculateLevelAndIndex() {
 size_t OperationMultiEvalStreamingOCL::padDataset(
 SGPP::base::DataMatrix& dataset) {
 
-	size_t vecWidth = 24;
+	size_t vecWidth = this->manager.getOCLLocalSize();
 
 	// Assure that data has a even number of instances -> padding might be needed
 	size_t remainder = dataset.getNrows() % vecWidth;

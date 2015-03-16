@@ -13,27 +13,6 @@
 namespace SGPP {
 namespace datadriven {
 
-unsigned int get_ocl_local_size() {
-	// read environment variable for local work group size: SGPP_OCL_LOCAL_SIZE
-	const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
-
-	if (ocl_local_size_env != NULL) {
-		unsigned int num_ocl_devices_envvalue = (unsigned int) (strtoul(
-				ocl_local_size_env, NULL, 0));
-
-		if (num_ocl_devices_envvalue != 0) {
-			return num_ocl_devices_envvalue;
-		} else {
-			std::cout << "Ignoring value: \"" << ocl_local_size_env
-					<< "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
-		}
-	}
-
-	return 64;
-}
-
-unsigned int OCLKernelImpl::ocl_local_size = get_ocl_local_size();
-
 void OCLKernelImpl::getPartitionSegment(size_t start, size_t end,
 		size_t segmentCount, size_t segmentNumber, size_t* segmentStart,
 		size_t* segmentEnd, size_t blockSize) {
@@ -84,6 +63,7 @@ OCLKernelImpl::OCLKernelImpl(OCLManager &manager): manager(manager) {
 	this->context = manager.context;
 	this->command_queue = manager.command_queue;
 	this->device_ids = manager.device_ids;
+	this->OCLLocalSize = manager.getOCLLocalSize();
 
 	clData = new cl_mem[num_devices];
 	clLevel = new cl_mem[num_devices];
@@ -98,8 +78,6 @@ OCLKernelImpl::OCLKernelImpl(OCLManager &manager): manager(manager) {
 
 	// initialize arrays
 	for (size_t i = 0; i < num_devices; i++) {
-		command_queue[i] = NULL;
-
 		clData[i] = NULL;
 		clLevel[i] = NULL;
 		clIndex[i] = NULL;

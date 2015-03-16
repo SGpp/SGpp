@@ -50,6 +50,8 @@ public:
 			max_number_ocl_devices = 8;
 		}
 
+		this->ocl_local_size = this->getOCLLocalSize();
+
 		// determine number of available OpenCL platforms
 		err = clGetPlatformIDs(0, NULL, &num_platforms);
 
@@ -86,7 +88,6 @@ public:
 				}
 
 #ifdef USEOCL_INTEL
-
 				if (strcmp(vendor_name, "Intel(R) Corporation") == 0) {
 #ifdef USEOCL_MIC
 					std::cout << "OCL Info: Using MIC Platform: " << vendor_name << std::endl;
@@ -95,11 +96,11 @@ public:
 							<< std::endl;
 #else
 					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-#endif
+#endif // USEOCL_MIC
 					platform_id = platform_ids[ui];
 				}
+#endif // USEOCL_INTEL
 
-#endif
 #ifdef USEOCL_AMD
 
 				if (strcmp(vendor_name, "Advanced Micro Devices, Inc.") == 0) {
@@ -107,22 +108,20 @@ public:
 					std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
 #else
 					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-#endif
+#endif // USEOCL_CPU
 					platform_id = platform_ids[ui];
 				}
+#endif // USEOCL_AMD
 
-#endif
 #ifdef USEOCL_NVIDIA
 
 				if (strcmp(vendor_name, "NVIDIA Corporation") == 0) {
 					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
 					platform_id = platform_ids[ui];
 				}
-
-#endif
+#endif //USEOCL_NVIDIA
 			}
 		}
-
 		std::cout << std::endl;
 
 		// Find out how many devices there are
@@ -237,7 +236,6 @@ public:
 		std::cout
 				<< "OCL Info: Successfully initialized OpenCL (local workgroup size: "
 				<< ocl_local_size << ")" << std::endl << std::endl;
-
 	}
 
 	/**
@@ -313,6 +311,26 @@ public:
 
 		return CL_SUCCESS;
 	}
+
+	unsigned int getOCLLocalSize() {
+		// read environment variable for local work group size: SGPP_OCL_LOCAL_SIZE
+		const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
+
+		if (ocl_local_size_env != NULL) {
+			unsigned int num_ocl_devices_envvalue = (unsigned int) (strtoul(
+					ocl_local_size_env, NULL, 0));
+
+			if (num_ocl_devices_envvalue != 0) {
+				return num_ocl_devices_envvalue;
+			} else {
+				std::cout << "Ignoring value: \"" << ocl_local_size_env
+						<< "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
+			}
+		}
+
+		return 64;
+	}
+
 };
 
 }

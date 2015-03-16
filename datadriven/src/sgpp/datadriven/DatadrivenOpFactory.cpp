@@ -194,11 +194,6 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 		case datadriven::OperationMultipleEvalType::DEFAULT:
 		case datadriven::OperationMultipleEvalType::STREAMING:
 			if (configuration.subType
-					!= SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
-				throw base::factory_exception(
-						"OperationMultiEval is not implemented for this implementation subtype.");
-			}
-			if (configuration.subType
 					== SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef __AVX__
 				return new datadriven::OperationMultiEvalStreaming(grid,
@@ -233,25 +228,16 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 				throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
 #endif
 				break;
-
+			case SGPP::datadriven::OperationMultipleEvalSubType::OCL:
 			default:
-				throw base::factory_exception(
-						"OperationMultiEval is not implemented for this implementation subtype.");
 				break;
 			}
-
-			break;
-
 		default:
-			throw base::factory_exception(
-					"OperationMultiEval is not implemented for this implementation type.");
 			break;
 		}
-
-	} else {
-		throw base::factory_exception(
-				"OperationMultiEval is not implemented for this grid type.");
 	}
+	throw base::factory_exception(
+			"OperationMultiEval is not implemented for this grid type.");
 }
 
 }

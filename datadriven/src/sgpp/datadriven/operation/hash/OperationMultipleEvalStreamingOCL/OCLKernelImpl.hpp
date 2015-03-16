@@ -50,7 +50,7 @@ private:
 	cl_kernel* kernel_multTrans;
 	cl_kernel* kernel_mult;
 
-	static unsigned int ocl_local_size;
+	unsigned int OCLLocalSize;
 	double* pinnedGrid;
 	double* pinnedTmp;
 
@@ -89,12 +89,13 @@ public:
 	}
 
 	void resetKernel();
-	static inline size_t getChunkGridPoints() {
-		return ocl_local_size;
+
+	size_t getChunkGridPoints() {
+		return this->OCLLocalSize;
 	}
 
-	static inline size_t getChunkDataPoints() {
-		return ocl_local_size;
+	size_t getChunkDataPoints() {
+		return this->OCLLocalSize;
 	}
 
 	double mult(
@@ -116,7 +117,7 @@ public:
 
 		if (kernel_mult[0] == NULL) {
 			size_t dims = dataset->getNrows();
-			this->createMult(dims, ocl_local_size, context, num_devices,
+			this->createMult(dims, OCLLocalSize, context, num_devices,
 					device_ids, kernel_mult);
 		}
 
@@ -131,7 +132,7 @@ public:
 		for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
 			this->getPartitionSegment(start_index_data, end_index_data,
 					num_devices, gpu_num, &gpu_start_index_data[gpu_num],
-					&gpu_end_index_data[gpu_num], ocl_local_size);
+					&gpu_end_index_data[gpu_num], OCLLocalSize);
 		}
 
 		// set kernel arguments
@@ -165,7 +166,7 @@ public:
 		cl_event *GPUDone = new cl_event[num_devices];
 
 		// enqueue kernel
-		size_t local = ocl_local_size;
+		size_t local = OCLLocalSize;
 		size_t active_devices = 0;
 
 		for (size_t i = 0; i < num_devices; i++) {
@@ -269,6 +270,7 @@ public:
 		delete[] GPUDone;
 
 		return time;
+		//return 0.0;
 	}
 
 	double multTranspose(
@@ -290,7 +292,7 @@ public:
 		double time = 0.0;
 
 		if (kernel_multTrans[0] == NULL) {
-			this->createMultTrans(dims, ocl_local_size, context, num_devices,
+			this->createMultTrans(dims, OCLLocalSize, context, num_devices,
 					device_ids, kernel_multTrans);
 		}
 
@@ -305,7 +307,7 @@ public:
 		for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
 			this->getPartitionSegment(start_index_grid, end_index_grid,
 					num_devices, gpu_num, &gpu_start_index_grid[gpu_num],
-					&gpu_end_index_grid[gpu_num], ocl_local_size);
+					&gpu_end_index_grid[gpu_num], OCLLocalSize);
 		}
 
 		// set kernel arguments
@@ -335,11 +337,12 @@ public:
 			}
 		}
 
+
 		cl_event* clTimings = new cl_event[num_devices];
 		cl_event* GPUDone = new cl_event[num_devices];
 
 		// enqueue kernels
-		size_t local = ocl_local_size;
+		size_t local = OCLLocalSize;
 		size_t active_devices = 0;
 
 		for (size_t i = 0; i < num_devices; i++) {
@@ -501,7 +504,12 @@ protected:
 
 			pinnedGrid = (double*) clEnqueueMapBuffer(command_queue[0],
 					clPinnedGrid, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE, 0,
-					mem_size, 0, NULL, NULL, NULL);
+					mem_size, 0, NULL, NULL, &err);
+			if (err != CL_SUCCESS) {
+				std::cout
+						<< "OCL Error: pinnedGrid: "
+						<< err << std::endl;
+			}
 		}
 
 		for (size_t i = 0; i < grid.getSize(); i++) {
