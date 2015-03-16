@@ -102,10 +102,10 @@ namespace SGPP {
       }
 
       base::GridStorage& gridStorage = *grid.getStorage();
-      // Set up linear system for hierarchisation with the linear grid as
+      // Set up linear system for hierarchization with the linear grid as
       // underlying grid, but set the internal grid storage to the one of the
       // B-spline/wavelet grid.
-      // hierSLE is used for two purposes: 1. initial hierarchisation
+      // hierSLE is used for two purposes: 1. initial hierarchization
       // (with a linear solver),
       // 2. in the algorithm loop: evaluation of basis functions at grid points
       // (no linear solver due to forward substitution).
@@ -176,7 +176,7 @@ namespace SGPP {
         }
       }
 
-      // initial hierarchisation
+      // initial hierarchization
       if (currentN > 1) {
         base::DataVector fXCutoff(fX.getPointer(), currentN);
         sle_solver::BiCGStab sleSolver;

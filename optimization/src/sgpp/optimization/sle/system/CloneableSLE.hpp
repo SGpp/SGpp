@@ -19,7 +19,7 @@ namespace SGPP {
      * Abstract class for "cloneable" linear systems.
      * This class is needed in the case that matrix entry lookups are not
      * possible concurrently
-     * (e.g. for hierarchisation systems with Clenshaw-Curtis grids).
+     * (e.g. for hierarchization systems with Clenshaw-Curtis grids).
      */
     class CloneableSLE : public SLE {
       public:

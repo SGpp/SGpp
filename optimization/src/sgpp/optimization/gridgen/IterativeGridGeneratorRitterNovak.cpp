@@ -89,10 +89,10 @@ namespace SGPP {
       // abbreviation (functionValues is a member variable of
       // IterativeGridGenerator)
       base::DataVector& fX = functionValues;
-      // fX_sorted is fX sorted ascendingly
-      base::DataVector fXSorted(currentN, 0);
-      // fX_order fulfills fX_sorted[i] = fX[fX_order[i]]
-      std::vector<size_t> fXOrder(currentN, 0);
+      // fXSorted is fX sorted ascendingly
+      base::DataVector fXSorted(currentN);
+      // fXOrder fulfills fXSorted[i] = fX[fXOrder[i]]
+      std::vector<size_t> fXOrder(currentN);
 
       fX.resize(std::max(N, currentN));
       fX.setAll(0.0);
@@ -116,7 +116,7 @@ namespace SGPP {
       for (size_t i = 0; i < currentN; i++) {
         base::GridIndex& gp = *gridStorage.get(i);
         gp.setPointDistribution(distr);
-        // prepare fX_order and rank
+        // prepare fXOrder and rank
         fXOrder[i] = i;
         rank[i] = i;
 
@@ -161,17 +161,17 @@ namespace SGPP {
         }
       }
 
-      // determine fX_order and rank (prepared above)
-      std::sort(fXOrder.begin(), fXOrder.end(),
+      // determine fXOrder and rank (prepared above)
+      std::sort(fXOrder.begin(), fXOrder.begin() + currentN,
       [&](size_t a, size_t b) {
         return (fX.get(a) < fX.get(b));
       });
-      std::sort(rank.begin(), rank.end(),
+      std::sort(rank.begin(), rank.begin() + currentN,
       [&](size_t a, size_t b) {
         return (fXOrder[a] < fXOrder[b]);
       });
 
-      // determine fX_sorted
+      // determine fXSorted
       for (size_t i = 0; i < currentN; i++) {
         fXSorted[i] = fX[fXOrder[i]];
       }
@@ -362,17 +362,19 @@ namespace SGPP {
         }
 
         for (size_t i = currentN; i < newN; i++) {
-          // update rank and fX_order by insertion sort
-          // ==> go through fX from biggest entry to lowest
+          const float_t fXi = fX[i];
+
+          // update rank and fXOrder by insertion sort
+          // ==> go through fX from greatest entry to lowest
           for (size_t j = i - 1; j-- > 0; ) {
-            if (fXSorted[j] < fX[i]) {
-              // new function value is bigger as current one ==> insert here
+            if (fXSorted[j] < fXi) {
+              // new function value is greater than current one ==> insert here
               fXOrder.insert(fXOrder.begin() + (j + 1), i);
-              fXSorted.insert(j + 1, fX[i]);
+              fXSorted.insert(j + 1, fXi);
               rank[i] = j + 1;
               break;
             } else {
-              // new function value value not bigger yet ==> increase rank
+              // new function value value not greater yet ==> increase rank
               rank[fXOrder[j]]++;
             }
           }
@@ -380,9 +382,9 @@ namespace SGPP {
           if (fXOrder.size() == i) {
             // this happens if the new function value is smaller than all
             // of the previous ones
-            // ==> insert at the beginning of fX_order, rank = 0
+            // ==> insert at the beginning of fXOrder, rank = 0
             fXOrder.insert(fXOrder.begin(), i);
-            fXSorted.insert(0, fX[i]);
+            fXSorted.insert(0, fXi);
             rank[i] = 0;
           }
         }
