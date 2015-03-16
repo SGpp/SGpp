@@ -56,11 +56,6 @@ public:
 				<< getType<real_type>::asString() << "* ptrLevel," << std::endl;
 		stream_program_src << "           __global const "
 				<< getType<real_type>::asString() << "* ptrIndex," << std::endl;
-//		stream_program_src << "           __global const "
-//				<< getType<real_type>::asString() << "* ptrMask," << std::endl; // not needed for this kernel, but there for uniformity
-//		stream_program_src << "           __global const "
-//				<< getType<real_type>::asString() << "* ptrOffset,"
-//				<< std::endl; // not needed for this kernel, but there for uniformity
 		stream_program_src << "           __global const "
 				<< getType<real_type>::asString() << "* ptrData," << std::endl;
 		stream_program_src << "           __global const "
@@ -74,6 +69,8 @@ public:
 		stream_program_src << "{" << std::endl;
 		stream_program_src << " int globalIdx = get_global_id(0);" << std::endl;
 		stream_program_src << " int localIdx = get_local_id(0);" << std::endl;
+//		stream_program_src << " printf(\"hello from: %i\\n\", globalIdx);" << std::endl;
+
 		stream_program_src << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
 		stream_program_src << " __local " << getType<real_type>::asString() << " locLevel[" << dims* local_workgroup_size << "];" << std::endl;
@@ -89,11 +86,31 @@ public:
 				<< std::endl;
 		stream_program_src << " // Create registers for the data" << std::endl;
 
+//		//TODO: remove print
+//		stream_program_src << "if (globalIdx == 0) {" << std::endl;
+//		stream_program_src << " printf(\"data: \");" << std::endl;
+//		stream_program_src << "}" << std::endl;
+
 		for (size_t d = 0; d < dims; d++) {
 			stream_program_src << " " << getType<real_type>::asString()
 					<< " data_" << d << " = ptrData[globalIdx+(resultSize*" << d
 					<< ")];" << std::endl;
+
+//			//TODO: remove print
+//			stream_program_src << "if (globalIdx == 0) {" << std::endl;
+//			if (d > 0) {
+//				stream_program_src << "printf(\", \");" << std::endl;
+//			}
+//			stream_program_src << "printf(\"%lf\", " << " data_" << d << ");"
+//					<< std::endl;
+//			stream_program_src << "}" << std::endl;
+
 		}
+
+//		//TODO: remove print
+//		stream_program_src << "if (globalIdx == 0) {" << std::endl;
+//		stream_program_src << "printf(\"\\n\");" << std::endl;
+//		stream_program_src << "}" << std::endl;
 
 		stream_program_src << std::endl;
 #ifdef USEOCL_LOCAL_MEMORY
@@ -168,7 +185,21 @@ public:
 					<< getType<real_type>::constSuffix() << ");" << std::endl;
 			stream_program_src << "   curSupport *= localSupport;" << std::endl
 					<< std::endl;
+
+			//TODO: remove print
+//			stream_program_src << "if (globalIdx == 0) {" << std::endl;
+//			if (d > 0) {
+//				stream_program_src << "printf(\" * \");" << std::endl;
+//			}
+//			stream_program_src << "printf(\"(1dEval=%lf)\", localSupport);"
+//					<< std::endl;
+//			stream_program_src << "}" << std::endl;
 		}
+
+		//TODO: remove print
+//		stream_program_src << "if (globalIdx == 0) {" << std::endl;
+//		stream_program_src << "printf(\" * (ptrAlpha[%i]=%lf) == (eval=%lf)\\n\", m, ptrAlpha[m], curSupport);" << std::endl;
+//		stream_program_src << "}" << std::endl;
 
 		stream_program_src << "   myResult += curSupport;" << std::endl;
 		stream_program_src << " }" << std::endl;
@@ -178,6 +209,7 @@ public:
 		stream_program_src << " ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
 
+		std::cout << stream_program_src.str();
 		return stream_program_src.str();
 	}
 
@@ -199,11 +231,6 @@ public:
 				<< getType<real_type>::asString() << "* ptrLevel," << std::endl;
 		stream_program_src << "           __global const "
 				<< getType<real_type>::asString() << "* ptrIndex," << std::endl;
-//		stream_program_src << "           __global const "
-//				<< getType<real_type>::asString() << "* ptrMask," << std::endl; // not needed for this kernel, but there for uniformity
-//		stream_program_src << "           __global const "
-//				<< getType<real_type>::asString() << "* ptrOffset,"
-//				<< std::endl; // not needed for this kernel, but there for uniformity
 		stream_program_src << "           __global const "
 				<< getType<real_type>::asString() << "* ptrData," << std::endl;
 		stream_program_src << "           __global const "

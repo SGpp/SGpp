@@ -60,6 +60,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     if not config.CheckLib('OpenCL'):
       sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
       sys.exit(1)
+    config.env.AppendUnique(CPPDEFINES=["USEOCL_INTEL", "USEOCL_CPU"])
 
     if env["SG_PYTHON"]:
         # check whether swig installed
