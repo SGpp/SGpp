@@ -94,8 +94,8 @@ namespace SGPP {
 	//		stream_program_src << " printf(\"data: \");" << std::endl;
 	//		stream_program_src << "}" << std::endl;
 
-	stream_program_src << "resultSize = 5;" << std::endl;
-	stream_program_src << "printf(\"resultsize: %i\\n\", resultSize);" << std::endl;
+	//stream_program_src << "resultSize = 5;" << std::endl;
+	//stream_program_src << "printf(\"resultsize: %i\\n\", resultSize);" << std::endl;
 
 	for (size_t d = 0; d < dims; d++) {
 
@@ -172,7 +172,7 @@ namespace SGPP {
 	stream_program_src << "   myResult += curSupport;" << std::endl;
 	stream_program_src << " }" << std::endl;
 #else
-	/*		stream_program_src << " // Iterate over all grid points (without cache)"
+			stream_program_src << " // Iterate over all grid points (without cache)"
 			<< std::endl;
 			stream_program_src << " for(int m = start_grid; m < end_grid; m++)"
 			<< std::endl;
@@ -193,7 +193,7 @@ namespace SGPP {
 			<< getType<real_type>::constSuffix() << ");" << std::endl;
 			stream_program_src << "   curSupport *= localSupport;" << std::endl
 			<< std::endl;
-	*/
+
 	//TODO: remove print
 	//			stream_program_src << "if (globalIdx == 0) {" << std::endl;
 	//			if (d > 0) {
@@ -204,19 +204,19 @@ namespace SGPP {
 	//			stream_program_src << "}" << std::endl;
 
 	//TODO: COMMENT IN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//}
+	}
 
 	//TODO: remove print
 	//		stream_program_src << "if (globalIdx == 0) {" << std::endl;
 	//		stream_program_src << "printf(\" * (ptrAlpha[%i]=%lf) == (eval=%lf)\\n\", m, ptrAlpha[m], curSupport);" << std::endl;
 	//		stream_program_src << "}" << std::endl;
-	/*
+
 	  stream_program_src << "   myResult += curSupport;" << std::endl;
 	  stream_program_src << " }" << std::endl;
-	*/
+
 #endif
-	/*		stream_program_src << std::endl;
-			stream_program_src << " ptrResult[globalIdx] = myResult;" << std::endl;*/
+			stream_program_src << std::endl;
+			stream_program_src << " ptrResult[globalIdx] = myResult;" << std::endl;
 	stream_program_src << "}" << std::endl;
 
 	//std::cout << stream_program_src.str();
@@ -269,6 +269,7 @@ namespace SGPP {
 	stream_program_src << " " << getType<real_type>::asString()
 			   << " myResult = ptrResult[globalIdx];" << std::endl
 			   << std::endl;
+
 #ifdef USEOCL_LOCAL_MEMORY
 	stream_program_src << " __local " << getType<real_type>::asString() << " locData[" << dims* local_workgroup_size << "];" << std::endl;
 	stream_program_src << " __local " << getType<real_type>::asString() << " locSource[" << local_workgroup_size << "];" << std::endl << std::endl;
