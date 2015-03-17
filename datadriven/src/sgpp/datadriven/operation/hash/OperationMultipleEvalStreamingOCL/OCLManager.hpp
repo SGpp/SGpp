@@ -17,6 +17,9 @@
 namespace SGPP {
 namespace datadriven {
 
+#define USEOCL_CPU 1
+//#undef USEOCL_CPU
+
 class OCLManager {
 public:
 	cl_int err;
@@ -116,7 +119,6 @@ public:
 			std::cout << "OCL Error: Unable to get Device ID. Error Code: "
 					<< err << std::endl;
 		}
-		std::cout << "CPU device found" << std::endl;
 
 		num_devices = 1;
 
@@ -137,14 +139,9 @@ public:
 
 		// Creating the command queues
 		for (size_t i = 0; i < num_devices; i++) {
-			// TODO FIXME whats the difference here?
-#ifdef USEOCL_CPU
+
 			command_queue[i] = clCreateCommandQueue(context, device_ids[i],
 			CL_QUEUE_PROFILING_ENABLE, &err);
-#else
-			command_queue[i] = clCreateCommandQueue(context, device_ids[i],
-					CL_QUEUE_PROFILING_ENABLE, &err);
-#endif
 
 			if (err != CL_SUCCESS) {
 				std::cout

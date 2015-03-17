@@ -498,7 +498,7 @@ protected:
 	inline void initParams(SGPP::base::DataVector& grid,
 	SGPP::base::DataVector& tmp) {
 		if (clPinnedGrid == NULL) {
-			size_t mem_size = sizeof(double) * grid.getSize();
+			size_t mem_size = sizeof(double) * grid.getSize(); //has to be the padded grid size
 			clPinnedGrid = clCreateBuffer(context,
 			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, NULL,
 			NULL);
@@ -523,8 +523,14 @@ protected:
 		}
 
 		for (size_t i = 0; i < num_devices; i++) {
-			clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE, 0,
+			err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE, 0,
 					sizeof(double) * grid.getSize(), pinnedGrid, 0, NULL, NULL);
+
+			if (err != CL_SUCCESS) {
+				std::cout
+						<< "OCL Error: Failed to enqueue write buffer command (multTrans)! Error Code: "
+						<< err << std::endl;
+			}
 		}
 
 		if (clPinnedTmp == NULL) {

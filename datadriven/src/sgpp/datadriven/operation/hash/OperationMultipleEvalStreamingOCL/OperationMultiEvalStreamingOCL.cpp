@@ -39,9 +39,9 @@ OperationMultiEvalStreamingOCL::~OperationMultiEvalStreamingOCL() {
 
 void OperationMultiEvalStreamingOCL::mult(SGPP::base::DataVector& alpha,
 SGPP::base::DataVector& result) {
-	std::cout << "in mult" << std::endl;
 	this->myTimer_.start();
 
+	//TODO: do so only if necessary, also in the other kernels
 	this->recalculateLevelAndIndex();
 
 	size_t originalSize = result.getSize();
@@ -65,11 +65,12 @@ SGPP::base::DataVector& result) {
 void OperationMultiEvalStreamingOCL::multTranspose(
 SGPP::base::DataVector& source,
 SGPP::base::DataVector& result) {
-	std::cout << "in multTranspose" << std::endl;
 	this->myTimer_.start();
 	this->recalculateLevelAndIndex();
 
 	size_t originalSize = source.getSize();
+	size_t gridOriginalSize = result.getSize();
+	result.resize(this->level_->getNrows());
 
 	source.resize(this->preparedDataset.getNcols());
 
@@ -91,6 +92,7 @@ SGPP::base::DataVector& result) {
 			datasetFrom, datasetTo);
 
 	source.resize(originalSize);
+	result.resize(gridOriginalSize);
 	this->duration = this->myTimer_.stop();
 }
 
@@ -114,12 +116,15 @@ void OperationMultiEvalStreamingOCL::recalculateLevelAndIndex() {
 
 	this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
+
 	for (size_t i = this->storage->size(); i < paddedSize; i++) {
 		for (size_t j = 0; j < this->storage->dim(); j++) {
 			this->level_->set(i, j, 1.0);
 			this->index_->set(i, j, 1.0);
 		}
 	}
+	//TODO: one call per CG iteration -> very expensive!
+	this->kernel->resetKernel();
 }
 
 //TODO: fix for OpenCL

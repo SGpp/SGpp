@@ -52,16 +52,17 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         
         
 
-    config.env.AppendUnique(CPPPATH="/home/pfandedd/AMDAPPSDK-2.9-1/include/")
+    config.env.AppendUnique(CPPPATH="/home/pfandedd/AMDAPPSDK-3.0-0-Beta/include/")
     if not config.CheckCXXHeader('CL/cl.h'):
       sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL")
       sys.exit(1)
       
-    config.env.AppendUnique(LIBPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/")
+    #config.env.AppendUnique(LIBPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/")
+    config.env.AppendUnique(LIBPATH="/home/pfandedd/AMDAPPSDK-3.0-0-Beta/lib/x86_64/")
     if not config.CheckLib('OpenCL'):
       sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
       sys.exit(1)
-    config.env.AppendUnique(CPPDEFINES=["USEOCL_INTEL", "NO_OCL_OPTS"]) # "USEOCL_CPU"
+    #config.env.AppendUnique(CPPDEFINES=["USEOCL_INTEL", "NO_OCL_OPTS"]) # "USEOCL_CPU"
 
     if env["SG_PYTHON"]:
         # check whether swig installed
