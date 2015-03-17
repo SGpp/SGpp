@@ -88,119 +88,38 @@ public:
 							<< vendor_name << std::endl;
 				}
 
-#ifdef USEOCL_INTEL
-				if (strcmp(vendor_name, "Intel(R) Corporation") == 0) {
-#ifdef USEOCL_MIC
-					std::cout << "OCL Info: Using MIC Platform: " << vendor_name << std::endl;
-#elif USEOCL_CPU
+
+#if USEOCL_CPU
 					std::cout << "OCL Info: Using CPU Platform: " << vendor_name
 							<< std::endl;
-#else
+#else //USEOCL_CPU
 					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-#endif // USEOCL_MIC
-					platform_id = platform_ids[ui];
-				}
-#endif // USEOCL_INTEL
 
-#ifdef USEOCL_AMD
-
-				if (strcmp(vendor_name, "Advanced Micro Devices, Inc.") == 0) {
-#ifdef USEOCL_CPU
-					std::cout << "OCL Info: Using CPU Platform: " << vendor_name << std::endl;
-#else
-					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
 #endif // USEOCL_CPU
 					platform_id = platform_ids[ui];
-				}
-#endif // USEOCL_AMD
-
-#ifdef USEOCL_NVIDIA
-
-				if (strcmp(vendor_name, "NVIDIA Corporation") == 0) {
-					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-					platform_id = platform_ids[ui];
-				}
-#endif //USEOCL_NVIDIA
 			}
 		}
 		std::cout << std::endl;
 
 		// Find out how many devices there are
-#ifdef USEOCL_INTEL
-#ifdef USEOCL_MIC
 		device_ids = new cl_device_id[max_number_ocl_devices];
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, max_number_ocl_devices, device_ids, &num_devices);
-
-		if (num_devices == 0) {
-			std::cout << "OCL Error: NO Accelerator OpenCL devices have been found!" << std::endl;
-		}
-
-		// set max number of devices
-		if (num_devices > max_number_ocl_devices) {
-			num_devices = max_number_ocl_devices;
-		}
-
-#else
-		device_ids = new cl_device_id[1];
 #ifdef USEOCL_CPU
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, device_ids,
-		NULL);
-#else
+		std::cout << "looking for CPU" << std::endl;
+		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, max_number_ocl_devices, device_ids,
+		&num_devices);
+#else //USEOCL_CPU
+		std::cout << "looking for GPU" << std::endl;
 		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, device_ids, NULL);
-#endif
+#endif //USEOCL_CPU
 
 		if (err != CL_SUCCESS) {
 			std::cout << "OCL Error: Unable to get Device ID. Error Code: "
 					<< err << std::endl;
 		}
+		std::cout << "CPU device found" << std::endl;
 
 		num_devices = 1;
-#endif
-#endif
-#ifdef USEOCL_AMD
-		device_ids = new cl_device_id[max_number_ocl_devices];
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, device_ids, &num_devices);
 
-		if (num_devices == 0) {
-			std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
-		}
-
-		// set max number of devices
-		if (num_devices > max_number_ocl_devices) {
-			num_devices = max_number_ocl_devices;
-		}
-
-#ifdef USEOCL_CPU
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 2, device_ids, NULL);
-#else
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 2, device_ids, NULL);
-#endif
-
-		if (err != CL_SUCCESS) {
-			std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-		}
-
-#endif
-#ifdef USEOCL_NVIDIA
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, NULL, &num_devices);
-
-		if (num_devices == 0) {
-			std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
-		}
-
-		// set max number of devices
-		if (num_devices > max_number_ocl_devices) {
-			num_devices = max_number_ocl_devices;
-		}
-
-		device_ids = new cl_device_id[num_devices];
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
-
-		if (err != CL_SUCCESS) {
-			std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
-		}
-
-#endif
 		std::cout << "OCL Info: " << num_devices
 				<< " OpenCL devices have been found!" << std::endl;
 
