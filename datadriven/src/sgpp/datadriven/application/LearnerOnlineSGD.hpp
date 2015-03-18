@@ -14,14 +14,13 @@
 #include <string>
 #include <vector>
 
-//TODO remove meta header usage
-#include "sgpp_base.hpp"
-#include "sgpp_datadriven.hpp"
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>
 //#include <sgpp/parallel/tools/TypesParallel.hpp>
 
+#include <sgpp/datadriven/application/Learner.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 
 #include <sgpp/globaldef.hpp>
 
