@@ -192,6 +192,7 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 	if (strcmp(grid.getType(), "linear") == 0) {
 		switch (configuration.type) {
 		case datadriven::OperationMultipleEvalType::DEFAULT:
+			//already handled
 		case datadriven::OperationMultipleEvalType::STREAMING:
 			if (configuration.subType
 					== SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {

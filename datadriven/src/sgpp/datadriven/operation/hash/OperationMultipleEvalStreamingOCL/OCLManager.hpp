@@ -8,17 +8,16 @@
 #pragma once
 
 //define required for clCreateCommandQueue on platforms that don't support OCL2.0 yet
+#define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
 #include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include "OCLKernelSourceBuilder.hpp"
+#include "StreamingOCLParameters.hpp"
 
 namespace SGPP {
 namespace datadriven {
-
-#define USEOCL_CPU 1
-//#undef USEOCL_CPU
 
 class OCLManager {
 public:
@@ -91,29 +90,22 @@ public:
 							<< vendor_name << std::endl;
 				}
 
-
-#if USEOCL_CPU
-					std::cout << "OCL Info: Using CPU Platform: " << vendor_name
-							<< std::endl;
-#else //USEOCL_CPU
-					std::cout << "OCL Info: Using GPU Platform: " << vendor_name << std::endl;
-
-#endif // USEOCL_CPU
-					platform_id = platform_ids[ui];
+				platform_id = platform_ids[ui];
 			}
 		}
 		std::cout << std::endl;
 
 		// Find out how many devices there are
 		device_ids = new cl_device_id[max_number_ocl_devices];
-#ifdef USEOCL_CPU
-		std::cout << "looking for CPU" << std::endl;
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, max_number_ocl_devices, device_ids,
-		&num_devices);
-#else //USEOCL_CPU
-		std::cout << "looking for GPU" << std::endl;
-		err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, 1, device_ids, NULL);
-#endif //USEOCL_CPU
+#if STREAMING_OCL_DEVICE_TYPE == CL_DEVICE_TYPE_CPU
+		std::cout << "OCL Info: looking for CPU device" << std::endl;
+#elif STREAMING_OCL_DEVICE_TYPE == CL_DEVICE_TYPE_GPU
+		std::cout << "OCL Info: looking for GPU device" << std::endl;
+#else
+		std::cout << "OCL Info: looking for device of unknown type" << std::endl;
+#endif
+		err = clGetDeviceIDs(platform_id, STREAMING_OCL_DEVICE_TYPE,
+				max_number_ocl_devices, device_ids, &num_devices);
 
 		if (err != CL_SUCCESS) {
 			std::cout << "OCL Error: Unable to get Device ID. Error Code: "
@@ -187,8 +179,8 @@ public:
 		}
 
 		std::string build_opts;
-#ifndef NO_OCL_OPTS
-		build_opts = "-cl-finite-math-only -cl-fast-relaxed-math ";
+#if STREAMING_OCL_ENABLE_OPTIMIZATIONS == true
+		build_opts = "-cl-finite-math-only -cl-fast-relaxed-math "; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
 #else
 		build_opts = "-cl-opt-disable -g ";
 #endif
@@ -247,7 +239,6 @@ public:
 
 		return 64;
 	}
-
 };
 
 }

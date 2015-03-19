@@ -60,9 +60,9 @@ namespace SGPP {
       this->completeTimeMultTrans_ += this->myTimer_->stop();
     }
 
-    void SystemMatrixLeastSquaresIdentity::rebuildLevelAndIndex() {
+    void SystemMatrixLeastSquaresIdentity::prepareGrid() {
       //TODO call to prepare not modeled
-      //this->B->prepareExecution();
+      this->B->prepare();
     }
 
   }

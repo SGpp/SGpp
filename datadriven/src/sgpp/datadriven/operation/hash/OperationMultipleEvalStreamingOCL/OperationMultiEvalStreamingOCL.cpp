@@ -20,6 +20,9 @@ OperationMultiEvalStreamingOCL::OperationMultiEvalStreamingOCL(base::Grid& grid,
 	this->storage = grid.getStorage();
 	this->padDataset(this->preparedDataset);
 	this->preparedDataset.transpose();
+
+	//create the kernel specific data structures
+	this->prepare();
 }
 
 OperationMultiEvalStreamingOCL::~OperationMultiEvalStreamingOCL() {
@@ -30,19 +33,11 @@ OperationMultiEvalStreamingOCL::~OperationMultiEvalStreamingOCL() {
 		delete this->index_;
 }
 
-//size_t OperationMultiEvalStreamingOCL::getChunkGridPoints() {
-//	return 12;
-//}
-//size_t OperationMultiEvalStreamingOCL::getChunkDataPoints() {
-//	return 24; // must be divisible by 24
-//}
-
 void OperationMultiEvalStreamingOCL::mult(SGPP::base::DataVector& alpha,
 SGPP::base::DataVector& result) {
 	this->myTimer_.start();
 
-	//TODO: do so only if necessary, also in the other kernels
-	this->recalculateLevelAndIndex();
+
 
 	size_t originalSize = result.getSize();
 
@@ -66,7 +61,7 @@ void OperationMultiEvalStreamingOCL::multTranspose(
 SGPP::base::DataVector& source,
 SGPP::base::DataVector& result) {
 	this->myTimer_.start();
-	this->recalculateLevelAndIndex();
+
 
 	size_t originalSize = source.getSize();
 	size_t gridOriginalSize = result.getSize();
@@ -123,8 +118,7 @@ void OperationMultiEvalStreamingOCL::recalculateLevelAndIndex() {
 			this->index_->set(i, j, 1.0);
 		}
 	}
-	//TODO: one call per CG iteration -> very expensive!
-	this->kernel->resetKernel();
+
 }
 
 //TODO: fix for OpenCL
@@ -153,6 +147,14 @@ SGPP::base::DataMatrix& dataset) {
 
 float_t OperationMultiEvalStreamingOCL::getDuration() {
 	return this->duration;
+}
+
+void OperationMultiEvalStreamingOCL::prepare() {
+//	std::cout << "in prepare" << std::endl;
+	//TODO: do so only if necessary, also in the other kernels
+	this->recalculateLevelAndIndex();
+
+	this->kernel->resetKernel();
 }
 
 }

@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <cstring>
 #include <cstdlib>
-#include <sgpp/base/tools/AlignedMemory.hpp>
+//#include <sgpp/base/tools/AlignedMemory.hpp>
 
 #include <iostream>
 

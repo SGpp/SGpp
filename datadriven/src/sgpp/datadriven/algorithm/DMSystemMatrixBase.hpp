@@ -69,7 +69,7 @@ namespace SGPP {
          * this routine is needed for supporting adaptiva grids
          * with vectorized high performance kernels
          */
-        virtual void rebuildLevelAndIndex();
+        virtual void prepareGrid();
 
         /**
          * resets all timers to 0

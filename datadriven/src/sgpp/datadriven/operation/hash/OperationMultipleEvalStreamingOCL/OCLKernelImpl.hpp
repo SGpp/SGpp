@@ -5,21 +5,10 @@
 
 #pragma once
 
-//#ifdef USEOCL
 #include <CL/cl.h>
 
 #include <string.h>
 #include <limits>
-
-#ifdef USEOCL_NVIDIA
-#define USEOCL_LOCAL_MEMORY
-#endif
-
-#ifdef USEOCL_AMD
-#ifndef USEOCL_CPU
-#define USEOCL_LOCAL_MEMORY
-#endif
-#endif
 
 #include <sgpp/globaldef.hpp>
 
