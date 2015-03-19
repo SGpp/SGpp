@@ -1,0 +1,12 @@
+import os
+import fnmatch
+
+Import('env')
+
+objs = []
+if '-mavx' in env['CPPFLAGS']:
+  for currentFolder, subdirNames, fileNames in os.walk("."):
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+      sourceFile = os.path.join(currentFolder, fileName)
+      objs.append(env.SharedObject(sourceFile))
+Return('objs')
