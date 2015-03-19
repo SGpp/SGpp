@@ -39,22 +39,20 @@ public:
 
 	~OperationMultiEvalStreamingOCL();
 
-//	size_t getChunkGridPoints();
-//
-//	size_t getChunkDataPoints();
-
 	void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result)
 			override;
 
 	void multTranspose(SGPP::base::DataVector& source,
 	SGPP::base::DataVector& result) override;
 
-	void recalculateLevelAndIndex();
-
 	float_t getDuration();
+
+	void prepare() override;
 
 private:
 	size_t padDataset(SGPP::base::DataMatrix& dataset);
+
+	void recalculateLevelAndIndex();
 };
 
 }

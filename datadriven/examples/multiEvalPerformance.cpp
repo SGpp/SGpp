@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 	SGPP::base::GridStorage* gridStorage = grid->getStorage();
 	std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 	// create regular grid, level 3
-	uint32_t level = 2;
+	uint32_t level = 4;
 	SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
 	gridGen->regular(level);
 	std::cout << "number of grid points: " << gridStorage->size() << std::endl;
@@ -94,6 +94,7 @@ int main(int argc, char **argv) {
 
 	double mse = 0.0;
 	for (size_t i = 0; i < result.getSize(); i++) {
+		std::cout << "comp: " << (result[i] - resultCompare[i]) << std::endl;
 		mse += (result[i] - resultCompare[i]) * (result[i] - resultCompare[i]);
 	}
 	mse = mse / static_cast<double>(result.getSize());

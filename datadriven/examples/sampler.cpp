@@ -5,13 +5,7 @@
 
 int main(int argc, char **argv) {
 
-	SGPP::datadriven::OperationMultipleEvalConfiguration kernelConfiguration;
-	kernelConfiguration.type =
-			SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-	kernelConfiguration.subType =
-			SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
-
-	int maxLevel = 2;
+	int maxLevel = 7;
 
 	std::string fileName = "debugging.arff";
 
@@ -23,19 +17,19 @@ int main(int argc, char **argv) {
 	// Set Adaptivity
 	adaptConfig.maxLevelType_ = false;
 	adaptConfig.noPoints_ = 80;
-	adaptConfig.numRefinements_ = 5;
+	adaptConfig.numRefinements_ = 0;
 	adaptConfig.percent_ = 200.0;
 	adaptConfig.threshold_ = 0.0;
 
 	// Set solver during refinement
 	SLESolverConfigRefine.eps_ = 0;
-	SLESolverConfigRefine.maxIterations_ = 100;
+	SLESolverConfigRefine.maxIterations_ = 0;
 	SLESolverConfigRefine.threshold_ = -1.0;
 	SLESolverConfigRefine.type_ = sg::solver::CG;
 
 	// Set solver for final step
 	SLESolverConfigFinal.eps_ = 0;
-	SLESolverConfigFinal.maxIterations_ = 500;
+	SLESolverConfigFinal.maxIterations_ = 45;
 	SLESolverConfigFinal.threshold_ = -1.0;
 	SLESolverConfigFinal.type_ = sg::solver::CG;
 
@@ -54,13 +48,22 @@ int main(int argc, char **argv) {
 			SLESolverConfigFinal, adaptConfig, maxLevel, lambda, verbose);
 
 	//learner.learn(kernelType, fileName);
-//	learner.learnReference(fileName);
+	//learner.learnReference(fileName);
+
+	//buggy are:
+	//subspace simple - 0
+	//subspacelinear combined - 60
+	//streaming default - 1600 (13 without avx)
+	//streaming ocl - 13
+
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-	configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-	learner.learn(configuration, fileName);
+	configuration.type = SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
+	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::COMBINED;
+	//learner.learn(configuration, fileName);
+	//learner.learnReference(fileName);
+
 	//learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-	//learner.learnAndCompare(kernelType, fileName, 4, 0.00001);
+	learner.learnAndCompare(configuration, fileName, 4, 0.000001);
 	//learner.writeStatisticsFile("statistics.csv", "test");
 
 	return EXIT_SUCCESS;

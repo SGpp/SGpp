@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-#include <sgpp/base/tools/AlignedMemory.hpp>
+//#include <sgpp/base/tools/AlignedMemory.hpp>
 
 #include <sgpp/globaldef.hpp>
 

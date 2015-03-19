@@ -9,6 +9,8 @@
 
 #include <fstream>
 
+#include "StreamingOCLParameters.hpp"
+
 namespace SGPP {
   namespace datadriven {
 
@@ -74,7 +76,7 @@ namespace SGPP {
 	//		stream_program_src << " printf(\"hello from: %i\\n\", globalIdx);" << std::endl;
 
 	stream_program_src << std::endl;
-#ifdef USEOCL_LOCAL_MEMORY
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 	stream_program_src << " __local " << getType<real_type>::asString() << " locLevel[" << dims* local_workgroup_size << "];" << std::endl;
 	stream_program_src << " __local " << getType<real_type>::asString() << " locIndex[" << dims* local_workgroup_size << "];" << std::endl;
 	stream_program_src << " __local " << getType<real_type>::asString() << " locAlpha[" << local_workgroup_size << "];" << std::endl;
@@ -121,7 +123,7 @@ namespace SGPP {
 	//		stream_program_src << "}" << std::endl;
 
 	stream_program_src << std::endl;
-#ifdef USEOCL_LOCAL_MEMORY
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 	stream_program_src << " // Iterate over all grid points (fast ones, with cache)" << std::endl;
 	stream_program_src << " uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
 	stream_program_src << " uint fastChunkSizeGrid = (chunkSizeGrid / " << local_workgroup_size << ") * " << local_workgroup_size << ";" << std::endl;
@@ -270,7 +272,7 @@ namespace SGPP {
 			   << " myResult = ptrResult[globalIdx];" << std::endl
 			   << std::endl;
 
-#ifdef USEOCL_LOCAL_MEMORY
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 	stream_program_src << " __local " << getType<real_type>::asString() << " locData[" << dims* local_workgroup_size << "];" << std::endl;
 	stream_program_src << " __local " << getType<real_type>::asString() << " locSource[" << local_workgroup_size << "];" << std::endl << std::endl;
 #endif
@@ -286,7 +288,7 @@ namespace SGPP {
 
 	stream_program_src << std::endl;
 	stream_program_src << " // Iterate over all grid points" << std::endl;
-#ifdef USEOCL_LOCAL_MEMORY
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 	stream_program_src << " for(int i = start_data; i < end_data; i+=" << local_workgroup_size << ")" << std::endl;
 	stream_program_src << " {" << std::endl;
 
@@ -310,7 +312,7 @@ namespace SGPP {
 #endif
 
 	  for (size_t d = 0; d < dims; d++) {
-#ifdef USEOCL_LOCAL_MEMORY
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 	    stream_program_src << "     eval = ((level_" << d << ") * (locData[(" << d << "*" << local_workgroup_size << ")+k]));" << std::endl;
 #else
 	    stream_program_src << "     eval = ((level_" << d
@@ -332,7 +334,7 @@ namespace SGPP {
 	  stream_program_src << std::endl << "     myResult += curSupport;"
 			     << std::endl;
 	  stream_program_src << "   }" << std::endl << std::endl;
-#ifdef USEOCL_LOCAL_MEMORY
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 	  stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
 	  stream_program_src << " }" << std::endl;
 #endif

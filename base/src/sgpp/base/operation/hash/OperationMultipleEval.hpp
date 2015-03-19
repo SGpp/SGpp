@@ -70,6 +70,7 @@ namespace SGPP {
           this->mult(alpha, result);
         }
 
+        //TODO: update text
         /**
          * Used for kernel-specific setup like special data structures that are defined from the current state of
          * the grid. This function is by default called with each "mult()", "multTranspose()" or evaluation operation
@@ -88,9 +89,9 @@ namespace SGPP {
          *
          * @param isPrepared Tells the operation that is has been prepared for the current (or not)
          */
-        void setPrepared(bool isPrepared) {
-          this->isPrepared = isPrepared;
-        }
+//        void setPrepared(bool isPrepared) {
+//          this->isPrepared = isPrepared;
+//        }
 
         /**
          * Name of this implementation of the operation.

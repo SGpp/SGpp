@@ -179,6 +179,7 @@ void OCLKernelImpl::releaseKernelsAndPrograms() {
 }
 
 void OCLKernelImpl::resetKernel() {
+	//leads to a reallocation before next kernel execution
 	releaseGridBuffers();
 }
 
