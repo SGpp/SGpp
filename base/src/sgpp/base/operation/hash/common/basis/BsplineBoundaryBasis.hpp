@@ -20,10 +20,6 @@ namespace SGPP {
      */
     template <class LT, class IT>
     class BsplineBoundaryBasis: public Basis<LT, IT> {
-      protected:
-        /// B-spline basis for B-spline evaluation
-        BsplineBasis<LT, IT> bsplineBasis;
-
       public:
         /**
          * Default constructor.
@@ -34,9 +30,11 @@ namespace SGPP {
         /**
          * Constructor.
          *
-         * @param degree    B-spline degree, must be odd (if it's even, degree - 1 is used)
+         * @param degree    B-spline degree, must be odd
+         *                  (if it's even, degree - 1 is used)
          */
-        BsplineBoundaryBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
+        BsplineBoundaryBasis(size_t degree) :
+          bsplineBasis(BsplineBasis<LT, IT>(degree)) {
         }
 
         /**
@@ -48,9 +46,10 @@ namespace SGPP {
         inline float_t eval(LT l, IT i, float_t x) {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
-          return bsplineBasis.uniformBSpline(x * hInv - static_cast<float_t>(i) +
-                                             static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
-                                             bsplineBasis.getDegree());
+          return bsplineBasis.uniformBSpline(
+                   x * hInv - static_cast<float_t>(i) +
+                   static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+                   bsplineBasis.getDegree());
         }
 
         /**
@@ -62,9 +61,10 @@ namespace SGPP {
         inline float_t evalDx(LT l, IT i, float_t x) {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
-          return hInv * bsplineBasis.uniformBSplineDx(x * hInv - static_cast<float_t>(i) +
-                 static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
-                 bsplineBasis.getDegree());
+          return hInv * bsplineBasis.uniformBSplineDx(
+                   x * hInv - static_cast<float_t>(i) +
+                   static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+                   bsplineBasis.getDegree());
         }
 
         /**
@@ -76,9 +76,10 @@ namespace SGPP {
         inline float_t evalDxDx(LT l, IT i, float_t x) {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
-          return hInv * hInv * bsplineBasis.uniformBSplineDxDx(x * hInv - static_cast<float_t>(i) +
-                 static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
-                 bsplineBasis.getDegree());
+          return hInv * hInv * bsplineBasis.uniformBSplineDxDx(
+                   x * hInv - static_cast<float_t>(i) +
+                   static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+                   bsplineBasis.getDegree());
         }
 
         /**
@@ -87,6 +88,10 @@ namespace SGPP {
         inline size_t getDegree() const {
           return bsplineBasis.getDegree();
         }
+
+      protected:
+        /// B-spline basis for B-spline evaluation
+        BsplineBasis<LT, IT> bsplineBasis;
     };
 
     // default type-def (unsigned int for level and index)
