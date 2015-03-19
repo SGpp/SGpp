@@ -34,23 +34,23 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration &adaptConfig,
 
 int main(int argc, char **argv) {
 
-//	std::string fileName = "friedman_4d_2000.arff";
-	std::string fileName = "debugging.arff";
+	std::string fileName = "friedman2_90000.arff";
+//	std::string fileName = "debugging.arff";
 
-	uint32_t level = 3;
+	uint32_t level = 5;
 
 	SGPP::base::AdpativityConfiguration adaptConfig;
 	adaptConfig.maxLevelType_ = false;
 	adaptConfig.noPoints_ = 80;
-	adaptConfig.numRefinements_ = 10;
+	adaptConfig.numRefinements_ = 5;
 	adaptConfig.percent_ = 200.0;
 	adaptConfig.threshold_ = 0.0;
 
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
 	configuration.type =
-	SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
+	SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType =
-	SGPP::datadriven::OperationMultipleEvalSubType::COMBINED;
+	SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 
 	SGPP::datadriven::ARFFTools arffTools;
 	SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -96,24 +96,24 @@ int main(int argc, char **argv) {
 	std::cout << "calculating result" << std::endl;
 	eval->mult(alpha, dataSizeVectorResult);
 
-	std::cout << "calculating comparison values..." << std::endl;
-
-	SGPP::base::OperationMultipleEval *evalCompare =
-	SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
-
-	SGPP::base::DataVector dataSizeVectorResultCompare(
-			dataset.getNumberInstances());
-	dataSizeVectorResultCompare.setAll(0.0);
-
-	evalCompare->mult(alpha, dataSizeVectorResultCompare);
-
-	double mse = 0.0;
-	for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-		//std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
-		mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
-				* (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-	}
-	mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-	std::cout << "mse: " << mse << std::endl;
+//	std::cout << "calculating comparison values..." << std::endl;
+//
+//	SGPP::base::OperationMultipleEval *evalCompare =
+//	SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+//
+//	SGPP::base::DataVector dataSizeVectorResultCompare(
+//			dataset.getNumberInstances());
+//	dataSizeVectorResultCompare.setAll(0.0);
+//
+//	evalCompare->mult(alpha, dataSizeVectorResultCompare);
+//
+//	double mse = 0.0;
+//	for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+//		//std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+//		mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
+//				* (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+//	}
+//	mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+//	std::cout << "mse: " << mse << std::endl;
 }
 

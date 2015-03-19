@@ -4,6 +4,8 @@ import subprocess
 import shlex
 import os
 import time
+import sys
+import re
 
 class AbstractParameter:
   PARAMETER_TYPES = ["define", "environment", "option"]
@@ -11,7 +13,9 @@ class AbstractParameter:
 class VectorParameter(AbstractParameter):
   def __init__(self):
     self.values = ["-msse3", "-mavx", ""]
+    #self.values = [""]
     self.index = 0
+    self.maxIndex = 2
   
   def __repr__(self):
     return "Vector"
@@ -23,7 +27,7 @@ class VectorParameter(AbstractParameter):
     self.index = 0
     
   def hasNext(self):
-    if self.index < 2:
+    if self.index < self.maxIndex:
       return True
     return False
   
@@ -33,6 +37,7 @@ class VectorParameter(AbstractParameter):
     return str(float(self.index) / len(self.values));
   
   def getValue(self):
+    print "index:", self.index
     return self.values[self.index]
   
   def next(self):
@@ -40,8 +45,8 @@ class VectorParameter(AbstractParameter):
       
 class CoresParameter(AbstractParameter):
   def __init__(self):
-    self.min = 1
-    self.max = 1
+    self.min = 3
+    self.max = 4
     self.step = 1
     self.value = self.min
   
@@ -72,9 +77,9 @@ class CoresParameter(AbstractParameter):
 
 class BlocksizeParameter(AbstractParameter):
   def __init__(self):
-    self.min = 1
-    self.max = 1
-    self.step = 1
+    self.min = 64
+    self.max = 256
+    self.stepMult = 2
     self.value = self.min
     
   def __repr__(self):
@@ -87,16 +92,16 @@ class BlocksizeParameter(AbstractParameter):
     self.value = self.min
   
   def getVariableName(self):
-    return "BLOCKSIZE"
+    return "STREAMING_OCL_LOCAL_SIZE"
   
   def hasNext(self):
     # print self.value, "+", self.step, "->", (self.value + self.step)
-    if self.value + self.step > self.max:
+    if self.value * self.stepMult > self.max:
       return False
     return True
   
   def getValue(self):
-    return "BLOCKSIZE=" + str(self.value)
+    return "STREAMING_OCL_LOCAL_SIZE=" + str(self.value)
 
   def getIndex(self):
     if self.max == self.min:
@@ -104,7 +109,7 @@ class BlocksizeParameter(AbstractParameter):
     return str(float(self.value - self.min) / (self.max - self.min));
   
   def next(self):
-    self.value += 1
+    self.value *= self.stepMult
 
 parameters = [
   VectorParameter(),
@@ -113,9 +118,10 @@ parameters = [
 ]
 
 class Sampler:
-  def __init__(self, resultFileName, parameters):
+  def __init__(self, resultFileName, parameters, jobs):
     self.resultFileName = resultFileName
     self.parameters = parameters
+    self.jobs = jobs
   def dimIter(self):
     index = 0
     while index < len(parameters):
@@ -149,20 +155,20 @@ class Sampler:
     
     # compile
     command = "scons CPPFLAGS=\"" + ''.join([option.getValue() + " " for option in optionParameters]) + \
-      "\" VERBOSE=1 -j32 NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
+      "\" VERBOSE=1 -j" + self.jobs + " NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
       "".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\" " + \
-      "SG_PYTHON=0 CXX=g++-4.8 CC=g++-4.8"
+      "SG_PYTHON=0 SG_JAVA=0 OPT=1 CXX=g++-4.8 CC=g++-4.8"
     print command
     # command = ["./execTest.py"]
     print "origC:", command
     splittedCmd = shlex.split(command)
-    print "split:", splittedCmd
+    
     p = subprocess.Popen(splittedCmd, env=my_env) #stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
     p.wait()
     stdout, stderr = p.communicate()
     
     # execute
-    command = ["datadriven/examples/sampler"]
+    command = ["bin/examples/datadriven/multTest"]
     startTimestamp = time.time()
     p = subprocess.Popen(command, shell=True, env=my_env)
     p.wait()
@@ -172,7 +178,8 @@ class Sampler:
 
     # extract runtime information
     dataTuple = [parameter.getIndex() for parameter in optionParameters + envParameters + defineParameters]
-    print "dataTuple:", dataTuple
+    print "configuration: ", str([str(parameter) + "=" + str(parameter.getValue()) for parameter in optionParameters + envParameters + defineParameters])
+    #print "dataTuple:", dataTuple
     self.resultFile.write(", ".join(dataTuple) + ", " + str(duration) + "\n")
     
   def sample(self):
@@ -199,5 +206,11 @@ class Sampler:
 
 resultFileName = "samples.dat"
 
-sampler = Sampler(resultFileName, parameters)
+jobs = 1
+for arg in sys.argv:
+  match = re.search("JOBS=([0-9]+?)", arg)
+  if match != None:
+    jobs = match.group(1)
+
+sampler = Sampler(resultFileName, parameters, jobs)
 sampler.sample()
