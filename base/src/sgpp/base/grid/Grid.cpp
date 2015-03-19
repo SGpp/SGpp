@@ -20,6 +20,7 @@
 #include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/grid/type/WaveletTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
@@ -109,6 +110,10 @@ namespace SGPP {
       return new ModBsplineGrid(dim, degree);
     }
 
+    Grid* Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+      return new ModBsplineClenshawCurtisGrid(dim, degree);
+    }
+
     Grid* Grid::createSquareRootGrid(size_t dim) {
       return new SquareRootGrid(dim);
     }
@@ -193,6 +198,7 @@ namespace SGPP {
         tMap->insert(std::pair<std::string, Grid::Factory>("bsplineTruncatedBoundary", BsplineTruncatedBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("bsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
 #else
@@ -215,6 +221,7 @@ namespace SGPP {
         tMap->insert(std::make_pair("bsplineTruncatedBoundary", BsplineTruncatedBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("bsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::make_pair("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
         tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
 #endif

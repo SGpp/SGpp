@@ -42,6 +42,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>

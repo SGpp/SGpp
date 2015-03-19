@@ -128,6 +128,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
@@ -169,6 +170,7 @@ namespace std {
 %template(SBsplineBoundaryBase) SGPP::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
 %template(SBsplineClenshawCurtisBase) SGPP::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedClenshawCurtisBase) SGPP::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, SGPP::float_t> > *OUTPUT { std::vector<std::pair<size_t, SGPP::float_t> >& result };

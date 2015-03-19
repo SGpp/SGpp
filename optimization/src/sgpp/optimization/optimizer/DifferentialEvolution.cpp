@@ -121,7 +121,7 @@ namespace SGPP {
           const std::vector<base::DataVector>& prob_k = prob[k];
 
           #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
-          xOld, fx, fOpt, xOptIndex, xNew) default(none)
+          xOld, fx, fOpt, xOptIndex, xNew, std::cout) default(none)
           {
             base::DataVector y(d);
             ObjectiveFunction* curFPtr = &f;
@@ -166,7 +166,7 @@ namespace SGPP {
               }
 
               // evaluate mutated point (if not out of bounds)
-              float_t fy = (inDomain ? curFPtr->eval(y) : INFINITY);
+              const float_t fy = (inDomain ? curFPtr->eval(y) : INFINITY);
 
               if (fy < fx[i]) {
                 // function_value is better ==> replace point with mutated one
