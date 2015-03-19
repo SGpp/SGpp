@@ -53,9 +53,9 @@ int main(int argc, char **argv) {
 
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
 	configuration.type =
-	SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
+	SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType =
-	SGPP::datadriven::OperationMultipleEvalSubType::COMBINED;
+	SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 
 	SGPP::datadriven::ARFFTools arffTools;
 	SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

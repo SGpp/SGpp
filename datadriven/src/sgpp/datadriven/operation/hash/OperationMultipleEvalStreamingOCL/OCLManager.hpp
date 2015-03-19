@@ -221,23 +221,24 @@ public:
 		return CL_SUCCESS;
 	}
 
-	unsigned int getOCLLocalSize() {
-		// read environment variable for local work group size: SGPP_OCL_LOCAL_SIZE
-		const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
-
-		if (ocl_local_size_env != NULL) {
-			unsigned int num_ocl_devices_envvalue = (unsigned int) (strtoul(
-					ocl_local_size_env, NULL, 0));
-
-			if (num_ocl_devices_envvalue != 0) {
-				return num_ocl_devices_envvalue;
-			} else {
-				std::cout << "Ignoring value: \"" << ocl_local_size_env
-						<< "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
-			}
-		}
-
-		return 64;
+	uint32_t getOCLLocalSize() {
+//		// read environment variable for local work group size: SGPP_OCL_LOCAL_SIZE
+//		const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
+//
+//		if (ocl_local_size_env != NULL) {
+//			unsigned int num_ocl_devices_envvalue = (unsigned int) (strtoul(
+//					ocl_local_size_env, NULL, 0));
+//
+//			if (num_ocl_devices_envvalue != 0) {
+//				return num_ocl_devices_envvalue;
+//			} else {
+//				std::cout << "Ignoring value: \"" << ocl_local_size_env
+//						<< "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
+//			}
+//		}
+//
+//		return 64;
+		return STREAMING_OCL_LOCAL_SIZE;
 	}
 };
 

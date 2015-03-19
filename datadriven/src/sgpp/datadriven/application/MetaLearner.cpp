@@ -253,10 +253,10 @@ namespace SGPP {
         temp *= temp;
         squareSum += temp;
 
-        std::cout << "value:" << computedClasses.get(i) << std::endl;
-        std::cout << "reference:" << referenceClasses.get(i) << std::endl;
-
-        std::cout << "diff: " << fabs(computedClasses.get(i) - referenceClasses.get(i)) << std::endl;
+//        std::cout << "value: " << computedClasses.get(i) << std::endl;
+//        std::cout << "reference: " << referenceClasses.get(i) << std::endl;
+//
+//        std::cout << "diff: " << fabs(computedClasses.get(i) - referenceClasses.get(i)) << std::endl;
         if (verbose && fabs(computedClasses.get(i) - referenceClasses.get(i)) > tolerance) {
           std::cout << "computed: " << computedClasses.get(i) << " but reference is: " << referenceClasses.get(i)
                     << std::endl;

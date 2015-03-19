@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
 	//streaming ocl - 13
 
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-	configuration.type = SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
-	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::COMBINED;
+	configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 	//learner.learn(configuration, fileName);
 	//learner.learnReference(fileName);
 
 	//learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-	learner.learnAndCompare(configuration, fileName, 4, 0.000001);
+	learner.learnAndCompare(configuration, fileName, 4, 1.0);
 	//learner.writeStatisticsFile("statistics.csv", "test");
 
 	return EXIT_SUCCESS;

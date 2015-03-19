@@ -49,20 +49,27 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
     else:
         print "Using " + commands.getoutput('dot -V').splitlines()[0]
+          
+    print "OCL_INCLUDE_PATH:", config.env['ENV']['OCL_INCLUDE_PATH']
+    print "OCL_LIBRARY_PATH:", config.env['ENV']['OCL_LIBRARY_PATH']
+    
+    if config.env['USE_OCL'] and 'OCL_INCLUDE_PATH' in config.env['ENV'] and 'OCL_LIBRARY_PATH' in config.env['ENV']:
+    
+      config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
+      if not config.CheckCXXHeader('CL/cl.h'):
+        sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL")
+        sys.exit(1)
         
-        
-
-    config.env.AppendUnique(CPPPATH="/home/pfandedd/AMDAPPSDK-3.0-0-Beta/include/")
-    if not config.CheckCXXHeader('CL/cl.h'):
-      sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL")
-      sys.exit(1)
-      
-    #config.env.AppendUnique(LIBPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/")
-    config.env.AppendUnique(LIBPATH="/home/pfandedd/AMDAPPSDK-3.0-0-Beta/lib/x86_64/")
-    if not config.CheckLib('OpenCL'):
-      sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
-      sys.exit(1)
-    #config.env.AppendUnique(CPPDEFINES=["USEOCL_INTEL", "NO_OCL_OPTS"]) # "USEOCL_CPU"
+      #config.env.AppendUnique(LIBPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/")
+      config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
+      if not config.CheckLib('OpenCL'):
+        sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
+        sys.exit(1)
+      #config.env.AppendUnique(CPPDEFINES=["USEOCL_INTEL", "NO_OCL_OPTS"]) # "USEOCL_CPU"
+      config.env["USE_OCL"] = True;
+    else:
+      print "Info: OpenCL is not enabled"
+      config.env["USE_OCL"] = False;
 
     if env["SG_PYTHON"]:
         # check whether swig installed
