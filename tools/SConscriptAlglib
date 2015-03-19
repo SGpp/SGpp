@@ -1,0 +1,41 @@
+# Copyright (C) 2008-today The SG++ Project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
+Import('env')
+
+#dependencies = ["Base"]
+
+srcs = Split("""
+alglib/alglibinternal.cpp
+alglib/alglibmisc.cpp
+alglib/ap.cpp
+alglib/dataanalysis.cpp
+alglib/diffequations.cpp
+alglib/fasttransforms.cpp
+alglib/integration.cpp
+alglib/interpolation.cpp
+alglib/linalg.cpp
+alglib/optimization.cpp
+alglib/solvers.cpp
+alglib/specialfunctions.cpp
+alglib/statistics.cpp
+""")
+
+alglib_env = env.Clone()
+alglib_env.AppendUnique(CPPFLAGS=['-Wno-format-nonliteral', '-Wno-redundant-decls', '-Wno-extra', '-Wno-ignored-qualifiers', '-Wno-conversion', '-Wno-unused-variable', '-Wno-maybe-uninitialized', '-fPIC'], CPPPATH=['#/tools/alglib'] )
+
+alglibobjects = []
+for source in srcs:
+	alglibobjects.append(SharedObject(source=source))
+alglib = alglib_env.SharedLibrary(target="alglib", source=alglibobjects, SHLIBPREFIX = 'lib')
+alglibstatic = alglib_env.StaticLibrary(target="alglibstatic", source=srcs, SHLIBPREFIX = 'lib')
+libraries = (alglib, alglibstatic)
+#alglibsrcs = srcs
+#Export('srcs')
+#Export('dependencies')
+Export('alglib')
+Export('alglibstatic')
+Export('alglibobjects')
+Return('libraries')

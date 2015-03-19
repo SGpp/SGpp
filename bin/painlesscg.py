@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
 # This file is part of sgpp, a program package making use of spatially
 # adaptive sparse grids to solve numerical problems
 # 
@@ -19,6 +24,7 @@
 
 
 from pysgpp import *
+from pysgpp.datadriven import *
 
 def ApplyA(B, C, alpha, result, x, l):
     temp = DataVector(x.getNrows())
@@ -315,4 +321,3 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         print "Final norm of residuum: %g" % delta_new
     
     return (i,delta_new)
-

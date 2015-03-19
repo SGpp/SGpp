@@ -1,0 +1,91 @@
+# Copyright (C) 2008-today The SG++ Project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at 
+# sgpp.sparsegrids.org
+
+import os
+import fnmatch
+
+Import("env")
+Import("BUILD_DIR")
+Import("EXAMPLE_DIR")
+Import("PYSGPP_BUILD_PATH")
+Import("moduleName")
+Import("libraryTargetList")
+Import("installTargetList")
+Import("exampleTargetList")
+
+
+
+libs = ["sgppbase"]
+config = env.Configure()
+
+if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
+    libs.append("umfpack")
+    env.Append(CPPDEFINES=["USEUMFPACK"])
+    print "SGPP::optimization will be compiled with UMFPACK."
+else:
+    env.Append(CPPDEFINES=["DONTUSEUMFPACK"])
+    print "SGPP::optimization will be compiled without UMFPACK (not found)."
+
+if config.CheckHeader("eigen3/Eigen/Dense", language="c++"):
+    env.Append(CPPDEFINES=["USEEIGEN"])
+    print "SGPP::optimization will be compiled with Eigen."
+else:
+    env.Append(CPPDEFINES=["DONTUSEEIGEN"])
+    print "SGPP::optimization will be compiled without Eigen (not found)."
+
+if config.CheckHeader("armadillo", language="c++"):
+    libs.append("armadillo")
+    env.Append(CPPDEFINES=["USEARMADILLO"])
+    print "SGPP::optimization will be compiled with Armadillo."
+else:
+    env.Append(CPPDEFINES=["DONTUSEARMADILLO"])
+    print "SGPP::optimization will be compiled without Armadillo (not found)."
+
+if config.CheckHeader("gmm/gmm.h", language="c++"):
+    env.Append(CPPDEFINES=["USEGMMPP"])
+    print "SGPP::optimization will be compiled with Gmm++."
+else:
+    env.Append(CPPDEFINES=["DONTUSEGMMPP"])
+    print "SGPP::optimization will be compiled without Gmm++ (not found)."
+
+
+
+dependencies = ["base"]
+
+srcs = []
+for currentFolder, subdirNames, fileNames in os.walk("."):
+    if currentFolder.startswith("./src"):
+        for fileName in fnmatch.filter(fileNames, "*.cpp"):
+            srcs.append(os.path.join(currentFolder, fileName))
+
+objs = []
+for sourceFile in srcs:
+    objs.append(env.SharedObject(sourceFile))
+    # objs.append(sourceFile)
+ 
+lib = env.SharedLibrary(target="sgpp%s" % moduleName,
+                        source=objs,
+                        LIBPATH=BUILD_DIR,
+                        LIBS=libs)
+env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+libInstall = env.Install(BUILD_DIR, lib)
+
+if not env["NO_UNIT_TESTS"] and env["SG_PYTHON"]:
+    Import("testTargetList")
+    moduleTest = env.Test(os.path.join("tests", "test_%s.py" % moduleName))
+    env.Requires(moduleTest, libInstall)
+    testTargetList.append(moduleTest)
+
+for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*.cpp"):
+        example = env.Program(source=os.path.join("examples", fileName),
+                              LIBPATH=BUILD_DIR,
+                              LIBS=libs + ["sgpp%s" % moduleName])
+        env.Requires(example, libInstall)
+        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
+        exampleTargetList.append(example)
+
+libraryTargetList.append(lib)
+installTargetList.append(libInstall)
