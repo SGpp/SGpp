@@ -263,6 +263,8 @@ public:
 					<< getType<real_type>::constSuffix() << ");" << std::endl;
 			stream_program_src << "   curSupport *= localSupport;" << std::endl
 					<< std::endl;
+			//stream_program_src << "   printf(\"l: %lf, i: %lf, sur: %lf\\n\", ptrLevel[m*" << dims <<" + d], ptrIndex[m*" << dims <<" + d], ptrAlpha[m]);" << std::endl;
+
 			stream_program_src << "}" << std::endl;
 		} else {
 			for (size_t d = 0; d < dims; d++) {

@@ -39,8 +39,8 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration &adaptConfig,
 
 int main(int argc, char **argv) {
 
-//	std::string fileName = "friedman_4d_2000.arff";
-	std::string fileName = "debugging.arff";
+	std::string fileName = "friedman2_90000.arff";
+	//std::string fileName = "debugging.arff";
 
 	uint32_t level = 3;
 
