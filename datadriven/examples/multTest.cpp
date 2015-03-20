@@ -96,24 +96,24 @@ int main(int argc, char **argv) {
 	std::cout << "calculating result" << std::endl;
 	eval->mult(alpha, dataSizeVectorResult);
 
-//	std::cout << "calculating comparison values..." << std::endl;
-//
-//	SGPP::base::OperationMultipleEval *evalCompare =
-//	SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
-//
-//	SGPP::base::DataVector dataSizeVectorResultCompare(
-//			dataset.getNumberInstances());
-//	dataSizeVectorResultCompare.setAll(0.0);
-//
-//	evalCompare->mult(alpha, dataSizeVectorResultCompare);
-//
-//	double mse = 0.0;
-//	for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-//		//std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
-//		mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
-//				* (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-//	}
-//	mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-//	std::cout << "mse: " << mse << std::endl;
+	std::cout << "calculating comparison values..." << std::endl;
+
+	SGPP::base::OperationMultipleEval *evalCompare =
+	SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+
+	SGPP::base::DataVector dataSizeVectorResultCompare(
+			dataset.getNumberInstances());
+	dataSizeVectorResultCompare.setAll(0.0);
+
+	evalCompare->mult(alpha, dataSizeVectorResultCompare);
+
+	double mse = 0.0;
+	for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+		//std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+		mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
+				* (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+	}
+	mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+	std::cout << "mse: " << mse << std::endl;
 }
 

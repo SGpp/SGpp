@@ -41,8 +41,9 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #endif
 
-//TODO: add ifdef OCL
+#ifdef USE_OCL
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/OperationMultiEvalStreamingOCL.hpp>
+#endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -200,13 +201,17 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 				return new datadriven::OperationMultiEvalStreaming(grid,
 						dataset);
 #else
-				throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
+				throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
 				break;
 			} else if (configuration.subType
 					== SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
+#ifdef USE_OCL
 				return new datadriven::OperationMultiEvalStreamingOCL(grid,
 						dataset);
+#else
+				throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
+#endif
 			}
 			break;
 		case datadriven::OperationMultipleEvalType::SUBSPACELINEAR:
@@ -217,7 +222,7 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 				return new datadriven::OperationMultipleEvalSubspaceCombined(
 						grid, dataset);
 #else
-				throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
+				throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
 				break;
 
@@ -226,13 +231,14 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 				return new datadriven::OperationMultipleEvalSubspaceSimple(grid,
 						dataset);
 #else
-				throw base::factory_exception("Error creating function: library wasn't compiled with AVX");
+				throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
 				break;
 			case SGPP::datadriven::OperationMultipleEvalSubType::OCL:
 			default:
 				break;
 			}
+			break;
 		default:
 			break;
 		}
