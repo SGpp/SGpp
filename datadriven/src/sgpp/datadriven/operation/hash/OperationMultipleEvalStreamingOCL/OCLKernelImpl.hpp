@@ -285,7 +285,6 @@ public:
 					device_ids, kernel_multTrans);
 		}
 
-//		initOCLBuffers(level, index, mask, offset, dataset);
 		initOCLBuffers(level, index, dataset);
 		initParams(result, source);
 
@@ -298,12 +297,6 @@ public:
 					num_devices, gpu_num, &gpu_start_index_grid[gpu_num],
 					&gpu_end_index_grid[gpu_num], OCLLocalSize);
 		}
-
-		/*
-        size_t range = end_index_grid - start_index_grid;
-        size_t numWGs = range / m_oclkernel.getChunkGridPoints();
-        size_t end_index_grid_gpu = start_index_grid + numWGs *  m_oclkernel.getChunkGridPoints();
-*/
 
 		// set kernel arguments
 		cl_uint clSourceSize = (cl_uint) sourceSize;
@@ -552,5 +545,3 @@ protected:
 
 }
 }
-
-//#endif // USEOCL

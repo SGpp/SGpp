@@ -60,13 +60,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL")
         sys.exit(1)
         
-      #config.env.AppendUnique(LIBPATH="/opt/intel/intel-opencl-1.2-4.6.0.92/opencl-1.2-4.6.0.92/lib64/")
       config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
       if not config.CheckLib('OpenCL'):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
         sys.exit(1)
-      #config.env.AppendUnique(CPPDEFINES=["USEOCL_INTEL", "NO_OCL_OPTS"]) # "USEOCL_CPU"
       config.env["USE_OCL"] = True;
+      config.env.AppendUnique(CPPDEFINES="USE_OCL")
     else:
       print "Info: OpenCL is not enabled"
       config.env["USE_OCL"] = False;
