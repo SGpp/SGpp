@@ -17,22 +17,28 @@
 namespace SGPP {
 namespace datadriven {
 
+
+
 class OperationMultiEvalStreamingOCL: public base::OperationMultipleEval {
 protected:
+	size_t dims;
 	SGPP::base::DataMatrix preparedDataset;
+	STREAMING_OCL_INTERNAL_PRECISION *kernelDataset = nullptr;
+	size_t datasetSize = 0;
 	/// Member to store the sparse grid's levels for better vectorization
-	SGPP::base::DataMatrix* level_ = nullptr;
+	STREAMING_OCL_INTERNAL_PRECISION* level = nullptr;
 	/// Member to store the sparse grid's indices for better vectorization
-	SGPP::base::DataMatrix* index_ = nullptr;
+	STREAMING_OCL_INTERNAL_PRECISION* index = nullptr;
+	size_t gridSize = 0;
 	/// Timer object to handle time measurements
-	SGPP::base::SGppStopwatch myTimer_;
+	SGPP::base::SGppStopwatch myTimer;
 
 	base::GridStorage* storage;
 
 	float_t duration;
 
 	OCLManager manager;
-	OCLKernelImpl *kernel;
+	OCLKernelImpl<STREAMING_OCL_INTERNAL_PRECISION> *kernel;
 public:
 
 	OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset);

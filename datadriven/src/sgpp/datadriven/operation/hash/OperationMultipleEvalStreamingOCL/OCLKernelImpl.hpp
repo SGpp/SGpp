@@ -18,8 +18,11 @@
 namespace SGPP {
 namespace datadriven {
 
+template<typename real_type>
 class OCLKernelImpl {
 private:
+	size_t dims;
+
 	cl_int err;
 	cl_device_id* device_ids;
 	cl_uint num_devices;
@@ -30,7 +33,7 @@ private:
 	cl_mem* clLevel;
 	cl_mem* clIndex;
 
-// use pinned memory (on host and device) to speed up data transfers from/to GPU
+	// use pinned memory (on host and device) to speed up data transfers from/to GPU
 	cl_mem* clDevGrid;
 	cl_mem* clDevTmp;
 	cl_mem clPinnedGrid;
@@ -40,59 +43,91 @@ private:
 	cl_kernel* kernel_mult;
 
 	unsigned int OCLLocalSize;
-	double* pinnedGrid;
-	double* pinnedTmp;
+	real_type* pinnedGrid;
+	real_type* pinnedTmp;
 
-	OCLKernelSourceBuilder<double> kernelSourceBuilder;
+	OCLKernelSourceBuilder<real_type> kernelSourceBuilder;
 	OCLManager &manager;
 
 public:
 
-	OCLKernelImpl(OCLManager &manager);
+	OCLKernelImpl(size_t dims, OCLManager &manager) :
+			manager(manager) {
 
-	~OCLKernelImpl();
+		this->dims = dims;
+		this->num_devices = manager.num_devices;
+		this->context = manager.context;
+		this->command_queue = manager.command_queue;
+		this->device_ids = manager.device_ids;
+		this->OCLLocalSize = manager.getOCLLocalSize();
+		this->err = CL_SUCCESS;
 
-	void getPartitionSegment(size_t start, size_t end, size_t segmentCount,
-			size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd,
-			size_t blockSize);
+		this->clData = new cl_mem[num_devices];
+		this->clLevel = new cl_mem[num_devices];
+		this->clIndex = new cl_mem[num_devices];
+		this->pinnedGrid = nullptr;
+		this->clDevGrid = new cl_mem[num_devices];
+		this->clDevTmp = new cl_mem[num_devices];
+		this->clPinnedGrid = nullptr;
+		this->pinnedTmp = nullptr;
+		this->clPinnedTmp = nullptr;
 
-	void getOpenMPPartitionSegment(size_t start, size_t end,
-			size_t* segmentStart, size_t* segmentEnd, size_t blocksize);
+		this->kernel_mult = new cl_kernel[num_devices];
+		this->kernel_multTrans = new cl_kernel[num_devices];
 
-	cl_int createMultTrans(size_t dims, size_t local_workgroup_size,
-			cl_context context, size_t num_devices, cl_device_id* device_ids,
-			cl_kernel* kernel) {
-		std::string program_src = kernelSourceBuilder.generateSourceMultTrans(
-				dims, local_workgroup_size);
-		return manager.buildKernel(program_src, "multTransOCL", context,
-				num_devices, device_ids, kernel);
+		// initialize arrays
+		for (size_t i = 0; i < num_devices; i++) {
+			this->clData[i] = nullptr;
+			this->clLevel[i] = nullptr;
+			this->clIndex[i] = nullptr;
+
+			this->clDevGrid[i] = nullptr;
+			this->clDevTmp[i] = nullptr;
+
+			this->kernel_mult[i] = nullptr;
+			this->kernel_multTrans[i] = nullptr;
+		}
 	}
 
-	cl_int createMult(size_t dims, size_t local_workgroup_size,
-			cl_context context, size_t num_devices, cl_device_id* device_ids,
-			cl_kernel* kernel) {
-		std::string program_src = kernelSourceBuilder.generateSourceMult(dims,
-				local_workgroup_size);
-		return manager.buildKernel(program_src, "multOCL", context, num_devices,
-				device_ids, kernel);
+	~OCLKernelImpl() {
+		releaseDataBuffers();
+		releaseGridBuffers();
+		releaseKernelsAndPrograms();
+
+		// release command queue
+		for (size_t i = 0; i < num_devices; i++) {
+			if (command_queue[i]) {
+				clReleaseCommandQueue(command_queue[i]);
+			}
+		}
+
+		// release context
+		clReleaseContext(context);
+
+		delete[] command_queue;
+
+		delete[] clData;
+		delete[] clLevel;
+		delete[] clIndex;
+
+		delete[] clDevGrid;
+		delete[] clDevTmp;
+
+		delete[] kernel_mult;
+		delete[] kernel_multTrans;
+
+		delete[] device_ids;
 	}
 
-	void resetKernel();
-
-	size_t getChunkGridPoints() {
-		return this->OCLLocalSize;
+	void resetKernel() {
+		//leads to a reallocation before next kernel execution
+		releaseGridBuffers();
 	}
 
-	size_t getChunkDataPoints() {
-		return this->OCLLocalSize;
-	}
-
-	double mult(
-	SGPP::base::DataMatrix* level,
-	SGPP::base::DataMatrix* index,
-	SGPP::base::DataMatrix* dataset,
-	SGPP::base::DataVector& alpha,
-	SGPP::base::DataVector& result, const size_t start_index_grid,
+	double mult(real_type* level, real_type* index, size_t gridSize,
+			real_type* dataset, size_t datasetSize,
+			SGPP::base::DataVector& alpha,
+			SGPP::base::DataVector& result, const size_t start_index_grid,
 			const size_t end_index_grid, const size_t start_index_data,
 			const size_t end_index_data) {
 
@@ -104,14 +139,12 @@ public:
 
 		double time = 0.0;
 
-		if (kernel_mult[0] == NULL) {
-			size_t dims = dataset->getNrows();
-			this->createMult(dims, OCLLocalSize, context, num_devices,
+		if (kernel_mult[0] == nullptr) {
+			this->createMult(this->dims, OCLLocalSize, context, num_devices,
 					device_ids, kernel_mult);
 		}
 
-//		initOCLBuffers(level, index, mask, offset, dataset);
-		initOCLBuffers(level, index, dataset);
+		initOCLBuffers(level, index, gridSize, dataset, datasetSize);
 		initParams(alpha, result);
 
 		// determine best fit
@@ -164,7 +197,7 @@ public:
 			if (rangeSize > 0) {
 				err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i],
 						1, &gpu_start_index_data[i], &rangeSize, &local, 0,
-						NULL, &(clTimings[i]));
+						nullptr, &(clTimings[i]));
 
 				if (active_devices != i) {
 					std::cout
@@ -189,9 +222,9 @@ public:
 			if (rangeSize > 0) {
 				size_t offset = gpu_start_index_data[i];
 				err = clEnqueueReadBuffer(command_queue[i], clDevTmp[i],
-				CL_FALSE, sizeof(double) * offset, sizeof(double) * rangeSize,
-						&(pinnedTmp[offset]), 0,
-						NULL, &(GPUDone[i]));
+				CL_FALSE, sizeof(real_type) * offset,
+						sizeof(real_type) * rangeSize, &(pinnedTmp[offset]), 0,
+						nullptr, &(GPUDone[i]));
 
 				if (err != CL_SUCCESS) {
 					std::cout
@@ -217,7 +250,8 @@ public:
 
 			if (gpu_end_index_data[i] > gpu_start_index_data[i]) {
 				err = clGetEventProfilingInfo(clTimings[i],
-				CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+				CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime,
+						nullptr);
 
 				if (err != CL_SUCCESS) {
 					std::cout
@@ -226,8 +260,7 @@ public:
 				}
 
 				err = clGetEventProfilingInfo(clTimings[i],
-				CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime,
-				NULL);
+				CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
 
 				if (err != CL_SUCCESS) {
 					std::cout
@@ -262,12 +295,10 @@ public:
 		//return 0.0;
 	}
 
-	double multTranspose(
-	SGPP::base::DataMatrix *level,
-	SGPP::base::DataMatrix *index,
-	SGPP::base::DataMatrix *dataset,
-	SGPP::base::DataVector &source,
-	SGPP::base::DataVector &result, const size_t start_index_grid,
+	double multTranspose(real_type* level, real_type* index, size_t gridSize,
+			real_type* dataset, size_t datasetSize,
+			SGPP::base::DataVector &source,
+			SGPP::base::DataVector &result, const size_t start_index_grid,
 			const size_t end_index_grid, const size_t start_index_data,
 			const size_t end_index_data) {
 		// check if there is something to do at all
@@ -276,16 +307,15 @@ public:
 			return 0.0;
 		}
 
-		size_t dims = dataset->getNrows();
 		size_t sourceSize = source.getSize();
 		double time = 0.0;
 
-		if (kernel_multTrans[0] == NULL) {
-			this->createMultTrans(dims, OCLLocalSize, context, num_devices,
+		if (kernel_multTrans[0] == nullptr) {
+			this->createMultTrans(this->dims, OCLLocalSize, context, num_devices,
 					device_ids, kernel_multTrans);
 		}
 
-		initOCLBuffers(level, index, dataset);
+		initOCLBuffers(level, index, gridSize, dataset, datasetSize);
 		initParams(result, source);
 
 		// determine best fit
@@ -325,7 +355,6 @@ public:
 			}
 		}
 
-
 		cl_event* clTimings = new cl_event[num_devices];
 		cl_event* GPUDone = new cl_event[num_devices];
 
@@ -339,7 +368,7 @@ public:
 			if (rangeSize > 0) {
 				err = clEnqueueNDRangeKernel(command_queue[i],
 						kernel_multTrans[i], 1, &gpu_start_index_grid[i],
-						&rangeSize, &local, 0, NULL, &(clTimings[i]));
+						&rangeSize, &local, 0, nullptr, &(clTimings[i]));
 
 				if (active_devices != i) {
 					std::cout
@@ -364,9 +393,9 @@ public:
 			if (rangeSize > 0) {
 				size_t offset = gpu_start_index_grid[i];
 				err = clEnqueueReadBuffer(command_queue[i], clDevGrid[i],
-				CL_FALSE, sizeof(double) * offset, sizeof(double) * rangeSize,
-						&(pinnedGrid[offset]), 0,
-						NULL, &(GPUDone[i]));
+				CL_FALSE, sizeof(real_type) * offset,
+						sizeof(real_type) * rangeSize, &(pinnedGrid[offset]), 0,
+						nullptr, &(GPUDone[i]));
 
 				if (err != CL_SUCCESS) {
 					std::cout
@@ -392,7 +421,8 @@ public:
 
 			if (gpu_end_index_grid[i] > gpu_start_index_grid[i]) {
 				err = clGetEventProfilingInfo(clTimings[i],
-				CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, NULL);
+				CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime,
+						nullptr);
 
 				if (err != CL_SUCCESS) {
 					std::cout
@@ -401,8 +431,7 @@ public:
 				}
 
 				err = clGetEventProfilingInfo(clTimings[i],
-				CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime,
-				NULL);
+				CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
 
 				if (err != CL_SUCCESS) {
 					std::cout
@@ -435,68 +464,137 @@ public:
 
 		return time;
 	}
-protected:
+private:
 
-	void releaseGridBuffers();
+	cl_int createMultTrans(size_t dims, size_t local_workgroup_size,
+			cl_context context, size_t num_devices, cl_device_id* device_ids,
+			cl_kernel* kernel) {
+		std::string program_src = kernelSourceBuilder.generateSourceMultTrans(
+				dims, local_workgroup_size);
+		return manager.buildKernel(program_src, "multTransOCL", context,
+				num_devices, device_ids, kernel);
+	}
 
-	void releaseDataBuffers();
+	cl_int createMult(size_t dims, size_t local_workgroup_size,
+			cl_context context, size_t num_devices, cl_device_id* device_ids,
+			cl_kernel* kernel) {
+		std::string program_src = kernelSourceBuilder.generateSourceMult(dims,
+				local_workgroup_size);
+		return manager.buildKernel(program_src, "multOCL", context, num_devices,
+				device_ids, kernel);
+	}
 
-	void releaseKernelsAndPrograms();
+	size_t getChunkGridPoints() {
+		return this->OCLLocalSize;
+	}
 
-	inline void initOCLBuffers(
-	SGPP::base::DataMatrix* level,
-	SGPP::base::DataMatrix* index,
-	SGPP::base::DataMatrix* dataset) {
-		size_t storageSize = level->getSize();
+	size_t getChunkDataPoints() {
+		return this->OCLLocalSize;
+	}
 
-		if (level != NULL && clLevel[0] == NULL) {
-			for (size_t i = 0; i < num_devices; i++) {
-				clLevel[i] = clCreateBuffer(context,
-				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-						sizeof(double) * storageSize, level->getPointer(),
-						NULL);
+	void releaseGridBuffers() {
+		for (size_t i = 0; i < num_devices; i++) {
+			if (clLevel[i] != nullptr) {
+				clReleaseMemObject(clLevel[i]);
+				clLevel[i] = nullptr;
+			}
+
+			if (clIndex[i] != nullptr) {
+				clReleaseMemObject(clIndex[i]);
+				clIndex[i] = nullptr;
+			}
+
+			if (clDevGrid[i] != nullptr) {
+				clReleaseMemObject(clDevGrid[i]);
+				clDevGrid[i] = nullptr;
 			}
 		}
 
-		if (index != NULL && clIndex[0] == NULL) {
-			for (size_t i = 0; i < num_devices; i++) {
-				clIndex[i] = clCreateBuffer(context,
-				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-						sizeof(double) * storageSize, index->getPointer(),
-						NULL);
+		if (clPinnedGrid) {
+			clReleaseMemObject(clPinnedGrid);
+			clPinnedGrid = nullptr;
+		}
+	}
+
+	void releaseDataBuffers() {
+		for (size_t i = 0; i < num_devices; i++) {
+			if (clData[i]) {
+				clReleaseMemObject(clData[i]);
+				clData[i] = nullptr;
+			}
+
+			if (clDevTmp[i]) {
+				clReleaseMemObject(clDevTmp[i]);
+				clDevTmp[i] = nullptr;
 			}
 		}
 
-		if (clData[0] == NULL) { // use first element as indicator if data has been already copied to device
-			for (size_t i = 0; i < num_devices; i++) {
-				clData[i] = clCreateBuffer(context,
-				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-						sizeof(double) * dataset->getSize(),
-						dataset->getPointer(), NULL);
+		if (clPinnedTmp) {
+			clReleaseMemObject(clPinnedTmp);
+			clPinnedTmp = nullptr;
+		}
+	}
+
+	void releaseKernelsAndPrograms() {
+		for (size_t i = 0; i < num_devices; i++) {
+			if (kernel_mult[i]) {
+				clReleaseKernel(kernel_mult[i]);
+				kernel_mult[i] = nullptr;
+			}
+
+			if (kernel_multTrans[i]) {
+				clReleaseKernel(kernel_multTrans[i]);
+				kernel_multTrans[i] = nullptr;
 			}
 		}
 	}
 
-	inline void initParams(SGPP::base::DataVector& grid,
+	void initOCLBuffers(real_type* level, real_type* index, size_t gridSize,
+			real_type* dataset, size_t datasetSize) {
+
+		if (level != nullptr && clLevel[0] == nullptr) {
+			for (size_t i = 0; i < num_devices; i++) {
+				clLevel[i] = clCreateBuffer(context,
+				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+						sizeof(real_type) * gridSize * this->dims, level, nullptr);
+			}
+		}
+
+		if (index != nullptr && clIndex[0] == nullptr) {
+			for (size_t i = 0; i < num_devices; i++) {
+				clIndex[i] = clCreateBuffer(context,
+				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+						sizeof(real_type) * gridSize * this->dims, index, nullptr);
+			}
+		}
+
+		if (clData[0] == nullptr) { // use first element as indicator if data has been already copied to device
+			for (size_t i = 0; i < num_devices; i++) {
+				clData[i] = clCreateBuffer(context,
+				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+						sizeof(real_type) * datasetSize * this->dims, dataset, nullptr);
+			}
+		}
+	}
+
+	void initParams(SGPP::base::DataVector& grid,
 	SGPP::base::DataVector& tmp) {
-		if (clPinnedGrid == NULL) {
-			size_t mem_size = sizeof(double) * grid.getSize(); //has to be the padded grid size
+		if (clPinnedGrid == nullptr) {
+			size_t mem_size = sizeof(real_type) * grid.getSize() * this->dims; //has to be the padded grid size
 			clPinnedGrid = clCreateBuffer(context,
-			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, NULL,
-			NULL);
+			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, nullptr,
+					nullptr);
 
 			for (size_t i = 0; i < num_devices; i++) {
 				clDevGrid[i] = clCreateBuffer(context, CL_MEM_READ_WRITE,
-						mem_size, NULL, NULL);
+						mem_size, nullptr, nullptr);
 			}
 
-			pinnedGrid = (double*) clEnqueueMapBuffer(command_queue[0],
+			pinnedGrid = (real_type*) clEnqueueMapBuffer(command_queue[0],
 					clPinnedGrid, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE, 0,
-					mem_size, 0, NULL, NULL, &err);
+					mem_size, 0, nullptr, nullptr, &err);
 			if (err != CL_SUCCESS) {
-				std::cout
-						<< "OCL Error: pinnedGrid: "
-						<< err << std::endl;
+				std::cout << "OCL Error: pinnedGrid: " << err << std::endl;
 			}
 		}
 
@@ -505,8 +603,9 @@ protected:
 		}
 
 		for (size_t i = 0; i < num_devices; i++) {
-			err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE, 0,
-					sizeof(double) * grid.getSize(), pinnedGrid, 0, NULL, NULL);
+			err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE,
+					0, sizeof(real_type) * grid.getSize(), pinnedGrid, 0,
+					nullptr, nullptr);
 
 			if (err != CL_SUCCESS) {
 				std::cout
@@ -515,20 +614,20 @@ protected:
 			}
 		}
 
-		if (clPinnedTmp == NULL) {
-			size_t mem_size = sizeof(double) * tmp.getSize();
+		if (clPinnedTmp == nullptr) {
+			size_t mem_size = sizeof(real_type) * tmp.getSize() * this->dims;
 			clPinnedTmp = clCreateBuffer(context,
-			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, NULL,
-			NULL);
+			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, nullptr,
+					nullptr);
 
 			for (size_t i = 0; i < num_devices; i++) {
 				clDevTmp[i] = clCreateBuffer(context, CL_MEM_READ_WRITE,
-						mem_size, NULL, NULL);
+						mem_size, nullptr, nullptr);
 			}
 
-			pinnedTmp = (double*) clEnqueueMapBuffer(command_queue[0],
+			pinnedTmp = (real_type*) clEnqueueMapBuffer(command_queue[0],
 					clPinnedTmp, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE, 0,
-					mem_size, 0, NULL, NULL, NULL);
+					mem_size, 0, nullptr, nullptr, nullptr);
 		}
 
 		for (size_t i = 0; i < tmp.getSize(); i++) {
@@ -537,8 +636,53 @@ protected:
 
 		for (size_t i = 0; i < num_devices; i++) {
 			clEnqueueWriteBuffer(command_queue[i], clDevTmp[i], CL_TRUE, 0,
-					sizeof(double) * tmp.getSize(), pinnedTmp, 0, NULL, NULL);
+					sizeof(real_type) * tmp.getSize(), pinnedTmp, 0, nullptr,
+					nullptr);
 		}
+	}
+
+	void getPartitionSegment(size_t start, size_t end, size_t segmentCount,
+			size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd,
+			size_t blockSize) {
+		size_t totalSize = end - start;
+
+		// check for valid input
+		if (blockSize == 0) {
+			throw SGPP::base::operation_exception(
+					"blockSize must not be zero!");
+		}
+
+		if (totalSize % blockSize != 0) {
+			//std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
+			throw SGPP::base::operation_exception(
+					"totalSize must be divisible by blockSize without remainder, but it is not!");
+		}
+
+		// do all further calculations with complete blocks
+		size_t blockCount = totalSize / blockSize;
+
+		size_t blockSegmentSize = blockCount / segmentCount;
+		size_t remainder = blockCount - blockSegmentSize * segmentCount;
+		size_t blockSegmentOffset = 0;
+
+		if (segmentNumber < remainder) {
+			blockSegmentSize++;
+			blockSegmentOffset = blockSegmentSize * segmentNumber;
+		} else {
+			blockSegmentOffset = remainder * (blockSegmentSize + 1)
+					+ (segmentNumber - remainder) * blockSegmentSize;
+		}
+
+		*segmentStart = start + blockSegmentOffset * blockSize;
+		*segmentEnd = *segmentStart + blockSegmentSize * blockSize;
+	}
+
+	void getOpenMPPartitionSegment(size_t start, size_t end,
+			size_t* segmentStart, size_t* segmentEnd, size_t blocksize) {
+		size_t threadCount = omp_get_num_threads();
+		size_t myThreadNum = omp_get_thread_num();
+		getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart,
+				segmentEnd, blocksize);
 	}
 
 };

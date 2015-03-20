@@ -12,60 +12,81 @@ namespace datadriven {
 
 OperationMultiEvalStreamingOCL::OperationMultiEvalStreamingOCL(base::Grid& grid,
 		base::DataMatrix& dataset) :
-		OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer_(
-		SGPP::base::SGppStopwatch()), duration(-1.0) { //, mask_(null_ptr), offset_(null_ptr)
+		OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer(
+		SGPP::base::SGppStopwatch()), duration(-1.0) {
 	this->manager.initializePlattform();
-	this->kernel = new OCLKernelImpl(this->manager);
+	this->dims = dataset.getNcols(); //be aware of transpose!
+	this->kernel = new OCLKernelImpl<double>(dims, this->manager);
 
 	this->storage = grid.getStorage();
 	this->padDataset(this->preparedDataset);
 	this->preparedDataset.transpose();
+	this->datasetSize = this->preparedDataset.getNcols();
+
+	std::cout << "dims: " << this->dims << std::endl;
+	std::cout << "padded instances: " << this->datasetSize << std::endl;
+
+	this->kernelDataset = new double[this->preparedDataset.getNrows()
+			* this->preparedDataset.getNcols()];
+	for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
+		this->kernelDataset[i] = (double) this->preparedDataset[i];
+	}
 
 	//create the kernel specific data structures
 	this->prepare();
 }
 
 OperationMultiEvalStreamingOCL::~OperationMultiEvalStreamingOCL() {
-	if (this->level_ != nullptr)
-		delete this->level_;
+	if (this->level != nullptr) {
+		delete this->level;
+	}
 
-	if (this->index_ != nullptr)
-		delete this->index_;
+	if (this->index != nullptr) {
+		delete this->index;
+	}
+
+	if (this->kernelDataset != nullptr) {
+		delete this->kernelDataset;
+	}
 }
 
 void OperationMultiEvalStreamingOCL::mult(SGPP::base::DataVector& alpha,
 SGPP::base::DataVector& result) {
-	this->myTimer_.start();
-
-
+	this->myTimer.start();
 
 	size_t originalSize = result.getSize();
 
 	result.resize(this->preparedDataset.getNcols());
-
 	result.setAll(0.0);
 
-	size_t gridFrom = 0;
-	size_t gridTo = grid.getStorage()->size();
-	size_t datasetFrom = 0;
-	size_t datasetTo = this->preparedDataset.getNcols();
+	size_t originalAlphaSize = alpha.getSize();
+	alpha.resize(this->gridSize);
+	for (size_t i = originalAlphaSize; i < alpha.getSize(); i++) {
+		alpha[i] = 0.0;
+	}
 
-	this->kernel->mult(level_, index_, &this->preparedDataset, alpha, result,
-			gridFrom, gridTo, datasetFrom, datasetTo);
+	size_t gridFrom = 0;
+	size_t gridTo = this->gridSize;
+	size_t datasetFrom = 0;
+	size_t datasetTo = this->datasetSize;
+
+	this->kernel->mult(this->level, this->index, this->gridSize,
+			this->kernelDataset, this->datasetSize, alpha, result, gridFrom,
+			gridTo, datasetFrom, datasetTo);
 
 	result.resize(originalSize);
-	this->duration = this->myTimer_.stop();
+	alpha.resize(originalAlphaSize);
+	this->duration = this->myTimer.stop();
 }
 
 void OperationMultiEvalStreamingOCL::multTranspose(
 SGPP::base::DataVector& source,
 SGPP::base::DataVector& result) {
-	this->myTimer_.start();
-
+	this->myTimer.start();
 
 	size_t originalSize = source.getSize();
 	size_t gridOriginalSize = result.getSize();
-	result.resize(this->level_->getNrows());
+	result.resize(this->gridSize);
 
 	source.resize(this->preparedDataset.getNcols());
 
@@ -78,50 +99,62 @@ SGPP::base::DataVector& result) {
 
 	size_t gridFrom = 0;
 	//size_t gridTo = grid.getStorage()->size();
-	size_t gridTo = this->level_->getNrows();
+	size_t gridTo = this->gridSize;
 	size_t datasetFrom = 0;
 	size_t datasetTo = this->preparedDataset.getNcols();
 
-	this->kernel->multTranspose(this->level_, this->index_,
-			&this->preparedDataset, source, result, gridFrom, gridTo,
-			datasetFrom, datasetTo);
+	this->kernel->multTranspose(this->level, this->index, this->gridSize,
+			this->kernelDataset, this->preparedDataset.getNcols(), source,
+			result, gridFrom, gridTo, datasetFrom, datasetTo);
 
 	source.resize(originalSize);
 	result.resize(gridOriginalSize);
-	this->duration = this->myTimer_.stop();
+	this->duration = this->myTimer.stop();
 }
 
 void OperationMultiEvalStreamingOCL::recalculateLevelAndIndex() {
-	if (this->level_ != nullptr)
-		delete this->level_;
+	if (this->level != nullptr)
+		delete this->level;
 
-	if (this->index_ != nullptr)
-		delete this->index_;
+	if (this->index != nullptr)
+		delete this->index;
 
 	uint32_t localWorkSize = this->manager.getOCLLocalSize();
 
 	size_t remainder = this->storage->size() % localWorkSize;
-	size_t padding = localWorkSize - remainder;
-	size_t paddedSize = this->storage->size() + padding;
+	size_t padding = 0;
+	if (remainder != 0) {
+		padding = localWorkSize - remainder;
+	}
+	this->gridSize = this->storage->size() + padding;
 
-	this->level_ = new SGPP::base::DataMatrix(paddedSize,
-			this->storage->dim());
-	this->index_ = new SGPP::base::DataMatrix(paddedSize,
-			this->storage->dim());
+	SGPP::base::DataMatrix *levelMatrix = new SGPP::base::DataMatrix(
+			this->gridSize, this->dims);
+	SGPP::base::DataMatrix *indexMatrix = new SGPP::base::DataMatrix(
+			this->gridSize, this->dims);
 
-	this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
+	this->storage->getLevelIndexArraysForEval(*levelMatrix, *indexMatrix);
 
-
-	for (size_t i = this->storage->size(); i < paddedSize; i++) {
+	for (size_t i = this->storage->size(); i < this->gridSize; i++) {
 		for (size_t j = 0; j < this->storage->dim(); j++) {
-			this->level_->set(i, j, 1.0);
-			this->index_->set(i, j, 1.0);
+			levelMatrix->set(i, j, 1.0);
+			indexMatrix->set(i, j, 1.0);
 		}
 	}
 
+	this->level = new double[this->gridSize * this->dims];
+	this->index = new double[this->gridSize * this->dims];
+
+	for (size_t i = 0; i < this->gridSize * this->dims; i++) {
+		this->level[i] = (*levelMatrix)[i];
+		this->index[i] = (*indexMatrix)[i];
+	}
+
+	delete levelMatrix;
+	delete indexMatrix;
+
 }
 
-//TODO: fix for OpenCL
 size_t OperationMultiEvalStreamingOCL::padDataset(
 SGPP::base::DataMatrix& dataset) {
 
@@ -150,11 +183,11 @@ float_t OperationMultiEvalStreamingOCL::getDuration() {
 }
 
 void OperationMultiEvalStreamingOCL::prepare() {
-//	std::cout << "in prepare" << std::endl;
-	//TODO: do so only if necessary, also in the other kernels
 	this->recalculateLevelAndIndex();
 
 	this->kernel->resetKernel();
+
+	std::cout << "gridSize: " << this->gridSize << std::endl;
 }
 
 }
