@@ -71,8 +71,10 @@ vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabl
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
 if 'CXX' in ARGUMENTS:
+  print "CXX: ", ARGUMENTS['CXX']
   env['CXX'] = ARGUMENTS['CXX']
 if 'CC' in ARGUMENTS:
+  print "CC: ", ARGUMENTS['CC']
   env['CC'] = ARGUMENTS['CC']
 if 'CPPFLAGS' in ARGUMENTS:
   env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(" ")

@@ -17,8 +17,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
-                                            'CheckFlag' : SGppConfigureExtend.CheckFlag })
-    
+                                            'CheckFlag' : SGppConfigureExtend.CheckFlag })    
 
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
@@ -50,6 +49,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     else:
         print "Using " + commands.getoutput('dot -V').splitlines()[0]
           
+        #TODO: remove
     print "OCL_INCLUDE_PATH:", config.env['ENV']['OCL_INCLUDE_PATH']
     print "OCL_LIBRARY_PATH:", config.env['ENV']['OCL_LIBRARY_PATH']
     
@@ -57,12 +57,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     
       config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
       if not config.CheckCXXHeader('CL/cl.h'):
-        sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL")
+        sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
         
       config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
       if not config.CheckLib('OpenCL'):
-        sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL")
+        sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
       config.env["USE_OCL"] = True;
       config.env.AppendUnique(CPPDEFINES="USE_OCL")
