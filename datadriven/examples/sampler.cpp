@@ -5,7 +5,7 @@
 
 int main(int argc, char **argv) {
 
-	int maxLevel = 7;
+	int maxLevel = 5;
 
 	std::string fileName = "friedman2_90000.arff";
 
