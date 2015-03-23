@@ -37,12 +37,12 @@ int main(int argc, char **argv) {
 	std::string fileName = "friedman2_90000.arff";
 //	std::string fileName = "debugging.arff";
 
-	uint32_t level = 5;
+	uint32_t level = 3;
 
 	SGPP::base::AdpativityConfiguration adaptConfig;
 	adaptConfig.maxLevelType_ = false;
 	adaptConfig.noPoints_ = 80;
-	adaptConfig.numRefinements_ = 5;
+	adaptConfig.numRefinements_ = 10;
 	adaptConfig.percent_ = 200.0;
 	adaptConfig.threshold_ = 0.0;
 
