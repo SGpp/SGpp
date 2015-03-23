@@ -384,7 +384,7 @@ public:
 
 		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
 			stream_program_src << "for (size_t d = 0; d < " << dims
-					<< "; d++) {" << std::endl;
+			<< "; d++) {" << std::endl;
 			stream_program_src << "   locData[(d * " << local_workgroup_size << ")+(localIdx)] = ptrData[(d * sourceSize) + (localIdx + i)];" << std::endl;
 			stream_program_src << "}" << std::endl;
 		} else {
@@ -421,10 +421,12 @@ public:
 			stream_program_src << "     eval = (level[d] * (locData[(d * " << local_workgroup_size
 			<< ")+k]));" << std::endl;
 #else
-			stream_program_src << "     eval = (level[d] * (ptrData[(d * sourceSize) + k]));"
+			stream_program_src
+					<< "     eval = (level[d] * (ptrData[(d * sourceSize) + k]));"
 					<< std::endl;
 #endif
-			stream_program_src << "     index_calc = eval - index[d];" << std::endl;
+			stream_program_src << "     index_calc = eval - index[d];"
+					<< std::endl;
 			stream_program_src << "     abs = fabs(index_calc);" << std::endl;
 			stream_program_src << "     last = 1.0"
 					<< getType<real_type>::constSuffix() << " - abs;"
@@ -433,26 +435,31 @@ public:
 					<< getType<real_type>::constSuffix() << ");" << std::endl;
 			stream_program_src << "     curSupport *= localSupport;"
 					<< std::endl;
+//			stream_program_src
+//					<< "   printf(\"l: %lf, i: %lf, data: %lf, source: %lf\\n\", level[d], index[d], ptrData[(d * sourceSize) + k], ptrSource[k]);"
+//					<< std::endl;
 			stream_program_src << "}" << std::endl;
 		} else {
 			for (size_t d = 0; d < dims; d++) {
-	#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+#if STREAMING_OCL_USE_LOCAL_MEMORY == true
 				stream_program_src << "     eval = ((level_" << d
 				<< ") * (locData[(" << d << "*" << local_workgroup_size
 				<< ")+k]));" << std::endl;
-	#else
+#else
 				stream_program_src << "     eval = ((level_" << d
 						<< ") * (ptrData[(" << d << "*sourceSize)+k]));"
 						<< std::endl;
-	#endif
+#endif
 				stream_program_src << "     index_calc = eval - (index_" << d
 						<< ");" << std::endl;
-				stream_program_src << "     abs = fabs(index_calc);" << std::endl;
+				stream_program_src << "     abs = fabs(index_calc);"
+						<< std::endl;
 				stream_program_src << "     last = 1.0"
 						<< getType<real_type>::constSuffix() << " - abs;"
 						<< std::endl;
 				stream_program_src << "     localSupport = fmax(last, 0.0"
-						<< getType<real_type>::constSuffix() << ");" << std::endl;
+						<< getType<real_type>::constSuffix() << ");"
+						<< std::endl;
 				stream_program_src << "     curSupport *= localSupport;"
 						<< std::endl;
 			}

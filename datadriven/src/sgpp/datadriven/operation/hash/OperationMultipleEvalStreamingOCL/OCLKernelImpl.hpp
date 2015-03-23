@@ -125,9 +125,8 @@ public:
 	}
 
 	double mult(real_type* level, real_type* index, size_t gridSize,
-			real_type* dataset, size_t datasetSize,
-			SGPP::base::DataVector& alpha,
-			SGPP::base::DataVector& result, const size_t start_index_grid,
+			real_type* dataset, size_t datasetSize, real_type* alpha,
+			real_type* result, const size_t start_index_grid,
 			const size_t end_index_grid, const size_t start_index_data,
 			const size_t end_index_data) {
 
@@ -145,7 +144,7 @@ public:
 		}
 
 		initOCLBuffers(level, index, gridSize, dataset, datasetSize);
-		initParams(alpha, result);
+		initParams(alpha, gridSize, result, datasetSize);
 
 		// determine best fit
 		size_t* gpu_start_index_data = new size_t[num_devices];
@@ -158,7 +157,7 @@ public:
 		}
 
 		// set kernel arguments
-		cl_uint clResultSize = (cl_uint) (result.getSize());
+		cl_uint clResultSize = (cl_uint) datasetSize;
 		cl_uint gpu_start_grid = (cl_uint) start_index_grid;
 		cl_uint gpu_end_grid = (cl_uint) end_index_grid;
 
@@ -296,27 +295,26 @@ public:
 	}
 
 	double multTranspose(real_type* level, real_type* index, size_t gridSize,
-			real_type* dataset, size_t datasetSize,
-			SGPP::base::DataVector &source,
-			SGPP::base::DataVector &result, const size_t start_index_grid,
+			real_type* dataset, size_t datasetSize, real_type *source,
+			real_type *result, const size_t start_index_grid,
 			const size_t end_index_grid, const size_t start_index_data,
 			const size_t end_index_data) {
+
 		// check if there is something to do at all
 		if (!(end_index_grid > start_index_grid
 				&& end_index_data > start_index_data)) {
 			return 0.0;
 		}
 
-		size_t sourceSize = source.getSize();
 		double time = 0.0;
 
 		if (kernel_multTrans[0] == nullptr) {
-			this->createMultTrans(this->dims, OCLLocalSize, context, num_devices,
-					device_ids, kernel_multTrans);
+			this->createMultTrans(this->dims, OCLLocalSize, context,
+					num_devices, device_ids, kernel_multTrans);
 		}
 
 		initOCLBuffers(level, index, gridSize, dataset, datasetSize);
-		initParams(result, source);
+		initParams(result, gridSize, source, datasetSize);
 
 		// determine best fit
 		size_t* gpu_start_index_grid = new size_t[num_devices];
@@ -329,7 +327,7 @@ public:
 		}
 
 		// set kernel arguments
-		cl_uint clSourceSize = (cl_uint) sourceSize;
+		cl_uint clSourceSize = (cl_uint) datasetSize;
 		cl_uint gpu_start_data = (cl_uint) start_index_data;
 		cl_uint gpu_end_data = (cl_uint) end_index_data;
 
@@ -556,7 +554,8 @@ private:
 			for (size_t i = 0; i < num_devices; i++) {
 				clLevel[i] = clCreateBuffer(context,
 				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-						sizeof(real_type) * gridSize * this->dims, level, nullptr);
+						sizeof(real_type) * gridSize * this->dims, level,
+						nullptr);
 			}
 		}
 
@@ -564,7 +563,8 @@ private:
 			for (size_t i = 0; i < num_devices; i++) {
 				clIndex[i] = clCreateBuffer(context,
 				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-						sizeof(real_type) * gridSize * this->dims, index, nullptr);
+						sizeof(real_type) * gridSize * this->dims, index,
+						nullptr);
 			}
 		}
 
@@ -572,15 +572,16 @@ private:
 			for (size_t i = 0; i < num_devices; i++) {
 				clData[i] = clCreateBuffer(context,
 				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-						sizeof(real_type) * datasetSize * this->dims, dataset, nullptr);
+						sizeof(real_type) * datasetSize * this->dims, dataset,
+						nullptr);
 			}
 		}
 	}
 
-	void initParams(SGPP::base::DataVector& grid,
-	SGPP::base::DataVector& tmp) {
+	void initParams(real_type *grid, size_t gridSize, real_type * tmp,
+			size_t datasetSize) {
 		if (clPinnedGrid == nullptr) {
-			size_t mem_size = sizeof(real_type) * grid.getSize() * this->dims; //has to be the padded grid size
+			size_t mem_size = sizeof(real_type) * gridSize * this->dims; //has to be the padded grid size
 			clPinnedGrid = clCreateBuffer(context,
 			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, nullptr,
 					nullptr);
@@ -598,14 +599,14 @@ private:
 			}
 		}
 
-		for (size_t i = 0; i < grid.getSize(); i++) {
+		for (size_t i = 0; i < gridSize; i++) {
 			pinnedGrid[i] = grid[i];
 		}
 
 		for (size_t i = 0; i < num_devices; i++) {
 			err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE,
-					0, sizeof(real_type) * grid.getSize(), pinnedGrid, 0,
-					nullptr, nullptr);
+					0, sizeof(real_type) * gridSize, pinnedGrid, 0, nullptr,
+					nullptr);
 
 			if (err != CL_SUCCESS) {
 				std::cout
@@ -615,7 +616,7 @@ private:
 		}
 
 		if (clPinnedTmp == nullptr) {
-			size_t mem_size = sizeof(real_type) * tmp.getSize() * this->dims;
+			size_t mem_size = sizeof(real_type) * datasetSize * this->dims;
 			clPinnedTmp = clCreateBuffer(context,
 			CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, nullptr,
 					nullptr);
@@ -630,13 +631,13 @@ private:
 					mem_size, 0, nullptr, nullptr, nullptr);
 		}
 
-		for (size_t i = 0; i < tmp.getSize(); i++) {
+		for (size_t i = 0; i < datasetSize; i++) {
 			pinnedTmp[i] = tmp[i];
 		}
 
 		for (size_t i = 0; i < num_devices; i++) {
 			clEnqueueWriteBuffer(command_queue[i], clDevTmp[i], CL_TRUE, 0,
-					sizeof(real_type) * tmp.getSize(), pinnedTmp, 0, nullptr,
+					sizeof(real_type) * datasetSize, pinnedTmp, 0, nullptr,
 					nullptr);
 		}
 	}

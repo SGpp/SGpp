@@ -16,7 +16,7 @@ OperationMultiEvalStreamingOCL::OperationMultiEvalStreamingOCL(base::Grid& grid,
 		SGPP::base::SGppStopwatch()), duration(-1.0) {
 	this->manager.initializePlattform();
 	this->dims = dataset.getNcols(); //be aware of transpose!
-	this->kernel = new OCLKernelImpl<double>(dims, this->manager);
+	this->kernel = new OCLKernelImpl<STREAMING_OCL_INTERNAL_PRECISION>(dims, this->manager);
 
 	this->storage = grid.getStorage();
 	this->padDataset(this->preparedDataset);
@@ -26,10 +26,10 @@ OperationMultiEvalStreamingOCL::OperationMultiEvalStreamingOCL(base::Grid& grid,
 	std::cout << "dims: " << this->dims << std::endl;
 	std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-	this->kernelDataset = new double[this->preparedDataset.getNrows()
+	this->kernelDataset = new STREAMING_OCL_INTERNAL_PRECISION[this->preparedDataset.getNrows()
 			* this->preparedDataset.getNcols()];
 	for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
-		this->kernelDataset[i] = (double) this->preparedDataset[i];
+		this->kernelDataset[i] = (STREAMING_OCL_INTERNAL_PRECISION) this->preparedDataset[i];
 	}
 
 	//create the kernel specific data structures
@@ -54,10 +54,10 @@ void OperationMultiEvalStreamingOCL::mult(SGPP::base::DataVector& alpha,
 SGPP::base::DataVector& result) {
 	this->myTimer.start();
 
-	size_t originalSize = result.getSize();
+//	size_t originalSize = result.getSize();
 
-	result.resize(this->preparedDataset.getNcols());
-	result.setAll(0.0);
+//	result.resize(this->preparedDataset.getNcols());
+//	result.setAll(0.0);
 
 	size_t originalAlphaSize = alpha.getSize();
 	alpha.resize(this->gridSize);
@@ -70,12 +70,31 @@ SGPP::base::DataVector& result) {
 	size_t datasetFrom = 0;
 	size_t datasetTo = this->datasetSize;
 
+	STREAMING_OCL_INTERNAL_PRECISION *alphaArray = new STREAMING_OCL_INTERNAL_PRECISION[this->gridSize];
+	for (size_t i = 0; i < alpha.getSize(); i++) {
+		alphaArray[i] = (STREAMING_OCL_INTERNAL_PRECISION) alpha[i];
+	}
+	for (size_t i = alpha.getSize(); i < this->gridSize; i++) {
+		alphaArray[i] = 0.0;
+	}
+
+	STREAMING_OCL_INTERNAL_PRECISION *resultArray = new STREAMING_OCL_INTERNAL_PRECISION[this->datasetSize];
+	for (size_t i = 0; i < this->datasetSize; i++) {
+		resultArray[i] = 0.0;
+	}
+
 	this->kernel->mult(this->level, this->index, this->gridSize,
-			this->kernelDataset, this->datasetSize, alpha, result, gridFrom,
+			this->kernelDataset, this->datasetSize, alphaArray, resultArray, gridFrom,
 			gridTo, datasetFrom, datasetTo);
 
-	result.resize(originalSize);
-	alpha.resize(originalAlphaSize);
+//	result.resize(originalSize);
+
+	for (size_t i = 0; i < result.getSize(); i++) {
+		result[i] = resultArray[i];
+	}
+
+	delete alphaArray;
+	delete resultArray;
 	this->duration = this->myTimer.stop();
 }
 
@@ -84,31 +103,34 @@ SGPP::base::DataVector& source,
 SGPP::base::DataVector& result) {
 	this->myTimer.start();
 
-	size_t originalSize = source.getSize();
-	size_t gridOriginalSize = result.getSize();
-	result.resize(this->gridSize);
-
-	source.resize(this->preparedDataset.getNcols());
-
-	//set padding area to zero
-	for (size_t i = originalSize; i < this->preparedDataset.getNcols(); i++) {
-		source[i] = 0.0;
-	}
-
-	result.setAll(0.0);
-
 	size_t gridFrom = 0;
-	//size_t gridTo = grid.getStorage()->size();
 	size_t gridTo = this->gridSize;
 	size_t datasetFrom = 0;
-	size_t datasetTo = this->preparedDataset.getNcols();
+	size_t datasetTo = this->datasetSize;
+
+	STREAMING_OCL_INTERNAL_PRECISION *sourceArray = new STREAMING_OCL_INTERNAL_PRECISION[this->datasetSize];
+	for (size_t i = 0; i < source.getSize(); i++) {
+		sourceArray[i] = (STREAMING_OCL_INTERNAL_PRECISION) source[i];
+	}
+	for (size_t i = source.getSize(); i < this->datasetSize; i++) {
+		sourceArray[i] = 0.0;
+	}
+
+	STREAMING_OCL_INTERNAL_PRECISION *resultArray = new STREAMING_OCL_INTERNAL_PRECISION[this->gridSize];
+	for (size_t i = 0; i < this->gridSize; i++) {
+		resultArray[i] = 0.0;
+	}
 
 	this->kernel->multTranspose(this->level, this->index, this->gridSize,
-			this->kernelDataset, this->preparedDataset.getNcols(), source,
-			result, gridFrom, gridTo, datasetFrom, datasetTo);
+			this->kernelDataset, this->preparedDataset.getNcols(), sourceArray,
+			resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
 
-	source.resize(originalSize);
-	result.resize(gridOriginalSize);
+	for (size_t i = 0; i < result.getSize(); i++) {
+		result[i] = resultArray[i];
+	}
+
+	delete sourceArray;
+	delete resultArray;
 	this->duration = this->myTimer.stop();
 }
 
@@ -142,12 +164,12 @@ void OperationMultiEvalStreamingOCL::recalculateLevelAndIndex() {
 		}
 	}
 
-	this->level = new double[this->gridSize * this->dims];
-	this->index = new double[this->gridSize * this->dims];
+	this->level = new STREAMING_OCL_INTERNAL_PRECISION[this->gridSize * this->dims];
+	this->index = new STREAMING_OCL_INTERNAL_PRECISION[this->gridSize * this->dims];
 
 	for (size_t i = 0; i < this->gridSize * this->dims; i++) {
-		this->level[i] = (*levelMatrix)[i];
-		this->index[i] = (*indexMatrix)[i];
+		this->level[i] = (STREAMING_OCL_INTERNAL_PRECISION) (*levelMatrix)[i];
+		this->index[i] = (STREAMING_OCL_INTERNAL_PRECISION) (*indexMatrix)[i];
 	}
 
 	delete levelMatrix;

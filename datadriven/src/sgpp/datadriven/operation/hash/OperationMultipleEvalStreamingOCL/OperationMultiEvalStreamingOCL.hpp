@@ -17,8 +17,6 @@
 namespace SGPP {
 namespace datadriven {
 
-
-
 class OperationMultiEvalStreamingOCL: public base::OperationMultipleEval {
 protected:
 	size_t dims;
