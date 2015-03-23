@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
 
 	int maxLevel = 7;
 
-	std::string fileName = "debugging.arff";
+	std::string fileName = "friedman2_90000.arff";
 
 	//sg::base::RegularGridConfiguration gridConfig;
 	sg::solver::SLESolverConfiguration SLESolverConfigRefine;
@@ -59,11 +59,11 @@ int main(int argc, char **argv) {
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
 	configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-	//learner.learn(configuration, fileName);
+	learner.learn(configuration, fileName);
 	//learner.learnReference(fileName);
 
 	//learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-	learner.learnAndCompare(configuration, fileName, 4, 1.0);
+	//learner.learnAndCompare(configuration, fileName, 4, 1.0);
 	//learner.writeStatisticsFile("statistics.csv", "test");
 
 	return EXIT_SUCCESS;

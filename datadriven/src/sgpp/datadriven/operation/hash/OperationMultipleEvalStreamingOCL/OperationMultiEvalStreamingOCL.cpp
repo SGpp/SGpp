@@ -60,10 +60,10 @@ SGPP::base::DataVector& result) {
 //	result.setAll(0.0);
 
 	size_t originalAlphaSize = alpha.getSize();
-	alpha.resize(this->gridSize);
-	for (size_t i = originalAlphaSize; i < alpha.getSize(); i++) {
-		alpha[i] = 0.0;
-	}
+//	alpha.resize(this->gridSize);
+//	for (size_t i = originalAlphaSize; i < alpha.getSize(); i++) {
+//		alpha[i] = 0.0;
+//	}
 
 	size_t gridFrom = 0;
 	size_t gridTo = this->gridSize;
