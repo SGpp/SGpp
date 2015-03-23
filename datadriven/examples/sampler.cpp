@@ -7,7 +7,8 @@ int main(int argc, char **argv) {
 
 	int maxLevel = 5;
 
-	std::string fileName = "friedman2_90000.arff";
+	std::string fileName = "debugging.arff";
+//	std::string fileName = "friedman2_90000.arff";
 
 	//sg::base::RegularGridConfiguration gridConfig;
 	sg::solver::SLESolverConfiguration SLESolverConfigRefine;
@@ -29,7 +30,7 @@ int main(int argc, char **argv) {
 
 	// Set solver for final step
 	SLESolverConfigFinal.eps_ = 0;
-	SLESolverConfigFinal.maxIterations_ = 45;
+	SLESolverConfigFinal.maxIterations_ = 10;
 	SLESolverConfigFinal.threshold_ = -1.0;
 	SLESolverConfigFinal.type_ = sg::solver::CG;
 

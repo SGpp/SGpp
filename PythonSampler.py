@@ -9,39 +9,6 @@ import re
 
 class AbstractParameter:
   PARAMETER_TYPES = ["define", "environment", "option"]
-    
-class VectorParameter(AbstractParameter):
-  def __init__(self):
-    self.values = ["-msse3", "-mavx", ""]
-    #self.values = [""]
-    self.index = 0
-    self.maxIndex = 2
-  
-  def __repr__(self):
-    return "Vector"
-  
-  def getType(self):
-    return "option"
-  
-  def reset(self):
-    self.index = 0
-    
-  def hasNext(self):
-    if self.index < self.maxIndex:
-      return True
-    return False
-  
-  def getIndex(self):
-    if len(self.values) == 1:
-      return "0.5"
-    return str(float(self.index) / len(self.values));
-  
-  def getValue(self):
-    print "index:", self.index
-    return self.values[self.index]
-  
-  def next(self):
-    self.index += 1
       
 class CoresParameter(AbstractParameter):
   def __init__(self):
@@ -110,11 +77,79 @@ class BlocksizeParameter(AbstractParameter):
   
   def next(self):
     self.value *= self.stepMult
+    
+class PrecisionParameter(AbstractParameter):
+  
+  def __init__(self):
+    self.values = ["float", "double"]
+    self.index = 0
+    self.maxIndex = 1
+  
+  def __repr__(self):
+    return "Precision"
+  
+  def getType(self):
+    return "define"
+  
+  def reset(self):
+    self.index = 0
+    
+  def hasNext(self):
+    if self.index < self.maxIndex:
+      return True
+    return False
+  
+  def getIndex(self):
+    if len(self.values) == 1:
+      return "0.5"
+    return str(float(self.index) / len(self.values));
+  
+  def getValue(self):
+    return "STREAMING_OCL_INTERNAL_PRECISION=" + str(self.values[self.index])
+  
+  def next(self):
+    self.index += 1
+
+class UnrollMaxParameter(AbstractParameter):
+  def __init__(self):
+    self.min = 2
+    self.max = 8
+    self.step = 2
+    self.value = self.min
+    
+  def __repr__(self):
+    return "UnrollMax"
+  
+  def getType(self):
+    return "define"
+  
+  def reset(self):
+    self.value = self.min
+  
+  def getVariableName(self):
+    return "STREAMING_OCL_MAX_DIM_UNROLL"
+  
+  def hasNext(self):
+    if self.value + self.step > self.max:
+      return False
+    return True
+  
+  def getValue(self):
+    return "STREAMING_OCL_MAX_DIM_UNROLL=" + str(self.value)
+
+  def getIndex(self):
+    if self.max == self.min:
+      return "0.5"
+    return str(float(self.value - self.min) / (self.max - self.min));
+  
+  def next(self):
+    self.value += self.step
 
 parameters = [
-  VectorParameter(),
   CoresParameter(),
-  BlocksizeParameter()
+  BlocksizeParameter(),
+  PrecisionParameter(),
+  UnrollMaxParameter()
 ]
 
 class Sampler:
@@ -156,17 +191,16 @@ class Sampler:
     # compile
     command = "scons CPPFLAGS=\"" + ''.join([option.getValue() + " " for option in optionParameters]) + \
       "\" VERBOSE=1 -j" + self.jobs + " NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
-      "".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\" " + \
+      "".join([defineParameter.getValue() + " " for defineParameter in defineParameters]) + "\" " + \
       "SG_PYTHON=0 SG_JAVA=0 OPT=1 CXX=g++-4.8 CC=g++-4.8"
     print command
     # command = ["./execTest.py"]
     print "origC:", command
-    splittedCmd = shlex.split(command)
-    
+    splittedCmd = shlex.split(command)    
     p = subprocess.Popen(splittedCmd, env=my_env) #stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
     p.wait()
     stdout, stderr = p.communicate()
-    
+     
     # execute
     command = ["bin/examples/datadriven/multTest"]
     startTimestamp = time.time()
