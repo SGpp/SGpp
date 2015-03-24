@@ -31,7 +31,7 @@ namespace SGPP {
 
     void PrewaveletGridGenerator::regular(size_t level) {
       HashGenerator gen;
-      gen.regular(this->storage, level);
+      gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
     }
 
     void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size) {
@@ -41,7 +41,7 @@ namespace SGPP {
 
     void PrewaveletGridGenerator::full(size_t level) {
       HashGenerator gen;
-      gen.full(this->storage, level);
+      gen.full(this->storage, static_cast<HashGenerator::level_t>(level));
     }
 
     /**

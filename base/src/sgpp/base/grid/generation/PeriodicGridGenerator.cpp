@@ -27,7 +27,7 @@ namespace SGPP {
 
     void PeriodicGridGenerator::regular(size_t level) {
       HashGenerator gen;
-      gen.regularWithPeriodicBoundaries(storage, level);
+      gen.regularWithPeriodicBoundaries(storage, static_cast<HashGenerator::level_t>(level));
     }
 
     void PeriodicGridGenerator::full(size_t level) {
