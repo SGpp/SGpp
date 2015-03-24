@@ -86,8 +86,8 @@ int main(int argc, const char* argv[]) {
 
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
-  SGPP::optimization::InterpolantFunction ft(d, grid, coeffs);
-  SGPP::optimization::InterpolantGradient ftGradient(d, grid, coeffs);
+  SGPP::optimization::InterpolantFunction ft(grid, coeffs);
+  SGPP::optimization::InterpolantGradient ftGradient(grid, coeffs);
   SGPP::optimization::optimizer::GradientMethod gradientMethod(ft, ftGradient);
   SGPP::base::DataVector x0(d);
   SGPP::float_t fX0;

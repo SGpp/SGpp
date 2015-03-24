@@ -35,15 +35,15 @@ namespace SGPP {
          * Creates a regular truncated boundary grid with given level and l_user=1
          * Is the same as the regular truncated grid
          * */
-        virtual void regular(int level);
-        virtual void cliques(int level, size_t clique_size);
-        virtual void full(int level) {};
+        virtual void regular(size_t level);
+        virtual void cliques(size_t level, size_t clique_size);
+        virtual void full(size_t level) {};
         /**
          * Creates a super truncated boundary grid with given level and l_user
          * @param level the maximum level of the grid
          * @param l_user the number of fullgrids cut off from the boundaries.
          * */
-        virtual void truncated(int level, int l_user);
+        virtual void truncated(size_t level, size_t l_user);
         virtual void refine(RefinementFunctor* func) {};
         virtual size_t getNumberOfRefinablePoints() {
           return 0;
@@ -55,10 +55,10 @@ namespace SGPP {
           return 0;
         };
 
-        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel) {
+        virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) {
           throw generation_exception("refineMaxLevel is not implemented");
         };
-        virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel) {
+        virtual size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
           throw generation_exception("getNumberOfRefinablePointsToMaxLevel is not implemented");
           return 0;
         };
