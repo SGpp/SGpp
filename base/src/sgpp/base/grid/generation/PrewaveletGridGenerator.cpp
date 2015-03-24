@@ -29,29 +29,17 @@ namespace SGPP {
     PrewaveletGridGenerator::~PrewaveletGridGenerator() {
     }
 
-    void PrewaveletGridGenerator::regular(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PrewaveletGridGenerator::regular(size_t level) {
       HashGenerator gen;
       gen.regular(this->storage, level);
     }
 
-    void PrewaveletGridGenerator::cliques(int level, size_t clique_size) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size) {
       HashGenerator gen;
       gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
     }
 
-    void PrewaveletGridGenerator::full(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PrewaveletGridGenerator::full(size_t level) {
       HashGenerator gen;
       gen.full(this->storage, level);
     }
@@ -263,20 +251,12 @@ namespace SGPP {
     }
 
     void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor* func,
-        int maxLevel) {
-      if (maxLevel < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+        size_t maxLevel) {
       throw generation_exception("PrewaveletGridGenerator::refineMaxLevel is not implemented");
     }
 
     size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
-      int maxLevel) {
-      if (maxLevel < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+      size_t maxLevel) {
       throw generation_exception("PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
       return 0;
     }

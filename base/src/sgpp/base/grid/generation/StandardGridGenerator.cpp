@@ -24,29 +24,17 @@ namespace SGPP {
     StandardGridGenerator::~StandardGridGenerator() {
     }
 
-    void StandardGridGenerator::regular(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void StandardGridGenerator::regular(size_t level) {
       HashGenerator gen;
       gen.regular(this->storage, static_cast<HashGenerator::level_t>(level));
     }
 
-    void StandardGridGenerator::cliques(int level, size_t clique_size) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void StandardGridGenerator::cliques(size_t level, size_t clique_size) {
       HashGenerator gen;
       gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
     }
 
-    void StandardGridGenerator::full(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void StandardGridGenerator::full(size_t level) {
       HashGenerator gen;
       gen.full(this->storage, static_cast<HashGenerator::level_t>(level));
     }
@@ -76,19 +64,11 @@ namespace SGPP {
       return coarsen.getNumberOfRemovablePoints(this->storage);
     }
 
-    void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel) {
-      if (maxLevel < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func, size_t maxLevel) {
       throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
     }
 
-    size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel) {
-      if (maxLevel < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
       throw generation_exception("StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
       return 0;
     }
