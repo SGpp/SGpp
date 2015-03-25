@@ -42,7 +42,7 @@
 #endif
 
 #ifdef USE_OCL
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/OperationMultiEvalStreamingOCL.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -207,8 +207,9 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 			} else if (configuration.subType
 					== SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-				return new datadriven::OperationMultiEvalStreamingOCL(grid,
-						dataset);
+				return datadriven::createStreamingOCLConfigured(grid, dataset);
+//				return new datadriven::OperationMultiEvalStreamingOCL<double>(grid,
+//						dataset);
 #else
 				throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
