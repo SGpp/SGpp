@@ -156,7 +156,10 @@ class Sampler:
   def __init__(self, resultFileName, parameters, jobs):
     self.resultFileName = resultFileName
     self.parameters = parameters
-    self.jobs = jobs
+    self.jobs = str(jobs)
+
+    self.bestParameters = None
+    self.bestParameterDuration = sys.maxint
   def dimIter(self):
     index = 0
     while index < len(parameters):
@@ -189,9 +192,10 @@ class Sampler:
       my_env[keyValue[0]] = keyValue[1]
     
     # compile
+    print "define parameter values:", " ".join([defineParameter.getValue() for defineParameter in defineParameters])
     command = "scons CPPFLAGS=\"" + ''.join([option.getValue() + " " for option in optionParameters]) + \
       "\" VERBOSE=1 -j" + self.jobs + " NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
-      "".join([defineParameter.getValue() + " " for defineParameter in defineParameters]) + "\" " + \
+      " ".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\" " + \
       "SG_PYTHON=0 SG_JAVA=0 OPT=1 CXX=g++-4.8 CC=g++-4.8"
     print command
     # command = ["./execTest.py"]
@@ -200,15 +204,19 @@ class Sampler:
     p = subprocess.Popen(splittedCmd, env=my_env) #stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
     p.wait()
     stdout, stderr = p.communicate()
-     
+    
     # execute
-    command = ["bin/examples/datadriven/multTest"]
+    command = ["bin/examples/datadriven/sampler"]
     startTimestamp = time.time()
     p = subprocess.Popen(command, shell=True, env=my_env)
     p.wait()
     stdout, stderr = p.communicate()
     duration = time.time() - startTimestamp
     print "duration:", duration
+
+    if self.bestParameterDuration == None or duration < self.bestParameterDuration:
+      self.bestParameterDuration = duration
+      self.bestParameters = str([str(parameter) + "=" + str(parameter.getValue()) for parameter in optionParameters + envParameters + defineParameters])
 
     # extract runtime information
     dataTuple = [parameter.getIndex() for parameter in optionParameters + envParameters + defineParameters]
@@ -242,9 +250,11 @@ resultFileName = "samples.dat"
 
 jobs = 1
 for arg in sys.argv:
-  match = re.search("JOBS=([0-9]+?)", arg)
+  match = re.search("JOBS=([0-9]+)", arg)
   if match != None:
     jobs = match.group(1)
+
+print "number of jobs: ", jobs
 
 sampler = Sampler(resultFileName, parameters, jobs)
 sampler.sample()

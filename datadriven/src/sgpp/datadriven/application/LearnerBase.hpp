@@ -33,7 +33,8 @@ namespace SGPP {
      */
     class LearnerBase {
       protected:
-
+        /// the grid's coefficients
+        SGPP::base::DataVector* alpha_;
         /// sparse grid object
         SGPP::base::Grid* grid_;
         /// is verbose output enabled
@@ -102,8 +103,6 @@ namespace SGPP {
         virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda) = 0;
 
       public:
-        /// the grid's coefficients
-        SGPP::base::DataVector* alpha_;
 
         /**
          * Constructor
