@@ -10,37 +10,70 @@ import re
 class AbstractParameter:
   PARAMETER_TYPES = ["define", "environment", "option"]
       
-class CoresParameter(AbstractParameter):
+# example environment parameter
+# class CoresParameter(AbstractParameter):
+#   def __init__(self):
+#     self.min = 3
+#     self.max = 4
+#     self.step = 1
+#     self.value = self.min
+#   
+#   def __repr__(self):
+#     return "Cores"
+#   
+#   def getType(self):
+#     return "environment"
+#   
+#   def reset(self):
+#     self.value = self.min
+#   
+#   def hasNext(self):
+#     if self.value + self.step > self.max:
+#       return False
+#     return True
+#   
+#   def getValue(self):
+#     return ("OMP_NUM_THREADS", str(self.value))
+#   
+#   def getIndex(self):
+#     if self.max == self.min:
+#       return "0.5"
+#     return str(float(self.value - self.min) / (self.max - self.min));
+#   
+#   def next(self):
+#     self.value += self.step
+
+class LocalMemoryParameter(AbstractParameter):
+  
   def __init__(self):
-    self.min = 3
-    self.max = 4
-    self.step = 1
-    self.value = self.min
+    self.values = ["true", "false"]
+    self.index = 0
+    self.maxIndex = 1
   
   def __repr__(self):
-    return "Cores"
+    return "LocalMemory"
   
   def getType(self):
-    return "environment"
+    return "define"
   
   def reset(self):
-    self.value = self.min
-  
+    self.index = 0
+    
   def hasNext(self):
-    if self.value + self.step > self.max:
-      return False
-    return True
-  
-  def getValue(self):
-    return ("OMP_NUM_THREADS", str(self.value))
+    if self.index < self.maxIndex:
+      return True
+    return False
   
   def getIndex(self):
-    if self.max == self.min:
+    if len(self.values) == 1:
       return "0.5"
-    return str(float(self.value - self.min) / (self.max - self.min));
+    return str(float(self.index) / len(self.values));
+  
+  def getValue(self):
+    return "STREAMING_OCL_USE_LOCAL_MEMORY=" + str(self.values[self.index])
   
   def next(self):
-    self.value += self.step
+    self.index += 1
 
 class BlocksizeParameter(AbstractParameter):
   def __init__(self):
@@ -146,7 +179,7 @@ class UnrollMaxParameter(AbstractParameter):
     self.value += self.step
 
 parameters = [
-  CoresParameter(),
+  LocalMemoryParameter(),
   BlocksizeParameter(),
   PrecisionParameter(),
   UnrollMaxParameter()
@@ -160,6 +193,7 @@ class Sampler:
 
     self.bestParameters = None
     self.bestParameterDuration = sys.maxint
+    
   def dimIter(self):
     index = 0
     while index < len(parameters):
