@@ -5,6 +5,7 @@
  *      Author: pfandedd
  */
 
+#include <CL/cl.h>
 
 #ifndef STREAMING_OCL_DEVICE_TYPE
 //options: CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_GPU, ...

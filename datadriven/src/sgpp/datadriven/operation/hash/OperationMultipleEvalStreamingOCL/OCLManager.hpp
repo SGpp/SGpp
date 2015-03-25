@@ -32,7 +32,8 @@ public:
 	cl_context context;
 
 public:
-	OCLManager(base::ConfigurationParameters parameters): parameters(parameters) {
+	OCLManager(base::ConfigurationParameters parameters) :
+			parameters(parameters) {
 		// read number of OpenCL devices environment variable: SGPP_NUM_OCL_DEVICES
 		const char* num_ocl_devices_env = getenv("SGPP_NUM_OCL_DEVICES");
 		unsigned int max_number_ocl_devices =
@@ -100,7 +101,7 @@ public:
 #elif STREAMING_OCL_DEVICE_TYPE == CL_DEVICE_TYPE_GPU
 		std::cout << "OCL Info: looking for GPU device" << std::endl;
 #else
-		std::cout << "OCL Info: looking for device of unknown type" << std::endl;
+		std::cout << "OCL Info: looking for device of all/unknown type" << std::endl;
 #endif
 		err = clGetDeviceIDs(platform_id, STREAMING_OCL_DEVICE_TYPE,
 				max_number_ocl_devices, device_ids, &num_devices);
@@ -143,7 +144,8 @@ public:
 
 		std::cout
 				<< "OCL Info: Successfully initialized OpenCL (local workgroup size: "
-				<< parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE") << ")" << std::endl << std::endl;
+				<< parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE") << ")"
+				<< std::endl << std::endl;
 	}
 
 	/**
@@ -178,11 +180,14 @@ public:
 		}
 
 		std::string build_opts;
-#if STREAMING_OCL_ENABLE_OPTIMIZATIONS == true
-		build_opts = "-cl-finite-math-only -cl-fast-relaxed-math "; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
-#else
-		build_opts = "-cl-opt-disable -g ";
-#endif
+		if (parameters.getAsBoolean("STREAMING_OCL_ENABLE_OPTIMIZATIONS")) {
+//#if STREAMING_OCL_ENABLE_OPTIMIZATIONS == true
+			build_opts = "-cl-finite-math-only -cl-fast-relaxed-math "; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
+//#else
+		} else {
+			build_opts = "-cl-opt-disable -g ";
+//#endif
+		}
 
 		// compiling the program
 		err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
@@ -220,25 +225,25 @@ public:
 		return CL_SUCCESS;
 	}
 
-	uint32_t getOCLLocalSize() {
-//		// read environment variable for local work group size: SGPP_OCL_LOCAL_SIZE
-//		const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
-//
-//		if (ocl_local_size_env != NULL) {
-//			unsigned int num_ocl_devices_envvalue = (unsigned int) (strtoul(
-//					ocl_local_size_env, NULL, 0));
-//
-//			if (num_ocl_devices_envvalue != 0) {
-//				return num_ocl_devices_envvalue;
-//			} else {
-//				std::cout << "Ignoring value: \"" << ocl_local_size_env
-//						<< "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
-//			}
-//		}
-//
-//		return 64;
-		return parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
-	}
+//	uint32_t getOCLLocalSize() {
+////		// read environment variable for local work group size: SGPP_OCL_LOCAL_SIZE
+////		const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
+////
+////		if (ocl_local_size_env != NULL) {
+////			unsigned int num_ocl_devices_envvalue = (unsigned int) (strtoul(
+////					ocl_local_size_env, NULL, 0));
+////
+////			if (num_ocl_devices_envvalue != 0) {
+////				return num_ocl_devices_envvalue;
+////			} else {
+////				std::cout << "Ignoring value: \"" << ocl_local_size_env
+////						<< "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
+////			}
+////		}
+////
+////		return 64;
+//		return parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
+//	}
 };
 
 }
