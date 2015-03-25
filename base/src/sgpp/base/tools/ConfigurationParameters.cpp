@@ -40,7 +40,9 @@ std::string ConfigurationParameters::operator[](std::string key) {
 
 bool ConfigurationParameters::getAsBoolean(std::string key) {
 	bool asBool;
-	std::istringstream(parameters[key]) >> asBool;
+	std::stringstream converter(parameters[key]);
+	converter >> std::boolalpha;
+	converter >> asBool;
 	return asBool;
 }
 

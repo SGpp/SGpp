@@ -173,7 +173,9 @@ private:
 	size_t padDataset(
 	SGPP::base::DataMatrix& dataset) {
 
-		size_t vecWidth = this->manager->getOCLLocalSize();
+
+//		size_t vecWidth = this->manager->getOCLLocalSize();
+		size_t vecWidth = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 
 		// Assure that data has a even number of instances -> padding might be needed
 		size_t remainder = dataset.getNrows() % vecWidth;
@@ -200,7 +202,8 @@ private:
 		if (this->index != nullptr)
 			delete this->index;
 
-		uint32_t localWorkSize = this->manager->getOCLLocalSize();
+//		uint32_t localWorkSize = this->manager->getOCLLocalSize();
+		uint32_t localWorkSize = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 
 		size_t remainder = this->storage->size() % localWorkSize;
 		size_t padding = 0;
