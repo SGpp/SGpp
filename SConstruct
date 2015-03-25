@@ -81,7 +81,12 @@ if 'CPPFLAGS' in ARGUMENTS:
 if 'CFLAGS' in ARGUMENTS:
   env['CFLAGS'] = ARGUMENTS['CFLAGS']
 if 'CPPDEFINES' in ARGUMENTS:
-  env['CPPDEFINES'] = ARGUMENTS['CPPDEFINES']
+  defineDict = {}
+  for define in ARGUMENTS['CPPDEFINES'].split(" "):
+    key, value = define.split("=")
+    defineDict[key] = value
+  env.AppendUnique(CPPDEFINES = defineDict)
+  print env['CPPDEFINES']
 env.Export('moduleNames')
 env.Export('moduleFolders')
 

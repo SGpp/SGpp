@@ -112,7 +112,7 @@ public:
 					<< err << std::endl;
 		}
 
-		num_devices = 1;
+		// num_devices = 1;
 
 		std::cout << "OCL Info: " << num_devices
 				<< " OpenCL devices have been found!" << std::endl;
