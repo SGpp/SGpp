@@ -9,7 +9,7 @@
 
 #include <fstream>
 
-#include "StreamingOCLParameters.hpp"
+//#include "StreamingOCLParameters.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -43,7 +43,15 @@ template<> struct getType<double> {
 
 template<typename real_type>
 class OCLKernelSourceBuilder {
+private:
+	base::ConfigurationParameters parameters;
+	real_type blubb;
 public:
+	OCLKernelSourceBuilder(base::ConfigurationParameters parameters) :
+			parameters(parameters) {
+
+	}
+
 	std::string generateSourceMult(size_t dims, size_t local_workgroup_size) {
 		std::stringstream stream_program_src;
 
@@ -76,17 +84,21 @@ public:
 		//		stream_program_src << " printf(\"hello from: %i\\n\", globalIdx);" << std::endl;
 
 		stream_program_src << std::endl;
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-		stream_program_src << " __local " << getType<real_type>::asString()
-		<< " locLevel[" << dims * local_workgroup_size << "];"
-		<< std::endl;
-		stream_program_src << " __local " << getType<real_type>::asString()
-		<< " locIndex[" << dims * local_workgroup_size << "];"
-		<< std::endl;
-		stream_program_src << " __local " << getType<real_type>::asString()
-		<< " locAlpha[" << local_workgroup_size << "];" << std::endl;
-		stream_program_src << std::endl;
-#endif
+
+		if (this->parameters.getAsBoolean("STREAMING_OCL_USE_LOCAL_MEMORY")) {
+//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+			stream_program_src << " __local " << getType<real_type>::asString()
+					<< " locLevel[" << dims * local_workgroup_size << "];"
+					<< std::endl;
+			stream_program_src << " __local " << getType<real_type>::asString()
+					<< " locIndex[" << dims * local_workgroup_size << "];"
+					<< std::endl;
+			stream_program_src << " __local " << getType<real_type>::asString()
+					<< " locAlpha[" << local_workgroup_size << "];"
+					<< std::endl;
+			stream_program_src << std::endl;
+//#endif
+		}
 		stream_program_src << " " << getType<real_type>::asString()
 				<< " eval, index_calc, abs, last, localSupport, curSupport;"
 				<< std::endl << std::endl;
@@ -95,7 +107,9 @@ public:
 				<< " myResult = 0.0;" << std::endl << std::endl;
 		stream_program_src << " // Create registers for the data" << std::endl;
 
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
+		if (dims
+				> this->parameters.getAsUnsigned(
+						"STREAMING_OCL_MAX_DIM_UNROLL")) {
 			stream_program_src << " " << getType<real_type>::asString()
 					<< " data[" << dims << "];" << std::endl;
 			stream_program_src << "for (size_t d = 0; d < " << dims
@@ -113,165 +127,124 @@ public:
 		}
 
 		stream_program_src << std::endl;
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-		stream_program_src
-		<< " // Iterate over all grid points (fast ones, with cache)"
-		<< std::endl;
-		stream_program_src << " uint chunkSizeGrid = end_grid - start_grid;"
-		<< std::endl;
-		stream_program_src << " uint fastChunkSizeGrid = (chunkSizeGrid / "
-		<< local_workgroup_size << ") * " << local_workgroup_size << ";"
-		<< std::endl;
-		stream_program_src
-		<< " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+="
-		<< local_workgroup_size << ")" << std::endl;
-		stream_program_src << " {" << std::endl;
 
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
-			stream_program_src << "for (size_t d = 0; d < " << dims <<"; d++) {" << std::endl;
-			stream_program_src << "   locLevel[(localIdx*" << dims << ")+ d] = ptrLevel[((j+localIdx)*" << dims << ")+ d];" << std::endl;
-			stream_program_src << "   locIndex[(localIdx*" << dims << ")+ d] = ptrIndex[((j+localIdx)*" << dims << ")+ d];" << std::endl;
-			stream_program_src << "}" << std::endl;
-		} else {
-			for (size_t d = 0; d < dims; d++) {
-				stream_program_src << "   locLevel[(localIdx*" << dims << ")+" << d
-				<< "] = ptrLevel[((j+localIdx)*" << dims << ")+" << d
-				<< "];" << std::endl;
-				stream_program_src << "   locIndex[(localIdx*" << dims << ")+" << d
-				<< "] = ptrIndex[((j+localIdx)*" << dims << ")+" << d
-				<< "];" << std::endl;
+		if (this->parameters.getAsBoolean("STREAMING_OCL_USE_LOCAL_MEMORY")) {
+//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+			stream_program_src
+					<< " // Iterate over all grid points (fast ones, with cache)"
+					<< std::endl;
+			stream_program_src << " uint chunkSizeGrid = end_grid - start_grid;"
+					<< std::endl;
+			stream_program_src << " uint fastChunkSizeGrid = (chunkSizeGrid / "
+					<< local_workgroup_size << ") * " << local_workgroup_size
+					<< ";" << std::endl;
+			stream_program_src
+					<< " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+="
+					<< local_workgroup_size << ")" << std::endl;
+			stream_program_src << " {" << std::endl;
+
+			if (dims
+					> this->parameters.getAsUnsigned(
+							"STREAMING_OCL_MAX_DIM_UNROLL")) {
+				stream_program_src << "for (size_t d = 0; d < " << dims
+						<< "; d++) {" << std::endl;
+				stream_program_src << "   locLevel[(localIdx*" << dims
+						<< ")+ d] = ptrLevel[((j+localIdx)*" << dims << ")+ d];"
+						<< std::endl;
+				stream_program_src << "   locIndex[(localIdx*" << dims
+						<< ")+ d] = ptrIndex[((j+localIdx)*" << dims << ")+ d];"
+						<< std::endl;
+				stream_program_src << "}" << std::endl;
+			} else {
+				for (size_t d = 0; d < dims; d++) {
+					stream_program_src << "   locLevel[(localIdx*" << dims
+							<< ")+" << d << "] = ptrLevel[((j+localIdx)*"
+							<< dims << ")+" << d << "];" << std::endl;
+					stream_program_src << "   locIndex[(localIdx*" << dims
+							<< ")+" << d << "] = ptrIndex[((j+localIdx)*"
+							<< dims << ")+" << d << "];" << std::endl;
+				}
 			}
-		}
 
-		stream_program_src << "   locAlpha[localIdx] = ptrAlpha[j+localIdx];"
-		<< std::endl;
-		stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-		stream_program_src << std::endl;
-		stream_program_src << "   for(int k = 0; k < " << local_workgroup_size
-		<< "; k++)" << std::endl;
-		stream_program_src << "   {" << std::endl;
-		stream_program_src << "     curSupport = locAlpha[k];" << std::endl
-		<< std::endl;
+			stream_program_src
+					<< "   locAlpha[localIdx] = ptrAlpha[j+localIdx];"
+					<< std::endl;
+			stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);"
+					<< std::endl;
+			stream_program_src << std::endl;
+			stream_program_src << "   for(int k = 0; k < "
+					<< local_workgroup_size << "; k++)" << std::endl;
+			stream_program_src << "   {" << std::endl;
+			stream_program_src << "     curSupport = locAlpha[k];" << std::endl
+					<< std::endl;
 
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
-			stream_program_src << "for (size_t d = 0; d < " << dims
-			<< "; d++) {" << std::endl;
-			stream_program_src << "     eval = ((locLevel[(k*" << dims
-			<< ")+ d ]) * (data[d]));" << std::endl;
-			stream_program_src << "     index_calc = eval - (locIndex[(k*"
-			<< dims << ")+ d]);" << std::endl;
-			stream_program_src << "     abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "     last = 1.0"
-			<< getType<real_type>::constSuffix() << " - abs;"
-			<< std::endl;
-			stream_program_src << "     localSupport = fmax(last, 0.0"
-			<< getType<real_type>::constSuffix() << ");" << std::endl;
-			stream_program_src << "     curSupport *= localSupport;"
-			<< std::endl << std::endl;
-			stream_program_src << "}" << std::endl;
-		} else {
-			for (size_t d = 0; d < dims; d++) {
+			if (dims
+					> this->parameters.getAsUnsigned(
+							"STREAMING_OCL_MAX_DIM_UNROLL")) {
+				stream_program_src << "for (size_t d = 0; d < " << dims
+						<< "; d++) {" << std::endl;
 				stream_program_src << "     eval = ((locLevel[(k*" << dims
-				<< ")+" << d << "]) * (data_" << d << "));"
-				<< std::endl;
+						<< ")+ d ]) * (data[d]));" << std::endl;
 				stream_program_src << "     index_calc = eval - (locIndex[(k*"
-				<< dims << ")+" << d << "]);" << std::endl;
+						<< dims << ")+ d]);" << std::endl;
 				stream_program_src << "     abs = fabs(index_calc);"
-				<< std::endl;
+						<< std::endl;
 				stream_program_src << "     last = 1.0"
-				<< getType<real_type>::constSuffix() << " - abs;"
-				<< std::endl;
+						<< getType<real_type>::constSuffix() << " - abs;"
+						<< std::endl;
 				stream_program_src << "     localSupport = fmax(last, 0.0"
-				<< getType<real_type>::constSuffix() << ");"
-				<< std::endl;
+						<< getType<real_type>::constSuffix() << ");"
+						<< std::endl;
 				stream_program_src << "     curSupport *= localSupport;"
-				<< std::endl << std::endl;
+						<< std::endl << std::endl;
+				stream_program_src << "}" << std::endl;
+			} else {
+				for (size_t d = 0; d < dims; d++) {
+					stream_program_src << "     eval = ((locLevel[(k*" << dims
+							<< ")+" << d << "]) * (data_" << d << "));"
+							<< std::endl;
+					stream_program_src
+							<< "     index_calc = eval - (locIndex[(k*" << dims
+							<< ")+" << d << "]);" << std::endl;
+					stream_program_src << "     abs = fabs(index_calc);"
+							<< std::endl;
+					stream_program_src << "     last = 1.0"
+							<< getType<real_type>::constSuffix() << " - abs;"
+							<< std::endl;
+					stream_program_src << "     localSupport = fmax(last, 0.0"
+							<< getType<real_type>::constSuffix() << ");"
+							<< std::endl;
+					stream_program_src << "     curSupport *= localSupport;"
+							<< std::endl << std::endl;
+				}
 			}
-		}
 
-		stream_program_src << "     myResult += curSupport;" << std::endl;
-		stream_program_src << "  }" << std::endl;
-		stream_program_src << std::endl;
-		stream_program_src << "  barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-		stream_program_src << " }" << std::endl;
-		stream_program_src << std::endl;
-		stream_program_src
-		<< " // Iterate over all grid points (slow ones, without cache)"
-		<< std::endl;
-		stream_program_src
-		<< " for(int m = start_grid + fastChunkSizeGrid; m < end_grid; m++)"
-		<< std::endl;
-		stream_program_src << " {" << std::endl;
-		stream_program_src << "   curSupport = ptrAlpha[m];" << std::endl
-		<< std::endl;
-
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
-			stream_program_src << "for (size_t d = 0; d < " << dims
-			<< "; d++) {" << std::endl;
-			stream_program_src << "   eval = ((ptrLevel[(m*" << dims << ")+ d]) * (data[d]));" << std::endl;
-			stream_program_src << "   index_calc = eval - (ptrIndex[(m*" << dims
-			<< ")+ d]);" << std::endl;
-			stream_program_src << "   abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "   last = 1.0"
-			<< getType<real_type>::constSuffix() << " - abs;"
-			<< std::endl;
-			stream_program_src << "   localSupport = fmax(last, 0.0"
-			<< getType<real_type>::constSuffix() << ");" << std::endl;
-			stream_program_src << "   curSupport *= localSupport;" << std::endl
-			<< std::endl;
-			stream_program_src << "}" << std::endl;
-		} else {
-			for (size_t d = 0; d < dims; d++) {
-				stream_program_src << "   eval = ((ptrLevel[(m*" << dims << ")+"
-				<< d << "]) * (data_" << d << "));" << std::endl;
-				stream_program_src << "   index_calc = eval - (ptrIndex[(m*" << dims
-				<< ")+" << d << "]);" << std::endl;
-				stream_program_src << "   abs = fabs(index_calc);" << std::endl;
-				stream_program_src << "   last = 1.0"
-				<< getType<real_type>::constSuffix() << " - abs;"
-				<< std::endl;
-				stream_program_src << "   localSupport = fmax(last, 0.0"
-				<< getType<real_type>::constSuffix() << ");" << std::endl;
-				stream_program_src << "   curSupport *= localSupport;" << std::endl
-				<< std::endl;
-			}
-		}
-
-		stream_program_src << "   myResult += curSupport;" << std::endl;
-		stream_program_src << " }" << std::endl;
-#else
-		stream_program_src << " // Iterate over all grid points (without cache)"
-				<< std::endl;
-		stream_program_src << " for(int m = start_grid; m < end_grid; m++)"
-				<< std::endl;
-		stream_program_src << " {" << std::endl;
-		stream_program_src << "   curSupport = ptrAlpha[m];" << std::endl
-				<< std::endl;
-
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
-			stream_program_src << "for (size_t d = 0; d < " << dims
-					<< "; d++) {" << std::endl;
-			stream_program_src << "   eval = ((ptrLevel[(m*" << dims
-					<< ") + d]) * (data[d]));" << std::endl;
-			stream_program_src << "   index_calc = eval - (ptrIndex[(m*" << dims
-					<< ")+ d]);" << std::endl;
-			stream_program_src << "   abs = fabs(index_calc);" << std::endl;
-			stream_program_src << "   last = 1.0"
-					<< getType<real_type>::constSuffix() << " - abs;"
+			stream_program_src << "     myResult += curSupport;" << std::endl;
+			stream_program_src << "  }" << std::endl;
+			stream_program_src << std::endl;
+			stream_program_src << "  barrier(CLK_LOCAL_MEM_FENCE);"
 					<< std::endl;
-			stream_program_src << "   localSupport = fmax(last, 0.0"
-					<< getType<real_type>::constSuffix() << ");" << std::endl;
-			stream_program_src << "   curSupport *= localSupport;" << std::endl
+			stream_program_src << " }" << std::endl;
+			stream_program_src << std::endl;
+			stream_program_src
+					<< " // Iterate over all grid points (slow ones, without cache)"
 					<< std::endl;
-			//stream_program_src << "   printf(\"l: %lf, i: %lf, sur: %lf\\n\", ptrLevel[m*" << dims <<" + d], ptrIndex[m*" << dims <<" + d], ptrAlpha[m]);" << std::endl;
+			stream_program_src
+					<< " for(int m = start_grid + fastChunkSizeGrid; m < end_grid; m++)"
+					<< std::endl;
+			stream_program_src << " {" << std::endl;
+			stream_program_src << "   curSupport = ptrAlpha[m];" << std::endl
+					<< std::endl;
 
-			stream_program_src << "}" << std::endl;
-		} else {
-			for (size_t d = 0; d < dims; d++) {
-				stream_program_src << "   eval = ((ptrLevel[(m*" << dims << ")+"
-						<< d << "]) * (data_" << d << "));" << std::endl;
+			if (dims
+					> this->parameters.getAsUnsigned(
+							"STREAMING_OCL_MAX_DIM_UNROLL")) {
+				stream_program_src << "for (size_t d = 0; d < " << dims
+						<< "; d++) {" << std::endl;
+				stream_program_src << "   eval = ((ptrLevel[(m*" << dims
+						<< ")+ d]) * (data[d]));" << std::endl;
 				stream_program_src << "   index_calc = eval - (ptrIndex[(m*"
-						<< dims << ")+" << d << "]);" << std::endl;
+						<< dims << ")+ d]);" << std::endl;
 				stream_program_src << "   abs = fabs(index_calc);" << std::endl;
 				stream_program_src << "   last = 1.0"
 						<< getType<real_type>::constSuffix() << " - abs;"
@@ -281,13 +254,86 @@ public:
 						<< std::endl;
 				stream_program_src << "   curSupport *= localSupport;"
 						<< std::endl << std::endl;
+				stream_program_src << "}" << std::endl;
+			} else {
+				for (size_t d = 0; d < dims; d++) {
+					stream_program_src << "   eval = ((ptrLevel[(m*" << dims
+							<< ")+" << d << "]) * (data_" << d << "));"
+							<< std::endl;
+					stream_program_src << "   index_calc = eval - (ptrIndex[(m*"
+							<< dims << ")+" << d << "]);" << std::endl;
+					stream_program_src << "   abs = fabs(index_calc);"
+							<< std::endl;
+					stream_program_src << "   last = 1.0"
+							<< getType<real_type>::constSuffix() << " - abs;"
+							<< std::endl;
+					stream_program_src << "   localSupport = fmax(last, 0.0"
+							<< getType<real_type>::constSuffix() << ");"
+							<< std::endl;
+					stream_program_src << "   curSupport *= localSupport;"
+							<< std::endl << std::endl;
+				}
 			}
+
+			stream_program_src << "   myResult += curSupport;" << std::endl;
+			stream_program_src << " }" << std::endl;
+//#else
+		} else {
+			stream_program_src
+					<< " // Iterate over all grid points (without cache)"
+					<< std::endl;
+			stream_program_src << " for(int m = start_grid; m < end_grid; m++)"
+					<< std::endl;
+			stream_program_src << " {" << std::endl;
+			stream_program_src << "   curSupport = ptrAlpha[m];" << std::endl
+					<< std::endl;
+
+			if (dims
+					> this->parameters.getAsUnsigned(
+							"STREAMING_OCL_MAX_DIM_UNROLL")) {
+				stream_program_src << "for (size_t d = 0; d < " << dims
+						<< "; d++) {" << std::endl;
+				stream_program_src << "   eval = ((ptrLevel[(m*" << dims
+						<< ") + d]) * (data[d]));" << std::endl;
+				stream_program_src << "   index_calc = eval - (ptrIndex[(m*"
+						<< dims << ")+ d]);" << std::endl;
+				stream_program_src << "   abs = fabs(index_calc);" << std::endl;
+				stream_program_src << "   last = 1.0"
+						<< getType<real_type>::constSuffix() << " - abs;"
+						<< std::endl;
+				stream_program_src << "   localSupport = fmax(last, 0.0"
+						<< getType<real_type>::constSuffix() << ");"
+						<< std::endl;
+				stream_program_src << "   curSupport *= localSupport;"
+						<< std::endl << std::endl;
+				//stream_program_src << "   printf(\"l: %lf, i: %lf, sur: %lf\\n\", ptrLevel[m*" << dims <<" + d], ptrIndex[m*" << dims <<" + d], ptrAlpha[m]);" << std::endl;
+
+				stream_program_src << "}" << std::endl;
+			} else {
+				for (size_t d = 0; d < dims; d++) {
+					stream_program_src << "   eval = ((ptrLevel[(m*" << dims
+							<< ")+" << d << "]) * (data_" << d << "));"
+							<< std::endl;
+					stream_program_src << "   index_calc = eval - (ptrIndex[(m*"
+							<< dims << ")+" << d << "]);" << std::endl;
+					stream_program_src << "   abs = fabs(index_calc);"
+							<< std::endl;
+					stream_program_src << "   last = 1.0"
+							<< getType<real_type>::constSuffix() << " - abs;"
+							<< std::endl;
+					stream_program_src << "   localSupport = fmax(last, 0.0"
+							<< getType<real_type>::constSuffix() << ");"
+							<< std::endl;
+					stream_program_src << "   curSupport *= localSupport;"
+							<< std::endl << std::endl;
+				}
+			}
+
+			stream_program_src << "   myResult += curSupport;" << std::endl;
+			stream_program_src << " }" << std::endl;
+
+//#endif
 		}
-
-		stream_program_src << "   myResult += curSupport;" << std::endl;
-		stream_program_src << " }" << std::endl;
-
-#endif
 		stream_program_src << std::endl;
 		stream_program_src << " ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
@@ -343,16 +389,20 @@ public:
 				<< " myResult = ptrResult[globalIdx];" << std::endl
 				<< std::endl;
 
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-		stream_program_src << " __local " << getType<real_type>::asString()
-		<< " locData[" << dims * local_workgroup_size << "];"
-		<< std::endl;
-		stream_program_src << " __local " << getType<real_type>::asString()
-		<< " locSource[" << local_workgroup_size << "];" << std::endl
-		<< std::endl;
-#endif
+		if (this->parameters.getAsBoolean("STREAMING_OCL_USE_LOCAL_MEMORY")) {
+			//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+			stream_program_src << " __local " << getType<real_type>::asString()
+					<< " locData[" << dims * local_workgroup_size << "];"
+					<< std::endl;
+			stream_program_src << " __local " << getType<real_type>::asString()
+					<< " locSource[" << local_workgroup_size << "];"
+					<< std::endl << std::endl;
+			//#endif
+		}
 
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
+		if (dims
+				> this->parameters.getAsUnsigned(
+						"STREAMING_OCL_MAX_DIM_UNROLL")) {
 			stream_program_src << " " << getType<real_type>::asString()
 					<< " level[" << dims << "];" << std::endl;
 			stream_program_src << " " << getType<real_type>::asString()
@@ -377,54 +427,73 @@ public:
 
 		stream_program_src << std::endl;
 		stream_program_src << " // Iterate over all grid points" << std::endl;
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-		stream_program_src << " for(int i = start_data; i < end_data; i+="
-		<< local_workgroup_size << ")" << std::endl;
-		stream_program_src << " {" << std::endl;
 
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
-			stream_program_src << "for (size_t d = 0; d < " << dims
-			<< "; d++) {" << std::endl;
-			stream_program_src << "   locData[(d * " << local_workgroup_size << ")+(localIdx)] = ptrData[(d * sourceSize) + (localIdx + i)];" << std::endl;
-			stream_program_src << "}" << std::endl;
-		} else {
-			for (size_t d = 0; d < dims; d++) {
-				stream_program_src << "   locData[(" << d << "*"
-				<< local_workgroup_size << ")+(localIdx)] = ptrData[(" << d
-				<< "*sourceSize)+(localIdx+i)];" << std::endl;
+		if (this->parameters.getAsBoolean("STREAMING_OCL_USE_LOCAL_MEMORY")) {
+			//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+			stream_program_src << " for(int i = start_data; i < end_data; i+="
+					<< local_workgroup_size << ")" << std::endl;
+			stream_program_src << " {" << std::endl;
+
+			if (dims
+					> this->parameters.getAsUnsigned(
+							"STREAMING_OCL_MAX_DIM_UNROLL")) {
+				stream_program_src << "for (size_t d = 0; d < " << dims
+						<< "; d++) {" << std::endl;
+				stream_program_src << "   locData[(d * " << local_workgroup_size
+						<< ")+(localIdx)] = ptrData[(d * sourceSize) + (localIdx + i)];"
+						<< std::endl;
+				stream_program_src << "}" << std::endl;
+			} else {
+				for (size_t d = 0; d < dims; d++) {
+					stream_program_src << "   locData[(" << d << "*"
+							<< local_workgroup_size
+							<< ")+(localIdx)] = ptrData[(" << d
+							<< "*sourceSize)+(localIdx+i)];" << std::endl;
+				}
 			}
+
+			stream_program_src
+					<< "   locSource[localIdx] = ptrSource[i+localIdx];"
+					<< std::endl;
+			stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);"
+					<< std::endl << std::endl;
+			stream_program_src << "   for(int k = 0; k < "
+					<< local_workgroup_size << "; k++)" << std::endl;
+			stream_program_src << "   {" << std::endl;
+
+			stream_program_src << "     curSupport = locSource[k];" << std::endl
+					<< std::endl;
+			//#else
+		} else {
+			stream_program_src
+					<< "   for(int k = start_data; k < end_data; k++)"
+					<< std::endl;
+			stream_program_src << "   {" << std::endl;
+			stream_program_src << "     curSupport = ptrSource[k];" << std::endl
+					<< std::endl;
+
+			//#endif
 		}
 
-		stream_program_src << "   locSource[localIdx] = ptrSource[i+localIdx];"
-		<< std::endl;
-		stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl
-		<< std::endl;
-		stream_program_src << "   for(int k = 0; k < " << local_workgroup_size
-		<< "; k++)" << std::endl;
-		stream_program_src << "   {" << std::endl;
-
-		stream_program_src << "     curSupport = locSource[k];" << std::endl
-		<< std::endl;
-#else
-		stream_program_src << "   for(int k = start_data; k < end_data; k++)"
-				<< std::endl;
-		stream_program_src << "   {" << std::endl;
-		stream_program_src << "     curSupport = ptrSource[k];" << std::endl
-				<< std::endl;
-
-#endif
-
-		if (dims > STREAMING_OCL_MAX_DIM_UNROLL) {
+		if (dims
+				> this->parameters.getAsUnsigned(
+						"STREAMING_OCL_MAX_DIM_UNROLL")) {
 			stream_program_src << "for (size_t d = 0; d < " << dims
 					<< "; d++) {" << std::endl;
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-			stream_program_src << "     eval = (level[d] * (locData[(d * " << local_workgroup_size
-			<< ")+k]));" << std::endl;
-#else
-			stream_program_src
-					<< "     eval = (level[d] * (ptrData[(d * sourceSize) + k]));"
-					<< std::endl;
-#endif
+
+			if (this->parameters.getAsBoolean(
+					"STREAMING_OCL_USE_LOCAL_MEMORY")) {
+				//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+				stream_program_src << "     eval = (level[d] * (locData[(d * "
+						<< local_workgroup_size << ")+k]));" << std::endl;
+				//#else
+			} else {
+				stream_program_src
+						<< "     eval = (level[d] * (ptrData[(d * sourceSize) + k]));"
+						<< std::endl;
+				//#endif
+			}
+
 			stream_program_src << "     index_calc = eval - index[d];"
 					<< std::endl;
 			stream_program_src << "     abs = fabs(index_calc);" << std::endl;
@@ -435,21 +504,26 @@ public:
 					<< getType<real_type>::constSuffix() << ");" << std::endl;
 			stream_program_src << "     curSupport *= localSupport;"
 					<< std::endl;
-//			stream_program_src
-//					<< "   printf(\"l: %lf, i: %lf, data: %lf, source: %lf\\n\", level[d], index[d], ptrData[(d * sourceSize) + k], ptrSource[k]);"
-//					<< std::endl;
+			//			stream_program_src
+			//					<< "   printf(\"l: %lf, i: %lf, data: %lf, source: %lf\\n\", level[d], index[d], ptrData[(d * sourceSize) + k], ptrSource[k]);"
+			//					<< std::endl;
 			stream_program_src << "}" << std::endl;
 		} else {
 			for (size_t d = 0; d < dims; d++) {
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-				stream_program_src << "     eval = ((level_" << d
-				<< ") * (locData[(" << d << "*" << local_workgroup_size
-				<< ")+k]));" << std::endl;
-#else
-				stream_program_src << "     eval = ((level_" << d
-						<< ") * (ptrData[(" << d << "*sourceSize)+k]));"
-						<< std::endl;
-#endif
+				if (this->parameters.getAsBoolean(
+						"STREAMING_OCL_USE_LOCAL_MEMORY")) {
+					//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+					stream_program_src << "     eval = ((level_" << d
+							<< ") * (locData[(" << d << "*"
+							<< local_workgroup_size << ")+k]));" << std::endl;
+					//#else
+				} else {
+					stream_program_src << "     eval = ((level_" << d
+							<< ") * (ptrData[(" << d << "*sourceSize)+k]));"
+							<< std::endl;
+					//#endif
+				}
+
 				stream_program_src << "     index_calc = eval - (index_" << d
 						<< ");" << std::endl;
 				stream_program_src << "     abs = fabs(index_calc);"
@@ -468,14 +542,17 @@ public:
 		stream_program_src << std::endl << "     myResult += curSupport;"
 				<< std::endl;
 		stream_program_src << "   }" << std::endl << std::endl;
-#if STREAMING_OCL_USE_LOCAL_MEMORY == true
-		stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-		stream_program_src << " }" << std::endl;
-#endif
+		if (this->parameters.getAsBoolean("STREAMING_OCL_USE_LOCAL_MEMORY")) {
+			//#if STREAMING_OCL_USE_LOCAL_MEMORY == true
+			stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);"
+					<< std::endl;
+			stream_program_src << " }" << std::endl;
+			//#endif
+		}
 		stream_program_src << " ptrResult[globalIdx] = myResult;" << std::endl;
 		stream_program_src << "}" << std::endl;
 
-		//update file with kernel (for debugging)
+//update file with kernel (for debugging)
 		std::ofstream multTransFile;
 		multTransFile.open("multTransKernel_tmp.cl");
 		multTransFile << stream_program_src.str();
@@ -484,7 +561,8 @@ public:
 		return stream_program_src.str();
 	}
 
-};
+}
+;
 
 }
 }

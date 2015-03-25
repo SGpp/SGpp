@@ -42,24 +42,25 @@ private:
 	cl_kernel* kernel_multTrans;
 	cl_kernel* kernel_mult;
 
-	unsigned int OCLLocalSize;
 	real_type* pinnedGrid;
 	real_type* pinnedTmp;
 
 	OCLKernelSourceBuilder<real_type> kernelSourceBuilder;
 	OCLManager &manager;
+	base::ConfigurationParameters parameters;
 
 public:
 
-	OCLKernelImpl(size_t dims, OCLManager &manager) :
-			manager(manager) {
+	OCLKernelImpl(size_t dims, OCLManager &manager,
+			base::ConfigurationParameters parameters) :
+			kernelSourceBuilder(parameters), manager(manager), parameters(
+					parameters) {
 
 		this->dims = dims;
 		this->num_devices = manager.num_devices;
 		this->context = manager.context;
 		this->command_queue = manager.command_queue;
 		this->device_ids = manager.device_ids;
-		this->OCLLocalSize = manager.getOCLLocalSize();
 		this->err = CL_SUCCESS;
 
 		this->clData = new cl_mem[num_devices];
@@ -139,7 +140,7 @@ public:
 		double time = 0.0;
 
 		if (kernel_mult[0] == nullptr) {
-			this->createMult(this->dims, OCLLocalSize, context, num_devices,
+			this->createMult(this->dims, parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"), context, num_devices,
 					device_ids, kernel_mult);
 		}
 
@@ -153,7 +154,7 @@ public:
 		for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
 			this->getPartitionSegment(start_index_data, end_index_data,
 					num_devices, gpu_num, &gpu_start_index_data[gpu_num],
-					&gpu_end_index_data[gpu_num], OCLLocalSize);
+					&gpu_end_index_data[gpu_num], parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"));
 		}
 
 		// set kernel arguments
@@ -187,7 +188,7 @@ public:
 		cl_event *GPUDone = new cl_event[num_devices];
 
 		// enqueue kernel
-		size_t local = OCLLocalSize;
+		size_t local = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 		size_t active_devices = 0;
 
 		for (size_t i = 0; i < num_devices; i++) {
@@ -309,7 +310,7 @@ public:
 		double time = 0.0;
 
 		if (kernel_multTrans[0] == nullptr) {
-			this->createMultTrans(this->dims, OCLLocalSize, context,
+			this->createMultTrans(this->dims, parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"), context,
 					num_devices, device_ids, kernel_multTrans);
 		}
 
@@ -323,7 +324,7 @@ public:
 		for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
 			this->getPartitionSegment(start_index_grid, end_index_grid,
 					num_devices, gpu_num, &gpu_start_index_grid[gpu_num],
-					&gpu_end_index_grid[gpu_num], OCLLocalSize);
+					&gpu_end_index_grid[gpu_num], parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"));
 		}
 
 		// set kernel arguments
@@ -357,7 +358,7 @@ public:
 		cl_event* GPUDone = new cl_event[num_devices];
 
 		// enqueue kernels
-		size_t local = OCLLocalSize;
+		size_t local = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 		size_t active_devices = 0;
 
 		for (size_t i = 0; i < num_devices; i++) {
@@ -480,14 +481,6 @@ private:
 				local_workgroup_size);
 		return manager.buildKernel(program_src, "multOCL", context, num_devices,
 				device_ids, kernel);
-	}
-
-	size_t getChunkGridPoints() {
-		return this->OCLLocalSize;
-	}
-
-	size_t getChunkDataPoints() {
-		return this->OCLLocalSize;
 	}
 
 	void releaseGridBuffers() {

@@ -7,6 +7,7 @@
 
 #include <omp.h>
 
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
@@ -22,6 +23,7 @@ template<typename T>
 class OperationMultiEvalStreamingOCL: public base::OperationMultipleEval {
 protected:
 	size_t dims;SGPP::base::DataMatrix preparedDataset;
+	base::ConfigurationParameters parameters;
 	T *kernelDataset = nullptr;
 	size_t datasetSize = 0;
 	/// Member to store the sparse grid's levels for better vectorization
@@ -36,16 +38,17 @@ protected:
 
 	float_t duration;
 
-	OCLManager manager;
+	OCLManager *manager;
 	OCLKernelImpl<T> *kernel;
 public:
 
-	OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset) :
-			OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer(
+	OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::ConfigurationParameters parameters) :
+			OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
 			SGPP::base::SGppStopwatch()), duration(-1.0) {
-		this->manager.initializePlattform();
+		this->manager = new OCLManager(parameters);
+		//.initializePlattform();
 		this->dims = dataset.getNcols(); //be aware of transpose!
-		this->kernel = new OCLKernelImpl<T>(dims, this->manager);
+		this->kernel = new OCLKernelImpl<T>(dims, *(this->manager), parameters);
 
 		this->storage = grid.getStorage();
 		this->padDataset(this->preparedDataset);
@@ -82,17 +85,6 @@ public:
 	void mult(SGPP::base::DataVector& alpha,
 	SGPP::base::DataVector& result) override {
 		this->myTimer.start();
-
-		//	size_t originalSize = result.getSize();
-
-		//	result.resize(this->preparedDataset.getNcols());
-		//	result.setAll(0.0);
-
-		size_t originalAlphaSize = alpha.getSize();
-		//	alpha.resize(this->gridSize);
-		//	for (size_t i = originalAlphaSize; i < alpha.getSize(); i++) {
-		//		alpha[i] = 0.0;
-		//	}
 
 		size_t gridFrom = 0;
 		size_t gridTo = this->gridSize;
@@ -181,7 +173,7 @@ private:
 	size_t padDataset(
 	SGPP::base::DataMatrix& dataset) {
 
-		size_t vecWidth = this->manager.getOCLLocalSize();
+		size_t vecWidth = this->manager->getOCLLocalSize();
 
 		// Assure that data has a even number of instances -> padding might be needed
 		size_t remainder = dataset.getNrows() % vecWidth;
@@ -208,7 +200,7 @@ private:
 		if (this->index != nullptr)
 			delete this->index;
 
-		uint32_t localWorkSize = this->manager.getOCLLocalSize();
+		uint32_t localWorkSize = this->manager->getOCLLocalSize();
 
 		size_t remainder = this->storage->size() % localWorkSize;
 		size_t padding = 0;
@@ -243,9 +235,6 @@ private:
 		delete indexMatrix;
 	}
 };
-
-//class OperationMultiEvalStreamingOCL<float>;
-//class OperationMultiEvalStreamingOCL<double>;
 
 }
 }
