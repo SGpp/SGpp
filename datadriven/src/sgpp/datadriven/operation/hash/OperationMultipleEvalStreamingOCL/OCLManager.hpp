@@ -11,7 +11,7 @@
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
-#include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include "OCLKernelSourceBuilder.hpp"
 #include "StreamingOCLParameters.hpp"
@@ -21,6 +21,7 @@ namespace datadriven {
 
 class OCLManager {
 public:
+	base::ConfigurationParameters parameters;
 	cl_int err;
 	cl_uint num_platforms;
 	cl_platform_id platform_id;
@@ -29,18 +30,17 @@ public:
 	cl_uint num_devices;
 	cl_command_queue* command_queue;
 	cl_context context;
-	unsigned int ocl_local_size;
 
 public:
-	void initializePlattform() {
+	OCLManager(base::ConfigurationParameters parameters): parameters(parameters) {
 		// read number of OpenCL devices environment variable: SGPP_NUM_OCL_DEVICES
 		const char* num_ocl_devices_env = getenv("SGPP_NUM_OCL_DEVICES");
 		unsigned int max_number_ocl_devices =
 				std::numeric_limits<unsigned int>::max();
 
-		if (num_ocl_devices_env != NULL) {
+		if (num_ocl_devices_env != nullptr) {
 			unsigned int num_ocl_devices_limit = (unsigned int) (strtoul(
-					num_ocl_devices_env, NULL, 0));
+					num_ocl_devices_env, nullptr, 0));
 
 			if (num_ocl_devices_limit != 0) {
 				max_number_ocl_devices = std::min<unsigned int>(
@@ -53,10 +53,8 @@ public:
 			max_number_ocl_devices = 8;
 		}
 
-		this->ocl_local_size = this->getOCLLocalSize();
-
 		// determine number of available OpenCL platforms
-		err = clGetPlatformIDs(0, NULL, &num_platforms);
+		err = clGetPlatformIDs(0, nullptr, &num_platforms);
 
 		if (err != CL_SUCCESS) {
 			std::cout
@@ -69,7 +67,7 @@ public:
 
 		// get available platforms
 		platform_ids = new cl_platform_id[num_platforms];
-		err = clGetPlatformIDs(num_platforms, platform_ids, NULL);
+		err = clGetPlatformIDs(num_platforms, platform_ids, nullptr);
 
 		if (err != CL_SUCCESS) {
 			std::cout << "OCL Error: Unable to get Platform ID. Error Code: "
@@ -79,13 +77,13 @@ public:
 		for (cl_uint ui = 0; ui < num_platforms; ui++) {
 			char vendor_name[128] = { 0 };
 			err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR,
-					128 * sizeof(char), vendor_name, NULL);
+					128 * sizeof(char), vendor_name, nullptr);
 
 			if (CL_SUCCESS != err) {
 				std::cout << "OCL Error: Can't get platform vendor!"
 						<< std::endl;
 			} else {
-				if (vendor_name != NULL) {
+				if (vendor_name != nullptr) {
 					std::cout << "OCL Info: Platform " << ui << " vendor name: "
 							<< vendor_name << std::endl;
 				}
@@ -121,7 +119,8 @@ public:
 		command_queue = new cl_command_queue[num_devices];
 
 		// Create OpenCL context
-		context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
+		context = clCreateContext(0, num_devices, device_ids, nullptr, nullptr,
+				&err);
 
 		if (err != CL_SUCCESS) {
 			std::cout
@@ -144,7 +143,7 @@ public:
 
 		std::cout
 				<< "OCL Info: Successfully initialized OpenCL (local workgroup size: "
-				<< ocl_local_size << ")" << std::endl << std::endl;
+				<< parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE") << ")" << std::endl << std::endl;
 	}
 
 	/**
@@ -238,7 +237,7 @@ public:
 //		}
 //
 //		return 64;
-		return STREAMING_OCL_LOCAL_SIZE;
+		return parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 	}
 };
 
