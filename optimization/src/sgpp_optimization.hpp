@@ -52,6 +52,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
+#include <sgpp/optimization/optimizer/CMAES.hpp>
 #include <sgpp/optimization/optimizer/DifferentialEvolution.hpp>
 #include <sgpp/optimization/optimizer/GradientMethod.hpp>
 #include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>

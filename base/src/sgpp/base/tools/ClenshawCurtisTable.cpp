@@ -20,7 +20,7 @@ namespace SGPP {
         const float_t h = 1.0 / static_cast<float_t>(hInv);
 
         for (index_type i = 0; i <= hInv; i++) {
-          table[k] = (cos(M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
+          table[k] = calculatePoint(h, i);
           k++;
         }
 
