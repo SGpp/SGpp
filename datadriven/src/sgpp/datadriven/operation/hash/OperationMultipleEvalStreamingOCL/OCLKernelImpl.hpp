@@ -58,12 +58,14 @@ private:
 	OCLManager &manager;
 	base::ConfigurationParameters parameters;
 
+	bool setVerboseLoadBalancing = false;
+
 public:
 
 	OCLKernelImpl(size_t dims, OCLManager &manager,
-			base::ConfigurationParameters parameters) :
+			base::ConfigurationParameters parameters, bool setVerboseLoadBalancing = false) :
 			kernelSourceBuilder(parameters), manager(manager), parameters(
-					parameters) {
+					parameters), setVerboseLoadBalancing(setVerboseLoadBalancing) {
 
 		this->dims = dims;
 		this->num_devices = manager.num_devices;
@@ -76,7 +78,7 @@ public:
 		}
 		this->deviceWeightsMult = new double[this->num_devices];
 		this->deviceWeightsMultTranspose = new double[this->num_devices];
-		for (size_t i = 0;i < this->num_devices; i++) {
+		for (size_t i = 0; i < this->num_devices; i++) {
 			//initialize with same timing to enforce equal problem sizes in the beginning
 			this->deviceWeightsMult[i] = 1.0;
 			this->deviceTimingsMultTranspose[i] = 1.0;
@@ -84,10 +86,12 @@ public:
 
 		this->devicePartitionMult = new double[this->num_devices];
 		this->devicePartitionMultTranspose = new double[this->num_devices];
-		for (size_t i = 0;i < this->num_devices; i++) {
+		for (size_t i = 0; i < this->num_devices; i++) {
 			//initialize with same timing to enforce equal problem sizes in the beginning
-			this->devicePartitionMult[i] = 1.0 / static_cast<double>(this->num_devices);
-			this->devicePartitionMultTranspose[i] = 1.0 / static_cast<double>(this->num_devices);
+			this->devicePartitionMult[i] = 1.0
+					/ static_cast<double>(this->num_devices);
+			this->devicePartitionMultTranspose[i] = 1.0
+					/ static_cast<double>(this->num_devices);
 		}
 
 		this->context = manager.context;
@@ -181,8 +185,9 @@ public:
 		double time = 0.0;
 
 		if (kernel_mult[0] == nullptr) {
-			this->createMult(this->dims, parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"), context, num_devices,
-					device_ids, kernel_mult);
+			this->createMult(this->dims,
+					parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"),
+					context, num_devices, device_ids, kernel_mult);
 		}
 
 		initOCLBuffers(level, index, gridSize, dataset, datasetSize);
@@ -192,8 +197,10 @@ public:
 		size_t* gpu_start_index_data = new size_t[num_devices];
 		size_t* gpu_end_index_data = new size_t[num_devices];
 
-		this->recalculateWeights(this->deviceTimingsMult, this->deviceWeightsMult, this->devicePartitionMult);
-		this->getPartitionSegments(start_index_data, end_index_data, this->devicePartitionMult, gpu_start_index_data,
+		this->recalculateWeights(this->deviceTimingsMult,
+				this->deviceWeightsMult, this->devicePartitionMult);
+		this->getPartitionSegments(start_index_data, end_index_data,
+				this->devicePartitionMult, gpu_start_index_data,
 				gpu_end_index_data);
 
 //		for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
@@ -202,7 +209,7 @@ public:
 //					&gpu_end_index_data[gpu_num], parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"));
 //		}
 
-		// set kernel arguments
+// set kernel arguments
 		cl_uint clResultSize = (cl_uint) datasetSize;
 		cl_uint gpu_start_grid = (cl_uint) start_index_grid;
 		cl_uint gpu_end_grid = (cl_uint) end_index_grid;
@@ -316,7 +323,6 @@ public:
 
 			tmpTime = (double) (endTime - startTime);
 			tmpTime *= 1e-9;
-			std::cout << "time: " << tmpTime << std::endl;
 			this->deviceTimingsMult[i] = tmpTime;
 
 			if (tmpTime > time) {
@@ -357,8 +363,9 @@ public:
 		double time = 0.0;
 
 		if (kernel_multTrans[0] == nullptr) {
-			this->createMultTrans(this->dims, parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"), context,
-					num_devices, device_ids, kernel_multTrans);
+			this->createMultTrans(this->dims,
+					parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE"),
+					context, num_devices, device_ids, kernel_multTrans);
 		}
 
 		initOCLBuffers(level, index, gridSize, dataset, datasetSize);
@@ -368,8 +375,11 @@ public:
 		size_t* gpu_start_index_grid = new size_t[num_devices];
 		size_t* gpu_end_index_grid = new size_t[num_devices];
 
-		this->recalculateWeights(this->deviceTimingsMultTranspose, this->deviceWeightsMultTranspose, this->devicePartitionMultTranspose);
-		this->getPartitionSegments(start_index_grid, end_index_grid, this->devicePartitionMultTranspose, gpu_start_index_grid,
+		this->recalculateWeights(this->deviceTimingsMultTranspose,
+				this->deviceWeightsMultTranspose,
+				this->devicePartitionMultTranspose);
+		this->getPartitionSegments(start_index_grid, end_index_grid,
+				this->devicePartitionMultTranspose, gpu_start_index_grid,
 				gpu_end_index_grid);
 
 //		for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
@@ -492,7 +502,6 @@ public:
 
 			tmpTime = (double) (endTime - startTime);
 			tmpTime *= 1e-9;
-			std::cout << "time: " << tmpTime << std::endl;
 			this->deviceTimingsMultTranspose[i] = tmpTime;
 
 			if (tmpTime > time) {
@@ -650,8 +659,8 @@ private:
 		}
 
 		for (size_t i = 0; i < num_devices; i++) {
-			err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i], CL_TRUE,
-					0, sizeof(real_type) * gridSize, pinnedGrid, 0, nullptr,
+			err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i],
+			CL_TRUE, 0, sizeof(real_type) * gridSize, pinnedGrid, 0, nullptr,
 					nullptr);
 
 			if (err != CL_SUCCESS) {
@@ -688,42 +697,43 @@ private:
 		}
 	}
 
-	void getPartitionSegment(size_t start, size_t end, size_t segmentCount,
-			size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd,
-			size_t blockSize) {
-		size_t totalSize = end - start;
+//	void getPartitionSegment(size_t start, size_t end, size_t segmentCount,
+//			size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd,
+//			size_t blockSize) {
+//		size_t totalSize = end - start;
+//
+//		// check for valid input
+//		if (blockSize == 0) {
+//			throw SGPP::base::operation_exception(
+//					"blockSize must not be zero!");
+//		}
+//
+//		if (totalSize % blockSize != 0) {
+//			throw SGPP::base::operation_exception(
+//					"totalSize must be divisible by blockSize without remainder, but it is not!");
+//		}
+//
+//		// do all further calculations with complete blocks
+//		size_t blockCount = totalSize / blockSize;
+//
+//		size_t blockSegmentSize = blockCount / segmentCount;
+//		size_t remainder = blockCount - blockSegmentSize * segmentCount;
+//		size_t blockSegmentOffset = 0;
+//
+//		if (segmentNumber < remainder) {
+//			blockSegmentSize++;
+//			blockSegmentOffset = blockSegmentSize * segmentNumber;
+//		} else {
+//			blockSegmentOffset = remainder * (blockSegmentSize + 1)
+//					+ (segmentNumber - remainder) * blockSegmentSize;
+//		}
+//
+//		*segmentStart = start + blockSegmentOffset * blockSize;
+//		*segmentEnd = *segmentStart + blockSegmentSize * blockSize;
+//	}
 
-		// check for valid input
-		if (blockSize == 0) {
-			throw SGPP::base::operation_exception(
-					"blockSize must not be zero!");
-		}
-
-		if (totalSize % blockSize != 0) {
-			throw SGPP::base::operation_exception(
-					"totalSize must be divisible by blockSize without remainder, but it is not!");
-		}
-
-		// do all further calculations with complete blocks
-		size_t blockCount = totalSize / blockSize;
-
-		size_t blockSegmentSize = blockCount / segmentCount;
-		size_t remainder = blockCount - blockSegmentSize * segmentCount;
-		size_t blockSegmentOffset = 0;
-
-		if (segmentNumber < remainder) {
-			blockSegmentSize++;
-			blockSegmentOffset = blockSegmentSize * segmentNumber;
-		} else {
-			blockSegmentOffset = remainder * (blockSegmentSize + 1)
-					+ (segmentNumber - remainder) * blockSegmentSize;
-		}
-
-		*segmentStart = start + blockSegmentOffset * blockSize;
-		*segmentEnd = *segmentStart + blockSegmentSize * blockSize;
-	}
-
-	void getPartitionSegments(size_t start, size_t end, double *partition, size_t* segmentStart, size_t* segmentEnd) {
+	void getPartitionSegments(size_t start, size_t end, double *partition,
+			size_t* segmentStart, size_t* segmentEnd) {
 		size_t totalSize = end - start;
 		size_t blockSize = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 
@@ -740,9 +750,11 @@ private:
 
 		size_t currentStartIndex = start;
 		for (size_t i = 0; i < this->num_devices; i++) {
-			size_t partitionElements = static_cast<size_t>(totalSize * partition[i]);
+			size_t partitionElements = static_cast<size_t>(totalSize
+					* partition[i]);
 			//last device has to ensure that all data is in one partition
-			if (currentStartIndex + partitionElements > end || i == this->num_devices - 1) {
+			if (currentStartIndex + partitionElements > end
+					|| i == this->num_devices - 1) {
 				partitionElements = end - currentStartIndex;
 			}
 
@@ -756,7 +768,11 @@ private:
 
 			segmentStart[i] = currentStartIndex;
 			segmentEnd[i] = currentStartIndex + partitionElements;
-			std::cout << "device: " << i << " from: " << segmentStart[i] << " to: " << segmentEnd[i] << std::endl;
+
+			if (setVerboseLoadBalancing) {
+				std::cout << "device: " << i << " from: " << segmentStart[i]
+						<< " to: " << segmentEnd[i] << std::endl;
+			}
 			currentStartIndex += partitionElements;
 		}
 
@@ -779,7 +795,8 @@ private:
 //		*segmentEnd = *segmentStart + blockSegmentSize * blockSize;
 	}
 
-	void recalculateWeights(double* timings, double *weights, double *partitioning) {
+	void recalculateWeights(double* timings, double *weights,
+			double *partitioning) {
 		//recalculate weights
 		for (size_t i = 0; i < this->num_devices; i++) {
 			weights[i] = timings[i] / partitioning[i];
@@ -791,12 +808,17 @@ private:
 			t += 1.0 / weights[i];
 		}
 		t = 1.0 / t;
-		std::cout << "t: " << t << std::endl;
+		if (setVerboseLoadBalancing) {
+			std::cout << "t: " << t << std::endl;
+		}
 
 		//calculate optimal partition
 		for (size_t i = 0; i < this->num_devices; i++) {
 			partitioning[i] = t / weights[i];
-			std::cout << "device: " << i << " partition size: " << partitioning[i] << std::endl;
+			if (setVerboseLoadBalancing) {
+				std::cout << "device: " << i << " partition size: "
+						<< partitioning[i] << std::endl;
+			}
 		}
 
 	}

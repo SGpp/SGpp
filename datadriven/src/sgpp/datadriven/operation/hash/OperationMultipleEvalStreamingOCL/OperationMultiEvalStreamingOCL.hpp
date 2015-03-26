@@ -21,6 +21,8 @@ namespace datadriven {
 
 template<typename T>
 class OperationMultiEvalStreamingOCL: public base::OperationMultipleEval {
+public:
+	bool setVerboseLoadBalancing = false;
 protected:
 	size_t dims;SGPP::base::DataMatrix preparedDataset;
 	base::ConfigurationParameters parameters;
@@ -42,13 +44,13 @@ protected:
 	OCLKernelImpl<T> *kernel;
 public:
 
-	OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::ConfigurationParameters parameters) :
+	OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::ConfigurationParameters parameters, bool setVerboseLoadBalancing = false) :
 			OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
 			SGPP::base::SGppStopwatch()), duration(-1.0) {
 		this->manager = new OCLManager(parameters);
 
 		this->dims = dataset.getNcols(); //be aware of transpose!
-		this->kernel = new OCLKernelImpl<T>(dims, *(this->manager), parameters);
+		this->kernel = new OCLKernelImpl<T>(dims, *(this->manager), parameters, setVerboseLoadBalancing);
 
 		this->storage = grid.getStorage();
 		this->padDataset(this->preparedDataset);
