@@ -9,9 +9,9 @@ int main(int argc, char **argv) {
 	int maxLevel = 9;
 
 //	std::string fileName = "debugging.arff";
-	//std::string fileName = "friedman_4d_2000.arff";
+	std::string fileName = "friedman_4d_2000.arff";
 	//std::string fileName = "friedman2_90000.arff";
-	std::string fileName = "bigger.arff";
+//	std::string fileName = "bigger.arff";
 
 	//sg::base::RegularGridConfiguration gridConfig;
 	sg::solver::SLESolverConfiguration SLESolverConfigRefine;

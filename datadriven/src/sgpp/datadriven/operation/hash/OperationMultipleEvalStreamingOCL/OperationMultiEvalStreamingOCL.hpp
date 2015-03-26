@@ -12,7 +12,6 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include "OCLKernelImpl.hpp"
-#include "StreamingOCLParameters.hpp"
 
 #include <sgpp/globaldef.hpp>
 
