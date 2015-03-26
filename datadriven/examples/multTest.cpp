@@ -94,6 +94,8 @@ int main(int argc, char **argv) {
 	eval->prepare();
 
 	std::cout << "calculating result" << std::endl;
+
+
 	eval->mult(alpha, dataSizeVectorResult);
 
 	std::cout << "calculating comparison values..." << std::endl;
