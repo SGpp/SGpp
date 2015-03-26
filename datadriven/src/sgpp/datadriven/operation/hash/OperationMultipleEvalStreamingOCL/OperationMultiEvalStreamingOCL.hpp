@@ -46,7 +46,7 @@ public:
 			OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
 			SGPP::base::SGppStopwatch()), duration(-1.0) {
 		this->manager = new OCLManager(parameters);
-		//.initializePlattform();
+
 		this->dims = dataset.getNcols(); //be aware of transpose!
 		this->kernel = new OCLKernelImpl<T>(dims, *(this->manager), parameters);
 
@@ -107,8 +107,6 @@ public:
 		this->kernel->mult(this->level, this->index, this->gridSize,
 				this->kernelDataset, this->datasetSize, alphaArray, resultArray,
 				gridFrom, gridTo, datasetFrom, datasetTo);
-
-		//	result.resize(originalSize);
 
 		for (size_t i = 0; i < result.getSize(); i++) {
 			result[i] = resultArray[i];
@@ -173,8 +171,6 @@ private:
 	size_t padDataset(
 	SGPP::base::DataMatrix& dataset) {
 
-
-//		size_t vecWidth = this->manager->getOCLLocalSize();
 		size_t vecWidth = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 
 		// Assure that data has a even number of instances -> padding might be needed
@@ -202,8 +198,7 @@ private:
 		if (this->index != nullptr)
 			delete this->index;
 
-//		uint32_t localWorkSize = this->manager->getOCLLocalSize();
-		uint32_t localWorkSize = parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
+		uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("STREAMING_OCL_LOCAL_SIZE");
 
 		size_t remainder = this->storage->size() % localWorkSize;
 		size_t padding = 0;
