@@ -14,7 +14,6 @@
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include "OCLKernelSourceBuilder.hpp"
-#include "StreamingOCLParameters.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -93,48 +92,65 @@ public:
 			err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_NAME,
 					128 * sizeof(char), platform_name, nullptr);
 			if (CL_SUCCESS != err) {
-				std::cout << "OCL Error: Can't get platform name!"
-						<< std::endl;
+				std::cout << "OCL Error: Can't get platform name!" << std::endl;
 			} else {
 				if (platform_name != nullptr) {
 					std::cout << "OCL Info: Platform " << ui << " name: "
 							<< platform_name << std::endl;
 				}
-				
-				if (parameters["STREAMING_OCL_PLATFORM"].compare(platform_name) == 0) {
-				  platform_id = platform_ids[ui];
-				  std::cout << "platform selected" << std::endl;
+
+				if (parameters["STREAMING_OCL_PLATFORM"].compare(platform_name)
+						== 0) {
+					platform_id = platform_ids[ui];
+					std::cout << "platform selected" << std::endl;
 				}
 			}
 		}
 		std::cout << std::endl;
 
 		if (parameters["STREAMING_OCL_PLATFORM"].compare("first") == 0) {
-		  std::cout << "using first platform" << std::endl;
-		  platform_id = platform_ids[0];
+			std::cout << "using first platform" << std::endl;
+			platform_id = platform_ids[0];
 		}
 
 		// Find out how many devices there are
 		device_ids = new cl_device_id[max_number_ocl_devices];
-#if STREAMING_OCL_DEVICE_TYPE == CL_DEVICE_TYPE_CPU
-		std::cout << "OCL Info: looking for CPU device" << std::endl;
-#elif STREAMING_OCL_DEVICE_TYPE == CL_DEVICE_TYPE_GPU
-		std::cout << "OCL Info: looking for GPU device" << std::endl;
-#else
-		std::cout << "OCL Info: looking for device of all/unknown type" << std::endl;
-#endif
-		err = clGetDeviceIDs(platform_id, STREAMING_OCL_DEVICE_TYPE,
-				max_number_ocl_devices, device_ids, &num_devices);
+		if (parameters["STREAMING_OCL_DEVICE_TYPE"] == "CL_DEVICE_TYPE_CPU") {
+			std::cout << "OCL Info: looking for CPU device" << std::endl;
+			err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU,
+					max_number_ocl_devices, device_ids, &num_devices);
+		} else if (parameters["STREAMING_OCL_DEVICE_TYPE"] == "CL_DEVICE_TYPE_GPU") {
+			std::cout << "OCL Info: looking for GPU device" << std::endl;
+			err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU,
+					max_number_ocl_devices, device_ids, &num_devices);
+		} else if (parameters["STREAMING_OCL_DEVICE_TYPE"] == "CL_DEVICE_TYPE_ACCELERATOR") {
+			std::cout << "OCL Info: looking for device of accelerator type"
+					<< std::endl;
+			err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR,
+					max_number_ocl_devices, device_ids, &num_devices);
+		} else if (parameters["STREAMING_OCL_DEVICE_TYPE"] == "CL_DEVICE_TYPE_ALL") {
+			std::cout << "OCL Info: looking for device of all available devices"
+					<< std::endl;
+			err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ALL,
+					max_number_ocl_devices, device_ids, &num_devices);
+		} else {
+			throw SGPP::base::operation_exception(
+					"OCL Error: No device found or unknown type specified (supported are: CPU, GPU, accelerator and all)");
+		}
 
 		if (err != CL_SUCCESS) {
 			std::cout << "OCL Error: Unable to get Device ID. Error Code: "
 					<< err << std::endl;
 		}
 
-		// num_devices = 1;
-
 		std::cout << "OCL Info: " << num_devices
 				<< " OpenCL devices have been found!" << std::endl;
+
+		cl_uint maxDevices = (cl_uint) parameters.getAsUnsigned("STREAMING_OCL_MAX_DEVICES");
+		if (maxDevices != 0 && maxDevices < num_devices) {
+			num_devices = maxDevices;
+		}
+		std::cout << "OCL Info: using " << num_devices << " device/s" << std::endl;
 
 		// allocate arrays
 		command_queue = new cl_command_queue[num_devices];
@@ -151,15 +167,16 @@ public:
 
 		// Creating the command queues
 		for (size_t i = 0; i < num_devices; i++) {
-		  char buffer[128];
-		  err = clGetDeviceInfo(device_ids[i], CL_DEVICE_NAME, 128 * sizeof(char), &buffer, nullptr);
-		  if (err != CL_SUCCESS) {
-		    std::cout << "OCL Error: Failed to read the device name for device: " << i << std::endl;
-		  } else {
-		    std::cout << "device name: " << buffer << std::endl;
-		  }
-
-
+			char buffer[128];
+			err = clGetDeviceInfo(device_ids[i], CL_DEVICE_NAME,
+					128 * sizeof(char), &buffer, nullptr);
+			if (err != CL_SUCCESS) {
+				std::cout
+						<< "OCL Error: Failed to read the device name for device: "
+						<< i << std::endl;
+			} else {
+				std::cout << "OCL Info: device name: " << buffer << std::endl;
+			}
 
 			command_queue[i] = clCreateCommandQueue(context, device_ids[i],
 			CL_QUEUE_PROFILING_ENABLE, &err);
