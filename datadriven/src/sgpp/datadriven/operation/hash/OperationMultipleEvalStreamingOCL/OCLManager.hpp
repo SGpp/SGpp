@@ -79,7 +79,6 @@ public:
 			char vendor_name[128] = { 0 };
 			err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR,
 					128 * sizeof(char), vendor_name, nullptr);
-
 			if (CL_SUCCESS != err) {
 				std::cout << "OCL Error: Can't get platform vendor!"
 						<< std::endl;
@@ -88,11 +87,32 @@ public:
 					std::cout << "OCL Info: Platform " << ui << " vendor name: "
 							<< vendor_name << std::endl;
 				}
+			}
 
-				platform_id = platform_ids[ui];
+			char platform_name[128] = { 0 };
+			err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_NAME,
+					128 * sizeof(char), platform_name, nullptr);
+			if (CL_SUCCESS != err) {
+				std::cout << "OCL Error: Can't get platform name!"
+						<< std::endl;
+			} else {
+				if (platform_name != nullptr) {
+					std::cout << "OCL Info: Platform " << ui << " name: "
+							<< platform_name << std::endl;
+				}
+				
+				if (parameters["STREAMING_OCL_PLATFORM"].compare(platform_name) == 0) {
+				  platform_id = platform_ids[ui];
+				  std::cout << "platform selected" << std::endl;
+				}
 			}
 		}
 		std::cout << std::endl;
+
+		if (parameters["STREAMING_OCL_PLATFORM"].compare("first") == 0) {
+		  std::cout << "using first platform" << std::endl;
+		  platform_id = platform_ids[0];
+		}
 
 		// Find out how many devices there are
 		device_ids = new cl_device_id[max_number_ocl_devices];
@@ -131,6 +151,15 @@ public:
 
 		// Creating the command queues
 		for (size_t i = 0; i < num_devices; i++) {
+		  char buffer[128];
+		  err = clGetDeviceInfo(device_ids[i], CL_DEVICE_NAME, 128 * sizeof(char), &buffer, nullptr);
+		  if (err != CL_SUCCESS) {
+		    std::cout << "OCL Error: Failed to read the device name for device: " << i << std::endl;
+		  } else {
+		    std::cout << "device name: " << buffer << std::endl;
+		  }
+
+
 
 			command_queue[i] = clCreateCommandQueue(context, device_ids[i],
 			CL_QUEUE_PROFILING_ENABLE, &err);

@@ -27,6 +27,7 @@ base::OperationMultipleEval *createStreamingOCLConfigured(base::Grid& grid,
 	defaultParameter["STREAMING_OCL_LOCAL_SIZE"] = "64";
 	defaultParameter["STREAMING_OCL_MAX_DIM_UNROLL"] = "10";
 	defaultParameter["STREAMING_OCL_INTERNAL_PRECISION"] = "float";
+	defaultParameter["STREAMING_OCL_PLATFORM"] = "first";
 
 	base::ConfigurationParameters parameters("StreamingOCL.cfg", defaultParameter);
 

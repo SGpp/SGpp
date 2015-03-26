@@ -8,7 +8,7 @@
 #include <CL/cl.h>
 
 #ifndef STREAMING_OCL_DEVICE_TYPE
-//options: CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_GPU, ...
+//options: CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_GPU, CL_DEVICE_TYPE_ACCELERATOR
 //this define requires the include of <CL/cl.h>
 #define STREAMING_OCL_DEVICE_TYPE CL_DEVICE_TYPE_ALL
 #endif

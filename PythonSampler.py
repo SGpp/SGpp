@@ -192,7 +192,7 @@ class Sampler:
     self.jobs = str(jobs)
 
     self.bestParameters = None
-    self.bestParameterDuration = sys.maxint
+    self.bestParameterDuration = None
     
   def dimIter(self):
     index = 0
@@ -226,19 +226,21 @@ class Sampler:
       my_env[keyValue[0]] = keyValue[1]
     
     # compile
-    print "define parameter values:", " ".join([defineParameter.getValue() for defineParameter in defineParameters])
-    command = "scons CPPFLAGS=\"" + ''.join([option.getValue() + " " for option in optionParameters]) + \
-      "\" VERBOSE=1 -j" + self.jobs + " NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
-      " ".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\" " + \
-      "SG_PYTHON=0 SG_JAVA=0 OPT=1 CXX=g++-4.8 CC=g++-4.8"
-    print command
-    # command = ["./execTest.py"]
-    print "origC:", command
-    splittedCmd = shlex.split(command)    
-    p = subprocess.Popen(splittedCmd, env=my_env) #stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
-    p.wait()
-    stdout, stderr = p.communicate()
+    # command = "scons CPPFLAGS=\"" + ''.join([option.getValue() + " " for option in optionParameters]) + \
+    #   "\" VERBOSE=1 -j" + self.jobs + " NO_UNIT_TESTS=1 CPPDEFINES=\"" + \
+    #   " ".join([defineParameter.getValue() for defineParameter in defineParameters]) + "\" " + \
+    #   "SG_PYTHON=0 SG_JAVA=0 OPT=1 CXX=g++-4.8 CC=g++-4.8"
+    # print command
+    # # command = ["./execTest.py"]
+    # print "origC:", command
+    # splittedCmd = shlex.split(command)    
+    # p = subprocess.Popen(splittedCmd, env=my_env) #stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
+    # p.wait()
+    # stdout, stderr = p.communicate()
     
+    # write configuration file
+    self.writeConfigFile("StreamingOCL.cfg", defineParameters)    
+
     # execute
     command = ["bin/examples/datadriven/sampler"]
     startTimestamp = time.time()
@@ -246,17 +248,24 @@ class Sampler:
     p.wait()
     stdout, stderr = p.communicate()
     duration = time.time() - startTimestamp
-    print "duration:", duration
+    #print "duration:", duration
 
     if self.bestParameterDuration == None or duration < self.bestParameterDuration:
+      #print "updated best duration"
       self.bestParameterDuration = duration
       self.bestParameters = str([str(parameter) + "=" + str(parameter.getValue()) for parameter in optionParameters + envParameters + defineParameters])
 
     # extract runtime information
     dataTuple = [parameter.getIndex() for parameter in optionParameters + envParameters + defineParameters]
-    print "configuration: ", str([str(parameter) + "=" + str(parameter.getValue()) for parameter in optionParameters + envParameters + defineParameters])
+    #print "configuration: ", str([str(parameter) + "=" + str(parameter.getValue()) for parameter in optionParameters + envParameters + defineParameters])
     #print "dataTuple:", dataTuple
     self.resultFile.write(", ".join(dataTuple) + ", " + str(duration) + "\n")
+
+  def writeConfigFile(self, configFileName, parameters):
+    configFile = open(configFileName, "w")
+    for parameter in parameters:
+      configFile.write(parameter.getValue() + "\n")
+    configFile.close()
     
   def sample(self):
     self.resultFile = open(self.resultFileName, "w")
@@ -278,7 +287,10 @@ class Sampler:
           print "error"
           
       self.execute(optionParameters, envParameters, defineParameters)
+
     self.resultFile.close()
+    print "best configuration duration:", self.bestParameterDuration
+    print "best configuration:", self.bestParameters
 
 resultFileName = "samples.dat"
 
