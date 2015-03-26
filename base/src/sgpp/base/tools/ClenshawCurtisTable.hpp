@@ -42,10 +42,25 @@ namespace SGPP {
          */
         inline float_t getPoint(level_type l, index_type i) const {
           if (l <= maxLevel) {
-            return table.get((1 << l) + l + i - 1);
+            return table.get((static_cast<index_type>(1) << l) +
+                             static_cast<index_type>(l) + i - 1);
           } else {
-            const float_t h = 1.0 / static_cast<float_t>(1 << l);
-            return (cos(M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
+            return calculatePoint(static_cast<index_type>(1) << l, i);
+          }
+        }
+
+        /**
+         * @param l       level of the grid point
+         * @param i       index of the grid point (can be even)
+         * @param hInv    2^l
+         */
+        inline float_t getPoint(level_type l, index_type i,
+                                index_type hInv) const {
+          if (l <= maxLevel) {
+            return table.get(hInv +
+                             static_cast<index_type>(l) + i - 1);
+          } else {
+            return calculatePoint(hInv, i);
           }
         }
 
@@ -54,6 +69,29 @@ namespace SGPP {
         DataVector table;
         /// maximal level
         level_type maxLevel;
+
+        /**
+         * @param hInv    2^l
+         * @param i       index of the grid point (can be even)
+         */
+        inline float_t calculatePoint(index_type hInv, index_type i) const {
+          return calculatePoint(1.0 / static_cast<float_t>(hInv), i);
+        }
+
+        /**
+         * @param h       step width of the grid point (2^(-l))
+         * @param i       index of the grid point (can be even)
+         */
+        inline float_t calculatePoint(float_t h, index_type i) const {
+          //return (std::cos(
+          //    M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
+          // TODO
+          constexpr float_t delta = 0.2;
+          constexpr float_t yScale = std::cos(delta * M_PI / 2.0);
+          return (1.0 - std::cos(
+                    M_PI * ((1.0 - delta) * (static_cast<float_t>(i) * h) +
+                            delta / 2.0)) / yScale) / 2.0;
+        }
     };
 
     extern ClenshawCurtisTable clenshawCurtisTable;
