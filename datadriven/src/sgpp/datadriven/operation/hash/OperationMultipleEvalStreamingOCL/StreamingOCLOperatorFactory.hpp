@@ -38,9 +38,9 @@ base::OperationMultipleEval *createStreamingOCLConfigured(base::Grid& grid,
 	std::cout << "internal precision: " << parameters["STREAMING_OCL_INTERNAL_PRECISION"] << std::endl;
 
 	if (parameters["STREAMING_OCL_INTERNAL_PRECISION"] == "float") {
-		return new datadriven::OperationMultiEvalStreamingOCL<float>(grid, dataset, parameters);
+	  return new datadriven::OperationMultiEvalStreamingOCL<float>(grid, dataset, parameters, true);
 	} else if (parameters["STREAMING_OCL_INTERNAL_PRECISION"] == "double") {
-		return new datadriven::OperationMultiEvalStreamingOCL<double>(grid, dataset, parameters);
+	  return new datadriven::OperationMultiEvalStreamingOCL<double>(grid, dataset, parameters, true);
 	} else {
 		throw base::factory_exception("Error creating operation\"OperationMultiEvalStreamingOCL\": invalid value for parameter \"STREAMING_OCL_INTERNAL_PRECISION\"");
 	}
