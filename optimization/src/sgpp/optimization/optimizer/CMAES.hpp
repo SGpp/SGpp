@@ -9,7 +9,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/Optimizer.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -17,25 +16,24 @@ namespace SGPP {
 
       class CMAES : public Optimizer {
         public:
-          /*/// default crossover probability
-          static constexpr float_t DEFAULT_CROSSOVER_PROBABILITY = 0.5;
-          /// default crossover scaling factor
-          static constexpr float_t DEFAULT_SCALING_FACTOR = 0.6;
-          /// default stopping criterion parameter 1
-          static const size_t DEFAULT_IDLE_GENERATIONS_COUNT = 20;
-          /// default stopping criterion parameter 2
-          static constexpr float_t DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
-          /// default stopping criterion parameter 3
-          static constexpr float_t DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;*/
+          /// default initial step size
+          static constexpr float_t DEFAULT_INITIAL_STEP_SIZE = 0.3;
 
           /**
            * Constructor.
            *
-           * @param f                         objective function
-           * @param maxFcnEvalCount           maximal number of
-           *                                  function evaluations
+           * @param f                 objective function
+           * @param maxFcnEvalCount   maximal number of
+           *                          function evaluations
+           * @param populationSize    number of individuals
+           * @param recombinationSize number of individuals used to recombine
+           * @param initialStepSize   initial step size
            */
-          CMAES(ObjectiveFunction& f, size_t maxFcnEvalCount = DEFAULT_N);
+          CMAES(ObjectiveFunction& f,
+                size_t maxFcnEvalCount = DEFAULT_N,
+                size_t populationSize = 0,
+                size_t recombinationSize = 0,
+                float_t initialStepSize = DEFAULT_INITIAL_STEP_SIZE);
 
           /**
            * @param[out] xOpt optimal point
@@ -46,33 +44,40 @@ namespace SGPP {
           /**
            * @return                  number of individuals
            */
-          //size_t getPopulationSize() const;
+          size_t getPopulationSize() const;
 
           /**
            * @param populationSize    number of individuals
            */
-          //void setPopulationSize(size_t populationSize);
+          void setPopulationSize(size_t populationSize);
+
+          /**
+           * @return                  number of individuals used to recombine
+           */
+          size_t getRecombinationSize() const;
+
+          /**
+           * @param recombinationSize number of individuals used to recombine
+           */
+          void setRecombinationSize(size_t recombinationSize);
+
+          /**
+           * @return                  initial step size
+           */
+          float_t getInitialStepSize() const;
+
+          /**
+           * @param initialStepSize   initial step size
+           */
+          void setInitialStepSize(float_t initialStepSize);
 
         protected:
-          /*/// number of individuals
-          size_t populationSize;
-          /// crossover probability
-          float_t crossoverProbability;
-          /// crossover scaling factor
-          float_t scalingFactor;
-          /// stopping criterion parameter 1
-          size_t idleGenerationsCount;
-          /// stopping criterion parameter 2
-          float_t avgImprovementThreshold;
-          /// stopping criterion parameter 3
-          float_t maxDistanceThreshold;*/
-
-          void schurDecomposition(base::DataMatrix& S, base::DataMatrix& V);
-          void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V);
-          void QRdecomposition(base::DataMatrix& A, base::DataMatrix& Q);
-          void householderTransformation(const base::DataMatrix& A,
-                                         size_t i, size_t j,
-                                         base::DataMatrix& Q);
+          /// number of individuals
+          size_t lambda;
+          /// number of individuals used to recombine
+          size_t mu;
+          /// initial step size
+          float_t sigma0;
       };
 
     }

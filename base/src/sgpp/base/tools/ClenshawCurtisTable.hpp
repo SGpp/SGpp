@@ -86,7 +86,8 @@ namespace SGPP {
           //return (std::cos(
           //    M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
           // TODO
-          constexpr float_t delta = 0.2;
+          constexpr float_t delta = 0.0;
+          //constexpr float_t delta = 0.2;
           constexpr float_t yScale = std::cos(delta * M_PI / 2.0);
           return (1.0 - std::cos(
                     M_PI * ((1.0 - delta) * (static_cast<float_t>(i) * h) +

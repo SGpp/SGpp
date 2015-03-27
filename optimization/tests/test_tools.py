@@ -191,3 +191,46 @@ class TestTools(unittest.TestCase):
             self.assertTrue(all([0 <= number <= k-1 for number in numbers]))
             self.assertAlmostEqual(mean, (k-1.0)/2.0, delta=k*0.01)
             self.assertAlmostEqual(var, (k*k-1.0)/12.0, delta=k*k*0.01)
+    
+    def orthogonalityTest(self, A):
+        n = A.getNrows()
+        self.assertEqual(n, A.getNcols())
+        
+        for i in range(n):
+            for j in range(i+1):
+                entry = 0.0
+                for l in range(n):
+                    entry += A.get(i, l) * A.get(j, l)
+                self.assertAlmostEqual(entry, 1.0 if (i == j) else 0.0)
+    
+    def symmetryTest(self, A):
+        n = A.getNrows()
+        self.assertEqual(n, A.getNcols())
+        
+        for i in range(n):
+            for j in range(i):
+                self.assertAlmostEqual(A.get(i, j), A.get(j, i))
+    
+    def testMathHouseholderTransformation(self):
+        random.seed(42)
+        n = 5
+        
+        A = pysgpp.DataMatrix(n, n)
+        
+        for i in range(n):
+            for j in range(n):
+                A.set(i, j, random.gauss(0.0, 1.0))
+        
+        for p, q in [(0, 0), (2, 1)]:
+            m = n - p
+            Q = pysgpp.DataMatrix(m, m)
+            pysgpp.OptMathHouseholderTransformation(A, p, q, Q)
+            self.symmetryTest(Q)
+            self.orthogonalityTest(Q)
+            
+            # TODO: something's wrong in the indices
+            for i in range(p+1, n):
+                entry = 0.0
+                for l in range(m):
+                    entry += Q.get(i, l) * A.get(l + p, q)
+                self.assertAlmostEqual(entry, 0.0)

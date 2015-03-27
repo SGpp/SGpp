@@ -74,6 +74,7 @@
 #include <sgpp/optimization/sle/system/SLE.hpp>
 
 #include <sgpp/optimization/tools/FileIO.hpp>
+#include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
