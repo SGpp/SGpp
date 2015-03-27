@@ -29,7 +29,9 @@ def isAVXFolder(folder):
             return True
     return False
 
-libs = ['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde', 'OpenCL']
+libs = ['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde']
+if env['USE_OCL']:
+    libs += ['OpenCL']
 
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
