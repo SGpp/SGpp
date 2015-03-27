@@ -48,27 +48,30 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
     else:
         print "Using " + commands.getoutput('dot -V').splitlines()[0]
-          
-        #TODO: remove
-    print "OCL_INCLUDE_PATH:", config.env['ENV']['OCL_INCLUDE_PATH']
-    print "OCL_LIBRARY_PATH:", config.env['ENV']['OCL_LIBRARY_PATH']
     
-    if config.env['USE_OCL'] and 'OCL_INCLUDE_PATH' in config.env['ENV'] and 'OCL_LIBRARY_PATH' in config.env['ENV']:
-    
-      config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
+    if config.env['USE_OCL']:
+      
+      if 'OCL_INCLUDE_PATH' in config.env['ENV']:
+        config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
+      else:
+        sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
+         
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
         
-      config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
+      if 'OCL_LIBRARY_PATH' in config.env['ENV']:
+        config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
+      else:
+        sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
+        
       if not config.CheckLib('OpenCL'):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
-      config.env["USE_OCL"] = True;
+        
       config.env.AppendUnique(CPPDEFINES="USE_OCL")
     else:
       print "Info: OpenCL is not enabled"
-      config.env["USE_OCL"] = False;
 
     if env["SG_PYTHON"]:
         # check whether swig installed

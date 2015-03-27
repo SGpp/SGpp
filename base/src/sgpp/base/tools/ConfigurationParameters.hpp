@@ -9,28 +9,35 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace base {
 
-	class ConfigurationParameters {
-	private:
-		std::map<std::string, std::string> parameters;
-	public:
-		ConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
+class ConfigurationParameters {
+protected:
+  std::map<std::string, std::string> parameters;
+public:
+  ConfigurationParameters();
 
-		std::string operator[](std::string key);
+  ConfigurationParameters(std::string fileName,
+      std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
 
-		bool getAsBoolean(std::string key);
-		uint64_t getAsUnsigned(std::string key);
+  std::string operator[](std::string key);
 
-	private:
-		std::vector<std::string> split(const std::string &s, char delim);
-	};
+  bool getAsBoolean(std::string key);
+  uint64_t getAsUnsigned(std::string key);
+
+protected:
+  void readFromMap(std::map<std::string, std::string> parametersMap);
+
+  void readFromFile(std::string fileName);
+private:
+  std::vector<std::string> split(const std::string &s, char delim);
+};
 
 }
 }
-
 
