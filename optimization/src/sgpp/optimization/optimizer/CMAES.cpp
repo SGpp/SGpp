@@ -6,10 +6,12 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/CMAES.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+#include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -18,8 +20,16 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      CMAES::CMAES(ObjectiveFunction& f, size_t maxFcnEvalCount) :
-        Optimizer(f, maxFcnEvalCount) {
+      CMAES::CMAES(ObjectiveFunction& f,
+                   size_t maxFcnEvalCount,
+                   size_t populationSize,
+                   size_t recombinationSize,
+                   float_t initialStepSize) :
+        Optimizer(f, maxFcnEvalCount),
+        lambda((populationSize > 0) ? populationSize :
+               4 + static_cast<size_t>(3.0 * std::log(f.getDimension()))),
+        mu((recombinationSize > 0) ? recombinationSize : lambda / 2),
+        sigma0(initialStepSize) {
       }
 
       float_t CMAES::optimize(base::DataVector& xOpt) {
@@ -28,18 +38,16 @@ namespace SGPP {
         const size_t d = f.getDimension();
         const float_t dDbl = static_cast<float_t>(d);
 
-        base::DataVector xMean(d, 0.5); // TODO: initialize
-        float_t sigma = 0.3; // TODO: initialize
+        base::DataVector xMean(x0);
+        float_t sigma = sigma0;
 
-        const size_t lambda = 4 + static_cast<size_t>(3.0 * std::log(d)); // TODO: initialize
-        const float_t muDbl = static_cast<float_t>(lambda) / 2.0;
-        const size_t mu = static_cast<size_t>(muDbl);
         base::DataVector weights(mu);
         float_t weightsSum = 0.0;
         float_t weightsSumSquared = 0.0;
 
         for (size_t i = 0; i < mu; i++) {
-          weights[i] = std::log((muDbl + 0.5) / static_cast<float_t>(i + 1));
+          weights[i] = std::log((static_cast<float_t>(mu) + 0.5) /
+                                static_cast<float_t>(i + 1));
           weightsSum += weights[i];
           weightsSumSquared += weights[i] * weights[i];
         }
@@ -178,7 +186,7 @@ namespace SGPP {
               static_cast<float_t>(lambda) / (10.0 * dDbl * (c1 + cMu))) {
             eigenEval = countEval;
             DMatrix = C;
-            schurDecomposition(DMatrix, B);
+            math::schurDecomposition(DMatrix, B);
 
             for (size_t t = 0; t < d; t++) {
               D[t] = std::sqrt(DMatrix.get(t, t));
@@ -191,311 +199,54 @@ namespace SGPP {
             }
           }
 
+          // status printing
+          if (k % 10 == 0) {
+            printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                                      std::to_string(fX[fXIndex[0]]));
+          }
+
           k++;
-          std::cout << "k = " << k << "\n";
-          std::cout << "C = " << C.toString() << "\n";
-          std::cout << "B = " << B.toString() << "\n";
-          std::cout << "D = " << D.toString() << "\n";
 
           // TODO
-          if (D.max() > 1e7 * D.min()) {
+          /*if (D.max() > 1e7 * D.min()) {
             break;
-          }
+          }*/
         }
 
         xOpt.resize(d);
         xOpt = X[fXIndex[0]];
         const float_t fOpt = fX[fXIndex[0]];
 
+        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                                  std::to_string(fOpt));
+        printer.printStatusEnd();
+
         return fOpt;
       }
 
-      void CMAES::schurDecomposition(base::DataMatrix& S,
-                                     base::DataMatrix& V) {
-        const size_t n = S.getNrows();
-        base::DataMatrix SMinusLambdaI(n, n);
-        base::DataMatrix QTilde(n, n);
-
-        hessenbergForm(S, V);
-
-        base::DataMatrix SNew(S);
-        base::DataMatrix VNew(V);
-
-        for (size_t k = 0; k < n - 1; k++) {
-          const size_t m = n - k;
-          SMinusLambdaI.resize(m, m);
-
-          for (size_t it = 0; it < 100; it++) {
-            const float_t dPlus = S.get(m - 1, m - 1) + S.get(m - 2, m - 2);
-            const float_t dMinus = S.get(m - 1, m - 1) - S.get(m - 2, m - 2);
-            const float_t sigma = (dMinus >= 0.0) ? 1.0 : -1.0;
-            const float_t lambda = dPlus / 2.0 + sigma / 2.0 * std::sqrt(
-                                     dMinus * dMinus +
-                                     4.0 * S.get(m - 1, m - 2) *
-                                     S.get(m - 2, m - 1));
-
-            for (size_t i = 0; i < m; i++) {
-              for (size_t j = 0; j < m; j++) {
-                SMinusLambdaI.set(i, j, S.get(i, j) -
-                                  ((i == j) ? lambda : 0.0));
-              }
-            }
-
-            QTilde.resize(m, m);
-            QRdecomposition(SMinusLambdaI, QTilde);
-
-            for (size_t i = m; i < n; i++) {
-              for (size_t j = 0; j < m; j++) {
-                float_t entry = 0.0;
-
-                for (size_t l = 0; l < m; l++) {
-                  entry += S.get(i, l) * QTilde.get(l, j);
-                }
-
-                SNew.set(i, j, entry);
-              }
-            }
-
-            for (size_t i = 0; i < m; i++) {
-              for (size_t j = m; j < n; j++) {
-                float_t entry = 0.0;
-
-                for (size_t l = 0; l < m; l++) {
-                  entry += QTilde.get(l, i) * S.get(l, j);
-                }
-
-                SNew.set(i, j, entry);
-              }
-            }
-
-            for (size_t i = 0; i < m; i++) {
-              for (size_t j = 0; j < m; j++) {
-                float_t entry = 0.0;
-
-                for (size_t p = 0; p < m; p++) {
-                  for (size_t q = 0; q < m; q++) {
-                    entry += QTilde.get(p, i) * S.get(p, q) * QTilde.get(q, j);
-                  }
-                }
-
-                SNew.set(i, j, entry);
-              }
-            }
-
-            S = SNew;
-
-            for (size_t i = 0; i < n; i++) {
-              for (size_t j = 0; j < m; j++) {
-                float_t entry = 0.0;
-
-                for (size_t l = 0; l < m; l++) {
-                  entry += V.get(i, l) * QTilde.get(l, j);
-                }
-
-                VNew.set(i, j, entry);
-              }
-            }
-
-            V = VNew;
-
-            if (std::abs(S.get(m - 1, m - 2)) < 1e-8) {
-              break;
-            }
-          }
-
-          for (size_t i = m; i < n; i++) {
-            S.set(i, m - 1, 0.0);
-            SNew.set(i, m - 1, 0.0);
-          }
-        }
-
-        for (size_t i = 1; i < n; i++) {
-          S.set(i, 0, 0.0);
-        }
+      size_t CMAES::getPopulationSize() const {
+        return lambda;
       }
 
-      void CMAES::hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
-        const size_t n = A.getNrows();
-        base::DataMatrix Q(n, n);
-        base::DataMatrix ANew(A);
-
-        for (size_t i = 0; i < n; i++) {
-          for (size_t j = 0; j < n; j++) {
-            V.set(i, j, (i == j) ? 1.0 : 0.0);
-          }
-        }
-
-        base::DataMatrix VNew(V);
-
-        for (size_t k = 0; k < n - 2; k++) {
-          const size_t m = n - k - 1;
-          Q.resize(m, m);
-          householderTransformation(A, k + 1, k, Q);
-
-          for (size_t i = 0; i < k + 1; i++) {
-            for (size_t j = k + 1; j < n; j++) {
-              float_t entry = 0.0;
-
-              for (size_t l = 0; l < m; l++) {
-                entry += A.get(i, l + k + 1) * Q.get(l, j - k - 1);
-              }
-
-              ANew.set(i, j, entry);
-            }
-          }
-
-          for (size_t i = k + 1; i < n; i++) {
-            for (size_t j = i - 1; j < k + 1; j++) {
-              float_t entry = 0.0;
-
-              for (size_t l = 0; l < m; l++) {
-                entry += Q.get(i - k - 1, l) * A.get(l + k + 1, j);
-              }
-
-              ANew.set(i, j, entry);
-            }
-          }
-
-          for (size_t i = k + 2; i < n; i++) {
-            ANew.set(i, k, 0.0);
-          }
-
-          for (size_t i = k + 1; i < n; i++) {
-            for (size_t j = k + 1; j < n; j++) {
-              float_t entry = 0.0;
-
-              for (size_t p = 0; p < m; p++) {
-                for (size_t q = 0; q < m; q++) {
-                  entry += Q.get(i - k - 1, p) *
-                           A.get(p + k + 1, q + k + 1) *
-                           Q.get(q, j - k - 1);
-                }
-              }
-
-              ANew.set(i, j, entry);
-            }
-          }
-
-          A = ANew;
-
-          for (size_t i = 0; i < n; i++) {
-            for (size_t j = k + 1; j < n; j++) {
-              float_t entry = 0.0;
-
-              for (size_t l = 0; l < m; l++) {
-                entry += V.get(i, l + k + 1) * Q.get(l, j - k - 1);
-              }
-
-              VNew.set(i, j, entry);
-            }
-          }
-
-          V = VNew;
-        }
+      void CMAES::setPopulationSize(size_t populationSize) {
+        lambda = populationSize;
       }
 
-      void CMAES::QRdecomposition(base::DataMatrix& A, base::DataMatrix& Q) {
-        const size_t n = A.getNrows();
-        base::DataMatrix QTilde(n, n);
-        base::DataVector d(n);
-        base::DataMatrix ANew(A);
-
-        for (size_t i = 0; i < n; i++) {
-          for (size_t j = 0; j < n; j++) {
-            Q.set(i, j, (i == j) ? 1.0 : 0.0);
-          }
-        }
-
-        base::DataMatrix QNew(Q);
-
-        for (size_t k = 0; k < n - 1; k++) {
-          const size_t m = n - k;
-          QTilde.resize(m, m);
-          householderTransformation(A, k, k, QTilde);
-
-          for (size_t i = k; i < n; i++) {
-            for (size_t j = k; j < n; j++) {
-              float_t entry = 0.0;
-
-              for (size_t l = 0; l < m; l++) {
-                entry += QTilde.get(i - k, l) * A.get(l + k, j);
-              }
-
-              ANew.set(i, j, entry);
-            }
-          }
-
-          for (size_t i = k + 1; i < n; i++) {
-            ANew.set(i, k, 0.0);
-          }
-
-          for (size_t i = k; i < n; i++) {
-            for (size_t j = k; j < n; j++) {
-              float_t entry = 0.0;
-
-              for (size_t p = 0; p < m; p++) {
-                for (size_t q = 0; q < m; q++) {
-                  entry += QTilde.get(i - k, p) *
-                           A.get(p + k, q + k) *
-                           QTilde.get(q, j - k);
-                }
-              }
-
-              ANew.set(i, j, entry);
-            }
-          }
-
-          A = ANew;
-
-          for (size_t i = 0; i < n; i++) {
-            for (size_t j = k; j < n; j++) {
-              float_t entry = 0.0;
-
-              for (size_t l = 0; l < m; l++) {
-                entry += Q.get(i, l + k) * QTilde.get(j - k, l);
-              }
-
-              QNew.set(i, j, entry);
-            }
-          }
-
-          Q = QNew;
-        }
+      size_t CMAES::getRecombinationSize() const {
+        return mu;
       }
 
-      void CMAES::householderTransformation(const base::DataMatrix& A,
-                                            size_t i, size_t j,
-                                            base::DataMatrix& Q) {
-        const size_t n = A.getNrows();
-        const size_t m = n - i;
-        base::DataVector d(m);
-        const float_t c1 = A.get(i, j);
-        float_t cNorm = c1 * c1;
-
-        for (size_t p = 1; p < m; p++) {
-          d[p] = A.get(p + i, j);
-          cNorm += d[p] * d[p];
-        }
-
-        cNorm = std::sqrt(cNorm);
-        const float_t sigma = (c1 >= 0.0) ? 1.0 : -1.0;
-        d[0] = c1 + sigma * cNorm;
-        const float_t r = std::abs(d[0]) * cNorm;
-
-        for (size_t p = 0; p < m; p++) {
-          for (size_t q = 0; q < m; q++) {
-            Q.set(p, q, ((p == q) ? 1.0 : 0.0) - d[p] * d[q] / r);
-          }
-        }
+      void CMAES::setRecombinationSize(size_t recombinationSize) {
+        mu = recombinationSize;
       }
 
-      /*size_t DifferentialEvolution::getPopulationSize() const {
-        return populationSize;
+      float_t CMAES::getInitialStepSize() const {
+        return sigma0;
       }
 
-      void DifferentialEvolution::setPopulationSize(size_t populationSize) {
-        this->populationSize = populationSize;
-      }*/
+      void CMAES::setInitialStepSize(float_t initialStepSize) {
+        sigma0 = initialStepSize;
+      }
 
     }
   }
