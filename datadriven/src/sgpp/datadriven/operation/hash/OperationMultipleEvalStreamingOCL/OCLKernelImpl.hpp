@@ -13,7 +13,9 @@
 #include <sgpp/globaldef.hpp>
 
 #include "OCLManager.hpp"
+#include "OCLMemory.hpp"
 #include "OCLKernelSourceBuilder.hpp"
+#include "LinearLoadBalancer.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -29,39 +31,36 @@ private:
   cl_context context;
   cl_command_queue* command_queue;
 
-  cl_mem* clData;
-  cl_mem* clLevel;
-  cl_mem* clIndex;
+//  cl_mem* clData;
+  OCLMemory deviceData;
+  OCLMemory deviceLevel;
+  OCLMemory deviceIndex;
 
   // use pinned memory (on host and device) to speed up data transfers from/to GPU
-  cl_mem* clDevGrid;
-  cl_mem* clDevTmp;
-  cl_mem clPinnedGrid;
-  cl_mem clPinnedTmp;
+  OCLMemory deviceGrid;
+  real_type *hostGrid;
+  OCLMemory deviceTemp;
+  real_type *hostTemp;
 
   cl_kernel* kernel_multTrans;
   cl_kernel* kernel_mult;
 
-  real_type* pinnedGrid;
-  real_type* pinnedTmp;
-
   double *deviceTimingsMult;
   double *deviceTimingsMultTranspose;
-
-  double *deviceWeightsMult;
-  double *deviceWeightsMultTranspose;
-
-  double *devicePartitionMult;
-  double *devicePartitionMultTranspose;
 
   OCLKernelSourceBuilder<real_type> kernelSourceBuilder;
   OCLManager &manager;
   base::ConfigurationParameters parameters;
 
+  LinearLoadBalancer multLoadBalancer;
+  LinearLoadBalancer multTransposeLoadBalancer;
+
 public:
 
   OCLKernelImpl(size_t dims, OCLManager &manager, base::ConfigurationParameters parameters) :
-      kernelSourceBuilder(parameters), manager(manager), parameters(parameters) {
+      deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
+          parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
+          manager, this->parameters) {
 
     this->dims = dims;
     this->num_devices = manager.num_devices;
@@ -72,49 +71,20 @@ public:
       this->deviceTimingsMult[i] = 1.0;
       this->deviceTimingsMultTranspose[i] = 1.0;
     }
-    this->deviceWeightsMult = new double[this->num_devices];
-    this->deviceWeightsMultTranspose = new double[this->num_devices];
-    for (size_t i = 0; i < this->num_devices; i++) {
-      //initialize with same timing to enforce equal problem sizes in the beginning
-      this->deviceWeightsMult[i] = 1.0;
-      this->deviceTimingsMultTranspose[i] = 1.0;
-    }
-
-    this->devicePartitionMult = new double[this->num_devices];
-    this->devicePartitionMultTranspose = new double[this->num_devices];
-    for (size_t i = 0; i < this->num_devices; i++) {
-      //initialize with same timing to enforce equal problem sizes in the beginning
-      this->devicePartitionMult[i] = 1.0 / static_cast<double>(this->num_devices);
-      this->devicePartitionMultTranspose[i] = 1.0 / static_cast<double>(this->num_devices);
-    }
 
     this->context = manager.context;
     this->command_queue = manager.command_queue;
     this->device_ids = manager.device_ids;
     this->err = CL_SUCCESS;
 
-    this->clData = new cl_mem[num_devices];
-    this->clLevel = new cl_mem[num_devices];
-    this->clIndex = new cl_mem[num_devices];
-    this->pinnedGrid = nullptr;
-    this->clDevGrid = new cl_mem[num_devices];
-    this->clDevTmp = new cl_mem[num_devices];
-    this->clPinnedGrid = nullptr;
-    this->pinnedTmp = nullptr;
-    this->clPinnedTmp = nullptr;
+    this->hostGrid = nullptr;
+    this->hostTemp = nullptr;
 
     this->kernel_mult = new cl_kernel[num_devices];
     this->kernel_multTrans = new cl_kernel[num_devices];
 
     // initialize arrays
     for (size_t i = 0; i < num_devices; i++) {
-      this->clData[i] = nullptr;
-      this->clLevel[i] = nullptr;
-      this->clIndex[i] = nullptr;
-
-      this->clDevGrid[i] = nullptr;
-      this->clDevTmp[i] = nullptr;
-
       this->kernel_mult[i] = nullptr;
       this->kernel_multTrans[i] = nullptr;
     }
@@ -123,7 +93,18 @@ public:
   ~OCLKernelImpl() {
     releaseDataBuffers();
     releaseGridBuffers();
-    releaseKernelsAndPrograms();
+
+    for (size_t i = 0; i < num_devices; i++) {
+      if (kernel_mult[i]) {
+        clReleaseKernel(kernel_mult[i]);
+        kernel_mult[i] = nullptr;
+      }
+
+      if (kernel_multTrans[i]) {
+        clReleaseKernel(kernel_multTrans[i]);
+        kernel_multTrans[i] = nullptr;
+      }
+    }
 
     // release command queue
     for (size_t i = 0; i < num_devices; i++) {
@@ -137,24 +118,15 @@ public:
 
     delete[] this->command_queue;
 
-    delete[] this->clData;
-    delete[] this->clLevel;
-    delete[] this->clIndex;
-
-    delete[] this->clDevGrid;
-    delete[] this->clDevTmp;
+    this->deviceData.freeBuffer();
+    this->deviceLevel.freeBuffer();
+    this->deviceIndex.freeBuffer();
 
     delete[] this->kernel_mult;
     delete[] this->kernel_multTrans;
 
     delete[] this->deviceTimingsMult;
     delete[] this->deviceTimingsMultTranspose;
-
-    delete[] this->deviceWeightsMult;
-    delete[] this->deviceWeightsMultTranspose;
-
-    delete[] this->devicePartitionMult;
-    delete[] this->devicePartitionMultTranspose;
 
     delete[] this->device_ids;
   }
@@ -187,9 +159,13 @@ public:
     size_t* gpu_start_index_data = new size_t[num_devices];
     size_t* gpu_end_index_data = new size_t[num_devices];
 
-    this->recalculateWeights(this->deviceTimingsMult, this->deviceWeightsMult, this->devicePartitionMult);
-    this->getPartitionSegments(start_index_data, end_index_data, this->devicePartitionMult, gpu_start_index_data,
-        gpu_end_index_data);
+//    this->recalculateWeights(this->deviceTimingsMult, this->deviceWeightsMult, this->devicePartitionMult);
+//    this->getPartitionSegments(start_index_data, end_index_data, this->devicePartitionMult, gpu_start_index_data,
+//        gpu_end_index_data);
+
+    multLoadBalancer.update(this->deviceTimingsMult);
+    multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters.getAsUnsigned("LOCAL_SIZE"),
+        gpu_start_index_data, gpu_end_index_data);
 
     // set kernel arguments
     cl_uint clResultSize = (cl_uint) datasetSize;
@@ -201,11 +177,11 @@ public:
       cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i];
 
       if (gpu_end_data > gpu_start_data) {
-        if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), &clLevel[i]) ||
-        clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), &clIndex[i]) ||
-        clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), &clData[i]) ||
-        clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), &clDevGrid[i]) ||
-        clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), &clDevTmp[i]) ||
+        if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
+        clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
+        clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
+        clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), this->deviceGrid.getBuffer(i)) ||
+        clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
         clSetKernelArg(kernel_mult[i], 5, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
             clSetKernelArg(kernel_mult[i], 6, sizeof(cl_uint), &gpu_start_grid) ||
             clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &gpu_end_grid) != CL_SUCCESS) {
@@ -216,7 +192,6 @@ public:
     }
 
     cl_event *clTimings = new cl_event[num_devices];
-    cl_event *GPUDone = new cl_event[num_devices];
 
     // enqueue kernel
     size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
@@ -243,28 +218,9 @@ public:
       }
     }
 
-    // read data back
-    for (size_t i = 0; i < num_devices; i++) {
-      size_t rangeSize = gpu_end_index_data[i] - gpu_start_index_data[i];
-
-      if (rangeSize > 0) {
-        size_t offset = gpu_start_index_data[i];
-        err = clEnqueueReadBuffer(command_queue[i], clDevTmp[i],
-        CL_FALSE, sizeof(real_type) * offset, sizeof(real_type) * rangeSize, &(pinnedTmp[offset]), 0, nullptr,
-            &(GPUDone[i]));
-
-        if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to enqueue read buffer command (mult)! Error Code: " << err << std::endl;
-          return 0.0;
-        }
-      }
-    }
-
-    // sync GPUs
-    clWaitForEvents((cl_uint) active_devices, GPUDone);
-
+    deviceTemp.readMappedBuffer(gpu_start_index_data, gpu_end_index_data);
     for (size_t i = start_index_data; i < end_index_data; i++) {
-      result[i] = pinnedTmp[i];
+      result[i] = hostTemp[i];
     }
 
     // determine kernel execution time
@@ -302,7 +258,6 @@ public:
     for (size_t i = 0; i < num_devices; i++) {
       if (gpu_end_index_data[i] > gpu_start_index_data[i]) {
         clReleaseEvent(clTimings[i]);
-        clReleaseEvent(GPUDone[i]);
       }
     }
 
@@ -310,10 +265,8 @@ public:
     delete[] gpu_end_index_data;
 
     delete[] clTimings;
-    delete[] GPUDone;
 
     return time;
-    //return 0.0;
   }
 
   double multTranspose(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
@@ -339,10 +292,9 @@ public:
     size_t* gpu_start_index_grid = new size_t[num_devices];
     size_t* gpu_end_index_grid = new size_t[num_devices];
 
-    this->recalculateWeights(this->deviceTimingsMultTranspose, this->deviceWeightsMultTranspose,
-        this->devicePartitionMultTranspose);
-    this->getPartitionSegments(start_index_grid, end_index_grid, this->devicePartitionMultTranspose,
-        gpu_start_index_grid, gpu_end_index_grid);
+    multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
+    multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
+        parameters.getAsUnsigned("LOCAL_SIZE"), gpu_start_index_grid, gpu_end_index_grid);
 
     // set kernel arguments
     cl_uint clSourceSize = (cl_uint) datasetSize;
@@ -354,11 +306,11 @@ public:
       cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
 
       if (gpu_end_grid > gpu_start_grid) {
-        if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), &clLevel[i]) ||
-        clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), &clIndex[i]) ||
-        clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), &clData[i]) ||
-        clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), &clDevTmp[i]) ||
-        clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), &clDevGrid[i]) ||
+        if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
+        clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
+        clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
+        clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
+        clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), this->deviceGrid.getBuffer(i)) ||
         clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
             clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_uint), &gpu_start_data) ||
             clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &gpu_end_data) != CL_SUCCESS) {
@@ -369,7 +321,6 @@ public:
     }
 
     cl_event* clTimings = new cl_event[num_devices];
-    cl_event* GPUDone = new cl_event[num_devices];
 
     // enqueue kernels
     size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
@@ -396,28 +347,10 @@ public:
       }
     }
 
-    // read data back
-    for (size_t i = 0; i < num_devices; i++) {
-      size_t rangeSize = gpu_end_index_grid[i] - gpu_start_index_grid[i];
-
-      if (rangeSize > 0) {
-        size_t offset = gpu_start_index_grid[i];
-        err = clEnqueueReadBuffer(command_queue[i], clDevGrid[i],
-        CL_FALSE, sizeof(real_type) * offset, sizeof(real_type) * rangeSize, &(pinnedGrid[offset]), 0, nullptr,
-            &(GPUDone[i]));
-
-        if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to enqueue read buffer command (multTrans)! Error Code: " << err << std::endl;
-          return 0.0;
-        }
-      }
-    }
-
-    // sync GPUs
-    clWaitForEvents((cl_uint) active_devices, GPUDone);
+    deviceGrid.readMappedBuffer(gpu_start_index_grid, gpu_end_index_grid);
 
     for (size_t i = start_index_grid; i < end_index_grid; i++) {
-      result[i] = pinnedGrid[i];
+      result[i] = hostGrid[i];
     }
 
     // determine kernel execution time
@@ -455,7 +388,6 @@ public:
     for (size_t i = 0; i < num_devices; i++) {
       if (gpu_end_index_grid[i] > gpu_start_index_grid[i]) {
         clReleaseEvent(clTimings[i]);
-        clReleaseEvent(GPUDone[i]);
       }
     }
 
@@ -463,7 +395,6 @@ public:
     delete[] gpu_end_index_grid;
 
     delete[] clTimings;
-    delete[] GPUDone;
 
     return time;
   }
@@ -482,205 +413,50 @@ private:
   }
 
   void releaseGridBuffers() {
-    for (size_t i = 0; i < num_devices; i++) {
-      if (clLevel[i] != nullptr) {
-        clReleaseMemObject(clLevel[i]);
-        clLevel[i] = nullptr;
-      }
-
-      if (clIndex[i] != nullptr) {
-        clReleaseMemObject(clIndex[i]);
-        clIndex[i] = nullptr;
-      }
-
-      if (clDevGrid[i] != nullptr) {
-        clReleaseMemObject(clDevGrid[i]);
-        clDevGrid[i] = nullptr;
-      }
-    }
-
-    if (clPinnedGrid) {
-      clReleaseMemObject(clPinnedGrid);
-      clPinnedGrid = nullptr;
-    }
+    this->deviceLevel.freeBuffer();
+    this->deviceIndex.freeBuffer();
+    this->deviceGrid.freeBuffer();
   }
 
   void releaseDataBuffers() {
-    for (size_t i = 0; i < num_devices; i++) {
-      if (clData[i]) {
-        clReleaseMemObject(clData[i]);
-        clData[i] = nullptr;
-      }
-
-      if (clDevTmp[i]) {
-        clReleaseMemObject(clDevTmp[i]);
-        clDevTmp[i] = nullptr;
-      }
-    }
-
-    if (clPinnedTmp) {
-      clReleaseMemObject(clPinnedTmp);
-      clPinnedTmp = nullptr;
-    }
-  }
-
-  void releaseKernelsAndPrograms() {
-    for (size_t i = 0; i < num_devices; i++) {
-      if (kernel_mult[i]) {
-        clReleaseKernel(kernel_mult[i]);
-        kernel_mult[i] = nullptr;
-      }
-
-      if (kernel_multTrans[i]) {
-        clReleaseKernel(kernel_multTrans[i]);
-        kernel_multTrans[i] = nullptr;
-      }
-    }
+    this->deviceData.freeBuffer();
+    this->deviceTemp.freeBuffer();
   }
 
   void initOCLBuffers(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize) {
-
-    if (level != nullptr && clLevel[0] == nullptr) {
-      for (size_t i = 0; i < num_devices; i++) {
-        clLevel[i] = clCreateBuffer(context,
-        CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(real_type) * gridSize * this->dims, level, nullptr);
-      }
+    if (level != nullptr && !this->deviceLevel.isInitialized()) {
+      this->deviceLevel.initializeBuffer(level, sizeof(real_type), gridSize * this->dims);
     }
 
-    if (index != nullptr && clIndex[0] == nullptr) {
-      for (size_t i = 0; i < num_devices; i++) {
-        clIndex[i] = clCreateBuffer(context,
-        CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(real_type) * gridSize * this->dims, index, nullptr);
-      }
+    if (level != nullptr && !this->deviceIndex.isInitialized()) {
+      this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * this->dims);
     }
 
-    if (clData[0] == nullptr) { // use first element as indicator if data has been already copied to device
-      for (size_t i = 0; i < num_devices; i++) {
-        clData[i] = clCreateBuffer(context,
-        CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(real_type) * datasetSize * this->dims, dataset, nullptr);
-      }
+    if (!this->deviceData.isInitialized()) {
+      this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims);
     }
   }
 
   void initParams(real_type *grid, size_t gridSize, real_type *tmp, size_t datasetSize) {
-    if (clPinnedGrid == nullptr) {
-      size_t mem_size = sizeof(real_type) * gridSize * this->dims; //has to be the padded grid size
-      clPinnedGrid = clCreateBuffer(context,
-      CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, nullptr, nullptr);
-
-      for (size_t i = 0; i < num_devices; i++) {
-        clDevGrid[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, mem_size, nullptr, nullptr);
-      }
-
-      pinnedGrid = (real_type*) clEnqueueMapBuffer(command_queue[0], clPinnedGrid, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE,
-          0, mem_size, 0, nullptr, nullptr, &err);
-      if (err != CL_SUCCESS) {
-        std::cout << "OCL Error: pinnedGrid: " << err << std::endl;
-      }
+    if (!this->deviceGrid.isInitialized()) {
+      this->deviceGrid.initializeMappedBuffer(sizeof(real_type), gridSize * this->dims);
+      this->hostGrid = (real_type *) this->deviceGrid.getMappedHostBuffer();
     }
 
     for (size_t i = 0; i < gridSize; i++) {
-      pinnedGrid[i] = grid[i];
+      this->hostGrid[i] = grid[i];
     }
+    deviceGrid.writeMappedBuffer();
 
-    for (size_t i = 0; i < num_devices; i++) {
-      err = clEnqueueWriteBuffer(command_queue[i], clDevGrid[i],
-      CL_TRUE, 0, sizeof(real_type) * gridSize, pinnedGrid, 0, nullptr, nullptr);
-
-      if (err != CL_SUCCESS) {
-        std::cout << "OCL Error: Failed to enqueue write buffer command! Error Code: " << err << std::endl;
-      }
-    }
-
-    if (clPinnedTmp == nullptr) {
-      size_t mem_size = sizeof(real_type) * datasetSize * this->dims;
-      clPinnedTmp = clCreateBuffer(context,
-      CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, mem_size, nullptr, nullptr);
-
-      for (size_t i = 0; i < num_devices; i++) {
-        clDevTmp[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, mem_size, nullptr, nullptr);
-      }
-
-      pinnedTmp = (real_type*) clEnqueueMapBuffer(command_queue[0], clPinnedTmp, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE, 0,
-          mem_size, 0, nullptr, nullptr, nullptr);
+    if (!this->deviceTemp.isInitialized()) {
+      this->deviceTemp.initializeMappedBuffer(sizeof(real_type), datasetSize * this->dims);
+      this->hostTemp = (real_type *) this->deviceTemp.getMappedHostBuffer();
     }
 
     for (size_t i = 0; i < datasetSize; i++) {
-      pinnedTmp[i] = tmp[i];
+      this->hostTemp[i] = tmp[i];
     }
-
-    for (size_t i = 0; i < num_devices; i++) {
-      clEnqueueWriteBuffer(command_queue[i], clDevTmp[i], CL_TRUE, 0, sizeof(real_type) * datasetSize, pinnedTmp, 0,
-          nullptr, nullptr);
-    }
-  }
-
-  void getPartitionSegments(size_t start, size_t end, double *partition, size_t* segmentStart, size_t* segmentEnd) {
-    bool setVerboseLoadBalancing = parameters.getAsBoolean("LINEAR_LOAD_BALANCING_VERBOSE");
-    size_t totalSize = end - start;
-    size_t blockSize = parameters.getAsUnsigned("LOCAL_SIZE");
-
-    // check for valid input
-    if (blockSize == 0) {
-      throw SGPP::base::operation_exception("blockSize must not be zero!");
-    }
-
-    if (totalSize % blockSize != 0) {
-      throw SGPP::base::operation_exception(
-          "totalSize must be divisible by blockSize without remainder, but it is not!");
-    }
-
-    size_t currentStartIndex = start;
-    for (size_t i = 0; i < this->num_devices; i++) {
-      size_t partitionElements = static_cast<size_t>(totalSize * partition[i]);
-      //last device has to ensure that all data is in one partition
-      if (currentStartIndex + partitionElements > end || i == this->num_devices - 1) {
-        partitionElements = end - currentStartIndex;
-      }
-
-      //employ padding
-      size_t remainder = partitionElements % blockSize;
-      size_t padding = 0;
-      if (remainder != 0) {
-        padding = blockSize - remainder;
-      }
-      partitionElements += padding;
-
-      segmentStart[i] = currentStartIndex;
-      segmentEnd[i] = currentStartIndex + partitionElements;
-
-      if (setVerboseLoadBalancing) {
-        std::cout << "device: " << i << " from: " << segmentStart[i] << " to: " << segmentEnd[i] << std::endl;
-      }
-      currentStartIndex += partitionElements;
-    }
-  }
-
-  void recalculateWeights(double* timings, double *weights, double *partitioning) {
-    bool setVerboseLoadBalancing = parameters.getAsBoolean("LINEAR_LOAD_BALANCING_VERBOSE");
-    //recalculate weights
-    for (size_t i = 0; i < this->num_devices; i++) {
-      weights[i] = timings[i] / partitioning[i];
-    }
-
-    //calculate the optimal duration
-    double t = 0.0;
-    for (size_t i = 0; i < this->num_devices; i++) {
-      t += 1.0 / weights[i];
-    }
-    t = 1.0 / t;
-    if (setVerboseLoadBalancing) {
-      std::cout << "t: " << t << std::endl;
-    }
-
-    //calculate optimal partition
-    for (size_t i = 0; i < this->num_devices; i++) {
-      partitioning[i] = t / weights[i];
-      if (setVerboseLoadBalancing) {
-        std::cout << "device: " << i << " partition size: " << partitioning[i] << std::endl;
-      }
-    }
-
+    deviceTemp.writeMappedBuffer();
   }
 
 };

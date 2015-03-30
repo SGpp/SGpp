@@ -13,7 +13,7 @@
 
 #include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
 
-#include "OCLMemory.hpp"
+//#include "OCLMemory.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -54,18 +54,6 @@ public:
    * - Read buffer from all devices
    * - Free buffer from all devices
    */
-
-  //TODO: read/write-flags
-
-  OCLMemory createBuffer(void *initialValues, size_t sizeofType, size_t elements);
-
-  OCLMemory createMappedBuffer(size_t sizeofType, size_t elements);
-
-  void writeToBuffer(OCLMemory buffers, void *hostData, size_t *offsets = nullptr);
-
-  void readFromBuffer(OCLMemory buffers, void *hostData, size_t *offsets = nullptr, size_t *ranges = nullptr);
-
-  void freeBuffer(OCLMemory buffers);
 
 };
 
