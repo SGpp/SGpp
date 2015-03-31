@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
@@ -6,7 +7,7 @@
 int main(int argc, char **argv) {
 
 //	int maxLevel = 9;
-	int maxLevel = 9;
+	int maxLevel = 2;
 
 //	std::string fileName = "debugging.arff";
 	std::string fileName = "friedman_4d_2000.arff";
@@ -33,7 +34,7 @@ int main(int argc, char **argv) {
 
 	// Set solver for final step
 	SLESolverConfigFinal.eps_ = 0;
-	SLESolverConfigFinal.maxIterations_ = 10;
+	SLESolverConfigFinal.maxIterations_ = 4;
 	SLESolverConfigFinal.threshold_ = -1.0;
 	SLESolverConfigFinal.type_ = sg::solver::CG;
 
