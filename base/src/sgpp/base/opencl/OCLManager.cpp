@@ -108,6 +108,13 @@ OCLManager::OCLManager(base::OpenCLConfigurationParameters parameters) :
   std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
 
   cl_uint maxDevices = (cl_uint) parameters.getAsUnsigned("MAX_DEVICES");
+  if (maxDevices > max_number_ocl_devices) {
+    std::stringstream errorString;
+    errorString << "OCL Error: More devices selected than support, currently can use at most " << max_number_ocl_devices
+        << " devices" << std::endl;
+    throw SGPP::base::operation_exception(errorString.str());
+  }
+
   if (parameters["SELECT_SPECIFIC_DEVICE"].compare("DISABLED") != 0) {
     if (maxDevices != 1) {
       std::stringstream errorString;
