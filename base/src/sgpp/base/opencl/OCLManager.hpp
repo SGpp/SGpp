@@ -13,10 +13,8 @@
 
 #include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
 
-//#include "OCLMemory.hpp"
-
 namespace SGPP {
-namespace datadriven {
+namespace base {
 
 class OCLManager {
 public:
@@ -46,14 +44,6 @@ public:
    */
   void buildKernel(const std::string& program_src, const char* kernel_name, cl_context context, size_t num_devices,
       cl_device_id* device_ids, cl_kernel* kernel);
-
-  /*
-   * - Create buffer on every device (on every platform?)
-   * - Created pinned memory and buffer for every device (/platform)
-   * - Write buffer to all devices
-   * - Read buffer from all devices
-   * - Free buffer from all devices
-   */
 
 };
 

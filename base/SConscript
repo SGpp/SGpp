@@ -18,6 +18,9 @@ Import('exampleTargetList')
 
 libs = []
 
+if env['USE_OCL']:
+    libs += ['OpenCL']
+
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith("./src"):

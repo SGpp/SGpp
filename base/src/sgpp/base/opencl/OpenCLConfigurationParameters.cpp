@@ -23,6 +23,7 @@ OpenCLConfigurationParameters::OpenCLConfigurationParameters(std::string fileNam
   this->parameters["PLATFORM"] = "first";
   this->parameters["DEVICE_TYPE"] = "CL_DEVICE_TYPE_ALL";
   this->parameters["MAX_DEVICES"] = "0";
+  this->parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
 
   this->readFromMap(defaultParameters);
   this->readFromFile(fileName);
