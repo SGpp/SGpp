@@ -12,7 +12,7 @@
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 namespace SGPP {
-namespace datadriven {
+namespace base {
 
 class LinearLoadBalancer {
 private:
@@ -31,8 +31,12 @@ public:
     }
   }
 
+  ~LinearLoadBalancer() {
+    delete[] this->weights;
+    delete[] this->partition;
+  }
+
   void getPartitionSegments(size_t start, size_t end, size_t blockSize, size_t* segmentStart, size_t* segmentEnd) {
-//    std::unique_ptr<double[]> partition(new double[this->deviceCount]);
     bool setVerboseLoadBalancing = parameters.getAsBoolean("LINEAR_LOAD_BALANCING_VERBOSE");
     size_t totalSize = end - start;
 

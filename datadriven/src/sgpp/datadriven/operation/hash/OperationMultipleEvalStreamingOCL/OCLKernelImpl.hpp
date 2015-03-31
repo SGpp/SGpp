@@ -12,10 +12,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "OCLManager.hpp"
-#include "OCLMemory.hpp"
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
+#include <sgpp/base/opencl/LinearLoadBalancer.hpp>
 #include "OCLKernelSourceBuilder.hpp"
-#include "LinearLoadBalancer.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -31,15 +32,14 @@ private:
   cl_context context;
   cl_command_queue* command_queue;
 
-//  cl_mem* clData;
-  OCLMemory deviceData;
-  OCLMemory deviceLevel;
-  OCLMemory deviceIndex;
+  base::OCLClonedBuffer deviceData;
+  base::OCLClonedBuffer deviceLevel;
+  base::OCLClonedBuffer deviceIndex;
 
   // use pinned memory (on host and device) to speed up data transfers from/to GPU
-  OCLMemory deviceGrid;
+  base::OCLStretchedBuffer deviceGrid;
   real_type *hostGrid;
-  OCLMemory deviceTemp;
+  base::OCLStretchedBuffer deviceTemp;
   real_type *hostTemp;
 
   cl_kernel* kernel_multTrans;
@@ -49,15 +49,15 @@ private:
   double *deviceTimingsMultTranspose;
 
   OCLKernelSourceBuilder<real_type> kernelSourceBuilder;
-  OCLManager &manager;
+  base::OCLManager &manager;
   base::ConfigurationParameters parameters;
 
-  LinearLoadBalancer multLoadBalancer;
-  LinearLoadBalancer multTransposeLoadBalancer;
+  base::LinearLoadBalancer multLoadBalancer;
+  base::LinearLoadBalancer multTransposeLoadBalancer;
 
 public:
 
-  OCLKernelImpl(size_t dims, OCLManager &manager, base::ConfigurationParameters parameters) :
+  OCLKernelImpl(size_t dims, base::OCLManager &manager, base::ConfigurationParameters parameters) :
       deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
           parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
           manager, this->parameters) {
@@ -159,10 +159,6 @@ public:
     size_t* gpu_start_index_data = new size_t[num_devices];
     size_t* gpu_end_index_data = new size_t[num_devices];
 
-//    this->recalculateWeights(this->deviceTimingsMult, this->deviceWeightsMult, this->devicePartitionMult);
-//    this->getPartitionSegments(start_index_data, end_index_data, this->devicePartitionMult, gpu_start_index_data,
-//        gpu_end_index_data);
-
     multLoadBalancer.update(this->deviceTimingsMult);
     multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters.getAsUnsigned("LOCAL_SIZE"),
         gpu_start_index_data, gpu_end_index_data);
@@ -218,7 +214,7 @@ public:
       }
     }
 
-    deviceTemp.readMappedBuffer(gpu_start_index_data, gpu_end_index_data);
+    deviceTemp.readFromBuffer(gpu_start_index_data, gpu_end_index_data);
     for (size_t i = start_index_data; i < end_index_data; i++) {
       result[i] = hostTemp[i];
     }
@@ -347,7 +343,7 @@ public:
       }
     }
 
-    deviceGrid.readMappedBuffer(gpu_start_index_grid, gpu_end_index_grid);
+    deviceGrid.readFromBuffer(gpu_start_index_grid, gpu_end_index_grid);
 
     for (size_t i = start_index_grid; i < end_index_grid; i++) {
       result[i] = hostGrid[i];
@@ -439,24 +435,24 @@ private:
 
   void initParams(real_type *grid, size_t gridSize, real_type *tmp, size_t datasetSize) {
     if (!this->deviceGrid.isInitialized()) {
-      this->deviceGrid.initializeMappedBuffer(sizeof(real_type), gridSize * this->dims);
+      this->deviceGrid.initializeBuffer(sizeof(real_type), gridSize * this->dims);
       this->hostGrid = (real_type *) this->deviceGrid.getMappedHostBuffer();
     }
 
     for (size_t i = 0; i < gridSize; i++) {
       this->hostGrid[i] = grid[i];
     }
-    deviceGrid.writeMappedBuffer();
+    deviceGrid.writeToBuffer();
 
     if (!this->deviceTemp.isInitialized()) {
-      this->deviceTemp.initializeMappedBuffer(sizeof(real_type), datasetSize * this->dims);
+      this->deviceTemp.initializeBuffer(sizeof(real_type), datasetSize * this->dims);
       this->hostTemp = (real_type *) this->deviceTemp.getMappedHostBuffer();
     }
 
     for (size_t i = 0; i < datasetSize; i++) {
       this->hostTemp[i] = tmp[i];
     }
-    deviceTemp.writeMappedBuffer();
+    deviceTemp.writeToBuffer();
   }
 
 };

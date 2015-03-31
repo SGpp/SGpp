@@ -13,7 +13,7 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 
 namespace SGPP {
-namespace datadriven {
+namespace base {
 
 OCLManager::OCLManager(base::OpenCLConfigurationParameters parameters) :
     parameters(parameters) {
@@ -108,6 +108,24 @@ OCLManager::OCLManager(base::OpenCLConfigurationParameters parameters) :
   std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
 
   cl_uint maxDevices = (cl_uint) parameters.getAsUnsigned("MAX_DEVICES");
+  if (parameters["SELECT_SPECIFIC_DEVICE"].compare("DISABLED") != 0) {
+    if (maxDevices != 1) {
+      std::stringstream errorString;
+      errorString
+          << "OCL Error: Cannot select a specific device if more than one device is used, MAX_DEVICES be set incorrectly"
+          << std::endl;
+      throw SGPP::base::operation_exception(errorString.str());
+    }
+    size_t selectedDevice = parameters.getAsUnsigned("SELECT_SPECIFIC_DEVICE");
+    if (selectedDevice > num_devices) {
+      std::stringstream errorString;
+      errorString << "OCL Error: Illegal value set for \"SELECT_SPECIFIC_DEVICE\"" << std::endl;
+      throw SGPP::base::operation_exception(errorString.str());
+    }
+    device_ids[0] = device_ids[selectedDevice];
+    std::cout << "OCL Info: select device number " << selectedDevice << std::endl;
+  }
+
   if (maxDevices != 0 && maxDevices < num_devices) {
     num_devices = maxDevices;
   }
@@ -220,7 +238,6 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
     clReleaseProgram(program);
   }
 }
-
 
 }
 }
