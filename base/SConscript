@@ -33,7 +33,6 @@ for sourceFile in srcs:
 
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        LIBPATH=BUILD_DIR,
                         LIBS=libs)
 libInstall = env.Install(BUILD_DIR, lib)
 
@@ -46,7 +45,6 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
         env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)

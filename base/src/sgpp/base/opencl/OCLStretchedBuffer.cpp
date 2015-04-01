@@ -129,7 +129,7 @@ void OCLStretchedBuffer::readFromBuffer(size_t *indexStart, size_t *indexEnd) {
   }
 
   if (devicesTransferring > 0) {
-    clWaitForEvents((cl_uint) this->manager.num_devices, actionDone);
+    clWaitForEvents((cl_uint) devicesTransferring, actionDone);
   }
 
   for (size_t i = 0; i < this->manager.num_devices; i++) {

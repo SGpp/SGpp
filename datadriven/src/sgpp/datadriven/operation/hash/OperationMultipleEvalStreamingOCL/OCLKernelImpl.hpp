@@ -167,10 +167,12 @@ public:
     cl_uint clResultSize = (cl_uint) datasetSize;
     cl_uint gpu_start_grid = (cl_uint) start_index_grid;
     cl_uint gpu_end_grid = (cl_uint) end_index_grid;
+    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
     for (size_t i = 0; i < num_devices; i++) {
       cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i];
       cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i];
+      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
       if (gpu_end_data > gpu_start_data) {
         if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
@@ -181,8 +183,9 @@ public:
         clSetKernelArg(kernel_mult[i], 5, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
             clSetKernelArg(kernel_mult[i], 6, sizeof(cl_uint), &gpu_start_grid) ||
             clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &gpu_end_grid) != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to create kernel Args for mult!" << std::endl;
-          return 0.0;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
       }
     }
@@ -201,15 +204,17 @@ public:
             0, nullptr, &(clTimings[i]));
 
         if (active_devices != i) {
-          std::cout
-              << "OCL Error: Splitting up calculations for multiple GPUs is erroneous, only the last chunks may handle 0 entries. syncing will be not correct.";
+          std::stringstream errorString;
+          errorString << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may handle 0 entries. Synchronization will be not correct." << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
 
         active_devices++;
 
         if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to enqueue kernel command! Error Code: " << err << std::endl;
-          return 0.0;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
       }
     }
@@ -230,14 +235,18 @@ public:
         CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, nullptr);
 
         if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to read start-time from command queue! Error Code: " << err << std::endl;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to read start-time from command queue (or crash in mult)! Error code: " << err << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTimings[i],
         CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
 
         if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to read end-time from command queue! Error Code: " << err << std::endl;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
       }
 
@@ -297,9 +306,12 @@ public:
     cl_uint gpu_start_data = (cl_uint) start_index_data;
     cl_uint gpu_end_data = (cl_uint) end_index_data;
 
+    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
+
     for (size_t i = 0; i < num_devices; i++) {
       cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i];
       cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
+      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
       if (gpu_end_grid > gpu_start_grid) {
         if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
@@ -310,8 +322,9 @@ public:
         clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
             clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_uint), &gpu_start_data) ||
             clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &gpu_end_data) != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to create kernel Args for kernel " << i << "!" << std::endl;
-          return 0.0;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
       }
     }
@@ -325,20 +338,24 @@ public:
     for (size_t i = 0; i < num_devices; i++) {
       size_t rangeSize = gpu_end_index_grid[i] - gpu_start_index_grid[i];
 
+
       if (rangeSize > 0) {
+    	std::cout << "enqueuing device: " << i << std::endl;
         err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_grid[i], &rangeSize,
             &local, 0, nullptr, &(clTimings[i]));
 
         if (active_devices != i) {
-          std::cout
-              << "OCL Error: Splitting up calculations for multiple GPUs is erroneous, only the last chunks may handle 0 entries. syncing will be not correct.";
+          std::stringstream errorString;
+          errorString << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may handle 0 entries. Synchronization will be not correct." << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
 
         active_devices++;
 
         if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to enqueue kernel command! Error Code: " << err << std::endl;
-          return 0.0;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
       }
     }
@@ -360,14 +377,18 @@ public:
         CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, nullptr);
 
         if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to read start-time from command queue! Error Code: " << err << std::endl;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to read start-time from command queue (or crash in multTranspose)! Error code: " << err << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTimings[i],
         CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
 
         if (err != CL_SUCCESS) {
-          std::cout << "OCL Error: Failed to read end-time from command queue! Error Code: " << err << std::endl;
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
         }
       }
 
