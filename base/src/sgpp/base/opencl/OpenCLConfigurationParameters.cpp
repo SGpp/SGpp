@@ -25,6 +25,7 @@ OpenCLConfigurationParameters::OpenCLConfigurationParameters(std::string fileNam
   this->parameters["MAX_DEVICES"] = "0";
   this->parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
   this->parameters["REUSE_SOURCE"] = "false";
+  this->parameters["OCL_MANAGER_VERBOSE"] = "false";
 
   this->readFromMap(defaultParameters);
   this->readFromFile(fileName);
