@@ -26,6 +26,7 @@ public:
   cl_uint num_devices;
   cl_command_queue* command_queue;
   cl_context context;
+  bool verbose;
 
 public:
   OCLManager(base::OpenCLConfigurationParameters parameters);
