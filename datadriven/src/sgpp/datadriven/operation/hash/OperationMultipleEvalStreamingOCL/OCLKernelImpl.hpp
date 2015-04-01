@@ -167,12 +167,12 @@ public:
     cl_uint clResultSize = (cl_uint) datasetSize;
     cl_uint gpu_start_grid = (cl_uint) start_index_grid;
     cl_uint gpu_end_grid = (cl_uint) end_index_grid;
-    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
+//    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
     for (size_t i = 0; i < num_devices; i++) {
       cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i];
       cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i];
-      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
+//      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
       if (gpu_end_data > gpu_start_data) {
         if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
@@ -306,12 +306,12 @@ public:
     cl_uint gpu_start_data = (cl_uint) start_index_data;
     cl_uint gpu_end_data = (cl_uint) end_index_data;
 
-    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
+//    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
     for (size_t i = 0; i < num_devices; i++) {
       cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i];
       cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
-      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
+//      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
       if (gpu_end_grid > gpu_start_grid) {
         if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
@@ -340,7 +340,7 @@ public:
 
 
       if (rangeSize > 0) {
-    	std::cout << "enqueuing device: " << i << std::endl;
+//    	std::cout << "enqueuing device: " << i << std::endl;
         err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_grid[i], &rangeSize,
             &local, 0, nullptr, &(clTimings[i]));
 
