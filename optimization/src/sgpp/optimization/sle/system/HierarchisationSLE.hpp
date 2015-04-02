@@ -39,7 +39,7 @@ namespace SGPP {
   namespace optimization {
 
     /**
-     * Linear system of the hierarchisation in a sparse grid.
+     * Linear system of the hierarchization in a sparse grid.
      */
     class HierarchisationSLE : public CloneableSLE {
       public:

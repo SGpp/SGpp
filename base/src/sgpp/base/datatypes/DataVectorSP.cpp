@@ -140,7 +140,8 @@ namespace SGPP {
       }
 
       append();
-      std::memmove(data + index + 1, data + index, size - index);
+      std::memmove(data + index + 1, data + index,
+                   (size - 1 - index) * sizeof(float));
       data[index] = value;
     }
 

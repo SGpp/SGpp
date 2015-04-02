@@ -26,13 +26,12 @@ namespace SGPP {
          * Constructor.
          * Do not destruct the grid before the InterpolantGradient object!
          *
-         * @param d     dimension of the domain
          * @param grid  sparse grid
          * @param alpha coefficient vector
          */
-        InterpolantGradient(size_t d, base::Grid& grid,
-                            const base::DataVector& alpha) :
-          ObjectiveGradient(d), grid(grid),
+        InterpolantGradient(base::Grid& grid, const base::DataVector& alpha) :
+          ObjectiveGradient(grid.getStorage()->dim()),
+          grid(grid),
           opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
           alpha(alpha) {
         }
@@ -58,7 +57,7 @@ namespace SGPP {
          */
         virtual void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
           clone = std::unique_ptr<ObjectiveGradient>(
-                    new InterpolantGradient(d, grid, alpha));
+                    new InterpolantGradient(grid, alpha));
         }
 
       protected:

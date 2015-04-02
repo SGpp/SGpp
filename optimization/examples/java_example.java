@@ -68,9 +68,6 @@ public class java_example {
       return;
     }
 
-    // convert std::vector to sgpp.DataVector
-    sgpp.DataVector coeffsDV = new sgpp.DataVector(coeffs);
-
     // ////////////////////////////////////////////////////////////////////////
     // OPTIMIZATION OF THE SMOOTH INTERPOLANT
     // ////////////////////////////////////////////////////////////////////////
@@ -78,9 +75,9 @@ public class java_example {
     printLine();
     System.out.println("Optimizing smooth interpolant...\n");
     sgpp.OptInterpolantFunction ft =
-        new sgpp.OptInterpolantFunction(d, grid, coeffsDV);
+        new sgpp.OptInterpolantFunction(d, grid, coeffs);
     sgpp.OptInterpolantGradient ftGradient =
-        new sgpp.OptInterpolantGradient(d, grid, coeffsDV);
+        new sgpp.OptInterpolantGradient(d, grid, coeffs);
     sgpp.OptGradientMethod gradientMethod =
         new sgpp.OptGradientMethod(ft, ftGradient);
     sgpp.DataVector x0 = new sgpp.DataVector(d);

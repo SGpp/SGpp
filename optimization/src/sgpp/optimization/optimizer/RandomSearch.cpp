@@ -130,7 +130,10 @@ namespace SGPP {
           // optimize with k-th starting point
           optimizer.setStartingPoint(x0[k]);
           optimizer.setN(roundN[k]);
+
+          printer.disableStatusPrinting();
           optimizer.optimize(curXOpt);
+          printer.enableStatusPrinting();
 
           curFOpt = f.eval(curXOpt);
 

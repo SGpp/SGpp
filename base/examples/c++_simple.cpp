@@ -25,13 +25,13 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
 
 int main() {
   // create a two-dimensional piecewise bilinear grid
-  int dim = 2;
+  size_t dim = 2;
   Grid* grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
   cout << "dimensionality:         " << gridStorage->dim() << endl;
 
   // create regular grid, level 3
-  int level = 3;
+  size_t level = 3;
   GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   cout << "number of grid points:  " << gridStorage->size() << endl;

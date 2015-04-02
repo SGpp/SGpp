@@ -72,7 +72,8 @@ namespace SGPP {
             const float_t x2 = 0.99 * x.get(1) + 0.01;
 
             return 1.0 + (x1 * x1 + x2 * x2) / 2.0 -
-                   cos(10.0 * log(2.0 * x1)) * cos(10.0 * log(3.0 * x2));
+                   std::cos(10.0 * std::log(2.0 * x1)) *
+                   std::cos(10.0 * std::log(3.0 * x2));
           }
 
           /**

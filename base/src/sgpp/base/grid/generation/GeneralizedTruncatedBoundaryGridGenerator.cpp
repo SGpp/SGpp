@@ -20,24 +20,16 @@ namespace SGPP {
     GeneralizedTruncatedBoundaryGridGenerator::~GeneralizedTruncatedBoundaryGridGenerator() {
     }
 
-    void GeneralizedTruncatedBoundaryGridGenerator::regular(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void GeneralizedTruncatedBoundaryGridGenerator::regular(size_t level) {
       this->truncated( static_cast<HashGenerator::level_t>(level), 1);
     }
 
-    void GeneralizedTruncatedBoundaryGridGenerator::cliques(int level, size_t clique_size) {
+    void GeneralizedTruncatedBoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
       throw generation_exception("Method is not implemented");
     }
 
 
-    void GeneralizedTruncatedBoundaryGridGenerator::truncated(int level, int l_user) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void GeneralizedTruncatedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
       HashGenerator gen;
       gen.truncated(this->storage, static_cast<HashGenerator::level_t>(level), static_cast<HashGenerator::level_t>(l_user));
     }

@@ -14,6 +14,13 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
 // #include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 
