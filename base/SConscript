@@ -18,19 +18,33 @@ Import('exampleTargetList')
 
 libs = []
 
-srcs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src"):
-        for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            srcs.append(os.path.join(currentFolder, fileName))
+if env['USE_OCL']:
+    libs += ['OpenCL']
 
+# srcs = []
+# for currentFolder, subdirNames, fileNames in os.walk("."):
+#     if currentFolder.startswith("./src"):
+#         for fileName in fnmatch.filter(fileNames, '*.cpp'):
+#             srcs.append(os.path.join(currentFolder, fileName))
+# 
+# objs = []
+# for sourceFile in srcs:
+#     objs.append(env.SharedObject(sourceFile))
+    
 objs = []
-for sourceFile in srcs:
-    objs.append(env.SharedObject(sourceFile))
+for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
+  if os.path.exists(os.path.join(currentFolder, "SConscript")):
+    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    objs += objsSubmodule
+    # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
+    subdirNames[:] = []
+  else:
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+      sourceFile = os.path.join(currentFolder, fileName)
+      objs.append(env.SharedObject(sourceFile))
 
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        LIBPATH=BUILD_DIR,
                         LIBS=libs)
 libInstall = env.Install(BUILD_DIR, lib)
 
@@ -43,7 +57,6 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
         env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)

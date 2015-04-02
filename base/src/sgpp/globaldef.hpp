@@ -34,11 +34,6 @@
 #define SGPP sgsp
 #endif
 
-
-
-
-
-
 namespace SGPP {
 
 #if USE_DOUBLE_PRECISION
