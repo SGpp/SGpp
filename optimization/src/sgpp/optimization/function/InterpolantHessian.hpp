@@ -28,13 +28,12 @@ namespace SGPP {
          * Constructor.
          * Do not destruct the grid before the InterpolantHessian object!
          *
-         * @param d     dimension of the domain
          * @param grid  sparse grid
          * @param alpha coefficient vector
          */
-        InterpolantHessian(size_t d, base::Grid& grid,
-                           const base::DataVector& alpha) :
-          ObjectiveHessian(d), grid(grid),
+        InterpolantHessian(base::Grid& grid, const base::DataVector& alpha) :
+          ObjectiveHessian(grid.getStorage()->dim()),
+          grid(grid),
           opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
           alpha(alpha) {
         }
@@ -63,7 +62,7 @@ namespace SGPP {
          */
         virtual void clone(std::unique_ptr<ObjectiveHessian>& clone) const {
           clone = std::unique_ptr<ObjectiveHessian>(
-                    new InterpolantHessian(d, grid, alpha));
+                    new InterpolantHessian(grid, alpha));
         }
 
       protected:

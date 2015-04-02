@@ -38,13 +38,11 @@ namespace SGPP {
          * Constructor.
          * Do not destruct the grid before the InterpolantFunction object!
          *
-         * @param d     dimension of the domain
          * @param grid  sparse grid
          * @param alpha coefficient vector
          */
-        InterpolantFunction(size_t d, base::Grid& grid,
-                            const base::DataVector& alpha) :
-          ObjectiveFunction(d),
+        InterpolantFunction(base::Grid& grid, const base::DataVector& alpha) :
+          ObjectiveFunction(grid.getStorage()->dim()),
           grid(grid),
           opEval(op_factory::createOperationNaiveEval(grid)),
           alpha(alpha) {
@@ -68,7 +66,7 @@ namespace SGPP {
          */
         virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
           clone = std::unique_ptr<ObjectiveFunction>(
-                    new InterpolantFunction(d, grid, alpha));
+                    new InterpolantFunction(grid, alpha));
         }
 
       protected:

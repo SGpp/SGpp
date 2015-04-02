@@ -50,7 +50,7 @@ namespace SGPP {
             for (size_t t = 0; t < d; t++) {
               const float_t xt = 1200.0 * x.get(t) - 600.0;
               result += xt * xt / 4000.0;
-              tmp *= cos(xt / sqrt(static_cast<float_t>(t + 1)));
+              tmp *= std::cos(xt / std::sqrt(static_cast<float_t>(t + 1)));
             }
 
             result -= tmp;
