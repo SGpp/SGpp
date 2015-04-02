@@ -66,9 +66,27 @@ vars.Add(BoolVariable('SSE3_FALLBACK', 'Tries to build as much as possible with 
 vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
+vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
+if 'CXX' in ARGUMENTS:
+  print "CXX: ", ARGUMENTS['CXX']
+  env['CXX'] = ARGUMENTS['CXX']
+if 'CC' in ARGUMENTS:
+  print "CC: ", ARGUMENTS['CC']
+  env['CC'] = ARGUMENTS['CC']
+if 'CPPFLAGS' in ARGUMENTS:
+  env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(" ")
+if 'CFLAGS' in ARGUMENTS:
+  env['CFLAGS'] = ARGUMENTS['CFLAGS']
+if 'CPPDEFINES' in ARGUMENTS:
+  defineDict = {}
+  for define in ARGUMENTS['CPPDEFINES'].split(" "):
+    key, value = define.split("=")
+    defineDict[key] = value
+  env.AppendUnique(CPPDEFINES = defineDict)
+  print env['CPPDEFINES']
 env.Export('moduleNames')
 env.Export('moduleFolders')
 
@@ -164,6 +182,7 @@ for moduleFolder in moduleFolders:
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
 
+#TODO: ask julian
 if env['SG_JAVA']:
   env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': "jsgpp"})
 

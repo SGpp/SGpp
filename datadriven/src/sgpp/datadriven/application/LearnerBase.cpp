@@ -194,7 +194,8 @@ namespace SGPP {
           grid_->createGridGenerator()->refine(myRefineFunc);
           delete myRefineFunc;
 
-          DMSystem->rebuildLevelAndIndex();
+          //tell the SLE manager that the grid changed (for interal data structures)
+          DMSystem->prepareGrid();
 
           alpha_->resizeZero(grid_->getSize());
           float_t refineTime = myStopwatch2->stop();

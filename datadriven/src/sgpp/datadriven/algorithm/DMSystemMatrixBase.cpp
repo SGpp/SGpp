@@ -21,7 +21,7 @@ namespace SGPP {
       delete myTimer_;
     }
 
-    void DMSystemMatrixBase::rebuildLevelAndIndex() {
+    void DMSystemMatrixBase::prepareGrid() {
     }
 
     void DMSystemMatrixBase::resetTimers() {

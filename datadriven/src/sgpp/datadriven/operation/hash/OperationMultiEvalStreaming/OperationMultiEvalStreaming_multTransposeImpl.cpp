@@ -8,6 +8,9 @@
 #include <sgpp/globaldef.hpp>
 
 
+//#undef __AVX__
+//#undef __SSE3__
+
 namespace SGPP {
   namespace datadriven {
 

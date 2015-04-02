@@ -231,7 +231,7 @@ namespace SGPP {
       }
 
       DataVector computedClasses(testTrainingData.getNrows());
-      this->referenceLearner->predict(testTrainingData, computedClasses);
+      this->myLearner->predict(testTrainingData, computedClasses);
 
       if (verbose) {
         std::cout << "predicting... (reference)" << std::endl;
@@ -242,11 +242,20 @@ namespace SGPP {
 
       float_t squareSum = 0.0;
 
+      // SGPP::base::DataVector *myAlpha = this->myLearner->alpha_;
+      // for (size_t i = 0; i < myAlpha->getSize();i++) {
+      // 	  std::cout << "alpha[ " << i << "]=" << (*myAlpha)[i] << ", ";
+      // }
+      // std::cout << std::endl;
+
       for (size_t i = 0; i < computedClasses.getSize(); i++) {
         float_t temp = fabs(computedClasses.get(i) - referenceClasses.get(i));
         temp *= temp;
         squareSum += temp;
 
+//        std::cout << "value: " << computedClasses.get(i) << std::endl;
+//        std::cout << "reference: " << referenceClasses.get(i) << std::endl;
+//        std::cout << "diff: " << fabs(computedClasses.get(i) - referenceClasses.get(i)) << std::endl;
         if (verbose && fabs(computedClasses.get(i) - referenceClasses.get(i)) > tolerance) {
           std::cout << "computed: " << computedClasses.get(i) << " but reference is: " << referenceClasses.get(i)
                     << std::endl;

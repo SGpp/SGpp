@@ -30,6 +30,8 @@ def isAVXFolder(folder):
     return False
 
 libs = ['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde']
+if env['USE_OCL']:
+    libs += ['OpenCL']
 
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
@@ -42,10 +44,11 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
-                                
+                 
+env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])               
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        LIBPATH = [BUILD_DIR, '#/lib/alglib'],
+                        #LIBPATH = [BUILD_DIR, '#/lib/alglib'],
                         LIBS=libs)
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
@@ -58,13 +61,17 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   env.Requires(moduleTest, libInstall)
   testTargetList.append(moduleTest)
 
+example_env = env.Clone()
+example_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=[BUILD_DIR, "#/lib/alglib"],
-                              LIBS=libs + ["sgpp%s" % moduleName])
-        env.Requires(example, libInstall)
-        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
+        example = example_env.Program(source=os.path.join("examples", fileName),
+                              #LIBPATH=[BUILD_DIR, "#/lib/alglib"],
+                              #LIBS=libs + ["sgpp%s" % moduleName]
+                              )
+        example_env.Requires(example, libInstall)
+        example_env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
 
 Import('libraryTargetList')

@@ -7,7 +7,7 @@
 #define OPERATIONMULTIPLEEVALITERATIVE_H
 
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
-#include <sgpp/base/tools/AlignedMemory.hpp>
+//#include <sgpp/base/tools/AlignedMemory.hpp>
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 #include <sgpp/globaldef.hpp>
