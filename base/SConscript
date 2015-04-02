@@ -21,15 +21,27 @@ libs = []
 if env['USE_OCL']:
     libs += ['OpenCL']
 
-srcs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src"):
-        for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            srcs.append(os.path.join(currentFolder, fileName))
-
+# srcs = []
+# for currentFolder, subdirNames, fileNames in os.walk("."):
+#     if currentFolder.startswith("./src"):
+#         for fileName in fnmatch.filter(fileNames, '*.cpp'):
+#             srcs.append(os.path.join(currentFolder, fileName))
+# 
+# objs = []
+# for sourceFile in srcs:
+#     objs.append(env.SharedObject(sourceFile))
+    
 objs = []
-for sourceFile in srcs:
-    objs.append(env.SharedObject(sourceFile))
+for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
+  if os.path.exists(os.path.join(currentFolder, "SConscript")):
+    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    objs += objsSubmodule
+    # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
+    subdirNames[:] = []
+  else:
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+      sourceFile = os.path.join(currentFolder, fileName)
+      objs.append(env.SharedObject(sourceFile))
 
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
