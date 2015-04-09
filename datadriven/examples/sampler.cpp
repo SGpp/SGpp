@@ -7,17 +7,22 @@
 int main(int argc, char **argv) {
 
 //	int maxLevel = 9;
-	int maxLevel = 9;
+	int maxLevel = 3;
 
 //	std::string fileName = "debugging.arff";
-//	std::string fileName = "friedman_4d_2000.arff";
-	std::string fileName = "friedman2_90000.arff";
+	std::string fileName = "friedman_4d.arff";
+//	std::string fileName = "friedman2_90000.arff";
 //	std::string fileName = "bigger.arff";
 
-	//sg::base::RegularGridConfiguration gridConfig;
+	sg::base::RegularGridConfiguration gridConfig;
 	sg::solver::SLESolverConfiguration SLESolverConfigRefine;
 	sg::solver::SLESolverConfiguration SLESolverConfigFinal;
 	sg::base::AdpativityConfiguration adaptConfig;
+
+    // setup grid
+    gridConfig.dim_ = 0; //dim is inferred from the data
+    gridConfig.level_ = maxLevel;
+    gridConfig.type_ = sg::base::Linear;
 
 	// Set Adaptivity
 	adaptConfig.maxLevelType_ = false;
@@ -49,8 +54,8 @@ int main(int argc, char **argv) {
 	double lambda = 0.000001;
 
 	bool verbose = true;
-	SGPP::datadriven::MetaLearner learner(SLESolverConfigRefine,
-			SLESolverConfigFinal, adaptConfig, maxLevel, lambda, verbose);
+	SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine,
+			SLESolverConfigFinal, adaptConfig, lambda, verbose);
 
 	//learner.learn(kernelType, fileName);
 	//learner.learnReference(fileName);

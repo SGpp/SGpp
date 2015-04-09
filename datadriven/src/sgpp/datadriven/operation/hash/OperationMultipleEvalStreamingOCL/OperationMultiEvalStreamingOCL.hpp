@@ -12,9 +12,8 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include "OCLKernelImpl.hpp"
-
 #include <sgpp/globaldef.hpp>
+#include "StreamingOCLKernelImpl.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -39,7 +38,7 @@ protected:
   float_t duration;
 
   base::OCLManager *manager;
-  OCLKernelImpl<T> *kernel;
+  StreamingOCLKernelImpl<T> *kernel;
 public:
 
   OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::OpenCLConfigurationParameters parameters) :
@@ -48,7 +47,7 @@ public:
     this->manager = new base::OCLManager(parameters);
 
     this->dims = dataset.getNcols(); //be aware of transpose!
-    this->kernel = new OCLKernelImpl<T>(dims, *(this->manager), parameters);
+    this->kernel = new StreamingOCLKernelImpl<T>(dims, *(this->manager), parameters);
 
     this->storage = grid.getStorage();
     this->padDataset(this->preparedDataset);

@@ -39,8 +39,8 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration &adaptConfig,
 
 int main(int argc, char **argv) {
 
-	std::string fileName = "friedman2_90000.arff";
-	//std::string fileName = "debugging.arff";
+//	std::string fileName = "friedman2_90000.arff";
+	std::string fileName = "debugging.arff";
 
 	uint32_t level = 3;
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	SGPP::base::DataMatrix *trainingData = dataset.getTrainingData();
 
 	size_t dim = dataset.getDimension();
-	SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+	SGPP::base::Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
 	SGPP::base::GridStorage* gridStorage = grid->getStorage();
 	std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 
@@ -112,8 +112,6 @@ int main(int argc, char **argv) {
 
 	double mse = 0.0;
 	for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
-//		std::cout << "comp: " << (alphaResult[i] - alphaResultCompare[i])
-//				<< std::endl;
 		mse += (alphaResult[i] - alphaResultCompare[i])
 				* (alphaResult[i] - alphaResultCompare[i]);
 	}

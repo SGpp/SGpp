@@ -5,6 +5,8 @@
  *      Author: pfandedd
  */
 
+#pragma once
+
 #include <CL/cl.h>
 
 #include <sgpp/globaldef.hpp>
