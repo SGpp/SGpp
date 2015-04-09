@@ -75,6 +75,7 @@ void OCLStretchedBuffer::initializeBuffer(size_t sizeofType, size_t elements) {
   this->isMappedMemory = true;
   this->hostBuffer = hostBuffer;
   this->mappedHostBuffer = hostPinnedMemory;
+  this->initialized = true;
 }
 
 void OCLStretchedBuffer::freeBuffer() {

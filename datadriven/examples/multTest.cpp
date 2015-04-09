@@ -34,8 +34,8 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration &adaptConfig,
 
 int main(int argc, char **argv) {
 
-	std::string fileName = "friedman2_90000.arff";
-//	std::string fileName = "debugging.arff";
+//	std::string fileName = "friedman2_90000.arff";
+	std::string fileName = "debugging.arff";
 
 	uint32_t level = 3;
 
@@ -111,7 +111,6 @@ int main(int argc, char **argv) {
 
 	double mse = 0.0;
 	for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-		//std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
 		mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
 				* (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
 	}

@@ -109,6 +109,7 @@ void OCLClonedBuffer::initializeBuffer(void *initialValues, size_t sizeofType, s
   this->bufferList = bufferList;
   this->sizeofType = sizeofType;
   this->elements = elements;
+  this->initialized = true;
 }
 
 void OCLClonedBuffer::freeBuffer() {
