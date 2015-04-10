@@ -89,11 +89,13 @@ public:
 
 	void mult(T *alphaArray, T *result) {
 //			size_t blockSize = 1;
-//		size_t gridBlockSize = 1;
+		size_t gridBlockSize = 64;
+
 
 		//TODO add OMP here
 #pragma omp parallel for
-		for (size_t dataIndex = 0; dataIndex < this->datasetSize; dataIndex += 1) {
+		for (size_t dataIndex = 0; dataIndex < this->datasetSize; dataIndex +=
+				1) {
 			//T *dataTuple = this->kernelDataset + (dataIndex * this->dim);
 
 			std::vector<T> dataTuple(dim); //necessary due to transposed dataset
@@ -103,56 +105,84 @@ public:
 //				std::cout << "data d: " << d << " -> " << dataTuple[d] << std::endl;
 			}
 
-			std::vector<T> eval1DArray(this->gridSize); //one temporary for each grid point
+			std::vector<T> eval1DArray(gridBlockSize); //one temporary for each grid point
 
-			//initiliaze with alpha
-			for (size_t i = 0; i < this->gridSize; i++) {
-				eval1DArray[i] = alphaArray[i];
-			}
-
-			//do case l==1&i==1 ... AAAAAAAND done (nothing to do)
-
-			//do case left border
-			for (size_t cur = 0; cur < this->gridIndexLeftBorder.size();
-					cur++) {
-				size_t gridPointIndex = this->gridIndexLeftBorder[cur];
-				T l = this->levelLeftBorder[cur];
-				size_t curDim = this->dim1DLeftBorder[cur];
-				T eval1D = std::max(2.0 - (l * dataTuple[curDim]), 0.0);
-				eval1DArray[gridPointIndex] *= eval1D;
-			}
-
-			//do case right border
-			for (size_t cur = 0; cur < this->gridIndexRightBorder.size();
-					cur++) {
-				size_t gridPointIndex = this->gridIndexRightBorder[cur];
-				T l = this->levelRightBorder[cur];
-				T i = this->indexRightBorder[cur];
-				size_t curDim = this->dim1DRightBorder[cur];
-				T eval1D = std::max(l * dataTuple[curDim] - i + 1.0, 0.0);
-				eval1DArray[gridPointIndex] *= eval1D;
-			}
-
-			//do case base
-			for (size_t cur = 0; cur < this->gridIndexBase.size(); cur++) {
-				size_t gridPointIndex = this->gridIndexBase[cur];
-				T l = this->levelBase[cur];
-				T i = this->indexBase[cur];
-				size_t curDim = this->dim1DBase[cur];
-				T eval1D = std::max(1.0 - fabs(l * dataTuple[curDim] - i), 0.0);
-				eval1DArray[gridPointIndex] *= eval1D;
-			}
-
-			//do reduce and store final result
 			T resultComponent = 0.0;
-			for (size_t i = 0; i < this->gridSize; i++) {
-				resultComponent += eval1DArray[i];
+
+			size_t baseIndex = 0;
+			size_t leftIndex = 0;
+			size_t rightIndex = 0;
+
+			size_t endBase = this->gridIndexBase.size();
+			size_t endLeft = this->gridIndexLeftBorder.size();
+			size_t endRight = this->gridIndexRightBorder.size();
+
+			for (size_t gridBlockIndex = 0; gridBlockIndex < this->gridSize;
+					gridBlockIndex += gridBlockSize) {
+
+				//initiliaze with alpha
+				for (size_t i = 0; i < gridBlockSize; i++) {
+					eval1DArray[i] = alphaArray[gridBlockIndex + i];
+				}
+
+				while (baseIndex < this->gridIndexBase.size()) {
+					size_t gridPointIndex = this->gridIndexBase[baseIndex];
+					if (gridPointIndex >= gridBlockIndex + gridBlockSize) {
+						break;
+					}
+					T l = this->levelBase[baseIndex];
+					T i = this->indexBase[baseIndex];
+					size_t curDim = this->dim1DBase[baseIndex];
+					T eval1D = std::max(1.0 - fabs(l * dataTuple[curDim] - i),
+							0.0);
+					eval1DArray[gridPointIndex % gridBlockSize] *= eval1D;
+					baseIndex += 1;
+				}
+
+				//do case left border
+//				for (size_t cur = 0; cur < this->gridIndexLeftBorder.size();
+//						cur++) {
+				while (leftIndex < this->gridIndexLeftBorder.size()) {
+					size_t gridPointIndex = this->gridIndexLeftBorder[leftIndex];
+					if (gridPointIndex >= gridBlockIndex + gridBlockSize) {
+						break;
+					}
+					T l = this->levelLeftBorder[leftIndex];
+					size_t curDim = this->dim1DLeftBorder[leftIndex];
+					T eval1D = std::max(2.0 - (l * dataTuple[curDim]), 0.0);
+					eval1DArray[gridPointIndex % gridBlockSize] *= eval1D;
+					leftIndex += 1;
+				}
+
+				//do case right border
+//				for (size_t cur = 0; cur < this->gridIndexRightBorder.size();
+//						cur++) {
+				while (rightIndex < this->gridIndexRightBorder.size()) {
+					size_t gridPointIndex =
+							this->gridIndexRightBorder[rightIndex];
+					if (gridPointIndex >= gridBlockIndex + gridBlockSize) {
+						break;
+					}
+					T l = this->levelRightBorder[rightIndex];
+					T i = this->indexRightBorder[rightIndex];
+					size_t curDim = this->dim1DRightBorder[rightIndex];
+					T eval1D = std::max(l * dataTuple[curDim] - i + 1.0, 0.0);
+					eval1DArray[gridPointIndex % gridBlockSize] *= eval1D;
+					rightIndex += 1;
+				}
+
+				//do reduce and store intermediate result
+
+				for (size_t i = 0; i < gridBlockSize; i++) {
+					resultComponent += eval1DArray[i];
+				}
 			}
-			result[dataIndex] = resultComponent;
+			result[dataIndex] += resultComponent;
 		}
 	}
 
-};
+}
+;
 
 }
 }

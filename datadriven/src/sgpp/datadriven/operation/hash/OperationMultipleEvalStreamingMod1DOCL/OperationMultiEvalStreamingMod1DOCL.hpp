@@ -112,7 +112,10 @@ public:
 		StreamingMod1DPseudoKernel<T> pseudoKernel(this->dims, this->level,
 				this->index, this->gridSize, this->kernelDataset,
 				this->datasetSize);
-		T *resultArrayCompare = new T[this->datasetSize]; //can be uninitialized
+		T *resultArrayCompare = new T[this->datasetSize];
+		for (size_t i = 0; i < this->datasetSize; i++) {
+			resultArrayCompare[i] = 0.0;
+		}
 
 	    std::chrono::time_point<std::chrono::system_clock> start, end;
 	    start = std::chrono::system_clock::now();
