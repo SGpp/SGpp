@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
 	std::string fileName = "friedman_4d.arff";
 
 	uint32_t level = 6;
+//	uint32_t level = 3;
 
 	SGPP::base::AdpativityConfiguration adaptConfig;
 	adaptConfig.maxLevelType_ = false;
