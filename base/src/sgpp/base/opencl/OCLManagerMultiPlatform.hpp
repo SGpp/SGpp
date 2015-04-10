@@ -19,11 +19,12 @@ namespace base {
 class OCLManagerMultiPlatform {
 public:
   base::OpenCLConfigurationParameters parameters;
+  size_t deviceType;
   cl_uint num_platforms;
-  cl_platform_id platform_id;
+  size_t *platformDeviceCount; //devices on the individual platforms
   cl_platform_id* platform_ids;
-  cl_device_id* device_ids;
-  cl_uint num_devices;
+  cl_device_id* device_ids; // device ids over all platforms
+  cl_uint num_devices; //devices over all platforms
   cl_command_queue* command_queue;
   cl_context context;
   bool verbose;
@@ -45,6 +46,20 @@ public:
    */
   void buildKernel(const std::string& program_src, const char* kernel_name, cl_context context, size_t num_devices,
       cl_device_id* device_ids, cl_kernel* kernel);
+
+  void setPlatformCount();
+
+  void setPlatformIDs();
+
+  void printPlatformsInfo();
+
+  void selectPlatform();
+
+  void setTotalDeviceCount();
+
+  void setDeviceType();
+
+  void setupDeviceIDs();
 
 };
 

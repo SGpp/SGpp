@@ -35,9 +35,10 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration &adaptConfig,
 int main(int argc, char **argv) {
 
 //	std::string fileName = "friedman2_90000.arff";
-	std::string fileName = "debugging.arff";
+//	std::string fileName = "debugging.arff";
+	std::string fileName = "friedman_4d.arff";
 
-	uint32_t level = 3;
+	uint32_t level = 6;
 
 	SGPP::base::AdpativityConfiguration adaptConfig;
 	adaptConfig.maxLevelType_ = false;
@@ -50,7 +51,7 @@ int main(int argc, char **argv) {
 	configuration.type =
 	SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType =
-	SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+	SGPP::datadriven::OperationMultipleEvalSubType::OCL1D;
 
 	SGPP::datadriven::ARFFTools arffTools;
 	SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

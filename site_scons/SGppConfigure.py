@@ -143,7 +143,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     if env['OPT'] == True:
        env.Append(CPPFLAGS=['-O3'])
     else:
-       env.Append(CPPFLAGS=['-g', '-O0'])
+       env.Append(CPPFLAGS=['-g']) #, '-O0'
 
     if env['TARGETCPU'] == 'default':
         print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
