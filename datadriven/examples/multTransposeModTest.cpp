@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
 	configuration.type =
 	SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType =
-	SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+	SGPP::datadriven::OperationMultipleEvalSubType::OCL1D;
 
 	SGPP::datadriven::ARFFTools arffTools;
 	SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	SGPP::base::DataMatrix *trainingData = dataset.getTrainingData();
 
 	size_t dim = dataset.getDimension();
-	SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+	SGPP::base::Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
 	SGPP::base::GridStorage* gridStorage = grid->getStorage();
 	std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 

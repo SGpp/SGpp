@@ -44,6 +44,7 @@
 #ifdef USE_OCL
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
 #include "operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp"
+#include "operation/hash/OperationMultipleEvalStreamingMod1DOCL/StreamingMod1DOCLOperatorFactory.hpp"
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -205,20 +206,20 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
       break;
     }
   } else if (strcmp(grid.getType(), "modlinear") == 0) {
-    switch (configuration.type) {
-    case datadriven::OperationMultipleEvalType::DEFAULT:
-    case datadriven::OperationMultipleEvalType::STREAMING:
+    if (configuration.type == datadriven::OperationMultipleEvalType::STREAMING) {
       if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
         return datadriven::createStreamingModOCLConfigured(grid, dataset);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
+      } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL1D) {
+#ifdef USE_OCL
+        return datadriven::createStreamingMod1DOCLConfigured(grid, dataset);
+#else
+        throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
+#endif
       }
-      break;
-    case datadriven::OperationMultipleEvalType::SUBSPACELINEAR:
-    default:
-      break;
     }
   }
   throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
