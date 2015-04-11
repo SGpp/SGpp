@@ -18,6 +18,7 @@ base::OperationMultipleEval *createStreamingModOCLConfigured(base::Grid& grid, b
 
   std::map<std::string, std::string> defaultParameter;
   defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
+  defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
   defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
   base::OpenCLConfigurationParameters parameters("StreamingModOCL.cfg", defaultParameter);

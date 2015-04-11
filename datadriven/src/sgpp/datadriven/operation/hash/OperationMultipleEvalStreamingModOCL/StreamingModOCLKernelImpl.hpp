@@ -161,7 +161,11 @@ public:
     size_t* gpu_start_index_data = new size_t[num_devices];
     size_t* gpu_end_index_data = new size_t[num_devices];
 
+    //TODO: don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
+
     multLoadBalancer.update(this->deviceTimingsMult);
+
+    size_t dataBlockingSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
     multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters.getAsUnsigned("LOCAL_SIZE"),
         gpu_start_index_data, gpu_end_index_data);
 
@@ -172,8 +176,8 @@ public:
 //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
     for (size_t i = 0; i < num_devices; i++) {
-      cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i];
-      cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i];
+      cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i] / dataBlockingSize;
+      cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i] / dataBlockingSize;
 //      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
       if (gpu_end_data > gpu_start_data) {
@@ -199,7 +203,7 @@ public:
     size_t active_devices = 0;
 
     for (size_t i = 0; i < num_devices; i++) {
-      size_t rangeSize = gpu_end_index_data[i] - gpu_start_index_data[i];
+      size_t rangeSize = (gpu_end_index_data[i] / dataBlockingSize) - (gpu_start_index_data[i] / dataBlockingSize);
 
       if (rangeSize > 0) {
         err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i], &rangeSize, &local,

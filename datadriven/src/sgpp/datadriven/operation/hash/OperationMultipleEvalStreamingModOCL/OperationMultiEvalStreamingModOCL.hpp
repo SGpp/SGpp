@@ -166,7 +166,7 @@ private:
   size_t padDataset(
   SGPP::base::DataMatrix& dataset) {
 
-    size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE");
+    size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE") * parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
