@@ -253,8 +253,10 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
   // compiling the program
   err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 
-  if (err != CL_SUCCESS) {
+  //if (err != CL_SUCCESS) {
 
+
+  if (parameters.getAsBoolean("SHOW_BUILD_LOG")) {
     size_t len;
     char buffer[4096];
 
@@ -263,12 +265,15 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
     if (verbose) {
       std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
     }
+  }
 
+    if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
+    }
 
-  }
+
 
   // creating the kernel
   for (size_t i = 0; i < num_devices; i++) {

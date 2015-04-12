@@ -26,6 +26,7 @@ OpenCLConfigurationParameters::OpenCLConfigurationParameters(std::string fileNam
   this->parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
   this->parameters["REUSE_SOURCE"] = "false";
   this->parameters["OCL_MANAGER_VERBOSE"] = "false";
+  this->parameters["SHOW_BUILD_LOG"] = "false";
 
   this->readFromMap(defaultParameters);
   this->readFromFile(fileName);
