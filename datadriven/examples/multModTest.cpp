@@ -6,6 +6,7 @@
  */
 
 #include <random>
+#include <chrono>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
@@ -38,13 +39,13 @@ int main(int argc, char **argv) {
 //	std::string fileName = "debugging.arff";
 	std::string fileName = "friedman_4d.arff";
 
-//	uint32_t level = 6;
-	uint32_t level = 3;
+	uint32_t level = 12;
+//	uint32_t level = 3;
 
 	SGPP::base::AdpativityConfiguration adaptConfig;
 	adaptConfig.maxLevelType_ = false;
 	adaptConfig.noPoints_ = 80;
-	adaptConfig.numRefinements_ = 10;
+	adaptConfig.numRefinements_ = 0;
 	adaptConfig.percent_ = 200.0;
 	adaptConfig.threshold_ = 0.0;
 
@@ -99,7 +100,12 @@ int main(int argc, char **argv) {
 	std::cout << "calculating result" << std::endl;
 
 
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();	
 	eval->mult(alpha, dataSizeVectorResult);
+	end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elapsed_seconds = end - start;
+	std::cout << "duration 1d: " << elapsed_seconds.count() << std::endl;
 
 	std::cout << "calculating comparison values..." << std::endl;
 

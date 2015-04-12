@@ -6,12 +6,12 @@
 
 int main(int argc, char **argv) {
 
-//	int maxLevel = 9;
-	int maxLevel = 2;
+	int maxLevel = 9;
+//	int maxLevel = 2;
 
 //	std::string fileName = "debugging.arff";
-//	std::string fileName = "friedman_4d_2000.arff";
-	std::string fileName = "friedman_4d.arff";
+	// std::string fileName = "friedman_4d.arff";
+	std::string fileName = "chess_train.arff"; 
 //	std::string fileName = "bigger.arff";
 
 	//sg::base::RegularGridConfiguration gridConfig;
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
 	// Set solver for final step
 	SLESolverConfigFinal.eps_ = 0;
-	SLESolverConfigFinal.maxIterations_ = 20;
+	SLESolverConfigFinal.maxIterations_ = 40;
 	SLESolverConfigFinal.threshold_ = -1.0;
 	SLESolverConfigFinal.type_ = sg::solver::CG;
 
@@ -70,11 +70,11 @@ int main(int argc, char **argv) {
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
 	configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST;
-//	learner.learn(configuration, fileName);
+	learner.learn(configuration, fileName);
 	//learner.learnReference(fileName);
 
 	//learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-	learner.learnAndCompare(configuration, fileName, 8, 1.0);
+	//learner.learnAndCompare(configuration, fileName, 8, 1.0);
 	//learner.writeStatisticsFile("statistics.csv", "test");
 
 	return EXIT_SUCCESS;
