@@ -44,6 +44,7 @@
 #ifdef USE_OCL
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
 #include "operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp"
+#include "operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingMod1DOCL/StreamingMod1DOCLOperatorFactory.hpp"
 #endif
 
@@ -216,6 +217,12 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
       } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL1D) {
 #ifdef USE_OCL
         return datadriven::createStreamingMod1DOCLConfigured(grid, dataset);
+#else
+        throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
+#endif
+      } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST) {
+#ifdef USE_OCL
+        return datadriven::createStreamingModOCLFastConfigured(grid, dataset);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif

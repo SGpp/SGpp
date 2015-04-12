@@ -475,11 +475,6 @@ void MetaLearner::testRegular(SGPP::datadriven::OperationMultipleEvalConfigurati
   srand(static_cast<unsigned int>(time(NULL)));
   this->gridConfig.dim_ = dim;
 
-  // Set grid config
-  this->gridConfig.dim_ = dim;
-  this->gridConfig.type_ = SGPP::base::Linear;
-  this->gridConfig.level_ = static_cast<int>(level);
-
   DataMatrix testTrainingData(instances, dim);
 
   for (size_t i = 0; i < instances; i++) {

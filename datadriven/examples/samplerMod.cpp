@@ -7,7 +7,7 @@
 int main(int argc, char **argv) {
 
 //	int maxLevel = 9;
-	int maxLevel = 9;
+	int maxLevel = 2;
 
 //	std::string fileName = "debugging.arff";
 //	std::string fileName = "friedman_4d_2000.arff";
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 
 	SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
 	configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+	configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST;
 //	learner.learn(configuration, fileName);
 	//learner.learnReference(fileName);
 

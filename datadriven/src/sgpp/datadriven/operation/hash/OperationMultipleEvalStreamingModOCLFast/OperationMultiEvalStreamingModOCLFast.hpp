@@ -13,13 +13,13 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/globaldef.hpp>
-#include "StreamingModOCLKernelImpl.hpp"
+#include "StreamingModOCLFastKernelImpl.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
 template<typename T>
-class OperationMultiEvalStreamingModOCL: public base::OperationMultipleEval {
+class OperationMultiEvalStreamingModOCLFast: public base::OperationMultipleEval {
 protected:
   size_t dims;SGPP::base::DataMatrix preparedDataset;
   base::OpenCLConfigurationParameters parameters;
@@ -38,17 +38,17 @@ protected:
   float_t duration;
 
   base::OCLManager *manager;
-  StreamingModOCLKernelImpl<T> *kernel;
+  StreamingModOCLFastKernelImpl<T> *kernel;
 public:
 
-  OperationMultiEvalStreamingModOCL(base::Grid& grid, base::DataMatrix& dataset, base::OpenCLConfigurationParameters parameters) :
+  OperationMultiEvalStreamingModOCLFast(base::Grid& grid, base::DataMatrix& dataset, base::OpenCLConfigurationParameters parameters) :
       OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
       SGPP::base::SGppStopwatch()), duration(-1.0) {
 
     this->manager = new base::OCLManager(parameters);
 
     this->dims = dataset.getNcols(); //be aware of transpose!
-    this->kernel = new StreamingModOCLKernelImpl<T>(dims, *(this->manager), parameters);
+    this->kernel = new StreamingModOCLFastKernelImpl<T>(dims, *(this->manager), parameters);
 
     this->storage = grid.getStorage();
     this->padDataset(this->preparedDataset);
@@ -67,7 +67,7 @@ public:
     this->prepare();
   }
 
-  ~OperationMultiEvalStreamingModOCL() {
+  ~OperationMultiEvalStreamingModOCLFast() {
     if (this->level != nullptr) {
       delete this->level;
     }
