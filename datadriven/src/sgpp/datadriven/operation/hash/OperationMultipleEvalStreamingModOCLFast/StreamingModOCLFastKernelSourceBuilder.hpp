@@ -393,8 +393,7 @@ public:
     }
 
     size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-//    size_t transDataBlockSize = this->parameters.getAsBoolean("KERNEL_TRANS_DATA_BLOCK_SIZE");
+    size_t transDataBlockSize = this->parameters.getAsUnsigned("KERNEL_TRANS_DATA_BLOCK_SIZE");
 
     std::stringstream stream_program_src;
 
@@ -426,12 +425,12 @@ public:
     stream_program_src << std::endl;
 
     stream_program_src << "   __local double resultsTemp[" << localWorkgroupSize << "];" << std::endl;
-        stream_program_src << std::endl;
+    stream_program_src << std::endl;
 
     stream_program_src << "   " << streamingModOCLFast::getType<real_type>::asString()
-        << " eval, index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
-    stream_program_src << "   " << streamingModOCLFast::getType<real_type>::asString()
-        << " myResult = 0.0;" << std::endl << std::endl;
+        << " eval, index_calc, abs, last, localSupport;" << std::endl << std::endl;
+    stream_program_src << "   " << streamingModOCLFast::getType<real_type>::asString() << " myResult = 0.0;"
+        << std::endl << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
       stream_program_src << " " << streamingModOCLFast::getType<real_type>::asString() << " level_" << d
@@ -442,49 +441,61 @@ public:
 
     stream_program_src << std::endl;
 
-    stream_program_src << "   for(int k = start_data + localIdx; k < end_data; k += " << localWorkgroupSize << ")" << std::endl;
+    stream_program_src << "   for(int k = start_data + localIdx; k < end_data; k += "
+        << transDataBlockSize * localWorkgroupSize << ")" << std::endl;
     stream_program_src << "       {" << std::endl;
 
-    stream_program_src << "           curSupport = ptrSource[k];" << std::endl << std::endl;
+    for (size_t i = 0; i < transDataBlockSize; i++) {
+      stream_program_src << "   " << streamingModOCLFast::getType<real_type>::asString() << " curSupport_" << i
+          << " = ptrSource[k + " << (localWorkgroupSize * i) << "];" << std::endl;
+    }
+    stream_program_src << std::endl;
 
     for (size_t d = 0; d < dims; d++) {
       stream_program_src << "         if ((level_" << d << ") == 2.0"
           << streamingModOCLFast::getType<real_type>::constSuffix() << ")" << std::endl;
       stream_program_src << "         {" << std::endl;
 
-      stream_program_src << "             curSupport *= 1.0" << streamingModOCLFast::getType<real_type>::constSuffix()
-          << ";" << std::endl;
-
       stream_program_src << "         }" << std::endl;
       stream_program_src << "         else if ((index_" << d << ") == 1.0"
           << streamingModOCLFast::getType<real_type>::constSuffix() << ")" << std::endl;
       stream_program_src << "         {" << std::endl;
 
-      stream_program_src << "             curSupport *= max(2.0"
-          << streamingModOCLFast::getType<real_type>::constSuffix() << " - ( (level_" << d << ") * (ptrData[(" << d
-          << "*sourceSize)+k]) ), 0.0" << streamingModOCLFast::getType<real_type>::constSuffix() << ") ;" << std::endl;
+      for (size_t i = 0; i < transDataBlockSize; i++) {
+        stream_program_src << "             curSupport_" << i << " *= max(2.0"
+            << streamingModOCLFast::getType<real_type>::constSuffix() << " - ( (level_" << d << ") * (ptrData[(" << d
+            << "*sourceSize)+k + " << (localWorkgroupSize * i) << "]) ), 0.0" << streamingModOCLFast::getType<real_type>::constSuffix() << ") ;"
+            << std::endl;
+      }
 
       stream_program_src << "         }" << std::endl;
       stream_program_src << "         else if ((index_" << d << ") == ((level_" << d << ") - 1.0"
           << streamingModOCLFast::getType<real_type>::constSuffix() << ") )" << std::endl;
       stream_program_src << "         {" << std::endl;
 
-      stream_program_src << "             curSupport *= max(( (level_" << d << ") * (ptrData[(" << d
-          << "*sourceSize)+k]) ) - (index_" << d << ") + 1.0, 0.0);" << std::endl;
+      for (size_t i = 0; i < transDataBlockSize; i++) {
+        stream_program_src << "             curSupport_" << i << " *= max(( (level_" << d << ") * (ptrData[(" << d
+            << "*sourceSize)+k + " << (localWorkgroupSize * i) << "]) ) - (index_" << d << ") + 1.0, 0.0);" << std::endl;
+      }
 
       stream_program_src << "         }" << std::endl;
       stream_program_src << "         else " << std::endl;
       stream_program_src << "         {" << std::endl;
 
-      stream_program_src << "             curSupport *= max(1.0"
-          << streamingModOCLFast::getType<real_type>::constSuffix() << " - fabs( ( (level_" << d << ") * (ptrData[("
-          << d << "*sourceSize)+k]) ) - (index_" << d << ") ), 0.0"
-          << streamingModOCLFast::getType<real_type>::constSuffix() << ");" << std::endl;
+      for (size_t i = 0; i < transDataBlockSize; i++) {
+        stream_program_src << "             curSupport_" << i << " *= max(1.0"
+            << streamingModOCLFast::getType<real_type>::constSuffix() << " - fabs( ( (level_" << d << ") * (ptrData[("
+            << d << "*sourceSize)+k + " << (localWorkgroupSize * i) << "]) ) - (index_" << d << ") ), 0.0"
+            << streamingModOCLFast::getType<real_type>::constSuffix() << ");" << std::endl;
+      }
 
       stream_program_src << "         }" << std::endl;
     }
 
-    stream_program_src << std::endl << "      myResult += curSupport;" << std::endl;
+    for (size_t i = 0; i < transDataBlockSize; i++) {
+      stream_program_src << std::endl << "      myResult += curSupport_" << i << ";" << std::endl;
+    }
+
     stream_program_src << "       }" << std::endl << std::endl;
 
     stream_program_src << "   resultsTemp[localIdx] = myResult;" << std::endl << std::endl;

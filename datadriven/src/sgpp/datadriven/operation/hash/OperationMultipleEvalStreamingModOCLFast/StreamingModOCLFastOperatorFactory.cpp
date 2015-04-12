@@ -20,6 +20,7 @@ base::OperationMultipleEval *createStreamingModOCLFastConfigured(base::Grid& gri
   defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
   defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
   defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+  defaultParameter["KERNEL_TRANS_DATA_BLOCK_SIZE"] = "1";
 
   base::OpenCLConfigurationParameters parameters("StreamingModOCLFast.cfg", defaultParameter);
 
