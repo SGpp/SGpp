@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 	configuration.type =
 	SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType =
-	SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+	SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST;
 
 	SGPP::datadriven::ARFFTools arffTools;
 	SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

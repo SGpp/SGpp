@@ -40,9 +40,11 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration &adaptConfig,
 int main(int argc, char **argv) {
 
 //	std::string fileName = "friedman2_90000.arff";
-	std::string fileName = "debugging.arff";
+//	std::string fileName = "debugging.arff";
+    std::string fileName = "friedman_4d.arff";
 
-	uint32_t level = 3;
+
+	uint32_t level = 5;
 
 	SGPP::base::AdpativityConfiguration adaptConfig;
 	adaptConfig.maxLevelType_ = false;
@@ -55,7 +57,7 @@ int main(int argc, char **argv) {
 	configuration.type =
 	SGPP::datadriven::OperationMultipleEvalType::STREAMING;
 	configuration.subType =
-	SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+	SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST;
 
 	SGPP::datadriven::ARFFTools arffTools;
 	SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -79,7 +81,8 @@ int main(int argc, char **argv) {
 
 	SGPP::base::DataVector dataSizeVector(dataset.getNumberInstances());
 	for (size_t i = 0; i < dataSizeVector.getSize(); i++) {
-		dataSizeVector[i] = dist(mt);
+//		dataSizeVector[i] = dist(mt);
+	  dataSizeVector[i] = static_cast<double>(i + 1);
 	}
 
 	std::cout << "creating operation with unrefined grid" << std::endl;
