@@ -1,10 +1,3 @@
-/*
- * OCLKernelBuilder.hpp
- *
- *  Created on: Mar 12, 2015
- *      Author: pfandedd
- */
-
 #pragma once
 
 #include <fstream>
@@ -14,513 +7,759 @@
 //#include "StreamingOCLParameters.hpp"
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-namespace streamingBSplineOCL {
-template<typename T> struct getType {
-};
+    namespace streamingBSplineOCL {
+      template<typename T> struct getType {
+      };
 
-template<> struct getType<float> {
-  static std::string asString() {
-    return "float";
-  }
-  static std::string constSuffix() {
-    return "f";
-  }
-  static std::string intAsString() {
-    return "uint";
-  }
-};
-
-template<> struct getType<double> {
-  static std::string asString() {
-    return "double";
-  }
-  static std::string constSuffix() {
-    return "";
-  }
-  static std::string intAsString() {
-    return "ulong";
-  }
-};
-}
-
-template<typename real_type>
-class StreamingBSplineOCLKernelSourceBuilder {
-private:
-  base::ConfigurationParameters parameters;
-public:
-  StreamingBSplineOCLKernelSourceBuilder(base::ConfigurationParameters parameters) :
-      parameters(parameters) {
-
-  }
-
-  std::string generateSourceMult(size_t dims) {
-
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
-      std::stringstream stream_program_src;
-      std::ifstream file;
-      file.open("multKernelBSpline_tmp.cl");
-      if (file.is_open()) {
-        std::string line;
-        while (getline(file, line)) {
-          stream_program_src << line << std::endl;
+      template<> struct getType<float> {
+        static std::string asString() {
+          return "float";
         }
-        file.close();
-      } else {
-        throw new base::operation_exception("OCL error: file to reuse not found\n");
-      }
-      return stream_program_src.str();
+        static std::string constSuffix() {
+          return "f";
+        }
+        static std::string intAsString() {
+          return "uint";
+        }
+      };
+
+      template<> struct getType<double> {
+        static std::string asString() {
+          return "double";
+        }
+        static std::string constSuffix() {
+          return "";
+        }
+        static std::string intAsString() {
+          return "ulong";
+        }
+      };
     }
 
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-
-    size_t dataBlockSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-
-    std::stringstream stream_program_src;
-
-    if (streamingBSplineOCL::getType<real_type>::asString() == "double") {
-      stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
-    }
-
-    stream_program_src << "__kernel" << std::endl;
-    stream_program_src << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))" << std::endl;
-    stream_program_src << "void multOCL(__global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrLevel," << std::endl;
-    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrIndex," << std::endl;
-//    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString() << "* ptrMask," << std::endl; // not needed for this kernel, but there for uniformity
-//    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString() << "* ptrOffset," << std::endl; // not needed for this kernel, but there for uniformity
-    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrData," << std::endl;
-    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrAlpha," << std::endl;
-    stream_program_src << "           __global       " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrResult," << std::endl;
-    stream_program_src << "           uint resultSize," << std::endl;
-    stream_program_src << "           uint start_grid," << std::endl;
-    stream_program_src << "           uint end_grid) " << std::endl;
-    stream_program_src << "{" << std::endl;
-    stream_program_src << "   int globalIdx = get_global_id(0);" << std::endl;
-    stream_program_src << "   int localIdx = get_local_id(0);" << std::endl;
-    stream_program_src << std::endl;
-    if (useLocalMemory) {
-      stream_program_src << "   __local " << streamingBSplineOCL::getType<real_type>::asString() << " locLevel["
-          << dims * localWorkgroupSize << "];" << std::endl;
-      stream_program_src << "   __local " << streamingBSplineOCL::getType<real_type>::asString() << " locIndex["
-          << dims * localWorkgroupSize << "];" << std::endl;
-      stream_program_src << "   __local " << streamingBSplineOCL::getType<real_type>::asString() << " locAlpha["
-          << localWorkgroupSize << "];" << std::endl;
-      stream_program_src << std::endl;
-    }
-    stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString()
-        << " eval, index_calc, abs, last, localSupport;" << std::endl << std::endl;
-
-    for (size_t i = 0; i < dataBlockSize; i++) {
-      stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString() << " curSupport_" << i << ";"
-          << std::endl;
-//      stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString() << " myResult_" << i
-//          << " = ptrResult[globalIdx];" << std::endl << std::endl;
-      stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString() << " myResult_" << i
-          << " = 0.0;" << std::endl << std::endl;
-    }
-
-//    for (size_t i = 0; i < dataBlockSize; i++) {
-//      stream_program_src << "printf(\"%i is working on index: %i\\n\", globalIdx, " << i << " + (" << dataBlockSize << " * globalIdx));" << std::endl;
-//    }
-
-    stream_program_src << "   // Create registers for the data" << std::endl;
-
-    //TODO: might lead to bad access battern, as each 1D array is accessed with a stride of dim |***|***|***|*** -> better: ||||************** and then ****||||************
-    for (size_t i = 0; i < dataBlockSize; i++) {
-      for (size_t d = 0; d < dims; d++) {
-        stream_program_src << " " << streamingBSplineOCL::getType<real_type>::asString() << " data_" << i << "_" << d
-            << " = ptrData[" << i << " + (" << dataBlockSize << " * globalIdx) + (resultSize * " << d << ")];"
-            << std::endl;
-//        stream_program_src << "printf(\"%i is working on data_" << i << ": %lf\\n\", globalIdx, data_" << i << "_" << d << ");" << std::endl;
-      }
-      stream_program_src << std::endl;
-    }
-
-    stream_program_src << std::endl;
-    if (useLocalMemory) {
-      stream_program_src << "   // Iterate over all grid points (fast ones, with cache)" << std::endl;
-      stream_program_src << " uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
-      stream_program_src << " uint fastChunkSizeGrid = (chunkSizeGrid / " << localWorkgroupSize << ") * "
-          << localWorkgroupSize << ";" << std::endl;
-      stream_program_src << " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+=" << localWorkgroupSize
-          << ")" << std::endl;
-      stream_program_src << "   {" << std::endl;
-
-      for (size_t d = 0; d < dims; d++) {
-        stream_program_src << "     locLevel[(localIdx*" << dims << ")+" << d << "] = ptrLevel[((j+localIdx)*" << dims
-            << ")+" << d << "];" << std::endl;
-        stream_program_src << "     locIndex[(localIdx*" << dims << ")+" << d << "] = ptrIndex[((j+localIdx)*" << dims
-            << ")+" << d << "];" << std::endl;
-      }
-
-      stream_program_src << "       locAlpha[localIdx] = ptrAlpha[j+localIdx];" << std::endl;
-      stream_program_src << "       barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-      stream_program_src << std::endl;
-      stream_program_src << "       for(int k = 0; k < " << localWorkgroupSize << "; k++)" << std::endl;
-      stream_program_src << "       {" << std::endl;
-
-      for (size_t i = 0; i < dataBlockSize; i++) {
-        stream_program_src << "           curSupport_" << i << " = locAlpha[k];" << std::endl << std::endl;
-      }
-
-      for (size_t d = 0; d < dims; d++) {
-        stream_program_src << "         if ((locLevel[(k*" << dims << ")+" << d << "]) == 2.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-        stream_program_src << "         {" << std::endl;
-//        stream_program_src << "             curSupport *= 1.0" << streamingBSplineOCL::getType<real_type>::constSuffix()
-//            << ";" << std::endl;
-        stream_program_src << "         }" << std::endl;
-        stream_program_src << "         else if ((locIndex[(k*" << dims << ")+" << d << "]) == 1.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-        stream_program_src << "         {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "             curSupport_" << i << " *= max(2.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - ( (locLevel[(k*" << dims << ")+" << d
-              << "]) * (data_" << i << "_" << d << ") ), 0.0" << streamingBSplineOCL::getType<real_type>::constSuffix()
-              << ") ;" << std::endl;
+    template<typename real_type>
+    class StreamingBSplineOCLKernelSourceBuilder {
+      private:
+        size_t degree;
+        base::ConfigurationParameters parameters;
+      public:
+        StreamingBSplineOCLKernelSourceBuilder(
+            size_t degree,
+            base::ConfigurationParameters parameters)
+          : degree(degree),
+            parameters(parameters) {
         }
 
-        stream_program_src << "         }" << std::endl;
-        stream_program_src << "         else if ((locIndex[(k*" << dims << ")+" << d << "]) == ((locLevel[(k*" << dims
-            << ")+" << d << "]) - 1.0" << streamingBSplineOCL::getType<real_type>::constSuffix() << ") )" << std::endl;
-        stream_program_src << "         {" << std::endl;
+        std::string generateSourceMult(size_t dims) {
 
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "             curSupport_" << i << " *= max(( (locLevel[(k*" << dims << ")+" << d
-              << "]) * (data_" << i << "_" << d << ") ) - (locIndex[(k*" << dims << ")+" << d << "]) + 1.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ", 0.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-        }
+          if (parameters.getAsBoolean("REUSE_SOURCE")) {
+            std::stringstream streamProgramSrc;
+            std::ifstream file;
+            file.open("multKernelBSpline_tmp.cl");
 
-        stream_program_src << "         }" << std::endl;
-        stream_program_src << "         else " << std::endl;
-        stream_program_src << "         {" << std::endl;
+            if (file.is_open()) {
+              std::string line;
 
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "             curSupport_" << i << " *= max(1.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - fabs( ( (locLevel[(k*" << dims << ")+"
-              << d << "]) * (data_" << i << "_" << d << ") ) - (locIndex[(k*" << dims << ")+" << d << "]) ), 0.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-        }
+              while (getline(file, line)) {
+                streamProgramSrc << line << std::endl;
+              }
 
-        stream_program_src << "         }" << std::endl;
-      }
+              file.close();
+            } else {
+              throw new base::operation_exception(
+                "OCL error: file to reuse not found\n");
+            }
 
-      for (size_t i = 0; i < dataBlockSize; i++) {
-        stream_program_src << "           myResult_" << i << " += curSupport_" << i << ";" << std::endl;
-      }
+            return streamProgramSrc.str();
+          }
 
-      stream_program_src << "       }" << std::endl;
-      stream_program_src << std::endl;
-      stream_program_src << "       barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-      stream_program_src << "   }" << std::endl;
-      stream_program_src << std::endl;
-      stream_program_src << "   // Iterate over all grid points (slow ones, without cache)" << std::endl;
-      stream_program_src << " for(int m = start_grid + fastChunkSizeGrid; m < end_grid; m++)" << std::endl;
-      stream_program_src << "   {" << std::endl;
+          size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
+          bool useLocalMemory = this->parameters.getAsBoolean(
+                                  "KERNEL_USE_LOCAL_MEMORY");
 
-      for (size_t i = 0; i < dataBlockSize; i++) {
-        stream_program_src << "       curSupport_" << i << " = ptrAlpha[m];" << std::endl << std::endl;
-      }
+          size_t dataBlockSize = parameters.getAsUnsigned(
+                                   "KERNEL_DATA_BLOCKING_SIZE");
 
-      for (size_t d = 0; d < dims; d++) {
-        stream_program_src << "     if ((ptrLevel[(m*" << dims << ")+" << d << "]) == 2.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-        stream_program_src << "     {" << std::endl;
-//        stream_program_src << "         curSupport *= 1.0" << streamingBSplineOCL::getType<real_type>::constSuffix() << ";"
-//            << std::endl;
-        stream_program_src << "     }" << std::endl;
-        stream_program_src << "     else if ((ptrIndex[(m*" << dims << ")+" << d << "]) == 1.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-        stream_program_src << "     {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "         curSupport_" << i << " *= max(2.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - ( (ptrLevel[(m*" << dims << ")+" << d
-              << "]) * (data_" << i << "_" << d << ") ), 0.0" << streamingBSplineOCL::getType<real_type>::constSuffix()
-              << ") ;" << std::endl;
-        }
-
-        stream_program_src << "     }" << std::endl;
-        stream_program_src << "     else if ((ptrIndex[(m*" << dims << ")+" << d << "]) == ((ptrLevel[(m*" << dims
-            << ")+" << d << "]) - 1.0" << streamingBSplineOCL::getType<real_type>::constSuffix() << ") )" << std::endl;
-        stream_program_src << "     {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "         curSupport_" << i << " *= max(( (ptrLevel[(m*" << dims << ")+" << d
-              << "]) * (data_" << i << "_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) + 1.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ", 0.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-        }
-
-        stream_program_src << "     }" << std::endl;
-        stream_program_src << "     else " << std::endl;
-        stream_program_src << "     {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "         curSupport_" << i << " *= max(1.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - fabs( ( (ptrLevel[(m*" << dims << ")+"
-              << d << "]) * (data_" << i << "_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) ), 0.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-        }
-
-        stream_program_src << "     }" << std::endl;
-      }
-
-      for (size_t i = 0; i < dataBlockSize; i++) {
-        stream_program_src << "       myResult_" << i << " += curSupport_" << i << ";" << std::endl;
-      }
-
-      stream_program_src << "   }" << std::endl;
+          auto createEvalFormula = [&]() {
+            switch (degree) {
+              case 1:
+                return R"(
+    if (({x} < 0.0{f}) || ({x} >= 2.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 1.0{f}) {
+      curSupport_{i} *= {x};
     } else {
-      stream_program_src << "   // Iterate over all grid points (slow ones, without cache)" << std::endl;
-      stream_program_src << " for(int m = start_grid; m < end_grid; m++)" << std::endl;
-      stream_program_src << "   {" << std::endl;
-
-      for (size_t i = 0; i < dataBlockSize; i++) {
-        stream_program_src << "       curSupport_" << i << " = ptrAlpha[m];" << std::endl << std::endl;
-//        stream_program_src << "         printf(\"curSupport_" << i << ": %lf\\n\", curSupport_" << i << ");" << std::endl;
-      }
-
-      for (size_t d = 0; d < dims; d++) {
-        stream_program_src << "     if ((ptrLevel[(m*" << dims << ")+" << d << "]) == 2.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-        stream_program_src << "     {" << std::endl;
-//        stream_program_src << "         curSupport *= 1.0" << streamingBSplineOCL::getType<real_type>::constSuffix() << ";"
-//            << std::endl;
-        stream_program_src << "     }" << std::endl;
-        stream_program_src << "     else if ((ptrIndex[(m*" << dims << ")+" << d << "]) == 1.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-        stream_program_src << "     {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-
-//          stream_program_src << "double temp_" << i << " = max(2.0"
-//              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - ( (ptrLevel[(m*" << dims << ")+" << d
-//              << "]) * (data_" << i << "_" << d << ") ), 0.0" << streamingBSplineOCL::getType<real_type>::constSuffix()
-//              << ") ;" << std::endl;
-//          stream_program_src << "         curSupport_" << i << " *= temp_" << i << ";" << std::endl;
-
-          stream_program_src << "         curSupport_" << i << " *= max(2.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - ( (ptrLevel[(m*" << dims << ")+" << d
-              << "]) * (data_" << i << "_" << d << ") ), 0.0" << streamingBSplineOCL::getType<real_type>::constSuffix()
-              << ") ;" << std::endl;
-//          stream_program_src << "         printf(\"temp_" << i << ": %lf\\n\", temp_" << i << ");" << std::endl;
-
-        }
-
-        stream_program_src << "     }" << std::endl;
-        stream_program_src << "     else if ((ptrIndex[(m*" << dims << ")+" << d << "]) == ((ptrLevel[(m*" << dims
-            << ")+" << d << "]) - 1.0" << streamingBSplineOCL::getType<real_type>::constSuffix() << ") )" << std::endl;
-        stream_program_src << "     {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "         curSupport_" << i << " *= max(( (ptrLevel[(m*" << dims << ")+" << d
-              << "]) * (data_" << i << "_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) + 1.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ", 0.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-//          stream_program_src << "         printf(\"curSupport_" << i << ": %lf\\n\", curSupport_" << i << ");" << std::endl;
-        }
-
-        stream_program_src << "     }" << std::endl;
-        stream_program_src << "     else " << std::endl;
-        stream_program_src << "     {" << std::endl;
-
-        for (size_t i = 0; i < dataBlockSize; i++) {
-          stream_program_src << "         curSupport_" << i << " *= max(1.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << " - fabs( ( (ptrLevel[(m*" << dims << ")+"
-              << d << "]) * (data_" << i << "_" << d << ") ) - (ptrIndex[(m*" << dims << ")+" << d << "]) ), 0.0"
-              << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-//          stream_program_src << "         printf(\"curSupport_" << i << ": %lf\\n\", curSupport_" << i << ");" << std::endl;
-        }
-
-        stream_program_src << "     }" << std::endl;
-      }
-
-      for (size_t i = 0; i < dataBlockSize; i++) {
-        stream_program_src << "       myResult_" << i << " += curSupport_" << i << ";" << std::endl;
-      }
-
-      stream_program_src << "   }" << std::endl;
+      curSupport_{i} *= 2.0{f} - {x};
     }
-    stream_program_src << std::endl;
-
-    for (size_t i = 0; i < dataBlockSize; i++) {
-//      stream_program_src << "         printf(\"myResult_" << i << ": %lf\\n\", myResult_" << i << ");" << std::endl;
-//      stream_program_src << "         printf(\"writing to index: %i\\n\", (" << dataBlockSize << " * globalIdx) + " << i
-//          << ");" << std::endl;
-
-      stream_program_src << "   ptrResult[(" << dataBlockSize << " * globalIdx) + " << i << "] = myResult_" << i << ";"
-          << std::endl;
+)";
+                break;
+              case 3:
+                return R"(
+    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 1.0{f}) {
+      tmp = 1.0{f} / 6.0{f};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 2.0{f}) {
+      tmp = -0.5{f};
+      tmp = 2.0{f} + tmp * {x};
+      tmp = -2.0{f} + tmp * {x};
+      tmp = (2.0{f} / 3.0{f}) + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 3.0{f}) {
+      tmp = 0.5{f};
+      tmp = -4.0{f} + tmp * {x};
+      tmp = 10.0{f} + tmp * {x};
+      tmp = -(22.0{f} / 3.0{f}) + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else {
+      tmp = -(1.0{f} / 6.0{f});
+      tmp = 2.0{f} + tmp * {x};
+      tmp = -8.0{f} + tmp * {x};
+      tmp = (32.0{f} / 3.0{f}) + tmp * {x};
+      curSupport_{i} *= tmp;
     }
-
-    stream_program_src << "}" << std::endl;
-
-    //update file with kernel (for debugging)
-    std::ofstream multFile;
-    multFile.open("multKernelBSpline_tmp.cl");
-    multFile << stream_program_src.str();
-    multFile.close();
-
-    return stream_program_src.str();
-  }
-
-  std::string generateSourceMultTrans(size_t dims) {
-
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
-      std::stringstream stream_program_src;
-      std::ifstream file;
-      file.open("multTransKernelBSpline_tmp.cl");
-      if (file.is_open()) {
-        std::string line;
-        while (getline(file, line)) {
-          stream_program_src << line << std::endl;
-        }
-        file.close();
+)";
+                // this takes longer despite fewer if-clauses on average
+                // (assuming the cases are reached with the same probability)
+                /*return R"(
+    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 2.0{f}) {
+      if ({x} < 1.0{f}) {
+        tmp = 1.0{f} / 6.0{f};
+        tmp *= {x};
+        tmp *= {x};
+        tmp *= {x};
+        curSupport_{i} *= tmp;
       } else {
-        throw new base::operation_exception("OCL error: file to reuse not found\n");
+        tmp = -0.5{f};
+        tmp = 2.0{f} + tmp * {x};
+        tmp = -2.0{f} + tmp * {x};
+        tmp = (2.0{f} / 3.0{f}) + tmp * {x};
+        curSupport_{i} *= tmp;
       }
-      return stream_program_src.str();
-    }
-
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    size_t transDataBlockSize = this->parameters.getAsUnsigned("KERNEL_TRANS_DATA_BLOCK_SIZE");
-
-    std::stringstream stream_program_src;
-
-    if (streamingBSplineOCL::getType<real_type>::asString() == "double") {
-      stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
-    }
-
-    stream_program_src << "__kernel" << std::endl;
-    stream_program_src << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))" << std::endl;
-    stream_program_src << "void multTransOCL(__global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrLevel," << std::endl;
-    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrIndex," << std::endl;
-//    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString() << "* ptrMask," << std::endl; // not needed for this kernel, but there for uniformity
-//    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString() << "* ptrOffset," << std::endl; // not needed for this kernel, but there for uniformity
-    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrData," << std::endl;
-    stream_program_src << "           __global const " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrSource," << std::endl;
-    stream_program_src << "           __global       " << streamingBSplineOCL::getType<real_type>::asString()
-        << "* ptrResult," << std::endl;
-    stream_program_src << "           uint sourceSize," << std::endl;
-    stream_program_src << "           uint start_data," << std::endl;
-    stream_program_src << "           uint end_data)" << std::endl;
-    stream_program_src << "{" << std::endl;
-    stream_program_src << "   int globalIdx = get_global_id(0);" << std::endl;
-    stream_program_src << "   int groupIdx = get_group_id(0);" << std::endl;
-    stream_program_src << "   int localIdx = get_local_id(0);" << std::endl;
-    stream_program_src << std::endl;
-
-    stream_program_src << "   __local double resultsTemp[" << localWorkgroupSize << "];" << std::endl;
-    stream_program_src << std::endl;
-
-    stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString()
-        << " eval, index_calc, abs, last, localSupport;" << std::endl << std::endl;
-    stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString() << " myResult = 0.0;"
-        << std::endl << std::endl;
-
-    for (size_t d = 0; d < dims; d++) {
-      stream_program_src << " " << streamingBSplineOCL::getType<real_type>::asString() << " level_" << d
-          << " = ptrLevel[(groupIdx*" << dims << ")+" << d << "];" << std::endl;
-      stream_program_src << " " << streamingBSplineOCL::getType<real_type>::asString() << " index_" << d
-          << " = ptrIndex[(groupIdx*" << dims << ")+" << d << "];" << std::endl;
-    }
-
-    stream_program_src << std::endl;
-
-    stream_program_src << "   for(int k = start_data + localIdx; k < end_data; k += "
-        << transDataBlockSize * localWorkgroupSize << ")" << std::endl;
-    stream_program_src << "       {" << std::endl;
-
-    for (size_t i = 0; i < transDataBlockSize; i++) {
-      stream_program_src << "   " << streamingBSplineOCL::getType<real_type>::asString() << " curSupport_" << i
-          << " = ptrSource[k + " << (localWorkgroupSize * i) << "];" << std::endl;
-    }
-    stream_program_src << std::endl;
-
-    for (size_t d = 0; d < dims; d++) {
-      stream_program_src << "         if ((level_" << d << ") == 2.0"
-          << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-      stream_program_src << "         {" << std::endl;
-
-      stream_program_src << "         }" << std::endl;
-      stream_program_src << "         else if ((index_" << d << ") == 1.0"
-          << streamingBSplineOCL::getType<real_type>::constSuffix() << ")" << std::endl;
-      stream_program_src << "         {" << std::endl;
-
-      for (size_t i = 0; i < transDataBlockSize; i++) {
-        stream_program_src << "             curSupport_" << i << " *= max(2.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << " - ( (level_" << d << ") * (ptrData[(" << d
-            << "*sourceSize)+k + " << (localWorkgroupSize * i) << "]) ), 0.0" << streamingBSplineOCL::getType<real_type>::constSuffix() << ") ;"
-            << std::endl;
+    } else {
+      if ({x} < 3.0{f}) {
+        tmp = 0.5{f};
+        tmp = -4.0{f} + tmp * {x};
+        tmp = 10.0{f} + tmp * {x};
+        tmp = -(22.0{f} / 3.0{f}) + tmp * {x};
+        curSupport_{i} *= tmp;
+      } else {
+        tmp = -(1.0{f} / 6.0{f});
+        tmp = 2.0{f} + tmp * {x};
+        tmp = -8.0{f} + tmp * {x};
+        tmp = (32.0{f} / 3.0{f}) + tmp * {x};
+        curSupport_{i} *= tmp;
       }
+    }
+)";*/
+                break;
+              case 5:
+                return R"(
+    if (({x} < 0.0{f}) || ({x} >= 6.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 1.0{f}) {
+      tmp = 1.0{f} / 120.0{f};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 2.0{f}) {
+      tmp = -1.0{f} / 24.0{f};
+      tmp = 0.25{f} + tmp * {x};
+      tmp = -0.5{f} + tmp * {x};
+      tmp = 0.5{f} + tmp * {x};
+      tmp = -0.25{f} + tmp * {x};
+      tmp = 0.05{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 3.0{f}) {
+      tmp = 1.0{f} / 12.0{f};
+      tmp = -1.0{f} + tmp * {x};
+      tmp = 4.5{f} + tmp * {x};
+      tmp = -9.5{f} + tmp * {x};
+      tmp = 9.75{f} + tmp * {x};
+      tmp = -3.95{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 4.0{f}) {
+      tmp = -1.0{f} / 12.0{f};
+      tmp = 1.5{f} + tmp * {x};
+      tmp = -10.5{f} + tmp * {x};
+      tmp = 35.5{f} + tmp * {x};
+      tmp = -57.75{f} + tmp * {x};
+      tmp = 36.55{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 5.0{f}) {
+      tmp = 1.0{f} / 24.0{f};
+      tmp = -1.0{f} + tmp * {x};
+      tmp = 9.5{f} + tmp * {x};
+      tmp = -44.5{f} + tmp * {x};
+      tmp = 102.25{f} + tmp * {x};
+      tmp = -91.45{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else {
+      tmp = -1.0{f} / 120.0{f};
+      tmp = 0.25{f} + tmp * {x};
+      tmp = -3.0{f} + tmp * {x};
+      tmp = 18.0{f} + tmp * {x};
+      tmp = -54.0{f} + tmp * {x};
+      tmp = 64.8{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    }
+)";
+                break;
+              default:
+                throw new base::operation_exception("degree not supported.");
+            }
+          };
 
-      stream_program_src << "         }" << std::endl;
-      stream_program_src << "         else if ((index_" << d << ") == ((level_" << d << ") - 1.0"
-          << streamingBSplineOCL::getType<real_type>::constSuffix() << ") )" << std::endl;
-      stream_program_src << "         {" << std::endl;
+          std::string streamProgramSrc;
+          const std::string dp1h = std::to_string((degree + 1) / 2) +
+                ((degree % 2 == 0) ? ".5{f}" : ".0{f}");
+          const std::string evalFormula = createEvalFormula();
 
-      for (size_t i = 0; i < transDataBlockSize; i++) {
-        stream_program_src << "             curSupport_" << i << " *= max(( (level_" << d << ") * (ptrData[(" << d
-            << "*sourceSize)+k + " << (localWorkgroupSize * i) << "]) ) - (index_" << d << ") + 1.0, 0.0);" << std::endl;
+          if (streamingBSplineOCL::getType<real_type>::asString() ==
+              "double") {
+            streamProgramSrc += R"(
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+)";
+          }
+
+          streamProgramSrc += R"(
+__kernel
+__attribute__((reqd_work_group_size({localWorkgroupSize}, 1, 1)))
+void multOCL(__global const {float}* ptrLevel,
+__global const {float}* ptrIndex,
+__global const {float}* ptrData,
+__global const {float}* ptrAlpha,
+__global       {float}* ptrResult,
+uint resultSize,
+uint start_grid,
+uint end_grid) {
+  int globalIdx = get_global_id(0);
+  int localIdx = get_local_id(0);
+  {float} tmp;
+)";
+
+          if (useLocalMemory) {
+            streamProgramSrc += R"(
+  __local {float} locLevel[{dimsTimesLocalWorkgroupSize}];
+  __local {float} locIndex[{dimsTimesLocalWorkgroupSize}];
+  __local {float} locAlpha[{localWorkgroupSize}];
+)";
+          }
+
+          for (size_t i = 0; i < dataBlockSize; i++) {
+            streamProgramSrc += replace(R"(
+  {float} curSupport_{i};
+  {float} myResult_{i} = 0.0;
+)", "{i}", i);
+          }
+
+          streamProgramSrc += R"(
+  // create registers for the data)";
+
+            //TODO: might lead to bad access battern, as each 1D array is accessed with a stride of dim |***|***|***|*** -> better: ||||************** and then ****||||************
+          for (size_t i = 0; i < dataBlockSize; i++) {
+            for (size_t d = 0; d < dims; d++) {
+              streamProgramSrc += replace(R"(
+  {float} x_{i}_{d};
+  {float} data_{i}_{d} = ptrData[{i} + ({dataBlockSize} * globalIdx) +
+                                 (resultSize * {d})];)",
+                  "{d}", d);
+            }
+
+            replaceInPlace(streamProgramSrc, "{i}", i);
+            streamProgramSrc += "\n";
+          }
+
+          streamProgramSrc += "\n";
+
+          if (useLocalMemory) {
+            streamProgramSrc += R"(
+  // iterate over all grid points (fast ones, with cache)
+  uint chunkSizeGrid = end_grid - start_grid;
+  uint fastChunkSizeGrid = (chunkSizeGrid / {localWorkgroupSize}) *
+                           {localWorkgroupSize};
+  for (int j = start_grid; j < start_grid + fastChunkSizeGrid;
+       j += {localWorkgroupSize}) {
+)";
+
+            for (size_t d = 0; d < dims; d++) {
+              streamProgramSrc += replace(R"(
+    locLevel[(localIdx*{dims})+{d}] = ptrLevel[((j+localIdx)*{dims})+{d}];
+    locIndex[(localIdx*{dims})+{d}] = ptrIndex[((j+localIdx)*{dims})+{d}];)",
+                  "{d}", d);
+            }
+
+            streamProgramSrc += R"(
+    locAlpha[localIdx] = ptrAlpha[j+localIdx];
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    for (int k = 0; k < {localWorkgroupSize}; k++) {
+)";
+
+            for (size_t i = 0; i < dataBlockSize; i++) {
+              streamProgramSrc += replace(R"(
+      curSupport_{i} = locAlpha[k];)",
+                  "{i}", i);
+
+              for (size_t d = 0; d < dims; d++) {
+                streamProgramSrc += replace(replace(replace(R"(
+    x_{i}_{d} = data_{i}_{d} * locLevel[(k*{dims})+{d}] - 
+                locIndex[(k*{dims})+{d}] + {dp1h};)",
+                    "{i}", i), "{d}", d), "{dp1h}", dp1h);
+              }
+            }
+
+            for (size_t d = 0; d < dims; d++) {
+              /*streamProgramSrc += R"(
+      if ((locLevel[(k*{dims})+{d}]) == 2.0{f}) {
+      } else if ((locIndex[(k*{dims})+{d}]) == 1.0{f}) {
+)";*/
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(
+                    replace(evalFormula, "{x}", "x_{i}_{d}"), "{i}", i);
+
+                /*streamProgramSrc += replace(R"(
+        curSupport_{i} *= max(2.0{f} - ((locLevel[(k*{dims})+{d}]) *
+                                        (data_{i}_{d})), 0.0{f});)",
+                    "{i}", i);*/
+              }
+
+              /*streamProgramSrc += R"(
+      } else if ((locIndex[(k*{dims})+{d}]) ==
+                 ((locLevel[(k*{dims})+{d}]) - 1.0{f})) {
+)";
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(R"(
+        curSupport_{i} *= max(((locLevel[(k*{dims})+{d}]) * (data_{i}_{d})) -
+                              (locIndex[(k*{dims})+{d}]) + 1.0{f}, 0.0{f});)",
+                    "{i}", i);
+              }
+
+              streamProgramSrc += R"(
+      } else {
+)";
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(R"(
+        curSupport_{i} *= max(
+            1.0{f} - fabs(((locLevel[(k*{dims})+{d}]) * (data_{i}_{d})) -
+                          (locIndex[(k*{dims})+{d}])), 0.0{f});)",
+                    "{i}", i);
+              }
+
+              streamProgramSrc += R"(
       }
+)";*/
 
-      stream_program_src << "         }" << std::endl;
-      stream_program_src << "         else " << std::endl;
-      stream_program_src << "         {" << std::endl;
+              replaceInPlace(streamProgramSrc, "{d}", d);
+            }
 
-      for (size_t i = 0; i < transDataBlockSize; i++) {
-        stream_program_src << "             curSupport_" << i << " *= max(1.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << " - fabs( ( (level_" << d << ") * (ptrData[("
-            << d << "*sourceSize)+k + " << (localWorkgroupSize * i) << "]) ) - (index_" << d << ") ), 0.0"
-            << streamingBSplineOCL::getType<real_type>::constSuffix() << ");" << std::endl;
-      }
+            for (size_t i = 0; i < dataBlockSize; i++) {
+              streamProgramSrc += replace(R"(
+      myResult_{i} += curSupport_{i};)",
+                  "{i}", i);
+            }
 
-      stream_program_src << "         }" << std::endl;
+            streamProgramSrc += R"(
     }
 
-    for (size_t i = 0; i < transDataBlockSize; i++) {
-      stream_program_src << std::endl << "      myResult += curSupport_" << i << ";" << std::endl;
-    }
-
-    stream_program_src << "       }" << std::endl << std::endl;
-
-    stream_program_src << "   resultsTemp[localIdx] = myResult;" << std::endl << std::endl;
-    stream_program_src << "   barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
-
-    stream_program_src << "   if (localIdx == 0) {" << std::endl;
-    stream_program_src << "     double overallResult = 0.0;" << std::endl;
-    stream_program_src << "     for (int i = 0; i < " << localWorkgroupSize << "; i++) {" << std::endl;
-    stream_program_src << "       overallResult += resultsTemp[i];" << std::endl;
-    stream_program_src << "     }" << std::endl;
-    stream_program_src << "     ptrResult[groupIdx] = overallResult;" << std::endl;
-    stream_program_src << "   }" << std::endl;
-
-    stream_program_src << "}" << std::endl;
-
-    //update file with kernel (for debugging)
-    std::ofstream multTransFile;
-    multTransFile.open("multTransKernelBSpline_tmp.cl");
-    multTransFile << stream_program_src.str();
-    multTransFile.close();
-
-    return stream_program_src.str();
+    barrier(CLK_LOCAL_MEM_FENCE);
   }
 
-};
+  // iterate over all grid points (slow ones, without cache)
+  for (int m = start_grid + fastChunkSizeGrid; m < end_grid; m++) {
+)";
 
+            for (size_t i = 0; i < dataBlockSize; i++) {
+              streamProgramSrc += replace(R"(
+    curSupport_{i} = ptrAlpha[m];)",
+                  "{i}", i);
+
+              for (size_t d = 0; d < dims; d++) {
+                streamProgramSrc += replace(replace(replace(R"(
+    x_{i}_{d} = data_{i}_{d} * ptrLevel[(m*{dims})+{d}] - 
+                ptrIndex[(m*{dims})+{d}] + {dp1h};)",
+                    "{i}", i), "{d}", d), "{dp1h}", dp1h);
+              }
+            }
+
+            for (size_t d = 0; d < dims; d++) {
+              /*streamProgramSrc += R"(
+    if ((ptrLevel[(m*{dims})+{d}]) == 2.0{f}) {
+    } else if ((ptrIndex[(m*{dims})+{d}]) == 1.0{f}) {
+)";*/
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(
+                    replace(evalFormula, "{x}", "x_{i}_{d}"), "{i}", i);
+
+                /*streamProgramSrc += replace(R"(
+      curSupport_{i} *= max(2.0{f} - ((ptrLevel[(m*{dims})+{d}]) *
+                                      (data_{i}_{d})), 0.0{f});)",
+                    "{i}", i);*/
+              }
+
+              /*streamProgramSrc += R"(
+    } else if ((ptrIndex[(m*{dims})+{d}]) ==
+               ((ptrLevel[(m*{dims})+{d}]) - 1.0{f})) {
+)";
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(R"(
+      curSupport_{i} *= max(((ptrLevel[(m*{dims})+{d}]) * (data_{i}_{d})) -
+                            (ptrIndex[(m*{dims})+{d}]) + 1.0{f}, 0.0{f});)",
+                    "{i}", i);
+              }
+
+              streamProgramSrc += R"(
+    } else {
+)";
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(R"(
+      curSupport_{i} *= max(
+          1.0{f} - fabs(((ptrLevel[(m*{dims})+{d}]) * (data_{i}_{d})) -
+                        (ptrIndex[(m*{dims})+{d}])), 0.0{f});)",
+                    "{i}", i);
+              }
+
+              streamProgramSrc += R"(
+    }
+)";*/
+
+              replaceInPlace(streamProgramSrc, "{d}", d);
+            }
+
+            for (size_t i = 0; i < dataBlockSize; i++) {
+              streamProgramSrc += replace(R"(
+    myResult_{i} += curSupport_{i};)",
+                    "{i}", i);
+            }
+
+            streamProgramSrc += R"(
+  }
+)";
+          } else {
+
+            streamProgramSrc += R"(
+  // iterate over all grid points (slow ones, without cache)
+  for (int m = start_grid; m < end_grid; m++) {
+)";
+
+            for (size_t i = 0; i < dataBlockSize; i++) {
+              streamProgramSrc += replace(R"(
+    curSupport_{i} = ptrAlpha[m];)",
+                  "{i}", i);
+
+              for (size_t d = 0; d < dims; d++) {
+                streamProgramSrc += replace(replace(replace(R"(
+    x_{i}_{d} = data_{i}_{d} * ptrLevel[(m*{dims})+{d}] - 
+                ptrIndex[(m*{dims})+{d}] + {dp1h};)",
+                    "{i}", i), "{d}", d), "{dp1h}", dp1h);
+              }
+            }
+
+            for (size_t d = 0; d < dims; d++) {
+              /*streamProgramSrc += R"(
+    if ((ptrLevel[(m*{dims})+{d}]) == 2.0{f}) {
+    } else if ((ptrIndex[(m*{dims})+{d}]) == 1.0{f}) {
+)";*/
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(
+                    replace(evalFormula, "{x}", "x_{i}_{d}"), "{i}", i);
+
+                /*streamProgramSrc += replace(R"(
+      curSupport_{i} *= max(2.0{f} - ((ptrLevel[(m*{dims})+{d}]) *
+                                      (data_{i}_{d})), 0.0{f});)",
+                    "{i}", i);*/
+              }
+
+              /*streamProgramSrc += R"(
+    } else if ((ptrIndex[(m*{dims})+{d}]) ==
+               ((ptrLevel[(m*{dims})+{d}]) - 1.0{f})) {
+)";
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(R"(
+      curSupport_{i} *= max(((ptrLevel[(m*{dims})+{d}]) * (data_{i}_{d})) -
+                            (ptrIndex[(m*{dims})+{d}]) + 1.0{f}, 0.0{f});)",
+                    "{i}", i);
+              }
+
+              streamProgramSrc += R"(
+    } else {
+)";
+
+              for (size_t i = 0; i < dataBlockSize; i++) {
+                streamProgramSrc += replace(R"(
+      curSupport_{i} *= max(
+          1.0{f} - fabs(((ptrLevel[(m*{dims})+{d}]) * (data_{i}_{d})) -
+                        (ptrIndex[(m*{dims})+{d}])), 0.0{f});)",
+                    "{i}", i);
+              }
+
+              streamProgramSrc += R"(
+    }
+)";*/
+              replaceInPlace(streamProgramSrc, "{d}", d);
+            }
+
+            for (size_t i = 0; i < dataBlockSize; i++) {
+              streamProgramSrc += replace(R"(
+    myResult_{i} += curSupport_{i};)",
+                  "{i}", i);
+            }
+
+            streamProgramSrc += R"(
+  }
+)";
+          }
+
+          streamProgramSrc += "\n";
+
+          for (size_t i = 0; i < dataBlockSize; i++) {
+            //      streamProgramSrc << "         printf(\"myResult_" << i << ": %lf\\n\", myResult_" << i << ");\n";
+            //      streamProgramSrc << "         printf(\"writing to index: %i\\n\", (" << dataBlockSize << " * globalIdx) + " << i
+            //          << ");\n";
+              streamProgramSrc += replace(R"(
+  ptrResult[({dataBlockSize} * globalIdx) + {i}] = myResult_{i};)",
+                  "{i}", i);
+          }
+
+          streamProgramSrc += R"(
 }
+)";
+
+          replaceInPlace(streamProgramSrc, "{float}",
+                  streamingBSplineOCL::getType<real_type>::asString());
+          replaceInPlace(streamProgramSrc, "{f}",
+                  streamingBSplineOCL::getType<real_type>::constSuffix());
+          replaceInPlace(streamProgramSrc, "{dataBlockSize}", dataBlockSize);
+          replaceInPlace(streamProgramSrc, "{dims}", dims);
+          replaceInPlace(streamProgramSrc, "{localWorkgroupSize}",
+                         localWorkgroupSize);
+          replaceInPlace(streamProgramSrc, "{dimsTimesLocalWorkgroupSize}",
+                  dims * localWorkgroupSize);
+
+          //update file with kernel (for debugging)
+          std::ofstream multFile;
+          multFile.open("multKernelBSpline_tmp.cl");
+          multFile << streamProgramSrc;
+          multFile.close();
+
+          return streamProgramSrc;
+        }
+
+        std::string generateSourceMultTrans(size_t dims) {
+
+          if (parameters.getAsBoolean("REUSE_SOURCE")) {
+            std::stringstream streamProgramSrc;
+            std::ifstream file;
+            file.open("multTransKernelBSpline_tmp.cl");
+
+            if (file.is_open()) {
+              std::string line;
+
+              while (getline(file, line)) {
+                streamProgramSrc << line << std::endl;
+              }
+
+              file.close();
+            } else {
+              throw new base::operation_exception(
+                  "OCL error: file to reuse not found\n");
+            }
+
+            return streamProgramSrc.str();
+          }
+
+          size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
+          size_t transDataBlockSize = this->parameters.getAsUnsigned(
+              "KERNEL_TRANS_DATA_BLOCK_SIZE");
+
+          std::string streamProgramSrc;
+
+          if (streamingBSplineOCL::getType<real_type>::asString() ==
+              "double") {
+            streamProgramSrc += R"(
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+)";
+          }
+
+          streamProgramSrc += R"(
+__kernel
+__attribute__((reqd_work_group_size({localWorkgroupSize}, 1, 1)))
+void multTransOCL(__global const {float}* ptrLevel,
+__global const {float}* ptrIndex,
+__global const {float}* ptrData,
+__global const {float}* ptrSource,
+__global       {float}* ptrResult,
+uint sourceSize,
+uint start_data,
+uint end_data) {
+  int globalIdx = get_global_id(0);
+  int groupIdx = get_group_id(0);
+  int localIdx = get_local_id(0);
+  
+  __local double resultsTemp[{localWorkgroupSize}];
+  
+  {float} myResult = 0.0;
+)";
+
+          for (size_t d = 0; d < dims; d++) {
+            streamProgramSrc += replace(R"(
+  {float} level_{d} = ptrLevel[(groupIdx*{dims})+{d}];
+  {float} index_{d} = ptrIndex[(groupIdx*{dims})+{d}];)",
+        "{d}", d);
+          }
+
+          streamProgramSrc += replace(R"(
+  for (int k = start_data + localIdx; k < end_data; k += {upper_bound}) {
+)", "{upper_bound}", transDataBlockSize*localWorkgroupSize);
+
+          for (size_t i = 0; i < transDataBlockSize; i++) {
+            streamProgramSrc += replace(replace(R"(
+    {float} curSupport_{i} = ptrSource[k + {iTimesLWGS}];)",
+        "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
+          }
+
+          streamProgramSrc += "\n";
+
+          for (size_t d = 0; d < dims; d++) {
+            streamProgramSrc += R"(
+    if ((level_{d}) == 2.0{f}) {
+    } else if ((index_{d}) = 1.0{f}) {
+)";
+
+            for (size_t i = 0; i < transDataBlockSize; i++) {
+              streamProgramSrc += replace(replace(R"(
+      curSupport_{i} *= max(
+          2.0{f} - ((level_{d}) * (ptrData[({d}*sourceSize)+k +
+                                   {iTimesLWGS}])), 0.0{f});)",
+          "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
+            }
+
+            streamProgramSrc += R"(
+    } else if ((index_{d}) == ((level_{d}) - 1.0{f})) {
+)";
+
+            for (size_t i = 0; i < transDataBlockSize; i++) {
+              streamProgramSrc += replace(replace(
+            R"(
+      curSupport_{i} *= max(
+          ((level_{d}) * (ptrData[({d}*sourceSize)+k + {iTimesLWGS}])) -
+          (index_{d}) + 1.0{f}, 0.0{f});)",
+          "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
+            }
+
+            streamProgramSrc += R"(
+    } else {
+)";
+
+            for (size_t i = 0; i < transDataBlockSize; i++) {
+              streamProgramSrc += replace(replace(R"(
+      curSupport_{i} *= max(
+          1.0{f} - fabs(((level_{d}) *
+                         (ptrData[({d}*sourceSize)+k + {iTimesLWGS}])) -
+                        (index_{d})), 0.0{f});)",
+        "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
+            }
+
+            streamProgramSrc +=  R"(
+    }
+)";
+
+            replaceInPlace(streamProgramSrc, "{d}", d);
+          }
+
+          for (size_t i = 0; i < transDataBlockSize; i++) {
+            streamProgramSrc += replace(R"(
+    myResult += curSupport_{i};)",
+        "{i}", i);
+          }
+
+          streamProgramSrc +=
+  R"(
+  }
+
+  resultsTemp[localIdx] = myResult;
+  barrier(CLK_LOCAL_MEM_FENCE);
+
+  if (localIdx == 0) {
+    double overallResult = 0.0;
+    for (int i = 0; i < {localWorkgroupSize}; i++) {
+      overallResult += resultsTemp[i];
+    }
+    ptrResult[groupIdx] = overallResult;
+  }
+}
+)";
+
+          replaceInPlace(streamProgramSrc, "{float}",
+                         streamingBSplineOCL::getType<real_type>::
+                         asString());
+          replaceInPlace(streamProgramSrc, "{f}",
+                         streamingBSplineOCL::getType<real_type>::
+                         constSuffix());
+          replaceInPlace(streamProgramSrc, "{dims}", dims);
+          replaceInPlace(streamProgramSrc, "{localWorkgroupSize}",
+                         localWorkgroupSize);
+
+          //update file with kernel (for debugging)
+          std::ofstream multTransFile;
+          multTransFile.open("multTransKernelBSpline_tmp.cl");
+          multTransFile << streamProgramSrc;
+          multTransFile.close();
+
+          return streamProgramSrc;
+        }
+
+      protected:
+        void replaceInPlace(std::string& str,
+                     const std::string& searchStr,
+                     const std::string& replaceStr) {
+          size_t pos = 0;
+
+          while ((pos = str.find(searchStr, pos)) != std::string::npos) {
+            str.replace(pos, searchStr.length(), replaceStr);
+            pos += replaceStr.length();
+          }
+        }
+
+        void replaceInPlace(std::string& str,
+                     const std::string& searchStr,
+                     size_t number) {
+          replaceInPlace(str, searchStr, std::to_string(number));
+        }
+
+        std::string replace(const std::string& str,
+                            const std::string& searchStr,
+                            const std::string& replaceStr) {
+          std::string result = str;
+          replaceInPlace(result, searchStr, replaceStr);
+          return result;
+        }
+
+        std::string replace(const std::string& str,
+                            const std::string& searchStr,
+                            size_t replaceNumber) {
+          return replace(str, searchStr, std::to_string(replaceNumber));
+        }
+    };
+
+  }
 }
 

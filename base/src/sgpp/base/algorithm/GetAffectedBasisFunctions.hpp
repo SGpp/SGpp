@@ -125,7 +125,7 @@ namespace SGPP {
         void rec(BASIS& basis, DataVector& point, size_t current_dim,
                  float_t value, GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
-                 size_t, float_t > >& result) {
+                 size_t, float_t > > & result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
@@ -233,7 +233,7 @@ namespace SGPP {
                  size_t current_dim, float_t value,
                  GridStorage::grid_iterator& working,
                  GridStorage::index_type::index_type* source, std::vector < std::pair <
-                 size_t, float_t > >& result) {
+                 size_t, float_t > > & result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
           //size_t i;

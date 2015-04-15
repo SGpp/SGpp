@@ -67,6 +67,8 @@ vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trail
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
+vars.Add('OCL_INCLUDE_PATH', 'Specifies the location of the OpenCL header files (parent directory of "CL/").')
+vars.Add('OCL_LIBRARY_PATH', 'Specifies the location of the OpenCL library.')
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)

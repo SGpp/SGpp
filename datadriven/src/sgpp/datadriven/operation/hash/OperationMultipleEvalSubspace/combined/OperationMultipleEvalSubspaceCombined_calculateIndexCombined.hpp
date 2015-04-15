@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 static inline void calculateIndexCombined(size_t dim, size_t nextIterationToRecalc,
-    const SGPP::float_t* const (&dataTuplePtr)[4], std::vector<uint32_t>& hInversePtr, uint32_t* (&intermediates)[4],
-    SGPP::float_t* (&evalIndexValues)[4],
+    const SGPP::float_t* const (&dataTuplePtr)[4], std::vector<uint32_t>& hInversePtr, uint32_t * (&intermediates)[4],
+    SGPP::float_t * (&evalIndexValues)[4],
     //uint32_t *(&indexPtr)[4],
     uint32_t (&indexFlat)[4], SGPP::float_t (&phiEval)[4]) {
 #if USE_DOUBLE_PRECISION==0
@@ -126,9 +126,9 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
     const SGPP::float_t* const (&dataTuplePtr)[4], const SGPP::float_t* const (&dataTuplePtr2)[4],
     std::vector<uint32_t>& hInversePtr,
     //rep
-    uint32_t* (&intermediates)[4], uint32_t* (&intermediates2)[4],
+    uint32_t * (&intermediates)[4], uint32_t * (&intermediates2)[4],
     //rep
-    SGPP::float_t* (&evalIndexValues)[4], SGPP::float_t* (&evalIndexValues2)[4],
+    SGPP::float_t * (&evalIndexValues)[4], SGPP::float_t * (&evalIndexValues2)[4],
     //rep
     uint32_t (&indexFlat)[4], uint32_t (&indexFlat2)[4],
     //rep

@@ -15,22 +15,22 @@
 
 int main(int argc, char** argv) {
 
-  //  std::string fileName = "friedman_4d_2000.arff";
-  std::string fileName = "debugging.arff";
+  std::string fileName = "friedman_4d.arff";
+  //  std::string fileName = "debugging_small.arff";
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-  //SGPP::base::DataVector *classes = dataset.getClasses();
   SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
 
   // create a two-dimensional piecewise bi-linear grid
-  size_t dim = dataset.getDimension();
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  const size_t dim = dataset.getDimension();
+  const size_t degree = 3;
+  SGPP::base::Grid* grid = SGPP::base::Grid::createBsplineGrid(dim, degree);
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
   // create regular grid, level 3
-  uint32_t level = 4;
+  const SGPP::base::GridIndex::level_type level = 6;
   SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
@@ -41,9 +41,9 @@ int main(int argc, char** argv) {
 
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::uniform_real_distribution<double> dist(1, 100);
+  std::uniform_real_distribution<double> dist(1.0, 100.0);
 
-  for (unsigned int i = 0; i < alpha.getSize(); i++) {
+  for (size_t i = 0; i < alpha.getSize(); i++) {
     alpha[i] = dist(mt);
     //    std::cout << "alpha[" << i << "] = " << alpha[i] << std::endl;
   }
@@ -53,8 +53,10 @@ int main(int argc, char** argv) {
   configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData,
-        configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+
+  //  SGPP::base::OperationMultipleEval *eval =
+  //  SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
 
   SGPP::base::DataVector result(dataset.getNumberInstances());
 
@@ -68,13 +70,17 @@ int main(int argc, char** argv) {
   //  }
   //  std::cout << std::endl;
 
-
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+  SGPP::base::OperationNaiveEval* evalCompare =
+    SGPP::op_factory::createOperationNaiveEval(*grid);
+  SGPP::base::DataVector evaluationPoint(dim);
   SGPP::base::DataVector resultCompare(dataset.getNumberInstances());
-  evalCompare->eval(alpha, resultCompare);
+
+  for (size_t i = 0; i < dataset.getNumberInstances(); i++) {
+    trainingData->getRow(i, evaluationPoint);
+    resultCompare[i] = evalCompare->eval(alpha, evaluationPoint);
+  }
 
   //  std::cout << "resultCompare: ";
   //  for (size_t i = 0; i < resultCompare.getSize(); i++) {
@@ -95,11 +101,11 @@ int main(int argc, char** argv) {
   double mse = 0.0;
 
   for (size_t i = 0; i < result.getSize(); i++) {
-    std::cout << "comp: " << (result[i] - resultCompare[i]) << std::endl;
+    //std::cout << "comp: " << (result[i] - resultCompare[i]) << std::endl;
     mse += (result[i] - resultCompare[i]) * (result[i] - resultCompare[i]);
   }
 
-  mse = mse / static_cast<double>(result.getSize());
+  mse /= static_cast<double>(result.getSize());
   std::cout << "mse: " << mse << std::endl;
 }
 

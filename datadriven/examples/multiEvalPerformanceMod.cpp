@@ -13,15 +13,15 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
   std::string fileName = "friedman_4d.arff";
-//  std::string fileName = "debugging_small.arff";
+  //  std::string fileName = "debugging_small.arff";
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-  SGPP::base::DataMatrix *trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
@@ -44,59 +44,61 @@ int main(int argc, char **argv) {
 
   for (unsigned int i = 0; i < alpha.getSize(); i++) {
     alpha[i] = dist(mt);
-//		std::cout << "alpha[" << i << "] = " << alpha[i] << std::endl;
+    //    std::cout << "alpha[" << i << "] = " << alpha[i] << std::endl;
   }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
   configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
   configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 
-  SGPP::base::OperationMultipleEval *eval =
-  SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+  SGPP::base::OperationMultipleEval* eval =
+    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
 
-//  SGPP::base::OperationMultipleEval *eval =
-//  SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+  //  SGPP::base::OperationMultipleEval *eval =
+  //  SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
 
   SGPP::base::DataVector result(dataset.getNumberInstances());
 
   eval->eval(alpha, result);
 
-//	std::cout << "result: ";
-//	for (size_t i = 0; i < result.getSize(); i++) {
-//		if (i > 0)
-//			std::cout << ",";
-//		std::cout << result[i];
-//	}
-//	std::cout << std::endl;
+  //  std::cout << "result: ";
+  //  for (size_t i = 0; i < result.getSize(); i++) {
+  //    if (i > 0)
+  //      std::cout << ",";
+  //    std::cout << result[i];
+  //  }
+  //  std::cout << std::endl;
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval *evalCompare =
-  SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+  SGPP::base::OperationMultipleEval* evalCompare =
+    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
   SGPP::base::DataVector resultCompare(dataset.getNumberInstances());
   evalCompare->eval(alpha, resultCompare);
 
-//	std::cout << "resultCompare: ";
-//	for (size_t i = 0; i < resultCompare.getSize(); i++) {
-//		if (i > 0)
-//			std::cout << ",";
-//		std::cout << resultCompare[i];
-//	}
-//	std::cout << std::endl;
+  //  std::cout << "resultCompare: ";
+  //  for (size_t i = 0; i < resultCompare.getSize(); i++) {
+  //    if (i > 0)
+  //      std::cout << ",";
+  //    std::cout << resultCompare[i];
+  //  }
+  //  std::cout << std::endl;
 
-//	std::cout << "diff: ";
-//	for (size_t i = 0; i < result.getSize(); i++) {
-//		if (i > 0)
-//			std::cout << ",";
-//		std::cout << (result[i] - resultCompare[i]);
-//	}
-//	std::cout << std::endl;
+  //  std::cout << "diff: ";
+  //  for (size_t i = 0; i < result.getSize(); i++) {
+  //    if (i > 0)
+  //      std::cout << ",";
+  //    std::cout << (result[i] - resultCompare[i]);
+  //  }
+  //  std::cout << std::endl;
 
   double mse = 0.0;
+
   for (size_t i = 0; i < result.getSize(); i++) {
     //std::cout << "comp: " << (result[i] - resultCompare[i]) << std::endl;
     mse += (result[i] - resultCompare[i]) * (result[i] - resultCompare[i]);
   }
+
   mse = mse / static_cast<double>(result.getSize());
   std::cout << "mse: " << mse << std::endl;
 }
