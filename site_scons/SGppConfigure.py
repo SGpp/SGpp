@@ -53,6 +53,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       
       if 'OCL_INCLUDE_PATH' in config.env['ENV']:
         config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
+      elif 'OCL_INCLUDE_PATH' in config.env:
+        config.env.AppendUnique(CPPPATH=config.env['OCL_INCLUDE_PATH'])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
          
@@ -62,6 +64,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         
       if 'OCL_LIBRARY_PATH' in config.env['ENV']:
         config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
+      elif 'OCL_LIBRARY_PATH' in config.env:
+        config.env.AppendUnique(LIBPATH=config.env['OCL_LIBRARY_PATH'])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
         

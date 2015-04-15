@@ -90,7 +90,7 @@ namespace SGPP {
          * @param len the length of the array
          * @param data the array
          */
-        void saveArray(const char* tFilename, int len, float_t data[]);
+        void saveArray(const char * tFilename, int len, float_t data[]);
 
         /**
          * load a float_t array
@@ -99,7 +99,7 @@ namespace SGPP {
          * @param len the length of the array
          * @return the array from the file
          */
-        float_t* loadArray(const char* tFilename, int* len);
+        float_t * loadArray(const char * tFilename, int * len);
 
         /**
          * save a two-dimensional float_t array
@@ -109,7 +109,7 @@ namespace SGPP {
          * @param col how many columns
          * @param data the two-dimensional array
          */
-        void saveArray(const char* tFilename, int row, int col, int** data);
+        void saveArray(const char * tFilename, int row, int col, int** data);
 
         /**
          * load a two-dimensional float_t array
@@ -119,7 +119,7 @@ namespace SGPP {
          * @param col how many columns
          * @return the two-dimensional array
          */
-        int** loadArray(const char* tFilename, int* row, int* col);
+        int** loadArray(const char * tFilename, int * row, int * col);
 
         /**
          * constant threshold function (f_t1)
@@ -221,14 +221,14 @@ namespace SGPP {
          * @param SolverConfig the solver configuration
          * @param lamda the regularization parameter
          */
-        void precalculateGridValues(const char* filename, SGPP::base::DataMatrix & testDataset, const SGPP::base::RegularGridConfiguration & GridConfig, const SGPP::solver::SLESolverConfiguration & SolverConfig,
+        void precalculateGridValues(const char * filename, SGPP::base::DataMatrix & testDataset, const SGPP::base::RegularGridConfiguration & GridConfig, const SGPP::solver::SLESolverConfiguration & SolverConfig,
         const float_t lamda);
 
         /**
          * Load the precalculated values from a file
          * @param filename the file
          */
-        void loadPrecalculatedValues(const char* filename);
+        void loadPrecalculatedValues(const char * filename);
 
         /**
          * Cluster function. The grid values must be calculated with LearnerDensityCluster::precalculateGridValues and the cluster configuration must be set with the function LearnerDensityCluster::setClusterConfiguration
@@ -260,13 +260,13 @@ namespace SGPP {
          * @param testDataset the data
          * @param n n nearest neighbors
          */
-        void precalculateNeighbors(const char* filename, SGPP::base::DataMatrix & testDataset, int n);
+        void precalculateNeighbors(const char * filename, SGPP::base::DataMatrix & testDataset, int n);
 
         /**
          * Loads the precalculated neighbors
          * @param filename file
          */
-        void loadPrecalculatedNeighbors(const char* filename);
+        void loadPrecalculatedNeighbors(const char * filename);
 #endif
     };
 

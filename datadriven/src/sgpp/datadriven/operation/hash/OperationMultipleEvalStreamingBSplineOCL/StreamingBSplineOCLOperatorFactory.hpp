@@ -14,9 +14,9 @@
 #include "OperationMultipleEvalStreamingBSplineOCL.hpp"
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-base::OperationMultipleEval *createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset);
+    base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset);
 
-}
+  }
 }
