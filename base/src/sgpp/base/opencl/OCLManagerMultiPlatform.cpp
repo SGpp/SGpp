@@ -192,13 +192,13 @@ namespace SGPP {
       err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 
       if (err != CL_SUCCESS) {
-
-        size_t len;
-        char buffer[4096];
-
         // get the build log
+        size_t len;
         clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG,
-                              sizeof(buffer), buffer, &len);
+                              0, NULL, &len);
+        std::string buffer(len, '\0');
+        clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG,
+                              len, &buffer[0], NULL);
 
         if (verbose) {
           std::cout << "--- Build Log ---" << std::endl << buffer

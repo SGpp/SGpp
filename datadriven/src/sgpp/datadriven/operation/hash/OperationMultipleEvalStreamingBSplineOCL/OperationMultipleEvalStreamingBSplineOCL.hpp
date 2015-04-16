@@ -120,7 +120,7 @@ namespace SGPP {
                              resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
           end = std::chrono::system_clock::now();
           std::chrono::duration<double> elapsed_seconds = end - start;
-          std::cout << "duration mult ocl mod fast: " << elapsed_seconds.count() << std::endl;
+          std::cout << "duration mult ocl B-spline: " << elapsed_seconds.count() << std::endl;
 
           for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -163,7 +163,7 @@ namespace SGPP {
                                       this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
           end = std::chrono::system_clock::now();
           std::chrono::duration<double> elapsed_seconds = end - start;
-          std::cout << "duration multTranspose ocl mod fast: " << elapsed_seconds.count() << std::endl;
+          std::cout << "duration multTranspose ocl B-spline: " << elapsed_seconds.count() << std::endl;
 
           for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
