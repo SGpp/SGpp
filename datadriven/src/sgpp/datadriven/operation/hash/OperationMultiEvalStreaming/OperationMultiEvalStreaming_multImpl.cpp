@@ -11,6 +11,14 @@
 //#undef __AVX__
 //#undef __SSE3__
 
+#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION==1
+#include <pmmintrin.h>
+#endif
+
+#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION==1
+#include <immintrin.h>
+#endif
+
 namespace SGPP {
 namespace datadriven {
 
