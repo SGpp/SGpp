@@ -81,149 +81,9 @@ namespace SGPP {
           size_t dataBlockSize = parameters.getAsUnsigned(
                                    "KERNEL_DATA_BLOCKING_SIZE");
 
-          auto createEvalFormula = [&]() {
-            switch (degree) {
-              case 1:
-                return R"(
-    if (({x} < 0.0{f}) || ({x} >= 2.0{f})) {
-      curSupport_{i} = 0.0{f};
-    } else if ({x} < 1.0{f}) {
-      curSupport_{i} *= {x};
-    } else {
-      curSupport_{i} *= 2.0{f} - {x};
-    }
-)";
-                break;
-              case 3:
-                return R"(
-    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
-      curSupport_{i} = 0.0{f};
-    } else if ({x} < 1.0{f}) {
-      tmp = 1.0{f} / 6.0{f};
-      tmp *= {x};
-      tmp *= {x};
-      tmp *= {x};
-      curSupport_{i} *= tmp;
-    } else if ({x} < 2.0{f}) {
-      tmp = -0.5{f};
-      tmp = 2.0{f} + tmp * {x};
-      tmp = -2.0{f} + tmp * {x};
-      tmp = (2.0{f} / 3.0{f}) + tmp * {x};
-      curSupport_{i} *= tmp;
-    } else if ({x} < 3.0{f}) {
-      tmp = 0.5{f};
-      tmp = -4.0{f} + tmp * {x};
-      tmp = 10.0{f} + tmp * {x};
-      tmp = -(22.0{f} / 3.0{f}) + tmp * {x};
-      curSupport_{i} *= tmp;
-    } else {
-      tmp = -(1.0{f} / 6.0{f});
-      tmp = 2.0{f} + tmp * {x};
-      tmp = -8.0{f} + tmp * {x};
-      tmp = (32.0{f} / 3.0{f}) + tmp * {x};
-      curSupport_{i} *= tmp;
-    }
-)";
-                // this takes longer despite fewer if-clauses on average
-                // (assuming the cases are reached with the same probability)
-                /*return R"(
-    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
-      curSupport_{i} = 0.0{f};
-    } else if ({x} < 2.0{f}) {
-      if ({x} < 1.0{f}) {
-        tmp = 1.0{f} / 6.0{f};
-        tmp *= {x};
-        tmp *= {x};
-        tmp *= {x};
-        curSupport_{i} *= tmp;
-      } else {
-        tmp = -0.5{f};
-        tmp = 2.0{f} + tmp * {x};
-        tmp = -2.0{f} + tmp * {x};
-        tmp = (2.0{f} / 3.0{f}) + tmp * {x};
-        curSupport_{i} *= tmp;
-      }
-    } else {
-      if ({x} < 3.0{f}) {
-        tmp = 0.5{f};
-        tmp = -4.0{f} + tmp * {x};
-        tmp = 10.0{f} + tmp * {x};
-        tmp = -(22.0{f} / 3.0{f}) + tmp * {x};
-        curSupport_{i} *= tmp;
-      } else {
-        tmp = -(1.0{f} / 6.0{f});
-        tmp = 2.0{f} + tmp * {x};
-        tmp = -8.0{f} + tmp * {x};
-        tmp = (32.0{f} / 3.0{f}) + tmp * {x};
-        curSupport_{i} *= tmp;
-      }
-    }
-)";*/
-                break;
-              case 5:
-                return R"(
-    if (({x} < 0.0{f}) || ({x} >= 6.0{f})) {
-      curSupport_{i} = 0.0{f};
-    } else if ({x} < 1.0{f}) {
-      tmp = 1.0{f} / 120.0{f};
-      tmp *= {x};
-      tmp *= {x};
-      tmp *= {x};
-      tmp *= {x};
-      tmp *= {x};
-      curSupport_{i} *= tmp;
-    } else if ({x} < 2.0{f}) {
-      tmp = -1.0{f} / 24.0{f};
-      tmp = 0.25{f} + tmp * {x};
-      tmp = -0.5{f} + tmp * {x};
-      tmp = 0.5{f} + tmp * {x};
-      tmp = -0.25{f} + tmp * {x};
-      tmp = 0.05{f} + tmp * {x};
-      curSupport_{i} *= tmp;
-    } else if ({x} < 3.0{f}) {
-      tmp = 1.0{f} / 12.0{f};
-      tmp = -1.0{f} + tmp * {x};
-      tmp = 4.5{f} + tmp * {x};
-      tmp = -9.5{f} + tmp * {x};
-      tmp = 9.75{f} + tmp * {x};
-      tmp = -3.95{f} + tmp * {x};
-      curSupport_{i} *= tmp;
-    } else if ({x} < 4.0{f}) {
-      tmp = -1.0{f} / 12.0{f};
-      tmp = 1.5{f} + tmp * {x};
-      tmp = -10.5{f} + tmp * {x};
-      tmp = 35.5{f} + tmp * {x};
-      tmp = -57.75{f} + tmp * {x};
-      tmp = 36.55{f} + tmp * {x};
-      curSupport_{i} *= tmp;
-    } else if ({x} < 5.0{f}) {
-      tmp = 1.0{f} / 24.0{f};
-      tmp = -1.0{f} + tmp * {x};
-      tmp = 9.5{f} + tmp * {x};
-      tmp = -44.5{f} + tmp * {x};
-      tmp = 102.25{f} + tmp * {x};
-      tmp = -91.45{f} + tmp * {x};
-      curSupport_{i} *= tmp;
-    } else {
-      tmp = -1.0{f} / 120.0{f};
-      tmp = 0.25{f} + tmp * {x};
-      tmp = -3.0{f} + tmp * {x};
-      tmp = 18.0{f} + tmp * {x};
-      tmp = -54.0{f} + tmp * {x};
-      tmp = 64.8{f} + tmp * {x};
-      curSupport_{i} *= tmp;
-    }
-)";
-                break;
-              default:
-                throw new base::operation_exception("degree not supported.");
-            }
-          };
-
           std::string streamProgramSrc;
-          const std::string dp1h = std::to_string((degree + 1) / 2) +
-                ((degree % 2 == 0) ? ".5{f}" : ".0{f}");
-          const std::string evalFormula = createEvalFormula();
+          const std::string dp1h = getDegreePlusOneHalvedString();
+          const std::string evalFormula = getBSplineEvalFormula();
 
           if (streamingBSplineOCL::getType<real_type>::asString() ==
               "double") {
@@ -266,14 +126,14 @@ uint end_grid) {
           streamProgramSrc += R"(
   // create registers for the data)";
 
-            //TODO: might lead to bad access battern, as each 1D array is accessed with a stride of dim |***|***|***|*** -> better: ||||************** and then ****||||************
+            //TODO: might lead to bad access pattern, as each 1D array is accessed with a stride of dim |***|***|***|*** -> better: ||||************** and then ****||||************
           for (size_t i = 0; i < dataBlockSize; i++) {
             for (size_t d = 0; d < dims; d++) {
               streamProgramSrc += replace(R"(
-  {float} x_{i}_{d};
   {float} data_{i}_{d} = ptrData[{i} + ({dataBlockSize} * globalIdx) +
-                                 (resultSize * {d})];)",
-                  "{d}", d);
+                                 (resultSize * {d})];
+  {float} x_{i}_{d};
+)", "{d}", d);
             }
 
             replaceInPlace(streamProgramSrc, "{i}", i);
@@ -591,6 +451,8 @@ uint end_grid) {
               "KERNEL_TRANS_DATA_BLOCK_SIZE");
 
           std::string streamProgramSrc;
+          const std::string dp1h = getDegreePlusOneHalvedString();
+          const std::string evalFormula = getBSplineEvalFormula();
 
           if (streamingBSplineOCL::getType<real_type>::asString() ==
               "double") {
@@ -613,9 +475,10 @@ uint end_data) {
   int globalIdx = get_global_id(0);
   int groupIdx = get_group_id(0);
   int localIdx = get_local_id(0);
-  
+
   __local double resultsTemp[{localWorkgroupSize}];
-  
+
+  {float} tmp;
   {float} myResult = 0.0;
 )";
 
@@ -627,6 +490,7 @@ uint end_data) {
           }
 
           streamProgramSrc += replace(R"(
+
   for (int k = start_data + localIdx; k < end_data; k += {upper_bound}) {
 )", "{upper_bound}", transDataBlockSize*localWorkgroupSize);
 
@@ -636,23 +500,39 @@ uint end_data) {
         "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
           }
 
-          streamProgramSrc += "\n";
+          //streamProgramSrc += "\n";
+
+          for (size_t i = 0; i < transDataBlockSize; i++) {
+            for (size_t d = 0; d < dims; d++) {
+              streamProgramSrc += replace(replace(R"(
+    {float} x_{i}_{d} = ptrData[({d}*sourceSize)+k + {iTimesLWGS}] * level_{d}
+                        - index_{d} + {dp1h};)",
+                  "{d}", d), "{dp1h}", dp1h);
+            }
+
+            streamProgramSrc = replace(replace(streamProgramSrc,
+                "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
+            streamProgramSrc += "\n";
+          }
 
           for (size_t d = 0; d < dims; d++) {
-            streamProgramSrc += R"(
+            /*streamProgramSrc += R"(
     if ((level_{d}) == 2.0{f}) {
     } else if ((index_{d}) = 1.0{f}) {
-)";
+)";*/
 
             for (size_t i = 0; i < transDataBlockSize; i++) {
-              streamProgramSrc += replace(replace(R"(
+              streamProgramSrc += replace(
+                  replace(evalFormula, "{x}", "x_{i}_{d}"), "{i}", i);
+
+              /*streamProgramSrc += replace(replace(R"(
       curSupport_{i} *= max(
           2.0{f} - ((level_{d}) * (ptrData[({d}*sourceSize)+k +
                                    {iTimesLWGS}])), 0.0{f});)",
-          "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);
+          "{i}", i), "{iTimesLWGS}", localWorkgroupSize * i);*/
             }
 
-            streamProgramSrc += R"(
+            /*streamProgramSrc += R"(
     } else if ((index_{d}) == ((level_{d}) - 1.0{f})) {
 )";
 
@@ -680,7 +560,7 @@ uint end_data) {
 
             streamProgramSrc +=  R"(
     }
-)";
+)";*/
 
             replaceInPlace(streamProgramSrc, "{d}", d);
           }
@@ -728,9 +608,153 @@ uint end_data) {
         }
 
       protected:
-        void replaceInPlace(std::string& str,
-                     const std::string& searchStr,
-                     const std::string& replaceStr) {
+        std::string getDegreePlusOneHalvedString() const {
+          return std::to_string((degree + 1) / 2) +
+                 ((degree % 2 == 0) ? ".5{f}" : ".0{f}");
+        }
+
+        std::string getBSplineEvalFormula() const {
+          switch (degree) {
+            case 1:
+              return R"(
+    if (({x} < 0.0{f}) || ({x} >= 2.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 1.0{f}) {
+      curSupport_{i} *= {x};
+    } else {
+      curSupport_{i} *= 2.0{f} - {x};
+    }
+)";
+              break;
+            case 3:
+              return R"(
+    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 1.0{f}) {
+      tmp = 1.0{f} / 6.0{f};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 2.0{f}) {
+      tmp = -0.5{f};
+      tmp = 2.0{f} + tmp * {x};
+      tmp = -2.0{f} + tmp * {x};
+      tmp = (2.0{f} / 3.0{f}) + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 3.0{f}) {
+      tmp = 0.5{f};
+      tmp = -4.0{f} + tmp * {x};
+      tmp = 10.0{f} + tmp * {x};
+      tmp = -(22.0{f} / 3.0{f}) + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else {
+      tmp = -(1.0{f} / 6.0{f});
+      tmp = 2.0{f} + tmp * {x};
+      tmp = -8.0{f} + tmp * {x};
+      tmp = (32.0{f} / 3.0{f}) + tmp * {x};
+      curSupport_{i} *= tmp;
+    }
+)";
+              // this takes longer despite fewer if-clauses on average
+              // (assuming the cases are reached with the same probability)
+              /*return R"(
+    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 2.0{f}) {
+      if ({x} < 1.0{f}) {
+        tmp = 1.0{f} / 6.0{f};
+        tmp *= {x};
+        tmp *= {x};
+        tmp *= {x};
+        curSupport_{i} *= tmp;
+      } else {
+        tmp = -0.5{f};
+        tmp = 2.0{f} + tmp * {x};
+        tmp = -2.0{f} + tmp * {x};
+        tmp = (2.0{f} / 3.0{f}) + tmp * {x};
+        curSupport_{i} *= tmp;
+      }
+    } else {
+      if ({x} < 3.0{f}) {
+        tmp = 0.5{f};
+        tmp = -4.0{f} + tmp * {x};
+        tmp = 10.0{f} + tmp * {x};
+        tmp = -(22.0{f} / 3.0{f}) + tmp * {x};
+        curSupport_{i} *= tmp;
+      } else {
+        tmp = -(1.0{f} / 6.0{f});
+        tmp = 2.0{f} + tmp * {x};
+        tmp = -8.0{f} + tmp * {x};
+        tmp = (32.0{f} / 3.0{f}) + tmp * {x};
+        curSupport_{i} *= tmp;
+      }
+    }
+)";*/
+              break;
+            case 5:
+              return R"(
+    if (({x} < 0.0{f}) || ({x} >= 6.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else if ({x} < 1.0{f}) {
+      tmp = 1.0{f} / 120.0{f};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      tmp *= {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 2.0{f}) {
+      tmp = -1.0{f} / 24.0{f};
+      tmp = 0.25{f} + tmp * {x};
+      tmp = -0.5{f} + tmp * {x};
+      tmp = 0.5{f} + tmp * {x};
+      tmp = -0.25{f} + tmp * {x};
+      tmp = 0.05{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 3.0{f}) {
+      tmp = 1.0{f} / 12.0{f};
+      tmp = -1.0{f} + tmp * {x};
+      tmp = 4.5{f} + tmp * {x};
+      tmp = -9.5{f} + tmp * {x};
+      tmp = 9.75{f} + tmp * {x};
+      tmp = -3.95{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 4.0{f}) {
+      tmp = -1.0{f} / 12.0{f};
+      tmp = 1.5{f} + tmp * {x};
+      tmp = -10.5{f} + tmp * {x};
+      tmp = 35.5{f} + tmp * {x};
+      tmp = -57.75{f} + tmp * {x};
+      tmp = 36.55{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else if ({x} < 5.0{f}) {
+      tmp = 1.0{f} / 24.0{f};
+      tmp = -1.0{f} + tmp * {x};
+      tmp = 9.5{f} + tmp * {x};
+      tmp = -44.5{f} + tmp * {x};
+      tmp = 102.25{f} + tmp * {x};
+      tmp = -91.45{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    } else {
+      tmp = -1.0{f} / 120.0{f};
+      tmp = 0.25{f} + tmp * {x};
+      tmp = -3.0{f} + tmp * {x};
+      tmp = 18.0{f} + tmp * {x};
+      tmp = -54.0{f} + tmp * {x};
+      tmp = 64.8{f} + tmp * {x};
+      curSupport_{i} *= tmp;
+    }
+)";
+              break;
+            default:
+              throw new base::operation_exception("degree not supported.");
+          }
+        }
+
+        static void replaceInPlace(std::string& str,
+                                   const std::string& searchStr,
+                                   const std::string& replaceStr) {
           size_t pos = 0;
 
           while ((pos = str.find(searchStr, pos)) != std::string::npos) {
@@ -739,23 +763,23 @@ uint end_data) {
           }
         }
 
-        void replaceInPlace(std::string& str,
-                     const std::string& searchStr,
-                     size_t number) {
+        static void replaceInPlace(std::string& str,
+                                   const std::string& searchStr,
+                                   size_t number) {
           replaceInPlace(str, searchStr, std::to_string(number));
         }
 
-        std::string replace(const std::string& str,
-                            const std::string& searchStr,
-                            const std::string& replaceStr) {
+        static std::string replace(const std::string& str,
+                                   const std::string& searchStr,
+                                   const std::string& replaceStr) {
           std::string result = str;
           replaceInPlace(result, searchStr, replaceStr);
           return result;
         }
 
-        std::string replace(const std::string& str,
-                            const std::string& searchStr,
-                            size_t replaceNumber) {
+        static std::string replace(const std::string& str,
+                                   const std::string& searchStr,
+                                   size_t replaceNumber) {
           return replace(str, searchStr, std::to_string(replaceNumber));
         }
     };
