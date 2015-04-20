@@ -31,12 +31,12 @@ int main(int argc, char** argv) {
 
   // create a two-dimensional piecewise bi-linear grid
   const size_t dim = dataset.getDimension();
-  const size_t degree = 3;
+  const size_t degree = 5;
   SGPP::base::Grid* grid = SGPP::base::Grid::createBsplineGrid(dim, degree);
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << "\n";
   // create regular grid, level 3
-  const SGPP::base::GridIndex::level_type level = 6;
+  const SGPP::base::GridIndex::level_type level = 8;
   SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << "\n";
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     SGPP::base::DataVector result(dataset.getNumberInstances());
     eval->eval(alpha, result);
 
-    std::cout << "calculating comparison values...\n";
+    /*std::cout << "calculating comparison values...\n";
     SGPP::base::OperationNaiveEval* evalCompare =
       SGPP::op_factory::createOperationNaiveEval(*grid);
     SGPP::base::DataVector evaluationPoint(dim);
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
       resultCompare[i] = evalCompare->eval(alpha, evaluationPoint);
     }
 
-    std::cout << "mse: " << calculateMSE(result, resultCompare) << "\n\n";
+    std::cout << "mse: " << calculateMSE(result, resultCompare) << "\n\n";*/
   }
 
   {
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     SGPP::base::DataVector result(gridStorage->size());
     eval->multTranspose(alpha, result);
 
-    std::cout << "calculating comparison values...\n";
+    /*std::cout << "calculating comparison values...\n";
     SGPP::base::SBsplineBase base(degree);
     SGPP::base::DataVector evaluationPoint(dim);
     SGPP::base::DataVector resultCompare(gridStorage->size());
@@ -120,6 +120,6 @@ int main(int argc, char** argv) {
       }
     }
 
-    std::cout << "mse: " << calculateMSE(result, resultCompare) << "\n";
+    std::cout << "mse: " << calculateMSE(result, resultCompare) << "\n";*/
   }
 }
