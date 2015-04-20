@@ -108,6 +108,12 @@ uint end_grid) {
   {float} tmp;
 )";
 
+          for (size_t i = 0; i < degree; i++) {
+            streamProgramSrc += replace(R"(
+  {float} c{i};
+)", "{i}", i);
+          }
+
           if (useLocalMemory) {
             streamProgramSrc += R"(
   __local {float} locLevel[{dimsTimesLocalWorkgroupSize}];
@@ -482,6 +488,12 @@ uint end_data) {
   {float} myResult = 0.0;
 )";
 
+          for (size_t i = 0; i < degree; i++) {
+            streamProgramSrc += replace(R"(
+  {float} c{i};
+)", "{i}", i);
+          }
+
           for (size_t d = 0; d < dims; d++) {
             streamProgramSrc += replace(R"(
   {float} level_{d} = ptrLevel[(groupIdx*{dims})+{d}];
@@ -630,6 +642,38 @@ uint end_data) {
               return R"(
     if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
       curSupport_{i} = 0.0{f};
+    } else {
+      if ({x} < 1.0{f}) {
+        tmp = 1.0{f} / 6.0{f};
+        c2 = 0.0{f};
+        c1 = 0.0{f};
+        c0 = 0.0{f};
+      } else if ({x} < 2.0{f}) {
+        tmp = -0.5{f};
+        c2 = 2.0{f};
+        c1 = -2.0{f};
+        c0 = 2.0{f} / 3.0{f};
+      } else if ({x} < 3.0{f}) {
+        tmp = 0.5{f};
+        c2 = -4.0{f};
+        c1 = 10.0{f};
+        c0 = -22.0{f} / 3.0{f};
+      } else {
+        tmp = -1.0{f} / 6.0{f};
+        c2 = 2.0{f};
+        c1 = -8.0{f};
+        c0 = 32.0{f} / 3.0{f};
+      }
+
+      tmp = c2 + tmp * {x};
+      tmp = c1 + tmp * {x};
+      tmp = c0 + tmp * {x};
+      curSupport_{i} *= tmp;
+    }
+)";
+              /*return R"(
+    if (({x} < 0.0{f}) || ({x} >= 4.0{f})) {
+      curSupport_{i} = 0.0{f};
     } else if ({x} < 1.0{f}) {
       tmp = 1.0{f} / 6.0{f};
       tmp *= {x};
@@ -655,7 +699,7 @@ uint end_data) {
       tmp = (32.0{f} / 3.0{f}) + tmp * {x};
       curSupport_{i} *= tmp;
     }
-)";
+)";*/
               // this takes longer despite fewer if-clauses on average
               // (assuming the cases are reached with the same probability)
               /*return R"(
@@ -694,6 +738,62 @@ uint end_data) {
               break;
             case 5:
               return R"(
+    if (({x} < 0.0{f}) || ({x} >= 6.0{f})) {
+      curSupport_{i} = 0.0{f};
+    } else {
+      if ({x} < 1.0{f}) {
+        tmp = 1.0{f} / 120.0{f};
+        c4 = 0.0{f};
+        c3 = 0.0{f};
+        c2 = 0.0{f};
+        c1 = 0.0{f};
+        c0 = 0.0{f};
+      } else if ({x} < 2.0{f}) {
+        tmp = -1.0{f} / 24.0{f};
+        c4 = 0.25{f};
+        c3 = -0.5{f};
+        c2 = 0.5{f};
+        c1 = -0.25{f};
+        c0 = 0.05{f};
+      } else if ({x} < 3.0{f}) {
+        tmp = 1.0{f} / 12.0{f};
+        c4 = -1.0{f};
+        c3 = 4.5{f};
+        c2 = -9.5{f};
+        c1 = 9.75{f};
+        c0 = -3.95{f};
+      } else if ({x} < 4.0{f}) {
+        tmp = -1.0{f} / 12.0{f};
+        c4 = 1.5{f};
+        c3 = -10.5{f};
+        c2 = 35.5{f};
+        c1 = -57.75{f};
+        c0 = 36.55{f};
+      } else if ({x} < 5.0{f}) {
+        tmp = 1.0{f} / 24.0{f};
+        c4 = -1.0{f};
+        c3 = 9.5{f};
+        c2 = -44.5{f};
+        c1 = 102.25{f};
+        c0 = -91.45{f};
+      } else {
+        tmp = -1.0{f} / 120.0{f};
+        c4 = 0.25{f};
+        c3 = -3.0{f};
+        c2 = 18.0{f};
+        c1 = -54.0{f};
+        c0 = 64.8{f};
+      }
+
+      tmp = c4 + tmp * {x};
+      tmp = c3 + tmp * {x};
+      tmp = c2 + tmp * {x};
+      tmp = c1 + tmp * {x};
+      tmp = c0 + tmp * {x};
+      curSupport_{i} *= tmp;
+    }
+)";
+              /*return R"(
     if (({x} < 0.0{f}) || ({x} >= 6.0{f})) {
       curSupport_{i} = 0.0{f};
     } else if ({x} < 1.0{f}) {
@@ -745,7 +845,7 @@ uint end_data) {
       tmp = 64.8{f} + tmp * {x};
       curSupport_{i} *= tmp;
     }
-)";
+)";*/
               break;
             default:
               throw new base::operation_exception("degree not supported.");
