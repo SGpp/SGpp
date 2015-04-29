@@ -100,15 +100,19 @@ const bool UMFPACK_ENABLED;
 %rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
 %rename(OptRandomSearch)            SGPP::optimization::optimizer::RandomSearch;
 
-%rename(OptFileIOWriteGrid)         SGPP::optimization::file_io::writeGrid;
-%rename(OptFileIOReadGrid)          SGPP::optimization::file_io::readGrid;
-%rename(OptFileIOWriteMatrix)       SGPP::optimization::file_io::writeMatrix;
-%rename(OptFileIOReadMatrix)        SGPP::optimization::file_io::readMatrix;
-%rename(OptFileIOWriteVector)       SGPP::optimization::file_io::writeVector;
-%rename(OptFileIOReadVector)        SGPP::optimization::file_io::readVector;
-%rename(OptMutexType)               SGPP::optimization::MutexType;
-%rename(OptPrinter)                 SGPP::optimization::Printer;
-%rename(OptPrinterInstance)         SGPP::optimization::printer;
+%rename(OptFileIOWriteGrid)                 SGPP::optimization::file_io::writeGrid;
+%rename(OptFileIOReadGrid)                  SGPP::optimization::file_io::readGrid;
+%rename(OptFileIOWriteMatrix)               SGPP::optimization::file_io::writeMatrix;
+%rename(OptFileIOReadMatrix)                SGPP::optimization::file_io::readMatrix;
+%rename(OptFileIOWriteVector)               SGPP::optimization::file_io::writeVector;
+%rename(OptFileIOReadVector)                SGPP::optimization::file_io::readVector;
+%rename(OptMathSchurDecomposition)          SGPP::optimization::math::schurDecomposition;
+%rename(OptMathQRDecomposition)             SGPP::optimization::math::QRDecomposition;
+%rename(OptMathHessenbergForm)              SGPP::optimization::math::hessenbergForm;
+%rename(OptMathHouseholderTransformation)   SGPP::optimization::math::householderTransformation;
+%rename(OptMutexType)                       SGPP::optimization::MutexType;
+%rename(OptPrinter)                         SGPP::optimization::Printer;
+%rename(OptPrinterInstance)                 SGPP::optimization::printer;
 
 // classes with director interface
 %feature("director") SGPP::optimization::ObjectiveFunction;
@@ -188,6 +192,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/sle/solver/UMFPACK.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/Optimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/CMAES.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/DifferentialEvolution.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/GradientMethod.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/NelderMead.hpp"
@@ -197,6 +202,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/RandomSearch.hpp"
 
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
+%include "optimization/src/sgpp/optimization/tools/Math.hpp"
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
 

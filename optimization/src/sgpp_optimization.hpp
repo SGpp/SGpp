@@ -42,6 +42,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
@@ -51,6 +52,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
+#include <sgpp/optimization/optimizer/CMAES.hpp>
 #include <sgpp/optimization/optimizer/DifferentialEvolution.hpp>
 #include <sgpp/optimization/optimizer/GradientMethod.hpp>
 #include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
@@ -72,6 +74,7 @@
 #include <sgpp/optimization/sle/system/SLE.hpp>
 
 #include <sgpp/optimization/tools/FileIO.hpp>
+#include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
