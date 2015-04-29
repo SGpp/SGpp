@@ -32,18 +32,18 @@ namespace SGPP {
          */
         virtual ~PeriodicGridGenerator();
 
-        virtual void regular(int level);
-        virtual void full(int level);
+        virtual void regular(size_t level);
+        virtual void full(size_t level);
         virtual void refine(RefinementFunctor* func);
-        virtual void cliques(int level, size_t clique_size);
+        virtual void cliques(size_t level, size_t clique_size);
         virtual size_t getNumberOfRefinablePoints();
 
         virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
         virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
         virtual size_t getNumberOfRemovablePoints();
 
-        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel);
-        virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel);
+        virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel);
+        virtual size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel);
 
       protected:
         /// pointer to the storage object

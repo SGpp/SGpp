@@ -19,6 +19,10 @@ namespace SGPP {
      */
     template <class LT, class IT>
     class BsplineBasis: public Basis<LT, IT> {
+      protected:
+        /// degree of the B-spline
+        size_t degree;
+
       public:
         /**
          * Default constructor.
@@ -29,8 +33,7 @@ namespace SGPP {
         /**
          * Constructor.
          *
-         * @param degree    B-spline degree, must be odd
-         *                  (if it's even, degree - 1 is used)
+         * @param degree    B-spline degree, must be odd (if it's even, degree - 1 is used)
          */
         BsplineBasis(size_t degree) : degree(degree) {
           if (degree < 1) {
@@ -47,8 +50,7 @@ namespace SGPP {
          *              (with knots \f$\{0, 1, ..., p+1\}\f$)
          */
         inline float_t uniformBSpline(float_t x, size_t p) const {
-          // wrote the following by hand... nah, not really
-          // (thanks to Sage & Python!)
+          // wrote the following by hand... nah, not really (thanks to Sage & Python!)
           switch (p) {
             case 3:
               if ((x < 0.0) || (x >= 4.0)) {
@@ -60,8 +62,7 @@ namespace SGPP {
               } else if (x < 3.0) {
                 return 0.5 * x * x * x - 4.0 * x * x + 10.0 * x - 22.0 / 3.0;
               } else {
-                return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x +
-                       32.0 / 3.0;
+                return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x + 32.0 / 3.0;
               }
 
               break;
@@ -627,8 +628,7 @@ namespace SGPP {
                 return 0.0;
               } else {
                 return (x / pDbl) * uniformBSpline(x, p - 1)
-                       + ((pDbl + 1.0 - x) / pDbl) *
-                       uniformBSpline(x - 1.0, p - 1);
+                       + ((pDbl + 1.0 - x) / pDbl) * uniformBSpline(x - 1.0, p - 1);
               }
           }
         }
@@ -1139,8 +1139,7 @@ namespace SGPP {
               if ((x < 0.0) || (x >= static_cast<float_t>(p) + 1.0)) {
                 return 0.0;
               } else {
-                return uniformBSpline(x, p - 1) -
-                       uniformBSpline(x - 1.0, p - 1);
+                return uniformBSpline(x, p - 1) - uniformBSpline(x - 1.0, p - 1);
               }
           }
         }
@@ -1577,9 +1576,8 @@ namespace SGPP {
               if ((x < 0.0) || (x >= static_cast<float_t>(p) + 1.0)) {
                 return 0.0;
               } else {
-                return uniformBSpline(x, p - 2) -
-                       2.0 * uniformBSpline(x - 1.0, p - 2) +
-                       uniformBSpline(x - 2.0, p - 2);
+                return uniformBSpline(x, p - 2) - 2.0 * uniformBSpline(x - 1.0, p - 2)
+                       + uniformBSpline(x - 2.0, p - 2);
               }
           }
         }
@@ -1594,8 +1592,7 @@ namespace SGPP {
           const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
 
           return uniformBSpline(
-                   x * hinv - static_cast<float_t>(i) +
-                   static_cast<float_t>(this->degree + 1) / 2.0,
+                   x * hinv - static_cast<float_t>(i) + static_cast<float_t>(this->degree + 1) / 2.0,
                    this->degree);
         }
 
@@ -1609,8 +1606,7 @@ namespace SGPP {
           const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
 
           return hinv * uniformBSplineDx(
-                   x * hinv - static_cast<float_t>(i) +
-                   static_cast<float_t>(this->degree + 1) / 2.0,
+                   x * hinv - static_cast<float_t>(i) + static_cast<float_t>(this->degree + 1) / 2.0,
                    this->degree);
         }
 
@@ -1624,8 +1620,7 @@ namespace SGPP {
           const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
 
           return hinv * hinv * uniformBSplineDxDx(
-                   x * hinv - static_cast<float_t>(i) +
-                   static_cast<float_t>(this->degree + 1) / 2.0,
+                   x * hinv - static_cast<float_t>(i) + static_cast<float_t>(this->degree + 1) / 2.0,
                    this->degree);
         }
 
@@ -1635,10 +1630,6 @@ namespace SGPP {
         inline size_t getDegree() const {
           return degree;
         }
-
-      protected:
-        /// degree of the B-spline
-        size_t degree;
     };
 
     // default type-def (unsigned int for level and index)

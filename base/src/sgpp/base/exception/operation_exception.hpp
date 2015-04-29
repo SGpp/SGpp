@@ -8,6 +8,7 @@
 
 #include <exception>
 #include <cstddef>
+#include <string>
 
 #include <sgpp/globaldef.hpp>
 
@@ -28,6 +29,14 @@ namespace SGPP {
          * @param msg the exception message
          */
         operation_exception(const char* msg) throw() : msg(msg) {
+        }
+
+        /**
+         * Constructor
+         *
+         * @param msg the exception message
+         */
+        operation_exception(std::string msg) throw() : stringMsg(msg), msg(stringMsg.c_str()) {
         }
 
         /**
@@ -55,6 +64,7 @@ namespace SGPP {
 
       protected:
         /// the exception message
+        std::string stringMsg;
         const char* msg;
 
     };

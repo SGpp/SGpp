@@ -14,7 +14,6 @@
 #include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
-#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationLinear.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisationModLinear.hpp>
@@ -65,7 +64,6 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalModBspline.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalBspline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalLinearClenshawCurtis.hpp>
@@ -78,7 +76,6 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientModBspline.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalGradientModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientBspline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientWaveletBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalGradientModWavelet.hpp>
@@ -87,7 +84,6 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessianBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessianBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessianModBspline.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalHessianModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessianBspline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessianWaveletBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalHessianModWavelet.hpp>
@@ -96,7 +92,6 @@
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModBspline.hpp>
-#include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeBspline.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeWaveletBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeModWavelet.hpp>
@@ -294,10 +289,6 @@ namespace SGPP {
         return new base::OperationNaiveEvalModBspline(
                  grid.getStorage(),
                  dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
-      } else if (strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) {
-        return new base::OperationNaiveEvalModBsplineClenshawCurtis(
-                 grid.getStorage(),
-                 dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree());
       } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
         return new base::OperationNaiveEvalBsplineBoundary(
                  grid.getStorage(),
@@ -327,10 +318,6 @@ namespace SGPP {
         return new base::OperationNaiveEvalGradientModBspline(
                  grid.getStorage(),
                  dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
-      } else if (strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) {
-        return new base::OperationNaiveEvalGradientModBsplineClenshawCurtis(
-                 grid.getStorage(),
-                 dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree());
       } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
         return new base::OperationNaiveEvalGradientBsplineBoundary(
                  grid.getStorage(),
@@ -361,10 +348,6 @@ namespace SGPP {
         return new base::OperationNaiveEvalHessianModBspline(
                  grid.getStorage(),
                  dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
-      } else if (strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) {
-        return new base::OperationNaiveEvalHessianModBsplineClenshawCurtis(
-                 grid.getStorage(),
-                 dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree());
       } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
         return new base::OperationNaiveEvalHessianBsplineBoundary(
                  grid.getStorage(),
@@ -394,10 +377,6 @@ namespace SGPP {
         return new base::OperationNaiveEvalPartialDerivativeModBspline(
                  grid.getStorage(),
                  dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
-      } else if (strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) {
-        return new base::OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis(
-                 grid.getStorage(),
-                 dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree());
       } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
         return new base::OperationNaiveEvalPartialDerivativeBsplineBoundary(
                  grid.getStorage(),

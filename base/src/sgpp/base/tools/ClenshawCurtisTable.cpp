@@ -10,17 +10,18 @@
 namespace SGPP {
   namespace base {
 
-    ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
+    template<class LT, class IT>
+    ClenshawCurtisTable<LT, IT>::ClenshawCurtisTable(LT maxLevel)
       : table((1 << (maxLevel + 1)) + maxLevel),
         maxLevel(maxLevel) {
       size_t k = 0;
-      index_type hInv = 1;
+      IT hInv = 1;
 
-      for (level_type l = 0; l <= maxLevel; l++) {
+      for (LT l = 0; l <= maxLevel; l++) {
         const float_t h = 1.0 / static_cast<float_t>(hInv);
 
-        for (index_type i = 0; i <= hInv; i++) {
-          table[k] = calculatePoint(h, i);
+        for (IT i = 0; i <= hInv; i++) {
+          table[k] = (cos(M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
           k++;
         }
 
@@ -28,7 +29,7 @@ namespace SGPP {
       }
     }
 
-    ClenshawCurtisTable clenshawCurtisTable;
+    SClenshawCurtisTable clenshawCurtisTable;
 
   }
 }

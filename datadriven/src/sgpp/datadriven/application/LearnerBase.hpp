@@ -103,6 +103,7 @@ namespace SGPP {
         virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset, float_t lambda) = 0;
 
       public:
+
         /**
          * Constructor
          *

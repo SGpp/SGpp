@@ -25,20 +25,12 @@ namespace SGPP {
     PeriodicGridGenerator::~PeriodicGridGenerator() {
     }
 
-    void PeriodicGridGenerator::regular(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PeriodicGridGenerator::regular(size_t level) {
       HashGenerator gen;
-      gen.regularWithPeriodicBoundaries(storage, level);
+      gen.regularWithPeriodicBoundaries(storage, static_cast<HashGenerator::level_t>(level));
     }
 
-    void PeriodicGridGenerator::full(int level) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PeriodicGridGenerator::full(size_t level) {
       throw generation_exception("PeriodicGridGenerator::full is not implemented");
     }
 
@@ -51,11 +43,7 @@ namespace SGPP {
       return 0;
     }
 
-    void PeriodicGridGenerator::cliques(int level, size_t clique_size) {
-      if (level < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PeriodicGridGenerator::cliques(size_t level, size_t clique_size) {
       HashGenerator gen;
       gen.cliques(this->storage, static_cast<HashGenerator::level_t>(level), clique_size);
     }
@@ -74,19 +62,11 @@ namespace SGPP {
       return 0;
     }
 
-    void PeriodicGridGenerator::refineMaxLevel(RefinementFunctor* func, int maxLevel) {
-      if (maxLevel < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    void PeriodicGridGenerator::refineMaxLevel(RefinementFunctor* func, size_t maxLevel) {
       throw generation_exception("PeriodicGridGenerator::refineMaxLevel is not implemented");
     }
 
-    size_t PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel(int maxLevel) {
-      if (maxLevel < 0) {
-        throw generation_exception("Grid level value is negative");
-      }
-
+    size_t PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
       throw generation_exception("PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
       return 0;
     }
