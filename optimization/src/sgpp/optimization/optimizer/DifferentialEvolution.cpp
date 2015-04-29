@@ -166,7 +166,7 @@ namespace SGPP {
               }
 
               // evaluate mutated point (if not out of bounds)
-              const float_t fy = (inDomain ? curFPtr->eval(y) : INFINITY);
+              float_t fy = (inDomain ? curFPtr->eval(y) : INFINITY);
 
               if (fy < fx[i]) {
                 // function_value is better ==> replace point with mutated one

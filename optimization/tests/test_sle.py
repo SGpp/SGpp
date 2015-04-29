@@ -183,7 +183,7 @@ class TestSLE(unittest.TestCase):
             testSLESolution(self, A, alpha, function_values)
             
             # create interpolant
-            ft = pysgpp.OptInterpolantFunction(d, grid, pysgpp.DataVector(alpha))
+            ft = pysgpp.OptInterpolantFunction(grid, pysgpp.DataVector(alpha))
             for i in range(100):
                 # don't go near the boundary (should suffice)
                 x = pysgpp.DataVector([random.uniform(0.2, 0.8) for t in range(d)])

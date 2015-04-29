@@ -21,6 +21,11 @@ namespace SGPP {
      */
     template<class LT, class IT>
     class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
+      protected:
+        /// B-spline basis for B-spline evaluation
+        BsplineBasis<LT, IT> bsplineBasis;
+        std::vector<float_t> knots;
+
       public:
         /**
          * Default constructor.
@@ -32,22 +37,23 @@ namespace SGPP {
         /**
          * Constructor.
          *
-         * @param degree        B-spline degree, must be odd
-         *                      (if it's even, degree - 1 is used)
+         * @param degree        B-spline degree, must be odd (if it's even, degree - 1 is used)
          */
         BsplineClenshawCurtisBasis(size_t degree)
           : bsplineBasis(BsplineBasis<LT, IT>(degree)),
-            xi(std::vector<float_t>(degree + 2, 0.0)) {
+            knots(std::vector<float_t>(degree + 2, 0.0)) {
         }
 
         /**
          * @param x     evaluation point
          * @param p     B-spline degree
          * @param k     index of B-spline in the knot sequence
-         * @return      value of non-uniform B-spline
-         *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
+         * @param xi    knot sequence
+         * @return      value of non-uniform B-spline with knots
+         *              \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
          */
-        inline float_t nonUniformBSpline(float_t x, size_t p, size_t k) const {
+        inline float_t nonUniformBSpline(float_t x, size_t p, size_t k,
+                                         const std::vector<float_t>& xi) const {
           if (p == 0) {
             // characteristic function of [xi[k], xi[k+1])
             return (((x >= xi[k]) && (x < xi[k + 1])) ? 1.0 : 0.0);
@@ -57,31 +63,9 @@ namespace SGPP {
           } else {
             // Cox-de-Boor recursion
             return (x - xi[k]) / (xi[k + p] - xi[k])
-                   * nonUniformBSpline(x, p - 1, k)
+                   * nonUniformBSpline(x, p - 1, k, xi)
                    + (1.0 - (x - xi[k + 1]) / (xi[k + p + 1] - xi[k + 1]))
-                   * nonUniformBSpline(x, p - 1, k + 1);
-          }
-        }
-
-        /**
-         * @param x     evaluation point
-         * @param p     B-spline degree
-         * @param k     index of B-spline in the knot sequence
-         * @return      value of derivative of non-uniform B-spline
-         *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
-         */
-        inline float_t nonUniformBSplineDx(
-          float_t x, size_t p, size_t k) const {
-          if (p == 0) {
-            return 0.0;
-          } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
-            return 0.0;
-          } else {
-            const float_t pDbl = static_cast<float_t>(p);
-
-            return pDbl / (xi[k + p] - xi[k]) * nonUniformBSpline(x, p - 1, k)
-                   - pDbl / (xi[k + p + 1] - xi[k + 1])
-                   * nonUniformBSpline(x, p - 1, k + 1);
+                   * nonUniformBSpline(x, p - 1, k + 1, xi);
           }
         }
 
@@ -90,11 +74,34 @@ namespace SGPP {
          * @param p     B-spline degree
          * @param k     index of B-spline in the knot sequence
          * @param xi    knot sequence
-         * @return      value of 2nd derivative of non-uniform B-spline
-         *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
+         * @return      value of derivative of non-uniform B-spline with knots
+         *              \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
          */
-        inline float_t nonUniformBSplineDxDx(
-          float_t x, size_t p, size_t k) const {
+        inline float_t nonUniformBSplineDx(float_t x, size_t p, size_t k,
+                                           const std::vector<float_t>& xi) const {
+          if (p == 0) {
+            return 0.0;
+          } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
+            return 0.0;
+          } else {
+            const float_t pDbl = static_cast<float_t>(p);
+
+            return pDbl / (xi[k + p] - xi[k]) * nonUniformBSpline(x, p - 1, k, xi)
+                   - pDbl / (xi[k + p + 1] - xi[k + 1])
+                   * nonUniformBSpline(x, p - 1, k + 1, xi);
+          }
+        }
+
+        /**
+         * @param x     evaluation point
+         * @param p     B-spline degree
+         * @param k     index of B-spline in the knot sequence
+         * @param xi    knot sequence
+         * @return      value of 2nd derivative of non-uniform B-spline with knots
+         *              \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
+         */
+        inline float_t nonUniformBSplineDxDx(float_t x, size_t p, size_t k,
+                                             const std::vector<float_t>& xi) const {
           if (p <= 1) {
             return 0.0;
           } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
@@ -105,14 +112,12 @@ namespace SGPP {
             const float_t alphaKp1P = pDbl / (xi[k + p + 1] - xi[k + 1]);
             const float_t alphaKPm1 = (pDbl - 1.0) / (xi[k + p - 1] - xi[k]);
             const float_t alphaKp1Pm1 = (pDbl - 1.0) / (xi[k + p] - xi[k + 1]);
-            const float_t alphaKp2Pm1 = (pDbl - 1.0) /
-                                        (xi[k + p + 1] - xi[k + 2]);
+            const float_t alphaKp2Pm1 = (pDbl - 1.0) / (xi[k + p + 1] - xi[k + 2]);
 
-            return alphaKP * alphaKPm1 * nonUniformBSpline(x, p - 2, k)
+            return alphaKP * alphaKPm1 * nonUniformBSpline(x, p - 2, k, xi)
                    - (alphaKP + alphaKp1P) * alphaKp1Pm1
-                   * nonUniformBSpline(x, p - 2, k + 1)
-                   + alphaKp1P * alphaKp2Pm1 *
-                   nonUniformBSpline(x, p - 2, k + 2);
+                   * nonUniformBSpline(x, p - 2, k + 1, xi)
+                   + alphaKp1P * alphaKp2Pm1 * nonUniformBSpline(x, p - 2, k + 2, xi);
           }
         }
 
@@ -126,17 +131,17 @@ namespace SGPP {
         }
 
         /**
-         * Construct the (p+2) Clenshaw-Curtis knots of a
-         * B-spline basis function and save them in xi.
+         * Construct the (p+2) Clenshaw-Curtis knots of a B-spline basis function
+         * and save them in knots.
          *
          * @param l     level of basis function
          * @param i     index of basis function
          */
         inline void constructKnots(LT l, IT i) {
           const IT hInv = static_cast<IT>(1) << l;
-          const size_t& p = bsplineBasis.getDegree();
+          const size_t p = bsplineBasis.getDegree();
 
-          xi[(p + 1) / 2] = clenshawCurtisTable.getPoint(l, i);
+          knots[(p + 1) / 2] = clenshawCurtisTable.getPoint(l, i);
 
           if (i < (p + 1) / 2) {
             // grid point index is too far on the left
@@ -144,20 +149,20 @@ namespace SGPP {
             size_t a = (p + 1) / 2 - i;
 
             for (size_t j = a; j < (p + 1) / 2; j++) {
-              xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(j - a));
+              knots[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(j - a));
             }
 
-            float_t h = xi[a + 1] - xi[a];
+            float_t h = knots[a + 1] - knots[a];
 
             // equivalent to "for (int j = a-1; j >= 0; j--)"
             for (size_t j = a; j-- > 0;) {
-              xi[j] = xi[j + 1] - h;
+              knots[j] = knots[j + 1] - h;
             }
           } else {
             // all grid points on the left can be calculated
             for (size_t j = 0; j < (p + 1) / 2; j++) {
-              xi[j] = clenshawCurtisTable.getPoint(
-                        l, static_cast<IT>(i - (p + 1) / 2 + j));
+              knots[j] = clenshawCurtisTable.getPoint(
+                           l, static_cast<IT>(i - (p + 1) / 2 + j));
             }
           }
 
@@ -167,20 +172,20 @@ namespace SGPP {
             size_t b = hInv + (p + 1) / 2 - i;
 
             for (size_t j = (p + 1) / 2 + 1; j <= b; j++) {
-              xi[j] = clenshawCurtisTable.getPoint(
-                        l, static_cast<IT>(i - (p + 1) / 2 + j));
+              knots[j] = clenshawCurtisTable.getPoint(
+                           l, static_cast<IT>(i - (p + 1) / 2 + j));
             }
 
-            float_t h = xi[b] - xi[b - 1];
+            float_t h = knots[b] - knots[b - 1];
 
             for (size_t j = b + 1; j < p + 2; j++) {
-              xi[j] = xi[j - 1] + h;
+              knots[j] = knots[j - 1] + h;
             }
           } else {
             // all grid points on the right can be calculated
             for (size_t j = (p + 1) / 2 + 1; j < p + 2; j++) {
-              xi[j] = clenshawCurtisTable.getPoint(
-                        l, static_cast<IT>(i - (p + 1) / 2 + j));
+              knots[j] = clenshawCurtisTable.getPoint(
+                           l, static_cast<IT>(i - (p + 1) / 2 + j));
             }
           }
         }
@@ -199,7 +204,7 @@ namespace SGPP {
                      bsplineBasis.getDegree());
           } else {
             constructKnots(l, i);
-            return nonUniformBSpline(x, bsplineBasis.getDegree(), 0);
+            return nonUniformBSpline(x, bsplineBasis.getDegree(), 0, knots);
           }
         }
 
@@ -207,8 +212,7 @@ namespace SGPP {
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
-         * @return      value of derivative of Clenshaw-Curtis
-         *              B-spline basis function
+         * @return      value of derivative of Clenshaw-Curtis B-spline basis function
          */
         inline float_t evalDx(LT l, IT i, float_t x) {
           if (l == 0) {
@@ -218,7 +222,7 @@ namespace SGPP {
                      bsplineBasis.getDegree());
           } else {
             constructKnots(l, i);
-            return nonUniformBSplineDx(x, bsplineBasis.getDegree(), 0);
+            return nonUniformBSplineDx(x, bsplineBasis.getDegree(), 0, knots);
           }
         }
 
@@ -226,8 +230,7 @@ namespace SGPP {
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
-         * @return      value of 2nd derivative of Clenshaw-Curtis
-         *              B-spline basis function
+         * @return      value of 2nd derivative of Clenshaw-Curtis B-spline basis function
          */
         inline float_t evalDxDx(LT l, IT i, float_t x) {
           if (l == 0) {
@@ -237,7 +240,7 @@ namespace SGPP {
                      bsplineBasis.getDegree());
           } else {
             constructKnots(l, i);
-            return nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0);
+            return nonUniformBSplineDxDx(x, bsplineBasis.getDegree(), 0, knots);
           }
         }
 
@@ -247,17 +250,10 @@ namespace SGPP {
         inline size_t getDegree() const {
           return bsplineBasis.getDegree();
         }
-
-      protected:
-        /// B-spline basis for B-spline evaluation
-        BsplineBasis<LT, IT> bsplineBasis;
-        /// temporary helper vector of fixed size p+2 containing B-spline knots
-        std::vector<float_t> xi;
     };
 
     // default type-def (unsigned int for level and index)
-    typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int>
-    SBsplineClenshawCurtisBase;
+    typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int> SBsplineClenshawCurtisBase;
   }
 }
 

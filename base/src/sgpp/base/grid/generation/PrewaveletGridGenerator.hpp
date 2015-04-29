@@ -75,9 +75,9 @@ namespace SGPP {
          */
         virtual ~PrewaveletGridGenerator();
 
-        virtual void regular(int level);
-        virtual void cliques(int level, size_t clique_size);
-        virtual void full(int level);
+        virtual void regular(size_t level);
+        virtual void cliques(size_t level, size_t clique_size);
+        virtual void full(size_t level);
         virtual void refine(RefinementFunctor* func);
         virtual size_t getNumberOfRefinablePoints();
 
@@ -85,8 +85,8 @@ namespace SGPP {
         virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
         virtual size_t getNumberOfRemovablePoints();
 
-        virtual void refineMaxLevel(RefinementFunctor* func, int maxLevel);
-        virtual size_t getNumberOfRefinablePointsToMaxLevel(int maxLevel);
+        virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel);
+        virtual size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel);
 
     };
 

@@ -189,7 +189,9 @@ namespace SGPP {
         return static_cast<float_t>(index[d]) /
                static_cast<float_t>(static_cast<index_type>(1) << level[d]);
       } else {
-        return clenshawCurtisTable.getPoint(level[d], index[d]);
+        return clenshawCurtisTable.getPoint(
+                 static_cast<SClenshawCurtisTable::level_type>(level[d]),
+                 static_cast<SClenshawCurtisTable::index_type>(index[d]));
       }
     }
 

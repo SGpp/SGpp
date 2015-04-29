@@ -68,7 +68,7 @@ namespace SGPP {
 
         virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 
-        virtual void rebuildLevelAndIndex();
+        virtual void prepareGrid();
 
         void setImplementation(SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
           this->implementationConfiguration = operationConfiguration;
