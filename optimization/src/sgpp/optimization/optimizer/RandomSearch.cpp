@@ -29,7 +29,7 @@ namespace SGPP {
       RandomSearch::RandomSearch(Optimizer& optimizer,
                                  size_t maxFcnEvalCount,
                                  size_t populationSize) :
-        Optimizer(f, maxFcnEvalCount),
+        Optimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(optimizer) {
         initialize(populationSize);

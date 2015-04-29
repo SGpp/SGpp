@@ -13,12 +13,12 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
@@ -61,6 +61,11 @@ namespace SGPP {
                               "modlinear") == 0)) {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::ModLinearGrid(f.getDimension()));
+      } else if (std::strcmp(grid.getType(),
+                             "modBsplineClenshawCurtis") == 0) {
+        linearGrid = std::unique_ptr<base::Grid>(
+                       new base::ModBsplineClenshawCurtisGrid(
+                         f.getDimension(), 1));
       } else {
         throw std::invalid_argument("Grid type not supported.");
       }
@@ -80,6 +85,7 @@ namespace SGPP {
       base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
 
       if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
+          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
           (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
         // Clenshaw-Curtis grid
         distr = base::GridIndex::ClenshawCurtis;

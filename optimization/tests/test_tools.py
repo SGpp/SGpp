@@ -191,3 +191,122 @@ class TestTools(unittest.TestCase):
             self.assertTrue(all([0 <= number <= k-1 for number in numbers]))
             self.assertAlmostEqual(mean, (k-1.0)/2.0, delta=k*0.01)
             self.assertAlmostEqual(var, (k*k-1.0)/12.0, delta=k*k*0.01)
+    
+    def orthogonalityTest(self, A):
+        n = A.getNrows()
+        self.assertEqual(n, A.getNcols())
+        
+        for i in range(n):
+            for j in range(i+1):
+                entry = 0.0
+                for l in range(n):
+                    entry += A.get(i, l) * A.get(j, l)
+                self.assertAlmostEqual(entry, 1.0 if (i == j) else 0.0)
+    
+    def symmetryTest(self, A):
+        n = A.getNrows()
+        self.assertEqual(n, A.getNcols())
+        
+        for i in range(n):
+            for j in range(i):
+                self.assertAlmostEqual(A.get(i, j), A.get(j, i))
+    
+    def similiarityTest(self, A, V, B):
+        n = A.getNrows()
+        self.assertEqual(n, A.getNcols())
+        self.assertEqual(n, V.getNrows())
+        self.assertEqual(n, V.getNcols())
+        self.assertEqual(n, B.getNrows())
+        self.assertEqual(n, B.getNcols())
+        
+        for i in range(n):
+            for j in range(n):
+                entry1 = 0.0
+                entry2 = 0.0
+                for l in range(n):
+                    entry1 += A.get(i, l) * V.get(l, j)
+                    entry2 += V.get(i, l) * B.get(l, j)
+                self.assertAlmostEqual(entry1, entry2)
+    
+    def generateRandomMatrix(self, n):
+        A = pysgpp.DataMatrix(n, n)
+        for i in range(n):
+            for j in range(n):
+                A.set(i, j, random.gauss(0.0, 1.0))
+        return A
+    
+    def testMathHouseholderTransformation(self):
+        """Test SGPP::optimization::math::householderTransformation."""
+        random.seed(42)
+        n = 20
+        A = self.generateRandomMatrix(n)
+        
+        for p, q in [(0, 0), (2, 1), (5, 9)]:
+            m = n - p
+            Q = pysgpp.DataMatrix(m, m)
+            pysgpp.OptMathHouseholderTransformation(A, p, q, Q)
+            self.symmetryTest(Q)
+            self.orthogonalityTest(Q)
+            
+            for i in range(p+1, n):
+                entry = 0.0
+                for l in range(p, n):
+                    entry += Q.get(i-p, l-p) * A.get(l, q)
+                self.assertAlmostEqual(entry, 0.0)
+    
+    def testMathHessenbergForm(self):
+        """Test SGPP::optimization::math::hessenbergForm."""
+        random.seed(42)
+        n = 20
+        A = self.generateRandomMatrix(n)
+        H = pysgpp.DataMatrix(A)
+        V = pysgpp.DataMatrix(n, n)
+        pysgpp.OptMathHessenbergForm(H, V)
+        self.orthogonalityTest(V)
+        self.similiarityTest(A, V, H)
+        
+        for i in range(n):
+            for j in range(i-2):
+                self.assertAlmostEqual(H.get(i, j), 0.0)
+    
+    def testMathQRDecomposition(self):
+        """Test SGPP::optimization::math::QRDecomposition."""
+        random.seed(42)
+        n = 20
+        A = self.generateRandomMatrix(n)
+        R = pysgpp.DataMatrix(A)
+        Q = pysgpp.DataMatrix(n, n)
+        pysgpp.OptMathQRDecomposition(R, Q)
+        self.orthogonalityTest(Q)
+        
+        for i in range(n):
+            for j in range(i-1):
+                self.assertAlmostEqual(R.get(i, j), 0.0)
+        
+        for i in range(n):
+            for j in range(n):
+                entry = 0.0
+                for l in range(n):
+                    entry += Q.get(i, l) * R.get(l, j)
+                self.assertAlmostEqual(A.get(i, j), entry)
+    
+    def testMathSchurDecomposition(self):
+        """Test SGPP::optimization::math::schurDecomposition."""
+        random.seed(42)
+        n = 20
+        A = self.generateRandomMatrix(n)
+        
+        for i in range(n):
+            for j in range(i):
+                A.set(i, j, A.get(j, i))
+        
+        S = pysgpp.DataMatrix(A)
+        V = pysgpp.DataMatrix(n, n)
+        pysgpp.OptMathSchurDecomposition(S, V)
+        self.orthogonalityTest(V)
+        self.similiarityTest(A, V, S)
+        
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    self.assertAlmostEqual(S.get(i, j), 0.0)
