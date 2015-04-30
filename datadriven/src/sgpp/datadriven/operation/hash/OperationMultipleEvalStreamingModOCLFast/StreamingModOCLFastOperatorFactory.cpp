@@ -23,6 +23,7 @@ namespace SGPP {
       //  defaultParameter["KERNEL_GRID_BLOCK_SIZE"] = "1";
       defaultParameter["KERNEL_TRANS_DATA_BLOCK_SIZE"] = "1";
       defaultParameter["KERNEL_TRANS_UNROLL_1D"] = "true";
+      defaultParameter["KERNEL_STORE_DATA"] = "array";
 
       base::OpenCLConfigurationParameters parameters("StreamingModOCLFast.cfg", defaultParameter);
 

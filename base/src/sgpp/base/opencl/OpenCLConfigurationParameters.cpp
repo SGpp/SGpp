@@ -25,6 +25,7 @@ namespace SGPP {
       this->parameters["MAX_DEVICES"] = "0";
       this->parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
       this->parameters["REUSE_SOURCE"] = "false";
+      this->parameters["WRITE_SOURCE"] = "false";
       this->parameters["OCL_MANAGER_VERBOSE"] = "false";
       this->parameters["SHOW_BUILD_LOG"] = "false";
 

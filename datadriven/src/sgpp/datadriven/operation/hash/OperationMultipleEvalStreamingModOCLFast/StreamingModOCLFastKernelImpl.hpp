@@ -49,7 +49,7 @@ namespace SGPP {
         double* deviceTimingsMult;
         double* deviceTimingsMultTranspose;
 
-        StreamingModOCLFastKernelSourceBuilder<real_type> kernelSourceBuilder;
+        StreamingModOCLFastKernelSourceBuilder kernelSourceBuilder;
         base::OCLManager& manager;
         base::ConfigurationParameters parameters;
 
@@ -60,8 +60,8 @@ namespace SGPP {
 
         StreamingModOCLFastKernelImpl(size_t dims, base::OCLManager& manager, base::ConfigurationParameters parameters) :
           deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
-            parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
-              manager, this->parameters) {
+            parameters, dims), manager(manager), parameters(parameters), multTransposeLoadBalancer(
+              manager, this->parameters),multLoadBalancer(manager, this->parameters) {
 
           this->dims = dims;
           this->num_devices = manager.num_devices;
@@ -431,13 +431,13 @@ namespace SGPP {
 
         void createMultTrans(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
                              cl_device_id* device_ids, cl_kernel* kernel) {
-          std::string program_src = kernelSourceBuilder.generateSourceMultTrans(dims);
+          std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
           manager.buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel);
         }
 
         void createMult(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
                         cl_device_id* device_ids, cl_kernel* kernel) {
-          std::string program_src = kernelSourceBuilder.generateSourceMult(dims);
+          std::string program_src = kernelSourceBuilder.generateSourceMult();
           manager.buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel);
         }
 
