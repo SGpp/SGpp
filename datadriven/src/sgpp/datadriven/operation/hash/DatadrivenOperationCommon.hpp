@@ -18,7 +18,7 @@ namespace SGPP {
     };
 
     enum class OperationMultipleEvalSubType {
-      DEFAULT, SIMPLE, COMBINED, OCL, OCL1D, OCLFAST
+      DEFAULT, SIMPLE, COMBINED, OCL, OCLFAST, OCLFASTMULTIPLATFORM
     };
 
     class OperationMultipleEvalConfiguration {
