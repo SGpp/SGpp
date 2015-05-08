@@ -14,9 +14,10 @@
 #include "OperationMultiEvalStreamingModOCLFastMultiPlatform.hpp"
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid, base::DataMatrix& dataset);
+base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid,
+        base::DataMatrix& dataset, base::OpenCLConfigurationParameters *parameters = nullptr);
 
-  }
+}
 }

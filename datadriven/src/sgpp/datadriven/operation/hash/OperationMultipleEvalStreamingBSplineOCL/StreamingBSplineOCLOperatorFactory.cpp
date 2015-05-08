@@ -13,34 +13,37 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset) {
+base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
+        base::OpenCLConfigurationParameters *parameters) {
 
-      std::map<std::string, std::string> defaultParameter;
-      defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
-      defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
-      defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
-      defaultParameter["KERNEL_TRANS_DATA_BLOCK_SIZE"] = "1";
+    if (parameters == nullptr) {
+        std::map<std::string, std::string> defaultParameter;
+        defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
+        defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+        defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+        defaultParameter["KERNEL_TRANS_DATA_BLOCK_SIZE"] = "1";
 
-      base::OpenCLConfigurationParameters parameters("StreamingBSplineOCL.cfg", defaultParameter);
-
-      std::cout << "are optimizations on: " << parameters.getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;
-      std::cout << "is local memory on: " << parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY") << std::endl;
-      std::cout << "local size: " << parameters.getAsUnsigned("LOCAL_SIZE") << std::endl;
-      std::cout << "internal precision: " << parameters["INTERNAL_PRECISION"] << std::endl;
-      std::cout << "platform is: " << parameters["PLATFORM"] << std::endl;
-      std::cout << "device type is: " << parameters["DEVICE_TYPE"] << std::endl;
-
-      if (parameters["INTERNAL_PRECISION"] == "float") {
-        return new datadriven::OperationMultiEvalStreamingBSplineOCL<float>(grid, dataset, parameters);
-      } else if (parameters["INTERNAL_PRECISION"] == "double") {
-        return new datadriven::OperationMultiEvalStreamingBSplineOCL<double>(grid, dataset, parameters);
-      } else {
-        throw base::factory_exception(
-          "Error creating operation\"OperationMultiEvalStreamingBSplineOCL\": invalid value for parameter \"INTERNAL_PRECISION\"");
-      }
+        parameters = new base::OpenCLConfigurationParameters("StreamingBSplineOCL.cfg", defaultParameter);
     }
 
-  }
+    std::cout << "are optimizations on: " << parameters->getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;
+    std::cout << "is local memory on: " << parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY") << std::endl;
+    std::cout << "local size: " << parameters->getAsUnsigned("LOCAL_SIZE") << std::endl;
+    std::cout << "internal precision: " << (*parameters)["INTERNAL_PRECISION"] << std::endl;
+    std::cout << "platform is: " << (*parameters)["PLATFORM"] << std::endl;
+    std::cout << "device type is: " << (*parameters)["DEVICE_TYPE"] << std::endl;
+
+    if ((*parameters)["INTERNAL_PRECISION"] == "float") {
+        return new datadriven::OperationMultiEvalStreamingBSplineOCL<float>(grid, dataset, *parameters);
+    } else if ((*parameters)["INTERNAL_PRECISION"] == "double") {
+        return new datadriven::OperationMultiEvalStreamingBSplineOCL<double>(grid, dataset, *parameters);
+    } else {
+        throw base::factory_exception(
+                "Error creating operation\"OperationMultiEvalStreamingBSplineOCL\": invalid value for parameter \"INTERNAL_PRECISION\"");
+    }
+}
+
+}
 }
