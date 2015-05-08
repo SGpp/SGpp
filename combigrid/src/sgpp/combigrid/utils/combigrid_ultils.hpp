@@ -31,20 +31,20 @@ typedef std::vector<int> IVector;
 #define COMBIGRID_ERROR_TEST(test,str) { \
       if (!(test)) std::cout << std::endl << "ERROR: " << str << std::endl; \
       assert(test); } \
- 
+
 #define COMBIGRID_ERROR_TEST_EQUAL(val1,val2,tolerance,str) { \
       if (fabs(val1-val2) > tolerance ) {std::cout << std::endl << "ERROR: " << str << \
                    " , v1:" << val1 << " , v2:" << val2 << " , tol:" << tolerance <<std::endl; \
       assert(false); }} \
- 
+
 #define COMBIGRID_ERROR_EXIT(str) { \
       std::cout << std::endl << "ERROR: " << str << std::endl; \
       assert(false); } \
- 
+
 /** write error message out*/
 #define COMBIGRID_ERROR_MSG(str) { \
       std::cout << std::endl << "ERROR: " << str << std::endl; } \
- 
+
 /** Conditionally write out */
 #define COMBIGRID_OUT_LEVEL(limit,level,str) \
      if (limit < level ) COMBIGRID_OUT(str);
