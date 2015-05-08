@@ -25,7 +25,7 @@ namespace SGPP {
         ConfigurationParameters(std::string fileName,
                                 std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
 
-        std::string operator[](std::string key);
+        std::string &operator[](std::string key);
 
         bool getAsBoolean(std::string key);
         uint64_t getAsUnsigned(std::string key);

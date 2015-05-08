@@ -20,6 +20,8 @@ namespace SGPP {
     class OpenCLConfigurationParameters: public ConfigurationParameters {
       public:
         OpenCLConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters);
+
+        OpenCLConfigurationParameters();
     };
 
   }

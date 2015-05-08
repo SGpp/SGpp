@@ -56,6 +56,7 @@ vars.Add('TARGETCPU', "Sets the processor you are compiling for. 'default' means
 vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
+vars.Add(BoolVariable('BOOST_TESTS', 'Build boost-based unit tests', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
 

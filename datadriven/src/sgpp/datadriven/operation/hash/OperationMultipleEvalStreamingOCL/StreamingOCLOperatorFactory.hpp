@@ -11,10 +11,13 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
+#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base::DataMatrix& dataset);
+base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
+        base::OpenCLConfigurationParameters *parameters = nullptr);
 
-  }
+}
 }

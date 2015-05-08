@@ -9,6 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 namespace SGPP {
   namespace datadriven {
@@ -25,6 +26,7 @@ namespace SGPP {
       public:
         OperationMultipleEvalType type = OperationMultipleEvalType::DEFAULT;
         OperationMultipleEvalSubType subType = OperationMultipleEvalSubType::DEFAULT;
+        base::ConfigurationParameters *parameters = nullptr;
 
         //operational - can be set for easier reporting
         std::string name = "DEFAULT";

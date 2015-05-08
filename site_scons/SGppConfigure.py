@@ -172,7 +172,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                              '-Wno-unused-parameter',
                              # '-Wconversion',
                              '-fno-strict-aliasing',
-                             '-funroll-loops', '-mfpmath=sse', '-msse3',
+                             '-funroll-loops', '-mfpmath=sse',
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])

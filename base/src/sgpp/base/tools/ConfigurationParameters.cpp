@@ -25,7 +25,8 @@ namespace SGPP {
       this->readFromFile(fileName);
     }
 
-    std::string ConfigurationParameters::operator[](std::string key) {
+    std::string &ConfigurationParameters::operator[](std::string key) {
+
       return this->parameters[key];
     }
 
