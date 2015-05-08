@@ -48,6 +48,11 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         LIBS=libs)
 libInstall = env.Install(BUILD_DIR, lib)
 
+libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
+                              source=objs,
+                              LIBS=libs)
+libStaticInstall = env.Install(BUILD_DIR, libStatic)
+
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
   moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
@@ -65,3 +70,5 @@ for fileName in os.listdir("examples"):
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
 
+libraryTargetList.append(libStatic)
+installTargetList.append(libStaticInstall)

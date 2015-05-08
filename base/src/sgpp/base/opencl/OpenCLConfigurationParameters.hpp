@@ -15,13 +15,13 @@
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-class OpenCLConfigurationParameters: public ConfigurationParameters {
-public:
-  OpenCLConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters);
-};
+    class OpenCLConfigurationParameters: public ConfigurationParameters {
+      public:
+        OpenCLConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters);
+    };
 
-}
+  }
 }
 
