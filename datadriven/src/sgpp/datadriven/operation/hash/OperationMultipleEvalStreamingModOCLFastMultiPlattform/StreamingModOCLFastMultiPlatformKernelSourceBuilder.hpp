@@ -12,7 +12,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 //#include "StreamingOCLParameters.hpp"
 
@@ -21,7 +21,7 @@ namespace datadriven {
 
 class StreamingModOCLFastMultiPlatformKernelSourceBuilder {
 private:
-    base::ConfigurationParameters parameters;
+    base::OCLConfigurationParameters parameters;
 
     size_t dims;
 
@@ -38,12 +38,6 @@ private:
 
     std::string indent4;
 
-    std::string asString();
-
-    std::string constSuffix();
-
-    std::string intAsString();
-
     std::string getData(std::string dim, size_t dataBlockingIndex);
 
     std::string getData(size_t dim, size_t dataBlockingIndex);
@@ -57,11 +51,17 @@ private:
 
     std::string getIndexTrans(std::string dim, size_t gridBlockingIndex);
 
-    std::string unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim,
-            size_t endDim, std::string unrollVariable, size_t gridBlockIndex);
+    std::string unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim, size_t endDim,
+            std::string unrollVariable, size_t gridBlockIndex);
 
 public:
-    StreamingModOCLFastMultiPlatformKernelSourceBuilder(base::ConfigurationParameters parameters, size_t dims);
+    StreamingModOCLFastMultiPlatformKernelSourceBuilder(base::OCLConfigurationParameters parameters, size_t dims);
+
+    std::string asString();
+
+    std::string constSuffix();
+
+    std::string intAsString();
 
     std::string generateSourceMult();
 

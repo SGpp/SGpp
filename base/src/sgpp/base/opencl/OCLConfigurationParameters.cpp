@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "OpenCLConfigurationParameters.hpp"
+#include "OCLConfigurationParameters.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -14,7 +14,7 @@
 namespace SGPP {
   namespace base {
 
-    OpenCLConfigurationParameters::OpenCLConfigurationParameters(std::string fileName,
+    OCLConfigurationParameters::OCLConfigurationParameters(std::string fileName,
         std::map<std::string, std::string> defaultParameters) {
       this->parameters["LOCAL_SIZE"] = "64";
       this->parameters["ENABLE_OPTIMIZATIONS"] = "true";
@@ -33,7 +33,7 @@ namespace SGPP {
       this->readFromFile(fileName);
     }
 
-    OpenCLConfigurationParameters::OpenCLConfigurationParameters() {
+    OCLConfigurationParameters::OCLConfigurationParameters() {
       this->parameters["LOCAL_SIZE"] = "64";
       this->parameters["ENABLE_OPTIMIZATIONS"] = "true";
       this->parameters["OPTIMIZATION_FLAGS"] = "-cl-finite-math-only -cl-fast-relaxed-math";

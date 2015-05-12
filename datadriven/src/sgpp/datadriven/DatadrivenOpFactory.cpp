@@ -173,7 +173,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 #endif
       } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-        return datadriven::createStreamingOCLConfigured(grid, dataset, (base::OpenCLConfigurationParameters *) configuration.parameters);
+        return datadriven::createStreamingOCLConfigured(grid, dataset, (base::OCLConfigurationParameters *) configuration.parameters);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
@@ -206,19 +206,19 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     if (configuration.type == datadriven::OperationMultipleEvalType::STREAMING) {
       if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-        return datadriven::createStreamingModOCLConfigured(grid, dataset, (base::OpenCLConfigurationParameters *) configuration.parameters);
+        return datadriven::createStreamingModOCLConfigured(grid, dataset, (base::OCLConfigurationParameters *) configuration.parameters);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
       } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST) {
 #ifdef USE_OCL
-        return datadriven::createStreamingModOCLFastConfigured(grid, dataset, (base::OpenCLConfigurationParameters *) configuration.parameters);
+        return datadriven::createStreamingModOCLFastConfigured(grid, dataset, (base::OCLConfigurationParameters *) configuration.parameters);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
       } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM) {
 #ifdef USE_OCL
-        return datadriven::createStreamingModOCLFastMultiPlatformConfigured(grid, dataset, (base::OpenCLConfigurationParameters *) configuration.parameters);
+        return datadriven::createStreamingModOCLFastMultiPlatformConfigured(grid, dataset, (base::OCLConfigurationParameters *) configuration.parameters);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
@@ -228,7 +228,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     if (configuration.type == datadriven::OperationMultipleEvalType::STREAMING) {
       if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-        return datadriven::createStreamingBSplineOCLConfigured(grid, dataset, (base::OpenCLConfigurationParameters *) configuration.parameters);
+        return datadriven::createStreamingBSplineOCLConfigured(grid, dataset, (base::OCLConfigurationParameters *) configuration.parameters);
 #else
         throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif

@@ -7,7 +7,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/globaldef.hpp>
 #include "StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
 
@@ -15,7 +15,7 @@ namespace SGPP {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid,
-        base::DataMatrix& dataset, base::OpenCLConfigurationParameters *parameters) {
+        base::DataMatrix& dataset, base::OCLConfigurationParameters *parameters) {
 
     if (parameters == nullptr) {
         std::map<std::string, std::string> defaultParameter;
@@ -27,7 +27,7 @@ base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(ba
         defaultParameter["KERNEL_TRANS_UNROLL_1D"] = "true";
         defaultParameter["KERNEL_STORE_DATA"] = "array";
 
-        parameters = new base::OpenCLConfigurationParameters("StreamingModOCLFastMultiPlatform.cfg", defaultParameter);
+        parameters = new base::OCLConfigurationParameters("StreamingModOCLFastMultiPlatform.cfg", defaultParameter);
     }
 
     if (parameters->getAsBoolean("KERNEL_VERBOSE")) {
@@ -40,6 +40,7 @@ base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(ba
         std::cout << "KERNEL_USE_LOCAL_MEMORY: " << (*parameters)["KERNEL_USE_LOCAL_MEMORY"] << std::endl;
         std::cout << "KERNEL_DATA_BLOCKING_SIZE: " << (*parameters)["KERNEL_DATA_BLOCKING_SIZE"] << std::endl;
         std::cout << "KERNEL_TRANS_DATA_BLOCK_SIZE: " << (*parameters)["KERNEL_TRANS_DATA_BLOCK_SIZE"] << std::endl;
+        std::cout << "KERNEL_TRANS_GRID_BLOCK_SIZE: " << (*parameters)["KERNEL_TRANS_GRID_BLOCK_SIZE"] << std::endl;
         std::cout << "KERNEL_TRANS_UNROLL_1D: " << (*parameters)["KERNEL_TRANS_UNROLL_1D"] << std::endl;
         std::cout << "KERNEL_STORE_DATA: " << (*parameters)["KERNEL_STORE_DATA"] << std::endl;
     }

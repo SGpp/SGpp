@@ -52,14 +52,14 @@ namespace SGPP {
 
         StreamingModOCLKernelSourceBuilder<real_type> kernelSourceBuilder;
         base::OCLManager& manager;
-        base::ConfigurationParameters parameters;
+        base::OCLConfigurationParameters parameters;
 
         base::LinearLoadBalancer multLoadBalancer;
         base::LinearLoadBalancer multTransposeLoadBalancer;
 
       public:
 
-        StreamingModOCLKernelImpl(size_t dims, base::OCLManager& manager, base::ConfigurationParameters parameters) :
+        StreamingModOCLKernelImpl(size_t dims, base::OCLManager& manager, base::OCLConfigurationParameters parameters) :
           deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
             parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
               manager, this->parameters) {

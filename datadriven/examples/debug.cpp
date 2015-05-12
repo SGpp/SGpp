@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     defaultParameter["KERNEL_TRANS_UNROLL_1D"] = "true";
     defaultParameter["KERNEL_STORE_DATA"] = "array";
 
-    SGPP::base::OpenCLConfigurationParameters parameters("StreamingModOCLFastMultiPlatform.cfg", defaultParameter);
+    SGPP::base::OCLConfigurationParameters parameters("StreamingModOCLFastMultiPlatform.cfg", defaultParameter);
     SGPP::base::OCLManagerMultiPlatform manager(parameters);
 
     SGPP::base::OCLClonedBufferMultiPlatform clonedBuffer(manager);

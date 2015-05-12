@@ -19,11 +19,11 @@ namespace base {
 class LinearLoadBalancerMultiPlatform {
 private:
     OCLManagerMultiPlatform &manager;
-    base::ConfigurationParameters& parameters;
+    base::OCLConfigurationParameters& parameters;
     std::map<cl_platform_id, double *> weights;
     std::map<cl_platform_id, double *> partition;
 public:
-    LinearLoadBalancerMultiPlatform(OCLManagerMultiPlatform& manager, base::ConfigurationParameters& parameters) :
+    LinearLoadBalancerMultiPlatform(OCLManagerMultiPlatform& manager, base::OCLConfigurationParameters& parameters) :
             manager(manager), parameters(parameters) {
         for (OCLPlatformWrapper platform : manager.platforms) {
             this->weights[platform.platformId] = new double[platform.deviceCount];

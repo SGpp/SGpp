@@ -7,7 +7,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/globaldef.hpp>
 #include "OperationMultiEvalAdaptiveOCL.hpp"
 
@@ -21,7 +21,7 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(base::Grid& grid, base:
   defaultParameter["KERNEL_MAX_DIM_UNROLL"] = "10";
   defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
-  base::OpenCLConfigurationParameters parameters("AdaptiveOCL.cfg", defaultParameter);
+  base::OCLConfigurationParameters parameters("AdaptiveOCL.cfg", defaultParameter);
 
 //  std::cout << "are optimizations on: " << parameters.getAsBoolean("STREAMING_OCL_ENABLE_OPTIMIZATIONS") << std::endl;
 //  std::cout << "is local memory on: " << parameters.getAsBoolean("STREAMING_OCL_USE_LOCAL_MEMORY") << std::endl;

@@ -47,7 +47,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
     sourceStream << std::endl;
 
     // array for local reduction
-    sourceStream << indent << "__local double resultsTemp[" << localWorkgroupSize << "];" << std::endl;
+    sourceStream << indent << "__local " << this->asString() << " resultsTemp[" << localWorkgroupSize << "];" << std::endl;
     sourceStream << std::endl;
 
     // blocked result variables
@@ -65,6 +65,19 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
                 sourceStream << indent << "level_" << gridIndex << "[" << d << "] = ptrLevel[((" << transGridBlockSize
                         << " * assignedComponentBase + " << gridIndex << ") * " << dims << ") +" << d << "];" << std::endl;
                 sourceStream << indent << "index_" << gridIndex << "[" << d << "] = ptrIndex[((" << transGridBlockSize
+                        << " * assignedComponentBase + " << gridIndex << ") * " << dims << ") +" << d << "];" << std::endl;
+            }
+            sourceStream << std::endl;
+        }
+        sourceStream << std::endl;
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+
+
+            for (size_t d = 0; d < dims; d++) {
+                sourceStream << indent << this->asString() << " level_" << gridIndex << "_" << d << " = ptrLevel[((" << transGridBlockSize
+                        << " * assignedComponentBase + " << gridIndex << ") * " << dims << ") +" << d << "];" << std::endl;
+                sourceStream << indent << this->asString() << " index_" << gridIndex << "_" << d << " = ptrIndex[((" << transGridBlockSize
                         << " * assignedComponentBase + " << gridIndex << ") * " << dims << ") +" << d << "];" << std::endl;
             }
             sourceStream << std::endl;
@@ -109,44 +122,6 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
         } else {
             sourceStream << this->unrolledBasisFunctionEvalulationTrans(dims, 0, dims, "", gridIndex);
         }
-
-//        sourceStream << this->unrolledBasisFunctionEvalulationTrans(dims, 0, dims, "", gridIndex);
-        /*
-         sourceStream << indent2 << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-
-         sourceStream << indent3 << "if ((level_" << gridIndex << "[d]) == 2.0" << this->constSuffix() << ") {"
-         << std::endl;
-
-         sourceStream << indent3 << "} else if ((index_" << gridIndex << "[d]) == 1.0" << this->constSuffix() << ") {"
-         << std::endl;
-
-         for (size_t dataIndex = 0; dataIndex < transDataBlockSize; dataIndex++) {
-         sourceStream << indent4 << "curSupport_" << gridIndex << "_" << dataIndex << " *= max(2.0"
-         << this->constSuffix() << " - ( (level_" << gridIndex << "[d]) * (ptrData[(d * sourceSize) + k + "
-         << (localWorkgroupSize * dataIndex) << "]) ), 0.0" << this->constSuffix() << ") ;" << std::endl;
-         }
-
-         sourceStream << indent3 << "} else if (index_" << gridIndex << "[d] == (level_" << gridIndex << "[d] - 1.0"
-         << this->constSuffix() << ")) {" << std::endl;
-
-         for (size_t dataIndex = 0; dataIndex < transDataBlockSize; dataIndex++) {
-         sourceStream << indent4 << "curSupport_" << gridIndex << "_" << dataIndex << " *= max(( level_"
-         << gridIndex << "[d] * (ptrData[(d * sourceSize) + k + " << (localWorkgroupSize * dataIndex)
-         << "]) ) - (index_" << gridIndex << "[d]) + 1.0, 0.0);" << std::endl;
-         }
-
-         sourceStream << indent3 << "} else {" << std::endl;
-
-         for (size_t dataIndex = 0; dataIndex < transDataBlockSize; dataIndex++) {
-         sourceStream << indent4 << "curSupport_" << gridIndex << "_" << dataIndex << " *= max(1.0"
-         << this->constSuffix() << " - fabs( ( level_" << gridIndex
-         << "[d] * (ptrData[(d * sourceSize) + k + " << (localWorkgroupSize * dataIndex) << "]) ) - index_"
-         << gridIndex << "[d] ), 0.0" << this->constSuffix() << ");" << std::endl;
-         }
-
-         sourceStream << indent3 << "}" << std::endl;
-         sourceStream << indent2 << "}" << std::endl << std::endl;
-         */
     }
 
     for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
@@ -167,7 +142,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
         sourceStream << indent << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
 
         sourceStream << indent << "if (localIdx == 0) {" << std::endl;
-        sourceStream << indent2 << "double overallResult = 0.0;" << std::endl;
+        sourceStream << indent2 << this->asString() << " overallResult = 0.0;" << std::endl;
         sourceStream << indent2 << "for (int i = 0; i < " << localWorkgroupSize << "; i++) {" << std::endl;
         sourceStream << indent3 << "overallResult += resultsTemp[i];" << std::endl;
         sourceStream << indent2 << "}" << std::endl;

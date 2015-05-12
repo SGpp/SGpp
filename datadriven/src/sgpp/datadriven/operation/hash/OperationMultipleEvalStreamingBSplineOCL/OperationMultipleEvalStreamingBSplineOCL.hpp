@@ -8,7 +8,7 @@
 #include <chrono>
 #include <omp.h>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
@@ -25,7 +25,7 @@ namespace SGPP {
       protected:
         size_t dims;
         SGPP::base::DataMatrix preparedDataset;
-        base::OpenCLConfigurationParameters parameters;
+        base::OCLConfigurationParameters parameters;
         T* kernelDataset = nullptr;
         size_t datasetSize = 0;
         /// Member to store the sparse grid's levels for better vectorization
@@ -44,7 +44,7 @@ namespace SGPP {
         StreamingBSplineOCLKernelImpl<T>* kernel;
       public:
 
-        OperationMultiEvalStreamingBSplineOCL(base::Grid& grid, base::DataMatrix& dataset, base::OpenCLConfigurationParameters parameters) :
+        OperationMultiEvalStreamingBSplineOCL(base::Grid& grid, base::DataMatrix& dataset, base::OCLConfigurationParameters parameters) :
           OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 

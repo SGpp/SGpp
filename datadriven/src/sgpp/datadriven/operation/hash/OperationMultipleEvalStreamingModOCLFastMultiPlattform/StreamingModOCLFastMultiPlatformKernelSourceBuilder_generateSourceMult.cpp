@@ -58,6 +58,14 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
             }
             sourceStream << std::endl;
         }
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        for (size_t i = 0; i < dataBlockSize; i++) {
+            for (size_t d = 0; d < dims; d++) {
+                sourceStream << indent << this->asString() << " " << getData(d, i) << " = ptrData[" << i << " + ("
+                        << dataBlockSize << " * globalIdx) + (resultSize * " << d << ")];" << std::endl;
+            }
+            sourceStream << std::endl;
+        }
     }
 
     sourceStream << indent << "size_t dimLevelIndex;" << std::endl;

@@ -14,83 +14,17 @@
 #include <map>
 #include <vector>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace SGPP {
 namespace base {
 
-class OCLPlatformWrapper {
-public:
-    cl_platform_id platformId;
-    char platformName[128];
-    cl_context context;
-    cl_device_id *deviceIds;
-    size_t deviceCount;
-    cl_command_queue *commandQueues;
-
-    OCLPlatformWrapper(cl_platform_id platformId) :
-            platformId(platformId), context(nullptr), deviceIds(nullptr), deviceCount(0), commandQueues(nullptr) {
-        for (size_t i = 0; i < 128; i++) {
-            platformName[i] = '\0';
-        }
-    }
-
-    OCLPlatformWrapper(const OCLPlatformWrapper &original) {
-        platformId = original.platformId;
-//		platformName = original.platformName;
-
-//		size_t index = 0;
-//		while (index < 128) {
-//			if (original.platformName[index] == '\0') {
-//				break;
-//			}
-//			platformName[index] = original.platformName[index];
-//			index += 1;
-//		}
-
-        for (size_t i = 0; i < 128; i++) {
-            platformName[i] = original.platformName[i];
-        }
-
-        context = original.context;
-        deviceCount = original.deviceCount;
-        if (deviceCount > 0) {
-            if (original.deviceIds != nullptr) {
-                deviceIds = new cl_device_id[deviceCount];
-                for (size_t i = 0; i < deviceCount; i++) {
-                    deviceIds[i] = original.deviceIds[i];
-                }
-            } else {
-                deviceIds = nullptr;
-            }
-            if (original.commandQueues != nullptr) {
-                commandQueues = new cl_command_queue[deviceCount];
-                for (size_t i = 0; i < deviceCount; i++) {
-                    commandQueues[i] = original.commandQueues[i];
-                }
-            } else {
-                commandQueues = nullptr;
-            }
-        } else {
-            deviceIds = nullptr;
-            commandQueues = nullptr;
-        }
-    }
-
-    ~OCLPlatformWrapper() {
-        if (deviceIds != nullptr) {
-            delete[] deviceIds;
-        }
-        if (commandQueues != nullptr) {
-            delete[] commandQueues;
-        }
-    }
-};
-
 class OCLManagerMultiPlatform {
 public:
-    base::OpenCLConfigurationParameters parameters;
+    base::OCLConfigurationParameters parameters;
     cl_uint deviceType;
+
     std::vector<OCLPlatformWrapper> platforms;
 //        cl_uint platformCount;
 //
@@ -106,7 +40,7 @@ public:
     bool verbose;
 
 public:
-    OCLManagerMultiPlatform(base::OpenCLConfigurationParameters parameters);
+    OCLManagerMultiPlatform(base::OCLConfigurationParameters parameters);
 
     /**
      * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects

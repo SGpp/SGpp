@@ -8,7 +8,7 @@
 #include <chrono>
 #include <omp.h>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
@@ -23,7 +23,7 @@ template<typename T>
 class OperationMultiEvalStreamingModOCLFastMultiPlatform: public base::OperationMultipleEval {
 protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
-    base::OpenCLConfigurationParameters parameters;
+    base::OCLConfigurationParameters parameters;
     T* kernelDataset = nullptr;
     size_t datasetSize = 0;
     /// Member to store the sparse grid's levels for better vectorization
@@ -43,7 +43,7 @@ protected:
 public:
 
     OperationMultiEvalStreamingModOCLFastMultiPlatform(base::Grid& grid, base::DataMatrix& dataset,
-            base::OpenCLConfigurationParameters parameters) :
+            base::OCLConfigurationParameters parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
@@ -115,7 +115,9 @@ public:
                 resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-//        std::cout << "duration mult ocl mod fast: " << elapsed_seconds.count() << std::endl;
+        if (parameters.getAsBoolean("KERNEL_VERBOSE")) {
+            std::cout << "duration mult ocl mod fast: " << elapsed_seconds.count() << std::endl;
+        }
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -158,7 +160,10 @@ public:
                 this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "duration multTranspose ocl mod fast: " << elapsed_seconds.count() << std::endl;
+
+        if (parameters.getAsBoolean("KERNEL_VERBOSE")) {
+            std::cout << "duration multTranspose ocl mod fast: " << elapsed_seconds.count() << std::endl;
+        }
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -216,7 +221,8 @@ private:
             delete this->index;
 
         //TODO: padding has to be least common multiple of "LOCAL_SIZE" and "KERNEL_TRANS_GRID_BLOCK_SIZE"
-        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE") * (uint32_t) parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
+        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE")
+                * (uint32_t) parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

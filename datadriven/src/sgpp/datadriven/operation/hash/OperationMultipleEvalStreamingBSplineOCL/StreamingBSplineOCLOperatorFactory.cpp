@@ -9,14 +9,14 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
-        base::OpenCLConfigurationParameters *parameters) {
+        base::OCLConfigurationParameters *parameters) {
 
     if (parameters == nullptr) {
         std::map<std::string, std::string> defaultParameter;
@@ -25,7 +25,7 @@ base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& gri
         defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
         defaultParameter["KERNEL_TRANS_DATA_BLOCK_SIZE"] = "1";
 
-        parameters = new base::OpenCLConfigurationParameters("StreamingBSplineOCL.cfg", defaultParameter);
+        parameters = new base::OCLConfigurationParameters("StreamingBSplineOCL.cfg", defaultParameter);
     }
 
     std::cout << "are optimizations on: " << parameters->getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;

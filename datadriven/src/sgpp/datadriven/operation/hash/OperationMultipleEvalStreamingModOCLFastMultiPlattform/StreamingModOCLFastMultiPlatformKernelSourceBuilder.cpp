@@ -15,8 +15,8 @@
 namespace SGPP {
 namespace datadriven {
 
-StreamingModOCLFastMultiPlatformKernelSourceBuilder::StreamingModOCLFastMultiPlatformKernelSourceBuilder(base::ConfigurationParameters parameters,
-        size_t dims) :
+StreamingModOCLFastMultiPlatformKernelSourceBuilder::StreamingModOCLFastMultiPlatformKernelSourceBuilder(
+        base::OCLConfigurationParameters parameters, size_t dims) :
         parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
                 "                ") {
     localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
@@ -29,6 +29,8 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getData(std::st
     std::stringstream output;
     if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
         output << "data_" << dataBlockingIndex << "[" << dim << "]";
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        output << "data_" << dataBlockingIndex << "_" << dim;
     } else if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
         output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim << ") + " << dataBlockingIndex
                 << "]";
@@ -67,18 +69,30 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::intAsString() {
     }
 }
 
-std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulation(size_t dims, size_t startDim,
-        size_t endDim, std::string unrollVariable) {
+std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulation(size_t dims,
+        size_t startDim, size_t endDim, std::string unrollVariable) {
     std::stringstream output;
 
     for (size_t d = startDim; d < endDim; d++) {
 
         std::stringstream dimElement;
+        dimElement << "(";
         if (!unrollVariable.compare("") == 0) {
             dimElement << unrollVariable << " + ";
         }
         dimElement << d;
-        std::string dString = dimElement.str();
+        dimElement << ")";
+        std::string pointerAccess = dimElement.str();
+
+
+        std::string dString;
+        if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+            std::stringstream stream;
+            stream << (d);
+            dString = stream.str();
+        } else {
+            dString = pointerAccess;
+        }
 
         std::stringstream levelAccessStream;
         std::stringstream indexAccessStream;
@@ -92,7 +106,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFu
         std::string levelAccess = levelAccessStream.str();
         std::string indexAccess = indexAccessStream.str();
 
-        output << indent3 << "dimLevelIndex = " << "(m * " << dims << ") + " << dString << ";" << std::endl;
+        output << indent3 << "dimLevelIndex = " << "(m * " << dims << ") + " << pointerAccess << ";" << std::endl;
 
         output << indent3 << "if (" << levelAccess << " == 2.0" << this->constSuffix() << ") {" << std::endl;
         output << indent3 << "} else if (" << indexAccess << " == 1.0" << this->constSuffix() << ") {" << std::endl;
@@ -124,16 +138,20 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFu
     return output.str();
 }
 
-std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getDataTrans(std::string dim, size_t dataBlockingIndex) {
+std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getDataTrans(std::string dim,
+        size_t dataBlockingIndex) {
     std::stringstream output;
     output << "ptrData[dimDataIndex + " << (localWorkgroupSize * dataBlockingIndex) << "]";
     return output.str();
 }
 
-std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getLevelTrans(std::string dim, size_t gridBlockingIndex) {
+std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getLevelTrans(std::string dim,
+        size_t gridBlockingIndex) {
     std::stringstream output;
     if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
         output << "level_" << gridBlockingIndex << "[" << dim << "]";
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        output << "level_" << gridBlockingIndex << "_" << dim;
     } else if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
         output << "ptrLevel[dimLevelIndex]";
     } else {
@@ -142,10 +160,13 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getLevelTrans(s
     return output.str();
 }
 
-std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getIndexTrans(std::string dim, size_t gridBlockingIndex) {
+std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getIndexTrans(std::string dim,
+        size_t gridBlockingIndex) {
     std::stringstream output;
     if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
         output << "index_" << gridBlockingIndex << "[" << dim << "]";
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        output << "index_" << gridBlockingIndex << "_" << dim;
     } else if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
         output << "ptrIndex[dimLevelIndex]";
     } else {
@@ -154,8 +175,8 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getIndexTrans(s
     return output.str();
 }
 
-std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim,
-        size_t endDim, std::string unrollVariable, size_t gridBlockIndex) {
+std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims,
+        size_t startDim, size_t endDim, std::string unrollVariable, size_t gridBlockIndex) {
 
     size_t transDataBlockSize = this->parameters.getAsUnsigned("KERNEL_TRANS_DATA_BLOCK_SIZE");
     size_t transGridBlockSize = this->parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
@@ -171,13 +192,23 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFu
         }
         dimElement << d;
         dimElement << ")";
-        std::string dString = dimElement.str();
+        std::string pointerAccess = dimElement.str();
 
-        output << indent3 << "dimDataIndex = " << "(" << dString << " * sourceSize) + k;" << std::endl;
+
+        std::string dString;
+        if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+            std::stringstream stream;
+            stream << (d);
+            dString = stream.str();
+        } else {
+            dString = pointerAccess;
+        }
+
+        output << indent3 << "dimDataIndex = " << "(" << pointerAccess << " * sourceSize) + k;" << std::endl;
 
         if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
             output << indent3 << "dimLevelIndex = " << "((" << transGridBlockSize << " * groupIdx + " << gridBlockIndex
-                    << ") * " << dims << ") +" << dString << ";" << std::endl;
+                    << ") * " << dims << ") +" << pointerAccess << ";" << std::endl;
         }
 
         output << indent3 << "if (" << getLevelTrans(dString, gridBlockIndex) << " == 2.0" << this->constSuffix()

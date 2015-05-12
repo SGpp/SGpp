@@ -7,7 +7,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/globaldef.hpp>
 #include "OperationMultiEvalStreamingModOCL.hpp"
 
@@ -15,7 +15,7 @@ namespace SGPP {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
-        base::OpenCLConfigurationParameters *parameters) {
+        base::OCLConfigurationParameters *parameters) {
 
     if (parameters == nullptr) {
         std::map<std::string, std::string> defaultParameter;
@@ -23,7 +23,7 @@ base::OperationMultipleEval* createStreamingModOCLConfigured(base::Grid& grid, b
         defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
         defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
-        parameters = new base::OpenCLConfigurationParameters("StreamingModOCL.cfg", defaultParameter);
+        parameters = new base::OCLConfigurationParameters("StreamingModOCL.cfg", defaultParameter);
     }
 
     std::cout << "are optimizations on: " << parameters->getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;
