@@ -15,7 +15,7 @@
 namespace SGPP {
 namespace base {
 
-OCLManagerMultiPlatform::OCLManagerMultiPlatform(base::OpenCLConfigurationParameters parameters) :
+OCLManagerMultiPlatform::OCLManagerMultiPlatform(base::OCLConfigurationParameters parameters) :
         parameters(parameters), deviceType(0) {
     this->verbose = parameters.getAsBoolean("OCL_MANAGER_VERBOSE");
 
@@ -74,17 +74,12 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(base::OpenCLConfigurationParame
         std::cout << "OCL Info: using " << overallDeviceCount << " device/s" << std::endl;
     }
 
-//    for (size_t i = 0; i < platforms.size(); i++) {
     for (OCLPlatformWrapper &platform : platforms) {
-//		cl_platform_id platformId = platformIds[i];
         // Create OpenCL context
         cl_context_properties properties[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties) platform.platformId, 0 };
 
-//		cl_context context = clCreateContext(properties, overallDeviceCount,
-//				platformDeviceIds[platformId], nullptr, nullptr, &err);
         platform.context = clCreateContext(properties, (cl_uint) platform.deviceCount, platform.deviceIds, nullptr,
                 nullptr, &err);
-//		this->platformContext.push_back(context);
 
         if (err != CL_SUCCESS) {
             std::stringstream errorString;
@@ -94,7 +89,6 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(base::OpenCLConfigurationParame
     }
 
     // Creating the command queues
-//    for (size_t i = 0; i < platforms.size(); i++) {
     for (OCLPlatformWrapper &platform : platforms) {
         platform.commandQueues = new cl_command_queue[platform.deviceCount];
         for (size_t deviceIndex = 0; deviceIndex < platform.deviceCount; deviceIndex++) {

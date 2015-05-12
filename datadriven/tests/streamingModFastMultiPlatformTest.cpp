@@ -23,7 +23,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 std::string uncompressFile(std::string fileName) {
 
@@ -56,8 +56,11 @@ std::string uncompressFile(std::string fileName) {
 
 void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
 SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
-SGPP::base::DataVector& alpha, std::mt19937 mt, std::uniform_real_distribution<double>& dist) {
+SGPP::base::DataVector& alpha) {
 
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1, 100);
 
     for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
         SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alpha,
@@ -94,10 +97,6 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
     BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
 
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(1, 100);
-
     SGPP::base::DataVector alpha(gridStorage->size());
 
     for (size_t i = 0; i < alpha.getSize(); i++) {
@@ -109,7 +108,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     SGPP::base::OperationMultipleEval* eval =
     SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
 
-    doAllRefinements(adaptConfig, *grid, *gridGen, alpha, mt, dist);
+    doAllRefinements(adaptConfig, *grid, *gridGen, alpha);
 
     BOOST_TEST_MESSAGE("number of grid points after refinement: " << gridStorage->size());
     BOOST_TEST_MESSAGE("grid set up");
@@ -167,7 +166,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -207,7 +206,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -247,7 +246,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -287,7 +286,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -325,7 +324,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -364,7 +363,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -403,7 +402,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
@@ -442,7 +441,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
 
-    SGPP::base::OpenCLConfigurationParameters parameters;
+    SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";

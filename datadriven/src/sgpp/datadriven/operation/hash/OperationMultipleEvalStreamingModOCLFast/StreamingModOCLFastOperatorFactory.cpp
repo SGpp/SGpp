@@ -7,7 +7,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/globaldef.hpp>
 #include "StreamingModOCLFastOperatorFactory.hpp"
 
@@ -15,7 +15,7 @@ namespace SGPP {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLFastConfigured(base::Grid& grid, base::DataMatrix& dataset,
-        base::OpenCLConfigurationParameters *parameters) {
+        base::OCLConfigurationParameters *parameters) {
 
     if (parameters == nullptr) {
         std::map<std::string, std::string> defaultParameter;
@@ -27,7 +27,7 @@ base::OperationMultipleEval* createStreamingModOCLFastConfigured(base::Grid& gri
         defaultParameter["KERNEL_TRANS_UNROLL_1D"] = "true";
         defaultParameter["KERNEL_STORE_DATA"] = "array";
 
-        parameters = new base::OpenCLConfigurationParameters("StreamingModOCLFast.cfg", defaultParameter);
+        parameters = new base::OCLConfigurationParameters("StreamingModOCLFast.cfg", defaultParameter);
     }
 
     std::cout << "are optimizations on: " << parameters->getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;

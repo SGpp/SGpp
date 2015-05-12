@@ -7,7 +7,7 @@
 
 #include <omp.h>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
@@ -23,26 +23,26 @@ namespace SGPP {
       protected:
         size_t dims;
         SGPP::base::DataMatrix preparedDataset;
-        base::OpenCLConfigurationParameters parameters;
-        T* kernelDataset = nullptr;
+        base::OCLConfigurationParameters parameters;
+        T *kernelDataset = nullptr;
         size_t datasetSize = 0;
-        /// Member to store the sparse grid's levels for better vectorization
-        T* level = nullptr;
-        /// Member to store the sparse grid's indices for better vectorization
-        T* index = nullptr;
+        // Member to store the sparse grid's levels for better vectorization
+        T *level = nullptr;
+        // Member to store the sparse grid's indices for better vectorization
+        T *index = nullptr;
         size_t gridSize = 0;
-        /// Timer object to handle time measurements
+        // Timer object to handle time measurements
         SGPP::base::SGppStopwatch myTimer;
 
         base::GridStorage* storage;
 
         float_t duration;
 
-        base::OCLManager* manager;
-        StreamingOCLKernelImpl<T>* kernel;
+        base::OCLManager *manager;
+        StreamingOCLKernelImpl<T> *kernel;
       public:
 
-        OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::OpenCLConfigurationParameters parameters) :
+        OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::OCLConfigurationParameters parameters) :
           OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
           this->manager = new base::OCLManager(parameters);

@@ -17,11 +17,11 @@
 namespace SGPP {
   namespace base {
 
-    class OpenCLConfigurationParameters: public ConfigurationParameters {
+    class OCLConfigurationParameters: public ConfigurationParameters {
       public:
-        OpenCLConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters);
+        OCLConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters);
 
-        OpenCLConfigurationParameters();
+        OCLConfigurationParameters();
     };
 
   }

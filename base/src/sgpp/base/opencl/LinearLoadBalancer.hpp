@@ -9,7 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace SGPP {
   namespace base {
@@ -17,12 +17,12 @@ namespace SGPP {
     class LinearLoadBalancer {
       private:
         size_t deviceCount;
-        base::ConfigurationParameters& parameters;
+        base::OCLConfigurationParameters& parameters;
         double* weights;
         double* partition;
       public:
         LinearLoadBalancer(OCLManager& manager,
-                           base::ConfigurationParameters& parameters) :
+                           base::OCLConfigurationParameters& parameters) :
           deviceCount(manager.num_devices), parameters(parameters) {
           this->weights = new double[manager.num_devices];
           this->partition = new double[manager.num_devices];

@@ -15,7 +15,7 @@
 namespace SGPP {
   namespace base {
 
-    OCLManager::OCLManager(base::OpenCLConfigurationParameters parameters) :
+    OCLManager::OCLManager(base::OCLConfigurationParameters parameters) :
       parameters(parameters) {
       verbose = parameters.getAsBoolean("OCL_MANAGER_VERBOSE");
       cl_int err;
