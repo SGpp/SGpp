@@ -23,11 +23,13 @@ created in the current directory. If <tt>$pathname</tt> is set to
 Run the following short and easy-remembered command from your local dir:
 
 @verbatim
-  svn co svn+ssh://$username@atsccs??.informatik.tu-muenchen.de/home_local/repositories/svn/$repositoryname
+  svn co https://ipvs.informatik.uni-stuttgart.de/SGpp/repos/trunk
 @endverbatim
 
-You should now have a working copy which works exactly like the local working copy. 
+If you are not a employee of the IPVS, please contact (TODO correct mail, proposed dirk.pflueger@ipvs.informatik.uni-stuttgart.de) 
+and ask for an account.
 
+You should now have a working copy which works exactly like a local working copy.
 @section infoGeneral A few helpful hints
 This can't cover everything, but provides some useful
 information. Normally the commands work for the current directory the
