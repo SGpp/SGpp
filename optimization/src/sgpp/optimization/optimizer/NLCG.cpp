@@ -44,7 +44,7 @@ namespace SGPP {
         base::DataVector y(d);
         size_t k;
 
-        fx = fGradient.evalGradient(x0, gradFx);
+        fx = fGradient.eval(x0, gradFx);
         float_t gradFxNorm = gradFx.l2Norm();
         float_t gradFyNorm = 0.0;
 
@@ -76,7 +76,7 @@ namespace SGPP {
           }
 
           // calculate gradient and norm
-          fy = fGradient.evalGradient(y, gradFy);
+          fy = fGradient.eval(y, gradFy);
           gradFyNorm = gradFy.l2Norm();
 
           float_t beta = 0.0;

@@ -53,7 +53,7 @@ printLine();
 fprintf('Optimizing smooth interpolant...\n\n');
 ft = sgpp.OptInterpolantFunction(d, grid, coeffs);
 ftGradient = sgpp.OptInterpolantGradient(d, grid, coeffs);
-gradientMethod = sgpp.OptGradientMethod(ft, ftGradient);
+gradientMethod = sgpp.OptGradientDescent(ft, ftGradient);
 x0 = sgpp.DataVector(d);
 
 % determine best grid point as starting point

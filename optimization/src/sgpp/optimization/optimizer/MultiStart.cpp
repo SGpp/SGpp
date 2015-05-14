@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/RandomSearch.hpp>
+#include <sgpp/optimization/optimizer/MultiStart.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
@@ -17,31 +17,31 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      RandomSearch::RandomSearch(ObjectiveFunction& f,
-                                 size_t maxFcnEvalCount,
-                                 size_t populationSize) :
+      MultiStart::MultiStart(ObjectiveFunction& f,
+                             size_t maxFcnEvalCount,
+                             size_t populationSize) :
         Optimizer(f, maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(defaultOptimizer) {
         initialize(populationSize);
       }
 
-      RandomSearch::RandomSearch(Optimizer& optimizer,
-                                 size_t maxFcnEvalCount,
-                                 size_t populationSize) :
+      MultiStart::MultiStart(Optimizer& optimizer,
+                             size_t maxFcnEvalCount,
+                             size_t populationSize) :
         Optimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(optimizer) {
         initialize(populationSize);
       }
 
-      void RandomSearch::initialize(size_t populationSize) {
+      void MultiStart::initialize(size_t populationSize) {
         this->populationSize = (populationSize > 0) ? populationSize :
                                std::min(10 * f.getDimension(),
                                         static_cast<size_t>(100));
       }
 
-      float_t RandomSearch::optimize(base::DataVector& xOpt) {
+      float_t MultiStart::optimize(base::DataVector& xOpt) {
         printer.printStatusBegin("Optimizing (random search)...");
 
         const size_t d = f.getDimension();
@@ -126,6 +126,10 @@ namespace SGPP {
 
         xOpt.resize(d);
 
+        // temporarily save x0 and N (will be overwritten by the loop)
+        const base::DataVector tmpX0(optimizer.getStartingPoint());
+        const size_t tmpN = optimizer.getN();
+
         for (size_t k = 0; k < populationSize; k++) {
           // optimize with k-th starting point
           optimizer.setStartingPoint(x0[k]);
@@ -154,17 +158,21 @@ namespace SGPP {
           }
         }
 
+        // set x0 and N to initial values
+        optimizer.setStartingPoint(tmpX0);
+        optimizer.setN(tmpN);
+
         printer.printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
         printer.printStatusEnd();
 
         return fOpt;
       }
 
-      size_t RandomSearch::getPopulationSize() const {
+      size_t MultiStart::getPopulationSize() const {
         return populationSize;
       }
 
-      void RandomSearch::setPopulationSize(size_t populationSize) {
+      void MultiStart::setPopulationSize(size_t populationSize) {
         this->populationSize = populationSize;
       }
 

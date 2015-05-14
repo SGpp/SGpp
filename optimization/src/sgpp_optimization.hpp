@@ -6,6 +6,8 @@
 #ifndef SGPP_OPTIMIZATION_HPP
 #define SGPP_OPTIMIZATION_HPP
 
+#include <sgpp/optimization/function/ConstraintFunction.hpp>
+#include <sgpp/optimization/function/ConstraintGradient.hpp>
 #include <sgpp/optimization/function/InterpolantFunction.hpp>
 #include <sgpp/optimization/function/InterpolantGradient.hpp>
 #include <sgpp/optimization/function/InterpolantHessian.hpp>
@@ -52,15 +54,18 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
+#include <sgpp/optimization/optimizer/AdaptiveGradientDescent.hpp>
+#include <sgpp/optimization/optimizer/AdaptiveNewton.hpp>
+#include <sgpp/optimization/optimizer/BFGS.hpp>
 #include <sgpp/optimization/optimizer/CMAES.hpp>
 #include <sgpp/optimization/optimizer/DifferentialEvolution.hpp>
-#include <sgpp/optimization/optimizer/GradientMethod.hpp>
 #include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/NelderMead.hpp>
 #include <sgpp/optimization/optimizer/Newton.hpp>
 #include <sgpp/optimization/optimizer/NLCG.hpp>
 #include <sgpp/optimization/optimizer/Optimizer.hpp>
-#include <sgpp/optimization/optimizer/RandomSearch.hpp>
+#include <sgpp/optimization/optimizer/Rprop.hpp>
 
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
@@ -81,5 +86,7 @@
 #include <sgpp/optimization/tools/ScopedLock.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include "sgpp/optimization/optimizer/GradientDescent.hpp"
+#include "sgpp/optimization/optimizer/MultiStart.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */

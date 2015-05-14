@@ -9,6 +9,11 @@ public class ExampleFunction extends sgpp.OptObjectiveFunction {
   }
 
   public double eval(sgpp.DataVector x) {
-    return Math.sin(8.0 * x.get(0)) + Math.sin(7.0 * x.get(1));
+    if ((x.get(0) >= 0.0) && (x.get(0) <= 1.0) &&
+        (x.get(1) >= 0.0) && (x.get(1) <= 1.0)) {
+      return Math.sin(8.0 * x.get(0)) + Math.sin(7.0 * x.get(1));
+    } else {
+      return Double.POSITIVE_INFINITY;
+    }
   }
 }

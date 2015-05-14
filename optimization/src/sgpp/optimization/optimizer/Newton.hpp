@@ -10,7 +10,7 @@
 
 #include <sgpp/optimization/optimizer/Optimizer.hpp>
 #include <sgpp/optimization/function/ObjectiveHessian.hpp>
-#include <sgpp/optimization/sle/solver/BiCGStab.hpp>
+#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
@@ -200,7 +200,7 @@ namespace SGPP {
           /// steepest descent restart exponent
           float_t p;
           /// default linear solver
-          const sle_solver::BiCGStab defaultSleSolver;
+          const sle_solver::GaussianElimination defaultSleSolver;
           /// linear solver
           const sle_solver::SLESolver& sleSolver;
       };

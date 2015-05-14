@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_RANDOMSEARCH_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_RANDOMSEARCH_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_MULTISTART_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_MULTISTART_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -16,9 +16,13 @@ namespace SGPP {
     namespace optimizer {
 
       /**
-       * Gradient-free random search.
+       * Meta optimization algorithm calling local algorithm multiple times.
+       * MultiStart generates a random population of a given number of
+       * starting points, and then runs a local optimization algorithm
+       * for each of the starting point.
+       * The best point wins.
        */
-      class RandomSearch : public Optimizer {
+      class MultiStart : public Optimizer {
         public:
           /// default maximal number of function evaluations
           static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 1000;
@@ -32,12 +36,14 @@ namespace SGPP {
            * @param populationSize  number of individual points
            *                        (default: \f$\min(10d, 100)\f$)
            */
-          RandomSearch(ObjectiveFunction& f,
-                       size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
-                       size_t populationSize = 0);
+          MultiStart(ObjectiveFunction& f,
+                     size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+                     size_t populationSize = 0);
 
           /**
            * Constructor with custom optimization algorithm.
+           * The current values of the optimizer's N and starting point
+           * properties will not be used.
            *
            * @param optimizer        optimization algorithm and
            *                         objective function
@@ -45,9 +51,9 @@ namespace SGPP {
            * @param populationSize   number of individual points
            *                         (default: \f$\min(10d, 100)\f$)
            */
-          RandomSearch(Optimizer& optimizer,
-                       size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
-                       size_t populationSize = 0);
+          MultiStart(Optimizer& optimizer,
+                     size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+                     size_t populationSize = 0);
 
           /**
            * @param[out] xOpt optimal point
@@ -86,4 +92,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_RANDOMSEARCH_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_MULTISTART_HPP */
