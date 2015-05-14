@@ -47,6 +47,8 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
 // renames
+%rename(OptConstraintFunction)  SGPP::optimization::ConstraintFunction;
+%rename(OptConstraintGradient)  SGPP::optimization::ConstraintGradient;
 %rename(OptObjectiveFunction)   SGPP::optimization::ObjectiveFunction;
 %rename(OptObjectiveGradient)   SGPP::optimization::ObjectiveGradient;
 %rename(OptObjectiveHessian)    SGPP::optimization::ObjectiveHessian;
@@ -92,13 +94,16 @@ const bool UMFPACK_ENABLED;
 %rename(OptUMFPACK)                 SGPP::optimization::sle_solver::UMFPACK;
 
 %rename(OptOptimizer)               SGPP::optimization::optimizer::Optimizer;
+%rename(OptAdaptiveGradientDescent) SGPP::optimization::optimizer::AdaptiveGradientDescent;
+%rename(OptAdaptiveNewton)          SGPP::optimization::optimizer::AdaptiveNewton;
+%rename(OptBFGS)                    SGPP::optimization::optimizer::BFGS;
 %rename(OptDifferentialEvolution)   SGPP::optimization::optimizer::DifferentialEvolution;
-%rename(OptGradientMethod)          SGPP::optimization::optimizer::GradientMethod;
+%rename(OptGradientDescent)         SGPP::optimization::optimizer::GradientDescent;
+%rename(OptMultiStart)              SGPP::optimization::optimizer::MultiStart;
 %rename(OptNelderMead)              SGPP::optimization::optimizer::NelderMead;
 %rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
 %rename(OptNLCG)                    SGPP::optimization::optimizer::NLCG;
-%rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
-%rename(OptRandomSearch)            SGPP::optimization::optimizer::RandomSearch;
+%rename(OptRprop)                   SGPP::optimization::optimizer::Rprop;
 
 %rename(OptFileIOWriteGrid)                 SGPP::optimization::file_io::writeGrid;
 %rename(OptFileIOReadGrid)                  SGPP::optimization::file_io::readGrid;
@@ -142,6 +147,8 @@ const bool UMFPACK_ENABLED;
 }
 
 // includes
+%include "optimization/src/sgpp/optimization/function/ConstraintFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/ConstraintGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveHessian.hpp"
@@ -192,14 +199,17 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/sle/solver/UMFPACK.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/Optimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/AdaptiveGradientDescent.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/AdaptiveNewton.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/BFGS.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/CMAES.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/DifferentialEvolution.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/GradientMethod.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/GradientDescent.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/MultiStart.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/NelderMead.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/Newton.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/NLCG.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/Newton.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/RandomSearch.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/Rprop.hpp"
 
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
 %include "optimization/src/sgpp/optimization/tools/Math.hpp"

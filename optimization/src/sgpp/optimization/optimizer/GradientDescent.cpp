@@ -3,9 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include "GradientDescent.hpp"
+
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/GradientMethod.hpp>
 #include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
@@ -13,10 +14,13 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      GradientMethod::GradientMethod(
+      GradientDescent::GradientDescent(
         ObjectiveFunction& f,
         ObjectiveGradient& fGradient,
-        size_t N, float_t beta, float_t gamma, float_t tolerance,
+        size_t maxItCount,
+        float_t beta,
+        float_t gamma,
+        float_t tolerance,
         float_t epsilon) :
         Optimizer(f, N),
         fGradient(fGradient),
@@ -26,8 +30,8 @@ namespace SGPP {
         eps(epsilon) {
       }
 
-      float_t GradientMethod::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (gradient method)...");
+      float_t GradientDescent::optimize(base::DataVector& xOpt) {
+        printer.printStatusBegin("Optimizing (gradient descent)...");
 
         const size_t d = f.getDimension();
         base::DataVector x(x0);
@@ -40,7 +44,7 @@ namespace SGPP {
 
         for (k = 0; k < N; k++) {
           // calculate gradient and norm
-          fx = fGradient.evalGradient(x, gradFx);
+          fx = fGradient.eval(x, gradFx);
           float_t gradFxNorm = gradFx.l2Norm();
 
           // exit if norm small enough
@@ -79,39 +83,39 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& GradientMethod::getObjectiveGradient() const {
+      ObjectiveGradient& GradientDescent::getObjectiveGradient() const {
         return fGradient;
       }
 
-      float_t GradientMethod::getBeta() const {
+      float_t GradientDescent::getBeta() const {
         return beta;
       }
 
-      void GradientMethod::setBeta(float_t beta) {
+      void GradientDescent::setBeta(float_t beta) {
         this->beta = beta;
       }
 
-      float_t GradientMethod::getGamma() const {
+      float_t GradientDescent::getGamma() const {
         return gamma;
       }
 
-      void GradientMethod::setGamma(float_t gamma) {
+      void GradientDescent::setGamma(float_t gamma) {
         this->gamma = gamma;
       }
 
-      float_t GradientMethod::getTolerance() const {
+      float_t GradientDescent::getTolerance() const {
         return tol;
       }
 
-      void GradientMethod::setTolerance(float_t tolerance) {
+      void GradientDescent::setTolerance(float_t tolerance) {
         tol = tolerance;
       }
 
-      float_t GradientMethod::getEpsilon() const {
+      float_t GradientDescent::getEpsilon() const {
         return eps;
       }
 
-      void GradientMethod::setEpsilon(float_t epsilon) {
+      void GradientDescent::setEpsilon(float_t epsilon) {
         eps = epsilon;
       }
 

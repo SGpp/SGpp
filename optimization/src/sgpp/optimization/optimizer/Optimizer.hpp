@@ -24,7 +24,7 @@ namespace SGPP {
       class Optimizer {
         public:
           /// default maximal number of iterations or function evaluations
-          static const size_t DEFAULT_N = 200;
+          static const size_t DEFAULT_N = 1000;
 
           /**
            * Constructor.

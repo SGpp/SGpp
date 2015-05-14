@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTMETHOD_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTMETHOD_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTDESCENT_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTDESCENT_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,7 +20,7 @@ namespace SGPP {
       /**
        * Gradient-based method of steepest descent.
        */
-      class GradientMethod : public Optimizer {
+      class GradientDescent : public Optimizer {
         public:
           /// default maximal number of iterations
           static const size_t DEFAULT_MAX_IT_COUNT = 2000;
@@ -44,13 +44,13 @@ namespace SGPP {
            * @param tolerance     tolerance (parameter for Armijo's rule)
            * @param epsilon       epsilon (parameter for Armijo's rule)
            */
-          GradientMethod(ObjectiveFunction& f,
-                         ObjectiveGradient& fGradient,
-                         size_t maxItCount = DEFAULT_MAX_IT_COUNT,
-                         float_t beta = DEFAULT_BETA,
-                         float_t gamma = DEFAULT_GAMMA,
-                         float_t tolerance = DEFAULT_TOLERANCE,
-                         float_t epsilon = DEFAULT_EPSILON);
+          GradientDescent(ObjectiveFunction& f,
+                          ObjectiveGradient& fGradient,
+                          size_t maxItCount = DEFAULT_MAX_IT_COUNT,
+                          float_t beta = DEFAULT_BETA,
+                          float_t gamma = DEFAULT_GAMMA,
+                          float_t tolerance = DEFAULT_TOLERANCE,
+                          float_t epsilon = DEFAULT_EPSILON);
 
           /**
            * @param[out] xOpt optimal point
@@ -120,4 +120,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTMETHOD_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTDESCENT_HPP */

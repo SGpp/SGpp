@@ -78,8 +78,8 @@ public class java_example {
         new sgpp.OptInterpolantFunction(d, grid, coeffs);
     sgpp.OptInterpolantGradient ftGradient =
         new sgpp.OptInterpolantGradient(d, grid, coeffs);
-    sgpp.OptGradientMethod gradientMethod =
-        new sgpp.OptGradientMethod(ft, ftGradient);
+    sgpp.OptGradientDescent gradientMethod =
+        new sgpp.OptGradientDescent(ft, ftGradient);
     sgpp.DataVector x0 = new sgpp.DataVector(d);
     double fX0;
     double ftX0;

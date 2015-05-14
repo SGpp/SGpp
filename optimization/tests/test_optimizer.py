@@ -25,11 +25,15 @@ class TestOptimizer(unittest.TestCase):
         
         # Test All The Optimizers!
         N = 1000
-        optimizers = [pysgpp.OptGradientMethod(f, f_gradient, N),
+        optimizers = [pysgpp.OptGradientDescent(f, f_gradient, N),
                       pysgpp.OptNLCG(f, f_gradient, N),
                       pysgpp.OptNewton(f, f_hessian, N),
+                      pysgpp.OptAdaptiveGradientDescent(f, f_gradient, N),
+                      pysgpp.OptAdaptiveNewton(f, f_hessian, N),
+                      pysgpp.OptBFGS(f, f_gradient, N),
+                      pysgpp.OptRprop(f, f_gradient, N),
                       pysgpp.OptNelderMead(f, N),
-                      pysgpp.OptRandomSearch(f, N),
+                      pysgpp.OptMultiStart(f, N),
                       pysgpp.OptDifferentialEvolution(f, N)]
         
         for optimizer in optimizers:

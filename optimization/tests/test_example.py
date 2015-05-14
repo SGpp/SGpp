@@ -60,17 +60,17 @@ class TestExample(unittest.TestCase):
                 self.assertLess(abs(f.eval(x) - ft.eval(x)), 0.25)
             
             # test all optimizers applied on function and interpolant
-            optimizers = [pysgpp.OptGradientMethod(f, f_gradient),
+            optimizers = [pysgpp.OptGradientDescent(f, f_gradient),
                           pysgpp.OptNLCG(f, f_gradient),
                           pysgpp.OptNewton(f, f_hessian),
                           pysgpp.OptNelderMead(f),
-                          pysgpp.OptRandomSearch(f),
+                          pysgpp.OptMultiStart(f),
                           pysgpp.OptDifferentialEvolution(f),
-                          pysgpp.OptGradientMethod(ft, ft_gradient),
+                          pysgpp.OptGradientDescent(ft, ft_gradient),
                           pysgpp.OptNLCG(ft, ft_gradient),
                           pysgpp.OptNewton(ft, ft_hessian),
                           pysgpp.OptNelderMead(ft),
-                          pysgpp.OptRandomSearch(ft),
+                          pysgpp.OptMultiStart(ft),
                           pysgpp.OptDifferentialEvolution(ft)]
             
             for optimizer in optimizers:

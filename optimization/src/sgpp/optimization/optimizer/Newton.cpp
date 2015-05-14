@@ -34,7 +34,7 @@ namespace SGPP {
         alpha1(alpha1),
         alpha2(alpha2),
         p(p),
-        defaultSleSolver(sle_solver::BiCGStab()),
+        defaultSleSolver(sle_solver::GaussianElimination()),
         sleSolver(defaultSleSolver) {
       }
 
@@ -54,7 +54,7 @@ namespace SGPP {
         alpha1(alpha1),
         alpha2(alpha2),
         p(p),
-        defaultSleSolver(sle_solver::BiCGStab()),
+        defaultSleSolver(sle_solver::GaussianElimination()),
         sleSolver(sleSolver) {
       }
 
@@ -63,7 +63,7 @@ namespace SGPP {
 
         const size_t d = f.getDimension();
         base::DataVector x(x0);
-        float_t fx = INFINITY;
+        float_t fx = NAN;
 
         bool lsSolved;
         base::DataVector dk(d);
@@ -78,7 +78,7 @@ namespace SGPP {
 
         for (k = 0; k < N; k++) {
           // calculate gradient, Hessian and gradient norm
-          fx = fHessian.evalHessian(x, gradFx, hessianFx);
+          fx = fHessian.eval(x, gradFx, hessianFx);
           float_t gradFxNorm = gradFx.l2Norm();
 
           // exit if norm small enough
