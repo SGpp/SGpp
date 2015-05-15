@@ -3,19 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_BFGS_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_BFGS_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_BFGS_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_BFGS_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
 #include <sgpp/optimization/function/ObjectiveGradient.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      class BFGS : public Optimizer {
+      class BFGS : public UnconstrainedOptimizer {
         public:
           static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
           static constexpr float_t DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
@@ -68,4 +68,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_BFGS_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_BFGS_HPP */

@@ -8,6 +8,7 @@
 
 #include <sgpp/optimization/function/ConstraintFunction.hpp>
 #include <sgpp/optimization/function/ConstraintGradient.hpp>
+#include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
 #include <sgpp/optimization/function/InterpolantFunction.hpp>
 #include <sgpp/optimization/function/InterpolantGradient.hpp>
 #include <sgpp/optimization/function/InterpolantHessian.hpp>
@@ -54,18 +55,23 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
-#include <sgpp/optimization/optimizer/AdaptiveGradientDescent.hpp>
-#include <sgpp/optimization/optimizer/AdaptiveNewton.hpp>
-#include <sgpp/optimization/optimizer/BFGS.hpp>
-#include <sgpp/optimization/optimizer/CMAES.hpp>
-#include <sgpp/optimization/optimizer/DifferentialEvolution.hpp>
-#include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
-#include <sgpp/optimization/optimizer/GradientDescent.hpp>
-#include <sgpp/optimization/optimizer/NelderMead.hpp>
-#include <sgpp/optimization/optimizer/Newton.hpp>
-#include <sgpp/optimization/optimizer/NLCG.hpp>
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
-#include <sgpp/optimization/optimizer/Rprop.hpp>
+#include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
+#include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
+#include <sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp>
+
+#include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/CMAES.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
@@ -73,9 +79,11 @@
 #include <sgpp/optimization/sle/solver/Eigen.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/Gmmpp.hpp>
+#include <sgpp/optimization/sle/solver/SLESolver.hpp>
 #include <sgpp/optimization/sle/solver/UMFPACK.hpp>
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/sle/system/SLE.hpp>
 
 #include <sgpp/optimization/tools/FileIO.hpp>
@@ -84,9 +92,5 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/tools/ScopedLock.hpp>
-#include <sgpp/optimization/sle/solver/SLESolver.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include "sgpp/optimization/optimizer/GradientDescent.hpp"
-#include "sgpp/optimization/optimizer/MultiStart.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */

@@ -10,7 +10,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cstddef>
-#include <memory>
 
 namespace SGPP {
   namespace optimization {

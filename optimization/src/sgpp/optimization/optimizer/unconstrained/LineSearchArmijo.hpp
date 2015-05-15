@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_LINESEARCHARMIJO_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_LINESEARCHARMIJO_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_LINESEARCHARMIJO_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_LINESEARCHARMIJO_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -35,19 +35,21 @@ namespace SGPP {
        * (depending on two tolerances)
        * is big enough to continue the optimization algorithm.
        *
-       * @param       f       objective function
-       * @param       beta    \f$\beta \in (0, 1)\f$
-       * @param       gamma   \f$\gamma \in (0, 1)\f$
-       * @param       tol     tolerance 1 (positive)
-       * @param       eps     tolerance 2 (positive)
-       * @param       x       point to start the line search in
-       * @param       fx      objective function value in x
-       * @param       gradFx  objective function gradient in x
-       * @param       s       search direction (should be normalized)
-       * @param[out]  y       new point, must have the same size as x before
-       *                      calling this function
-       * @return              whether the new point reaches an acceptable
-       *                      improvement
+       * @param       f             objective function
+       * @param       beta          \f$\beta \in (0, 1)\f$
+       * @param       gamma         \f$\gamma \in (0, 1)\f$
+       * @param       tol           tolerance 1 (positive)
+       * @param       eps           tolerance 2 (positive)
+       * @param       x             point to start the line search in
+       * @param       fx            objective function value in x
+       * @param       gradFx        objective function gradient in x
+       * @param       s             search direction (should be normalized)
+       * @param[out]  y             new point, must have the same size as x
+       *                            before calling this function
+       * @param[in,out] evalCounter this variable will be increased by the
+       *                            number of evaluations of f while searching
+       * @return                    whether the new point reaches an acceptable
+       *                            improvement
        */
       inline bool lineSearchArmijo(ObjectiveFunction& f, float_t beta,
                                    float_t gamma,
@@ -55,7 +57,8 @@ namespace SGPP {
                                    const base::DataVector& x, float_t fx,
                                    base::DataVector& gradFx,
                                    const base::DataVector& s,
-                                   base::DataVector& y) {
+                                   base::DataVector& y,
+                                   size_t& evalCounter) {
         const size_t d = x.getSize();
         float_t sigma = 1.0;
         const float_t ip = gradFx.dotProduct(s);
@@ -77,6 +80,7 @@ namespace SGPP {
           // check if y lies in [0, 1]^d
           if (y_in_domain) {
             fy = f.eval(y);
+            evalCounter++;
 
             float_t improvement = fx - fy;
             float_t rhs = gamma * sigma * (-ip);
@@ -99,4 +103,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_LINESEARCHARMIJO_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_LINESEARCHARMIJO_HPP */

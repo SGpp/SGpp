@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_NLCG_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_NLCG_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NLCG_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NLCG_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
 #include <sgpp/optimization/function/ObjectiveGradient.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -23,7 +23,7 @@ namespace SGPP {
        * two successive gradients
        * exceeds a "restart threshold" \f$\alpha\f$.
        */
-      class NLCG : public Optimizer {
+      class NLCG : public UnconstrainedOptimizer {
         public:
           /// default beta (parameter for Armijo's rule)
           static constexpr float_t DEFAULT_BETA = 0.5;
@@ -137,4 +137,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_NLCG_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NLCG_HPP */

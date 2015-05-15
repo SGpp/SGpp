@@ -3,15 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTDESCENT_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTDESCENT_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_GRADIENTDESCENT_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_GRADIENTDESCENT_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
 #include <sgpp/optimization/function/ObjectiveGradient.hpp>
 
 #include <memory>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -20,7 +20,7 @@ namespace SGPP {
       /**
        * Gradient-based method of steepest descent.
        */
-      class GradientDescent : public Optimizer {
+      class GradientDescent : public UnconstrainedOptimizer {
         public:
           /// default maximal number of iterations
           static const size_t DEFAULT_MAX_IT_COUNT = 2000;
@@ -120,4 +120,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_GRADIENTDESCENT_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_GRADIENTDESCENT_HPP */

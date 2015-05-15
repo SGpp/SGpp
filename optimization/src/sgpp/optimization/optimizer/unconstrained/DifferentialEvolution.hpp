@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_DIFFERENTIALEVOLUTION_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_DIFFERENTIALEVOLUTION_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_DIFFERENTIALEVOLUTION_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_DIFFERENTIALEVOLUTION_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -17,7 +17,7 @@ namespace SGPP {
       /**
        * Gradient-free Differential Evolution method.
        */
-      class DifferentialEvolution : public Optimizer {
+      class DifferentialEvolution : public UnconstrainedOptimizer {
         public:
           /// default crossover probability
           static constexpr float_t DEFAULT_CROSSOVER_PROBABILITY = 0.5;
@@ -95,4 +95,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_DIFFERENTIALEVOLUTION_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_DIFFERENTIALEVOLUTION_HPP */

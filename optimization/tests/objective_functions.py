@@ -86,3 +86,8 @@ class SphereFunctionHessian(pysgpp.OptObjectiveHessian):
             return fx
         else:
             return float("inf")
+
+class G3Objective(pysgpp.OptObjectiveFunction):
+    # TODO
+    # http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO_files/Page2613.htm
+    pass

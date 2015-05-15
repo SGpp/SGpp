@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Newton.hpp>
-#include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
@@ -25,7 +25,7 @@ namespace SGPP {
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
-        Optimizer(f, max_it_count),
+        UnconstrainedOptimizer(f, max_it_count),
         fHessian(fHessian),
         beta(beta),
         gamma(gamma),
@@ -45,7 +45,7 @@ namespace SGPP {
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p,
         const sle_solver::SLESolver& sleSolver) :
-        Optimizer(f, max_it_count),
+        UnconstrainedOptimizer(f, max_it_count),
         fHessian(fHessian),
         beta(beta),
         gamma(gamma),
@@ -74,12 +74,14 @@ namespace SGPP {
         base::DataVector y(d);
 
         FullSLE system(hessianFx);
-        size_t k;
+        size_t k = 0;
 
-        for (k = 0; k < N; k++) {
+        while (k < N) {
           // calculate gradient, Hessian and gradient norm
           fx = fHessian.eval(x, gradFx, hessianFx);
-          float_t gradFxNorm = gradFx.l2Norm();
+          k++;
+
+          const float_t gradFxNorm = gradFx.l2Norm();
 
           // exit if norm small enough
           if (gradFxNorm < tol) {
@@ -117,12 +119,13 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fx));
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, f(x) = " +
+            std::to_string(fx));
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
-                                gradFx, s, y)) {
+                                gradFx, s, y, k)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement
             // achieved is too small)
@@ -135,8 +138,9 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fx));
+        printer.printStatusUpdate(
+          std::to_string(k) + " evaluations, f(x) = " +
+          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

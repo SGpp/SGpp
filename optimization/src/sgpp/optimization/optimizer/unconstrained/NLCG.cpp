@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/NLCG.hpp>
-#include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <numeric>
@@ -20,7 +20,7 @@ namespace SGPP {
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon,
                  float_t restartThreshold) :
-        Optimizer(f, maxItCount),
+        UnconstrainedOptimizer(f, maxItCount),
         fGradient(fGradient),
         beta(beta),
         gamma(gamma),
@@ -42,18 +42,18 @@ namespace SGPP {
         base::DataVector s(d);
         base::DataVector sNormalized(d);
         base::DataVector y(d);
-        size_t k;
 
         fx = fGradient.eval(x0, gradFx);
         float_t gradFxNorm = gradFx.l2Norm();
-        float_t gradFyNorm = 0.0;
+
+        size_t k = 1;
 
         // negated gradient as starting search direction
         for (size_t t = 0; t < d; t++) {
           s[t] = -gradFx[t];
         }
 
-        for (k = 0; k < N; k++) {
+        while (k < N) {
           // exit if norm small enough
           if (gradFxNorm < tol) {
             break;
@@ -68,7 +68,7 @@ namespace SGPP {
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
-                                gradFx, sNormalized, y)) {
+                                gradFx, sNormalized, y, k)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement achieved is
             // too small)
@@ -77,7 +77,9 @@ namespace SGPP {
 
           // calculate gradient and norm
           fy = fGradient.eval(y, gradFy);
-          gradFyNorm = gradFy.l2Norm();
+          k++;
+
+          const float_t gradFyNorm = gradFy.l2Norm();
 
           float_t beta = 0.0;
 
@@ -99,8 +101,9 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fx));
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, f(x) = " +
+            std::to_string(fx));
 
           x = y;
           fx = fy;
@@ -111,8 +114,9 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fx));
+        printer.printStatusUpdate(
+          std::to_string(k) + " evaluations, f(x) = " +
+          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

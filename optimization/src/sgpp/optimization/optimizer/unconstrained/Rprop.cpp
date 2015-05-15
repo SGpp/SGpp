@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/optimizer/Rprop.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -20,7 +20,7 @@ namespace SGPP {
         float_t initialStepSize,
         float_t stepSizeIncreaseFactor,
         float_t stepSizeDecreaseFactor) :
-        Optimizer(f, N),
+        UnconstrainedOptimizer(f, maxItCount),
         fGradient(fGradient),
         theta(tolerance),
         initialAlpha(initialStepSize),
@@ -100,8 +100,9 @@ namespace SGPP {
           std::cout << "gradFxOld = " << gradFxOld.toString() << "\n";*/
 
           // status printing
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fx));
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, f(x) = " +
+            std::to_string(fx));
 
           // take difference between old and new x
           xOld.sub(x);
@@ -124,8 +125,9 @@ namespace SGPP {
         xOpt = x;
         fx = f.eval(x);
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fx));
+        printer.printStatusUpdate(
+          std::to_string(k) + " evaluations, f(x) = " +
+          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

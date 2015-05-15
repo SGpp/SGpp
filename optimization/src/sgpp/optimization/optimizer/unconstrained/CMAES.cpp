@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/CMAES.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/CMAES.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
@@ -25,7 +25,7 @@ namespace SGPP {
                    size_t populationSize,
                    size_t recombinationSize,
                    float_t initialStepSize) :
-        Optimizer(f, maxFcnEvalCount),
+        UnconstrainedOptimizer(f, maxFcnEvalCount),
         lambda((populationSize > 0) ? populationSize :
                4 + static_cast<size_t>(3.0 * std::log(f.getDimension()))),
         mu((recombinationSize > 0) ? recombinationSize : lambda / 2),

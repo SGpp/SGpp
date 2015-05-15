@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/MultiStart.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
@@ -20,16 +20,16 @@ namespace SGPP {
       MultiStart::MultiStart(ObjectiveFunction& f,
                              size_t maxFcnEvalCount,
                              size_t populationSize) :
-        Optimizer(f, maxFcnEvalCount),
+        UnconstrainedOptimizer(f, maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(defaultOptimizer) {
         initialize(populationSize);
       }
 
-      MultiStart::MultiStart(Optimizer& optimizer,
+      MultiStart::MultiStart(UnconstrainedOptimizer& optimizer,
                              size_t maxFcnEvalCount,
                              size_t populationSize) :
-        Optimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
+        UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
         defaultOptimizer(NelderMead(f)),
         optimizer(optimizer) {
         initialize(populationSize);
