@@ -25,9 +25,12 @@ class TestExample(unittest.TestCase):
         N = 100
         
         # test two simple objective functions
-        fs = [objective_functions.ExampleFunction(), pysgpp.OptSphere(d)]
-        f_gradients = [objective_functions.ExampleFunctionGradient(), objective_functions.SphereFunctionGradient(d)]
-        f_hessians = [objective_functions.ExampleFunctionHessian(), objective_functions.SphereFunctionHessian(d)]
+        fs = [objective_functions.ExampleFunction(),
+              pysgpp.OptSphere(d)]
+        f_gradients = [objective_functions.ExampleFunctionGradient(),
+                       objective_functions.SphereFunctionGradient(d)]
+        f_hessians = [objective_functions.ExampleFunctionHessian(),
+                      objective_functions.SphereFunctionHessian(d)]
         # minima
         real_xopts = [[3.0/16.0 * math.pi, 3.0/14.0 * math.pi], [0.1, 0.1]]
         real_fopts = [-2.0, 0.0]

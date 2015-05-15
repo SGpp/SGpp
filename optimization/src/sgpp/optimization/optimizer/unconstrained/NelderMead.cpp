@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/NelderMead.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <algorithm>
@@ -18,7 +18,7 @@ namespace SGPP {
       NelderMead::NelderMead(ObjectiveFunction& f,
                              size_t maxFcnEvalCount, float_t alpha,
                              float_t beta, float_t gamma, float_t delta) :
-        Optimizer(f, maxFcnEvalCount),
+        UnconstrainedOptimizer(f, maxFcnEvalCount),
         alpha(alpha),
         beta(beta),
         gamma(gamma),

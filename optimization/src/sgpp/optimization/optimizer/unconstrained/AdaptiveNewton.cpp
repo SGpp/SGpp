@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/optimizer/AdaptiveNewton.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 
 namespace SGPP {
@@ -23,7 +23,7 @@ namespace SGPP {
         float_t dampingIncreaseFactor,
         float_t dampingDecreaseFactor,
         float_t lineSearchAccuracy) :
-        Optimizer(f, N),
+        UnconstrainedOptimizer(f, maxItCount),
         fHessian(fHessian),
         theta(tolerance),
         rhoAlphaPlus(stepSizeIncreaseFactor),
@@ -46,7 +46,7 @@ namespace SGPP {
         float_t dampingDecreaseFactor,
         float_t lineSearchAccuracy,
         const sle_solver::SLESolver& sleSolver) :
-        Optimizer(f, N),
+        UnconstrainedOptimizer(f, N),
         fHessian(fHessian),
         theta(tolerance),
         rhoAlphaPlus(stepSizeIncreaseFactor),
@@ -74,7 +74,7 @@ namespace SGPP {
         float_t fxNew;
 
         FullSLE system(hessianFx);
-        size_t k;
+        size_t k = 0;
         float_t alpha = 1.0;
         float_t lambda = 1.0;
         base::DataVector dir(d);
@@ -82,16 +82,22 @@ namespace SGPP {
         size_t breakIterationCounter = 0;
         const size_t BREAK_ITERATION_COUNTER_MAX = 10;
 
-        for (k = 0; k < N; k++) {
-          // calculate gradient, Hessian and gradient norm
+        const float_t ALPHA1 = 1e-6;
+        const float_t ALPHA2 = 1e-6;
+        const float_t P = 0.1;
+
+        while (k < N) {
+          // calculate gradient and Hessian
           fx = fHessian.eval(x, gradFx, hessianFx);
+          k++;
 
           // DEBUG
           /*std::cout << "\nk = " << k << "\n";
           std::cout << "x = " << x.toString() << "\n";
           std::cout << "fx = " << fx << "\n";
           std::cout << "gradFx = " << gradFx.toString() << "\n";
-          std::cout << "hessianFx = " << hessianFx.toString() << "\n";*/
+          std::cout << "hessianFx = " << hessianFx.toString() << "\n";
+          std::cout << "lambda = " << lambda << "\n";*/
 
           for (size_t t = 0; t < d; t++) {
             // RHS of linear system to be solved
@@ -106,15 +112,29 @@ namespace SGPP {
           lsSolved = sleSolver.solve(system, b, dir);
           printer.enableStatusPrinting();
 
-          if (!lsSolved) {
+          const float_t dirNorm = dir.l2Norm();
+
+          // acceptance criterion
+          if (lsSolved && (b.dotProduct(dir) >=
+                           std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) *
+                           dirNorm * dirNorm)) {
+            // normalize search direction
+            for (size_t t = 0; t < d; t++) {
+              dir[t] /= dirNorm;
+            }
+          } else {
             // restart method
             // (negated normalized gradient as new search direction)
             const float_t gradFxNorm = gradFx.l2Norm();
 
             for (size_t t = 0; t < d; t++) {
-              dir[t] = gradFx[t] / gradFxNorm;
+              dir[t] = b[t] / gradFxNorm;
             }
           }
+
+          // DEBUG
+          /*std::cout << "lsSolved = " << lsSolved << "\n";
+          std::cout << "dir = " << dir.toString() << "\n";*/
 
           for (size_t t = 0; t < d; t++) {
             // new point
@@ -123,6 +143,7 @@ namespace SGPP {
 
           // evaluate at new point
           fxNew = f.eval(xNew);
+          k++;
 
           // inner product of gradient and search direction
           float_t gradFxTimesDir = gradFx.dotProduct(dir);
@@ -158,11 +179,15 @@ namespace SGPP {
 
             // evaluate at new point
             fxNew = f.eval(xNew);
+            k++;
           }
 
           // save new point
           x = xNew;
           fx = fxNew;
+
+          // DEBUG
+          //std::cout << "alpha = " << alpha << "\n";
 
           // increase step size
           alpha = std::min(rhoAlphaPlus * alpha, 1.0);
@@ -171,8 +196,9 @@ namespace SGPP {
           lambda *= rhoLambdaMinus;
 
           // status printing
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fx));
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, f(x) = " +
+            std::to_string(fx));
 
           // stopping criterion:
           // stop if alpha * dir is smaller than tolerance theta
@@ -191,8 +217,9 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fx));
+        printer.printStatusUpdate(
+          std::to_string(k) + " evaluations, f(x) = " +
+          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

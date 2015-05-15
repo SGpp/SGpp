@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_OPTIMIZER_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_OPTIMIZER_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,7 +21,7 @@ namespace SGPP {
       /**
        * Abstract class for optimizing objective functions.
        */
-      class Optimizer {
+      class UnconstrainedOptimizer {
         public:
           /// default maximal number of iterations or function evaluations
           static const size_t DEFAULT_N = 1000;
@@ -35,14 +35,14 @@ namespace SGPP {
            * @param N     maximal number of iterations or function evaluations
            *              (depending on the implementation)
            */
-          Optimizer(ObjectiveFunction& f, size_t N = DEFAULT_N) :
+          UnconstrainedOptimizer(ObjectiveFunction& f, size_t N = DEFAULT_N) :
             f(f), N(N), x0(f.getDimension(), 0.5) {
           }
 
           /**
            * Virtual destructor.
            */
-          virtual ~Optimizer() {
+          virtual ~UnconstrainedOptimizer() {
           }
 
           /**
@@ -101,4 +101,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_OPTIMIZER_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP */

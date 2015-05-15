@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/DifferentialEvolution.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
@@ -23,7 +23,7 @@ namespace SGPP {
           float_t crossoverProbability, float_t scalingFactor,
           size_t idleGenerationsCount, float_t avgImprovementThreshold,
           float_t maxDistanceThreshold) :
-        Optimizer(f, maxFcnEvalCount),
+        UnconstrainedOptimizer(f, maxFcnEvalCount),
         populationSize((populationSize > 0) ? populationSize :
                        10 * f.getDimension()),
         crossoverProbability(crossoverProbability),

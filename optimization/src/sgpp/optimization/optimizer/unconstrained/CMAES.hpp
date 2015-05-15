@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_CMAES_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_CMAES_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_CMAES_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_CMAES_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      class CMAES : public Optimizer {
+      class CMAES : public UnconstrainedOptimizer {
         public:
           // TODO
           /// default initial step size
@@ -86,4 +86,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_CMAES_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_CMAES_HPP */

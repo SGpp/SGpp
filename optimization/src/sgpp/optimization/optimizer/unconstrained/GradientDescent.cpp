@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 namespace SGPP {
@@ -22,7 +22,7 @@ namespace SGPP {
         float_t gamma,
         float_t tolerance,
         float_t epsilon) :
-        Optimizer(f, N),
+        UnconstrainedOptimizer(f, maxItCount),
         fGradient(fGradient),
         beta(beta),
         gamma(gamma),
@@ -40,11 +40,12 @@ namespace SGPP {
         base::DataVector gradFx(d);
         base::DataVector s(d);
         base::DataVector y(d);
-        size_t k;
+        size_t k = 0;
 
-        for (k = 0; k < N; k++) {
+        while (k < N) {
           // calculate gradient and norm
           fx = fGradient.eval(x, gradFx);
+          k++;
           float_t gradFxNorm = gradFx.l2Norm();
 
           // exit if norm small enough
@@ -58,12 +59,13 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fx));
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, f(x) = " +
+            std::to_string(fx));
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
-                                gradFx, s, y)) {
+                                gradFx, s, y, k)) {
             // line search failed ==> exit
             // (either a "real" error occured or the improvement
             // achieved is too small)
@@ -76,8 +78,9 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fx));
+        printer.printStatusUpdate(
+          std::to_string(k) + " evaluations, f(x) = " +
+          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

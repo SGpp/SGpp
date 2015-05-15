@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_NELDERMEAD_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_NELDERMEAD_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NELDERMEAD_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NELDERMEAD_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -17,7 +17,7 @@ namespace SGPP {
       /**
        * Gradient-free Nelder-Mead method.
        */
-      class NelderMead : public Optimizer {
+      class NelderMead : public UnconstrainedOptimizer {
         public:
           /// default reflection coefficient
           static constexpr float_t DEFAULT_ALPHA = 1.0;
@@ -113,4 +113,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_NELDERMEAD_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NELDERMEAD_HPP */

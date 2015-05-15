@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_MULTISTART_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_MULTISTART_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
-#include <sgpp/optimization/optimizer/NelderMead.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -22,7 +22,7 @@ namespace SGPP {
        * for each of the starting point.
        * The best point wins.
        */
-      class MultiStart : public Optimizer {
+      class MultiStart : public UnconstrainedOptimizer {
         public:
           /// default maximal number of function evaluations
           static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 1000;
@@ -51,7 +51,7 @@ namespace SGPP {
            * @param populationSize   number of individual points
            *                         (default: \f$\min(10d, 100)\f$)
            */
-          MultiStart(Optimizer& optimizer,
+          MultiStart(UnconstrainedOptimizer& optimizer,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      size_t populationSize = 0);
 
@@ -75,7 +75,7 @@ namespace SGPP {
           /// default optimization algorithm
           NelderMead defaultOptimizer;
           /// optimization algorithm
-          Optimizer& optimizer;
+          UnconstrainedOptimizer& optimizer;
           /// number of individual points
           size_t populationSize;
 
@@ -92,4 +92,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_MULTISTART_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP */

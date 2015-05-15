@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_NEWTON_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_NEWTON_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NEWTON_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NEWTON_HPP
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/Optimizer.hpp>
 #include <sgpp/optimization/function/ObjectiveHessian.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -27,7 +27,7 @@ namespace SGPP {
        * if the inner product of negated gradient and search direction is
        * not big enough (criterion depending on three parameters).
        */
-      class Newton : public Optimizer {
+      class Newton : public UnconstrainedOptimizer {
         public:
           /// default beta (parameter for Armijo's rule)
           static constexpr float_t DEFAULT_BETA = 0.5;
@@ -209,4 +209,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_NEWTON_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NEWTON_HPP */

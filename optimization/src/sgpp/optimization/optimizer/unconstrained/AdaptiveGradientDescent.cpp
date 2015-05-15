@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/optimizer/AdaptiveGradientDescent.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -20,7 +20,7 @@ namespace SGPP {
         float_t stepSizeIncreaseFactor,
         float_t stepSizeDecreaseFactor,
         float_t lineSearchAccuracy) :
-        Optimizer(f, N),
+        UnconstrainedOptimizer(f, maxItCount),
         fGradient(fGradient),
         theta(tolerance),
         rhoAlphaPlus(stepSizeIncreaseFactor),
@@ -40,16 +40,18 @@ namespace SGPP {
         base::DataVector xNew(d);
         float_t fxNew;
 
-        size_t k;
+        size_t k = 0;
         float_t alpha = 1.0;
         base::DataVector dir(d);
 
         size_t breakIterationCounter = 0;
         const size_t BREAK_ITERATION_COUNTER_MAX = 10;
 
-        for (k = 0; k < N; k++) {
+        while (k < N) {
           // calculate gradient and norm
           fx = fGradient.eval(x, gradFx);
+          k++;
+
           const float_t gradFxNorm = gradFx.l2Norm();
 
           for (size_t t = 0; t < d; t++) {
@@ -61,6 +63,7 @@ namespace SGPP {
 
           // evaluate at new point
           fxNew = f.eval(xNew);
+          k++;
 
           // inner product of gradient and search direction
           const float_t gradFxTimesDir = -gradFxNorm;
@@ -76,6 +79,7 @@ namespace SGPP {
 
             // evaluate at new point
             fxNew = f.eval(xNew);
+            k++;
           }
 
           // save new point
@@ -86,8 +90,9 @@ namespace SGPP {
           alpha *= rhoAlphaPlus;
 
           // status printing
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fx));
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, f(x) = " +
+            std::to_string(fx));
 
           // stopping criterion:
           // stop if alpha is smaller than tolerance theta
@@ -106,8 +111,9 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fx));
+        printer.printStatusUpdate(
+          std::to_string(k) + " evaluations, f(x) = " +
+          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;
