@@ -66,6 +66,12 @@ namespace SGPP {
           fx = fGradient.eval(x, gradFx);
           k++;
 
+          const float_t gradFxNorm = gradFx.l2Norm();
+
+          if (gradFxNorm == 0.0) {
+            break;
+          }
+
           // DEBUG
           /*std::cout << "\nk = " << k << "\n";
           std::cout << "x = " << x.toString() << "\n";
@@ -81,8 +87,6 @@ namespace SGPP {
           }
 
           if (dir.dotProduct(gradFx) > 0.0) {
-            const float_t gradFxNorm = gradFx.l2Norm();
-
             for (size_t t = 0; t < d; t++) {
               dir[t] = -gradFx[t] / gradFxNorm;
             }

@@ -54,6 +54,10 @@ namespace SGPP {
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
+          if (gradFxNorm == 0.0) {
+            break;
+          }
+
           for (size_t t = 0; t < d; t++) {
             // search direction (normalized negated gradient)
             dir[t] = -gradFx[t] / gradFxNorm;

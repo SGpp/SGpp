@@ -48,6 +48,8 @@ const bool UMFPACK_ENABLED;
 %rename(OptConstraintGradient)              SGPP::optimization::ConstraintGradient;
 %rename(OptEmptyConstraintFunction)         SGPP::optimization::EmptyConstraintFunction;
 %rename(OptEmptyConstraintFunctionInstance) SGPP::optimization::emptyConstraintFunction;
+%rename(OptEmptyConstraintGradient)         SGPP::optimization::EmptyConstraintGradient;
+%rename(OptEmptyConstraintGradientInstance) SGPP::optimization::emptyConstraintGradient;
 %rename(OptObjectiveFunction)               SGPP::optimization::ObjectiveFunction;
 %rename(OptObjectiveGradient)               SGPP::optimization::ObjectiveGradient;
 %rename(OptObjectiveHessian)                SGPP::optimization::ObjectiveHessian;
@@ -105,6 +107,7 @@ const bool UMFPACK_ENABLED;
 %rename(OptRprop)                   SGPP::optimization::optimizer::Rprop;
 
 %rename(OptConstrainedOptimizer)    SGPP::optimization::optimizer::ConstrainedOptimizer;
+%rename(OptAugmentedLagrangian)     SGPP::optimization::optimizer::AugmentedLagrangian;
 %rename(OptLogBarrier)              SGPP::optimization::optimizer::LogBarrier;
 %rename(OptSquaredPenalty)          SGPP::optimization::optimizer::SquaredPenalty;
 
@@ -168,6 +171,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/ConstraintFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/ConstraintGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/EmptyConstraintFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/EmptyConstraintGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveHessian.hpp"
@@ -231,6 +235,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/Rprop.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/LogBarrier.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp"
 
