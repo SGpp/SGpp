@@ -9,6 +9,7 @@
 #include <sgpp/optimization/function/ConstraintFunction.hpp>
 #include <sgpp/optimization/function/ConstraintGradient.hpp>
 #include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
+#include <sgpp/optimization/function/EmptyConstraintGradient.hpp>
 #include <sgpp/optimization/function/InterpolantFunction.hpp>
 #include <sgpp/optimization/function/InterpolantGradient.hpp>
 #include <sgpp/optimization/function/InterpolantHessian.hpp>
@@ -55,6 +56,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
+#include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
 #include <sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp>

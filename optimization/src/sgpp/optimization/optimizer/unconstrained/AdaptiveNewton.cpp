@@ -91,6 +91,12 @@ namespace SGPP {
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
 
+          const float_t gradFxNorm = gradFx.l2Norm();
+
+          if (gradFxNorm == 0.0) {
+            break;
+          }
+
           // DEBUG
           /*std::cout << "\nk = " << k << "\n";
           std::cout << "x = " << x.toString() << "\n";
@@ -125,8 +131,6 @@ namespace SGPP {
           } else {
             // restart method
             // (negated normalized gradient as new search direction)
-            const float_t gradFxNorm = gradFx.l2Norm();
-
             for (size_t t = 0; t < d; t++) {
               dir[t] = b[t] / gradFxNorm;
             }
