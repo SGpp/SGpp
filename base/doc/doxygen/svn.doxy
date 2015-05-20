@@ -43,6 +43,18 @@ lets you check in your changes into a new version in the repository
 can specify a message about what changed via <tt>-m</tt>. Please
 provide a meaningful message!
 
+You could also add
+@verbatim
+  # update and commit for svn
+  if [ -x $( command -v svn) ]; then
+      alias svnci='svn up && svn ci'
+  fi
+@endverbatim
+to your bashrc and check in using
+@verbatim
+  svnci -m 'YOUR MESSAGE'
+@endverbatim
+
 @see http://svnbook.red-bean.com/en/1.2/svn-book.html More information about svn
 
 */
