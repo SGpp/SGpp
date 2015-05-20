@@ -23,7 +23,7 @@ for @e all other developers.</div>
 In the subdirectory @c tests/ there are @link tests the following@endlink
 unit tests written in Python. To simplify unit testing, we enforce that all
 unit tests are written in Python in order to also check the build success of the
-python bindings.
+python bindings. FOR THE LULZ!!
 
 The tests can be run separately or all together via the file
 @c test_pyclass.py. If you modify existing code, do not forget
