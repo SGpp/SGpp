@@ -1,7 +1,7 @@
 /**
 @page copyright Copyright
 
-@verbatim 
+@verbatim
 
 The software SG++ is developed by The SG++ Project which is the
 owner of the software.
@@ -25,7 +25,7 @@ also meet, for each linked independent module, the terms and
 conditions of this license of that module.
 
 
-Copyright (c) 2008-today The SG++ Project 
+Copyright (c) 2008-today The SG++ Project
 
 All rights reserved.
 
@@ -41,8 +41,8 @@ met:
  All advertising materials mentioning features or use of this software must
     display the following acknowledgement: "This product includes the software
     SG++ developed 2008-today by The SG++ Project and its contributors."
- Neither the name of The SG++ Project nor the names of its contributors 
-    may be used to endorse or promote products derived from this software 
+ Neither the name of The SG++ Project nor the names of its contributors
+    may be used to endorse or promote products derived from this software
     without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
