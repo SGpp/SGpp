@@ -44,16 +44,16 @@ Please keep in mind using Doxygen compatible comments for classes an methods.
 
 @section naming Naming
 Conventions:
-- directories: all lowercase
-- classes: starting uppercase, camel case (upper camel case)
-- functions, variables: starting lowercase, camel case (lower camel case)
-- constants, defines: all uppercase, _ separated
-- nothing starts with underscores (only system/builtin/compiler)
+ directories: all lowercase
+ classes: starting uppercase, camel case (upper camel case)
+ functions, variables: starting lowercase, camel case (lower camel case)
+ constants, defines: all uppercase, _ separated
+ nothing starts with underscores (only system/builtin/compiler)
 
 
-Don't
-- include sgpp.hpp - only include the header files you require. Reason: faster compilation times
-- use "using namespace"s
-- use tabs, use four (4) space instead! Please configure your editor in order to do so!
+Don't:
+ include sgpp.hpp - only include the header files you require. Reason: faster compilation times
+ use "using namespace"s
+ use tabs, use four (4) space instead! Please configure your editor in order to do so!
 
-
+asdf
