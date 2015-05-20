@@ -1,7 +1,7 @@
 /**
 @page development Developer How-Tos
 
-<div width=80% align=center style="color:#FF0000;">All code has to be documented in such a way that functions,
+<div width=60% align=center style="color:#FF0000;">All code has to be documented in such a way that functions,
 classes and all other entities appearing in this documentation are easily understandable
 for @e all other developers.</div>
 
