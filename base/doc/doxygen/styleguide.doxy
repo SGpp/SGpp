@@ -11,21 +11,21 @@ together with the identifiers, have to enable others to familiarize
 with the code quickly. Header files have to be commented
 completely. In source files it suffices to comment the codelines. The
 comments have to be verbose enough so that one can understand what is
-going on without reading the code!
+going on without reading the code! Please keep in mind using Doxygen compatible comments for classes and methods.
 @verbatim
 // Thread .h
 
 /**
- * Klassenbeschreibung
+ * Class description
  */
 class Thread {
 public :
     /**
-     * Methodenbeschreibung
+     * Method description
      */
     void wakeUp ();
 
-    State state ; // Variablenbeschreibung
+    State state ; // Variable description
 };
 
 
@@ -33,7 +33,7 @@ public :
 
 void Thread :: wakeUp ()
 {
-    // Beschreibung von Implementierungsdetails
+    // Description of implementation details
     if ( ... ) {
         ...
     }
@@ -42,22 +42,19 @@ void Thread :: wakeUp ()
 
 @section naming Naming
 
-Use meaningful names (TODO add naming convention)
-
-@verbatim
 Naming:
 - directories: all lowercase
-- constants, defines: all uppercase
-- functions, variables: starting lowercase, camel-case
-- nothing starting with underscores (only system/builtin/compiler)
-- classes: starting uppercase, camel-case
+- classes: starting uppercase, camel case (upper camel case)
+- functions, variables: starting lowercase, camel case (lower camel case)
+- constants, defines: all uppercase, _ separated
+- nothing starts with underscores (only system/builtin/compiler)
+
 
 Don't
 - include sgpp.hpp - only include the header files you require. Reason: faster compilation times
 - use "using namespace"s
 - use tabs, use four (4) space instead! Please configure your editor in order to do so!
 
-@endverbatim
 
 @section refs References
 [1] http://www-bs.informatik.tu-cottbus.de/fileadmin/user_upload/lehre/bs1/styleguide.pdf
