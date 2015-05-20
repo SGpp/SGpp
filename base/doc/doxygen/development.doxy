@@ -22,7 +22,8 @@ for @e all other developers.</div>
 
 In the subdirectory @c tests/ there are @link tests the following@endlink
 unit tests written in Python. To simplify unit testing, we enforce that all
-unit tests are written in Python in order to also check the build success of the python bindings.
+unit tests are written in Python in order to also check the build success of the
+python bindings.
 
 The tests can be run separately or all together via the file
 @c test_pyclass.py. If you modify existing code, do not forget
@@ -57,12 +58,15 @@ documentation with doxygen!
 Executing <tt>doxygen</tt> in the main folder creates the
 Doxygen-documentation in the subfolder <tt>doc</tt>. The settings
 for Doxygen are automatically taken from the file
-@todo file does not exist@endtodo <tt>Doxyfile</tt>. As those settings do some preprocessing to
+@todo file does not exist
+<tt>Doxyfile</tt>. As those settings do some preprocessing to
 include the revision numbers from the svn-Repository this requires the
 use of <tt>svn</tt> and takes longer than normal execution.
 
 Therefore a second file with Doxygen-settings exists, just without
-the preprocessing steps, @todo file does not exist @endtodo <tt>Doxyfile.fast</tt>, which is much
+the preprocessing steps,
+@todo file does not exist
+<tt>Doxyfile.fast</tt>, which is much
 faster. It can be used running <tt>doxygen Doxyfile.fast</tt>
 in the main folder.
 
