@@ -902,7 +902,6 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
 # @param data DataVector to split
 # @param proportion split into proportion, (1-proportion)
 # @return (DataVector1, DataVector2)
-#-------------------------------------------------------------------------------
 def split_DataVector_by_proportion(data, proportion):
     dim = data.getDim()
     size = data.getSize()
@@ -929,7 +928,6 @@ def split_DataVector_by_proportion(data, proportion):
 # @param classes DataVector with class values to split
 # @param proportion split into proportion, (1-proportion)
 # @return (data1, data2, classes1, classes2)
-#-------------------------------------------------------------------------------
 def split_DataVectors_by_proportion_stratified(data, 
                                                classes,
                                                proportion):
