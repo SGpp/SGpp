@@ -62,19 +62,19 @@ namespace SGPP {
 
         Armadillo solverArmadillo;
         Eigen solverEigen;
-        UMFPACK solverUmfpack;
+        UMFPACK solverUMFPACK;
         Gmmpp solverGmmpp;
-        BiCGStab solverBicgstab;
+        BiCGStab solverBiCGStab;
         GaussianElimination solverGaussianElimination;
 
         std::map<SLESolver*, bool> supports;
 
-        // by default, only BiCGStab is supported
+        // by default, only BiCGStab and GaussianElimination supported
         supports[&solverArmadillo] = false;
         supports[&solverEigen] = false;
-        supports[&solverUmfpack] = false;
+        supports[&solverUMFPACK] = false;
         supports[&solverGmmpp] = false;
-        supports[&solverBicgstab] = true;
+        supports[&solverBiCGStab] = true;
         supports[&solverGaussianElimination] = true;
 
 #ifdef USEARMADILLO
@@ -86,7 +86,7 @@ namespace SGPP {
 #endif /* USEEIGEN */
 
 #ifdef USEUMFPACK
-        supports[&solverUmfpack] = true;
+        supports[&solverUMFPACK] = true;
 #endif /* USEUMFPACK */
 
 #ifdef USEGMMPP
@@ -98,7 +98,7 @@ namespace SGPP {
         std::vector<SLESolver*> solvers;
         const size_t n = system.getDimension();
 
-        if (supports[&solverUmfpack] || supports[&solverGmmpp]) {
+        if (supports[&solverUMFPACK] || supports[&solverGmmpp]) {
           // if at least one of the sparse solvers is supported
           // ==> estimate sparsity ratio of matrix by considering
           // every inc-th row
@@ -134,21 +134,9 @@ namespace SGPP {
             printer.printStatusNewLine();
           }
 
-          if ((n > MAX_DIM_FOR_FULL) ||
-              (nnzRatio <= MAX_NNZ_RATIO_FOR_GMMPP)) {
-            if (B.size() == 1) {
-              // prefer Gmm++ over UMFPACK
-              addSLESolver(&solverGmmpp, solvers, supports);
-              addSLESolver(&solverUmfpack, solvers, supports);
-            } else {
-              // prefer UMFPACK over Gmm++
-              // (UMFPACK can solve multiple systems simultaneously)
-              addSLESolver(&solverUmfpack, solvers, supports);
-              addSLESolver(&solverGmmpp, solvers, supports);
-            }
-          } else if (nnzRatio <= MAX_NNZ_RATIO_FOR_SPARSE) {
+          if (nnzRatio <= MAX_NNZ_RATIO_FOR_SPARSE) {
             // prefer UMFPACK over Gmm++
-            addSLESolver(&solverUmfpack, solvers, supports);
+            addSLESolver(&solverUMFPACK, solvers, supports);
             addSLESolver(&solverGmmpp, solvers, supports);
           }
         }
@@ -156,9 +144,9 @@ namespace SGPP {
         // add all remaining solvers (prefer Armadillo over Eigen)
         addSLESolver(&solverArmadillo, solvers, supports);
         addSLESolver(&solverEigen, solvers, supports);
+        addSLESolver(&solverUMFPACK, solvers, supports);
         addSLESolver(&solverGmmpp, solvers, supports);
-        addSLESolver(&solverUmfpack, solvers, supports);
-        addSLESolver(&solverBicgstab, solvers, supports);
+        addSLESolver(&solverBiCGStab, solvers, supports);
         addSLESolver(&solverGaussianElimination, solvers, supports);
 
         for (size_t i = 0; i < solvers.size(); i++) {

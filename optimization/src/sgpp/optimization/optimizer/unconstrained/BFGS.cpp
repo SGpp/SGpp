@@ -57,6 +57,7 @@ namespace SGPP {
         size_t k = 0;
         float_t alpha = 1.0;
         base::DataVector dir(d);
+        bool inDomain;
 
         size_t breakIterationCounter = 0;
         const size_t BREAK_ITERATION_COUNTER_MAX = 10;
@@ -92,12 +93,19 @@ namespace SGPP {
             }
           }
 
+          inDomain = true;
+
           for (size_t t = 0; t < d; t++) {
             xNew[t] = x[t] + alpha * dir[t];
+
+            if ((xNew[t] < 0.0) || (xNew[t] > 1.0)) {
+              inDomain = false;
+              break;
+            }
           }
 
           // evaluate at new point
-          fxNew = f.eval(xNew);
+          fxNew = (inDomain ? f.eval(xNew) : INFINITY);
           k++;
 
           // inner product of gradient and search direction
@@ -106,14 +114,20 @@ namespace SGPP {
           // line search
           while (fxNew > fx + rhoLs * alpha * gradFxTimesDir) {
             alpha *= rhoAlphaMinus;
+            inDomain = true;
 
             // recalculate new point
             for (size_t t = 0; t < d; t++) {
               xNew[t] = x[t] + alpha * dir[t];
+
+              if ((xNew[t] < 0.0) || (xNew[t] > 1.0)) {
+                inDomain = false;
+                break;
+              }
             }
 
             // evaluate at new point
-            fxNew = fGradient.eval(xNew, gradFxNew);
+            fxNew = (inDomain ? fGradient.eval(xNew, gradFxNew) : INFINITY);
             k++;
           }
 

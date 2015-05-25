@@ -78,6 +78,7 @@ namespace SGPP {
         float_t alpha = 1.0;
         float_t lambda = 1.0;
         base::DataVector dir(d);
+        bool inDomain;
 
         size_t breakIterationCounter = 0;
         const size_t BREAK_ITERATION_COUNTER_MAX = 10;
@@ -85,6 +86,7 @@ namespace SGPP {
         const float_t ALPHA1 = 1e-6;
         const float_t ALPHA2 = 1e-6;
         const float_t P = 0.1;
+        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient and Hessian
@@ -114,9 +116,16 @@ namespace SGPP {
 
           // solve linear system with damped Hessian as system matrix
           system.setA(hessianFx);
-          printer.disableStatusPrinting();
+
+          if (statusPrintingEnabled) {
+            printer.disableStatusPrinting();
+          }
+
           lsSolved = sleSolver.solve(system, b, dir);
-          printer.enableStatusPrinting();
+
+          if (statusPrintingEnabled) {
+            printer.enableStatusPrinting();
+          }
 
           const float_t dirNorm = dir.l2Norm();
 
@@ -140,13 +149,20 @@ namespace SGPP {
           /*std::cout << "lsSolved = " << lsSolved << "\n";
           std::cout << "dir = " << dir.toString() << "\n";*/
 
+          inDomain = true;
+
           for (size_t t = 0; t < d; t++) {
             // new point
             xNew[t] = x[t] + alpha * dir[t];
+
+            if ((xNew[t] < 0.0) || (xNew[t] > 1.0)) {
+              inDomain = false;
+              break;
+            }
           }
 
           // evaluate at new point
-          fxNew = f.eval(xNew);
+          fxNew = (inDomain ? f.eval(xNew) : INFINITY);
           k++;
 
           // inner product of gradient and search direction
@@ -176,13 +192,20 @@ namespace SGPP {
               gradFxTimesDir = gradFx.dotProduct(dir);
             }
 
+            inDomain = true;
+
             // recalculate new point
             for (size_t t = 0; t < d; t++) {
               xNew[t] = x[t] + alpha * dir[t];
+
+              if ((xNew[t] < 0.0) || (xNew[t] > 1.0)) {
+                inDomain = false;
+                break;
+              }
             }
 
             // evaluate at new point
-            fxNew = f.eval(xNew);
+            fxNew = (inDomain ? f.eval(xNew) : INFINITY);
             k++;
           }
 
