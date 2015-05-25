@@ -160,6 +160,10 @@ namespace SGPP {
       statusPrintingEnabled = false;
     }
 
+    bool Printer::isStatusPrintingEnabled() {
+      return statusPrintingEnabled;
+    }
+
     float_t Printer::getLastDurationSecs() const {
       return lastDuration;
     }

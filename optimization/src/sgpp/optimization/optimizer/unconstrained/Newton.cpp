@@ -75,6 +75,7 @@ namespace SGPP {
 
         FullSLE system(hessianFx);
         size_t k = 0;
+        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient, Hessian and gradient norm
@@ -95,9 +96,16 @@ namespace SGPP {
 
           // solve linear system with Hessian as system matrix
           system.setA(hessianFx);
-          printer.disableStatusPrinting();
+
+          if (statusPrintingEnabled) {
+            printer.disableStatusPrinting();
+          }
+
           lsSolved = sleSolver.solve(system, s, dk);
-          printer.enableStatusPrinting();
+
+          if (statusPrintingEnabled) {
+            printer.enableStatusPrinting();
+          }
 
           // norm of solution
           const float_t dkNorm = dk.l2Norm();

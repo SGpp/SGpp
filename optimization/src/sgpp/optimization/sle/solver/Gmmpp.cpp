@@ -55,7 +55,7 @@ namespace SGPP {
         printer.printStatusNewLine();
         printer.printStatusUpdate("solving with Gmm++");
 
-        gmm::iteration iter(1e-6, 0, 100000);
+        gmm::iteration iter(1e-6, 0, 10000);
         iter.set_callback(&callback);
 
         try {

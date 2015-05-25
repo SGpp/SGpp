@@ -129,15 +129,22 @@ namespace SGPP {
         // temporarily save x0 and N (will be overwritten by the loop)
         const base::DataVector tmpX0(optimizer.getStartingPoint());
         const size_t tmpN = optimizer.getN();
+        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
 
         for (size_t k = 0; k < populationSize; k++) {
           // optimize with k-th starting point
           optimizer.setStartingPoint(x0[k]);
           optimizer.setN(roundN[k]);
 
-          printer.disableStatusPrinting();
+          if (statusPrintingEnabled) {
+            printer.disableStatusPrinting();
+          }
+
           optimizer.optimize(curXOpt);
-          printer.enableStatusPrinting();
+
+          if (statusPrintingEnabled) {
+            printer.enableStatusPrinting();
+          }
 
           curFOpt = f.eval(curXOpt);
 

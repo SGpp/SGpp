@@ -141,6 +141,11 @@ namespace SGPP {
         void disableStatusPrinting();
 
         /**
+         * @return          whether status printing is enabled or not
+         */
+        bool isStatusPrintingEnabled();
+
+        /**
          * @return          current verbosity level
          */
         inline int getVerbosity() const {
