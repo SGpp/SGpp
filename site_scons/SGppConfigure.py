@@ -205,10 +205,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
         env['SHLIBSUFFIX'] = '.dylib'
     elif env['PLATFORM'] == 'cygwin':
-        # required to find the static libraries compiled before the shared libraries
-        # the static libraries are required as the linker on windows cannot ignore undefined symbols
-        # (as is done on linux automatically and is done on OSX with the settings above)
-        env.Append(LIBPATH=[BUILD_DIR])
+        pass
 
     # will lead to a warning on cygwin (and we have -Werror enabled)
     # is enabled by default on cygwin

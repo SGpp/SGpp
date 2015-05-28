@@ -135,6 +135,11 @@ Export('EXAMPLE_DIR')
 if not env.GetOption('clean'):
     SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
+# add #/lib/sgpp and #/lib/alglib to LIBPATH
+# (to add corresponding -L... flags to linker calls)
+env.Append(LIBPATH=[BUILD_DIR,
+                    Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'))])
+
 # add C++ defines for all modules
 cppdefines = []
 for module in moduleNames:
