@@ -45,7 +45,9 @@ namespace SGPP {
       BsplineClenshawCurtis,
       Wavelet,
       WaveletTruncatedBoundary,
-      ModBsplineClenshawCurtis
+      ModBsplineClenshawCurtis,
+      FundamentalSpline,
+      ModFundamentalSpline
     };
 
     /**
@@ -222,6 +224,10 @@ namespace SGPP {
          * @param degree the polynom's max. degree
          */
         static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+
+        static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
+
+        static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
 
         /**
          * creates a prewavelet grid

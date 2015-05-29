@@ -22,6 +22,8 @@
 #include "sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 #include "sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"

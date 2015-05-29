@@ -42,7 +42,7 @@ namespace SGPP {
       }
 
       float_t MultiStart::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (random search)...");
+        printer.printStatusBegin("Optimizing (multi-start)...");
 
         const size_t d = f.getDimension();
         std::vector<base::DataVector> x0(populationSize, base::DataVector(d));

@@ -22,6 +22,8 @@
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/grid/type/WaveletTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
@@ -35,6 +37,8 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
 
 namespace SGPP {
   namespace op_factory {
@@ -77,6 +81,12 @@ namespace SGPP {
       } else if (std::strcmp(grid.getType(), "modWavelet") == 0) {
         return new optimization::OperationMultipleHierarchisationModWavelet(
                  dynamic_cast<base::ModWaveletGrid&>(grid));
+      } else if (std::strcmp(grid.getType(), "fundamentalSpline") == 0) {
+        return new optimization::OperationMultipleHierarchisationFundamentalSpline(
+                 dynamic_cast<base::FundamentalSplineGrid&>(grid));
+      } else if (std::strcmp(grid.getType(), "modFundamentalSpline") == 0) {
+        return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
+                 dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
       } else {
         throw base::factory_exception(
           "OperationMultipleHierarchisation is not implemented for this grid type.");
