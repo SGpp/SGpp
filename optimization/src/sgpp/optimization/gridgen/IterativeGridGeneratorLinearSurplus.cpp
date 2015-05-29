@@ -35,7 +35,9 @@ namespace SGPP {
           (std::strcmp(grid.getType(),
                        "wavelet") == 0) ||
           (std::strcmp(grid.getType(),
-                       "linear") == 0)) {
+                       "linear") == 0) ||
+          (std::strcmp(grid.getType(),
+                       "fundamentalSpline") == 0)) {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::LinearGrid(f.getDimension()));
       } else if ((std::strcmp(grid.getType(),
@@ -58,7 +60,9 @@ namespace SGPP {
                  (std::strcmp(grid.getType(),
                               "modWavelet") == 0) ||
                  (std::strcmp(grid.getType(),
-                              "modlinear") == 0)) {
+                              "modlinear") == 0) ||
+                 (std::strcmp(grid.getType(),
+                              "modFundamentalSpline") == 0)) {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::ModLinearGrid(f.getDimension()));
       } else if (std::strcmp(grid.getType(),

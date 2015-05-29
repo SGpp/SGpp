@@ -17,6 +17,8 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
@@ -29,8 +31,10 @@
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -103,6 +107,18 @@ namespace SGPP {
                   dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).
                   getDegree()));
             basisType = BSPLINE_MODIFIED_CLENSHAW_CURTIS;
+          } else if (strcmp(grid.getType(), "fundamentalSpline") == 0) {
+            fundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineBase>(
+                                       new base::SFundamentalSplineBase(
+                                         dynamic_cast<base::FundamentalSplineGrid&>(grid).
+                                         getDegree()));
+            basisType = FUNDAMENTAL_SPLINE;
+          } else if (strcmp(grid.getType(), "modFundamentalSpline") == 0) {
+            modFundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineModifiedBase>(
+                                          new base::SFundamentalSplineModifiedBase(
+                                            dynamic_cast<base::ModFundamentalSplineGrid&>(grid).
+                                            getDegree()));
+            basisType = FUNDAMENTAL_SPLINE_MODIFIED;
           } else if (strcmp(grid.getType(), "linear") == 0) {
             linearBasis = std::unique_ptr<base::SLinearBase>(
                             new base::SLinearBase());
@@ -207,6 +223,11 @@ namespace SGPP {
         /// modified B-spline Clenshaw-Curtis basis
         std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase>
         modBsplineClenshawCurtisBasis;
+        /// fundamental spline basis
+        std::unique_ptr<base::SFundamentalSplineBase> fundamentalSplineBasis;
+        /// modified fundamental spline basis
+        std::unique_ptr<base::SFundamentalSplineModifiedBase>
+        modFundamentalSplineBasis;
         /// linear basis
         std::unique_ptr<base::SLinearBase> linearBasis;
         /// linear boundary basis
@@ -231,6 +252,8 @@ namespace SGPP {
           BSPLINE_CLENSHAW_CURTIS,
           BSPLINE_MODIFIED,
           BSPLINE_MODIFIED_CLENSHAW_CURTIS,
+          FUNDAMENTAL_SPLINE,
+          FUNDAMENTAL_SPLINE_MODIFIED,
           LINEAR,
           LINEAR_BOUNDARY,
           LINEAR_CLENSHAW_CURTIS,
@@ -260,6 +283,11 @@ namespace SGPP {
           } else if (basisType == BSPLINE_MODIFIED_CLENSHAW_CURTIS) {
             return evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(
                      basisI, pointJ);
+          } else if (basisType == FUNDAMENTAL_SPLINE) {
+            return evalFundamentalSplineFunctionAtGridPoint(basisI, pointJ);
+          } else if (basisType == FUNDAMENTAL_SPLINE_MODIFIED) {
+            return evalFundamentalSplineModifiedFunctionAtGridPoint(basisI,
+                   pointJ);
           } else if (basisType == LINEAR) {
             return evalLinearFunctionAtGridPoint(basisI, pointJ);
           } else if (basisType == LINEAR_BOUNDARY) {
@@ -414,6 +442,78 @@ namespace SGPP {
             }
 
             result *= result1d;
+          }
+
+          return result;
+        }
+
+        /**
+         * @param basisI    basis function index
+         * @param pointJ    grid point index
+         * @return          value of the basisI-th fundamental spline basis
+         *                  function at the pointJ-th grid point
+         */
+        inline float_t evalFundamentalSplineFunctionAtGridPoint(size_t basisI,
+            size_t pointJ) {
+          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
+          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          float_t result = 1.0;
+
+          for (size_t t = 0; t < gridStorage.dim(); t++) {
+            if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
+              return 0.0;
+            } else if (gpPoint.getLevel(t) == gpBasis.getLevel(t)) {
+              if (gpPoint.getIndex(t) != gpBasis.getIndex(t)) {
+                return 0.0;
+              }
+            } else {
+              const float_t result1d = fundamentalSplineBasis->eval(
+                                         gpBasis.getLevel(t),
+                                         gpBasis.getIndex(t),
+                                         gpPoint.getCoord(t));
+
+              if (result1d == 0.0) {
+                return 0.0;
+              }
+
+              result *= result1d;
+            }
+          }
+
+          return result;
+        }
+
+        /**
+         * @param basisI    basis function index
+         * @param pointJ    grid point index
+         * @return          value of the basisI-th modified fundamental spline
+         *                  basis function at the pointJ-th grid point
+         */
+        inline float_t evalFundamentalSplineModifiedFunctionAtGridPoint(
+          size_t basisI, size_t pointJ) {
+          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
+          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          float_t result = 1.0;
+
+          for (size_t t = 0; t < gridStorage.dim(); t++) {
+            if (gpPoint.getLevel(t) < gpBasis.getLevel(t)) {
+              return 0.0;
+            } else if (gpPoint.getLevel(t) == gpBasis.getLevel(t)) {
+              if (gpPoint.getIndex(t) != gpBasis.getIndex(t)) {
+                return 0.0;
+              }
+            } else {
+              const float_t result1d = modFundamentalSplineBasis->eval(
+                                         gpBasis.getLevel(t),
+                                         gpBasis.getIndex(t),
+                                         gpPoint.getCoord(t));
+
+              if (result1d == 0.0) {
+                return 0.0;
+              }
+
+              result *= result1d;
+            }
           }
 
           return result;

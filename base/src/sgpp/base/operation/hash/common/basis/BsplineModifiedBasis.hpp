@@ -38,117 +38,6 @@ namespace SGPP {
         }
 
         /**
-         * @param l     level of basis function
-         * @param i     index of basis function
-         * @param x     evaluation point
-         * @return      value of modified B-spline basis function
-         */
-        inline float_t eval(LT l, IT i, float_t x) {
-          if (l == 1) {
-            return 1.0;
-          }
-
-          const IT hInv = static_cast<IT>(1) << l;
-          const float_t hInvDbl = static_cast<float_t>(hInv);
-
-          if (i == hInv - 1) {
-            // mirror the situation at x = 0.5
-            x = 1.0 - x;
-            i = 1;
-          }
-
-          if (i == 1) {
-            return modifiedBSpline(x * hInvDbl, bsplineBasis.getDegree());
-          } else {
-            return bsplineBasis.uniformBSpline(
-                     x * hInvDbl - static_cast<float_t>(i) +
-                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
-                     bsplineBasis.getDegree());
-          }
-        }
-
-        /**
-         * @param l     level of basis function
-         * @param i     index of basis function
-         * @param x     evaluation point
-         * @return      value of derivative of modified
-         *              B-spline basis function
-         */
-        inline float_t evalDx(LT l, IT i, float_t x) {
-          if (l == 1) {
-            return 0.0;
-          }
-
-          const IT hInv = static_cast<IT>(1) << l;
-          const float_t hInvDbl = static_cast<float_t>(hInv);
-          // inner derivative
-          float_t dxFactor = hInvDbl;
-
-          if (i == hInv - 1) {
-            // mirror the situation at x = 0.5
-            // (don't forget the inner derivative!)
-            x = 1.0 - x;
-            i = 1;
-            dxFactor *= -1.0;
-          }
-
-          if (i == 1) {
-            return dxFactor * modifiedBSplineDx(
-                     x * hInvDbl, bsplineBasis.getDegree());
-          } else {
-            return dxFactor * bsplineBasis.uniformBSplineDx(
-                     x * hInvDbl - static_cast<float_t>(i) +
-                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
-                     bsplineBasis.getDegree());
-          }
-        }
-
-        /**
-         * @param l     level of basis function
-         * @param i     index of basis function
-         * @param x     evaluation point
-         * @return      value of 2nd derivative of modified
-         *              B-spline basis function
-         */
-        inline float_t evalDxDx(LT l, IT i, float_t x) {
-          if (l == 1) {
-            return 0.0;
-          }
-
-          const IT hInv = static_cast<IT>(1) << l;
-          const float_t hInvDbl = static_cast<float_t>(hInv);
-          // inner derivative
-          float_t dxFactor = hInvDbl;
-
-          if (i == hInv - 1) {
-            // mirror the situation at x = 0.5
-            x = 1.0 - x;
-            i = 1;
-          }
-
-          if (i == 1) {
-            return dxFactor * dxFactor * modifiedBSplineDxDx(
-                     x * hInvDbl, bsplineBasis.getDegree());
-          } else {
-            return dxFactor * dxFactor * bsplineBasis.uniformBSplineDxDx(
-                     x * hInvDbl - static_cast<float_t>(i) +
-                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
-                     bsplineBasis.getDegree());
-          }
-        }
-
-        /**
-         * @return      B-spline degree
-         */
-        inline size_t getDegree() const {
-          return bsplineBasis.getDegree();
-        }
-
-      protected:
-        /// B-spline basis for B-spline evaluation
-        BsplineBasis<LT, IT> bsplineBasis;
-
-        /**
          * @param x     evaluation point
          * @param p     B-spline degree
          * @return      value of modified uniform B-spline (e.g. index == 1)
@@ -1251,6 +1140,117 @@ namespace SGPP {
               return y;
           }
         }
+
+        /**
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of modified B-spline basis function
+         */
+        inline float_t eval(LT l, IT i, float_t x) {
+          if (l == 1) {
+            return 1.0;
+          }
+
+          const IT hInv = static_cast<IT>(1) << l;
+          const float_t hInvDbl = static_cast<float_t>(hInv);
+
+          if (i == hInv - 1) {
+            // mirror the situation at x = 0.5
+            x = 1.0 - x;
+            i = 1;
+          }
+
+          if (i == 1) {
+            return modifiedBSpline(x * hInvDbl, bsplineBasis.getDegree());
+          } else {
+            return bsplineBasis.uniformBSpline(
+                     x * hInvDbl - static_cast<float_t>(i) +
+                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+                     bsplineBasis.getDegree());
+          }
+        }
+
+        /**
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of derivative of modified
+         *              B-spline basis function
+         */
+        inline float_t evalDx(LT l, IT i, float_t x) {
+          if (l == 1) {
+            return 0.0;
+          }
+
+          const IT hInv = static_cast<IT>(1) << l;
+          const float_t hInvDbl = static_cast<float_t>(hInv);
+          // inner derivative
+          float_t dxFactor = hInvDbl;
+
+          if (i == hInv - 1) {
+            // mirror the situation at x = 0.5
+            // (don't forget the inner derivative!)
+            x = 1.0 - x;
+            i = 1;
+            dxFactor *= -1.0;
+          }
+
+          if (i == 1) {
+            return dxFactor * modifiedBSplineDx(
+                     x * hInvDbl, bsplineBasis.getDegree());
+          } else {
+            return dxFactor * bsplineBasis.uniformBSplineDx(
+                     x * hInvDbl - static_cast<float_t>(i) +
+                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+                     bsplineBasis.getDegree());
+          }
+        }
+
+        /**
+         * @param l     level of basis function
+         * @param i     index of basis function
+         * @param x     evaluation point
+         * @return      value of 2nd derivative of modified
+         *              B-spline basis function
+         */
+        inline float_t evalDxDx(LT l, IT i, float_t x) {
+          if (l == 1) {
+            return 0.0;
+          }
+
+          const IT hInv = static_cast<IT>(1) << l;
+          const float_t hInvDbl = static_cast<float_t>(hInv);
+          // inner derivative
+          float_t dxFactor = hInvDbl;
+
+          if (i == hInv - 1) {
+            // mirror the situation at x = 0.5
+            x = 1.0 - x;
+            i = 1;
+          }
+
+          if (i == 1) {
+            return dxFactor * dxFactor * modifiedBSplineDxDx(
+                     x * hInvDbl, bsplineBasis.getDegree());
+          } else {
+            return dxFactor * dxFactor * bsplineBasis.uniformBSplineDxDx(
+                     x * hInvDbl - static_cast<float_t>(i) +
+                     static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+                     bsplineBasis.getDegree());
+          }
+        }
+
+        /**
+         * @return      B-spline degree
+         */
+        inline size_t getDegree() const {
+          return bsplineBasis.getDegree();
+        }
+
+      protected:
+        /// B-spline basis for B-spline evaluation
+        BsplineBasis<LT, IT> bsplineBasis;
     };
 
     // default type-def (unsigned int for level and index)

@@ -7,7 +7,7 @@
 #define BSPLINEGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <iostream>
 
