@@ -42,8 +42,9 @@ namespace SGPP {
          * @param[in,out] nodeValues before: vector of function values at
          *                           the grid points,
          *                           after: vector of hierarchical coefficients
+         * @return                   whether hierarchisation was successful
          */
-        virtual void doHierarchisation(base::DataVector& nodeValues);
+        virtual bool doHierarchisation(base::DataVector& nodeValues);
 
         /**
          * @param[in,out] alpha before: vector of hierarchical coefficients,
@@ -56,8 +57,9 @@ namespace SGPP {
          * @param[in,out] nodeValues before: vector of function values at
          *                           the grid points,
          *                           after: vector of hierarchical coefficients
+         * @return                   whether hierarchisation was successful
          */
-        virtual void doHierarchisation(
+        virtual bool doHierarchisation(
           std::vector<base::DataVector>& nodeValues);
 
         /**
