@@ -15,12 +15,12 @@
 namespace SGPP {
   namespace optimization {
 
-    void OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
+    bool OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
       base::DataVector& nodeValues) {
       HierarchisationSLE system(grid);
       sle_solver::Auto solver;
       base::DataVector b(nodeValues);
-      solver.solve(system, b, nodeValues);
+      return solver.solve(system, b, nodeValues);
     }
 
     void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(
@@ -45,12 +45,12 @@ namespace SGPP {
       alpha = nodeValues;
     }
 
-    void OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
+    bool OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
       std::vector<base::DataVector>& nodeValues) {
       HierarchisationSLE system(grid);
       sle_solver::Auto solver;
       std::vector<base::DataVector> B(nodeValues);
-      solver.solve(system, B, nodeValues);
+      return solver.solve(system, B, nodeValues);
     }
 
     void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(
