@@ -118,50 +118,6 @@ namespace SGPP {
       return DIM;
     }
 
-    void
-    HashGridIndex::set(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i) {
-      level[d] = l;
-      index[d] = i;
-      rehash();
-    }
-
-    void
-    HashGridIndex::set(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf) {
-      level[d] = l;
-      index[d] = i;
-      Leaf = isLeaf;
-      rehash();
-    }
-
-    void
-    HashGridIndex::push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i) {
-      level[d] = l;
-      index[d] = i;
-    }
-
-    void
-    HashGridIndex::push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf) {
-      level[d] = l;
-      index[d] = i;
-      Leaf = isLeaf;
-    }
-
-    void
-    HashGridIndex::get(size_t d, HashGridIndex::level_type& l, HashGridIndex::index_type& i) const {
-      l = level[d];
-      i = index[d];
-    }
-
-    int
-    HashGridIndex::getLevel(size_t d) const {
-      return level[d];
-    }
-
-    int
-    HashGridIndex::getIndex(size_t d) const {
-      return index[d];
-    }
-
     HashGridIndex::PointDistribution
     HashGridIndex::getPointDistribution() const {
       return distr;

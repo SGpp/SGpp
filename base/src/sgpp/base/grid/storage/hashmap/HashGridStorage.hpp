@@ -185,7 +185,9 @@ namespace SGPP {
          *
          * @return sequence number of the given index
          */
-        size_t& operator[](index_pointer index);
+        inline size_t& operator[](index_pointer index) {
+          return map[index];
+        }
 
         /**
          * gets the index number for given gridpoint by its sequence number
@@ -194,7 +196,9 @@ namespace SGPP {
          *
          * @return gridindex object (reference)
          */
-        index_pointer& operator[](size_t seq);
+        inline index_pointer& operator[](size_t seq) {
+          return list[seq];
+        }
 
         /**
          * gets the index number for given gridpoint by its sequence number
@@ -203,7 +207,9 @@ namespace SGPP {
          *
          * @return gridindex object (pointer)
          */
-        HashGridIndex* get(size_t seq) const;
+        inline HashGridIndex* get(size_t seq) const {
+          return list[seq];
+        }
 
         /**
          * insert a new index into map
