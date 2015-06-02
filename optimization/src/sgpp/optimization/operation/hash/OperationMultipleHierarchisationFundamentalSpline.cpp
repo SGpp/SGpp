@@ -27,130 +27,130 @@ namespace SGPP {
         alpha.push_back(nodeValues[m]);
       }
 
-      std::vector<bool> bfsVisited(n, false);
-      base::GridIndex bfsStart(d);
-      //base::HashGridIterator iterator(grid.getStorage());
+      std::vector<bool> visited(n, false);
+      base::GridIndex startPoint(d);
 
       for (size_t t = 0; t < d; t++) {
-        bfsStart.push(t, 1, 1);
+        startPoint.push(t, 1, 1);
       }
 
-      bfsStart.rehash();
+      startPoint.rehash();
       std::queue<size_t> queue;
-      const size_t bfsStartIndex = gridStorage.seq(&bfsStart);
+      size_t pointIndex = gridStorage.seq(&startPoint);
 
-      if (bfsStartIndex >= n) {
+      if (pointIndex >= n) {
         return false;
       }
 
-      queue.push(bfsStartIndex);
-      bfsVisited[bfsStartIndex] = true;
+      queue.push(pointIndex);
+      visited[pointIndex] = true;
 
       base::SFundamentalSplineBase base(grid.getDegree());
 
+      /*size_t counter1 = 0, counter2 = 0;
+      size_t counter3 = 0, counter4 = 0;*/
+
       while (!queue.empty()) {
-        size_t bfsPointIndex = queue.front();
+        pointIndex = queue.front();
         queue.pop();
-        base::GridIndex& bfsPoint = *gridStorage.get(bfsPointIndex);
 
-        // TODO
-        {
-          std::vector<bool> dfsVisited(n, false);
-          std::stack<size_t> stack;
-          stack.push(bfsPointIndex);
+        base::GridIndex& point = *gridStorage[pointIndex];
 
-          while (!stack.empty()) {
-            size_t dfsPointIndex = stack.top();
-            stack.pop();
-            base::GridIndex& dfsPoint = *gridStorage.get(dfsPointIndex);
+        for (size_t q = 0; q < n; q++) {
+          base::GridIndex& childPoint = *gridStorage[q];
+          bool skipChild = false;
 
-            if (!dfsVisited[dfsPointIndex]) {
-              dfsVisited[dfsPointIndex] = true;
+          if (q == pointIndex) {
+            continue;
+          }
 
-              {
-                float_t value = 1.0;
+          for (size_t t = 0; t < d; t++) {
+            const base::GridIndex::level_type l = point.getLevel(t);
+            const base::GridIndex::level_type k = childPoint.getLevel(t);
 
-                for (size_t t = 0; t < d; t++) {
-                  const float_t val1d = base.eval(bfsPoint.getLevel(t),
-                                                  bfsPoint.getIndex(t),
-                                                  dfsPoint.getCoord(t));
-
-                  if (val1d == 0.0) {
-                    value = 0.0;
-                    break;
-                  }
-
-                  value *= val1d;
-                }
-
-                for (size_t m = 0; m < alpha.size(); m++) {
-                  alpha[m][dfsPointIndex] -= alpha[m][bfsPointIndex] * value;
-                }
-              }
-
-              for (size_t t = 0; t < d; t++) {
-                base::GridIndex::level_type l;
-                base::GridIndex::index_type i;
-                dfsPoint.get(t, l, i);
-
-                {
-                  dfsPoint.set(t, l + 1, 2 * i - 1);
-                  dfsPointIndex = gridStorage.seq(&dfsPoint);
-
-                  if (dfsPointIndex < n) {
-                    stack.push(dfsPointIndex);
-                  }
-                }
-
-                {
-                  dfsPoint.set(t, l + 1, 2 * i + 1);
-                  dfsPointIndex = gridStorage.seq(&dfsPoint);
-
-                  if (dfsPointIndex < n) {
-                    stack.push(dfsPointIndex);
-                  }
-                }
-
-                dfsPoint.push(t, l, i);
-              }
+            if ((k <= l) && ((k != l) ||
+                             (point.getIndex(t) != childPoint.getIndex(t)))) {
+              skipChild = true;
+              break;
             }
+          }
+
+          /*TODO
+          if (skipChild) {
+            counter4++;
+          } else {
+            counter3++;
+          }*/
+
+          if (!skipChild) {
+            float_t value = 1.0;
+
+            for (size_t t = 0; t < d; t++) {
+              const float_t val1d = base.eval(point.getLevel(t),
+                                              point.getIndex(t),
+                                              childPoint.getCoord(t));
+
+              if (val1d == 0.0) {
+                value = 0.0;
+                break;
+              }
+
+              value *= val1d;
+            }
+
+            if (value != 0.0) {
+              //TODO
+              //counter1++;
+
+              for (size_t m = 0; m < alpha.size(); m++) {
+                alpha[m][q] -= alpha[m][pointIndex] * value;
+              }
+            } /* else { //TODO
+
+              counter2++;
+            }*/
           }
         }
 
         for (size_t t = 0; t < d; t++) {
-          base::GridIndex::level_type l;
-          base::GridIndex::index_type i;
-          bfsPoint.get(t, l, i);
+          const base::GridIndex::level_type l = point.getLevel(t);
+          const base::GridIndex::index_type i = point.getIndex(t);
 
           {
-            bfsPoint.set(t, l + 1, 2 * i - 1);
-            bfsPointIndex = gridStorage.seq(&bfsPoint);
+            point.set(t, l + 1, 2 * i - 1);
+            pointIndex = gridStorage.seq(&point);
 
-            if ((bfsPointIndex < n) && (!bfsVisited[bfsPointIndex])) {
-              queue.push(bfsPointIndex);
-              bfsVisited[bfsPointIndex] = true;
+            if ((pointIndex < n) && (!visited[pointIndex])) {
+              queue.push(pointIndex);
+              visited[pointIndex] = true;
             }
           }
 
           {
-            bfsPoint.set(t, l + 1, 2 * i + 1);
-            bfsPointIndex = gridStorage.seq(&bfsPoint);
+            point.set(t, l + 1, 2 * i + 1);
+            pointIndex = gridStorage.seq(&point);
 
-            if ((bfsPointIndex < n) && (!bfsVisited[bfsPointIndex])) {
-              queue.push(bfsPointIndex);
-              bfsVisited[bfsPointIndex] = true;
+            if ((pointIndex < n) && (!visited[pointIndex])) {
+              queue.push(pointIndex);
+              visited[pointIndex] = true;
             }
           }
 
-          bfsPoint.push(t, l, i);
+          point.push(t, l, i);
         }
       }
 
-      for (size_t k = 0; k < n; k++) {
-        if (!bfsVisited[k]) {
+      for (size_t q = 0; q < n; q++) {
+        if (!visited[q]) {
           return false;
         }
       }
+
+      /*TODO
+      std::cout << "counter1 = " << counter1 << "\n";
+      std::cout << "counter2 = " << counter2 << "\n";
+      std::cout << "counter3 = " << counter3 << "\n";
+      std::cout << "counter4 = " << counter4 << "\n";*/
 
       return true;
     }

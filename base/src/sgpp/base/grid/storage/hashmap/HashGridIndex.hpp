@@ -95,7 +95,11 @@ namespace SGPP {
          * @param l the level of the ansatzfunction
          * @param i the index of the ansatzfunction
          */
-        void set(size_t d, level_type l, index_type i);
+        inline void set(size_t d, level_type l, index_type i) {
+          level[d] = l;
+          index[d] = i;
+          rehash();
+        }
 
         /**
          * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
@@ -105,7 +109,12 @@ namespace SGPP {
          * @param i the index of the ansatzfunction
          * @param isLeaf specifies if this gridpoint has any childrens in any dimension
          */
-        void set(size_t d, level_type l, index_type i, bool isLeaf);
+        inline void set(size_t d, level_type l, index_type i, bool isLeaf) {
+          level[d] = l;
+          index[d] = i;
+          Leaf = isLeaf;
+          rehash();
+        }
 
         /**
          * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the HashGridIndex object
@@ -114,7 +123,10 @@ namespace SGPP {
          * @param l the level of the ansatzfunction
          * @param i the index of the ansatzfunction
          */
-        void push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i);
+        inline void push(size_t d, level_type l, index_type i) {
+          level[d] = l;
+          index[d] = i;
+        }
 
         /**
          * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and doesn't rehash the HashGridIndex object
@@ -124,7 +136,11 @@ namespace SGPP {
          * @param i the index of the ansatzfunction
          * @param isLeaf specifies if this gridpoint has any childrens in any dimension
          */
-        void push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf);
+        inline void push(size_t d, level_type l, index_type i, bool isLeaf) {
+          level[d] = l;
+          index[d] = i;
+          Leaf = isLeaf;
+        }
 
         /**
          * gets level <i>l</i> and index <i>i</i> in dimension <i>d</i> by reference parameters
@@ -133,21 +149,28 @@ namespace SGPP {
          * @param l reference parameter for the level of the ansatz function
          * @param i reference parameter for the index of the ansatz function
          */
-        void get(size_t d, HashGridIndex::level_type& l, HashGridIndex::index_type& i) const;
+        inline void get(size_t d, level_type& l, index_type& i) const {
+          l = level[d];
+          i = index[d];
+        }
 
         /**
          * gets level <i>l</i> in dimension <i>d</i>
          *
          * @param d the dimension in which the ansatz function should be read
          */
-        int getLevel(size_t d) const;
+        inline level_type getLevel(size_t d) const {
+          return level[d];
+        }
 
         /**
          * gets index <i>i</i> in dimension <i>d</i>
          *
          * @param d the dimension in which the ansatz function should be read
          */
-        int getIndex(size_t d) const;
+        inline index_type getIndex(size_t d) const {
+          return index[d];
+        }
 
         /**
          * Gets the point distribution of the grid point.
@@ -349,21 +372,21 @@ namespace SGPP {
          *
          * @return the sum of the one-dimensional levels
          */
-        HashGridIndex::level_type getLevelSum();
+        level_type getLevelSum();
 
         /**
          * Returns the maximum of the one-dimensional levels, i.e., @f$ |\vec{l}|_\infty @f$.
          *
          * @return the maximum of the one-dimensional levels
          */
-        HashGridIndex::level_type getLevelMax();
+        level_type getLevelMax();
 
         /**
          * Returns the minimum of the one-dimensional levels.
          *
          * @return the minimum of the one-dimensional levels
          */
-        HashGridIndex::level_type getLevelMin();
+        level_type getLevelMin();
 
       private:
         /// the dimension of the gridpoint
