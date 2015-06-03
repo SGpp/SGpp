@@ -32,14 +32,14 @@ languageSupportNames = []
 for moduleFolder in moduleFolders:
   moduleName = 'SG_' + moduleFolder.upper()
   moduleNames.append(moduleName)
-      
+
 for wrapper in languageSupport:
     if wrapper == "pysgpp":
       languageSupportNames.append('SG_PYTHON')
     elif wrapper == "jsgpp":
       languageSupportNames.append('SG_JAVA')
 
-print moduleFolders      
+print moduleFolders
 print moduleNames
 
 print languageSupport
@@ -118,7 +118,7 @@ export LIBPATH=$LD_LIBRARY_PATH
 ---------------------------------------------------------------------
 
 Parameters are:
-""" + 
+""" +
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
@@ -194,7 +194,7 @@ if env['SG_JAVA']:
 # Unit tests
 #########################################################################
 
-# necessary to enforce an order on the final steps of the building of the wrapper    
+# necessary to enforce an order on the final steps of the building of the wrapper
 dependency = None
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   # serialize tests and move them at the end of the build

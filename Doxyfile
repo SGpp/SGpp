@@ -648,7 +648,7 @@ WARN_LOGFILE           = doxygen_warnings.log
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT = bin/ doc/ quadrature/ pde/ parallel/ combigrid/ optimization/ solver/ base/ misc/ finance/ datadriven/
+INPUT = bin/ doc/ datadriven/ finance/ pde/ solver/ base/ parallel/ combigrid/ quadrature/ optimization/ misc/
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -714,7 +714,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH = quadrature/examples pde/examples parallel/examples combigrid/examples optimization/examples solver/examples base/examples misc/examples finance/examples datadriven/examples
+EXAMPLE_PATH = datadriven/examples finance/examples pde/examples solver/examples base/examples parallel/examples combigrid/examples quadrature/examples optimization/examples misc/examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -886,9 +886,7 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            = 
-
-# base/doc/doxygen/header.html
+HTML_HEADER            = base/doc/doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
