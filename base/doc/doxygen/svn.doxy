@@ -11,7 +11,7 @@ Run the following short command from your local dir:
   svn co https://ipvs.informatik.uni-stuttgart.de/SGpp/repos/trunk
 @endverbatim
 
-If you are not a employee of the IPVS, please contact (TODO correct mail, proposed dirk.pflueger@ipvs.informatik.uni-stuttgart.de)
+If you are not a employee of the IPVS, please contact dirk.pflueger@ipvs.informatik.uni-stuttgart.de
 and ask for an account.
 
 You should now have a working copy which is linked to the main development server.
