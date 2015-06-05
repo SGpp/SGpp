@@ -45,11 +45,11 @@ namespace SGPP {
           bsplineModifiedBasis(BsplineModifiedBasis<LT, IT>(degree)) {
           switch (bsplineBasis.getDegree()) {
             case 1:
-              coefficients = {1.0};
+              coefficients = {2.0, 1.0};
               break;
             case 3:
               coefficients = {
-                1.04674578112205663375656322699728967679562834439521,
+                /*1.04674578112205663375656322699728967679562834439521,
                 -0.280474686732339802539379361983738060773770066371254,
                 0.0751529658073025764009542209376625662994519210898056,
                 -0.0201371764968705030644375217669122044240376179879689,
@@ -66,12 +66,32 @@ namespace SGPP {
                 1.02937959154766813776187778645327408098194941152597e-8,
                 -2.75821430260276622493082348789826231648936024746435e-9,
                 7.39061294934383522104516087060308456137946874597714e-10,
-                -1.98030877134767863487240860342971508062427250926503e-10
+                -1.98030877134767863487240860342971508062427250926503e-10*/
+                3.00555349946513493861893415142970724186027337856089,
+                1.97927405783630982421797926692905631343500649801563,
+                1.07735026918962576450914878085406750439970062937659,
+                -0.288675134594812882254574390345326331033809015521984,
+                0.0773502691896257645091487805272378197355354327113475,
+                -0.0207259421636901757820207317636249479083327153234060,
+                0.00555349946513493861893414652726197189779542858227669,
+                -0.00148805569684957869371585434542293968284899900570070,
+                0.000398723322263376155929270854429786833600567440526131,
+                -0.000106837592203925930001229072296207651553270756403819,
+                0.0000286270465523275640756454347550437726125155850891456,
+                -7.67059400538432630135266672396743889679158395276336e-6,
+                2.05532946920974112976523214082598297465075072190782e-6,
+                -5.50723871454638217708261839336493001811418934867907e-7,
+                1.47566016608811741067815216519989032594925017563811e-7,
+                -3.95401949806087465629990267434631285682811353873362e-8,
+                1.05947633136232451841808904538634816781995239855340e-8,
+                -2.83885827388423417372453507199079814451696055479987e-9,
+                7.60669781913691510717249834099710899868318233665478e-10,
+                -2.03820853770531869144464264408045454956312379862036e-10,
               };
               break;
             case 5:
               coefficients = {
-                1.11169781137737472588093757238415436343418026149603,
+                /*1.11169781137737472588093757238415436343418026149603,
                 -0.567837492469660850396483303052716778311637892703584,
                 0.248339627548840278715119620887958260566773569273942,
                 -0.107094531838723445091464168363929582325059204574711,
@@ -98,7 +118,38 @@ namespace SGPP {
                 2.21245452847915414326784971081810487549275204432462e-9,
                 -9.52628376542820646014981500032974866215123088645845e-10,
                 4.10178293887209531044927022396464472183043902103230e-10,
-                -1.76612661263360302066433255616551731354875783146013e-10
+                -1.76612661263360302066433255616551731354875783146013e-10*/
+                3.97761884901317601237505294647935366430548260075455,
+                3.05197891743048952938320540794415752252378431262053,
+                1.87929705844552798159581670361280439862378201234362,
+                1.27994107042222447033988597112101657209527171520227,
+                -0.641144390588586790499331240618970433570552138826048,
+                0.279941070422224459675698460229065627804305772573088,
+                -0.120702941554471989045150037862892980356355531983641,
+                0.0519789174304894592205288942891007549201467360258633,
+                -0.0223811509868238238226774779024188137457479738263700,
+                0.00963678523916236633290992658839119412070080078021938,
+                -0.00414936272610310304754576339225598748631415243408659,
+                0.00178661332089446143322022453862526514721569525153020,
+                -0.000769271651848896958686067511113953123346862349404142,
+                0.000331229408555179236582857349959762014249696989546598,
+                -0.000142619217560355094053909977433812570893130773236695,
+                0.0000614083191042623235506050662723499625441246270561106,
+                -0.0000264409083131473972258968002893285943458686486444272,
+                0.0000113848032745721823521844968668107540520625936592734,
+                -4.90201562161384250942984508867883378040615483109085e-6,
+                2.11068707776587432371092034633340130288908179531579e-6,
+                -9.08809821128470725014271399616415376068694322895240e-7,
+                3.91311104180256378441788970861238025604085853523032e-7,
+                -1.68488914506487895598684783698373939882378727632567e-7,
+                7.25471728461288350678683430094112219691511858871106e-8,
+                -3.12370241293437167236230369277850285984726780190644e-8,
+                1.34498925068624274589037267977545049340724248700694e-8,
+                -5.79119213459962633826859405412307210223840279586775e-9,
+                2.49354456347787225366809386840207060055687387654119e-9,
+                -1.07365881592873747751709282016317655415450486554061e-9,
+                4.62291017335463009429936619151300495389498474829422e-10,
+                -1.99051115250416986152072491494923818169957214087854e-10
               };
               break;
             default:
@@ -113,6 +164,16 @@ namespace SGPP {
          * @return      value of modified fundamental spline basis function
          */
         inline float_t eval(LT l, IT i, float_t x) {
+          /*const float_t t = x * hInv - 1.0 +
+                            static_cast<float_t>(p + 1) / 2.0;
+          float_t y = coefficients[0] *
+                      bsplineModifiedBasis.modifiedBSpline(x * hInvDbl, p);
+
+          for (size_t k = 1; k < coefficients.size(); k++) {
+            y += coefficients[k] *
+                 bsplineBasis.uniformBSpline(t - static_cast<float_t>(k), p);
+          }*/
+
           if (l == 1) {
             return 1.0;
           }
@@ -123,8 +184,6 @@ namespace SGPP {
             return fundamentalSplineBasis.eval(l, i, x);
           }
 
-          const float_t hInvDbl = static_cast<float_t>(hInv);
-
           if (i == hInv - 1) {
             // mirror the situation at x = 0.5
             x = 1.0 - x;
@@ -132,14 +191,12 @@ namespace SGPP {
           }
 
           const size_t p = bsplineBasis.getDegree();
-          const float_t t = x * hInv - 1.0 +
-                            static_cast<float_t>(p + 1) / 2.0;
-          float_t y = coefficients[0] *
-                      bsplineModifiedBasis.modifiedBSpline(x * hInvDbl, p);
+          const float_t t = x * hInv + static_cast<float_t>(p);
+          float_t y = 0.0;
 
-          for (size_t k = 1; k < coefficients.size(); k++) {
-            y += coefficients[k] *
-                 bsplineBasis.uniformBSpline(t - static_cast<float_t>(k), p);
+          for (size_t k = 0; k < coefficients.size(); k++) {
+            y += coefficients[k] * bsplineBasis.uniformBSpline(
+                   t - static_cast<float_t>(k), p);
           }
 
           return y;
@@ -153,6 +210,16 @@ namespace SGPP {
          *              fundamental spline basis function
          */
         inline float_t evalDx(LT l, IT i, float_t x) {
+          /*const float_t t = x * hInv - 1.0 +
+                            static_cast<float_t>(p + 1) / 2.0;
+          float_t y = coefficients[0] *
+                      bsplineModifiedBasis.modifiedBSplineDx(x * hInvDbl, p);
+
+          for (size_t k = 1; k < coefficients.size(); k++) {
+            y += coefficients[k] *
+                 bsplineBasis.uniformBSplineDx(t - static_cast<float_t>(k), p);
+          }*/
+
           if (l == 1) {
             return 1.0;
           }
@@ -175,14 +242,12 @@ namespace SGPP {
           }
 
           const size_t p = bsplineBasis.getDegree();
-          const float_t t = x * hInv - 1.0 +
-                            static_cast<float_t>(p + 1) / 2.0;
-          float_t y = coefficients[0] *
-                      bsplineModifiedBasis.modifiedBSplineDx(x * hInvDbl, p);
+          const float_t t = x * hInv + static_cast<float_t>(p);
+          float_t y = 0.0;
 
-          for (size_t k = 1; k < coefficients.size(); k++) {
-            y += coefficients[k] *
-                 bsplineBasis.uniformBSplineDx(t - static_cast<float_t>(k), p);
+          for (size_t k = 0; k < coefficients.size(); k++) {
+            y += coefficients[k] * bsplineBasis.uniformBSplineDx(
+                   t - static_cast<float_t>(k), p);
           }
 
           return dxFactor * y;
@@ -196,6 +261,17 @@ namespace SGPP {
          *              fundamental spline basis function
          */
         inline float_t evalDxDx(LT l, IT i, float_t x) {
+          /*const float_t t = x * hInv - 1.0 +
+                            static_cast<float_t>(p + 1) / 2.0;
+          float_t y = coefficients[0] *
+                      bsplineModifiedBasis.modifiedBSplineDxDx(x * hInvDbl, p);
+
+          for (size_t k = 1; k < coefficients.size(); k++) {
+            y += coefficients[k] *
+                 bsplineBasis.uniformBSplineDxDx(
+                   t - static_cast<float_t>(k), p);
+          }*/
+
           if (l == 1) {
             return 1.0;
           }
@@ -217,14 +293,11 @@ namespace SGPP {
           }
 
           const size_t p = bsplineBasis.getDegree();
-          const float_t t = x * hInv - 1.0 +
-                            static_cast<float_t>(p + 1) / 2.0;
-          float_t y = coefficients[0] *
-                      bsplineModifiedBasis.modifiedBSplineDxDx(x * hInvDbl, p);
+          const float_t t = x * hInv + static_cast<float_t>(p);
+          float_t y = 0.0;
 
-          for (size_t k = 1; k < coefficients.size(); k++) {
-            y += coefficients[k] *
-                 bsplineBasis.uniformBSplineDxDx(
+          for (size_t k = 0; k < coefficients.size(); k++) {
+            y += coefficients[k] * bsplineBasis.uniformBSplineDxDx(
                    t - static_cast<float_t>(k), p);
           }
 
