@@ -3,6 +3,7 @@
 Compilation, installation and dependecies.
 
 @todo REWRITE COMPLETELY
+<!---
 things to mention:
 ~/sgpp/trunk$ echo $LD_LIBRARY_PATH
 /home/baurms/sgpp/trunk/lib/alglib:/home/baurms/sgpp/trunk/lib/sgpp
@@ -12,7 +13,7 @@ has to be set
 STLport????
 swig >= 3.0.0
 WORKING build command scons -j 4 SG_JAVA=0 SSE3_FALLBACK=1
-
+-->
 
 @section overview Overview
 - \ref requirements
@@ -46,6 +47,7 @@ Compilation of the C++ libraries is done with SCons. Execute
 in the main folder. For configuration and optimization, see below.
 
 @todo wrong, scons --help starts building.
+
 To obtain help on parameters for compilation, type
 @verbatim
   scons --help
@@ -66,7 +68,7 @@ Import and print contents via
 @endverbatim
 
 You can get help on the options that are set and available to
-configure the build with the parameter @todo wrong, starts building <code>-h</code> and help on
+configure the build with the parameter <code>-h</code> and help on
 general options for scons with <code>-H</code>.
 
 
@@ -78,9 +80,12 @@ otherwise you can download it from http://www.scons.org/download.php.
 
 @subsection sconsConfiguration Configuration for compilation
 
+@todo update platforms
+ 
 SCons uses the file <tt>SConstruct</tt>. This file
 contains all information for compiling SGpp. Several platforms are
-@todo add new platforms supported: @verbatim
+supported
+@verbatim
   all platforms that have a gcc
   Intel Core2 Platforms using icc
   general x86 / x86_64 SSE3 Platforms such as AMD Opteron or Intel Pentium4 using icc
@@ -157,17 +162,11 @@ at the beginning.
   swig -version
    @endverbatim
    whether swig is installed and the swig version is >= 3.0.0. \ref installSwig "Install swig", if necessary.
-- @todo replace pypy psyco
- - psyco can help you to speed up the execution of Python code
-   (e.g. <tt>classifier.py</tt>). \ref installPsyco "Install psyco", if desired.
 - doxygen
- - Doxygen is needed to generate the documentation. Installation instructions
-   for version 1.6.1 are provided @ref installDoxygen "below", older versions work as
-   well.
+ - Doxygen is needed to generate the documentation. 
 - dot
  - Dot, contained in the Graphviz package, is only needed
-   if the doxygen Documentation should contain inheritance diagrams (usage of Doxyfile),
-   using only Doxyfile.fast with doxygen doesn't require this package.
+   if the doxygen Documentation should contain browsable inheritance diagrams (usage of Doxyfile).
    \ref installGraphviz "Install graphviz", if desired.
 
 
