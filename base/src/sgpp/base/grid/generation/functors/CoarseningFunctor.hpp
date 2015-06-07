@@ -16,7 +16,6 @@ namespace SGPP {
 
     /**
      * Abstract class that defines the interfaces that coarsening functors have to provide.
-     * @version $HEAD$
      */
     class CoarseningFunctor {
       public:

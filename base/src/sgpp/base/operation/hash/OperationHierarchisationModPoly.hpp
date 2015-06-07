@@ -21,7 +21,6 @@ namespace SGPP {
     /**
      * Hierarchisation on sparse grid, mod poly case
      *
-     * @version $HEAD$
      */
     class OperationHierarchisationModPoly : public OperationHierarchisation {
       public:

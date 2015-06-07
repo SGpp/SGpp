@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of an application failure
      *
-     * @version $HEAD$
      */
     class application_exception : public std::exception {
       public:

@@ -19,7 +19,6 @@ namespace SGPP {
      * the solve the multidimensional Black Scholes
      * equation, on grids with fix Dirichlet-0-Boundaries.
      *
-     * @version $HEAD$
      */
     class OperationGammaLinear : public SGPP::pde::UpDownTwoOpDims {
       public:

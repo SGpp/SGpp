@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Hierarchisation on sparse grid, mod linear case
      *
-     * @version $HEAD$
      */
     class OperationHierarchisationModLinear : public OperationHierarchisation {
       public:

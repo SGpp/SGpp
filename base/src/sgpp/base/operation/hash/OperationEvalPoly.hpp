@@ -20,7 +20,6 @@ namespace SGPP {
     /**
      * This class implements OperationEval for a grids with poly basis ansatzfunctions with
      *
-     * @version $HEAD$
      */
     class OperationEvalPoly : public OperationEval {
       public:

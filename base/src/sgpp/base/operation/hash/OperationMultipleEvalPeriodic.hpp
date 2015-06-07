@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * This class implements OperationMultipleEval for a grids with periodic linear basis ansatzfunctions
      *
-     * @version $HEAD$
      */
     class OperationMultipleEvalPeriodic : public OperationMultipleEval {
       public:

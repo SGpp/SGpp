@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a data failure (conversion, creation, ...).
      *
-     * @version $HEAD$
      */
     class data_exception : public std::exception {
       public:

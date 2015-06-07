@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      * This class implements OperationTest for a grids with poly basis ansatzfunctions with
      *
-     * @version $HEAD$
      */
     class OperationTestPoly : public OperationTest {
       public:

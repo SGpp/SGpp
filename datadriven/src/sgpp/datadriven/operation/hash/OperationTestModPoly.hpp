@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      * This class implements OperationTest for a grids with mod poly basis ansatzfunctions with
      *
-     * @version $HEAD$
      */
     class OperationTestModPoly : public OperationTest {
       public:

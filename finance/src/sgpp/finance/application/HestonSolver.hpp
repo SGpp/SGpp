@@ -37,7 +37,6 @@ namespace SGPP {
      * This class provides abstracts the functionality for solving the multi dimensional Heston
      * Equation on Sparse Grids.
      *
-     * @version $HEAD$
      */
     class HestonSolver : public SGPP::pde::ParabolicPDESolver {
       protected:

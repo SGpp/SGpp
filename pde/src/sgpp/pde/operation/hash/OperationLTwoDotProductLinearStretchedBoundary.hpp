@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Implements the standard L 2 scalar product on linear boundary grids
      *
-     * @version $HEAD$
      */
     class OperationLTwoDotProductLinearStretchedBoundary: public StdUpDown {
       public:

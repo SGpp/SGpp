@@ -22,7 +22,6 @@ namespace SGPP {
      * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
      * for solving ordinary partial equations
      *
-     * @version $HEAD$
      */
     class StepsizeControlMC : public VarTimestep {
       protected:

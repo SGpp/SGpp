@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a grid generation failure
      *
-     * @version $HEAD$
      */
     class generation_exception : public std::exception {
       public:

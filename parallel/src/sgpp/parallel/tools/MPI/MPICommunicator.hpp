@@ -63,7 +63,6 @@ namespace SGPP {
      * needed when dealing with distributed
      * sparse grid applications.
      *
-     * @version $HEAD$
      */
     class MPICommunicator {
       private:
