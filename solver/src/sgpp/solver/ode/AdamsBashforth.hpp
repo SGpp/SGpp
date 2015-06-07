@@ -20,7 +20,6 @@ namespace SGPP {
      * This class implements the explicit Adams-Bashforth method
      * for solving ordinary partial equations
      *
-     * @version $HEAD$
      */
     class AdamsBashforth : public ODESolver {
       private:

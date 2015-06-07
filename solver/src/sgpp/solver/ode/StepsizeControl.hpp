@@ -21,7 +21,6 @@ namespace SGPP {
      * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
      * for solving ordinary partial equations
      *
-     * @version $HEAD$
      */
     class StepsizeControl : public ODESolver {
       private:

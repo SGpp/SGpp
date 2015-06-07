@@ -19,7 +19,6 @@ namespace SGPP {
      * the solve the multidimensional Black Scholes
      * equation
      *
-     * @version $HEAD$
      */
     class OperationGammaLinearStretchedBoundary: public SGPP::pde::UpDownTwoOpDims {
       public:

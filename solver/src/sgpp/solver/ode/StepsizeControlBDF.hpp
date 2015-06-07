@@ -23,7 +23,6 @@ namespace SGPP {
      * For solving the system of linear equations the
      * already implemented CG-method is used
      *
-     * @version $HEAD$
      */
     class StepsizeControlBDF  : public VarTimestep {
       protected:

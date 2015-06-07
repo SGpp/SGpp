@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      * Polynomial basis functions.
      *
-     * @version $HEAD$
      */
     template<class LT, class IT>
     class PolyBasis: public Basis<LT, IT> {

@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * This class implements OperationTest for a grid with mod wavelet basis ansatzfunctions
      *
-     * @version $HEAD$
      */
     class OperationTestModWavelet : public OperationTest {
       public:

@@ -19,7 +19,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a grid operation failure
      *
-     * @version $HEAD$
      */
     class operation_exception : public std::exception {
       public:

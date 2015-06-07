@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      *  This is used to implement the output on the command line
      *
-     *  @version $HEAD$
      */
     class ScreenOutput {
       public:

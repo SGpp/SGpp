@@ -24,7 +24,6 @@ namespace SGPP {
      * for the log-transformed Black Scholes Equation
      * on grid's with 0-Dririchlet Boundaries.
      *
-     * @version $HEAD$
      */
     class OperationDeltaLogLinearStretched: public SGPP::pde::UpDownOneOpDim {
       public:

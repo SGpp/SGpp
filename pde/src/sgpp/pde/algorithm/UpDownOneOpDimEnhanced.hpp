@@ -28,7 +28,6 @@ namespace SGPP {
      * $d$ Up/Downs are executed concurrently and the results are merged
      * afterwards.
      *
-     * @version $HEAD$
      */
     class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
       public:

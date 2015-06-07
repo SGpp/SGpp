@@ -21,7 +21,6 @@ namespace SGPP {
     /**
      * Implements the standard L 2 scalar product on linear boundary grids
      *
-     * @version $HEAD$
      */
     class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public SGPP::base::OperationMatrix {
 

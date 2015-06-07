@@ -19,7 +19,6 @@ namespace SGPP {
      * This class implements OperationEval for a grids with linear basis ansatzfunctions with
      * boundaries
      *
-     * @version $HEAD$
      */
     class OperationEvalLinearBoundary : public OperationEval {
       public:
