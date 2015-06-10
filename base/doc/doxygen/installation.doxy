@@ -81,7 +81,7 @@ otherwise you can download it from http://www.scons.org/download.php.
 @subsection sconsConfiguration Configuration for compilation
 
 @todo update platforms
- 
+
 SCons uses the file <tt>SConstruct</tt>. This file
 contains all information for compiling SGpp. Several platforms are
 supported
@@ -123,9 +123,9 @@ For example, the command @verbatim
 Use @verbatim scons SG_ALL=1 @endverbatim to compile all modules.
 
 Additionally, you can pass some specific flags to the compiler using CPPFLAGS environment variable:
-@verbatim
+@code{bash}
   scons CPPFLAGS='-g -O0'
-@endverbatim
+@endcode
 
 
 @subsection sconsEclipse Configuration for use of Scons within Eclipse
@@ -163,7 +163,7 @@ at the beginning.
    @endverbatim
    whether swig is installed and the swig version is >= 3.0.0. \ref installSwig "Install swig", if necessary.
 - doxygen
- - Doxygen is needed to generate the documentation. 
+ - Doxygen is needed to generate the documentation.
 - dot
  - Dot, contained in the Graphviz package, is only needed
    if the doxygen Documentation should contain browsable inheritance diagrams (usage of Doxyfile).
