@@ -126,11 +126,11 @@ a.elRef {
 }
 
 a.code, a.code:visited {
-	color: #4665A2; 
+	color: #4665A2;
 }
 
 a.codeRef, a.codeRef:visited {
-	color: #4665A2; 
+	color: #4665A2;
 }
 
 /* @end */
@@ -144,7 +144,7 @@ dl.el {
 	font-size: 105%;
 }
 
-pre.fragment {
+div.fragment, pre.fragment {
 	border: 1px solid #CCCCCC;
 	background-color: #f5f5f5;
 	padding: 4px 6px;
@@ -222,7 +222,7 @@ p.formulaDsp {
 }
 
 img.formulaDsp {
-	
+
 }
 
 img.formulaInl {
@@ -280,20 +280,20 @@ span.charliteral {
 	color: #008080
 }
 
-span.vhdldigit { 
-	color: #ff00ff 
+span.vhdldigit {
+	color: #ff00ff
 }
 
-span.vhdlchar { 
-	color: #000000 
+span.vhdlchar {
+	color: #000000
 }
 
-span.vhdlkeyword { 
-	color: #700070 
+span.vhdlkeyword {
+	color: #700070
 }
 
-span.vhdllogic { 
-	color: #ff0000 
+span.vhdllogic {
+	color: #ff0000
 }
 
 /* @end */
@@ -445,9 +445,9 @@ table.memberdecls {
 }
 
 .memdoc, dl.reflist dd {
-        border-bottom: 1px solid #A8B8D9;      
-        border-left: 1px solid #A8B8D9;      
-        border-right: 1px solid #A8B8D9; 
+        border-bottom: 1px solid #A8B8D9;
+        border-left: 1px solid #A8B8D9;
+        border-right: 1px solid #A8B8D9;
         padding: 2px 5px;
         background-color: #FBFCFD;
         border-top-width: 0;
@@ -494,18 +494,18 @@ dl.reflist dd {
 
 .params, .retval, .exception, .tparams {
         border-spacing: 6px 2px;
-}       
+}
 
 .params .paramname, .retval .paramname {
         font-weight: bold;
         vertical-align: top;
 }
-        
+
 .params .paramtype {
         font-style: italic;
         vertical-align: top;
-}       
-        
+}
+
 .params .paramdir {
         font-family: "courier new",courier,monospace;
         vertical-align: top;
@@ -757,7 +757,7 @@ div.summary
 	padding-right: 5px;
 	width: 50%;
 	text-align: right;
-}       
+}
 
 div.summary a
 {
@@ -844,19 +844,19 @@ dl.bug
 	vertical-align: bottom;
 	border-collapse: separate;
 }
- 
+
 #projectlogo img
-{ 
+{
 	border: 0px none;
 }
- 
+
 #projectname
 {
 	font: 300% Tahoma, Arial,sans-serif;
 	margin: 0px;
 	padding: 2px 0px;
 }
-    
+
 #projectbrief
 {
 	font: 120% Tahoma, Arial,sans-serif;
