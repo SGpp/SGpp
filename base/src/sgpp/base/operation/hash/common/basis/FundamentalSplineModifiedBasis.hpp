@@ -144,15 +144,16 @@ namespace SGPP {
                    t - static_cast<float_t>(k), p);
           }*/
 
-          int kMin = std::max(static_cast<int>(t) - static_cast<int>(p + 1) + 1,
+          int kMin = std::max(static_cast<int>(std::floor(t)) -
+                              static_cast<int>(p + 1) + 1,
                               0);
-          int kMax = std::min(static_cast<int>(t),
+          int kMax = std::min(static_cast<int>(std::floor(t)),
                               static_cast<int>(coefficients.size()) - 1);
 
           float_t y = 0;
 
           for (int k = kMin; k <= kMax; k++) {
-            y += coefficients[std::abs(k)] * bsplineBasis.uniformBSpline(
+            y += coefficients[k] * bsplineBasis.uniformBSpline(
                    t - static_cast<float_t>(k), p);
           }
 
@@ -198,15 +199,16 @@ namespace SGPP {
                    t - static_cast<float_t>(k), p);
           }*/
 
-          int kMin = std::max(static_cast<int>(t) - static_cast<int>(p + 1) + 1,
+          int kMin = std::max(static_cast<int>(std::floor(t)) -
+                              static_cast<int>(p + 1) + 1,
                               0);
-          int kMax = std::min(static_cast<int>(t),
+          int kMax = std::min(static_cast<int>(std::floor(t)),
                               static_cast<int>(coefficients.size()) - 1);
 
           float_t y = 0;
 
           for (int k = kMin; k <= kMax; k++) {
-            y += coefficients[std::abs(k)] * bsplineBasis.uniformBSplineDx(
+            y += coefficients[k] * bsplineBasis.uniformBSplineDx(
                    t - static_cast<float_t>(k), p);
           }
 
@@ -251,15 +253,16 @@ namespace SGPP {
                    t - static_cast<float_t>(k), p);
           }*/
 
-          int kMin = std::max(static_cast<int>(t) - static_cast<int>(p + 1) + 1,
+          int kMin = std::max(static_cast<int>(std::floor(t)) -
+                              static_cast<int>(p + 1) + 1,
                               0);
-          int kMax = std::min(static_cast<int>(t),
+          int kMax = std::min(static_cast<int>(std::floor(t)),
                               static_cast<int>(coefficients.size()) - 1);
 
           float_t y = 0;
 
           for (int k = kMin; k <= kMax; k++) {
-            y += coefficients[std::abs(k)] * bsplineBasis.uniformBSplineDxDx(
+            y += coefficients[k] * bsplineBasis.uniformBSplineDxDx(
                    t - static_cast<float_t>(k), p);
           }
 
