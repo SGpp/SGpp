@@ -6,6 +6,7 @@
 #ifndef FUNDAMENTAL_SPLINE_BASE_HPP
 #define FUNDAMENTAL_SPLINE_BASE_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
@@ -112,7 +113,8 @@ namespace SGPP {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
           const float_t t = x * hInv - static_cast<float_t>(i) +
                             static_cast<float_t>(p + 1) / 2.0;
-          float_t y = coefficients[0] * bsplineBasis.uniformBSpline(t, p);
+
+          /*float_t y = coefficients[0] * bsplineBasis.uniformBSpline(t, p);
 
           for (size_t k = 1; k < coefficients.size(); k++) {
             y += coefficients[k] * (
@@ -120,6 +122,18 @@ namespace SGPP {
                      t - static_cast<float_t>(k), p) +
                    bsplineBasis.uniformBSpline(
                      t + static_cast<float_t>(k), p));
+          }*/
+
+          int kMin = std::max(static_cast<int>(t) - static_cast<int>(p + 1) + 1,
+                              1 - static_cast<int>(coefficients.size()));
+          int kMax = std::min(static_cast<int>(t),
+                              static_cast<int>(coefficients.size()) - 1);
+
+          float_t y = 0;
+
+          for (int k = kMin; k <= kMax; k++) {
+            y += coefficients[std::abs(k)] * bsplineBasis.uniformBSpline(
+                   t - static_cast<float_t>(k), p);
           }
 
           return y;
@@ -137,7 +151,8 @@ namespace SGPP {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
           const float_t t = x * hInv - static_cast<float_t>(i) +
                             static_cast<float_t>(p + 1) / 2.0;
-          float_t y = coefficients[0] *
+
+          /*float_t y = coefficients[0] *
                       bsplineBasis.uniformBSplineDx(t, p);
 
           for (size_t k = 1; k < coefficients.size(); k++) {
@@ -146,6 +161,18 @@ namespace SGPP {
                      t - static_cast<float_t>(k), p) +
                    bsplineBasis.uniformBSplineDx(
                      t + static_cast<float_t>(k), p));
+          }*/
+
+          int kMin = std::max(static_cast<int>(t) - static_cast<int>(p + 1) + 1,
+                              -static_cast<int>(coefficients.size()));
+          int kMax = std::min(static_cast<int>(t),
+                              static_cast<int>(coefficients.size()));
+
+          float_t y = 0;
+
+          for (int k = kMin; k <= kMax; k++) {
+            y += coefficients[std::abs(k)] * bsplineBasis.uniformBSplineDx(
+                   t - static_cast<float_t>(k), p);
           }
 
           // don't forget the inner derivative
@@ -164,7 +191,8 @@ namespace SGPP {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
           const float_t t = x * hInv - static_cast<float_t>(i) +
                             static_cast<float_t>(p + 1) / 2.0;
-          float_t y = coefficients[0] *
+
+          /*float_t y = coefficients[0] *
                       bsplineBasis.uniformBSplineDxDx(t, p);
 
           for (size_t k = 1; k < coefficients.size(); k++) {
@@ -173,6 +201,18 @@ namespace SGPP {
                      t - static_cast<float_t>(k), p) +
                    bsplineBasis.uniformBSplineDxDx(
                      t + static_cast<float_t>(k), p));
+          }*/
+
+          int kMin = std::max(static_cast<int>(t) - static_cast<int>(p + 1) + 1,
+                              -static_cast<int>(coefficients.size()));
+          int kMax = std::min(static_cast<int>(t),
+                              static_cast<int>(coefficients.size()));
+
+          float_t y = 0;
+
+          for (int k = kMin; k <= kMax; k++) {
+            y += coefficients[std::abs(k)] * bsplineBasis.uniformBSplineDxDx(
+                   t - static_cast<float_t>(k), p);
           }
 
           // don't forget the inner derivative
