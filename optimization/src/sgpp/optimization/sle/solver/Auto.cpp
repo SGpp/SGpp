@@ -77,21 +77,21 @@ namespace SGPP {
         supports[&solverBicgstab] = true;
         supports[&solverGaussianElimination] = true;
 
-#ifdef USEARMADILLO
+#ifdef USE_ARMADILLO
         supports[&solverArmadillo] = true;
-#endif /* USEARMADILLO */
+#endif /* USE_ARMADILLO */
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
         supports[&solverEigen] = true;
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
 
-#ifdef USEUMFPACK
+#ifdef USE_UMFPACK
         supports[&solverUmfpack] = true;
-#endif /* USEUMFPACK */
+#endif /* USE_UMFPACK */
 
-#ifdef USEGMMPP
+#ifdef USE_GMMPP
         supports[&solverGmmpp] = true;
-#endif /* USEGMMPP */
+#endif /* USE_GMMPP */
 
         // solvers to be used, the solver which should be tried first
         // should be the first element

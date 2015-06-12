@@ -68,6 +68,11 @@ vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
 
+vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
+
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
 if 'CXX' in ARGUMENTS:

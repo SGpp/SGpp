@@ -9,9 +9,9 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
 
 #include <cstddef>
 #include <iostream>
@@ -20,7 +20,7 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
 
 #if USE_DOUBLE_PRECISION == 1
       typedef ::Eigen::VectorXd EigenVector;
@@ -54,7 +54,7 @@ namespace SGPP {
           return false;
         }
       }
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
 
       bool Eigen::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
@@ -75,7 +75,7 @@ namespace SGPP {
       bool Eigen::solve(SLE& system,
                         std::vector<base::DataVector>& B,
                         std::vector<base::DataVector>& X) const {
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
         printer.printStatusBegin("Solving linear system (Eigen)...");
 
         const size_t n = system.getDimension();
@@ -174,7 +174,7 @@ namespace SGPP {
         std::cerr << "Error in sle_solver::Eigen::solve: "
                   << "SG++ was compiled without Eigen support!\n";
         return false;
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
       }
 
     }
