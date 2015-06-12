@@ -24,6 +24,8 @@
 %newobject SGPP::base::Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createFundamentalSplineGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createModFundamentalSlineGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createSquareRootGrid(size_t dim);
 %newobject SGPP::base::Grid::createPrewaveletGrid(size_t dim);
@@ -66,6 +68,8 @@ public:
   static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
   static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
+  static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
   static Grid* createSquareRootGrid(size_t dim);
   static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
   static Grid* createPrewaveletGrid(size_t dim);
