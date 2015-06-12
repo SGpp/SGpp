@@ -17,8 +17,6 @@ WORKING build command scons -j 4 SG_JAVA=0 SSE3_FALLBACK=1
 @section overview Overview
 - \ref requirements
 - \ref compilation_scons
-- \ref stepByStep
-- \ref installInstructions
 - \ref troubleshooting
 
 
@@ -62,18 +60,10 @@ otherwise you can download it from http://www.scons.org/download.php.
 
 @subsection sconsConfiguration Configuration for compilation
 
-@todo update platforms
+SCons uses the file <tt>SConstruct</tt>. This file contains all information for
+compiling SGpp. Currently all processor with the SSE3 instruction set are
+supported  but the compilation standard is AVX 1.
 
-SCons uses the file <tt>SConstruct</tt>. This file
-contains all information for compiling SGpp. Several platforms are
-supported
-@verbatim
-      all platforms that have a gcc
-  or  Intel Core2 Platforms using icc
-      general x86 / x86_64 SSE3 Platforms such as AMD Opteron or Intel Pentium4 using gcc/icc
-  or  Intel Itanium Platforms using icc
-  and the processor must support the SSE3 instruction set but the compilitaion standard is AVX 1
-@endverbatim
 If you just execute
 @code{bash}
   scons
