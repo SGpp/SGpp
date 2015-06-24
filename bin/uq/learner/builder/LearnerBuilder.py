@@ -87,45 +87,7 @@ import bin.utils.json as json
 #                     .withProgressPresenter(InfoToFile("./presentor.test"))\
 #                     .andGetResult()
 # @endcode
-#
-# @section Parameters Parameters and where I can set them?
-# @li <code>level</code>: <i>Gridlevel</i> - @link GridDescriptor.withLevel() <code>withGrid().withLevel(2)</code> @endlink
-# @li <code>dim</code>: <i>Griddimension</i> - Dimension is identified from the %data set (by calling @link withTrainingDataFromARFFFile() <code>.withTrainingDataFromARFFFile(...)</code> @endlink)
-# @li <code>adaptive</code>: <i>Using an adaptive Grid with NUM of refines</i> - @link StopPolicyDescriptor.withAdaptiveIterationLimit() <code>.withStopPolicy().withAdaptiveIterationLimit(10)</code> @endlink
-# @li <code>adapt_points</code>: <i>Number of points in one refinement iteration</i> - @link RegressorSpecificationDescriptor.withAdaptPoints() <code>.withSpecification().withAdaptPoints(100)</code> @endlink
-# @li <code>adapt_rate</code>: <i>Percentage of points from all refinable points in one refinement iteration</i> - @link RegressorSpecificationDescriptor.withAdaptRate() <code>.withSpecification().withAdaptRate(0.05)</code> @endlink
-# @li <code>adapt_start</code>: <i>The index of adapt step to begin with</i> - Is know handled by loading the learner with specified iteration level from  CheckpointController using @link bin.controller.CheckpointController.CheckpointController.loadAll() <code>checkpointController.loadAll(10)</code> @endlink
-# @li <code>adapt_threshold</code>: @link bin.learner.TrainingSpecification.TrainingSpecification.setAdaptThreshold() <i>refinement threshold</i> @endlink - @link RegressorSpecificationDescriptor.withAdaptThreshold() .withSpecification().withAdaptThreshold(0.003) @endlink
-# @li <code>mode</code>: <i>Specifies the action to do</i> - Call corresponding method, i.e. @link Learner.Learner.applyData() applyData@endlink, @link Learner.Learner.learnData() learnData@endlink, @link Learner.Learner.learnDataWithTest() learnDataWithTest@endlink, @link  Learner.Learner.learnDataWithFolding() learnDataWithFolding@endlink
-# @li <code>zeh</code>: <i>Specifies the action to do</i> - @link RegressorSpecificationDescriptor.withIdentityOperator() .withSpecification().withIdentityOperator()@endlink or @link RegressorSpecificationDescriptor.withLaplaceOperator() .withSpecification().withLaplaceOperator()@endlink
-# @li <code>foldlevel</code>: <i>specifies the number of sets generated</i> - Is set in @link LearnerBuilder.LearnerBuilder.FoldingDescriptor FoldingDescriptor@endlink: <code> builder.withSequentialFoldingPolicy().withLevel(level)</code>
-# @li <code>onlyfoldnum</code>: <i>Run only fold I in n-fold cross-validation. Default: run all</i> - @link bin.controller.CheckpointController.CheckpointController.generateFoldValidationJob() checkpointController.generateFoldValidationJob()@endlink generates a set of independent learners and a job script to run as SGE job array. In this way all or individual jobs can be ran either with SGE jobs or in console.
-# @li <code>lambda</code>: <i>Lambda</i> - @link RegressorSpecificationDescriptor.withLambda() .withSpecification().withLambda(0.00001)@endlink
-# @li <code>imax</code>: <i>Max number of iterations</i> - @link CGSolverDescriptor.withImax() .withCGSolver().withImax(500)@endlink
-# @li <code>accuracy</code>: <i>Specifies the accuracy of the CG-Iteration</i> - @link CGSolverDescriptor.withAccuracy() .withCGSolver().withAccuracy(0.0001)@endlink
-# @li <code>max_accuracy</code>: <i>If the norm of the residuum falls below ACCURACY, stop the CG iterations</i> - @link CGSolverDescriptor.withThreshold() .withCGSolver().withThreshold(0.0000000001)@endlink
-# @li <code>%data</code>: <i>Filename for the Datafile.</i> - @link LearnerBuilder.withTrainingDataFromARFFFile() .withTestingDataFromARFFFile("./datasets/classifier.test.arff")@endlink
-# @li <code>test</code>: <i>File containing the testdata</i> - @link LearnerBuilder.withTestingDataFromARFFFile() .withTestingDataFromARFFFile("./datasets/classifier.test.arff")@endlink
-# @li <code>alpha</code>: <i>Filename for a file containing an alpha-Vector</i> -  <code>%learner = builder.andGetResult()\n learner.knowledge = LearnedKnowledgeFileAdapter().load("./alphas.arff")</code>
-# @li <code>outfile</code>: <i>Filename where the calculated alphas are stored</i> - <code>@link LearnerBuilder.withProgressPresenter() .withProgressPresenter@endlink(@link bin.controller.InfoToFile.InfoToFile InfoToFile@endlink("./presentor.test"))</code>
-# @li <code>gnuplot</code>: <i>In 2D case, the generated can be stored in a gnuplot readable format</i> - Some Graphs can now be plotted with @link bin.controller.InfoToGraph.InfoToGraph InfoToGraph@endlink
-# @li <code>resolution</code>: <i>Specifies the resolution of the gnuplotfile</i> - Not used, as <code>gnuplot</code> is not yet implemented
-# @li <code>stats</code>: <i>In this file the statistics from the test are stored</i> - Can be implemented as subclass from @link bin.controller.LearnerEventController.LearnerEventController LearnerEventController@endlink
-# @li <code>polynom</code>: <i>Sets the maximum degree for basis functions</i> - @link GridDescriptor.withPolynomialBase() .withGrid().withPolynomialBase(2)@endlink
-# @li <code>border</code> <i>Enables special border base functions</i> - @link GridDescriptor.withBorder() .withGrid().withBorder(Types.BorderTypes.TRAPEZOIDBOUNDARY)@endlink
-# @li <code>trapezoid-boundary</code> <i>Enables boundary functions that have a point on the boundary for every inner point (Trapezoid)</i> - @link GridDescriptor.withBorder() .withGrid().withBorder(Types.BorderTypes.TRAPEZOIDBOUNDARY)@endlink
-# @li <code>complete-boundary</code> <i>Enables boundary functions that have more points on the boundary than inner points</i> - @link GridDescriptor.withBorder() .withGrid().withBorder(Types.BorderTypes.COMPLETEBOUNDARY)@endlink
-# @li <code>verbose</code>: <i>Provides extra output</i> - Set the suitable @link bin.controller.LearnerEventController.LearnerEventController LearnerEventController@endlink implementation, i.e. <code>.withProgressPresenter(InfoToScreen())</code>
-# @li <code>normfile</code>: <i>For all modes that read %data via stdin. Normalizes %data according to boundaries in FILE</i> - Can be implemented as subclass of <code>@link bin.data.ARFFAdapter.ARFFAdapter ARFFAdapter@endlink</code>
-# @li <code>reuse</code>: <i>Reuse alpha-values for CG</i> - @link bin.learner.LearnerBuilder.LearnerBuilder.CGSolverDescriptor.withAlphaReusing() <code>.withCGSolver().withAlphaReusing()</code>@endlink
-# @li <code>seed</code>: <i>Random seed used for initializing</i> Is set in @link LearnerBuilder.LearnerBuilder.FoldingDescriptor FoldingDescriptor@endlink: <code>builder.withRandomFoldingPolicy().withSeed(level)</code>
-# @li <code>regression</code>: <i>Use regression approach</i> - <code>@link buildRegressor() builder.buildRegressor()@endlink</code>
-# @li <code>checkpoint</code>: <i>Filename for checkpointing</i> - <code> %controller = @link bin.controller.CheckpointController.CheckpointController.__init__ CheckpointController("classification_job")@endlink @link withCheckpointController() builder.withCheckpointController(controller)@endlink</code>
-# @li <code>grid</code>: <i>Filename for Grid-resume</i> - <code>@link GridDescriptor.fromFile() .withGrid.fromFile("gridfile.gz")@endlink</code>
-# @li <code>epochs_limit</code>: <i>Number of refinement iterations (epochs), MSE of test %data have to increase, before refinement will stop</i> - <code>@link StopPolicyDescriptor.withEpochsLimit() .withStopPolicy().withEpochsLimit(20)@endlink</code>
-# @li <code>mse_limit</code> <i>If MSE of test %data fall below this limit, refinement will stop</i> - <code>@link StopPolicyDescriptor.withMSELimit() .withStopPolicy().withMSELimit(0.0003)@endlink</code>, also <code>@link StopPolicyDescriptor.withAccuracyLimit() ..withStopPolicy().withAccuracyLimit(0.95)@endlink</code> for classification accuracy
-# @li <code>grid_limit</code> <i>If the number of points on grid exceed grid_limit, refinement will stop</i> - <code>@link StopPolicyDescriptor.withGridSizeLimit() .withStopPolicy().withGridSizeLimit(40000)@endlink</code>
-#
+
 class LearnerBuilder(object):
 
     def __init__(self):
