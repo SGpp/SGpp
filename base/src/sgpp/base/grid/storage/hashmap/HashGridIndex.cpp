@@ -160,7 +160,7 @@ namespace SGPP {
     }
 
     bool
-    HashGridIndex::isInnerPoint() {
+    HashGridIndex::isInnerPoint() const {
       for (size_t d = 0; d < DIM; d++) {
         if (level[d] == 0)
           return false;
@@ -249,7 +249,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::toString() {
+    HashGridIndex::toString() const {
       std::ostringstream ostream;
       toString(ostream);
 
@@ -257,7 +257,7 @@ namespace SGPP {
     }
 
     void
-    HashGridIndex::toString(std::ostream& stream) {
+    HashGridIndex::toString(std::ostream& stream) const {
       stream << "[";
 
       for (size_t i = 0; i < DIM; i++) {
@@ -273,21 +273,21 @@ namespace SGPP {
     }
 
     void
-    HashGridIndex::getCoords(DataVector& p) {
+    HashGridIndex::getCoords(DataVector& p) const {
       for (size_t d = 0; d < DIM; d++) {
         p.set(d, getCoord(d));
       }
     }
 
     void
-    HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) {
+    HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) const {
       for (size_t d = 0; d < DIM; d++) {
         p.set(d, BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d));
       }
     }
 
     void
-    HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) {
+    HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) const {
       for (size_t d = 0; d < DIM; d++) {
         if (level[d] == 0) {
           p.set(d, stretch.getIntervalWidth(d) * index[d] + stretch.getIntervalOffset(d));
@@ -298,7 +298,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::getCoordsString() {
+    HashGridIndex::getCoordsString() const {
       std::stringstream return_stream;
 
       // switch on scientific notation:
@@ -320,7 +320,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::getCoordsStringBB(BoundingBox& BB) {
+    HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
       std::stringstream return_stream;
 
       for (size_t d = 0; d < DIM; d++) {
@@ -336,7 +336,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::getCoordsStringStretching(Stretching& stretch) {
+    HashGridIndex::getCoordsStringStretching(Stretching& stretch) const {
       std::stringstream return_stream;
 
       for (size_t d = 0; d < DIM; d++) {
@@ -352,7 +352,7 @@ namespace SGPP {
     }
 
     HashGridIndex::level_type
-    HashGridIndex::getLevelSum() {
+    HashGridIndex::getLevelSum() const {
       HashGridIndex::level_type levelsum = 0;
 
       for (size_t d = 0; d < DIM; d++) {
@@ -363,7 +363,7 @@ namespace SGPP {
     }
 
     HashGridIndex::level_type
-    HashGridIndex::getLevelMax() {
+    HashGridIndex::getLevelMax() const {
       HashGridIndex::level_type levelmax = level[0];
 
       for (size_t d = 1; d < DIM; d++) {
@@ -374,7 +374,7 @@ namespace SGPP {
     }
 
     HashGridIndex::level_type
-    HashGridIndex::getLevelMin() {
+    HashGridIndex::getLevelMin() const {
       HashGridIndex::level_type levelmin = level[0];
 
       for (size_t d = 1; d < DIM; d++) {

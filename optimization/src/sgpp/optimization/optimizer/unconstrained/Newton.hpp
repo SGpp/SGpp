@@ -46,7 +46,7 @@ namespace SGPP {
 
           /**
            * Constructor.
-           * By default, the BiCGStab method is used to solve the
+           * By default, GaussianElimination is used to solve the
            * linear systems.
            *
            * @param f                 objective function

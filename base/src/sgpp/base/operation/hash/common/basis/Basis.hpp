@@ -12,11 +12,27 @@
 namespace SGPP {
   namespace base {
 
+    /**
+     * Basis class for basis functions.
+     */
     template<class LT, class IT>
     class Basis {
       public:
-        virtual float_t eval(LT level, IT index, float_t p) = 0;
+        /**
+         * Evaluate the basis function with given level and index.
+         *
+         * @param level   level of the basis function
+         * @param index   index of the basis function
+         * @param x       evaluation point
+         * @result        value of the basis function.
+         */
+        virtual float_t eval(LT level, IT index, float_t x) = 0;
+
+        /**
+         * Destructor.
+         */
         virtual ~Basis() {};
+
         //Basis();
         /*private:
         Basis(Basis const&);

@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      * Operation the tests the function that is applied the current Sparse SGPP::base::Grid at a given point
      *
-     * @version $HEAD$
      */
     class OperationTest {
       public:

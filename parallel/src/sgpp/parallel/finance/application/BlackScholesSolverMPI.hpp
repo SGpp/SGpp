@@ -47,7 +47,6 @@ namespace SGPP {
      *
      * Only European options are support so far!
      *
-     * @version $HEAD$
      */
     class BlackScholesSolverMPI : public SGPP::pde::ParabolicPDESolver {
       protected:

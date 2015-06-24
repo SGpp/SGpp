@@ -22,7 +22,6 @@ namespace SGPP {
      * Copies data from DataVector objects into DataVectorSP objects and vice versa.
      * Copies data from DataMatrix objects into DataMatrixSP objects and vice versa.
      *
-     * @version $HEAD$
      */
     class PrecisionConverter {
       public:

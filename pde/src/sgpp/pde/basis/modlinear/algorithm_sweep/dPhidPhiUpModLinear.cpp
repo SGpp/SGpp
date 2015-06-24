@@ -39,14 +39,14 @@ namespace SGPP {
         f = 0.0;
 
         if (!index.hint()) {
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, f);
           }
 
           f = 0.0;
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, f);
@@ -62,7 +62,7 @@ namespace SGPP {
         f = 0.0;
 
         if (!index.hint()) {
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, f);
@@ -80,7 +80,7 @@ namespace SGPP {
         f = 0.0;
 
         if (!index.hint()) {
-          index.right_child(dim);
+          index.rightChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, f);

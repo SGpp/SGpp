@@ -16,13 +16,36 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
+      /**
+       * Augmented Lagrangian method for constrained optimization.
+       */
       class AugmentedLagrangian : public ConstrainedOptimizer {
         public:
+          /// default point tolerance
           static constexpr float_t DEFAULT_X_TOLERANCE = 1e-6;
+          /// default constraint tolerance
           static constexpr float_t DEFAULT_CONSTRAINT_TOLERANCE = 1e-6;
+          /// default penalty start value
           static constexpr float_t DEFAULT_PENALTY_START_VALUE = 1.0;
+          /// default penalty increase factor
           static constexpr float_t DEFAULT_PENALTY_INCREASE_FACTOR = 1.0;
 
+          /**
+           * Constructor.
+           *
+           * @param f                     objective function
+           * @param fGradient             objective function gradient
+           * @param g                     inequality constraint
+           * @param gGradient             inequality constraint gradient
+           * @param h                     equality constraint
+           * @param hGradient             equality constraint gradient
+           * @param maxItCount            maximal number of
+           *                              function evaluations
+           * @param xTolerance            point tolerance
+           * @param constraintTolerance   constraint tolerance
+           * @param penaltyStartValue     penalty start value
+           * @param penaltyIncreaseFactor penalty increase factor
+           */
           AugmentedLagrangian(ObjectiveFunction& f,
                               ObjectiveGradient& fGradient,
                               ConstraintFunction& g,
@@ -59,16 +82,44 @@ namespace SGPP {
            */
           ConstraintGradient& getEqualityConstraintGradient() const;
 
+          /**
+           * @return point tolerance
+           */
           float_t getXTolerance() const;
+
+          /**
+           * @param xTolerance point tolerance
+           */
           void setXTolerance(float_t xTolerance);
 
+          /**
+           * @return constraint tolerance
+           */
           float_t getConstraintTolerance() const;
+
+          /**
+           * @param constraintTolerance constraint tolerance
+           */
           void setConstraintTolerance(float_t constraintTolerance);
 
+          /**
+           * @return penalty start value
+           */
           float_t getPenaltyStartValue() const;
+
+          /**
+           * @param penaltyStartValue penalty start value
+           */
           void setPenaltyStartValue(float_t penaltyStartValue);
 
+          /**
+           * @return penalty increase factor
+           */
           float_t getPenaltyIncreaseFactor() const;
+
+          /**
+           * @param penaltyIncreaseFactor penalty increase factor
+           */
           void setPenaltyIncreaseFactor(float_t penaltyIncreaseFactor);
 
         protected:
@@ -78,9 +129,13 @@ namespace SGPP {
           ConstraintGradient& gGradient;
           /// equality constraint function gradient
           ConstraintGradient& hGradient;
+          /// point tolerance
           float_t theta;
+          /// constraint tolerance
           float_t epsilon;
+          /// penalty start value
           float_t mu0;
+          /// penalty increase factor
           float_t rhoMuPlus;
       };
 

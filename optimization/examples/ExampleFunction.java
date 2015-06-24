@@ -3,14 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * Example test function.
+ */
 public class ExampleFunction extends sgpp.OptObjectiveFunction {
+  /**
+   * Constructor.
+   */
   public ExampleFunction() {
     super(2);
   }
 
+  /**
+   * Evaluates the test function.
+   *
+   * @param x     point \f$\vec{x} \in [0, 1]^2\f$
+   * @return      \f$f(\vec{x})\f$
+   */
   public double eval(sgpp.DataVector x) {
     if ((x.get(0) >= 0.0) && (x.get(0) <= 1.0) &&
         (x.get(1) >= 0.0) && (x.get(1) <= 1.0)) {
+      // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
       return Math.sin(8.0 * x.get(0)) + Math.sin(7.0 * x.get(1));
     } else {
       return Double.POSITIVE_INFINITY;

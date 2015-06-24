@@ -20,7 +20,6 @@ namespace SGPP {
      * This class implements the explicit and implicit Euler method
      * for solving ordinary partial equations
      *
-     * @version $HEAD$
      */
     class Euler : public ODESolver {
       private:

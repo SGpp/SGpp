@@ -20,7 +20,6 @@ namespace SGPP {
     /**
      * Implementation for linear functions of LTwoDotLaplace Operation, linear grids without boundaries using OpenCL
      *
-     * @version $HEAD$
      */
     class OperationLTwoDotLaplaceVectorizedLinearOCL: public OperationParabolicPDEMatrixCombined {
       private:

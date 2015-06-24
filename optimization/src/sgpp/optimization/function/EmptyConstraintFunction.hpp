@@ -35,6 +35,7 @@ namespace SGPP {
         void eval(const base::DataVector& x, base::DataVector& value) {}
     };
 
+    /// instance of EmptyConstraintFunction
     extern EmptyConstraintFunction emptyConstraintFunction;
 
   }

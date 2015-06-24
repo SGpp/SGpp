@@ -180,7 +180,7 @@ namespace SGPP {
         }
 
         /**
-         * @return grid     sparse grid
+         * @param grid      sparse grid
          */
         void setGrid(base::Grid& grid) {
           this->grid = grid;

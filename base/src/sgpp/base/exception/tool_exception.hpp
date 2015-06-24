@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a tool operation failure
      *
-     * @version $HEAD$
      */
     class tool_exception : public std::exception {
       public:

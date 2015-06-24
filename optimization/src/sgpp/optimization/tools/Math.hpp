@@ -27,9 +27,9 @@ namespace SGPP {
        * The Schur decomposition exists iff the characteristic polynomial
        * of \f$A\f$ factorizes in real linear factors.
        *
-       * @param[in,out] square matrix, afterwards \f$S\f$
-       * @param[out]    transformation matrix
-       *                (must have correct size \f$n \times n\f$)
+       * @param[in,out] A   square matrix, afterwards \f$S\f$
+       * @param[out]    V   transformation matrix
+       *                    (must have correct size \f$n \times n\f$)
        */
       void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V);
 
@@ -38,9 +38,9 @@ namespace SGPP {
        * matrix \f$Q\f$ with \f$A = QR\f$
        * (\f$Q\f$ orthogonal and \f$R\f$ upper triangular).
        *
-       * @param[in,out] square matrix, afterwards \f$R\f$
-       * @param[out]    transformation matrix
-       *                (must have correct size \f$n \times n\f$)
+       * @param[in,out] A   square matrix, afterwards \f$R\f$
+       * @param[out]    Q   transformation matrix
+       *                    (must have correct size \f$n \times n\f$)
        */
       void QRDecomposition(base::DataMatrix& A, base::DataMatrix& Q);
 
@@ -50,9 +50,9 @@ namespace SGPP {
        * (similiarity transformation such that entries \f$(i,j)\f$ vanish
        * for \f$i > j + 1\f$, \f$V\f$ orthogonal).
        *
-       * @param[in,out] square matrix, afterwards \f$H\f$
-       * @param[out]    transformation matrix
-       *                (must have correct size \f$n \times n\f$)
+       * @param[in,out] A   square matrix, afterwards \f$H\f$
+       * @param[out]    V   transformation matrix
+       *                    (must have correct size \f$n \times n\f$)
        */
       void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V);
 
@@ -68,9 +68,9 @@ namespace SGPP {
        * After applying \f$QA\f$, the entries \f$(i+1:end,j)\f$
        * should vanish.
        *
-       * @param A       square matrix containing the normal vector
-       * @param i       row index of starting row of normal vector
-       * @param j       column index of starting column of normal vector
+       * @param      A  square matrix containing the normal vector
+       * @param      i  row index of starting row of normal vector
+       * @param      j  column index of starting column of normal vector
        * @param[out] Q  transformation matrix
        *                (must have correct size \f$(n-i) \times (n-i)\f$)
        */

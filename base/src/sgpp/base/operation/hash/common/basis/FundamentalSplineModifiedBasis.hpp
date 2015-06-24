@@ -29,8 +29,7 @@ namespace SGPP {
          */
         FundamentalSplineModifiedBasis() :
           fundamentalSplineBasis(FundamentalSplineBasis<LT, IT>()),
-          bsplineBasis(BsplineBasis<LT, IT>()),
-          bsplineModifiedBasis(BsplineModifiedBasis<LT, IT>()) {
+          bsplineBasis(BsplineBasis<LT, IT>()) {
         }
 
         /**
@@ -41,8 +40,7 @@ namespace SGPP {
          */
         FundamentalSplineModifiedBasis(size_t degree) :
           fundamentalSplineBasis(FundamentalSplineBasis<LT, IT>(degree)),
-          bsplineBasis(BsplineBasis<LT, IT>(degree)),
-          bsplineModifiedBasis(BsplineModifiedBasis<LT, IT>(degree)) {
+          bsplineBasis(BsplineBasis<LT, IT>(degree)) {
           switch (bsplineBasis.getDegree()) {
             case 1:
               coefficients = {2.0, 1.0};
@@ -457,8 +455,9 @@ namespace SGPP {
       protected:
         /// fundamental spline basis for fundamental spline evaluation
         FundamentalSplineBasis<LT, IT> fundamentalSplineBasis;
+        /// B-spline basis
         BsplineBasis<LT, IT> bsplineBasis;
-        BsplineModifiedBasis<LT, IT> bsplineModifiedBasis;
+        /// B-spline coefficients
         std::vector<float_t> coefficients;
     };
 

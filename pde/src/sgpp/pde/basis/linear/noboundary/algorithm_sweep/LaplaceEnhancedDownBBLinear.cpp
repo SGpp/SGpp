@@ -150,13 +150,13 @@ namespace SGPP {
       float_t fm = tmp_m + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec(fl, fm, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec(fm, fr, dim, index);
@@ -178,13 +178,13 @@ namespace SGPP {
       ptr_result_[(seq * this->numAlgoDims_) + dim] = (static_cast<float_t>(1 << (l + 1)) * alpha_value);
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_grad(dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_grad(dim, index);
@@ -266,7 +266,7 @@ namespace SGPP {
 #endif
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
 #if 1
@@ -284,7 +284,7 @@ namespace SGPP {
 #endif
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
 #if 1
@@ -327,13 +327,13 @@ namespace SGPP {
       float_t fm = tmp_m + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_LG(fl, fm, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_LG(fm, fr, dim, index);
@@ -365,13 +365,13 @@ namespace SGPP {
       float_t fm = tmp_m + alpha_value2;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_GL(fl, fm, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_GL(fm, fr, dim, index);
@@ -398,13 +398,13 @@ namespace SGPP {
       float_t fm = tmp_m + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB(fl, fm, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB(fm, fr, dim, index);
@@ -435,13 +435,13 @@ namespace SGPP {
       float_t fm2 = tmp_m2 + alpha_value2;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LL(fl, fm, fl2, fm2, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LL(fm, fr, fm2, fr2, dim, index);
@@ -472,13 +472,13 @@ namespace SGPP {
       float_t fm = tmp_m + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LG(fl, fm, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LG(fm, fr, dim, index);
@@ -508,13 +508,13 @@ namespace SGPP {
       float_t fm = tmp_m + alpha_value2;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_GL(fl, fm, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_GL(fm, fr, dim, index);
@@ -536,13 +536,13 @@ namespace SGPP {
       ptr_result_[(seq * this->numAlgoDims_) + dim] = ((static_cast<float_t>(1 << (l + 1)) / q_) * alpha_value);
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_grad(dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_grad(dim, index);

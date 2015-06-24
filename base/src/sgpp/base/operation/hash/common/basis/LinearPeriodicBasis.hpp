@@ -18,7 +18,6 @@ namespace SGPP {
      * linear basis functions with boundaries
      * And here we have another implicit dependence on tensor products
      *
-     * @version $HEAD$
      */
     template<class LT, class IT>
     class LinearPeriodicBasis: public Basis<LT, IT>  {

@@ -71,7 +71,7 @@ namespace SGPP {
         gradient_temp(NULL),
         l2dot_temp(NULL)
 #if defined(STORE_MATRIX)
-      ,
+        ,
         operation_result_matrix_(NULL),
         operation_result_generated_(false)
 #endif

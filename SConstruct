@@ -32,14 +32,14 @@ languageSupportNames = []
 for moduleFolder in moduleFolders:
   moduleName = 'SG_' + moduleFolder.upper()
   moduleNames.append(moduleName)
-      
+
 for wrapper in languageSupport:
     if wrapper == "pysgpp":
       languageSupportNames.append('SG_PYTHON')
     elif wrapper == "jsgpp":
       languageSupportNames.append('SG_JAVA')
 
-print moduleFolders      
+print moduleFolders
 print moduleNames
 
 print languageSupport
@@ -67,6 +67,11 @@ vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trail
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
+
+vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
@@ -118,7 +123,7 @@ export LIBPATH=$LD_LIBRARY_PATH
 ---------------------------------------------------------------------
 
 Parameters are:
-""" + 
+""" +
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
@@ -134,6 +139,11 @@ Export('EXAMPLE_DIR')
 # no checks if clean:
 if not env.GetOption('clean'):
     SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+
+# add #/lib/sgpp and #/lib/alglib to LIBPATH
+# (to add corresponding -L... flags to linker calls)
+env.Append(LIBPATH=[BUILD_DIR,
+                    Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'))])
 
 # add C++ defines for all modules
 cppdefines = []
@@ -189,7 +199,7 @@ if env['SG_JAVA']:
 # Unit tests
 #########################################################################
 
-# necessary to enforce an order on the final steps of the building of the wrapper    
+# necessary to enforce an order on the final steps of the building of the wrapper
 dependency = None
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   # serialize tests and move them at the end of the build

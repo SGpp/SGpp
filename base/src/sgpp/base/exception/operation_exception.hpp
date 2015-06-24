@@ -19,7 +19,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a grid operation failure
      *
-     * @version $HEAD$
      */
     class operation_exception : public std::exception {
       public:
@@ -65,6 +64,7 @@ namespace SGPP {
       protected:
         /// the exception message
         std::string stringMsg;
+        /// the exception message as C string
         const char* msg;
 
     };

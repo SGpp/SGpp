@@ -9,9 +9,9 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#ifdef USEGMMPP
+#ifdef USE_GMMPP
 #include <gmm/gmm.h>
-#endif /* USEGMMPP */
+#endif /* USE_GMMPP */
 
 #include <cstddef>
 #include <iostream>
@@ -20,7 +20,7 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-#ifdef USEGMMPP
+#ifdef USE_GMMPP
       /**
        * Gmm++ status printing callback.
        *
@@ -108,11 +108,11 @@ namespace SGPP {
           return false;
         }
       }
-#endif /* USEGMMPP */
+#endif /* USE_GMMPP */
 
       bool Gmmpp::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
-#ifdef USEGMMPP
+#ifdef USE_GMMPP
         printer.printStatusBegin("Solving linear system (Gmm++)...");
 
         const size_t n = system.getDimension();
@@ -193,7 +193,7 @@ namespace SGPP {
         std::cerr << "Error in sle_solver::Gmmpp::solve: "
                   << "SG++ was compiled without Gmm++ support!\n";
         return false;
-#endif /* USEGMMPP */
+#endif /* USE_GMMPP */
       }
 
     }

@@ -66,6 +66,7 @@ namespace SGPP {
         }
 
       protected:
+        /// sparse grid
         base::Grid& grid;
         /// pointer to evaluation operation
         std::unique_ptr<base::OperationNaiveEvalHessian> opEvalHessian;

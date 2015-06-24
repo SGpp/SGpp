@@ -9,9 +9,9 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#ifdef USEUMFPACK
+#ifdef USE_UMFPACK
 #include <suitesparse/umfpack.h>
-#endif /* USEUMFPACK */
+#endif /* USE_UMFPACK */
 
 #include <cstddef>
 #include <iostream>
@@ -21,7 +21,7 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-#ifdef USEUMFPACK
+#ifdef USE_UMFPACK
       typedef UF_long sslong;
 
       /**
@@ -67,7 +67,7 @@ namespace SGPP {
 
 #endif /* USE_DOUBLE_PRECISION */
       }
-#endif /* USEUMFPACK */
+#endif /* USE_UMFPACK */
 
       bool UMFPACK::solve(SLE& system, base::DataVector& b,
                           base::DataVector& x) const {
@@ -88,7 +88,7 @@ namespace SGPP {
       bool UMFPACK::solve(SLE& system,
                           std::vector<base::DataVector>& B,
                           std::vector<base::DataVector>& X) const {
-#ifdef USEUMFPACK
+#ifdef USE_UMFPACK
         printer.printStatusBegin("Solving linear system (UMFPACK)...");
 
         const size_t n = system.getDimension();
@@ -259,7 +259,7 @@ namespace SGPP {
         std::cerr << "Error in sle_solver::UMFPACK::solve: "
                   << "SG++ was compiled without UMFPACK support!\n";
         return false;
-#endif /* USEUMFPACK */
+#endif /* USE_UMFPACK */
       }
 
     }

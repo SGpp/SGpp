@@ -25,7 +25,6 @@ namespace SGPP {
      * After the calculation, all shadow grid points are deleted, the result vector is adapted
      * accordingly.
      *
-     * @version $HEAD$
      */
     class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
       public:

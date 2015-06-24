@@ -9,9 +9,9 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#ifdef USEARMADILLO
+#ifdef USE_ARMADILLO
 #include <armadillo>
-#endif /* USEARMADILLO */
+#endif /* USE_ARMADILLO */
 
 #include <cstddef>
 #include <iostream>
@@ -39,7 +39,7 @@ namespace SGPP {
       bool Armadillo::solve(SLE& system,
                             std::vector<base::DataVector>& B,
                             std::vector<base::DataVector>& X) const {
-#ifdef USEARMADILLO
+#ifdef USE_ARMADILLO
         printer.printStatusBegin("Solving linear system (Armadillo)...");
 
         const arma::uword n = static_cast<arma::uword>(system.getDimension());
@@ -155,7 +155,7 @@ namespace SGPP {
         std::cerr << "Error in sle_solver::Armadillo::solve: "
                   << "SG++ was compiled without Armadillo support!\n";
         return false;
-#endif /* USEARMADILLO */
+#endif /* USE_ARMADILLO */
       }
 
     }

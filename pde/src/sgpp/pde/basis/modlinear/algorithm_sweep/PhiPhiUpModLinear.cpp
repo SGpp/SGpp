@@ -40,13 +40,13 @@ namespace SGPP {
       float_t fmr = 0.0;
 
       if (!index.hint()) {
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fl, fml);
         }
 
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fmr, fr);

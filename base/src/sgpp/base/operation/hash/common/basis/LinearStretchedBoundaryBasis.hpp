@@ -20,7 +20,6 @@ namespace SGPP {
      * linearstretched basis functions with boundaries
      * And here we have another implicit dependence on tensor products
      *
-     * @version $HEAD$
      */
     template<class LT, class IT>
     class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {

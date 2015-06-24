@@ -86,22 +86,22 @@ namespace SGPP {
 
       while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) && (delta_new > max_threshold)) {
 
-        //          //SGPP::base::DataVector *myAlpha = this->myLearner->alpha_;
-        //        if (this->nIterations == 42) {
-        //          for (size_t j = 0; j < d.getSize();j++) {
-        //            std::cout << "d[ " << j << "]=" << d[j] << ", ";
-        //          }
-        //          std::cout << std::endl;
-        //        }
+//          //SGPP::base::DataVector *myAlpha = this->myLearner->alpha_;
+//    	  if (this->nIterations == 42) {
+//          for (size_t j = 0; j < d.getSize();j++) {
+//        	  std::cout << "d[ " << j << "]=" << d[j] << ", ";
+//          }
+//          std::cout << std::endl;
+//    	  }
 
         // q = A*d
         SystemMatrix.mult(d, q);
 
         float_t dq = d.dotProduct(q);
 
-        if (dq == 0.0) {
-          break;
-        }
+		if (dq == 0.0) {
+			break;
+		}
 
         // a = d_new / d.q
         a = delta_new / d.dotProduct(q);

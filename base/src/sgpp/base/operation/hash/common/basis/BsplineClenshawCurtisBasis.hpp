@@ -89,7 +89,6 @@ namespace SGPP {
          * @param x     evaluation point
          * @param p     B-spline degree
          * @param k     index of B-spline in the knot sequence
-         * @param xi    knot sequence
          * @return      value of 2nd derivative of non-uniform B-spline
          *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
          */
