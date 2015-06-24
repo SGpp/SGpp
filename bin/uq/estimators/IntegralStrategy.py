@@ -3,14 +3,14 @@ from bin.uq.operations import discretize
 from bin.uq.quadrature import doQuadrature
 from bin.uq.transformation import InverseCDFTransformation
 
-from EstimationStrategy import EstimationStrategy
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
 from bin.uq.operations.discretizeProduct import discretizeProduct
 from bin.uq.operations.sparse_grid import evalSGFunction
 from pysgpp import DataVector
 
 
-class IntegralStrategy(EstimationStrategy):
+class IntegralStrategy(SparseGridEstimationStrategy):
 
     def __init__(self, refnums=1, pointsNum=100, epsilon=0.,
                  level=0, deg=1):

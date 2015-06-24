@@ -19,12 +19,12 @@ class QuadratureStrategy(object):
         n = 30
         self.gaussPoints = [None] * n
         for i in xrange(n):
-            # get roots in [-1, 1]
-            roots, weights = leggauss(i + 1)
-            # transform roots to [0, 1]
-            roots = (roots + 1) / 2.
+            # get rootsArray in [-1, 1]
+            rootsArray, weights = leggauss(i + 1)
+            # transform rootsArray to [0, 1]
+            rootsArray = (rootsArray + 1) / 2.
             # zip them
-            self.gaussPoints[i] = zip(roots, weights)
+            self.gaussPoints[i] = zip(rootsArray, weights)
 
     def getBounds(self, level, index):
         if level > 0:

@@ -17,7 +17,7 @@
 import os
 import json
 from anova import HDMR, HDMRAnalytic
-from bin.uq.estimators import EstimationStrategy
+from bin.uq.estimators import MonteCarloStrategy
 from bin.uq.operations import (evalSGFunctionMulti,
                                evalSGFunction,
                                isNumerical, discretize)
@@ -26,32 +26,35 @@ from pysgpp import (DataVector,
                     DataMatrix)
 import numpy as np
 
-from ASGCKnowledge import KnowledgeTypes
+from bin.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from bin.tools import writeAlphaARFF, writeGrid
+from bin.uq.analysis import Analysis
 
 
-class ASGCAnalysis(object):
+class ASGCAnalysis(Analysis):
     """
     The ASGC class
     """
 
     def __init__(self, learner, strategy=None):
+        Analysis.__init__(self, learner.getQoI(),
+                          learner.getKnowledge().getAvailableTimeSteps(),
+                          learner.getKnowledge().getAvailableIterations())
+
         self.__learner = learner
         self.__params = learner.getParameters().activeParams()
         self.__knowledge = learner.getKnowledge()
-        self.__qoi = learner.getQoI()
         self.__estimationStrategy = strategy
 
         # initialize pdf and transformation
         self.__U = self.__params.getIndependentJointDistribution()
         self.__T = self.__params.getJointTransformation()
 
-        # initialize dicts
-        qoi = learner.getQoI()
-        self.__moments = {qoi: {}}
-        self.__anova = {}
-
-        self.__verbose = True
+        # init strategy
+        if strategy is None:
+            self.__estimationStrategy = MonteCarloStrategy()
+        else:
+            self.__estimationStrategy = strategy
 
     def getLearner(self):
         return self.__learner
@@ -64,9 +67,9 @@ class ASGCAnalysis(object):
         if ts is None:
             ts = self.__knowledge.getAvailableTimeSteps()
 
-        grid = self.__knowledge.getGrid(self.__qoi)
+        grid = self.__knowledge.getGrid(self._qoi)
         for t in ts:
-            alpha = self.__knowledge.getAlpha(self.__qoi, t, dtype)
+            alpha = self.__knowledge.getAlpha(self._qoi, t, dtype)
             res = evalSGFunction(grid, alpha, samples)
             ans[t] = res
 
@@ -110,139 +113,66 @@ class ASGCAnalysis(object):
 #         return np.array([0] + f(count)), buckets
 
     def setEstimationStrategy(self, strategy):
-        self.__specification.getEstimator().setStrategy(strategy)
+        self.__estimationStrategy.getEstimator().setStrategy(strategy)
+        # reset moments
         self.__moments = {}
-        self.__moments[self.__qoi] = {}
+        self.__moments[self._qoi] = {}
 
-    def hasMoment(self, t=0, iteration=None, idd='mean'):
-        if iteration is None:
-            iteration = self.__knowledge.getIteration()
+    def computeMean(self, iteration, qoi, t):
+        grid, alpha = self.__knowledge.getSparseGridFunction(qoi, t,
+                                                             iteration=iteration)
+        # do the estimation
+        moment, err = self.__estimationStrategy.mean(grid, alpha,
+                                                     self.__U, self.__T)
+        if self._verbose:
+            print "E(f) = %.14f, L2 err = %g, size = %i" % \
+                (moment, err, grid.getSize())
 
-        return iteration in self.__moments and \
-            self.__qoi in self.__moments[iteration] and \
-            t in self.__moments[iteration][self.__qoi] and \
-            idd in self.__moments[iteration][self.__qoi][t]
+        return moment, err
 
-    def setMoment(self, t, idd, value, qoi=None, iteration=None):
-        if qoi is None:
-            qoi = self.__qoi
-        if iteration is None:
-            iteration = self.__knowledge.getIteration()
-
-        if iteration not in self.__moments:
-            self.__moments[iteration] = {}
-        if qoi not in self.__moments[iteration]:
-            self.__moments[iteration][qoi] = {}
-        if t not in self.__moments[iteration][qoi]:
-            self.__moments[iteration][qoi][t] = {}
-        self.__moments[iteration][qoi][t][idd] = value
-
-    def getMoment(self, t, idd, qoi=None, iteration=None):
-        if qoi is None:
-            qoi = self.__qoi
-        if iteration is None:
-            iteration = self.__knowledge.getIteration()
-
-        if self.hasMoment(t, iteration, idd):
-            return self.__moments[iteration][qoi][t][idd]
+    def computeVar(self, iteration, qoi, t):
+        # compute the mean
+        if not self._moments.hasMoment(iteration, qoi, t, 'mean'):
+            mean, err1 = self.computeMean(iteration, qoi, t)
         else:
-            return None
+            mean, err1 = self._moments.getMoment(iteration, qoi, t, 'mean')
 
-    def __computeMean(self, t, iteration=None):
-        if not self.hasMoment(t, iteration, 'mean'):
-            grid, alpha = self.__knowledge.getSparseGridFunction(self.__qoi, t,
-                                                                 iteration=iteration)
-            # do the estimation
-            moment, err = self.__estimationStrategy.mean(grid, alpha,
-                                                         self.__U, self.__T)
-            if self.__verbose:
-                print "E(f) = %.14f, L2 err = %g, size = %i" % \
-                    (moment, err, grid.getSize())
-            self.setMoment(t, 'mean', [moment, err], iteration=iteration)
+        # compute the variance
+        def f(_, y):
+            return (y - mean) * (y - mean)
 
-    def mean(self, ts=None, iteration=None):
-        if ts is None:
-            ts = self.__knowledge.getAvailableTimeSteps()
-        elif isNumerical(ts):
-            ts = [ts]
+        # get the sparse grid function
+        grid, alpha = self.__knowledge.getSparseGridFunction(self._qoi, t,
+                                                             iteration=iteration)
+        # do the estimation
+        moment, err2 = self.__estimationStrategy.var(grid, alpha,
+                                                     self.__U, self.__T,
+                                                     mean)
 
-        ans = {}
-        for i, t in enumerate(ts):
-            # compute mean
-            if self.__verbose:
-                print "-" * 60
-                print "Estimate E[t = %g] (%i/%i), iteration = %s" % \
-                    (t, i + 1, len(ts), iteration)
-            self.__computeMean(t, iteration)
+        # accumulate the errors
+        err = err1 + err2
 
-            ans[t] = self.getMoment(t, 'mean', iteration=iteration)
-        return ans
+        if self._verbose:
+            print "V(f) = %.14f, L2 err = %g, size = %i" % \
+                (moment, err, grid.getSize())
 
-    def __computeVar(self, t, iteration=None):
-        if not self.hasMoment(t, iteration, 'var'):
-            # compute the mean
-            self.__computeMean(t, iteration=iteration)
-            mean, err1 = self.getMoment(t, 'mean', iteration=iteration)
-
-            # compute the variance
-            def f(_, y):
-                return (y - mean) * (y - mean)
-
-            # get the sparse grid function
-            grid, alpha = self.__knowledge.getSparseGridFunction(self.__qoi, t,
-                                                                 iteration=iteration)
-            # do the estimation
-            moment, err2 = self.__estimationStrategy.var(grid, alpha,
-                                                         self.__U, self.__T,
-                                                         mean)
-
-            # accumulate the errors
-            err = err1 + err2
-
-            if self.__verbose:
-                print "V(f) = %.14f, L2 err = %g, size = %i" % \
-                    (moment, err, grid.getSize())
-            self.setMoment(t, 'var', [moment, err], iteration=iteration)
-
-    def var(self, ts=None, iteration=None):
-        """
-        Compute the variance
-        @param ts: (list of) numerical value(s), time steps
-        @param iteration: int, select sparse grid function
-        @return: dictionary, variances
-        """
-        if ts is None:
-            ts = self.__knowledge.getAvailableTimeSteps()
-        elif isNumerical(ts):
-            ts = [ts]
-
-        ans = {}
-        for i, t in enumerate(ts):
-            # compute variance
-            if self.__verbose:
-                print "-" * 60
-                print "Estimate V[t = %g] (%i/%i), iteration = %s" % \
-                    (t, i + 1, len(ts), iteration)
-            self.__computeVar(t, iteration)
-
-            ans[t] = self.getMoment(t, 'var', iteration=iteration)
-        return ans
+        return moment, err
 
     # ----------------------------------------------------------------
     # sensitivity analysis
     # ----------------------------------------------------------------
     def getAnovaDecomposition(self, t=0, dtype="analytical", *args, **kws):
         # init dictionary
-        if self.__qoi not in self.__anova:
-            self.__anova[self.__qoi] = {}
+        if self._qoi not in self.__anova:
+            self.__anova[self._qoi] = {}
 
         # check if the decomposition already exists
-        if t in self.__anova[self.__qoi]:
-            return self.__anova[self.__qoi][t]
+        if t in self.__anova[self._qoi]:
+            return self.__anova[self._qoi][t]
 
         # determine the anova representation
         grid, alpha = self.__knowledge\
-                          .getSparseGridFunction(self.__qoi, t=t,
+                          .getSparseGridFunction(self._qoi, t=t,
                                                  dtype=KnowledgeTypes.SIMPLE)
         if dtype == "interpolation":
             anova = HDMR(grid, alpha, self.__params, *args, **kws)
@@ -252,7 +182,7 @@ class ASGCAnalysis(object):
         anova.doDecomposition()
 
         # store it ...
-        self.__anova[self.__qoi][t] = anova
+        self.__anova[self._qoi][t] = anova
 
         # ... and return it
         return anova
@@ -530,7 +460,7 @@ class ASGCAnalysis(object):
                     v[6] = self.__learner.testAccuracy[dtype][t][iteration]
                     n = self.__learner.testCount[dtype][t][iteration]
                     v[7] = float(np.sqrt(v[6] * n))  # == L2 error
-                v[8] = self.computeL2ErrorSurpluses(self.__qoi, t,
+                v[8] = self.computeL2ErrorSurpluses(self._qoi, t,
                                                     dtype, iteration)
                 # write results to matrix
                 data.setRow(row, v)
@@ -546,7 +476,7 @@ class ASGCAnalysis(object):
 
 # -----------------------------------------------------------------------------
 
-    def computeMoments(self, ts=None):
+    def computeMoments(self, iterations=None, ts=None):
         names = ['time',
                  'iteration',
                  'grid_size',
@@ -555,24 +485,26 @@ class ASGCAnalysis(object):
                  'var',
                  'varDiscretizationError']
         # parameters
-        ts = self.__learner.getTimeStepsOfInterest()
-        iterations = self.__learner.iteration + 1
-        nrows = len(ts) * iterations
+        if ts is None:
+            ts = self.__knowledge.getAvailableTimeSteps()
+        if iterations is None:
+            iterations = self.__knowledge.getAvailableIterations()
+        nrows = len(ts) * len(iterations)
         ncols = len(names)
         data = DataMatrix(nrows, ncols)
         v = DataVector(ncols)
 
         row = 0
         for t in ts:
-            for iteration in xrange(iterations):
-                size = self.__knowledge.getGrid(qoi=self.__qoi,
+            for iteration in iterations:
+                size = self.__knowledge.getGrid(qoi=self._qoi,
                                                 iteration=iteration).getSize()
                 v.setAll(0.0)
                 v[0] = t
                 v[1] = iteration
                 v[2] = size
-                v[3], v[4] = self.mean(ts=[t], iteration=iteration)[t]
-                v[5], v[6] = self.var(ts=[t], iteration=iteration)[t]
+                v[3], v[4] = self.mean(ts=[t], iterations=[iteration])
+                v[5], v[6] = self.var(ts=[t], iterations=[iteration])
 
                 # write results to matrix
                 data.setRow(row, v)
@@ -580,11 +512,6 @@ class ASGCAnalysis(object):
 
         return {'data': data,
                 'names': names}
-
-    def writeMoments(self, filename):
-        stats = self.computeMoments()
-        stats['filename'] = filename + ".moments.arff"
-        writeDataARFF(stats)
 
 # -------------------------------------------------------------------------------
 
@@ -597,7 +524,7 @@ class ASGCAnalysis(object):
 
         # parameters
         ts = self.__knowledge.getAvailableTimeSteps()
-        gs = self.__knowledge.getGrid(self.__qoi).getStorage()
+        gs = self.__knowledge.getGrid(self._qoi).getStorage()
 
         n = len(ts)
         n1 = gs.dim()
@@ -673,7 +600,7 @@ class ASGCAnalysis(object):
         names.append('f_\\mathcal{I}(x)')
 
         for t in ts:
-            grid, surplus = self.__knowledge.getSparseGridFunction(self.__qoi, t)
+            grid, surplus = self.__knowledge.getSparseGridFunction(self._qoi, t)
 
             # init
             gs = grid.getStorage()
@@ -682,7 +609,7 @@ class ASGCAnalysis(object):
             # -----------------------------------------
             # do full grid sampling of sparse grid function
             # -----------------------------------------
-            data = eval_fullGrid(2, dim)
+            data = eval_fullGrid(4, dim)
             res = evalSGFunctionMulti(grid, surplus, data)
 
             data.transpose()
@@ -739,7 +666,7 @@ class ASGCAnalysis(object):
                               "paramValues": list(ts),
                               "paramName": "Time"}}
             for t in ts:
-                grid, surplus = self.__knowledge.getSparseGridFunction(self.__qoi, t,
+                grid, surplus = self.__knowledge.getSparseGridFunction(self._qoi, t,
                                                                        iteration=iteration)
                 out = "%s.t%f.i%i" % (filename, t, iteration)
                 out_grid = "%s.grid" % out
@@ -756,9 +683,9 @@ class ASGCAnalysis(object):
             json.dump(myjson, fd, indent=2)
             fd.close()
 
-    def computeSurplusesLevelWise(self, t=-1, dtype=KnowledgeTypes.SIMPLE):
-        gs = self.__knowledge.getGrid(self.__qoi).getStorage()
-        alpha = self.__knowledge.getAlpha(self.__qoi, t, dtype)
+    def computeSurplusesLevelWise(self, t=0, dtype=KnowledgeTypes.SIMPLE):
+        gs = self.__knowledge.getGrid(self._qoi).getStorage()
+        alpha = self.__knowledge.getAlpha(self._qoi, t, dtype)
 
         res = {}
         for i in xrange(gs.size()):

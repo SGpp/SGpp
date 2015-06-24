@@ -7,7 +7,7 @@ from pysgpp import DataVector, DataMatrix
 from SimulationLearnerSpecification import SimulationLearnerSpecification
 import numpy as np
 import copy
-from bin.uq.operations.sparse_grid import copyGrid
+from bin.uq.operations.sparse_grid import copyGrid, dehierarchize
 
 
 class SimulationLearner(Learner):
@@ -35,7 +35,7 @@ class SimulationLearner(Learner):
         # there is one learner per time step
         self._learners = {}
 
-        self.__verbose = True
+        self._verbose = True
 
     # ----------------------------------------------------------------
     def __getattr__(self, attr):
@@ -272,7 +272,7 @@ class SimulationLearner(Learner):
         self.iteration += 1
 
         # print some information
-        if self.__verbose:
+        if self._verbose:
             print "iteration: %i" % self.iteration
             print "old grid size: %i" % oldGridSize
             print "old AS size: %i" % oldAdmissibleSetSize

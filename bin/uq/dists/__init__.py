@@ -34,8 +34,14 @@ from DataDist import DataDist
 from Dist import Dist
 from J import J
 from Lognormal import Lognormal
-from SGDEdist import SGDEdist
 from TNormal import TNormal
 from Normal import Normal
 from Uniform import Uniform
 from MultivariateNormal import MultivariateNormal
+
+from SGDEdist import SGDEdist
+from LibAGFDist import LibAGFDist
+from DTreesDist import DTreesDist
+from GaussianKDEDist import GaussianKDEDist
+
+import optimization

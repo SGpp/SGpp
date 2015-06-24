@@ -10,10 +10,10 @@ class ASGCAnalysisSpecification(object):
         self.__distribution = None
         self.__estimator = None
         self._refinement = None
-        self.__strategy = None
+        self.__estimationStrategy = None
         self.__k = None
 
-        self.__qoi = '_'
+        self._qoi = '_'
 
         self.__reachesSteadyState = False
         self.__timeStepsOfInterest = [0]
@@ -39,10 +39,10 @@ class ASGCAnalysisSpecification(object):
         return self.__estimator
 
     def setEstimationStrategy(self, strategy):
-        self.__strategy = strategy
+        self.__estimationStrategy = strategy
 
     def getEstimationStrategy(self):
-        return self.__strategy
+        return self.__estimationStrategy
 
     def setParameters(self, params):
         self.__params = params
@@ -62,10 +62,10 @@ class ASGCAnalysisSpecification(object):
         return self.__params.getDim()
 
     def setQoI(self, qoi):
-        self.__qoi = qoi
+        self._qoi = qoi
 
     def getQoI(self):
-        return self.__qoi
+        return self._qoi
 
     def setNumberOfMoments(self, k):
         self.__k = k

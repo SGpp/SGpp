@@ -51,3 +51,6 @@ class MCSampler(Sampler):
 
     def hasMoreSamples(self):
         return True
+
+    def learnData(self, *args, **kws):
+        return

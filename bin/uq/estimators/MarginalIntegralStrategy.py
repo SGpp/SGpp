@@ -3,11 +3,11 @@ from bin.uq.operations import discretize
 from bin.uq.quadrature.marginalization import doMarginalize
 from bin.uq.transformation import InverseCDFTransformation
 
-from EstimationStrategy import EstimationStrategy
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
 
 
-class MarginalIntegralStrategy(EstimationStrategy):
+class MarginalIntegralStrategy(SparseGridEstimationStrategy):
 
     def __init__(self, refnums=0, epsilon=1e-6,
                  level=0, deg=2):

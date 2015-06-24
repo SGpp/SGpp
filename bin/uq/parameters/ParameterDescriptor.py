@@ -92,8 +92,8 @@ class UncertainParameterDesciptor(ParameterDescriptor):
         self._dist = Lognormal.by_alpha(mu, sigma, alpha)
         return self
 
-    def withBetaDistribution(self, p, q, l=0., width=1.):
-        self._dist = Beta(p, q, l, width)
+    def withBetaDistribution(self, p, q, accLevel=0., width=1.):
+        self._dist = Beta(p, q, accLevel, width)
         return self
 
     def withMultivariateNormalDistribution(self, mu, cov, a, b):

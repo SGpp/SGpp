@@ -53,7 +53,7 @@ class CutHDMR(object):
         self.__anova_components = None
         self.__variance_components = None
 
-        self.__verbose = True
+        self._verbose = True
 
 
     def __interpolate(self, grid, f):
@@ -102,7 +102,7 @@ class CutHDMR(object):
                 dd = filter(lambda x: all([x != y for y in perm]),
                             xrange(self.__dim))
 
-                if self.__verbose:
+                if self._verbose:
                     print "Explore %s, Integrate: %s" % (perm, dd)
 
                 # -----------------------------------------------

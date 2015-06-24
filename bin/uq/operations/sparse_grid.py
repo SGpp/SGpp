@@ -2,8 +2,8 @@ from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval,
                     DataVector, DataMatrix,
                     GridIndex,
-                    X86SIMD, createOperationMultipleEvalVectorized,
-                    DMVectorizationPaddingAssistant_padDataset,
+#                     X86SIMD, createOperationMultipleEvalVectorized,
+#                     DMVectorizationPaddingAssistant_padDataset,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
                     SMyPolyBase, SMyPolyBoundaryBase)
@@ -43,28 +43,36 @@ def createGrid(grid, dim, deg=1, addTrapezoidBorder=False):
             raise Exception('unknown grid type %s' % gridType)
 
 
+def dehierarchizeOnNewGrid(gridResult, grid, alpha):
+    # dehierarchization
+    gsResult = gridResult.getStorage()
+    ps = DataMatrix(gsResult.size(), gsResult.dim())
+    p = DataVector(gsResult.dim())
+    for i in xrange(gsResult.size()):
+        gsResult.get(i).getCoords(p)
+        ps.setRow(i, p)
+    nodalValues = evalSGFunctionMulti(grid, alpha, ps)
+    return nodalValues
+
+
 def copyGrid(grid, level=0, deg=1):
     # create new grid
     gs = grid.getStorage()
     dim = gs.dim()
-    n_grid = createGrid(grid, dim, deg)
+    newGrid = createGrid(grid, dim, deg)
     if level > 0:
-        n_grid.createGridGenerator().regular(level)
-    n_gs = n_grid.getStorage()
-
+        newGrid.createGridGenerator().regular(level)
+    newGs = newGrid.getStorage()
     # insert grid points
     for i in xrange(gs.size()):
         gp = gs.get(i)
 
         # insert grid point
-        if not n_gs.has_key(gp):
-            n_gs.insert(GridIndex(gp))
-            if hasBorder:
-                insertTrapezoidBorder(n_grid, gp)
+        if not newGs.has_key(gp):
+            newGs.insert(GridIndex(gp))
 
-    n_gs.recalcLeafProperty()
-
-    return n_grid
+    newGs.recalcLeafProperty()
+    return newGrid
 
 
 def getBasis(grid):
@@ -168,6 +176,39 @@ def insertHierarchicalAncestors(grid, gp):
     @param gp: GridIndex
     @return: list of GridIndex, contains all the newly added grid points
     """
+    newGridPoints = []
+    gs = grid.getStorage()
+    gps = [gp]
+    while len(gps) > 0:
+        gp = gps.pop()
+        gpc = GridIndex(gp)
+        for dim in xrange(gp.dim()):
+            oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
+            # run up to the root node until you find one existing node
+            level, index = oldlevel, oldindex
+            while level > 1:
+                level -= 1
+                index = index / 2 + ((index + 1) / 2) % 2
+
+                gpc.set(dim, level, index)
+
+                if not gs.has_key(gpc):
+                    newGridPoints.append(GridIndex(gpc))
+                else:
+                    break
+
+            # reset the point
+            gpc.set(dim, oldlevel, oldindex)
+
+        # insert the grid points in a list and add the hierarchical ancestors
+        # of them
+        for gp in newGridPoints:
+            gps += insertPoint(grid, gp)
+
+    return newGridPoints
+
+
+def insertHierarchicalAncestorsS(grid, gp):
     ans = []
     gps = [gp]
 
@@ -186,41 +227,49 @@ def insertHierarchicalAncestors(grid, gp):
 def hasChildren(grid, gp):
     gs = grid.getStorage()
     d = 0
-    childFound = False
-    while d < gs.dim() and not childFound:
+    gpn = GridIndex(gp)
+    while d < gs.dim():
+        # load level index
+        level, index = gp.getLevel(d), gp.getIndex(d)
         # check left child in d
-        gpl = GridIndex(gp)
-        gs.left_child(gpl, d)
+        gs.left_child(gp, d)
+        if gs.has_key(gpn):
+            return True
 
         # check right child in d
-        gpr = GridIndex(gp)
-        gs.right_child(gpr, d)
+        gp.set(d, level, index)
+        gs.right_child(gp, d)
+        if gs.has_key(gpn):
+            return True
 
-        childFound = gs.has_key(gpl) or gs.has_key(gpr)
-
+        gpn.set(d, level, index)
         d += 1
 
     return False
 
 
-def countChildren(grid, gp):
+def hasAllChildren(grid, gp):
     gs = grid.getStorage()
-    d = 0
+    dim = 0
     cnt = 0
-    for d in xrange(gs.dim()):
-        # check left child in d
-        gpl = GridIndex(gp)
-        gs.left_child(gpl, d)
+    while dim < gs.dim() and cnt % 2 == 0:
+        # load level index
+        level, index = gp.getLevel(dim), gp.getIndex(dim)
 
-        cnt += 1 if gs.has_key(gpl) else 0
+        # check left child in dimension dim
+        gs.left_child(gp, dim)
+        cnt += gs.has_key(gp)
 
-        # check right child in d
-        gpr = GridIndex(gp)
-        gs.right_child(gpr, d)
+        # check right child in dimension dim
+        gp.set(dim, level, index)
+        gs.right_child(gp, dim)
+        cnt += gs.has_key(gp)
 
-        cnt += 1 if gs.has_key(gpr) else 0
+        # reset grid point
+        gp.set(dim, level, index)
+        dim += 1
 
-    return cnt
+    return cnt % 2 == 0
 
 
 def insertTrapezoidBorder(grid, gp):
@@ -240,22 +289,18 @@ def insertTrapezoidBorder(grid, gp):
             # right border in d
             rgp = GridIndex(gp)
             gs.right_levelzero(rgp, d)
+            # insert the point
+            if not gs.has_key(rgp):
+                ans += insertPoint(grid, rgp)
+                gps.append(rgp)
 
             # left border in d
             lgp = GridIndex(gp)
             gs.left_levelzero(lgp, d)
-
-            # add them to the grid
-            for ngp in [rgp, lgp]:
-                # insert current grid point
-                res = insertPoint(grid, ngp)
-
-                # add the to the current grid point list to check them
-                # for consistency
-#                 for gp in res:
-#                     gps.append(gp)
-                gps += res
-                ans += res
+            # insert the point
+            if not gs.has_key(rgp):
+                ans += insertPoint(grid, lgp)
+                gps.append(lgp)
     return ans
 
 
@@ -294,18 +339,18 @@ def isRefineable(grid, gp):
 
     return False
 
-
-def evalSGFunctionMultiVectorized(grid, alpha, A, vecMode=X86SIMD):
-    if not isinstance(A, DataMatrix):
-        raise AttributeError('A has to be a DataMatrix')
-    size = A.getNrows()
-    numPatchedInstances = DMVectorizationPaddingAssistant_padDataset(A, vecMode)
-    A.transpose()
-    opMEval = createOperationMultipleEvalVectorized(grid, vecMode, A)
-    tmp = DataVector(numPatchedInstances)
-    opMEval.multVectorized(alpha, tmp)
-    tmp.resize(size)
-    return tmp
+#
+# def evalSGFunctionMultiVectorized(grid, alpha, A, vecMode=X86SIMD):
+#     if not isinstance(A, DataMatrix):
+#         raise AttributeError('A has to be a DataMatrix')
+#     size = A.getNrows()
+#     numPatchedInstances = DMVectorizationPaddingAssistant_padDataset(A, vecMode)
+#     A.transpose()
+#     opMEval = createOperationMultipleEvalVectorized(grid, vecMode, A)
+#     tmp = DataVector(numPatchedInstances)
+#     opMEval.multVectorized(alpha, tmp)
+#     tmp.resize(size)
+#     return tmp
 
 
 def evalSGFunctionMulti(grid, alpha, A):
@@ -346,10 +391,10 @@ def evalHierToTop(basis, grid, coeffs, gp, d):
     # print "======== evalHierToTop (%i, %i) ========" % (gp.getLevel(0), gp.getIndex(0))
     while gpa is not None:
         ix = gs.seq(gpa)
-        l, i, p = gpa.getLevel(d), gpa.getIndex(d), gp.abs(d)
-        b = basis.eval(l, i, p)
+        accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gp.abs(d)
+        b = basis.eval(accLevel, i, p)
 #         print "%i, %i, %.20f: %.20f * %.20f = %.20f (%.20f)" % \
-#             (l, i, p, coeffs[ix], b, coeffs[ix] * b, ans)
+#             (accLevel, i, p, coeffs[ix], b, coeffs[ix] * b, ans)
         ans += coeffs[ix] * b
         gpa = parent(grid, gpa, d)
     # print "==============================="
@@ -371,11 +416,11 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
         # compute starting points by level sum
         ixs = {}
         for i in xrange(gs.size()):
-            l = gs.get(i).getLevel(d)
-            if l in ixs:
-                ixs[l].append(i)
+            accLevel = gs.get(i).getLevel(d)
+            if accLevel in ixs:
+                ixs[accLevel].append(i)
             else:
-                ixs[l] = [i]
+                ixs[accLevel] = [i]
 
         # collect all possible starting points
         starting_points = []
@@ -445,6 +490,24 @@ def dehierarchize(grid, alpha):
     A = DataMatrix(gs.size(), gs.dim())
     for i in xrange(gs.size()):
         gs.get(i).getCoords(p)
+        A.setRow(i, p)
+    createOperationMultipleEval(grid, A).mult(alpha, nodalValues)
+    return nodalValues
+
+
+def dehierarchizeList(grid, alpha, gps):
+    """
+    evaluate sparse grid function at grid points in gps
+    @param grid: Grid
+    @param alpha: DataVector
+    @param gps: list of GridIndex
+    """
+    dim = grid.getStorage().dim()
+    p = DataVector(dim)
+    nodalValues = DataVector(len(gps))
+    A = DataMatrix(len(gps), dim)
+    for i, gp in enumerate(gps):
+        gp.getCoords(p)
         A.setRow(i, p)
     createOperationMultipleEval(grid, A).mult(alpha, nodalValues)
     return nodalValues
@@ -716,3 +779,4 @@ def checkPositivity(grid, alpha):
     if cnt > 0:
         print "warning: function is not positive"
         print "%i/%i: [%g, %g]" % (cnt, fullGridStorage.size(), ymin, ymax)
+    return cnt == 0

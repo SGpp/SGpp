@@ -12,5 +12,8 @@ class Sampler(object):
     def nextSamples(self, *args, **kws):
         raise NotImplementedError()
 
+    def learnData(self, *args, **kws):
+        raise NotImplementedError()
+
     def hasMoreSamples(self):
         raise NotImplementedError()

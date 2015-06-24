@@ -9,7 +9,7 @@ class ASGCSamplerSpecification(object):
     def __init__(self):
         self.__params = None
         self.__knowledgeTypes = [KnowledgeTypes.SIMPLE]
-        self.__qoi = '_'
+        self._qoi = '_'
         self.__timeStepsOfInterest = [0]
         self.__stopPolicy = None
         self.__testSet = None
@@ -54,7 +54,7 @@ class ASGCSamplerSpecification(object):
         return self.__knowledgeTypes
 
     def getQoI(self):
-        return self.__qoi
+        return self._qoi
 
     def getTimeStepsOfInterest(self):
         return self.__timeStepsOfInterest
@@ -66,7 +66,7 @@ class ASGCSamplerSpecification(object):
         self.__knowledgeTypes = value
 
     def setQoI(self, value):
-        self.__qoi = value
+        self._qoi = value
 
     def setTimeStepsOfInterest(self, value):
         self.__timeStepsOfInterest = value

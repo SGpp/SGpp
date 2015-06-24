@@ -1,13 +1,13 @@
 from bin.uq.dists import SGDEdist
 
-from EstimationStrategy import EstimationStrategy
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp import DataVector, DataMatrix
 from bin.uq.quadrature.marginalization import doMarginalize
 
 import numpy as np
 
 
-class MarginalAnalyticEstimationStrategy(EstimationStrategy):
+class MarginalAnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
     def __init__(self):
         super(self.__class__, self).__init__()

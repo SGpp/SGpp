@@ -14,10 +14,13 @@ __all__ = []
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 from CollocationPointsStrategy import CollocationPointsStrategy
-from EstimationStrategy import EstimationStrategy
-from Estimator import Estimator
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from SparseGridEstimator import SparseGridEstimator
 from MonteCarloStrategy import MonteCarloStrategy
 # from PiecewiseConstantIntegralStrategy import PiecewiseConstantIntegralStrategy
 # from DiscreteIntegralStrategy import DiscreteIntegralStrategy
 from AnalyticEstimationStrategy import AnalyticEstimationStrategy
 from MarginalAnalyticEstimationStrategy import MarginalAnalyticEstimationStrategy
+
+
+from MCEstimator import MCEstimator

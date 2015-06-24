@@ -1,11 +1,11 @@
 from ASGCAnalysisSpecification import ASGCAnalysisSpecification
 
-from estimators import (
+from bin.uq.estimators import (
     MonteCarloStrategy,
     IntegralStrategy,
     CollocationPointsStrategy)
 
-from refinement import RefinementDescriptor
+from bin.uq.refinement import RefinementDescriptor
 # import types
 
 

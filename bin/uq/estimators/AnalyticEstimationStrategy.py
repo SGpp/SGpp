@@ -1,6 +1,6 @@
 from bin.uq.dists import SGDEdist
 
-from EstimationStrategy import EstimationStrategy
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from bin.uq.operations.general import project
 from pysgpp import DataVector, DataMatrix
 from bin.uq.operations.sparse_grid import hierarchize, evalSGFunction
@@ -13,7 +13,7 @@ from bin.uq.quadrature.trilinearform import TrilinearGaussQuadratureStrategy
 from bin.uq.dists.Dist import Dist
 
 
-class AnalyticEstimationStrategy(EstimationStrategy):
+class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -137,7 +137,7 @@ class AnalyticEstimationStrategy(EstimationStrategy):
                 # the current dimensions
                 gpsk, basisk = project(dist.grid, range(len(dims)))
                 # compute the bilinear form
-                tf = TrilinearGaussQuadratureStrategy()
+                tf = TrilinearGaussQuadratureStrategy([dist], trans)
                 A, erri = tf.computeTrilinearFormByList(gpsk, basisk, dist.alpha,
                                                         gpsi, basisi,
                                                         gpsi, basisi)

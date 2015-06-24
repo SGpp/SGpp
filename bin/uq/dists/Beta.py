@@ -25,20 +25,20 @@ class Beta(Dist):
     The Beta distribution class
     """
 
-    def __init__(self, p, q, l=0., width=1.):
+    def __init__(self, p, q, accLevel=0., width=1.):
         """
         Constructor
         @param p: first design parameter
         @param q: second design parameter
-        @param l: lower boundary
+        @param accLevel: lower boundary
         @param width: width of the interval
         """
         super(Beta, self).__init__()
         self.__p = p
         self.__q = q
-        self._dist = stats.beta(p, q, l, width)
+        self._dist = stats.beta(p, q, accLevel, width)
 
-        self.__l = l
+        self.__l = accLevel
         self.__width = width
 
     def pdf(self, x):
@@ -111,12 +111,12 @@ class Beta(Dist):
         if key in jsonObject:
             q = int(jsonObject[key])
 
-        key = '_Beta__l'
+        key = '_Beta__accLevel'
         if key in jsonObject:
-            l = float(jsonObject[key])
+            accLevel = float(jsonObject[key])
 
         key = '_Beta__width'
         if key in jsonObject:
             width = float(jsonObject[key])
 
-        return Beta(p, q, l, width)
+        return Beta(p, q, accLevel, width)

@@ -14,9 +14,9 @@ class GaussLegendreQuadrature(QuadratureStrategy):
 
         # init gauss-legendre points
         for i in xrange(self._n):
-            # get roots in [-1, 1]
-            roots, weights = leggauss(i + 1)
-            # transform roots to [0, 1]
-            roots = (roots + 1) / 2.
+            # get rootsArray in [-1, 1]
+            rootsArray, weights = leggauss(i + 1)
+            # transform rootsArray to [0, 1]
+            rootsArray = (rootsArray + 1) / 2.
             # zip them
-            self._gaussPoints[i] = zip(roots, weights)
+            self._gaussPoints[i] = zip(rootsArray, weights)

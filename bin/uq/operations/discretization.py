@@ -198,20 +198,20 @@ def discretize(grid, alpha, f, epsilon=0.,
 
     # compute errors
     maxdrift = None
-    l2error = None
+    accMiseL2 = None
     l2error_grid = alpha.l2Norm()
     if useDiscreteL2Error:
-        maxdrift, l2error = computeErrors(jgrid, jalpha, grid, alpha, f)
+        maxdrift, accMiseL2 = computeErrors(jgrid, jalpha, grid, alpha, f)
     else:
-        l2error = l2error_grid
+        accMiseL2 = l2error_grid
 
 #     print "iteration 0/%i (%i, %i, %g): %g, %g, %s" % \
 #         (refnums, jgs.size(), len(jalpha),
-#          epsilon, l2error, l2error_grid, maxdrift)
+#          epsilon, accMiseL2, l2error_grid, maxdrift)
 
     ref = 0
-    errs = [jgs.size(), l2error, l2error_grid, maxdrift]
-    bestGrid, bestAlpha, bestL2Error = copyGrid(jgrid), DataVector(jalpha), l2error
+    errs = [jgs.size(), accMiseL2, l2error_grid, maxdrift]
+    bestGrid, bestAlpha, bestL2Error = copyGrid(jgrid), DataVector(jalpha), accMiseL2
 
     # repeat refinement as long as there are iterations and the
     # minimum error epsilon is reached
@@ -233,29 +233,29 @@ def discretize(grid, alpha, f, epsilon=0.,
         # compute useDiscreteL2Error
         l2error_grid = estimateL2error(oldgrid, jgrid, jalpha)
 
-        # do Monte Carlo integration for obtaining the l2error
+        # do Monte Carlo integration for obtaining the accMiseL2
         if useDiscreteL2Error:
-            maxdrift, l2error = computeErrors(jgrid, jalpha, grid, alpha, f)
+            maxdrift, accMiseL2 = computeErrors(jgrid, jalpha, grid, alpha, f)
         # ------------------------------
         print "iteration %i/%i (%i, %i, %i, %i, %g): %g, %g, %s -> current best %g" % \
             (ref + 1, refnums,
              jgs.size(), len(jalpha),
              bestGrid.getSize(), len(bestAlpha),
              epsilon,
-             l2error, l2error_grid, maxdrift, bestL2Error)
+             accMiseL2, l2error_grid, maxdrift, bestL2Error)
 
         # check whether the new grid is better than the current best one
         # using the discrete l2 error. If no MC integration is done,
         # use the l2 error approximation via the sparse grid surpluses
         if (not useDiscreteL2Error and l2error_grid < bestL2Error) or \
-                (useDiscreteL2Error and l2error < bestL2Error):
+                (useDiscreteL2Error and accMiseL2 < bestL2Error):
             bestGrid = copyGrid(jgrid)
             bestAlpha = DataVector(jalpha)
             if useDiscreteL2Error:
-                bestL2Error = l2error
+                bestL2Error = accMiseL2
             else:
                 bestL2Error = l2error_grid
-            errs = [jgs.size(), l2error, l2error_grid, maxdrift]
+            errs = [jgs.size(), accMiseL2, l2error_grid, maxdrift]
 
         ref += 1
 

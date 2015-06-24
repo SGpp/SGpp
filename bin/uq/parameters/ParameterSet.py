@@ -1,8 +1,7 @@
 #!/usr/bin/python
-# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2013 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
-# sgpp.sparsegrids.org
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
 """
 @file    Parameters.py
@@ -259,15 +258,15 @@ class ParameterSet(object):
             raise AttributeError('tuple "%s" has to have size %i' % (p, self.__dim))
 
         ans = [0] * self.getStochasticDim()
-        k = l = 0
+        k = accLevel = 0
         for param in self.values():
             cnt = param.getCount()
             if param.isActive():
                 for j in xrange(cnt):
-                    ans[k + j] = p[l + j]
+                    ans[k + j] = p[accLevel + j]
                 k += cnt
 
-            l += cnt
+            accLevel += cnt
 
         return ans
 
@@ -301,22 +300,22 @@ class ParameterSet(object):
                                   parameters')
 
         ans = np.ndarray(self.__dim, dtype='float')
-        k = l = 0
+        k = accLevel = 0
         for param in self.values():
             cnt = param.getCount()
             # if the parameter is active then it must be available in p
             if param.isActive():
                 for j in xrange(cnt):
-                    ans[l + j] = p[k + j]
+                    ans[accLevel + j] = p[k + j]
                 k += cnt
             # ... otherwise we need to get the value from its specification
             else:
                 if isUnit:
-                    ans[l] = param.getUnitValue()
+                    ans[accLevel] = param.getUnitValue()
                 else:
-                    ans[l] = param.getProbabilisticValue()
+                    ans[accLevel] = param.getProbabilisticValue()
 
-            l += cnt
+            accLevel += cnt
         return ans
 
     def expandProbabilisticParameter(self, p):

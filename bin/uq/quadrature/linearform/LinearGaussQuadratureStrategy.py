@@ -4,6 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from LinearQuadratureStrategy import LinearQuadratureStrategy
+from bin.uq.operations import getBoundsOfSupport
 
 
 class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
@@ -30,7 +31,7 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
 
         # compute left and right boundary of the support of both
         # basis functions
-        xlow, xhigh = self.getBounds(lid, iid)
+        xlow, xhigh = getBoundsOfSupport(lid, iid)
 
         # ----------------------------------------------------
         # use gauss-legendre-quadrature
