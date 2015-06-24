@@ -14,42 +14,42 @@
 #include "OCLManager.hpp"
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-//copies the whole buffer on all devices, retrieves only the part that was worked on on a specific device
+    //copies the whole buffer on all devices, retrieves only the part that was worked on on a specific device
 
-class OCLStretchedBuffer {
-private:
-  OCLManager &manager;
-  bool initialized;
-  cl_mem *bufferList;
-  size_t sizeofType;
-  size_t elements;
+    class OCLStretchedBuffer {
+      private:
+        OCLManager& manager;
+        bool initialized;
+        cl_mem* bufferList;
+        size_t sizeofType;
+        size_t elements;
 
-  bool isMappedMemory;
-  cl_mem hostBuffer;
-  void *mappedHostBuffer;
-public:
+        bool isMappedMemory;
+        cl_mem hostBuffer;
+        void* mappedHostBuffer;
+      public:
 
-  OCLStretchedBuffer(OCLManager &manager);
+        OCLStretchedBuffer(OCLManager& manager);
 
-  bool isInitialized();
+        bool isInitialized();
 
-  cl_mem *getBuffer(size_t deviceNumber);
+        cl_mem* getBuffer(size_t deviceNumber);
 
-  //only for mapped buffer
-  void *getMappedHostBuffer();
+        //only for mapped buffer
+        void* getMappedHostBuffer();
 
-  void readFromBuffer(size_t *indexStart, size_t *indexEnd);
+        void readFromBuffer(size_t* indexStart, size_t* indexEnd);
 
-  void writeToBuffer();
+        void writeToBuffer();
 
-  void initializeBuffer(size_t sizeofType, size_t elements);
+        void initializeBuffer(size_t sizeofType, size_t elements);
 
-  void freeBuffer();
-};
+        void freeBuffer();
+    };
 
-}
+  }
 }
 
 

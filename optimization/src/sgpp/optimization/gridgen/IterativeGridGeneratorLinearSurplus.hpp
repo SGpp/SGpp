@@ -12,11 +12,6 @@
 
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
-#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
-
 namespace SGPP {
   namespace optimization {
 

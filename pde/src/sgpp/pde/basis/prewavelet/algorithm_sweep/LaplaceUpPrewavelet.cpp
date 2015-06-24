@@ -44,7 +44,7 @@ namespace SGPP {
 
       result[seq] = 1.0 / 3.0 * source[seq];
 
-      if (!index.hint_left(dim) && !index.hint_right(dim)) {
+      if (!index.hintLeft(dim) && !index.hintRight(dim)) {
         return;
       }
 
@@ -53,7 +53,7 @@ namespace SGPP {
       h = 1 << l;
       index.set(dim, 2, 1);
 
-      if (!hasChilds && (index.hint_left(dim) || index.hint_right(dim)))
+      if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))
         hasChilds = true;
 
       _seql1 = index.seq();
@@ -61,7 +61,7 @@ namespace SGPP {
 
       index.set(dim, 2, 3);
 
-      if (!hasChilds && (index.hint_left(dim) || index.hint_right(dim)))
+      if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))
         hasChilds = true;
 
       _seqr1 = index.seq();
@@ -92,7 +92,7 @@ namespace SGPP {
 
         index.set(dim, l, 1);
 
-        if (!hasChilds && (index.hint_left(dim) || index.hint_right(dim)))
+        if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))
           hasChilds = true;
 
         _seq = index.seq();
@@ -100,7 +100,7 @@ namespace SGPP {
 
         index.set(dim, l, 3);
 
-        if (!hasChilds && (index.hint_left(dim) || index.hint_right(dim)))
+        if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))
           hasChilds = true;
 
         _seqr1 = index.seq();
@@ -108,7 +108,7 @@ namespace SGPP {
 
         index.set(dim, l, 5);
 
-        if (!hasChilds && (index.hint_left(dim) || index.hint_right(dim)))
+        if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))
           hasChilds = true;
 
         _seqr2 = index.seq();
@@ -127,7 +127,7 @@ namespace SGPP {
         _valr1 = _valr2;
         index.set(dim, l, 7);
 
-        if (!hasChilds && (index.hint_left(dim) || index.hint_right(dim)))
+        if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))
           hasChilds = true;
 
         _seqr2 = index.seq();
@@ -151,8 +151,8 @@ namespace SGPP {
           _valr1 = _valr2;
           index.set(dim, l, i * 2 + 5);
 
-          if (!hasChilds && (index.hint_left(dim)
-                             || index.hint_right(dim)))
+          if (!hasChilds && (index.hintLeft(dim)
+                             || index.hintRight(dim)))
             hasChilds = true;
 
           _seqr2 = index.seq();

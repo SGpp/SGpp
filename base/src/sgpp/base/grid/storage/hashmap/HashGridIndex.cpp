@@ -118,50 +118,6 @@ namespace SGPP {
       return DIM;
     }
 
-    void
-    HashGridIndex::set(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i) {
-      level[d] = l;
-      index[d] = i;
-      rehash();
-    }
-
-    void
-    HashGridIndex::set(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf) {
-      level[d] = l;
-      index[d] = i;
-      Leaf = isLeaf;
-      rehash();
-    }
-
-    void
-    HashGridIndex::push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i) {
-      level[d] = l;
-      index[d] = i;
-    }
-
-    void
-    HashGridIndex::push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf) {
-      level[d] = l;
-      index[d] = i;
-      Leaf = isLeaf;
-    }
-
-    void
-    HashGridIndex::get(size_t d, HashGridIndex::level_type& l, HashGridIndex::index_type& i) const {
-      l = level[d];
-      i = index[d];
-    }
-
-    int
-    HashGridIndex::getLevel(size_t d) const {
-      return level[d];
-    }
-
-    int
-    HashGridIndex::getIndex(size_t d) const {
-      return index[d];
-    }
-
     HashGridIndex::PointDistribution
     HashGridIndex::getPointDistribution() const {
       return distr;
@@ -189,9 +145,7 @@ namespace SGPP {
         return static_cast<float_t>(index[d]) /
                static_cast<float_t>(static_cast<index_type>(1) << level[d]);
       } else {
-        return clenshawCurtisTable.getPoint(
-                 static_cast<SClenshawCurtisTable::level_type>(level[d]),
-                 static_cast<SClenshawCurtisTable::index_type>(index[d]));
+        return clenshawCurtisTable.getPoint(level[d], index[d]);
       }
     }
 
@@ -206,7 +160,7 @@ namespace SGPP {
     }
 
     bool
-    HashGridIndex::isInnerPoint() {
+    HashGridIndex::isInnerPoint() const {
       for (size_t d = 0; d < DIM; d++) {
         if (level[d] == 0)
           return false;
@@ -295,7 +249,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::toString() {
+    HashGridIndex::toString() const {
       std::ostringstream ostream;
       toString(ostream);
 
@@ -303,7 +257,7 @@ namespace SGPP {
     }
 
     void
-    HashGridIndex::toString(std::ostream& stream) {
+    HashGridIndex::toString(std::ostream& stream) const {
       stream << "[";
 
       for (size_t i = 0; i < DIM; i++) {
@@ -319,21 +273,21 @@ namespace SGPP {
     }
 
     void
-    HashGridIndex::getCoords(DataVector& p) {
+    HashGridIndex::getCoords(DataVector& p) const {
       for (size_t d = 0; d < DIM; d++) {
         p.set(d, getCoord(d));
       }
     }
 
     void
-    HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) {
+    HashGridIndex::getCoordsBB(DataVector& p, BoundingBox& BB) const {
       for (size_t d = 0; d < DIM; d++) {
         p.set(d, BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d));
       }
     }
 
     void
-    HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) {
+    HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) const {
       for (size_t d = 0; d < DIM; d++) {
         if (level[d] == 0) {
           p.set(d, stretch.getIntervalWidth(d) * index[d] + stretch.getIntervalOffset(d));
@@ -344,7 +298,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::getCoordsString() {
+    HashGridIndex::getCoordsString() const {
       std::stringstream return_stream;
 
       // switch on scientific notation:
@@ -366,7 +320,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::getCoordsStringBB(BoundingBox& BB) {
+    HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
       std::stringstream return_stream;
 
       for (size_t d = 0; d < DIM; d++) {
@@ -382,7 +336,7 @@ namespace SGPP {
     }
 
     std::string
-    HashGridIndex::getCoordsStringStretching(Stretching& stretch) {
+    HashGridIndex::getCoordsStringStretching(Stretching& stretch) const {
       std::stringstream return_stream;
 
       for (size_t d = 0; d < DIM; d++) {
@@ -398,7 +352,7 @@ namespace SGPP {
     }
 
     HashGridIndex::level_type
-    HashGridIndex::getLevelSum() {
+    HashGridIndex::getLevelSum() const {
       HashGridIndex::level_type levelsum = 0;
 
       for (size_t d = 0; d < DIM; d++) {
@@ -409,7 +363,7 @@ namespace SGPP {
     }
 
     HashGridIndex::level_type
-    HashGridIndex::getLevelMax() {
+    HashGridIndex::getLevelMax() const {
       HashGridIndex::level_type levelmax = level[0];
 
       for (size_t d = 1; d < DIM; d++) {
@@ -420,7 +374,7 @@ namespace SGPP {
     }
 
     HashGridIndex::level_type
-    HashGridIndex::getLevelMin() {
+    HashGridIndex::getLevelMin() const {
       HashGridIndex::level_type levelmin = level[0];
 
       for (size_t d = 1; d < DIM; d++) {

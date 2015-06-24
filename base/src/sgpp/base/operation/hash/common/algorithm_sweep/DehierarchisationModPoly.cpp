@@ -48,14 +48,14 @@ namespace SGPP {
         koeffs[cur_lev] = result[seq];
 
         // descend left
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, koeffs);
         }
 
         // descend right
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, koeffs);

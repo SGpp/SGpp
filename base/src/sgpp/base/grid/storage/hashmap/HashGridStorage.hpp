@@ -44,15 +44,23 @@ namespace SGPP {
      */
     class HashGridStorage {
       public:
+        /// type of grid points
         typedef HashGridIndex index_type;
+        /// pointer to index_type
         typedef HashGridIndex* index_pointer;
+        /// unordered_map of index_pointers
         typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor > grid_map;
+        /// iterator of grid_map
         typedef grid_map::iterator grid_map_iterator;
+        /// const_iterator of grid_map
         typedef grid_map::const_iterator grid_map_const_iterator;
 
+        /// vector of index_pointers
         typedef std::vector<index_pointer> grid_list;
+        /// iterator of grid_list
         typedef grid_list::iterator grid_list_iterator;
 
+        /// iterator for grid points
         typedef HashGridIterator grid_iterator;
 
         /**
@@ -185,7 +193,9 @@ namespace SGPP {
          *
          * @return sequence number of the given index
          */
-        size_t& operator[](index_pointer index);
+        inline size_t& operator[](index_pointer index) {
+          return map[index];
+        }
 
         /**
          * gets the index number for given gridpoint by its sequence number
@@ -194,7 +204,9 @@ namespace SGPP {
          *
          * @return gridindex object (reference)
          */
-        index_pointer& operator[](size_t seq);
+        inline index_pointer& operator[](size_t seq) {
+          return list[seq];
+        }
 
         /**
          * gets the index number for given gridpoint by its sequence number
@@ -203,7 +215,9 @@ namespace SGPP {
          *
          * @return gridindex object (pointer)
          */
-        HashGridIndex* get(size_t seq) const;
+        inline HashGridIndex* get(size_t seq) const {
+          return list[seq];
+        }
 
         /**
          * insert a new index into map
@@ -260,16 +274,19 @@ namespace SGPP {
          * sets the iterator to a given index
          *
          * @param index the index to which the cursor should be moved
+         * @return iterator pointing to the index
          */
         grid_map_iterator find(index_pointer index);
 
         /**
          * set iterator to the first position in the map
+         * @return iterator pointing to the beginning of the map
          */
         grid_map_iterator begin();
 
         /**
          * sets the iterator to last position in the map
+         * @return iterator pointing to the end of the map
          */
         grid_map_iterator end();
 

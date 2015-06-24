@@ -64,6 +64,7 @@ namespace SGPP {
       protected:
         /// the exception message
         std::string stringMsg;
+        /// the exception message as C string
         const char* msg;
 
     };

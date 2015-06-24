@@ -51,7 +51,7 @@ namespace SGPP {
         /**
          * Evaluation of the function.
          *
-         * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @return      \f$f(\vec{x})\f$
          */
         inline float_t eval(const base::DataVector& x) {

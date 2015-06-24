@@ -59,8 +59,8 @@ class TestBase(unittest.TestCase):
   def linearLevelZeroTest(self, b):
     """Test boundary linear basis functions (level 0)."""
     for i in range(2):
-        for x in [j/4.0 for j in range(5)]:
-            self.assertEqual(b.eval(0, i, x), i*x + (1-i)*(1.0-x))
+      for x in [j/4.0 for j in range(5)]:
+        self.assertEqual(b.eval(0, i, x), i*x + (1-i)*(1.0-x))
 
   def ccKnot(self, l, i):
     """Return Clenshaw-Curtis knot with given level and index."""
@@ -84,6 +84,12 @@ class TestBase(unittest.TestCase):
               ]
     self.baseTest(b, points)
 
+  def errorTest(self, x, y, tol):
+    if abs(x) >= 10.0:
+      self.assertLess(abs(x - y) / abs(x), tol)
+    else:
+      self.assertAlmostEqual(abs(x), abs(y), delta=10.0*tol)
+
   def derivativesTest(self, b, deg=2, start_level=1, max_discontinuities_count=0):
     """Test derivatives (up to order deg, max. 2) of basis functions for level >= start_level.
     Allow for max_discontinuities_count discontinuities (e.g. for Wavelets which are cut off).
@@ -94,11 +100,12 @@ class TestBase(unittest.TestCase):
     if not cvar.USING_DOUBLE_PRECISION: return
     
     dx = 1e-8
-    tol = 0.01
+    tol1 = 1e-3
+    tol2 = 1e-2
     discontinuityTol = 1e5
     
     # levels
-    for l in range(start_level, 4):
+    for l in range(start_level, 6):
       # indices
       for i in range(1, 2**l, 2):
         f = lambda y: b.eval(l, i, y)
@@ -106,13 +113,17 @@ class TestBase(unittest.TestCase):
         if deg >= 1:
           # test first derivative at boundary (central difference quotient)
           df = lambda y: b.evalDx(l, i, y)
-          self.assertAlmostEqual((f(2.0*dx) - f(0.0)) / (2.0*dx), df(dx), delta=tol)
-          self.assertAlmostEqual((f(1.0) - f(1.0-2.0*dx)) / (2.0*dx), df(1.0-dx), delta=tol)
+          self.errorTest((f(2.0*dx) - f(0.0)) / (2.0*dx), df(dx), tol1)
+          self.errorTest((f(1.0) - f(1.0-2.0*dx)) / (2.0*dx), df(1.0-dx), tol1)
+          #self.assertAlmostEqual((f(2.0*dx) - f(0.0)) / (2.0*dx), df(dx), delta=tol1)
+          #self.assertAlmostEqual((f(1.0) - f(1.0-2.0*dx)) / (2.0*dx), df(1.0-dx), delta=tol1)
         if deg >= 2:
           # test second derivative at boundary (central difference quotient)
           ddf = lambda y: b.evalDxDx(l, i, y)
-          self.assertAlmostEqual((df(2.0*dx) - df(0.0)) / (2.0*dx), ddf(dx), delta=tol)
-          self.assertAlmostEqual((df(1.0) - df(1.0-2.0*dx)) / (2.0*dx), ddf(1.0-dx), delta=tol)
+          self.errorTest((df(2.0*dx) - df(0.0)) / (2.0*dx), ddf(dx), tol2)
+          self.errorTest((df(1.0) - df(1.0-2.0*dx)) / (2.0*dx), ddf(1.0-dx), tol2)
+          #self.assertAlmostEqual((df(2.0*dx) - df(0.0)) / (2.0*dx), ddf(dx), delta=tol2)
+          #self.assertAlmostEqual((df(1.0) - df(1.0-2.0*dx)) / (2.0*dx), ddf(1.0-dx), delta=tol2)
         
         # count discontinuities
         discontinuities = 0
@@ -124,44 +135,74 @@ class TestBase(unittest.TestCase):
             # test derivatives only if the function is continuous
             if deg >= 1:
               # test first derivative (central difference quotient)
-              self.assertAlmostEqual((f(x+dx) - f(x-dx)) / (2.0*dx), df(x), delta=tol)
+              self.errorTest((f(x+dx) - f(x-dx)) / (2.0*dx), df(x), tol1)
+              #self.assertAlmostEqual((f(x+dx) - f(x-dx)) / (2.0*dx), df(x), delta=tol1)
             if deg >= 2:
               # test second derivative (central difference quotient)
-              self.assertAlmostEqual((df(x+dx) - df(x-dx)) / (2.0*dx), ddf(x), delta=tol)
+              self.errorTest((df(x+dx) - df(x-dx)) / (2.0*dx), ddf(x), tol2)
+              #self.assertAlmostEqual((df(x+dx) - df(x-dx)) / (2.0*dx), ddf(x), delta=tol2)
         self.assertLessEqual(discontinuities, max_discontinuities_count)
 
-  def bsplinePropertiesTest(self, b, start_level=1):
+  def boundTest(self, b, l, i, lower_bound, upper_bound):
+    for x in [j/100.0 for j in range(101)]:
+      fx = b.eval(l, i, x)
+      self.assertGreaterEqual(fx, lower_bound)
+      self.assertLessEqual(fx, upper_bound)
+
+  def bsplinePropertiesTest(self, b, start_level=1, modified=False):
     """Test basic B-spline properties (mixed monotonicity, bounds) for level >= start_level."""
     from pysgpp import cvar
     
     tol = 0.0 if cvar.USING_DOUBLE_PRECISION else 1e-4
     
-    for l in range(start_level, 4):
-        for i in range(1, 2**l, 2):
-            # rising at the beginning
-            falling = False
-            fx = None
-            for x in [j/100.0 for j in range(101)]:
-                fx_new = b.eval(l, i, x)
-                if fx is not None:
-                    if falling:
-                        # hope we're still falling
-                        self.assertLessEqual(fx_new, fx + tol)
-                    elif fx_new < fx - tol:
-                        # we're now falling (and weren't until now)
-                        falling = True
-                fx = fx_new
-                
-                # test bounds
-                if fx < 0.0 - tol: print b.getDegree(), l, i, x, fx
-                self.assertGreaterEqual(fx, 0.0 - tol)
-                
-                if 1 < i < 2**l-1:
-                    self.assertLessEqual(fx, 1.0 + tol)
-                else:
-                    # allow 2 as upper bound for leftmost and rightmost basis functions
-                    # (in case of modified B-splines)
-                    self.assertLessEqual(fx, 2.0 + 1e-2 + tol)
+    for l in range(start_level, 6):
+      for i in range(1, 2**l, 2):
+        # test bounds
+        upper_bound = (1.0 if ((not modified) or (1 < i < 2**l-1)) else 2.02)
+        self.boundTest(b, l, i, 0.0, upper_bound)
+        
+        # rising at the beginning
+        falling = False
+        fx = None
+        for x in [j/100.0 for j in range(101)]:
+          fx_new = b.eval(l, i, x)
+          if fx is not None:
+            if falling:
+              # hope we're still falling
+              self.assertLessEqual(fx_new, fx + tol)
+            elif fx_new < fx - tol:
+              # we're now falling (and weren't until now)
+              falling = True
+          fx = fx_new
+
+  def fundamentalSplineTest(self, b, modified=False):
+    start_level = 1
+    
+    for l in range(start_level, 6):
+      for i in range(1, 2**l, 2):
+        # test bounds
+        upper_bound = (1.0 if ((not modified) or (1 < i < 2**l-1)) else 2.2)
+        self.boundTest(b, l, i, -0.3, upper_bound + 1e-10)
+        
+        for i2 in range(0, 2**l + 1):
+          # test Lagrange property
+          if (not modified) or (1 < i < 2**l-1) or (0 < i2 < 2**l):
+            x = i2 * 2**(-l)
+            fx = b.eval(l, i, x)
+            self.assertAlmostEqual(fx, 1.0 if i == i2 else 0.0)
+          
+          # test sign
+          if i2 < 2**l:
+            sign = (-1.0)**(i2 - i)
+            if i2 < i:
+              sign *= -1.0
+            
+            for x in [(i2 + j/100.0) * 2**(-l) for j in range(101)]:
+              fx = b.eval(l, i, x)
+              if sign == +1.0:
+                self.assertGreaterEqual(fx, -1e-10)
+              else:
+                self.assertLessEqual(fx, 1e-10)
 
   def testLinear(self):
     from pysgpp import SLinearBase
@@ -207,7 +248,7 @@ class TestBase(unittest.TestCase):
     from pysgpp import SBsplineBase, cvar
     b = SBsplineBase(1)
     self.linearUniformUnmodifiedTest(b)
-    p_max = 9 if cvar.USING_DOUBLE_PRECISION else 6
+    p_max = 11 if cvar.USING_DOUBLE_PRECISION else 6
     
     for p in range(p_max+1):
       b = SBsplineBase(p)
@@ -220,7 +261,7 @@ class TestBase(unittest.TestCase):
     b = SBsplineBoundaryBase(1)
     self.linearLevelZeroTest(b)
     self.linearUniformUnmodifiedTest(b)
-    p_max = 9 if cvar.USING_DOUBLE_PRECISION else 6
+    p_max = 11 if cvar.USING_DOUBLE_PRECISION else 6
     
     for p in range(p_max+1):
       b = SBsplineBoundaryBase(p)
@@ -229,12 +270,13 @@ class TestBase(unittest.TestCase):
 
   def testBsplineClenshawCurtisBasis(self):
     """Test B-spline Clenshaw-Curtis basis."""
-    from pysgpp import SBsplineClenshawCurtisBase
+    from pysgpp import SBsplineClenshawCurtisBase, cvar
     b = SBsplineClenshawCurtisBase(1)
     self.linearLevelZeroTest(b)
     self.linearClenshawCurtisTest(b)
+    p_max = 11 if cvar.USING_DOUBLE_PRECISION else 6
     
-    for p in range(10):
+    for p in range(p_max+1):
       b = SBsplineClenshawCurtisBase(p)
       self.bsplinePropertiesTest(b, 0)
       self.derivativesTest(b, deg=max(b.getDegree() - 1, 0), start_level=0)
@@ -244,13 +286,33 @@ class TestBase(unittest.TestCase):
     from pysgpp import SBsplineModifiedBase, cvar
     b = SBsplineModifiedBase(1)
     self.linearModifiedTest(b)
-    p_max = 9 if cvar.USING_DOUBLE_PRECISION else 6
+    p_max = 11 if cvar.USING_DOUBLE_PRECISION else 6
     
     for p in range(p_max+1):
       b = SBsplineModifiedBase(p)
-      self.bsplinePropertiesTest(b)
+      self.bsplinePropertiesTest(b, modified=True)
       self.derivativesTest(b, deg=max(b.getDegree() - 1, 0))
+
+  def testFundamentalSplineBasis(self):
+    """Test fundamental spline basis."""
+    from pysgpp import SFundamentalSplineBase
+    p_max = 11
     
+    for p in range(p_max+1):
+      b = SFundamentalSplineBase(p)
+      self.fundamentalSplineTest(b)
+      self.derivativesTest(b, deg=max(b.getDegree() - 1, 0))
+
+  def testFundamentalSplineModifiedBasis(self):
+    """Test modified fundamental spline basis."""
+    from pysgpp import SFundamentalSplineModifiedBase
+    p_max = 11
+    
+    for p in range(p_max+1):
+      b = SFundamentalSplineModifiedBase(p)
+      self.fundamentalSplineTest(b, modified=True)
+      self.derivativesTest(b, deg=max(b.getDegree() - 1, 0))
+
   def testWaveletBasis(self):
     """Test Wavelet Noboundary basis."""
     from pysgpp import SWaveletBase

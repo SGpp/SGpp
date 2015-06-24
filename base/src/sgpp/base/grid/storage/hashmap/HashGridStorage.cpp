@@ -338,21 +338,6 @@ namespace SGPP {
       return DIM;
     }
 
-    size_t&
-    HashGridStorage::operator[](HashGridStorage::index_pointer index) {
-      return map[index];
-    }
-
-    HashGridStorage::index_pointer&
-    HashGridStorage::operator[](size_t seq) {
-      return list[seq];
-    }
-
-    HashGridIndex*
-    HashGridStorage::get(size_t seq) const {
-      return list[seq];
-    }
-
     size_t
     HashGridStorage::insert(index_type& index) {
       index_pointer insert = new HashGridIndex(&index);

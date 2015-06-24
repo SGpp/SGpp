@@ -25,23 +25,23 @@ namespace SGPP {
       size_t seq;
 
       // left boundary
-      index.left_levelzero(dim);
+      index.resetToLeftLevelZero(dim);
       seq = index.seq();
       left_boundary = source[seq];
       // right boundary
-      index.right_levelzero(dim);
+      index.resetToRightLevelZero(dim);
       seq = index.seq();
       right_boundary = source[seq];
 
       // move to root
       if (!index.hint()) {
-        index.top(dim);
+        index.resetToLevelOne(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, left_boundary, right_boundary);
         }
 
-        index.left_levelzero(dim);
+        index.resetToLeftLevelZero(dim);
       }
     }
 

@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Abstract base class for objective functions
      * \f$f\colon [0, 1]^d \to \mathbb{R}\f$.
-     * They're used in adaptive grid generation and optimization.
      */
     class ObjectiveFunction {
       public:
@@ -39,7 +38,7 @@ namespace SGPP {
         /**
          * Pure virtual method for calculating \f$f(\vec{x})\f$.
          *
-         * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @return      \f$f(\vec{x})\f$
          */
         virtual float_t eval(const base::DataVector& x) = 0;

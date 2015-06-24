@@ -28,8 +28,11 @@ namespace SGPP {
      */
     class HashGridIterator {
       public:
+        /// type of grid points
         typedef HashGridIndex index_type;
+        /// index type
         typedef HashGridIndex::index_type index_t;
+        /// level type
         typedef HashGridIndex::level_type level_t;
 
         /**
@@ -61,37 +64,35 @@ namespace SGPP {
          *
          * @param dim dimension in which we should step to level zero
          */
-        void left_levelzero(size_t dim);
+        void resetToLeftLevelZero(size_t dim);
 
         /**
          * right level zero ansatz function for a given dimension
          *
          * @param dim dimension in which we should step to level zero
          */
-        void right_levelzero(size_t dim);
+        void resetToRightLevelZero(size_t dim);
+
+        /**
+         * resets the iterator to the top if dimension d
+         *
+         * @param d the moving direction
+         */
+        void resetToLevelOne(size_t d);
 
         /**
          * left child in direction dim
          *
          * @param dim dimension in which we should step to the left child
          */
-        void left_child(size_t dim);
+        void leftChild(size_t dim);
 
         /**
          * right child in direction dim
          *
          * @param dim dimension in which we should step to the right child
          */
-        void right_child(size_t dim);
-
-        /**
-         * resets the iterator to the top if dimension d
-         *
-         * @todo (heinecke, must) maybe rename to steptoLevelOne
-         *
-         * @param d the moving direction
-         */
-        void top(size_t d);
+        void rightChild(size_t dim);
 
         /**
          * hierarchical parent in direction dim
@@ -105,37 +106,44 @@ namespace SGPP {
          *
          * @param d the moving direction
          */
-        void step_left(size_t d);
+        void stepLeft(size_t d);
 
         /**
          * step right in direction dim
          *
          * @param d the moving direction
          */
-        void step_right(size_t d);
-
-        bool isInnerPoint();
+        void stepRight(size_t d);
 
         /**
-         * returns true if there are no more childs in any dimension
+         * determines if the grid point is an inner grid point
          *
-         * @return returns true if there are no more childs in any dimension
+         * @return true if the grid point is an inner grid point
+         */
+        bool isInnerPoint() const;
+
+        /**
+         * returns true if there are no more children in any dimension
+         *
+         * @return returns true if there are no more children in any dimension
          */
         bool hint() const;
 
         /**
-         * returns true if there are more left childs in dimension d
+         * returns true if there are more left children in dimension d
          *
          * @param d the moving direction
+         * @return true if there are more left children in dimension d
          */
-        bool hint_left(size_t d);
+        bool hintLeft(size_t d);
 
         /**
-         * returns true if there are more right childs in dimension d
+         * returns true if there are more right children in dimension d
          *
          * @param d the moving direction
+         * @return true if there are more right children in dimension d
          */
-        bool hint_right(size_t d);
+        bool hintRight(size_t d);
 
         /**
          * Gets level @c l and index @c i in dimension @c d of the current grid point
@@ -156,6 +164,14 @@ namespace SGPP {
          */
         void set(size_t d, index_type::level_type l,
                  index_type::index_type i);
+
+        /**
+         * Sets the iterator to a grid point.
+         * Recomputes the hash value of the current grid point.
+         *
+         * @param point new grid point
+         */
+        void set(const index_type& point);
 
         /**
          * Sets level @c l and index @c i in dimension @c d of the current grid point.
@@ -181,6 +197,11 @@ namespace SGPP {
          */
         level_t getGridDepth(size_t dim);
 
+        /**
+         * Generates a string with level and index of the gridpoint.
+         *
+         * @returns string into which the gridpoint is written
+         */
         std::string toString();
 
       private:

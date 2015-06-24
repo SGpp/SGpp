@@ -81,6 +81,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for unknown types (right-padded "other")
        */
       template <class T>
@@ -90,6 +91,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for uint8_t (right-padded "uint8")
        */
       template <>
@@ -99,6 +101,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for uint16_t (right-padded "uint16")
        */
       template <>
@@ -108,6 +111,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for uint32_t (right-padded "uint32")
        */
       template <>
@@ -117,6 +121,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for uint64_t (right-padded "uint64")
        */
       template <>
@@ -126,6 +131,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for float (right-padded "float")
        */
       template <>
@@ -135,6 +141,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for double (right-padded "double")
        */
       template <>
@@ -144,6 +151,7 @@ namespace SGPP {
       }
 
       /**
+       * @param A ignored
        * @return  type string for string (right-padded "string")
        */
       template <>
@@ -152,7 +160,7 @@ namespace SGPP {
         return "string          ";
       }
 
-      /*
+      /**
        * Write a grid (only grid points) to a file.
        * The format is the same as the version with functions values
        * with all function values set to zero.
