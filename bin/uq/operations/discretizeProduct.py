@@ -58,9 +58,9 @@ def computeErrors(jgrid, jalpha,
     return maxdrift, l2norm
 
 
-def dehierarchizeOnNewGrid(grid_result, grid, alpha):
+def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     # dehierarchization
-    gs = grid_result.getStorage()
+    gs = gridResult.getStorage()
     ps = DataMatrix(gs.size(), gs.dim())
     p = DataVector(gs.dim())
     for i in xrange(gs.size()):

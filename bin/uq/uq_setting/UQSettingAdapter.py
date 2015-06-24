@@ -1,6 +1,6 @@
+from pysgpp import DataVector, DataMatrix
 from bin.data.DataAdapter import DataAdapter
 from bin.data.DataContainer import DataContainer
-from bin.pysgpp import DataVector, DataMatrix
 from bin.uq.analysis import KnowledgeTypes
 from bin.uq.uq_setting import UQSetting, UQSettingFormatter
 import gzip

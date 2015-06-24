@@ -43,7 +43,7 @@ def createGrid(dim, level, borderType, isFull=False):
     else:
         raise Exception('Unknown border type')
 
-    # create regular grid of level l
+    # create regular grid of level accLevel
     gridGen = grid.createGridGenerator()
     if isFull:
         gridGen.full(level)
@@ -53,17 +53,17 @@ def createGrid(dim, level, borderType, isFull=False):
     return grid
 
 
-def natural_sort(l):
+def natural_sort(accLevel):
     convert = lambda text:\
         int(text) if text.isdigit()else text.lower()
     alphanum_key = lambda key:\
         [convert(c) for c in re.split('([0-9]+)', key)]
-    return sorted(l, key=alphanum_key)
+    return sorted(accLevel, key=alphanum_key)
 
-def unique(l):
+def unique(accLevel):
     seen = set()
     seen_add = seen.add
-    return [x for x in l if x not in seen and not seen_add(x)]
+    return [x for x in accLevel if x not in seen and not seen_add(x)]
 
 
 # # @brief write ARFF data
@@ -154,9 +154,9 @@ def eval_linear(ppd, dim, norm_offset=0.0):
             i = 0
             while i < nrows:
                 for k in xrange(n):
-                    for l in xrange(offset):
+                    for accLevel in xrange(offset):
                         v = norm_offset + mw * k
-                        out[i + k * offset + l, j] = v
+                        out[i + k * offset + accLevel, j] = v
                 i += n * offset
 
     return out

@@ -3,8 +3,6 @@ from bin.uq.estimators import (MonteCarloStrategy,
                                CollocationPointsStrategy)
 
 from ASGCAnalysis import ASGCAnalysis
-from ASGCKnowledge import ASGCKnowledge
-from ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
 
 
 class ASGCAnalysisBuilder(object):
@@ -14,23 +12,22 @@ class ASGCAnalysisBuilder(object):
         Default constructor
         """
         self.__learner = None
-        self.__qoi = None
-        self.__strategy = MonteCarloStrategy()
+        self.__estimationStrategy = None
 
     def withLearner(self, learner):
         self.__learner = learner
         return self
 
     def withMonteCarloEstimationStrategy(self, *args, **kws):
-        self.__strategy = MonteCarloStrategy(*args, **kws)
+        self.__estimationStrategy = MonteCarloStrategy(*args, **kws)
         return self
 
     def withAnalyticEstimationStrategy(self, *args, **kws):
-        self.__strategy = AnalyticEstimationStrategy()
+        self.__estimationStrategy = AnalyticEstimationStrategy()
         return self
 
     def withCollocationPointsStrategy(self):
-        self.__strategy = CollocationPointsStrategy()
+        self.__estimationStrategy = CollocationPointsStrategy()
         return self
 
     def andGetResult(self):
@@ -41,4 +38,4 @@ class ASGCAnalysisBuilder(object):
         if self.__learner is None:
             raise AttributeError('no learner specified')
 
-        return ASGCAnalysis(self.__learner, strategy=self.__strategy)
+        return ASGCAnalysis(self.__learner, strategy=self.__estimationStrategy)

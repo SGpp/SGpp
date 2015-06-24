@@ -42,6 +42,13 @@ class ASGCKnowledge(object):
         ts = self.__alphas[self.__iteration][qoi][dtype].keys()
         return sorted(ts)
 
+    def getAvailableIterations(self):
+        """
+        get available iterations
+        @return: sorted list of integes
+        """
+        return self.__alphas.keys()
+
     def getIteration(self):
         """
         get current iteration number

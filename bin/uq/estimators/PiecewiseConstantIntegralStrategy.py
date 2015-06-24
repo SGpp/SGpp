@@ -1,4 +1,4 @@
-from EstimationStrategy import EstimationStrategy
+from uq.estimators.SparseGridEstimationStrategy import EstimationStrategy
 from numpy import prod
 from bin.uq.operations import evalSGFunction, discretize
 from bin.uq.quadrature import doQuadrature

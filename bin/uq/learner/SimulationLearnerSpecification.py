@@ -11,7 +11,7 @@ class SimulationLearnerSpecification(TrainingSpecification):
         super(self.__class__, self).__init__()
         # simulation based parameters
         self.__params = None
-        self.__qoi = '_'
+        self._qoi = '_'
         self.__knowledgeTypes = [KnowledgeTypes.SIMPLE]
         self.__timeStepsOfInterest = [0]
 
@@ -31,7 +31,7 @@ class SimulationLearnerSpecification(TrainingSpecification):
         return self.__knowledgeTypes
 
     def getQoI(self):
-        return self.__qoi
+        return self._qoi
 
     def getTimeStepsOfInterest(self):
         return self.__timeStepsOfInterest
@@ -43,7 +43,7 @@ class SimulationLearnerSpecification(TrainingSpecification):
         self.__knowledgeTypes = value
 
     def setQoI(self, value):
-        self.__qoi = value
+        self._qoi = value
 
     def setTimeStepsOfInterest(self, value):
         self.__timeStepsOfInterest = value

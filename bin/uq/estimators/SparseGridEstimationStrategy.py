@@ -2,7 +2,7 @@ from bin.uq.transformation import InverseCDFTransformation
 from bin.uq.dists import Uniform, J
 
 
-class EstimationStrategy(object):
+class SparseGridEstimationStrategy(object):
 
     def _extractPDFforMomentEstimation(self, U, T):
         dists = U.getDistributions()

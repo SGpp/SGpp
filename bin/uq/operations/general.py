@@ -13,7 +13,11 @@ def isNumerical(x):
 
 
 def isList(x):
-    return type(x) in (list, tuple, np.array, np.ndarray)
+    return type(x) in (list, tuple) or (type(x) in (np.array, np.ndarray) and len(x.shape) == 1)
+
+
+def isMatrix(x):
+    return type(x) in (np.array, np.ndarray) and len(x.shape) == 2
 
 
 def insert_children(grid, gp, d):
@@ -39,15 +43,15 @@ def insert_children(grid, gp, d):
 
 def extend_grid_1d(grid, *args, **kws):
     gs = grid.getStorage()
-    l = gs.getMaxLevel()
+    accLevel = gs.getMaxLevel()
     dim = gs.dim()
 
     # create dim+1 dimensional grid of level 0
     new_grid = createGrid(grid, dim + 1, *args, **kws)
 
-    # create 1 dimensional reference grid of level l
+    # create 1 dimensional reference grid of level accLevel
     ref_grid = createGrid(grid, 1)
-    ref_grid.createGridGenerator().regular(l)  # == full grid in dim = 1
+    ref_grid.createGridGenerator().regular(accLevel)  # == full grid in dim = 1
     ref_gs = ref_grid.getStorage()
 
     # create cross product between the 1d and the dimd-grid

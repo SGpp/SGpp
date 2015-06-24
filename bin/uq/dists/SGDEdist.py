@@ -1,13 +1,13 @@
-from bin.tools import (readDataARFF,
-                       readAlphaARFF,
+from bin.tools import (readAlphaARFF,
                        readGrid,
                        readDataTrivial)
 from pysgpp import (DataVector,
-                    createOperationEval,
                     createOperationQuadrature,
                     createOperationInverseRosenblattTransformation,
-                    createOperationDensityRejectionSampling,
-                    Grid, DataMatrix)
+                    createOperationInverseRosenblattTransformation1D,
+                    createOperationRosenblattTransformation1D,
+                    createOperationRosenblattTransformation,
+                    DataMatrix)
 from bin.uq.operations import (dehierarchize,
                                hierarchize,
                                hierarchizeBruteForce,
@@ -19,7 +19,8 @@ import warnings
 from Dist import Dist
 import ConfigParser as cp
 import numpy as np
-from bin.uq.operations.general import isNumerical, isList
+from bin.uq.operations import isNumerical, isList
+from bin.uq.operations.sparse_grid import evalSGFunctionMulti
 
 
 class SGDEdist(Dist):
@@ -28,7 +29,8 @@ class SGDEdist(Dist):
     """
 
     def __init__(self, grid, alpha, trainData=None,
-                 samples=None, bounds=None, transformation=None):
+                 samples=None, bounds=None, transformation=None,
+                 surfaceFile=None):
         super(SGDEdist, self).__init__()
 
         self.grid, self.alpha = grid, alpha  # makePositive(grid, alpha)
@@ -41,6 +43,7 @@ class SGDEdist(Dist):
         self.scale = 1.
         self.samples = samples
         self.transformation = transformation
+        self.surfaceFile = surfaceFile
 
         # self.computeLogDensity()
         self.computeBounds()
@@ -54,12 +57,15 @@ class SGDEdist(Dist):
     def byConfig(cls, config):
         if config is not None and os.path.exists(config):
             # init density function
-            gridfile, alphafile, traindatafile, samplefile = cls.computeDensity(config)
-            return cls.byFiles(gridfile, alphafile, traindatafile, samplefile)
+            gridfile, alphafile, traindatafile, samplefile, surfacefile = \
+                cls.computeDensity(config)
+            return cls.byFiles(gridfile, alphafile, traindatafile, samplefile,
+                               surfacefile)
 
     @classmethod
     def byFiles(cls, gridFile, alphaFile,
-                trainDataFile=None, samplesFile=None):
+                trainDataFile=None, samplesFile=None,
+                surfaceFile=None):
         if os.path.exists(gridFile):
             grid = readGrid(gridFile)
         else:
@@ -86,18 +92,24 @@ class SGDEdist(Dist):
             else:
                 raise Exception('The samples file "%s" does not exist' % samplesFile)
 
-        return cls(grid, alpha, trainData=trainData, samples=samples)
+        if surfaceFile is not None and surfaceFile != "" and \
+                not os.path.exists(surfaceFile):
+            raise Exception('The surface file does not exist.')
+
+        return cls(grid, alpha, trainData=trainData, samples=samples,
+                   surfaceFile=surfaceFile)
 
     @classmethod
     def computeDensity(self, config,
-                       exe='/home/franzefn/Promotion/UQ/benjamin/clustc/cluster'):
+                       pathsgpp='/home/franzefn/workspace/SGppUQ/lib/sgpp',
+                       cluster='/home/franzefn/Promotion/UQ/benjamin/clustc/cluster'):
         if not os.path.exists(config):
             raise Exception('the config file "%s" does not exist' % config)
 
-        os.environ['LD_LIBRARY_PATH'] = "/home/franzefn/workspace/SGppUQ/lib/sgpp"
-        # ret = subprocess.Popen([exe, "-c %s" % config], shell=True, env=os.environ)
-        # ret = subprocess.call([exe, "-c %s" % config], shell=True)
-        ret = os.system("%s -c %s > out.txt" % (exe, config))
+        os.environ['LD_LIBRARY_PATH'] = pathsgpp
+        # ret = subprocess.Popen([clustc, "-c %s" % config], shell=True, env=os.environ)
+        # ret = subprocess.call([clustc, "-c %s" % config], shell=True)
+        ret = os.system("%s -c %s > out_sgde.log" % (cluster, config))
         if ret != 0:
             raise Exception('The density estimation exited unexpectedly')
 
@@ -108,46 +120,53 @@ class SGDEdist(Dist):
         gridfile = s.get('dmest', 'writegridfile')
         alphafile = s.get('dmest', 'writealphafile')
         traindatafile = s.get('files', 'inFileTrain')
+
         samplesfile = None
-        if 'samp_outfile' in s.options('dmest'):
+        if 'samp_numsamples' in s.options('dmest') and \
+                s.get('dmest', 'samp_numsamples') > 0 and \
+                'samp_outfile' in s.options('dmest'):
             samplesfile = s.get('dmest', 'samp_outFile')
 
-        return gridfile, alphafile, traindatafile, samplesfile
+        surfacefile = None
+        if 'printsurfacefile' in s.options('dmest'):
+            surfacefile = s.get('dmest', 'printsurfacefile')
 
-    def computeLogDensity(self):
-        # dehierarchize
-        nodalValues = dehierarchize(self.grid, self.alpha)
-        gs = self.grid.getStorage()
-        # logarithm in nodal basis
-        invalid = []
-        for i in xrange(len(nodalValues)):
-            if nodalValues[i] < 0:
-                # take the mean over child and father node in each dimension
-                # such that the surplus for linear grids is zero for this
-                # node
-                nodalValues[i] = 0.
-                invalid.append(i)
-            else:
-                nodalValues[i] = float(np.log(nodalValues[i]))
+        return gridfile, alphafile, traindatafile, samplesfile, surfacefile
 
-        # hierarchize using a mod linear grid
-        gs = self.grid.getStorage()
-        self.loggrid = Grid.createLinearGrid(gs.dim())
-        self.loggrid.createGridGenerator().regular(gs.getMaxLevel())
-        if len(invalid) > 0:
-            self.logalpha = hierarchizeBruteForce(self.loggrid, nodalValues,
-                                                  ignore=invalid)
-        else:
-            self.logalpha = hierarchize(self.loggrid, nodalValues)
-
-        # set all the invalid coefficients to zero
-        for i in invalid:
-            assert self.logalpha[i] < 1e-10
-
-        from bin.uq.uq_plot import plotNodal3d
-        fig, ax = plotNodal3d(self.loggrid, self.logalpha)
-        ax.set_title("%g" % nodalValues.min())
-        fig.show()
+#     def computeLogDensity(self):
+#         # dehierarchize
+#         nodalValues = dehierarchize(self.grid, self.alpha)
+#         gs = self.grid.getStorage()
+#         # logarithm in nodal basis
+#         invalid = []
+#         for i in xrange(len(nodalValues)):
+#             if nodalValues[i] < 0:
+#                 # take the mean over child and father node in each dimension
+#                 # such that the surplus for linear grids is zero for this
+#                 # node
+#                 nodalValues[i] = 0.
+#                 invalid.append(i)
+#             else:
+#                 nodalValues[i] = float(np.log(nodalValues[i]))
+#
+#         # hierarchize using a mod linear grid
+#         gs = self.grid.getStorage()
+#         self.loggrid = Grid.createLinearGrid(gs.dim())
+#         self.loggrid.createGridGenerator().regular(gs.getMaxLevel())
+#         if len(invalid) > 0:
+#             self.logalpha = hierarchizeBruteForce(self.loggrid, nodalValues,
+#                                                   ignore=invalid)
+#         else:
+#             self.logalpha = hierarchize(self.loggrid, nodalValues)
+#
+#         # set all the invalid coefficients to zero
+#         for i in invalid:
+#             assert self.logalpha[i] < 1e-10
+#
+#         from bin.uq.uq_plot import plotNodal3d
+#         fig, ax = plotNodal3d(self.loggrid, self.logalpha)
+#         ax.set_title("%g" % nodalValues.min())
+#         fig.show()
 
     def computeMin(self):
         # assert that the function is positive
@@ -169,7 +188,7 @@ class SGDEdist(Dist):
     def computeScale(self):
         # normalize density
         self.scale = createOperationQuadrature(self.grid).doQuadrature(self.alpha)
-        assert self.scale > 0
+        # assert self.scale > 0
 
     def computeBounds(self):
         if self.bounds is None:
@@ -178,15 +197,26 @@ class SGDEdist(Dist):
                 self.bounds = self.bounds[0]
 
     def pdf(self, x):
-        # y = self.transformation.inv_trans(x, ixs=[0, 1])
-        isnumerical = isNumerical(x)
-        if isnumerical:
-            x = [x]
+        # convert the parameter to the right format
+        if isList(x):
+            x = DataVector(x)
+        elif isNumerical(x):
+            return evalSGFunction(self.grid, self.alpha, DataVector([x]))
 
-        fx = self.scale * evalSGFunction(self.grid, self.alpha, DataVector(x))
+        if isinstance(x, DataMatrix):
+            A = x
+        elif isinstance(x, DataVector):
+            A = DataMatrix(1, len(x))
+            A.setRow(0, x)
+        else:
+            raise AttributeError('data type "%s" is not supported in SGDEdist' % type(x))
 
-        if not isnumerical:
-            fx = np.array([fx])
+        # evaluate the sparse grid density
+        fx = evalSGFunctionMulti(self.grid, self.alpha, A)
+
+        # if there is just one value given, extract it from the list
+        if len(fx) == 1:
+            fx = fx[0]
 
         return fx
         # return max(0, fx)
@@ -200,24 +230,111 @@ class SGDEdist(Dist):
 #         # return np.power(self.logpdf(x), 2)
 #         return np.exp(self.logpdf(x))
 
-    def ppf(self, x):
-        if isNumerical(x):
+    def cdf(self, x):
+        # convert the parameter to the right format
+        if isList(x):
+            x = DataVector(x)
+        elif isNumerical(x):
             x = DataVector([x])
 
-        op = createOperationInverseRosenblattTransformation(self.grid)
-        A = DataMatrix(1, len(x))
-        A.setRow(0, x)
-        B = DataMatrix(1, len(x))
-        B.setAll(0)
-        op.doTransformation(self.alpha, A, B)
-        y = DataVector(len(x))
-        B.getRow(0, y)
-        if isList(x):
-            y = y.array()
+        # do the transformation
+        if self.grid.getStorage().dim() == 1:
+            op = createOperationRosenblattTransformation1D(self.grid)
+            ans = np.ndarray(len(x))
+            for i, xi in enumerate(x.array()):
+                ans[i] = op.doTransformation1D(self.alpha, xi)
+            if len(ans) == 1:
+                return ans[0]
+            else:
+                return ans
         else:
-            y = y[0]
+            if isinstance(x, DataMatrix):
+                A = x
+                B = DataMatrix(A.getNrows(), A.getNcols())
+                B.setAll(0.0)
+            elif isinstance(x, DataVector):
+                A = DataMatrix(1, len(x))
+                A.setRow(0, x)
+                B = DataMatrix(1, len(x))
+                B.setAll(0)
 
-        return y
+            # do the transformation
+            op = createOperationRosenblattTransformation(self.grid)
+            op.doTransformation(self.alpha, A, B)
+
+            # extract the outcome
+            if isNumerical(x) or isinstance(x, DataVector):
+                return B.get(0, 0)
+            elif isinstance(x, DataMatrix):
+                return B.array()
+
+    def ppf(self, x):
+        # convert the parameter to the right format
+        if isList(x):
+            x = DataVector(x)
+        elif isNumerical(x):
+            x = DataVector([x])
+
+        # do the transformation
+        if self.grid.getStorage().dim() == 1:
+            op = createOperationInverseRosenblattTransformation1D(self.grid)
+            ans = np.ndarray(len(x))
+            for i, xi in enumerate(x.array()):
+                ans[i] = op.doTransformation1D(self.alpha, xi)
+            if len(ans) == 1:
+                return ans[0]
+            else:
+                return ans
+        else:
+            if isinstance(x, DataMatrix):
+                A = x
+                B = DataMatrix(A.getNrows(), A.getNcols())
+                B.setAll(0.0)
+            elif isinstance(x, DataVector):
+                A = DataMatrix(1, len(x))
+                A.setRow(0, x)
+                B = DataMatrix(1, len(x))
+                B.setAll(0)
+
+            # do the transformation
+            op = createOperationInverseRosenblattTransformation(self.grid)
+            op.doTransformation(self.alpha, A, B)
+
+            # extract the outcome
+            if isNumerical(x) or isinstance(x, DataVector):
+                return B.get(0, 0)
+            elif isinstance(x, DataMatrix):
+                return B.array()
+
+    def mean(self):
+        ans = 0.
+        gs = self.grid.getStorage()
+
+        for i in xrange(gs.size()):
+            gp = gs.get(i)
+            value = self.alpha[i]
+            for d in xrange(gs.dim()):
+                level, index = gp.getLevel(d), gp.getIndex(d)
+                value *= index * 2 ** (-2 * level)
+            ans += value
+
+        return ans
+
+    def var(self):
+        mean = self.mean()
+
+        ans = 0.
+        gs = self.grid.getStorage()
+
+        for i in xrange(gs.size()):
+            gp = gs.get(i)
+            value = self.alpha[i]
+            for d in xrange(gs.dim()):
+                level, index = gp.getLevel(d), gp.getIndex(d)
+                value *= (index * index + 1. / 6.) * 2 ** (-3 * level)
+            ans += value
+
+        return ans - mean ** 2
 
     def rvs(self, n=1):
         if self.samples is None or n > len(self.samples):
@@ -242,16 +359,7 @@ class SGDEdist(Dist):
             # return samples
 
     def getDistributions(self):
-        from bin.uq.quadrature import doMarginalize
-        dim = self.getDim()
-        ans = [None] * dim
-        for d in xrange(dim):
-            alpha = DataVector(len(self.alpha))
-            alpha.setAll(0.0)
-            dd = range(0, d) + range(d + 1, dim)
-            ans[d] = doMarginalize(self.grid, self.alpha, dd)
-
-        return ans
+        return [self]
 
     def getBounds(self):
         return self.bounds
@@ -261,6 +369,34 @@ class SGDEdist(Dist):
             return self.grid.getStorage().dim()
         else:
             raise Exception('Dimensionality is unknown')
+
+    def gnuplot(self, jpegFile, gnuplotConfig=None):
+        if self.surfaceFile is not None and \
+                os.path.exists(self.surfaceFile):
+            gnuplot = """
+            set terminal jpeg
+            set output "%s"
+
+            set view map
+            set size ratio .9
+
+            set object 1 rect from graph 0, graph 0 to graph 1, graph 1 back
+            set object 1 rect fc rgb "black" fillstyle solid 1.0
+
+            splot '%s' using 1:2:3 with points pointtype 5 pointsize 1 palette linewidth 0
+            """
+
+            if gnuplotConfig is None:
+                gnuplotConfig = 'gnuplot.config'
+
+            fd = open(gnuplotConfig, "w")
+            fd.write(gnuplot % (jpegFile, self.surfaceFile))
+            fd.close()
+            os.system("gnuplot %s" % gnuplotConfig)
+            # -----------------------------------------------------------
+        else:
+            raise Exception('surface file "%s" not found. specify "printSurfaceFile" in [dmest] section of config' % self.surfaceFile)
+        return
 
     def __str__(self):
         return "SGDE"
@@ -290,4 +426,4 @@ class SGDEdist(Dist):
         if key in jsonObject:
             config = jsonObject[key]
 
-        return SGDEdist(config)
+        return SGDEdist.byConfig(config)

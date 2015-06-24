@@ -1,10 +1,10 @@
-from EstimationStrategy import EstimationStrategy
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy 
 from bin.uq.operations import dehierarchize
 from pysgpp import DataVector
 import numpy as np
 
 
-class CollocationPointsStrategy(EstimationStrategy):
+class CollocationPointsStrategy(SparseGridEstimationStrategy):
 
     def mean(self, grid, alpha, U, T):
         r"""

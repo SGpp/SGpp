@@ -4,6 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from bin.uq.operations import getBoundsOfSupport
 
 
 class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
@@ -21,8 +22,8 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
 
         # compute left and right boundary of the support of both
         # basis functions
-        xlowi, xhighi = self.getBounds(lid, iid)
-        xlowj, xhighj = self.getBounds(ljd, ijd)
+        xlowi, xhighi = getBoundsOfSupport(lid, iid)
+        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
 
         xlow = max(xlowi, xlowj)
         xhigh = min(xhighi, xhighj)

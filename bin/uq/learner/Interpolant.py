@@ -7,7 +7,7 @@ from Learner import Learner, LearnerEvents
 import numpy as np
 from bin.uq.operations.sparse_grid import checkInterpolation, dehierarchize
 from bin.uq.uq_plot import plotNodal3d, plotSGNodal3d
-import pylab as plt
+import matplotlib.pyplot as plt
 from bin.uq.uq_plot.plot3d import plotSG3d
 import pdb
 from bin.uq.analysis import KnowledgeTypes

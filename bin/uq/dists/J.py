@@ -1,8 +1,7 @@
 #!/usr/bin/python
-# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2013 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
-# sgpp.sparsegrids.org
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
 """
 @file    j.py
@@ -124,8 +123,8 @@ class J(Dist):
 
     def getBounds(self):
         ans = np.ndarray([self.__dim, 2], dtype='float')
-        for i, dist in enumerate(self.__dists):
-            ans[i, :] = dist.getBounds()
+        for i, ix in enumerate(self.__ixs):
+            ans[ix, :] = self.__dists[i].getBounds()
         return ans
 
     def getDistributions(self):
@@ -187,7 +186,7 @@ class J(Dist):
 #         return grid, alpha, err
 
     def __str__(self):
-        return str([str(dist) for dist in self.__dists])
+        return "J(%s)" % str([str(dist) for dist in self.__dists])
 
     def toJson(self):
         """

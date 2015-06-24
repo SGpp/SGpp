@@ -145,6 +145,10 @@ class Samples(object):
     def __iter__(self):
         return SamplesIterator(self._samples)
 
+    def __str__(self):
+        return "SampleSet: nsamples = %i, ndims = %i" % (len(self._samples,
+                                                             self._dim))
+
 
 class SamplesIterator(object):
     """
@@ -168,6 +172,12 @@ class Sample(object):
 
     def __init__(self, params=None, sample=None,
                  dtype=SampleType.ACTIVEPROBABILISTIC):
+        """
+        constructor
+        @param params: ParameterSet
+        @param sample: numpy array, tuple or list
+        @param dtype: SampleType
+        """
         self.__activeUnit = None
         self.__activeProb = None
         self.__expandedUnit = None

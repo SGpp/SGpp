@@ -4,6 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
+from bin.uq.operations.sparse_grid import getBoundsOfSupport
 
 
 class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
@@ -25,9 +26,9 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
 
         # compute left and right boundary of the support of all
         # three basis functions
-        xlowk, xhighk = self.getBounds(lkd, ikd)
-        xlowi, xhighi = self.getBounds(lid, iid)
-        xlowj, xhighj = self.getBounds(ljd, ijd)
+        xlowk, xhighk = getBoundsOfSupport(lkd, ikd)
+        xlowi, xhighi = getBoundsOfSupport(lid, iid)
+        xlowj, xhighj = getBoundsOfSupport(ljd, ijd)
 
         # compute overlapping support
         xlow = max(xlowk, xlowi, xlowj)

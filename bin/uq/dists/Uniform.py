@@ -1,8 +1,7 @@
 #!/usr/bin/python
-# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2013 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
-# sgpp.sparsegrids.org
+# use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
 """
 @file    uniform.py
@@ -16,7 +15,7 @@
 """
 
 
-from bin.uq.dists.Dist import Dist
+from Dist import Dist
 from scipy.stats import uniform
 
 import bin.uq.jsonLib as ju

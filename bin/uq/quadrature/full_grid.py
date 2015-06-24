@@ -2,8 +2,8 @@ from math import cos, pi
 import numpy as np
 
 
-def __trapezoidal(k, l):
-    return 1./2**l * k
+def __trapezoidal(k, accLevel):
+    return 1./2**accLevel * k
 
 
 def trapezoidal(n):
@@ -11,8 +11,8 @@ def trapezoidal(n):
     return sorted([__trapezoidal(k, n) for k in ks])  # in [0, 1]
 
 
-def __clenshaw_curtis(k, l):
-    return (1 - cos(pi * k / 2**l)) / 2.
+def __clenshaw_curtis(k, accLevel):
+    return (1 - cos(pi * k / 2**accLevel)) / 2.
 
 
 def clenshaw_curtis(n):

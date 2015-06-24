@@ -68,7 +68,7 @@ class HDMR(object):
         self.__anova_components = None
         self.__variance_components = None
 
-        self.__verbose = True
+        self._verbose = True
         self.__marginalization = MarginalIntegralStrategy()
         self.__estimation = IntegralStrategy()
         # self.__estimation = MonteCarloStrategy(npaths=40, isPositive=True)
@@ -151,7 +151,7 @@ class HDMR(object):
                 # select dimensions to be integrated
                 dd = [d for d in xrange(self.__dim) if d not in perm]
 
-                if self.__verbose:
+                if self._verbose:
                     print "-" * 60
                     print "Explore %s, Integrate: %s" % (perm, dd),
 
@@ -172,7 +172,7 @@ class HDMR(object):
                                                  f, U, T, dd)
                 expec[perm] = grid, alpha
 
-                if self.__verbose:
+                if self._verbose:
                     print "L2 err = %g" % err
 
         # add highest order term
@@ -323,7 +323,7 @@ class HDMR(object):
             # store the variance
             vis[perm] = vi
 
-            if self.__verbose:
+            if self._verbose:
                 print "Estimated V[%s]: %g, L2 err = %g" % (perm, vi, err)
                 print "-" * 60
 

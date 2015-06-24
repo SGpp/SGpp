@@ -15,6 +15,7 @@ from discretizeProduct import discretizeProduct
 from epsilonComplexity import getL2EpsilonComplexity
 from general import (isNumerical,
                      isList,
+                     isMatrix,
                      extend_grid_1d,
                      extend_grid,
                      join,
@@ -32,18 +33,17 @@ from sparse_grid import (getBoundsOfSupport,
                          getBasis, getDegree,
                          evalSGFunction,
                          evalSGFunctionMulti,
-                         evalSGFunctionMultiVectorized,
+#                          evalSGFunctionMultiVectorized,
                          isValid,
                          isRefineable,
                          copyGrid, createGrid,
-                         hierarchize, dehierarchize,
+                         hierarchize, dehierarchize, dehierarchizeList,
                          hierarchizeBruteForce,
                          balance,
                          estimateSurplus, estimateConvergence,
                          checkInterpolation,
                          checkPositivity,
-                         hasChildren)
+                         hasChildren,
+                         hasAllChildren)
 
-from forcePositivity.interpolateParents import InterpolateParents
-from forcePositivity.estimateDensity import EstimateDensityAlgorithm
-from forcePositivity.operationMakePositive import OperationMakePositive
+# from natafTransformation import NatafTransformation

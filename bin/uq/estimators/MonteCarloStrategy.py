@@ -4,32 +4,35 @@ from pysgpp import DataVector, DataMatrix
 from scipy.stats import norm
 from bin.uq.uq_plot import scatterplot_matrix
 
-from EstimationStrategy import EstimationStrategy
+from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
 
 
-class MonteCarloStrategy(EstimationStrategy):
+class MonteCarloStrategy(SparseGridEstimationStrategy):
 
-    def __init__(self, samples=None,
+    def __init__(self, samples=None, ixs=None,
                  n=5000, npaths=10, epsilon=1e-1, beta=0.01,
                  isPositive=False):
         """
         Constructor
         @param samples: ndarray containing monte carlo samples
+        @param ixs: list of indices for which there is data available
         @param n: number of samples per path
         @param npaths: number of paths
         @param epsilon: maximal error with respect to the central limit theorem
         @param beta: confidence level for central limit theorem
+        @param isPositive: forces the function to be positive
         """
         super(MonteCarloStrategy, self).__init__()
         if samples is not None:
             self.samples = samples
-            self.__n = self.samples.shape[0]
-            self.__npaths = 1
         else:
             self.samples = None
-            self.__n = n
-            self.__npaths = npaths
+        self.__ixs = None
+        if ixs is not None and len(ixs) > 0:
+            self.__ixs = np.array(ixs)
+        self.__n = n
+        self.__npaths = npaths
 
         # other stuff
         self.__c = norm.ppf(1. - beta / 2.)
@@ -38,28 +41,36 @@ class MonteCarloStrategy(EstimationStrategy):
 
     def __getSamples(self, W, T, n):
         if self.samples is None:
-            # draw n samples
-            samples = W.rvs(n)
+            # draw n ans
+            ans = W.rvs(n)
 
             # transform them to the unit hypercube
             ans = DataMatrix(n, W.getDim())
-            for i, sample in enumerate(samples):
+            for i, sample in enumerate(ans):
                 p = T.probabilisticToUnit(sample)
                 ans.setRow(i, DataVector(p))
 
             return ans
         else:
-            samples = W.rvs(self.__n)
+            if self.samples.shape[0] == n:
+                dataSamples = self.samples
+            else:
+                ixs = np.random.randint(0, len(self.samples), n)
+                dataSamples = self.samples[ixs, :]
 
-            # transform them to the unit hypercube
-            ans = DataMatrix(samples.shape[0], samples.shape[1])
-            for i, sample in enumerate(samples):
-                p = T.probabilisticToUnit(sample)
-                p[0] = self.samples[i, 0]
-                p[1] = self.samples[i, 1]
-                ans.setRow(i, DataVector(p))
+            # check if there are just samples for a subset of the random
+            # variables. If so, add the missing ones
+            if self.__ixs is not None:
+                ans = W.rvs(n)
 
-            return ans
+                # transform them to the unit hypercube
+                for i, sample in enumerate(dataSamples):
+                    ans[i, :] = T.probabilisticToUnit(ans[i, :])
+                    ans[i, self.__ixs] = sample
+            else:
+                ans = dataSamples
+
+            return DataMatrix(ans)
 
     def __estimate(self, vol, grid, alpha, U, T, f, npaths):
         n = npaths * self.__n
@@ -158,7 +169,7 @@ class MonteCarloStrategy(EstimationStrategy):
             err_clt = np.Inf
 
         # calculate moment
-        return np.sum(moments * self.__n) / (self.__npaths * self.__n), err_clt
+        return np.sum(moments) / self.__npaths, err_clt
 
     def var(self, grid, alpha, U, T, mean):
         r"""
@@ -171,16 +182,13 @@ class MonteCarloStrategy(EstimationStrategy):
         # init
         _, W = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
-
+        vecMean = DataVector(self.__n)
+        vecMean.setAll(mean)
         for i in xrange(self.__npaths):
             samples = self.__getSamples(W, T, self.__n)
             res = evalSGFunctionMulti(grid, alpha, samples)
-
-            # multiply the result with the corresponding pdf value
-            sample = DataVector(samples.getNcols())
-            for j in xrange(samples.getNrows()):
-                samples.getRow(j, sample)
-                res[j] = (res[j] - mean) ** 2
+            res.sub(vecMean)
+            res.sqr()
 
             # compute the moment
             moments[i] = res.sum() / (len(res) - 1.)
@@ -189,4 +197,4 @@ class MonteCarloStrategy(EstimationStrategy):
         err = np.Inf
 
         # calculate moment
-        return np.sum(moments * self.__n) / (self.__npaths * self.__n - 1), err
+        return np.sum(moments) / self.__npaths, err

@@ -22,6 +22,18 @@ class JointTransformation(Transformation):
         self.__ixs.append(ixs)
         self.__n += n
 
+    def probabilisticToUnitMatrix(self, ps, *args, **kws):
+        unitdata = np.zeros(ps.shape)
+        for i in xrange(ps.shape[0]):
+            unitdata[i, :] = self.probabilisticToUnit(ps[i, :])
+        return unitdata
+
+    def unitToProbabilisticMatrix(self, ps, *args, **kws):
+        probdata = np.zeros(ps.shape)
+        for i in xrange(ps.shape[0]):
+            probdata[i, :] = self.unitToProbabilistic(ps[i, :])
+        return probdata
+
     def unitToProbabilistic(self, p, *args, **kws):
         q = np.ndarray(self.__n, dtype='float')
         i = 0
