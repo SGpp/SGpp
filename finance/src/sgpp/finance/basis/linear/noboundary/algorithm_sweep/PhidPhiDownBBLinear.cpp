@@ -40,13 +40,13 @@ namespace SGPP {
       float_t fm = ((fl + fr) / 2.0) + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fl, fm);
         }
 
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fm, fr);

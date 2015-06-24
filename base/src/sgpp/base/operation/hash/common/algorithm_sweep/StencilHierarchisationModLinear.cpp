@@ -55,7 +55,7 @@ namespace SGPP {
 
         // descend left
         if (!isLeaf) {
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             // pass down the parent in the parameter for the left neighbor
@@ -63,7 +63,7 @@ namespace SGPP {
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             // pass down the parent in the parameter for the right neighbor
@@ -80,7 +80,7 @@ namespace SGPP {
       else if (i == 1) {
         if (!isLeaf) {
           // descend left
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             // special boundary treatment:
@@ -89,7 +89,7 @@ namespace SGPP {
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seqm, seqr);
@@ -122,14 +122,14 @@ namespace SGPP {
       else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
         if (!isLeaf) {
           // descend left
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seql, seqm);
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             // special boundary treatment:
@@ -164,14 +164,14 @@ namespace SGPP {
       else {
         if (!isLeaf) {
           // descend left
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seql, seqm);
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seqm, seqr);

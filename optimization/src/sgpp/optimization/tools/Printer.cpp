@@ -160,6 +160,10 @@ namespace SGPP {
       statusPrintingEnabled = false;
     }
 
+    bool Printer::isStatusPrintingEnabled() {
+      return statusPrintingEnabled;
+    }
+
     float_t Printer::getLastDurationSecs() const {
       return lastDuration;
     }
@@ -182,6 +186,8 @@ namespace SGPP {
         // print grid point and function value
         std::cout << *gridStorage.get(i) << ", " << functionValues.get(i);
       }
+
+      std::cout << "\n";
     }
 
     void Printer::printSLE(SLE& system) const {
@@ -204,7 +210,7 @@ namespace SGPP {
         }
       }
 
-      std::cout << "]";
+      std::cout << "]\n";
     }
 
   }

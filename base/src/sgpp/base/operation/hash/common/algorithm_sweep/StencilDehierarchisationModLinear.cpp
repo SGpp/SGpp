@@ -49,7 +49,7 @@ namespace SGPP {
         // no dehierarchisation necessary for constant function (root)
 
         // descend left
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           // pass down the parent in the parameter for the left neighbor
@@ -57,7 +57,7 @@ namespace SGPP {
         }
 
         // descend right
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           // pass down the parent in the parameter for the right neighbor
@@ -90,7 +90,7 @@ namespace SGPP {
 
         if (!isLeaf) {
           // descend left
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             // special boundary treatment:
@@ -99,7 +99,7 @@ namespace SGPP {
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seqm, seqr);
@@ -132,14 +132,14 @@ namespace SGPP {
 
         if (!isLeaf) {
           // descend left
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seql, seqm);
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             // special boundary treatment:
@@ -167,14 +167,14 @@ namespace SGPP {
 
         if (!isLeaf) {
           // descend left
-          index.left_child(dim);
+          index.leftChild(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seql, seqm);
           }
 
           // descend right
-          index.step_right(dim);
+          index.stepRight(dim);
 
           if (!storage->end(index.seq())) {
             rec(source, result, index, dim, seqm, seqr);

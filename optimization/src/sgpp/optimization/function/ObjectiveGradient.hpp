@@ -21,7 +21,6 @@ namespace SGPP {
      * \f$f\colon [0, 1]^d \to \mathbb{R}\f$
      * together with their gradients
      * \f$\nabla f\colon [0, 1]^d \to \mathbb{R}^d\f$.
-     * They're used in optimization.
      */
     class ObjectiveGradient {
       public:
@@ -43,13 +42,13 @@ namespace SGPP {
          * Pure virtual method for calculating
          * \f$f(\vec{x})\f$ together with \f$\nabla f(\vec{x})\f$.
          *
-         * @param      x        point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] gradient gradient
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @return              \f$f(\vec{x})\f$
          */
-        virtual float_t evalGradient(const base::DataVector& x,
-                                     base::DataVector& gradient) = 0;
+        virtual float_t eval(const base::DataVector& x,
+                             base::DataVector& gradient) = 0;
 
         /**
          * @return dimension \f$d\f$ of the domain
@@ -62,7 +61,7 @@ namespace SGPP {
          * Pure virtual method for cloning the objective gradient.
          * It should generate a pointer to the cloned object and
          * it's used for parallel computations
-         * (the evalGradient() method might not be thread-safe).
+         * (the eval() method might not be thread-safe).
          *
          * @param[out] clone pointer to cloned object
          */

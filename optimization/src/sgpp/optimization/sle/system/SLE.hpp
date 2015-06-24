@@ -74,6 +74,8 @@ namespace SGPP {
         /**
          * Count all non-zero entries.
          * Standard implementation with \f$\mathcal{O}(n^2)\f$ checks.
+         *
+         * @return number of non-zero entries
          */
         virtual size_t countNNZ() {
           const size_t n = getDimension();

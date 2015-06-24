@@ -41,11 +41,11 @@ namespace SGPP {
       // This handles the diagonal only
       //////////////////////////////////////
       // left boundary
-      index.left_levelzero(this->algoDims[dim]);
+      index.resetToLeftLevelZero(this->algoDims[dim]);
       size_t seq_left = index.seq();
 
       // right boundary
-      index.right_levelzero(this->algoDims[dim]);
+      index.resetToRightLevelZero(this->algoDims[dim]);
       size_t seq_right = index.seq();
 
       if (q_ != 1.0 || t_ != 0.0) {
@@ -62,39 +62,39 @@ namespace SGPP {
             calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 recBB_GL(fl2, fr2, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           } else if (dim == i + 1) {
             calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
             calcGradBoundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_reci);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 recBB_LG(fl1, fr1, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           } else {
             calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
             calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 recBB_LL(fl1, fr1, fl2, fr2, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           }
         }
@@ -107,25 +107,25 @@ namespace SGPP {
             calcGradBoundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, q_reci);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 recBB_grad(i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           } else {
             calcL2Boundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, q_);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 recBB(fl, fr, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           }
         }
@@ -154,26 +154,26 @@ namespace SGPP {
             calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_GL(fl2, fr2, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           } else if (dim == i + 1) {
             calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
             calcGradBoundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_LG(fl1, fr1, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           } else {
             calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
@@ -182,25 +182,25 @@ namespace SGPP {
 #if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_LL(fl_xmm, fr_xmm, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
 
 #else
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_LL(fl1, fr1, fl2, fr2, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
 
 #endif
@@ -208,25 +208,25 @@ namespace SGPP {
 #ifdef __SSE3__
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_LL(fl_xmm, fr_xmm, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
 
 #else
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_LL(fl1, fr1, fl2, fr2, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
 
 #endif
@@ -242,26 +242,26 @@ namespace SGPP {
             calcGradBoundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
                 rec_grad(i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           } else {
             calcL2Boundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, 1.0);
 
             if (!index.hint()) {
-              index.top(dim);
+              index.resetToLevelOne(dim);
 
               if (!this->storage->end(index.seq())) {
 
                 rec(fl, fr, i, index);
               }
 
-              index.left_levelzero(dim);
+              index.resetToLeftLevelZero(dim);
             }
           }
         }

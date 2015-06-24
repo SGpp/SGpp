@@ -47,12 +47,18 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
 // renames
-%rename(OptObjectiveFunction)   SGPP::optimization::ObjectiveFunction;
-%rename(OptObjectiveGradient)   SGPP::optimization::ObjectiveGradient;
-%rename(OptObjectiveHessian)    SGPP::optimization::ObjectiveHessian;
-%rename(OptInterpolantFunction) SGPP::optimization::InterpolantFunction;
-%rename(OptInterpolantGradient) SGPP::optimization::InterpolantGradient;
-%rename(OptInterpolantHessian)  SGPP::optimization::InterpolantHessian;
+%rename(OptConstraintFunction)              SGPP::optimization::ConstraintFunction;
+%rename(OptConstraintGradient)              SGPP::optimization::ConstraintGradient;
+%rename(OptEmptyConstraintFunction)         SGPP::optimization::EmptyConstraintFunction;
+%rename(OptEmptyConstraintFunctionInstance) SGPP::optimization::emptyConstraintFunction;
+%rename(OptEmptyConstraintGradient)         SGPP::optimization::EmptyConstraintGradient;
+%rename(OptEmptyConstraintGradientInstance) SGPP::optimization::emptyConstraintGradient;
+%rename(OptObjectiveFunction)               SGPP::optimization::ObjectiveFunction;
+%rename(OptObjectiveGradient)               SGPP::optimization::ObjectiveGradient;
+%rename(OptObjectiveHessian)                SGPP::optimization::ObjectiveHessian;
+%rename(OptInterpolantFunction)             SGPP::optimization::InterpolantFunction;
+%rename(OptInterpolantGradient)             SGPP::optimization::InterpolantGradient;
+%rename(OptInterpolantHessian)              SGPP::optimization::InterpolantHessian;
 
 %rename(OptTestFunction)    SGPP::optimization::test_functions::TestFunction;
 %rename(OptAckley)          SGPP::optimization::test_functions::Ackley;
@@ -91,26 +97,40 @@ const bool UMFPACK_ENABLED;
 %rename(OptGmmpp)                   SGPP::optimization::sle_solver::Gmmpp;
 %rename(OptUMFPACK)                 SGPP::optimization::sle_solver::UMFPACK;
 
-%rename(OptOptimizer)               SGPP::optimization::optimizer::Optimizer;
+%rename(OptUnconstrainedOptimizer)  SGPP::optimization::optimizer::UnconstrainedOptimizer;
+%rename(OptAdaptiveGradientDescent) SGPP::optimization::optimizer::AdaptiveGradientDescent;
+%rename(OptAdaptiveNewton)          SGPP::optimization::optimizer::AdaptiveNewton;
+%rename(OptBFGS)                    SGPP::optimization::optimizer::BFGS;
 %rename(OptDifferentialEvolution)   SGPP::optimization::optimizer::DifferentialEvolution;
-%rename(OptGradientMethod)          SGPP::optimization::optimizer::GradientMethod;
+%rename(OptGradientDescent)         SGPP::optimization::optimizer::GradientDescent;
+%rename(OptMultiStart)              SGPP::optimization::optimizer::MultiStart;
 %rename(OptNelderMead)              SGPP::optimization::optimizer::NelderMead;
 %rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
 %rename(OptNLCG)                    SGPP::optimization::optimizer::NLCG;
-%rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
-%rename(OptRandomSearch)            SGPP::optimization::optimizer::RandomSearch;
+%rename(OptRprop)                   SGPP::optimization::optimizer::Rprop;
 
-%rename(OptFileIOWriteGrid)         SGPP::optimization::file_io::writeGrid;
-%rename(OptFileIOReadGrid)          SGPP::optimization::file_io::readGrid;
-%rename(OptFileIOWriteMatrix)       SGPP::optimization::file_io::writeMatrix;
-%rename(OptFileIOReadMatrix)        SGPP::optimization::file_io::readMatrix;
-%rename(OptFileIOWriteVector)       SGPP::optimization::file_io::writeVector;
-%rename(OptFileIOReadVector)        SGPP::optimization::file_io::readVector;
-%rename(OptMutexType)               SGPP::optimization::MutexType;
-%rename(OptPrinter)                 SGPP::optimization::Printer;
-%rename(OptPrinterInstance)         SGPP::optimization::printer;
+%rename(OptConstrainedOptimizer)    SGPP::optimization::optimizer::ConstrainedOptimizer;
+%rename(OptAugmentedLagrangian)     SGPP::optimization::optimizer::AugmentedLagrangian;
+%rename(OptLogBarrier)              SGPP::optimization::optimizer::LogBarrier;
+%rename(OptSquaredPenalty)          SGPP::optimization::optimizer::SquaredPenalty;
+
+%rename(OptFileIOWriteGrid)                 SGPP::optimization::file_io::writeGrid;
+%rename(OptFileIOReadGrid)                  SGPP::optimization::file_io::readGrid;
+%rename(OptFileIOWriteMatrix)               SGPP::optimization::file_io::writeMatrix;
+%rename(OptFileIOReadMatrix)                SGPP::optimization::file_io::readMatrix;
+%rename(OptFileIOWriteVector)               SGPP::optimization::file_io::writeVector;
+%rename(OptFileIOReadVector)                SGPP::optimization::file_io::readVector;
+%rename(OptMathSchurDecomposition)          SGPP::optimization::math::schurDecomposition;
+%rename(OptMathQRDecomposition)             SGPP::optimization::math::QRDecomposition;
+%rename(OptMathHessenbergForm)              SGPP::optimization::math::hessenbergForm;
+%rename(OptMathHouseholderTransformation)   SGPP::optimization::math::householderTransformation;
+%rename(OptMutexType)                       SGPP::optimization::MutexType;
+%rename(OptPrinter)                         SGPP::optimization::Printer;
+%rename(OptPrinterInstance)                 SGPP::optimization::printer;
 
 // classes with director interface
+%feature("director") SGPP::optimization::ConstraintFunction;
+%feature("director") SGPP::optimization::ConstraintGradient;
 %feature("director") SGPP::optimization::ObjectiveFunction;
 %feature("director") SGPP::optimization::ObjectiveGradient;
 %feature("director") SGPP::optimization::ObjectiveHessian;
@@ -119,6 +139,18 @@ const bool UMFPACK_ENABLED;
 %feature("director") SGPP::optimization::sle_solver::SLESolver;
 
 // dirty hack to override SWIG's generated director method for "clone"
+%typemap(directorin) std::unique_ptr<SGPP::optimization::ConstraintFunction>& {
+    clone = std::unique_ptr<SGPP::optimization::ConstraintFunction>(
+        new SwigDirector_OptConstraintFunction(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::ConstraintGradient>& {
+    clone = std::unique_ptr<SGPP::optimization::ConstraintGradient>(
+        new SwigDirector_OptConstraintGradient(*this));
+    return;
+}
+
 %typemap(directorin) std::unique_ptr<SGPP::optimization::ObjectiveFunction>& {
     clone = std::unique_ptr<SGPP::optimization::ObjectiveFunction>(
         new SwigDirector_OptObjectiveFunction(*this));
@@ -138,6 +170,10 @@ const bool UMFPACK_ENABLED;
 }
 
 // includes
+%include "optimization/src/sgpp/optimization/function/ConstraintFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/ConstraintGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/EmptyConstraintFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/EmptyConstraintGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/ObjectiveHessian.hpp"
@@ -187,16 +223,26 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/sle/solver/Gmmpp.hpp"
 %include "optimization/src/sgpp/optimization/sle/solver/UMFPACK.hpp"
 
-%include "optimization/src/sgpp/optimization/optimizer/Optimizer.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/DifferentialEvolution.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/GradientMethod.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/NelderMead.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/Newton.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/NLCG.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/Newton.hpp"
-%include "optimization/src/sgpp/optimization/optimizer/RandomSearch.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/BFGS.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/CMAES.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/MultiStart.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/NelderMead.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/Newton.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/NLCG.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/Rprop.hpp"
+
+%include "optimization/src/sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/constrained/LogBarrier.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp"
 
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
+%include "optimization/src/sgpp/optimization/tools/Math.hpp"
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
 

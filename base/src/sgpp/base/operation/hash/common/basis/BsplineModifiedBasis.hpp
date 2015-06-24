@@ -20,10 +20,6 @@ namespace SGPP {
      */
     template <class LT, class IT>
     class BsplineModifiedBasis: public Basis<LT, IT> {
-      protected:
-        /// B-spline basis for B-spline evaluation
-        BsplineBasis<LT, IT> bsplineBasis;
-
       public:
         /**
          * Default constructor.
@@ -34,9 +30,11 @@ namespace SGPP {
         /**
          * Constructor.
          *
-         * @param degree    B-spline degree, must be odd (if it's even, degree - 1 is used)
+         * @param degree    B-spline degree, must be odd
+         *                  (if it's even, degree - 1 is used)
          */
-        BsplineModifiedBasis(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
+        BsplineModifiedBasis(size_t degree) :
+          bsplineBasis(BsplineBasis<LT, IT>(degree)) {
         }
 
         /**
@@ -45,7 +43,8 @@ namespace SGPP {
          * @return      value of modified uniform B-spline (e.g. index == 1)
          */
         inline float_t modifiedBSpline(float_t x, size_t p) const {
-          // wrote the following by hand... nah, not really (thanks to Sage & Python!)
+          // wrote the following by hand... nah, not really
+          // (thanks to Sage & Python!)
           switch (p) {
             case 3:
               if ((x < 0.0) || (x >= 3.0)) {
@@ -53,7 +52,8 @@ namespace SGPP {
               } else if (x < 1.0) {
                 return -x + 2.0;
               } else if (x < 2.0) {
-                return 1.0 / 6.0 * x * x * x - 0.5 * x * x - 0.5 * x + 11.0 / 6.0;
+                return 1.0 / 6.0 * x * x * x - 0.5 * x * x - 0.5 * x +
+                       11.0 / 6.0;
               } else {
                 return -1.0 / 6.0 * x * x * x + 1.5 * x * x - 4.5 * x + 4.5;
               }
@@ -445,7 +445,8 @@ namespace SGPP {
               // which is the same as (p + 2) / 2 written in C
               for (size_t k = 0; k <= (p + 2) / 2; k++) {
                 // x2 is chosen such that it holds: x2 = x + (p+1)/2 + k - 1
-                y += static_cast<float_t>(k + 1) * bsplineBasis.uniformBSpline(x2, p);
+                y += static_cast<float_t>(k + 1) *
+                     bsplineBasis.uniformBSpline(x2, p);
                 // the rounding errors induced by this method can be neglected
                 x2 += 1.0;
               }
@@ -457,7 +458,8 @@ namespace SGPP {
         /**
          * @param x     evaluation point
          * @param p     B-spline degree
-         * @return      value of derivative of modified uniform B-spline (e.g. index == 1)
+         * @return      value of derivative of modified uniform B-spline
+         *              (e.g. index == 1)
          */
         inline float_t modifiedBSplineDx(float_t x, size_t p) const {
           switch (p) {
@@ -810,7 +812,8 @@ namespace SGPP {
               }
 
               for (size_t k = 0; k <= (p + 2) / 2; k++) {
-                y += static_cast<float_t>(k + 1) * bsplineBasis.uniformBSplineDx(x2, p);
+                y += static_cast<float_t>(k + 1) *
+                     bsplineBasis.uniformBSplineDx(x2, p);
                 x2 += 1.0;
               }
 
@@ -821,7 +824,8 @@ namespace SGPP {
         /**
          * @param x     evaluation point
          * @param p     B-spline degree
-         * @return      value of 2nd derivative of modified uniform B-spline (e.g. index == 1)
+         * @return      value of 2nd derivative of modified uniform B-spline
+         *              (e.g. index == 1)
          */
         inline float_t modifiedBSplineDxDx(float_t x, size_t p) const {
           switch (p) {
@@ -848,7 +852,8 @@ namespace SGPP {
               } else if (x < 3.0) {
                 return 0.5 * x * x * x - 4.0 * x * x + 10.0 * x - 22.0 / 3.0;
               } else {
-                return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x + 32.0 / 3.0;
+                return -1.0 / 6.0 * x * x * x + 2.0 * x * x - 8.0 * x +
+                       32.0 / 3.0;
               }
 
               break;
@@ -1127,7 +1132,8 @@ namespace SGPP {
               }
 
               for (size_t k = 0; k <= (p + 2) / 2; k++) {
-                y += static_cast<float_t>(k + 1) * bsplineBasis.uniformBSplineDxDx(x2, p);
+                y += static_cast<float_t>(k + 1) *
+                     bsplineBasis.uniformBSplineDxDx(x2, p);
                 x2 += 1.0;
               }
 
@@ -1169,7 +1175,8 @@ namespace SGPP {
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
-         * @return      value of derivative of modified B-spline basis function
+         * @return      value of derivative of modified
+         *              B-spline basis function
          */
         inline float_t evalDx(LT l, IT i, float_t x) {
           if (l == 1) {
@@ -1182,14 +1189,16 @@ namespace SGPP {
           float_t dxFactor = hInvDbl;
 
           if (i == hInv - 1) {
-            // mirror the situation at x = 0.5 (don't forget the inner derivative!)
+            // mirror the situation at x = 0.5
+            // (don't forget the inner derivative!)
             x = 1.0 - x;
             i = 1;
             dxFactor *= -1.0;
           }
 
           if (i == 1) {
-            return dxFactor * modifiedBSplineDx(x * hInvDbl, bsplineBasis.getDegree());
+            return dxFactor * modifiedBSplineDx(
+                     x * hInvDbl, bsplineBasis.getDegree());
           } else {
             return dxFactor * bsplineBasis.uniformBSplineDx(
                      x * hInvDbl - static_cast<float_t>(i) +
@@ -1202,7 +1211,8 @@ namespace SGPP {
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
-         * @return      value of 2nd derivative of modified B-spline basis function
+         * @return      value of 2nd derivative of modified
+         *              B-spline basis function
          */
         inline float_t evalDxDx(LT l, IT i, float_t x) {
           if (l == 1) {
@@ -1221,7 +1231,8 @@ namespace SGPP {
           }
 
           if (i == 1) {
-            return dxFactor * dxFactor * modifiedBSplineDxDx(x * hInvDbl, bsplineBasis.getDegree());
+            return dxFactor * dxFactor * modifiedBSplineDxDx(
+                     x * hInvDbl, bsplineBasis.getDegree());
           } else {
             return dxFactor * dxFactor * bsplineBasis.uniformBSplineDxDx(
                      x * hInvDbl - static_cast<float_t>(i) +
@@ -1236,10 +1247,15 @@ namespace SGPP {
         inline size_t getDegree() const {
           return bsplineBasis.getDegree();
         }
+
+      protected:
+        /// B-spline basis for B-spline evaluation
+        BsplineBasis<LT, IT> bsplineBasis;
     };
 
     // default type-def (unsigned int for level and index)
-    typedef BsplineModifiedBasis<unsigned int, unsigned int> SBsplineModifiedBase;
+    typedef BsplineModifiedBasis<unsigned int, unsigned int>
+    SBsplineModifiedBase;
   }
 }
 

@@ -185,6 +185,7 @@ namespace SGPP {
          * vec.size() elements of the current vector are overwritten.
          *
          * @param vec the DataVector containing the data
+         * @return *this
          */
         //  void copySmall(const DataVector& vec);
         /**
@@ -199,6 +200,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float_t& operator[](size_t i) {
           return data[i];
@@ -209,6 +211,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float_t get(size_t i) const {
           return data[i];

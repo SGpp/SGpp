@@ -25,9 +25,12 @@ class TestExample(unittest.TestCase):
         N = 100
         
         # test two simple objective functions
-        fs = [objective_functions.ExampleFunction(), pysgpp.OptSphere(d)]
-        f_gradients = [objective_functions.ExampleFunctionGradient(), objective_functions.SphereFunctionGradient(d)]
-        f_hessians = [objective_functions.ExampleFunctionHessian(), objective_functions.SphereFunctionHessian(d)]
+        fs = [objective_functions.ExampleFunction(),
+              pysgpp.OptSphere(d)]
+        f_gradients = [objective_functions.ExampleFunctionGradient(),
+                       objective_functions.SphereFunctionGradient(d)]
+        f_hessians = [objective_functions.ExampleFunctionHessian(),
+                      objective_functions.SphereFunctionHessian(d)]
         # minima
         real_xopts = [[3.0/16.0 * math.pi, 3.0/14.0 * math.pi], [0.1, 0.1]]
         real_fopts = [-2.0, 0.0]
@@ -60,17 +63,17 @@ class TestExample(unittest.TestCase):
                 self.assertLess(abs(f.eval(x) - ft.eval(x)), 0.25)
             
             # test all optimizers applied on function and interpolant
-            optimizers = [pysgpp.OptGradientMethod(f, f_gradient),
+            optimizers = [pysgpp.OptGradientDescent(f, f_gradient),
                           pysgpp.OptNLCG(f, f_gradient),
                           pysgpp.OptNewton(f, f_hessian),
                           pysgpp.OptNelderMead(f),
-                          pysgpp.OptRandomSearch(f),
+                          pysgpp.OptMultiStart(f),
                           pysgpp.OptDifferentialEvolution(f),
-                          pysgpp.OptGradientMethod(ft, ft_gradient),
+                          pysgpp.OptGradientDescent(ft, ft_gradient),
                           pysgpp.OptNLCG(ft, ft_gradient),
                           pysgpp.OptNewton(ft, ft_hessian),
                           pysgpp.OptNelderMead(ft),
-                          pysgpp.OptRandomSearch(ft),
+                          pysgpp.OptMultiStart(ft),
                           pysgpp.OptDifferentialEvolution(ft)]
             
             for optimizer in optimizers:

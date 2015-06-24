@@ -153,6 +153,7 @@ namespace SGPP {
          * Dimensions have to match.
          *
          * @param vec the DataVector containing the data
+         * @return *this
          */
         DataVectorSP& operator=(const DataVectorSP& vec);
 
@@ -160,6 +161,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float& operator[](size_t i) {
           return data[i];
@@ -169,6 +171,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float get(size_t i) const {
           return data[i];

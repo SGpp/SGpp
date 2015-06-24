@@ -168,14 +168,14 @@ namespace SGPP {
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };
@@ -273,7 +273,7 @@ namespace SGPP {
                 result.push_back(std::make_pair(seq, value * new_value));
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 tmpSeq = working.seq();
 
                 if (!(storage->end(tmpSeq))) {
@@ -291,10 +291,10 @@ namespace SGPP {
 
                 }
 
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking Left Neighbour" << std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 tmpSeq = working.seq();
 
                 if (!(storage->end(tmpSeq))) {
@@ -312,29 +312,29 @@ namespace SGPP {
 
                 }
 
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
 
               } else {
                 rec(basis, point, current_dim + 1, value * new_value,
                     working, source, result);
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
                 rec(basis, point, current_dim + 1, value * new_value,
                     working, source, result);
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking left Neighbour"<< std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
                 rec(basis, point, current_dim + 1, value * new_value,
                     working, source, result);
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
               }
 
             }
@@ -349,14 +349,14 @@ namespace SGPP {
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };
@@ -447,7 +447,7 @@ namespace SGPP {
                 result.push_back(std::make_pair(seq, value * new_value));
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 tmpSeq = working.seq();
 
                 if ( !(storage->end(tmpSeq)) ) {
@@ -463,10 +463,10 @@ namespace SGPP {
 
                 }
 
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking Left Neighbour" << std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 tmpSeq = working.seq();
 
                 if (!(storage->end(tmpSeq)) ) {
@@ -482,24 +482,24 @@ namespace SGPP {
 
                 }
 
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
 
               } else {
                 rec(base, point, current_dim + 1, value * new_value, working, source, result);
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = base.eval(work_level, work_index, point[current_dim]);
                 rec(base, point, current_dim + 1, value * new_value, working, source, result);
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking left Neighbour"<< std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = base.eval(work_level, work_index, point[current_dim]);
                 rec(base, point, current_dim + 1 , value * new_value, working, source, result);
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
               }
 
             }
@@ -514,14 +514,14 @@ namespace SGPP {
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };
@@ -594,7 +594,7 @@ namespace SGPP {
               // handle boundaries if we are on level 0
               else {
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
@@ -605,7 +605,7 @@ namespace SGPP {
                 }
 
                 // level 0, index 1
-                working.right_levelzero(current_dim);
+                working.resetToRightLevelZero(current_dim);
                 size_t seq_lz_right = working.seq();
                 float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
 
@@ -636,21 +636,21 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
                 break;
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
 
 
@@ -686,7 +686,7 @@ namespace SGPP {
               // handle boundaries if we are on level 0
               else {
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
@@ -697,7 +697,7 @@ namespace SGPP {
                 }
 
                 // level 0, index 1
-                working.right_levelzero(current_dim);
+                working.resetToRightLevelZero(current_dim);
                 size_t seq_lz_right = working.seq();
                 float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
@@ -728,21 +728,21 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim)) + BB->getIntervalOffset(current_dim)))
                 break;
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
 
     };
@@ -827,7 +827,7 @@ namespace SGPP {
                 float_t left = stretch->getBoundary(current_dim).leftBoundary;
                 float_t right = stretch->getBoundary(current_dim).rightBoundary;
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 //float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
                 float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], right, left);
@@ -839,7 +839,7 @@ namespace SGPP {
                 }
 
                 // level 0, index 1
-                working.right_levelzero(current_dim);
+                working.resetToRightLevelZero(current_dim);
                 size_t seq_lz_right = working.seq();
                 //float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
                 float_t new_value_l_zero_right = basis.eval(0, 1,  point[current_dim], left, right);
@@ -871,9 +871,9 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               //if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim))+BB->getIntervalOffset(current_dim)))
@@ -883,13 +883,13 @@ namespace SGPP {
                 break;
               }
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
 
     };
@@ -971,9 +971,9 @@ namespace SGPP {
             level_type save_level;
             iter.get(d, save_level, save_index); //Save current index
 
-            if (iter.hint_left(d)) {
+            if (iter.hintLeft(d)) {
               //Handle left Child in dimension d
-              iter.left_child(d);
+              iter.leftChild(d);
               index_type current_index;
               level_type current_level;
               iter.get(d, current_level, current_index);
@@ -989,9 +989,9 @@ namespace SGPP {
 
             iter.set(d, save_level, save_index); //reset index
 
-            if (iter.hint_right(d)) {
+            if (iter.hintRight(d)) {
               //Handle left Child in dimension d
-              iter.right_child(d);
+              iter.rightChild(d);
               index_type current_index;
               level_type current_level;
               iter.get(d, current_level, current_index);
@@ -1072,7 +1072,7 @@ namespace SGPP {
               // handle boundaries if we are on level 0
               else {
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
@@ -1103,21 +1103,21 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
                 break;
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
     };
   }
