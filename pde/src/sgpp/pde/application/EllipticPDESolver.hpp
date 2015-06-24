@@ -18,7 +18,6 @@ namespace SGPP {
      * This class extends the PDESolver with functions that are needed to
      * solve elliptic PDEs
      *
-     * @version $HEAD$
      */
     class EllipticPDESolver : public PDESolver {
       protected:

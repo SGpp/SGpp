@@ -37,12 +37,12 @@ namespace SGPP {
       // This handles the diagonal only
       //////////////////////////////////////
       // left boundary
-      index.left_levelzero(dim);
+      index.resetToLeftLevelZero(dim);
       seq_left = index.seq();
       left_boundary = source[seq_left];
 
       // right boundary
-      index.right_levelzero(dim);
+      index.resetToRightLevelZero(dim);
       seq_right = index.seq();
       right_boundary = source[seq_right];
 
@@ -67,13 +67,13 @@ namespace SGPP {
 
       // move to root
       if (!index.hint()) {
-        index.top(dim);
+        index.resetToLevelOne(dim);
 
         if (!this->storage->end(index.seq())) {
           rec(source, result, index, dim, left_boundary, right_boundary);
         }
 
-        index.left_levelzero(dim);
+        index.resetToLeftLevelZero(dim);
       }
 
 

@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Implementation for linear functions of Laplace Operation, linear grids without boundaries
      *
-     * @version $HEAD$
      */
     class OperationLaplaceLinearStretched: public UpDownOneOpDim {
       public:

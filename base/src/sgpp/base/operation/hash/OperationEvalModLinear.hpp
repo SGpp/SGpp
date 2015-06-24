@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * This class implements OperationEval for a grids with mod linear basis ansatzfunctions with
      *
-     * @version $HEAD$
      */
     class OperationEvalModLinear : public OperationEval {
       public:

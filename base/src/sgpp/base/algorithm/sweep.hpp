@@ -185,13 +185,13 @@ namespace SGPP {
               continue;
             }
 
-            index.left_child(current_dim);
+            index.leftChild(current_dim);
 
             if (!storage->end(index.seq())) {
               sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
             }
 
-            index.step_right(current_dim);
+            index.stepRight(current_dim);
 
             if (!storage->end(index.seq())) {
               sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
@@ -224,13 +224,13 @@ namespace SGPP {
               continue;
             }
 
-            index.left_child(current_dim);
+            index.leftChild(current_dim);
 
             if (!storage->end(index.seq())) {
               sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
             }
 
-            index.step_right(current_dim);
+            index.stepRight(current_dim);
 
             if (!storage->end(index.seq())) {
               sweep_rec(source, result, index, dim_list, d + 1, dim_sweep);
@@ -270,13 +270,13 @@ namespace SGPP {
               sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
               if (!index.hint()) {
-                index.left_child(dim_list[dim_rem - 1]);
+                index.leftChild(dim_list[dim_rem - 1]);
 
                 if (!storage->end(index.seq())) {
                   sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
                 }
 
-                index.step_right(dim_list[dim_rem - 1]);
+                index.stepRight(dim_list[dim_rem - 1]);
 
                 if (!storage->end(index.seq())) {
                   sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
@@ -289,18 +289,18 @@ namespace SGPP {
             else {
               sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
-              index.right_levelzero(dim_list[dim_rem - 1]);
+              index.resetToRightLevelZero(dim_list[dim_rem - 1]);
               sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
               if (!index.hint()) {
-                index.top(dim_list[dim_rem - 1]);
+                index.resetToLevelOne(dim_list[dim_rem - 1]);
 
                 if (!storage->end(index.seq())) {
                   sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
                 }
               }
 
-              index.left_levelzero(dim_list[dim_rem - 1]);
+              index.resetToLeftLevelZero(dim_list[dim_rem - 1]);
             }
           }
         }
@@ -335,13 +335,13 @@ namespace SGPP {
               sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
               if (!index.hint()) {
-                index.left_child(dim_list[dim_rem - 1]);
+                index.leftChild(dim_list[dim_rem - 1]);
 
                 if (!storage->end(index.seq())) {
                   sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
                 }
 
-                index.step_right(dim_list[dim_rem - 1]);
+                index.stepRight(dim_list[dim_rem - 1]);
 
                 if (!storage->end(index.seq())) {
                   sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
@@ -354,18 +354,18 @@ namespace SGPP {
             else {
               sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
-              index.right_levelzero(dim_list[dim_rem - 1]);
+              index.resetToRightLevelZero(dim_list[dim_rem - 1]);
               sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
 
               if (!index.hint()) {
-                index.top(dim_list[dim_rem - 1]);
+                index.resetToLevelOne(dim_list[dim_rem - 1]);
 
                 if (!storage->end(index.seq())) {
                   sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
                 }
               }
 
-              index.left_levelzero(dim_list[dim_rem - 1]);
+              index.resetToLeftLevelZero(dim_list[dim_rem - 1]);
             }
           }
         }

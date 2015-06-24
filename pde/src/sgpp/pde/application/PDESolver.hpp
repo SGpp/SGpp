@@ -25,7 +25,6 @@ namespace SGPP {
      * useful while solving PDEs. E.g. grid construction, simple grid evaluation tools
      * grid printing, initial grid refinement etc.
      *
-     * @version $HEAD$
      */
     class PDESolver {
       protected:

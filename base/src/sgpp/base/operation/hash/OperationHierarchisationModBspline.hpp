@@ -21,7 +21,6 @@ namespace SGPP {
     /**
      * Hierarchisation on sparse grid, mod bspline case
      *
-     * @version $HEAD$
      */
     class OperationHierarchisationModBspline : public OperationHierarchisation {
       public:

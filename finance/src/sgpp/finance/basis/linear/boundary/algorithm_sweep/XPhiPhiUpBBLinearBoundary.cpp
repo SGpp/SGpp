@@ -35,13 +35,13 @@ namespace SGPP {
 
       if (useBB) {
         if (!index.hint()) {
-          index.top(dim);
+          index.resetToLevelOne(dim);
 
           if (!this->storage->end(index.seq())) {
             recBB(source, result, index, dim, fl, fr, q, t);
           }
 
-          index.left_levelzero(dim);
+          index.resetToLeftLevelZero(dim);
         }
 
         size_t seq_left;
@@ -51,7 +51,7 @@ namespace SGPP {
         seq_left = index.seq();
 
         // right boundary
-        index.right_levelzero(dim);
+        index.resetToRightLevelZero(dim);
         seq_right = index.seq();
 
         // up
@@ -71,16 +71,16 @@ namespace SGPP {
           result[seq_right] = fr;
         }
 
-        index.left_levelzero(dim);
+        index.resetToLeftLevelZero(dim);
       } else {
         if (!index.hint()) {
-          index.top(dim);
+          index.resetToLevelOne(dim);
 
           if (!this->storage->end(index.seq())) {
             rec(source, result, index, dim, fl, fr);
           }
 
-          index.left_levelzero(dim);
+          index.resetToLeftLevelZero(dim);
         }
 
         size_t seq_left;
@@ -90,7 +90,7 @@ namespace SGPP {
         seq_left = index.seq();
 
         // right boundary
-        index.right_levelzero(dim);
+        index.resetToRightLevelZero(dim);
         seq_right = index.seq();
 
         // up
@@ -110,7 +110,7 @@ namespace SGPP {
           result[seq_right] = fr;
         }
 
-        index.left_levelzero(dim);
+        index.resetToLeftLevelZero(dim);
       }
     }
 

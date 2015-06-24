@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a file failure
      *
-     * @version $HEAD$
      */
     class file_exception : public std::exception {
       public:

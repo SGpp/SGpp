@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a solver operation failure
      *
-     * @version $HEAD$
      */
     class solver_exception : public std::exception {
       public:

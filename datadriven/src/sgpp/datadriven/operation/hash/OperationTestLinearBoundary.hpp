@@ -19,7 +19,6 @@ namespace SGPP {
      * This class implements OperationTest for a grids with linear basis ansatzfunctions with
      * boundaries
      *
-     * @version $HEAD$
      */
     class OperationTestLinearBoundary : public OperationTest {
       public:

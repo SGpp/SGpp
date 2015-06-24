@@ -54,9 +54,9 @@ namespace SGPP {
       h = 1 << l;
       temp_old = temp_current;
       temp_current = new float_t[3];
-      index.left_child(dim);
+      index.leftChild(dim);
       _seql1 = index.seq();
-      index.step_right(dim);
+      index.stepRight(dim);
       _seqr1 = index.seq();
 
       //Calculate new temp variables
@@ -88,15 +88,15 @@ namespace SGPP {
           _seql2 = index.seq();
           _vall2 = storage->end(_seql2) ? 0.0 : source[_seql2];
 
-          index.step_right(dim);
+          index.stepRight(dim);
           _seql1 = index.seq();
           _vall1 = storage->end(_seql1) ? 0.0 : source[_seql1];
 
-          index.step_right(dim);
+          index.stepRight(dim);
           _seqr1 = index.seq();
           _valr1 = storage->end(_seqr1) ? 0.0 : source[_seqr1];
 
-          index.step_right(dim);
+          index.stepRight(dim);
           _seqr2 = index.seq();
           _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
 
@@ -127,7 +127,7 @@ namespace SGPP {
                 _vall2 = _vall1;
                 _vall1 = _valr1;
                 _valr1 = _valr2;
-                index.step_right(dim);
+                index.stepRight(dim);
                 _seq = index.seq();
                 _valr2 = storage->end(_seq) ? 0.0 : source[_seq];
               }
@@ -154,20 +154,20 @@ namespace SGPP {
         _seql2 = index.seq();
         _vall2 = storage->end(_seql2) ? 0.0 : source[_seql2];
 
-        index.step_right(dim);
+        index.stepRight(dim);
         _seql1 = index.seq();
         _vall1 = storage->end(_seql1) ? 0.0 : source[_seql1];
 
-        index.step_right(dim);
+        index.stepRight(dim);
         _seq = index.seq();
         _val = storage->end(_seq) ? 0.0 : source[_seq];
 
-        index.step_right(dim);
+        index.stepRight(dim);
         _seqr1 = index.seq();
         _valr1 = storage->end(_seqr1) ? 0.0 : source[_seqr1];
 
         if (l != 3) {
-          index.step_right(dim);
+          index.stepRight(dim);
           _seqr2 = index.seq();
           _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
         }
@@ -218,7 +218,7 @@ namespace SGPP {
               _seq = _seqr1;
               _valr1 = _valr2;
               _seqr1 = _seqr2;
-              index.step_right(dim);
+              index.stepRight(dim);
               _seqr2 = index.seq();
               _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
             }

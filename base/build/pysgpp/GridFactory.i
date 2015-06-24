@@ -76,9 +76,9 @@ typedef enum mail_ {
     BsplineClenshawCurtis = 17,
     Wavelet = 18,
     WaveletTruncatedBoundary = 19,
-    ModBsplineClenshawCurtis = 20,
-    FundamentalSpline = 21,
-    ModFundamentalSpline = 22
+    FundamentalSpline = 20,
+    ModFundamentalSpline = 21,
+    ModBsplineClenshawCurtis = 22
 } GridType;
 
 class Grid

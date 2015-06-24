@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Implements the standard L 2 scalar product on periodic grids
      *
-     * @version $HEAD$
      */
     class OperationMatrixLTwoDotPeriodic: public SGPP::base::OperationMatrix {
       public:

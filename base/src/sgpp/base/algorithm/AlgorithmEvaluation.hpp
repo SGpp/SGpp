@@ -192,14 +192,14 @@ namespace SGPP {
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };

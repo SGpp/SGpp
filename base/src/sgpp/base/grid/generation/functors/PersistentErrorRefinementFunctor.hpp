@@ -22,7 +22,6 @@ namespace SGPP {
 
     /**
      * A refinement functor, refining according to the maximal absolute values in a DataVector provided.
-     * @version $HEAD$
      */
     class PersistentErrorRefinementFunctor : public RefinementFunctor {
       public:

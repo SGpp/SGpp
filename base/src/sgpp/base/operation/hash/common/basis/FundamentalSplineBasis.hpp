@@ -398,7 +398,9 @@ namespace SGPP {
         }
 
       protected:
+        /// B-spline coefficients
         std::vector<float_t> coefficients;
+        /// B-spline basis
         BsplineBasis<LT, IT> bsplineBasis;
     };
 

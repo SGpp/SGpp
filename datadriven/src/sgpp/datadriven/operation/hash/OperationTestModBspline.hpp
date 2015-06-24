@@ -21,7 +21,6 @@ namespace SGPP {
     /**
      * This class implements OperationTest for a grids with modified bspline basis functions with a certain degree
      *
-     * @version $HEAD$
      */
     class OperationTestModBspline : public OperationTest {
       public:

@@ -14,6 +14,9 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
+      /**
+       * CMAES method for unconstrained optimization.
+       */
       class CMAES : public UnconstrainedOptimizer {
         public:
           // TODO

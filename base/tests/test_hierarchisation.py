@@ -1,405 +1,287 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
-import re
-from pysgpp import DataVector, createOperationEval, createOperationHierarchisation, cvar
+import pysgpp
 
 #-------------------------------------------------------------------------------
-## tests the correctness of the hierarchisation and dehierachisation
+# # tests the correctness of the hierarchisation and dehierachisation
 # @param node1 the vector of the node base values before hierarchisation and dehierarchisation
 # @param node2 the vector of the node base values after hierarchisation and dehierarchisation
 # @return maximum error during the transformations
 def testHierarchisationResults(node1, node2):
-    error = 0.0
-    
-    for i in xrange(len(node1)):
-        if abs(abs(node1[i])-abs(node2[i])) > error:
-            error = abs(abs(node1[i])-abs(node2[i]))
-            
-    return error
+  error = 0.0
+
+  for i in xrange(len(node1)):
+    if abs(node1[i] - node2[i]) > error:
+      error = abs(node1[i] - node2[i])
+
+  return error
 
 
 #-------------------------------------------------------------------------------
-## Hierarchise and dechierarchise a regular sparse grid for a given function and test.
+# # Hierarchise and dechierarchise a regular sparse grid for a given function and test.
 # @param obj reference to unittest
 # @param grid the grid object
 # @param level the number of levels used in the grid
 # @param function string of function which to use for test
-def testHierarchisationDehierarchisation(obj, grid, level, function):
-    node_values = None
-    node_values_back = None
-    alpha = None
-    points = None
-    p = None
+def testHierarchisationDehierarchisation(obj, grid, level, function,
+                                         evalOp=None):
+  places = 7 if pysgpp.cvar.USING_DOUBLE_PRECISION else 4
 
-    places = 7 if cvar.USING_DOUBLE_PRECISION else 4
+  # generate a regular test grid
+  generator = grid.createGridGenerator()
+  generator.regular(level)
 
-    # generate a regular test grid
-    generator = grid.createGridGenerator()
-    generator.regular(level)
+  storage = grid.getStorage()
+  dim = storage.dim()
 
-    storage = grid.getStorage()
-    dim = storage.dim()
+  # generate the node_values vector
+  node_values = pysgpp.DataVector(storage.size())
+  for n in xrange(storage.size()):
+    points = storage.get(n).getCoordsString().split()
+    node_values[n] = evalFunction(function, points)
 
-    # generate the node_values vector
-    node_values = DataVector(storage.size())
-    for n in xrange(storage.size()):
-        points = storage.get(n).getCoordsString().split()
-        node_values[n] = evalFunction(function, points)
+  # do hierarchisation
+  alpha = doHierarchisation(node_values, grid)
 
-    # do hierarchisation
-    alpha = doHierarchisation(node_values, grid)
+  # test hierarchisation
+  p = pysgpp.DataVector(storage.dim())
+  if evalOp is None:
+    evalOp = pysgpp.createOperationEval(grid)
+  for n in xrange(storage.size()):
+    storage.get(n).getCoords(p)
+    obj.assertAlmostEqual(evalOp.eval(alpha, p), node_values[n],
+                places=places)
 
-    # test hierarchisation
-    p = DataVector(storage.dim())
-    evalOp = createOperationEval(grid)
-    for n in xrange(storage.size()):
-        storage.get(n).getCoords(p)
-        obj.assertAlmostEqual(evalOp.eval(alpha, p), node_values[n],
-                              places=places)
-        
-    # do dehierarchisation
-    node_values_back = doDehierarchisation(alpha, grid)
+  # do dehierarchisation
+  node_values_back = doDehierarchisation(alpha, grid)
 
-    # test dehierarchisation
-    obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
-                          0.0, places=places)
+  # test dehierarchisation
+  obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
+              0.0, places=places)
 
 #-------------------------------------------------------------------------------
-## Hierarchise and dechierarchise a regular sparse grid for a given function and test
+# # Hierarchise and dechierarchise a regular sparse grid for a given function and test
 # Difference from the function above is the getCoordsStretching function usage.
 # @param obj reference to unittest
 # @param grid the grid object
 # @param level the number of levels used in the grid
 # @param function string of function which to use for test
 def testHierarchisationDehierarchisationStretching(obj, grid, level, function):
-    node_values = None
-    node_values_back = None
-    alpha = None
-    points = None
-    p = None
+  places = 7 if pysgpp.cvar.USING_DOUBLE_PRECISION else 4
 
-    places = 7 if cvar.USING_DOUBLE_PRECISION else 4
+  # generate a regular test grid
+  generator = grid.createGridGenerator()
+  generator.regular(level)
 
-    # generate a regular test grid
-    generator = grid.createGridGenerator()
-    generator.regular(level)
+  storage = grid.getStorage()
+  dim = storage.dim()
+  stretch = storage.getStretching()
+  # generate the node_values vector
+  node_values = pysgpp.DataVector(storage.size())
+  for n in xrange(storage.size()):
+    points = storage.get(n).getCoordsStringStretching(stretch).split()
+    node_values[n] = evalFunction(function, points)
 
-    storage = grid.getStorage()
-    dim = storage.dim()
-    stretch= storage.getStretching()
-    # generate the node_values vector
-    node_values = DataVector(storage.size())
-    for n in xrange(storage.size()):
-        points = storage.get(n).getCoordsStringStretching(stretch).split()
-        node_values[n] = evalFunction(function, points)
+  # do hierarchisation
+  alpha = doHierarchisation(node_values, grid)
 
-    # do hierarchisation
-    alpha = doHierarchisation(node_values, grid)
+  # test hierarchisation
+  p = pysgpp.DataVector(storage.dim())
+  evalOp = pysgpp.createOperationEval(grid)
+  for n in xrange(storage.size()):
+    storage.get(n).getCoordsStretching(p, stretch)
+    obj.assertAlmostEqual(evalOp.eval(alpha, p), node_values[n],
+                places=places)
 
-    # test hierarchisation
-    p = DataVector(storage.dim())
-    evalOp = createOperationEval(grid)
-    for n in xrange(storage.size()):
-        storage.get(n).getCoordsStretching(p,stretch)
-        obj.assertAlmostEqual(evalOp.eval(alpha, p), node_values[n],
-                              places=places)
-        
-    # do dehierarchisation
-    node_values_back = doDehierarchisation(alpha, grid)
+  # do dehierarchisation
+  node_values_back = doDehierarchisation(alpha, grid)
 
-    # test dehierarchisation
-    obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
-                          0.0, places=places)
+  # test dehierarchisation
+  obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
+              0.0, places=places)
 
 #-------------------------------------------------------------------------------
-## hierarchisation of the node base values on a grid
+# # hierarchisation of the node base values on a grid
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
-def doHierarchisation(node_values, grid):   
-    tmp = DataVector(node_values)
-    
-    # create operation: hierarchisation
-    hierarchisation = createOperationHierarchisation(grid)
-    
-    # execute hierarchisation
-    hierarchisation.doHierarchisation(tmp)    
-
-    return tmp
+def doHierarchisation(node_values, grid):
+  alpha = pysgpp.DataVector(node_values)
+  hierarchisation = pysgpp.createOperationHierarchisation(grid)
+  hierarchisation.doHierarchisation(alpha)
+  return alpha
 
 
 #-------------------------------------------------------------------------------
-## hierarchisation of the node base values on a grid
+# # hierarchisation of the node base values on a grid
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
 # @param grid thee grid matching to the alpha vector
 def doDehierarchisation(alpha, grid):
-    tmp =  DataVector(grid.getStorage().size())
-    
-    for i in xrange(len(alpha)):
-        tmp[i] = alpha[i]
-         
-    # create operation: hierarchisation
-    hierarchisation = createOperationHierarchisation(grid)
-    
-    # execute hierarchisation
-    hierarchisation.doDehierarchisation(tmp)
-    
-    return tmp
+  node_values = pysgpp.DataVector(alpha)
+  hierarchisation = pysgpp.createOperationHierarchisation(grid)
+  hierarchisation.doDehierarchisation(node_values)
+  return node_values
 
 
-## evalutes a given function
+# # evalutes a given function
 # @param function a string the gives the function; x1...xn must be the names of the placeholders
 # @param points sorted list of the coordinates (x1...xn) of evaluation point
 # @return returns the function value at points
 def evalFunction(function, points):
-    for i in xrange(len(points)):
-        function = re.sub("x" + str(i+1), points[i], function)
-            
-    return eval(function)
+  for i in xrange(len(points) - 1, -1, -1):
+    function = function.replace("x{}".format(i + 1), points[i])
+
+  return eval(function)
 
 
-## build parable test function over [0,1]^d
-# @param dim dimension of the parable's space
+# # build parabola test function over [0,1]^d
+# @param dim dimension of the parabola's space
 # @return returns a string that contains the function as string
-def buildParable(dim):
-    function = ""
-    
-    function = str(pow(4.0,dim))
-    
-    for i in xrange(dim):
-        function = function + "*x" + str(i+1) + "*(1-" + "x" + str(i+1) + ")"
-        
-    return function 
-    
-    
-## build parable test function over [0,1]^d with boundaries
-# @param dim dimension of the parable's space
+def buildParabola(dim):
+  function = str(pow(4.0, dim))
+
+  for i in xrange(dim):
+    function += "*x{0}*(1-x{0})".format(i + 1)
+
+  return function
+
+
+# # build parabola test function over [0,1]^d with boundaries
+# @param dim dimension of the parabola's space
 # @return returns a string that contains the function as string
-def buildParableBoundary(dim):
-    function = ""
-    
-    function = "1.0"
-    
-    for i in xrange(dim):
-        function = function + "*((0.25*(x" + str(i+1) + "-0.7)*(x" + str(i+1) + "-0.7))+2.0)"
-        
-    return function 
+def buildParabolaBoundary(dim):
+  function = "1.0"
+
+  for i in xrange(dim):
+    function += "*((0.25*(x{0}-0.7)*(x{0}-0.7))+2.0)".format(i + 1)
+
+  return function
 
 
-class TestHierarchisationLinear(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D, LinearGrid
-    def testHierarchisation1D(self):
-        from pysgpp import Grid
-        
-        dim = 1
-        level = 5
-        function = buildParable(dim)
-        grid = Grid.createLinearGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+class TestHierarchisation(unittest.TestCase):
+  def testHierarchisationLinear(self):
+    level = 5
 
-  
-    ##
-    # Test regular sparse grid dD, LinearGrid
-    def testHierarchisationD(self):
-        from pysgpp import Grid
-        
-        dim = 3
-        level = 5
-        function = buildParable(dim)
-        grid = Grid.createLinearGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
-        
-class TestHierarchisationModLinear(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D
-    def testHierarchisation1DModLinear(self):
-        from pysgpp import Grid
-        
-        dim = 1
-        level = 5
-        function = buildParable(dim)
-        grid = Grid.createModLinearGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+    for dim in [1, 3]:
+      function = buildParabola(dim)
+      grid = pysgpp.Grid.createLinearGrid(dim)
+      testHierarchisationDehierarchisation(self, grid, level, function)
 
-  
-    ##
-    # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDModLinear(self):
-        from pysgpp import Grid
-        
-        dim = 3
-        level = 5
-        function = buildParable(dim)
-        grid = Grid.createModLinearGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
-      
+  def testHierarchisationModLinear(self):
+    level = 5
 
-class TestHierarchisationModLinearWithBoundary(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D
-    def testHierarchisation1DModLinearWithBoundary(self):
-        from pysgpp import Grid
-        
-        dim = 1
-        level = 5
-        function = buildParableBoundary(dim)
-        grid = Grid.createModLinearGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+    for dim in [1, 3]:
+      function = buildParabola(dim)
+      grid = pysgpp.Grid.createModLinearGrid(dim)
+      testHierarchisationDehierarchisation(self, grid, level, function)
 
-  
-    ##
-    # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDModLinearWithBoundary(self):
-        from pysgpp import Grid
+  def testHierarchisationModLinearWithBoundary(self):
+    level = 5
 
-        dim = 3
-        level = 5
-        function = buildParableBoundary(dim)
-        grid = Grid.createModLinearGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+    for dim in [1, 3]:
+      function = buildParabolaBoundary(dim)
+      grid = pysgpp.Grid.createModLinearGrid(dim)
+      testHierarchisationDehierarchisation(self, grid, level, function)
 
-        
-class TestHierarchisationLinearTruncatedBoundary(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D
-    def testHierarchisation1DTruncatedBoundary(self):
-        from pysgpp import Grid
-        
-        dim = 1
-        level = 5
-        function = buildParableBoundary(dim)
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+  def testHierarchisationTruncatedBoundary(self):
+    level = 5
 
+    for dim in [1, 3]:
+      function = buildParabolaBoundary(dim)
+      grid = pysgpp.Grid.createLinearTruncatedBoundaryGrid(dim)
+      testHierarchisationDehierarchisation(self, grid, level, function)
 
-    ##
-    # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDTruncatedBoundary(self):
-        from pysgpp import Grid
-        
-        dim = 3
-        level = 5
-        function = buildParableBoundary(dim)
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+  def testHierarchisationBoundary(self):
+    level = 5
 
-        
-class TestHierarchisationLinearBoundary(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D
-    def testHierarchisation1DBoundary(self):
-        from pysgpp import Grid
-        
-        dim = 1
-        level = 5
-        function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+    for dim in [1, 3]:
+      function = buildParabolaBoundary(dim)
+      grid = pysgpp.Grid.createLinearBoundaryGrid(dim)
+      testHierarchisationDehierarchisation(self, grid, level, function)
 
-  
-    ##
-    # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationDBoundary(self):
-        from pysgpp import Grid
-        
-        dim = 3
-        level = 5
-        function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+  def testHierarchisationStretchedTruncatedBoundary1D(self):
+    dim = 1
+    level = 5
+    function = buildParabolaBoundary(dim)
+    str1d = pysgpp.Stretching1D()
+    str1d.type = 'log'
+    str1d.x_0 = 0
+    str1d.xsi = 10
+    dimBound = pysgpp.DimensionBoundary()
+    dimBound.leftBoundary = 0.00001
+    dimBound.rightBoundary = 1
+    stretch = pysgpp.Stretching(1, dimBound, str1d)
 
-class TestHierarchisationLinearStretchedTruncatedBoundary(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D
-    def testHierarchisation1DLinearStretchedTruncatedBoundary(self):
-        from pysgpp import Grid
-	from pysgpp import Stretching, Stretching1D, DimensionBoundary
+    grid = pysgpp.Grid.createLinearStretchedTruncatedBoundaryGrid(1)
+    grid.getStorage().setStretching(stretch)
 
-        
-        dim = 1
-        level = 5
-        function = buildParableBoundary(dim)
-	str1d = Stretching1D()
-	str1d.type='log'
-	str1d.x_0=0
-	str1d.xsi=10
-	dimBound = DimensionBoundary() 
-	dimBound.leftBoundary=0.00001
-	dimBound.rightBoundary=1
-	stretch=Stretching(1,dimBound,str1d)
+    testHierarchisationDehierarchisationStretching(self, grid, level, function)
 
-        grid = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
-	grid.getStorage().setStretching(stretch)
+  def testHierarchisationStretchedTruncatedBoundaryD(self):
+    str1d = pysgpp.Stretching1D()
+    str1d.type = 'sinh'
+    str1d.x_0 = 1
+    str1d.xsi = 10
+    dimBound = pysgpp.DimensionBoundary()
+    dimBound.leftBoundary = 0.001
+    dimBound.rightBoundary = 1
 
-        testHierarchisationDehierarchisationStretching(self, grid, level, function)
+    dim = 3
+    level = 5
 
+    dimBoundVector = pysgpp.DimensionBoundaryVector(3)
+    dimBoundVector[0] = dimBound
+    dimBoundVector[1] = dimBound
+    dimBoundVector[2] = dimBound
 
-    ##
-    # Test regular sparse grid dD, stretched hat basis functions.
-    def testHierarchisationDLinearStretchedTruncatedBoundary(self):
-        from pysgpp import Grid
-        from pysgpp import Stretching, Stretching1D, DimensionBoundary
-	from pysgpp import Stretching1DVector, DimensionBoundaryVector
+    str1dVector = pysgpp.Stretching1DVector(3)
+    str1dVector[0] = str1d
+    str1dVector[1] = str1d
+    str1dVector[2] = str1d
 
-	str1d = Stretching1D()
-	str1d.type='sinh'
-	str1d.x_0=1
-	str1d.xsi=10
-	dimBound = DimensionBoundary() 
- 	dimBound.leftBoundary=0.001
-	dimBound.rightBoundary=1
+    stretch = pysgpp.Stretching(dim, dimBoundVector, str1dVector)
 
-        dim = 3
-        level = 5
+    function = buildParabolaBoundary(dim)
+    grid = pysgpp.Grid.createLinearStretchedTruncatedBoundaryGrid(dim)
+    grid.getStorage().setStretching(stretch)
 
-	dimBoundVector = DimensionBoundaryVector(3)
-	dimBoundVector[0]=dimBound
-	dimBoundVector[1]=dimBound
-	dimBoundVector[2]=dimBound
+    testHierarchisationDehierarchisationStretching(self, grid, level, function)
 
-	str1dVector=Stretching1DVector(3)
-	str1dVector[0]=str1d
-	str1dVector[1]=str1d
-	str1dVector[2]=str1d
+  def testHierarchisationPrewavelet(self):
+    level = 5
 
-	stretch = Stretching(dim, dimBoundVector, str1dVector)
+    for dim in [1, 3]:
+      function = buildParabola(dim)
+      grid = pysgpp.Grid.createPrewaveletGrid(dim)
+      testHierarchisationDehierarchisation(self, grid, level, function)
 
-        function = buildParableBoundary(dim)
-        grid = Grid.createLinearStretchedTruncatedBoundaryGrid(dim)
-	grid.getStorage().setStretching(stretch)
-	
-        testHierarchisationDehierarchisationStretching(self, grid, level, function)
+  def testHierarchisationFundamentalSpline(self):
+    level = 5
 
-        
+    for dim in [1, 3]:
+      function = buildParabola(dim)
 
-class TestHierarchisationPrewavelet(unittest.TestCase):
-    ##
-    # Test hierarchisation for 1D
-    def testHierarchisation1D(self):
-        from pysgpp import Grid
-        
-        dim = 1
-        level = 5
-        function = buildParable(dim)
-        grid = Grid.createPrewaveletGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
+      for degree in [1, 3, 5]:
+        grid = pysgpp.Grid.createFundamentalSplineGrid(dim, degree)
+        evalOp = pysgpp.createOperationNaiveEval(grid)
+        testHierarchisationDehierarchisation(self, grid, level, function,
+                                             evalOp)
 
-  
-    ##
-    # Test regular sparse grid dD, normal hat basis functions.
-    def testHierarchisationD(self):
-        from pysgpp import Grid
-        
-        dim = 3
-        level = 5
-        function = buildParable(dim)
-        grid = Grid.createPrewaveletGrid(dim)
-        testHierarchisationDehierarchisation(self, grid, level, function)
-        
-# Run tests for this file if executed as application 
-if __name__=='__main__':
-    unittest.main()
+  def testHierarchisationModFundamentalSpline(self):
+    level = 5
+
+    for dim in [1, 3]:
+      function = buildParabola(dim)
+
+      for degree in [1, 3, 5]:
+        grid = pysgpp.Grid.createModFundamentalSplineGrid(dim, degree)
+        evalOp = pysgpp.createOperationNaiveEval(grid)
+        testHierarchisationDehierarchisation(self, grid, level, function,
+                                             evalOp)
+
+# Run tests for this file if executed as application
+if __name__ == '__main__':
+  unittest.main()

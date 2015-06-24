@@ -38,6 +38,7 @@ namespace SGPP {
                   base::DataMatrix& gradient) {}
     };
 
+    /// instance of EmptyConstraintGradient
     extern EmptyConstraintGradient emptyConstraintGradient;
 
   }

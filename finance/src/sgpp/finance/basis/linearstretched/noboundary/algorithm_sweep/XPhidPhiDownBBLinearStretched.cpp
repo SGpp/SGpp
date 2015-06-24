@@ -47,14 +47,14 @@ namespace SGPP {
       float_t fm =  (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fl, fm);
 
         }
 
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fm, fr);

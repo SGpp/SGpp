@@ -20,7 +20,6 @@ namespace SGPP {
     /**
      * This class implements OperationEval for a grids with modified Bspline basis functions with a certain degree
      *
-     * @version $HEAD$
      */
     class OperationEvalModBspline : public OperationEval {
       public:

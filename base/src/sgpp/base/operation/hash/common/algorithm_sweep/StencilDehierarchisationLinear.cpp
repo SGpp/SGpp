@@ -49,14 +49,14 @@ namespace SGPP {
       // recursive calls for the right and left side of the current node
       if (index.hint() == false) {
         // descend left
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, seql, seqm);
         }
 
         // descend right
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, seqm, seqr);

@@ -17,29 +17,72 @@
 namespace SGPP {
   namespace base {
 
+    /**
+     * Grid with modified fundamental spline basis functions
+     * @todo (pflueged) include for factory exception is missing in several classes which use it. It only works, as it is include by a header loaded previously.
+     */
     class ModFundamentalSplineGrid : public Grid {
       protected:
+        /**
+         * This constructor creates a new GridStorage out of the stream.
+         *
+         * @param istr inputstream that contains the grid information
+         */
         ModFundamentalSplineGrid(std::istream& istr);
 
       public:
+        /**
+         * Constructor of grid with modified fundamental spline basis functions
+         *
+         * @param dim the dimension of the grid
+         * @param degree fundamental spline degree
+         */
         ModFundamentalSplineGrid(size_t dim, size_t degree);
 
+        /**
+         * Destructor.
+         */
         virtual ~ModFundamentalSplineGrid();
 
+        /**
+         * @return string that identifies the grid type uniquely
+         */
         virtual const char* getType();
 
+        /**
+         * @return fundamental spline basis
+         */
         virtual const SBasis& getBasis();
 
+        /**
+         * @return pointer to a GridGenerator object
+         */
         virtual GridGenerator* createGridGenerator();
 
+        /**
+         * reads a grid out of a string
+         *
+         * @param istr string that contains the grid information
+         * @return grid
+         */
         static Grid* unserialize(std::istream& istr);
 
+        /**
+         * Serializes the grid.
+         *
+         * @param ostr stream to which the grid is written
+         */
         virtual void serialize(std::ostream& ostr);
+
+        /**
+         * @return B-spline degree
+         */
         virtual size_t getDegree();
 
       protected:
+        /// fundamental spline degree
         size_t degree;
-
+        /// fundamental spline basis
         const SFundamentalSplineModifiedBase* basis_;
     };
 

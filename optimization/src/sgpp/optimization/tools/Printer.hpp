@@ -27,6 +27,7 @@ namespace SGPP {
      *
      * @param stream    output stream
      * @param x         vector
+     * @return          stream
      */
     template <class T>
     inline std::ostream& operator<<(std::ostream& stream,
@@ -43,6 +44,7 @@ namespace SGPP {
      *
      * @param stream    output stream
      * @param x         vector
+     * @return          stream
      */
     inline std::ostream& operator<<(std::ostream& stream,
                                     const base::DataVector& x) {
@@ -58,6 +60,7 @@ namespace SGPP {
      *
      * @param stream    output stream
      * @param x         pointer to grid point
+     * @return          stream
      */
     inline std::ostream& operator<<(std::ostream& stream,
                                     SGPP::base::GridIndex& x) {

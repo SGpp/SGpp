@@ -34,7 +34,6 @@ namespace SGPP {
      * the non-diagonal elements must be multiplied by 2
      * before executing this Up/down scheme!
      *
-     * @version $HEAD$
      */
     class UpDownTwoOpDims: public SGPP::base::OperationMatrix {
       public:

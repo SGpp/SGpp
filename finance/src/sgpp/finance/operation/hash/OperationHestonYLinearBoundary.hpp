@@ -19,7 +19,6 @@ namespace SGPP {
      * the solve the multidimensional Heston
      * equation.
      *
-     * @version $HEAD$
      */
     class OperationHestonYLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
       public:

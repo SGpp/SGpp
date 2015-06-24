@@ -30,6 +30,8 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationPrewavelet.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModBspline.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationModWavelet.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationModFundamentalSpline.hpp>
 
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureLinear.hpp>
@@ -154,6 +156,12 @@ namespace SGPP {
       } else if (strcmp(grid.getType(), "prewavelet") == 0 ) {
         return new base::OperationHierarchisationPrewavelet(grid.getStorage(),
                ((base::PrewaveletGrid*) &grid)->getShadowStorage());
+      } else if (strcmp(grid.getType(), "fundamentalSpline") == 0 ) {
+        return new base::OperationHierarchisationFundamentalSpline(
+                 dynamic_cast<base::FundamentalSplineGrid*>(&grid));
+      } else if (strcmp(grid.getType(), "modFundamentalSpline") == 0 ) {
+        return new base::OperationHierarchisationModFundamentalSpline(
+                 dynamic_cast<base::ModFundamentalSplineGrid*>(&grid));
       }
       //    else if(strcmp(grid.getType(), "modBspline") == 0 )
       //      {

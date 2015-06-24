@@ -3,16 +3,31 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * Java example for SGPP::optimization.
+ */
 public class java_example {
+  /**
+   * Prints a separator line.
+   */
   static void printLine() {
     System.out.println("----------------------------------------" +
                        "----------------------------------------");
   }
 
+  /**
+   * @param number
+   * @return number formatted as string
+   */
   static String numToStr(double number) {
     return new java.text.DecimalFormat("#.#####").format(number);
   }
 
+  /**
+   * Main method.
+   * 
+   * @param args ignored
+   */
   public static void main(String[] args) {
     // load jsgpp
     sgpp.LoadJSGPPLib.loadJSGPPLib();
@@ -75,9 +90,9 @@ public class java_example {
     printLine();
     System.out.println("Optimizing smooth interpolant...\n");
     sgpp.OptInterpolantFunction ft =
-        new sgpp.OptInterpolantFunction(d, grid, coeffs);
+        new sgpp.OptInterpolantFunction(grid, coeffs);
     sgpp.OptInterpolantGradient ftGradient =
-        new sgpp.OptInterpolantGradient(d, grid, coeffs);
+        new sgpp.OptInterpolantGradient(grid, coeffs);
     sgpp.OptGradientDescent gradientMethod =
         new sgpp.OptGradientDescent(ft, ftGradient);
     sgpp.DataVector x0 = new sgpp.DataVector(d);
