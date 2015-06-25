@@ -38,6 +38,7 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
   std::string fileName = "debugging.arff";
+  //std::string fileName = "debugging_small.arff";
 
   uint32_t level = 3;
 
@@ -50,9 +51,19 @@ int main(int argc, char** argv) {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
   configuration.type =
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE;
   configuration.subType =
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
+
+  if ( argc == 2 )
+  {
+    if ( strcmp(argv[1], "streaming" ) == 0 )
+  	{
+      configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+      std::cout << "EvalType::STREAMING" << std::endl;
+  	}
+  }
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

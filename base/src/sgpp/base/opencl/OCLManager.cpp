@@ -59,6 +59,19 @@ namespace SGPP {
           }
         }
 
+        char version_info[128] = { 0 };
+        err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VERSION, 128 * sizeof(char), version_info, nullptr);
+
+        if (CL_SUCCESS != err) {
+          std::stringstream errorString;
+          errorString << "OCL Error: Can't get platform version!" << std::endl;
+          throw SGPP::base::operation_exception(errorString.str());
+        } else {
+          if (version_info != nullptr && verbose) {
+            std::cout << "OCL Info: Platform " << ui << " version: " << version_info << std::endl;
+          }
+        }
+
         char platform_name[128] = { 0 };
         err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_NAME, 128 * sizeof(char), platform_name, nullptr);
 

@@ -25,11 +25,17 @@ protected:
   base::OCLConfigurationParameters parameters;
   T *kernelDataset = nullptr;
   size_t datasetSize = 0;
-  /// Member to store the sparse grid's levels for better vectorization
-  T* level = nullptr;
+  /// Member to store the sparse grid's subspaces
+  //SubspaceInfo* subSpaces = nullptr;
+  std::map<uint32_t, std::vector<uint32_t>> subspaceMap;
+
+  T* levels = nullptr;
+  T* indices = nullptr;
+  T* alphas = nullptr;
   /// Member to store the sparse grid's indices for better vectorization
   T* index = nullptr;
   size_t gridSize = 0;
+  size_t numSubspaces = 0;
   /// Timer object to handle time measurements
   SGPP::base::SGppStopwatch myTimer;
 
@@ -50,6 +56,7 @@ public:
     this->kernel = new AdaptiveOCLKernelImpl<T>(dims, *(this->manager), parameters);
 
     this->storage = grid.getStorage();
+    this->gridSize = grid.getSize();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
     this->datasetSize = this->preparedDataset.getNcols();
@@ -69,9 +76,6 @@ public:
   }
 
   ~OperationMultiEvalAdaptiveOCL() {
-    if (this->level != nullptr) {
-      delete this->level;
-    }
 
     if (this->index != nullptr) {
       delete this->index;
@@ -98,14 +102,16 @@ public:
     for (size_t i = alpha.getSize(); i < this->gridSize; i++) {
       alphaArray[i] = 0.0;
     }
+    this->alphas = alphaArray;
+    recalculateLevelAndIndex();
 
     T *resultArray = new T[this->datasetSize];
     for (size_t i = 0; i < this->datasetSize; i++) {
       resultArray[i] = 0.0;
     }
 
-    this->kernel->mult(this->level, this->index, this->gridSize, this->kernelDataset, this->datasetSize, alphaArray,
-        resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+    this->kernel->mult(this->levels, this->indices, this->gridSize, this->kernelDataset, this->datasetSize, this->alphas,
+        resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces);
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
@@ -129,18 +135,22 @@ public:
     T *sourceArray = new T[this->datasetSize];
     for (size_t i = 0; i < source.getSize(); i++) {
       sourceArray[i] = (T) source[i];
+      //printf("source: %f \n", sourceArray[i]);
     }
     for (size_t i = source.getSize(); i < this->datasetSize; i++) {
       sourceArray[i] = 0.0;
+      //printf("source: %f \n", sourceArray[i]);
     }
+    this->alphas = sourceArray;
+    recalculateLevelAndIndex();
 
     T *resultArray = new T[this->gridSize];
     for (size_t i = 0; i < this->gridSize; i++) {
       resultArray[i] = 0.0;
     }
 
-    this->kernel->multTranspose(this->level, this->index, this->gridSize, this->kernelDataset,
-        this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+    this->kernel->multTranspose(this->levels, this->indices, this->gridSize, this->kernelDataset,
+        this->preparedDataset.getNcols(), this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces);
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
@@ -188,9 +198,37 @@ private:
     return dataset.getNrows();
   }
 
+  uint32_t flattenLevel(size_t dims, uint32_t* level , size_t maxLevel) {
+      uint32_t levelFlat = 0;
+
+      levelFlat += level[dims - 1];
+
+      // loop terminates at -1
+      for (int i = static_cast<int>(dims - 2); i >= 0; i--) {
+        levelFlat *= static_cast<uint32_t>(maxLevel);
+        levelFlat += level[i];
+      }
+
+      return levelFlat;
+    }
+
+    uint32_t flattenIndex(size_t dim, uint32_t* maxIndices, uint32_t* index) {
+      uint32_t indexFlat = index[0];
+      indexFlat >>= 1;
+
+      for (size_t i = 1; i < dim; i++) {
+        uint32_t actualDirectionGridPoints = maxIndices[i];
+        actualDirectionGridPoints >>= 1;
+        indexFlat *= actualDirectionGridPoints;
+        uint32_t actualIndex = index[i];
+        actualIndex >>= 1; //divide index by 2, skip even indices
+        indexFlat += actualIndex;
+      }
+
+      return indexFlat;
+    }
+
   void recalculateLevelAndIndex() {
-    if (this->level != nullptr)
-      delete this->level;
 
     if (this->index != nullptr)
       delete this->index;
@@ -202,31 +240,98 @@ private:
     if (remainder != 0) {
       padding = localWorkSize - remainder;
     }
+
     this->gridSize = this->storage->size() + padding;
 
-    SGPP::base::DataMatrix *levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
-    SGPP::base::DataMatrix *indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
+    uint32_t maxLevel = (uint32_t)(this->storage->getMaxLevel());
+    uint32_t curLevel = 1;
+    uint32_t curIndex = 1;
 
-    this->storage->getLevelIndexArraysForEval(*levelMatrix, *indexMatrix);
+    std::map<uint32_t, std::vector<uint32_t> > flatLevelList;
+    flatLevelList.clear();
 
-    for (size_t i = this->storage->size(); i < this->gridSize; i++) {
-      for (size_t j = 0; j < this->storage->dim(); j++) {
-        levelMatrix->set(i, j, 1.0);
-        indexMatrix->set(i, j, 1.0);
+    this->numSubspaces = 0;
+
+    for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
+      SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+
+
+      uint32_t* level = new uint32_t[this->dims];
+      uint32_t* index = new uint32_t[this->dims];
+
+      for (size_t d = 0; d < this->dims; d++) {
+        point->get(d, curLevel, curIndex);
+        level[d] = curLevel;
+        index[d] = curIndex;
+      }
+
+      uint32_t flatLevel = flattenLevel(this->dims, level, maxLevel);
+      std::map<uint32_t, std::vector<uint32_t> >::iterator flatLevelEntry = flatLevelList.find(flatLevel);
+
+      if ( flatLevelEntry == flatLevelList.end() ) {
+        std::vector<uint32_t> indexList;
+
+        for (size_t d = 0; d < this->dims; d++) {
+          indexList.push_back(level[d]);
+        }
+
+        indexList.push_back((uint32_t)gridIndex);
+
+        for (size_t d = 0; d < this->dims; d++) {
+          indexList.push_back(index[d]);
+        }
+
+        flatLevelList.insert(std::make_pair(flatLevel, indexList));
+        this->numSubspaces += 1;
+      }
+      else {
+        flatLevelEntry->second.push_back((uint32_t)gridIndex);
+        for (size_t d = 0; d < this->dims; d++) {
+            flatLevelEntry->second.push_back(index[d]);
+        }
       }
     }
 
-    this->level = new T[this->gridSize * this->dims];
-    this->index = new T[this->gridSize * this->dims];
+//    flatLevelList.clear();
 
-    for (size_t i = 0; i < this->gridSize * this->dims; i++) {
-      this->level[i] = (T) (*levelMatrix)[i];
-      this->index[i] = (T) (*indexMatrix)[i];
+    this->levels = new T[(this->dims+1)*numSubspaces];
+    this->indices = new T[(this->dims+1)*this->gridSize];
+
+
+    size_t indexCounter = 0;
+    size_t levelCounter = 0;
+
+    for ( auto& kv : flatLevelList ) {
+      size_t numIndices = (kv.second.size() - this->dims)/(this->dims+1);
+
+      //store the number of corresponding indices in front of the level-vector
+      this->levels[(levelCounter*(this->dims+1))] = (T)(indexCounter + numIndices);
+
+
+      //read and store level
+      for ( int d = 0; d < this->dims; d++) {
+
+        this->levels[(levelCounter*(this->dims+1))+d+1] = (T)(kv.second[d]);
+      }
+      //read and store indices
+      for ( int i = 0; i < numIndices; i++) {
+
+        //store alpha index
+        T alpha_idx = (T)(kv.second[(this->dims) + (i*(this->dims+1))]);
+        this->indices[(indexCounter+i)*(this->dims +1)] = alpha_idx;
+
+        for ( int d = 0; d < this->dims; d++) {
+          T tmpVal = (T)(kv.second[(this->dims) + (i*(this->dims+1)) + d + 1]);
+          this->indices[(indexCounter+i)*(this->dims + 1) + d + 1] = tmpVal;
+        }
+      }
+
+      indexCounter += numIndices;
+      levelCounter += 1;
     }
 
-    delete levelMatrix;
-    delete indexMatrix;
   }
+
 };
 
 }
