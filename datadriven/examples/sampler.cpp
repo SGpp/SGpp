@@ -1,18 +1,22 @@
 #include <iostream>
-#include <string>
+#include <stdio.h>
+#include <string.h>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 int main(int argc, char** argv) {
 
+
   //  int maxLevel = 9;
   int maxLevel = 3;
 
-  //  std::string fileName = "debugging.arff";
+  //std::string fileName = "debugging.arff";
   std::string fileName = "friedman_4d.arff";
-  //  std::string fileName = "friedman2_90000.arff";
-  //  std::string fileName = "bigger.arff";
+  //std::string fileName = "friedman_10d.arff";
+  //std::string fileName = "DR5_train.arff";
+  //std::string fileName = "friedman2_90000.arff";
+  //std::string fileName = "bigger.arff";
 
   sg::base::RegularGridConfiguration gridConfig;
   sg::solver::SLESolverConfiguration SLESolverConfigRefine;
@@ -67,13 +71,27 @@ int main(int argc, char** argv) {
   //streaming ocl - 13
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-  configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-  configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+  configuration.type = SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE;
+  configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
+
+  if ( argc == 2 )
+  {
+    if ( strcmp(argv[1], "streaming" ) == 0 )
+    {
+      configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+      std::cout << "EvalType::STREAMING" << std::endl;
+    }
+  }
+
   //  learner.learn(configuration, fileName);
   //learner.learnReference(fileName);
 
   //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
+  SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
+  myStopwatch->start();
   learner.learnAndCompare(configuration, fileName, 8, 1.0);
+  std::cout << "Total time: " << myStopwatch->stop() << std::endl;
   //learner.writeStatisticsFile("statistics.csv", "test");
 
   return EXIT_SUCCESS;

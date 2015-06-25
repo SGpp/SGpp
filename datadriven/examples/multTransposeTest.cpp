@@ -44,21 +44,32 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
   std::string fileName = "debugging.arff";
+  //std::string fileName = "debugging_small.arff";
 
   uint32_t level = 3;
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 10;
+  adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
   configuration.type =
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE;
   configuration.subType =
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
+
+  if ( argc == 2 )
+  {
+    if ( strcmp(argv[1], "streaming" ) == 0 )
+    {
+      configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+      std::cout << "EvalType::STREAMING" << std::endl;
+    }
+  }
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -66,7 +77,7 @@ int main(int argc, char** argv) {
   SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
-  SGPP::base::Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 
