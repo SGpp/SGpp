@@ -103,7 +103,6 @@ def prepareDoxyfile(modules):
         for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy')):
             examplesFile.write('- @subpage ' + (os.path.split(subpage)[-1])[:-5] + '\n')
     examplesFile.write('**/\n')
-    examplesFile.close()
 
     # create module page
     modulesFile = open('base/doc/doxygen/modules.doxy', 'w')
