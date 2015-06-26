@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest, tools
@@ -8,19 +8,19 @@ from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
 # # Builds the training data vector
-# 
+#
 # @param data a list of lists that contains the points a the training data set, coordinate-wise
 # @return a instance of a DataVector that stores the training data
 def buildTrainingVector(data):
     from pysgpp import DataMatrix
     dim = len(data["data"])
     training = DataMatrix(len(data["data"][0]), dim)
-    
+
     # i iterates over the data points, d over the dimension of one data point
     for i in xrange(len(data["data"][0])):
         for d in xrange(dim):
             training.set(i, d, data["data"][d][i])
-    
+
     return training
 
 
@@ -29,23 +29,23 @@ def openFile(filename):
         data = tools.readDataARFF(filename)
     except:
         print ("An error occured while reading " + filename + "!")
-        
+
     if data.has_key("classes") == False:
         print ("No classes found in the given File " + filename + "!")
-        
+
     return data
 
 
 def generateBBTMatrix(factory, training, verbose=False):
     from pysgpp import DataVector, DataMatrix
     storage = factory.getStorage()
-       
+
     b = createOperationMultipleEval(factory, training)
-    
+
     alpha = DataVector(storage.size())
     erg = DataVector(len(alpha))
     temp = DataVector(training.getNrows())
-    
+
     # create B matrix
     m = DataMatrix(storage.size(), storage.size())
     for i in xrange(storage.size()):
@@ -58,7 +58,7 @@ def generateBBTMatrix(factory, training, verbose=False):
         b.multTranspose(temp, erg)
         # Sets the column in m
         m.setColumn(i, erg)
-        
+
     return m
 
 
@@ -69,10 +69,10 @@ def readReferenceMatrix(self, storage, filename):
         fd = tools.gzOpen(filename, 'r')
     except IOError, e:
         fd = None
-        
+
     if not fd:
         fd = tools.gzOpen('tests/' + filename, 'r')
-        
+
     dat = fd.read().strip()
     fd.close()
     dat = dat.split('\n')
@@ -91,15 +91,15 @@ def readReferenceMatrix(self, storage, filename):
 
 def readDataVector(filename):
     from pysgpp import DataVector
-    
+
     try:
         fin = tools.gzOpen(filename, 'r')
     except IOError, e:
         fin = None
-        
+
     if not fin:
         fin = tools.gzOpen('tests/' + filename, 'r')
-    
+
     data = []
     classes = []
     hasclass = False
@@ -112,14 +112,14 @@ def readDataVector(filename):
 
         if sline.startswith("@data"):
             break
-        
+
         if sline.startswith("@attribute"):
             value = sline.split()
             if value[1].startswith("class"):
                 hasclass = True
             else:
                 data.append([])
-    
+
     # read in the data stored in the ARFF file
     for line in fin:
         sline = line.strip()
@@ -132,7 +132,7 @@ def readDataVector(filename):
             values = values[:-1]
         for i in xrange(len(values)):
             data[i].append(float(values[i]))
-            
+
     # cleaning up and return
     fin.close()
     return {"data":data, "classes":classes, "filename":filename}
@@ -204,7 +204,7 @@ class TestOperationBBTModLinear(unittest.TestCase):
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createModLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
@@ -215,14 +215,14 @@ class TestOperationBBTModLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-  
+
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createModLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
@@ -233,14 +233,14 @@ class TestOperationBBTModLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-                
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD_one(self):  
+    def testHatRegulardD_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createModLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
@@ -251,14 +251,14 @@ class TestOperationBBTModLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
-  
-        
+        compareBBTMatrices(self, m, m_ref)
+
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createModLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
@@ -269,15 +269,15 @@ class TestOperationBBTModLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
-             
+        compareBBTMatrices(self, m, m_ref)
+
 
 class TestOperationBBTLinear(unittest.TestCase):
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
@@ -288,14 +288,14 @@ class TestOperationBBTLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-  
+
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
@@ -306,14 +306,14 @@ class TestOperationBBTLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-                
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD_one(self):  
+    def testHatRegulardD_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
@@ -324,14 +324,14 @@ class TestOperationBBTLinear(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
-  
-        
+        compareBBTMatrices(self, m, m_ref)
+
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
@@ -343,14 +343,14 @@ class TestOperationBBTLinear(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
-        
-        
+
+
 class TestOperationBBTPrewavelet(unittest.TestCase):
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testPrewavelet1D_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createPrewaveletGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
@@ -362,11 +362,11 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
-        
-        
+
+
     def testPrewavelet1D_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createPrewaveletGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
@@ -378,11 +378,11 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
-        
 
-    def testPrewaveletdD_one(self):  
+
+    def testPrewaveletdD_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createPrewaveletGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
@@ -394,11 +394,11 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
-        
-        
+
+
     def testPrewaveletdD_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createPrewaveletGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
@@ -410,17 +410,17 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
-        
-        
+
+
     def testPrewaveletAdaptivedD_two(self):
         from pysgpp import Grid, DataVector, SurplusRefinementFunctor
-        
+
         factory = Grid.createPrewaveletGrid(4)
         training = buildTrainingVector(readDataVector('data/data_dim_4_nops_4096_float.arff.gz'))
         level = 2
         gen = factory.createGridGenerator()
         gen.regular(level)
-        
+
         alpha = DataVector(factory.getStorage().size())
         for i in xrange(factory.getStorage().size()):
             alpha[i] = i + 1
@@ -431,14 +431,14 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
-             
+
 
 class TestOperationBBTLinearBoundary(unittest.TestCase):
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 4
@@ -449,14 +449,14 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-  
+
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
@@ -467,14 +467,14 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-                
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD_one(self):  
+    def testHatRegulardD_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
@@ -485,14 +485,14 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
-  
-        
+        compareBBTMatrices(self, m, m_ref)
+
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
@@ -503,15 +503,15 @@ class TestOperationBBTLinearBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref)     
-        
+        compareBBTMatrices(self, m, m_ref)
+
 
 class TestOperationBBTLinearTruncatedBoundary(unittest.TestCase):
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 4
@@ -522,14 +522,14 @@ class TestOperationBBTLinearTruncatedBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-  
+
     # #
     # Test laplace for regular sparse grid in 1d using linear hat functions
     def testHatRegular1D_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearTruncatedBoundaryGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
@@ -540,14 +540,14 @@ class TestOperationBBTLinearTruncatedBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
+        compareBBTMatrices(self, m, m_ref)
 
-                
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
-    def testHatRegulardD_one(self):  
+    def testHatRegulardD_one(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 2
@@ -558,14 +558,14 @@ class TestOperationBBTLinearTruncatedBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref) 
-  
-        
+        compareBBTMatrices(self, m, m_ref)
+
+
     # #
     # Test regular sparse grid dD, normal hat basis functions.
     def testHatRegulardD_two(self):
         from pysgpp import Grid
-        
+
         factory = Grid.createLinearTruncatedBoundaryGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
@@ -576,9 +576,9 @@ class TestOperationBBTLinearTruncatedBoundary(unittest.TestCase):
         m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
 
         # compare
-        compareBBTMatrices(self, m, m_ref)  
-        
-                                       
-# Run tests for this file if executed as application 
+        compareBBTMatrices(self, m, m_ref)
+
+
+# Run tests for this file if executed as application
 if __name__ == '__main__':
     unittest.main()
