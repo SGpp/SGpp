@@ -5,7 +5,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## @package tools
+# @package tools
 # @ingroup bin
 # @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief A collection of helper functions.

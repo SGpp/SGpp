@@ -167,11 +167,13 @@ env.Append(CPPPATH=['#/tools'])
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    # run tests
-    sys.path.append(os.getcwd() + '/lib/pysgpp/')
-    pythonpath = (os.environ['PYTHONPATH'] if 'PYTHONPATH' in os.environ else '') + os.pathsep + os.getcwd() + '/lib/pysgpp/'
-    ld_library_path = (os.environ['LD_LIBRARY_PATH'] if 'LD_LIBRARY_PATH' in os.environ else '') + os.pathsep +  os.getcwd() + '/lib/sgpp/' + os.pathsep +  os.getcwd() + '/lib/alglib/'
+    # set up paths (Only Tested on Ubuntu!)
+    # TODO consider using scons environment to achieve this!
+    pythonpath = os.environ.get('PYTHONPATH', '') + os.pathsep + os.getcwd() + '/lib/pysgpp/'
+    ld_library_path = os.environ.get('LD_LIBRARY_PATH', '') + os.pathsep +  os.getcwd() + '/lib/sgpp/' + os.pathsep +  os.getcwd() + '/lib/alglib/'
     exports = 'export PYTHONPATH=' + pythonpath + ' && export LD_LIBRARY_PATH=' + ld_library_path + ' && '
+
+    # do the actual thing
     builder = Builder(action=exports + "python $SOURCE.file", chdir=1)
     env.Append(BUILDERS={'Test' : builder})
     builder = Builder(action="python $SOURCE")
