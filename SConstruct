@@ -5,9 +5,7 @@
 
 import glob
 import SCons
-import fnmatch
 import os
-import sys
 import SGppConfigure
 
 from Helper import *
