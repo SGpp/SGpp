@@ -225,6 +225,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     env = config.Finish()
 
     # clear build_log file
-    logfile = open(env['CMD_LOGFILE'], 'a')
-    logfile.seek(0)
-    logfile.truncate()
+    with open(env['CMD_LOGFILE'], 'a') as logFile:
+        logFile.seek(0)
+        logFile.truncate()

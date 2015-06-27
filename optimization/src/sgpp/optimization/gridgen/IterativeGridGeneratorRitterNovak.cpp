@@ -287,7 +287,7 @@ namespace SGPP {
         refinement.free_refine(&gridStorage, &refineFunc);
 
         // new grid size
-        size_t newN = gridStorage.size();
+        const size_t newN = gridStorage.size();
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)
@@ -327,7 +327,7 @@ namespace SGPP {
         }
 
         // parallel evaluation of f in the new grid points
-        #pragma omp parallel shared(fX, currentN, newN, gridStorage) \
+        #pragma omp parallel shared(fX, currentN, gridStorage) \
         default(none)
         {
           base::DataVector x(d);
