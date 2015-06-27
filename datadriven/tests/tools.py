@@ -2,10 +2,10 @@
 
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## @package tools
+# @package tools
 # @ingroup bin
 # @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief A collection of helper functions.
@@ -21,10 +21,10 @@ SIMPLE = 0
 NOTAFILE = -1
 
 #-------------------------------------------------------------------------------
-## @brief A value pair is added to a dictionary's value entry. 
+## @brief A value pair is added to a dictionary's value entry.
 #
-# Each entry of the 
-# dictionary is a list. If the dictionary has no entry for key, [value] is 
+# Each entry of the
+# dictionary is a list. If the dictionary has no entry for key, [value] is
 # added. Otherwise value is appended to the list under key.
 # @param dict the dictionary
 # @param key the key
@@ -37,7 +37,7 @@ def appendToDict(dict, key, val):
 
 #-------------------------------------------------------------------------------
 ## @brief Opens a file. If the file ends with ".gz", automatically gzip compression
-# is used for the file. 
+# is used for the file.
 #
 # Returns the filedescriptor
 # @param filename file's filename
@@ -118,7 +118,7 @@ def writeStringToFile(s, filename, check=True):
 
 
 #-------------------------------------------------------------------------------
-## @brief Reads in (multidimensional) data from a delimiter separated data file. 
+## @brief Reads in (multidimensional) data from a delimiter separated data file.
 #
 # Last column is assumend to contain class values, if <tt>hasclass=True</tt>.
 # The data is stored in a dictionary, thus either
@@ -139,12 +139,12 @@ def readDataTrivial(filename, delim = None, hasclass = True):
         if sline.startswith("#") or len(sline) == 0:
             continue
 
-        # split and convert 
+        # split and convert
         values = sline.split(delim)
         values = map(lambda x: x.strip(), values)
         values = filter(lambda x: len(x) > 0, values)
         values = map(lambda x: float(x), values)
-        
+
         if hasclass:
             data.append(values[:-1])
             classes.append(values[-1])
@@ -182,12 +182,12 @@ def readDataARFF(filename):
 
         if sline.startswith("@data"):
             break
-        
+
         if sline.startswith("@attribute"):
             value = sline.split()
             if value[1].startswith("class"):
                 hasclass = True
-    
+
     #read in the data stored in the ARFF file
     for line in fin:
         sline = line.strip()
@@ -195,18 +195,18 @@ def readDataARFF(filename):
         if sline.startswith("%") or len(sline) == 0:
             continue
 
-        # split and convert 
+        # split and convert
         values = sline.split(",")
         values = map(lambda x: x.strip(), values)
         values = filter(lambda x: len(x) > 0, values)
         values = map(lambda x: float(x), values)
-        
+
         if hasclass:
             data.append(values[:-1])
             classes.append(values[-1])
         else:
             data.append(values)
-            
+
     # cleaning up and return
     fin.close()
     if hasclass:
@@ -231,11 +231,11 @@ def readData(filename):
     except Exception, e:
         print ("An error occured while reading " + filename + "!")
         raise e
-        
+
     if data.has_key("classes") == False:
         print ("No classes found in the given File " + filename + "!")
         sys.exit(1)
-        
+
     return data
 
 #-------------------------------------------------------------------------------
@@ -355,7 +355,7 @@ def writeGnuplotGrid(filename, grid):
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-## @brief Writes DataVector to arff file. 
+## @brief Writes DataVector to arff file.
 # If filename ends with ".gz", file is gzip-compressed.
 #
 # @param filename Filename of new file
@@ -364,12 +364,12 @@ def writeAlphaARFF(filename, alpha):
     fout = gzOpen(filename, "w")
     fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % filename)
     fout.write("@ATTRIBUTE alpha NUMERIC\n")
-    
+
     fout.write("\n@DATA\n")
-    
+
     for i in xrange(len(alpha)):
         fout.write("%1.20f\n" % alpha[i])
-    
+
     fout.close()
 
 #-------------------------------------------------------------------------------
@@ -437,13 +437,13 @@ def writeGrid(filename, grid):
 #-------------------------------------------------------------------------------
 ## @brief Unserialize a Grid from a file.
 #
-# @param filename Filename of file 
+# @param filename Filename of file
 # @return Grid
 def readGrid(filename):
     fin = gzOpen(filename, "r")
     text = fin.read()
     fin.close()
-    
+
     return Grid.unserialize(text)
 
 #-------------------------------------------------------------------------------
@@ -466,7 +466,7 @@ def writeCheckpoint(filename, grid, alpha, adaption = None, fold = None):
         fold_str = ".f%d" % (fold)
     writeAlphaARFF("%s%s%s.alpha.arff.gz" % (filename, fold_str, adapt_str), alpha)
     writeGrid("%s%s%s.grid.gz" % (filename, fold_str, adapt_str), grid)
-    
+
 #-------------------------------------------------------------------------------
 # perform split of dataset in num_partitions partitions for n-fold-cv
 # split data into folds,
@@ -498,7 +498,7 @@ def split_n_folds(data, num_partitions, seed=None):
             cvec[i][rowNum] = data["classes"][seq[index]]
             index += 1
         size_left = size_left-size_fold
-    
+
     return (dvec, cvec)
 
 
@@ -530,7 +530,7 @@ def writeStats(filename, txt, mode = "a"):
 def readCheckpoint(filename):
     alpha = readAlphaARFF(filename+".alpha.arff")
     grid = readGrid(filename+".grid")
-    
+
     return grid, alpha
 
 
@@ -556,7 +556,7 @@ def writeDataARFF(data, merge=False):
     # is data a dataset or is it a list of datasets?
     if isinstance(data, dict):
         data = [data]
-    
+
     hasHeader = False
     for dataset in data:
     	if hasHeader == False or merge == False:
@@ -569,11 +569,11 @@ def writeDataARFF(data, merge=False):
                 dim = dataset["data"].getNcols()
             else:
                 dim = len(dataset["data"])
-                   
+
             for i in xrange(dim):
                 fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
                 fstring = fstring + "%s,"
-           
+
             hasclass = False
             if dataset.has_key("classes"):
            	hasclass = True
@@ -581,10 +581,10 @@ def writeDataARFF(data, merge=False):
            	fstring = fstring + "%s"
             else:
            	fstring = fstring.strip(',')
-                
+
             fstring = fstring + "\n"
             fout.write("\n@DATA\n")
-        
+
         if isinstance(dataset["data"], DataMatrix):
             num_rows = dataset["data"].getNrows()
             for row in xrange(num_rows):
@@ -603,10 +603,10 @@ def writeDataARFF(data, merge=False):
                 if hasclass:
                     lout.append(dataset["classes"][row])
                 fout.write(fstring % tuple(lout))
-        
+
         if merge == False:
         	fout.close()
-    
+
     if merge == True:
         fout.close()
     return
@@ -620,10 +620,10 @@ def writeDataARFF(data, merge=False):
 def writeDataMaple(data, merge):
     if merge == True:
         print "Ignoring merge. Not implemented yet!"
-    
+
     if len(data) == 0:
         return
-    
+
     for dataset in data:
         s = ""
 
@@ -639,7 +639,7 @@ def writeDataMaple(data, merge):
         s = "X := Matrix([%s]);\n" %(s[:-2])
         s += "Y := Vector([%s]);\n" % (','.join(map(lambda l: str(l), lclass)))
 
-        # write out 
+        # write out
         fout = open(dataset["filename"]+".maple", "w")
         fout.write(s)
         fout.close()
@@ -685,7 +685,7 @@ def writeNormfile(filename, border, minvals, maxvals):
     s += "min:    %s\n" % (' '.join(map(lambda l: "%s"%l, minvals)))
     s += "max:    %s\n" % (' '.join(map(lambda l: "%s"%l, maxvals)))
     writeStringToFile(s, filename)
-    
+
 #-------------------------------------------------------------------------------
 ## @brief Reads information that is needed for the normalization of data from a file.
 #
@@ -713,7 +713,7 @@ def readNormfile(filename):
 ## @brief Normalize values of input vectors on the segment [0,1]
 #
 # @param data Dataset
-# @param border Specifies border of the dataset, will be added to the normalized value 
+# @param border Specifies border of the dataset, will be added to the normalized value
 # @param filename Filename of normfile (optional)
 # @param minvals Array of normalization boundary min values (one per dimension) (optional)
 # @param maxvals Array of normalization boundary max values (one per dimension) (optional)
@@ -723,7 +723,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
     if len(data) == 0:
         raise ValueError, "Wrong or no data."
     if minvals and maxvals:
-        if (len(minvals) <> data[0]["data"].getNcols() or 
+        if (len(minvals) <> data[0]["data"].getNcols() or
             len(maxvals) <> data[0]["data"].getNcols()):
             raise ValueError, "Wrong number of min- or max-values."
         lmin = minvals
@@ -757,9 +757,9 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
     if filename:
         if verbose: print "Writing normalization information to", filename
         writeNormfile(filename, border, lmin, lmax)
-    
+
     for dataset in data:
-        vec_tmp = DataVector(dataset["data"].getNrows())    
+        vec_tmp = DataVector(dataset["data"].getNrows())
         for dim in xrange(dataset["data"].getNcols()):
             # special handling for the case that all max==min, i.e. all
             # attribute values are equal: set to 0.5
@@ -771,7 +771,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
 		dataset["data"].getColumn(dim, vec_tmp)
 		for j in range(dataset["data"].getNrows()):
 		    vec_tmp[j] = (vec_tmp[j]-lmin[dim]) / ldelta[dim] + border
-                
+
                 dataset["data"].setColumn(dim, vec_tmp)
     return
 
@@ -779,8 +779,8 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
 #-------------------------------------------------------------------------------
 ## @brief Divides the class values in two categories
 #
-# @param data Dataset 
-# @param border Classes will be differentiated between greater and less then border 
+# @param data Dataset
+# @param border Classes will be differentiated between greater and less then border
 # @param minborder All classes under the minborder are processed as if they were over border
 # @param verbose Provide additional output
 def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1, verbose=False):
@@ -793,18 +793,18 @@ def normalizeClasses(data, border=0.0, minborder=-sys.maxint-1, verbose=False):
 #-------------------------------------------------------------------------------
 ## @brief Validates Dataset
 #
-# @param data Dataset 
+# @param data Dataset
 def checkData(data):
     if len(data) == 0:
     	print("No data loaded. Aborting!")
     	sys.exit(1)
 
     hasClasses = False
-    
+
     data_len = data[0]["data"].getNcols()
     if data[0].has_key("classes"):
     	hasClasses = True
-    
+
     for dataset in data:
     	if data_len != dataset["data"].getNcols():
     		print("Error! Can't merge data due to different amount of dimensions!")
@@ -812,7 +812,7 @@ def checkData(data):
     	if dataset.has_key("classes") != hasClasses:
     		print("Error! Can't merge data, because some files have classification data and some not!")
     		sys.exit(1)
-    		
+
     return
 
 
@@ -861,7 +861,7 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
             neg.append(i)
         else:
             pos.append(i)
-    
+
     # shuffel using seed
     random.seed(seed)
     random.shuffle(neg)
@@ -910,7 +910,7 @@ def split_DataVector_by_proportion(data, proportion):
     dv1 = DataVector(splitpoint, dim)
     dv2 = DataVector(size-splitpoint, dim)
     row = DataVector(1,dim)
-    
+
     # copy
     for i in xrange(splitpoint):
         data.getRow(i, row)
@@ -928,7 +928,7 @@ def split_DataVector_by_proportion(data, proportion):
 # @param classes DataVector with class values to split
 # @param proportion split into proportion, (1-proportion)
 # @return (data1, data2, classes1, classes2)
-def split_DataVectors_by_proportion_stratified(data, 
+def split_DataVectors_by_proportion_stratified(data,
                                                classes,
                                                proportion):
     proportion = float(proportion)
@@ -941,13 +941,13 @@ def split_DataVectors_by_proportion_stratified(data,
     cv1 = DataVector(splitpoint, 1)
     cv2 = DataVector(size-splitpoint, 1)
     row = DataVector(1,dim)
-    
+
     # get index ranges for stratification
     index_pos = [i for i in range(size) if classes[i]>=0]
     index_neg = [i for i in range(size) if classes[i]<0]
     index_pos_splitpoint = int(min(size-1, round(len(index_pos)*proportion)))
     index_neg_splitpoint = int(min(size-1, round(len(index_neg)*proportion)))
-    
+
     if (index_pos_splitpoint+index_neg_splitpoint > splitpoint):
         proportion_pos = len(index_pos)*proportion
         proportion_neg = len(index_neg)*proportion
@@ -996,7 +996,7 @@ CModes = {
     "rowsum" : "Sum of the rows of classical Laplacian. See OpLaplaceAdaptive",
     "hkmix": "H^k_mix norm; requires parameter Hk",
     "h0hklaplace" : "Pseudo-Laplace with H^k in one, and 'H^0' in the remaining dimensions each; requires paramer Hk"}
-    
+
 ## base function types
 base_types = {
 #    "linear" : {"base" : SLinearBase, "b" : SGridOperationB, "t" : test_dataset_linear, "laplace" : SGridOperationLaplace},
@@ -1017,7 +1017,7 @@ class Matrix:
         #val: base is obviously not used
         #self.base = base
         self.CMode = mode.lower()
-        
+
         if self.CMode == "laplace":
             self.C = createOperationLaplace(grid)
         elif self.CMode == "identity":
@@ -1062,21 +1062,21 @@ class Matrix:
             self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.HKMIX, Hk)
         elif self.CMode == "h0hklaplace":
             self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.H0HKLAPLACE, Hk)
-    
+
     def generateb(self, y):
         b = DataVector(self.grid.getStorage().size())
         self.B.multTranspose(y, b)
         return b
-    
+
     def ApplyMatrix(self, alpha, result):
         M = self.x.getNrows();
         temp = DataVector(M)
-    
+
         self.B.mult(alpha, temp)
         self.B.multTranspose(temp, result)
 
         if (self.CMode == "laplace" or
-            self.CMode == "hkmix" or 
+            self.CMode == "hkmix" or
             self.CMode == "h0hklaplace" or
             self.CMode == "isotropicpenalty" or
             self.CMode == "anisotropicpenalty" or
@@ -1088,7 +1088,7 @@ class Matrix:
 
         elif self.CMode == "identity":
             result.axpy(M*self.l, alpha)
-            
+
         elif self.CMode == "identity_no_level1":
             result.axpy(M*self.l, alpha)
             # now correct for level 1 again
@@ -1098,7 +1098,7 @@ class Matrix:
                 gi.set(d, 1, 1)
             i = gridStorage.seq(gi)
             result[i] = result[i] - M*self.l*alpha[i]
-            
+
 #        elif self.CMode == "levelsum":
 #            temp = DataVector(len(alpha))
 #            # fill temp vector with levelsums
@@ -1117,7 +1117,7 @@ class Matrix:
 #            for i in range(len(alpha)):
 #                temp[i] = temp[i]*alpha[i]
 #            result.axpy(M*self.l, temp)
-        
+
         elif self.CMode == "pseudounit":
             raise Exception("not implemented")
 
@@ -1131,15 +1131,15 @@ class Matrix:
 # # saves/restores grid from file
 # # set appropriate modes for automatic destructions
 # #-------------------------------------------------------------------------------
-# 
+#
 # ## @brief
 # def restoreGrid(text):
 #     return Grid.unserialize(text)
-# 
-# 
+#
+#
 # def saveGrid(grid):
 #     return grid.serialize()
-# 
+#
 ##-------------------------------------------------------------------------------
 ### @brief Converts a python "dataset"-structure into two objects of type DataVector (X,Y).
 ##
@@ -1147,20 +1147,20 @@ class Matrix:
 #    dim = len(dataset["data"])
 #    entries = len(dataset["data"][0])
 #    data = dataset["data"]
-#    
+#
 #    x = DataVector(entries, dim)
 #    y = None
 #
-#    for d in xrange(dim):    
+#    for d in xrange(dim):
 #        for i in xrange(entries):
 #            x[i*dim + d] = data[d][i]
-#            
+#
 #    if dataset.has_key("classes"):
 #        classes = dataset["classes"]
 #        y = DataVector(entries)
 #        for i in xrange(entries):
 #            y[i] = classes[i]
-#            
+#
 #    return (x,y)
 #
 ##-------------------------------------------------------------------------------
@@ -1175,7 +1175,7 @@ class Matrix:
 #
 #    if classes:
 #        dataset['classes'] = [classes[i] for i in range(len(classes))]
-#    
+#
 #    return dataset
 
 #-------------------------------------------------------------------------------

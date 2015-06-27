@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import os
@@ -44,8 +44,8 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
-                 
-env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])               
+
+env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         #LIBPATH = [BUILD_DIR, '#/lib/alglib'],
