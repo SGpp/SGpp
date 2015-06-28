@@ -30,16 +30,13 @@ namespace SGPP {
          * @param grid  grid (should be empty)
          * @param N     maximal number of grid points
          */
-        IterativeGridGenerator(ObjectiveFunction& f,
-                               base::Grid& grid, size_t N) :
-          f(f), grid(grid), N(N), functionValues(0) {
-        }
+        IterativeGridGenerator(
+          ObjectiveFunction& f, base::Grid& grid, size_t N);
 
         /**
          * Virtual destructor.
          */
-        virtual ~IterativeGridGenerator() {
-        }
+        virtual ~IterativeGridGenerator();
 
         /**
          * Pure virtual method for iterative grid generation.
@@ -51,16 +48,12 @@ namespace SGPP {
         /**
          * @return underlying grid
          */
-        base::Grid& getGrid() const {
-          return grid;
-        }
+        base::Grid& getGrid() const;
 
         /**
          * @return vector of function values at the grid points
          */
-        const base::DataVector& getFunctionValues() const {
-          return functionValues;
-        }
+        const base::DataVector& getFunctionValues() const;
 
       protected:
         /// objective function
@@ -71,6 +64,24 @@ namespace SGPP {
         size_t N;
         /// vector of function values at the grid points
         base::DataVector functionValues;
+
+        /**
+         * Removes grid points with indices
+         * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+         * from the grid.
+         *
+         * @param oldGridSize   number of grid points after removal
+         */
+        void undoRefinement(size_t oldGridSize);
+
+        /**
+         * Evaluates the objective function at grid points with indices
+         * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+         * and saves values in functionValues.
+         *
+         * @param oldGridSize   number of grid points already evaluated
+         */
+        void evalFunction(size_t oldGridSize = 0);
     };
 
   }

@@ -24,11 +24,6 @@ namespace SGPP {
         /// default maximal level of grid points
         static const size_t DEFAULT_MAX_LEVEL = 20;
 
-        /// exponentiation methods
-        enum PowMethod {
-          STD_POW, FAST_POW
-        };
-
         /**
          * Constructor.
          * Do not destruct the grid before this object!
@@ -36,11 +31,7 @@ namespace SGPP {
          * @param f             objective function
          * @param grid          grid (should be empty)
          * @param N             maximal number of grid points
-         * @param gamma         adaptivity
          * @param maxLevel      maximal level of grid points
-         * @param powMethod     exponentiation method
-         *                      (fastPow is faster than std::pow,
-         *                      but only approximative)
          */
         IterativeGridGeneratorSOO(ObjectiveFunction& f,
                                   base::Grid& grid,
@@ -55,12 +46,12 @@ namespace SGPP {
          */
         bool generate();
 
-        /**
+        /*
          * @return      adaptivity
          */
         //float_t getGamma() const;
 
-        /**
+        /*
          * @param gamma adaptivity
          */
         //void setGamma(float_t gamma);

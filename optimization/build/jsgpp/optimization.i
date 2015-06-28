@@ -81,6 +81,7 @@ const bool UMFPACK_ENABLED;
 %rename(OptIterativeGridGenerator)              SGPP::optimization::IterativeGridGenerator;
 %rename(OptIterativeGridGeneratorLinearSurplus) SGPP::optimization::IterativeGridGeneratorLinearSurplus;
 %rename(OptIterativeGridGeneratorRitterNovak)   SGPP::optimization::IterativeGridGeneratorRitterNovak;
+%rename(OptIterativeGridGeneratorSOO)           SGPP::optimization::IterativeGridGeneratorSOO;
 
 %rename(OptSLE)                     SGPP::optimization::SLE;
 %rename(OptFullSLE)                 SGPP::optimization::FullSLE;
@@ -203,6 +204,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
+%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
 %include "optimization/src/sgpp/optimization/operation/OptimizationOpFactory.hpp"
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"

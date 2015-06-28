@@ -148,13 +148,7 @@ namespace SGPP {
 
             if (newN > N) {
               // too many new points ==> undo refinement and exit
-              std::list<size_t> indicesToRemove;
-
-              for (size_t i = currentN; i < newN; i++) {
-                indicesToRemove.push_back(i);
-              }
-
-              gridStorage.deletePoints(indicesToRemove);
+              undoRefinement(currentN);
               breakLoop = true;
               break;
             }
@@ -186,41 +180,8 @@ namespace SGPP {
               depthMap[depth].push_back(i);
             }
 
-            // parallel evaluation of f in the new grid points
-            #pragma omp parallel shared(fX, currentN, gridStorage) \
-            default(none)
-            {
-              base::DataVector x(d);
-              ObjectiveFunction* curFPtr = &f;
-#ifdef _OPENMP
-              std::unique_ptr<ObjectiveFunction> curF;
-
-              if (omp_get_max_threads() > 1) {
-                f.clone(curF);
-                curFPtr = curF.get();
-              }
-
-#endif /* _OPENMP */
-
-              #pragma omp for
-
-              for (size_t i = currentN; i < newN; i++) {
-                // convert grid point to coordinate vector
-                #pragma omp critical
-                {
-                  base::GridIndex& gp = *gridStorage.get(i);
-
-                  for (size_t t = 0; t < d; t++) {
-                    x[t] = gp.getCoord(t);
-                  }
-                }
-
-                float_t fx = curFPtr->eval(x);
-
-                #pragma omp critical
-                fX[i] = fx;
-              }
-            }
+            // evaluation of f in the new grid points
+            evalFunction(currentN);
 
             refinable[iBest] = false;
             n++;
