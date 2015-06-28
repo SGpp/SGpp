@@ -141,8 +141,8 @@ if not env.GetOption('clean'):
 
 # add #/lib/sgpp and #/lib/alglib to LIBPATH
 # (to add corresponding -L... flags to linker calls)
-env.Append(LIBPATH=[BUILD_DIR,
-                    Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'))])
+ALGLIB_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'))
+env.Append(LIBPATH=[BUILD_DIR, ALGLIB_BUILD_PATH])
 
 # add C++ defines for all modules
 cppdefines = []
@@ -166,13 +166,16 @@ env.Append(CPPPATH=['#/tools'])
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     # set up paths (Only Tested on Ubuntu!)
-    # TODO consider using scons environment to achieve this!
-    pythonpath = os.environ.get('PYTHONPATH', '') + os.pathsep + os.getcwd() + '/lib/pysgpp/'
-    ld_library_path = os.environ.get('LD_LIBRARY_PATH', '') + os.pathsep +  os.getcwd() + '/lib/sgpp/' + os.pathsep +  os.getcwd() + '/lib/alglib/'
-    exports = 'export PYTHONPATH=' + pythonpath + ' && export LD_LIBRARY_PATH=' + ld_library_path + ' && '
+    env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
+        env["ENV"].get("LD_LIBRARY_PATH", ""),
+        BUILD_DIR.abspath,
+        ALGLIB_BUILD_PATH.abspath])
+    env["ENV"]["PYTHONPATH"] = ":".join([
+        env["ENV"].get("PYTHONPATH", ""),
+        PYSGPP_BUILD_PATH.abspath])
 
     # do the actual thing
-    builder = Builder(action=exports + "python $SOURCE.file", chdir=1)
+    builder = Builder(action="python $SOURCE.file", chdir=1)
     env.Append(BUILDERS={'Test' : builder})
     builder = Builder(action="python $SOURCE")
     env.Append(BUILDERS={'SimpleTest' : builder})
