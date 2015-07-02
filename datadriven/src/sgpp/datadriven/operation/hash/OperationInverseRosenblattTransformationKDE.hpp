@@ -49,16 +49,17 @@ public:
 //            base::DataMatrix* pointsCdf);
 
     /**
+     * do the inverse Rosenblatt transformation for one data point for given samples
      *
-     * @param y
-     * @param samples1d
-     * @param sigma
-     * @param xlower
-     * @param xupper
-     * @param ylower
-     * @param yupper
-     * @param kern
-     * @return
+     * @param y data point to be inverted
+     * @param samples1d training samples in the dimension to be transformed
+     * @param sigma bandwidth of the kernels in the current dimension
+     * @param xlower lower bound for x-space
+     * @param xupper upper bound for x-space
+     * @param ylower lower bound for y-space
+     * @param yupper upper bound for y-space
+     * @param kern kernel evaluations
+     * @return error of inversion
      */
     float_t doTransformation1D(float_t y, base::DataVector& samples1d,
             float_t sigma, float_t xlower, float_t xupper, float_t ylower,

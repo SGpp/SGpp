@@ -56,7 +56,7 @@ public:
      * Conditional (Density) Functions to a dd density where the remaining
      * dimensions are mdims
      *
-     * @param mdim conditionalize all dimensions but the ones in mdims
+     * @param mdims conditionalize all dimensions but the ones in mdims
      * @param xbar point at which to conditionalize
      * @param conditionalizedKDE conditionalized kernel density
      */

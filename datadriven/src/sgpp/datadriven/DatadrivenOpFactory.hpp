@@ -131,7 +131,7 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used for the operation
- * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid/**
+ * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid
  */
 datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(
         base::Grid& grid);
@@ -166,33 +166,43 @@ datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTrans
         datadriven::GaussianKDE& kde);
 
 /**
+ * Factory method, returning an OperationInverseRosenblattTransformationKDE for the kde.
+ * Note: object has to be freed after use.
  *
- * @param trainingSamples
- * @return
+ * @param kde GaussianKDE for which the inverse Rosenblatt transformation should be computed
+ * @return Pointer to new OperationInverseRosenblattTransformationKDE for the kde
  */
 datadriven::OperationInverseRosenblattTransformationKDE* createOperationInverseRosenblattTransformationKDE(
         datadriven::GaussianKDE& kde);
 
 /**
- * Factory method, returning an OperationDensityMarginalize for the kernel density.
+ * Factory method, returning an OperationDensityMarginalizeKDE for the kernel density.
  * Note: object has to be freed after use.
  *
  * @param kde kernel density which is to be used for the operation
- * @return Pointer to new OperationDensityMarginalize
+ * @return Pointer to new OperationDensityMarginalizeKDE
  */
 datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
         datadriven::GaussianKDE& kde);
 
 /**
- * Factory method, returning an OperationDensityConditional for the kernel density.
+ * Factory method, returning an OperationDensityConditionalKDE for the kernel density.
  * Note: object has to be freed after use.
  *
  * @param kde kernel density which is to be used for the operation
- * @return Pointer to new OperationDensityConditional
+ * @return Pointer to new OperationDensityConditionalKDE
  */
 datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
         datadriven::GaussianKDE& kde);
 
+/**
+ * Factory method, returning an OperationMultipleEval for the grid.
+ * Note: object has to be freed after use.
+ * @param grid Grid which is to be used for the operation
+ * @param dataset dataset to be evaluated
+ * @param configuration configuration to be used (evalType and evalSubType)
+ * @return Pointer to new OperationMultipleEval for the Grid grid
+ */
 
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
         base::DataMatrix& dataset,
