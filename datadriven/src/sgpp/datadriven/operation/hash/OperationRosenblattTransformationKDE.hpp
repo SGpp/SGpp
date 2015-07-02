@@ -1,10 +1,7 @@
-/* ****************************************************************************
- * Copyright (C) 2009 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de
-// some defines for the following algorithm
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef OPERATIONROSENBLATTTRANSFORMATIONKDE_HPP
 #define OPERATIONROSENBLATTTRANSFORMATIONKDE_HPP
@@ -29,8 +26,8 @@ public:
     /**
      * Rosenblatt Transformation with mixed starting dimension
      *
-     * @param pointsUniform data points to be transformed base::DataMatrix (rows: # of samples, columns: # of dims)
      * @param pointsCdf Output base::DataMatrix (rows: # of samples, columns: # of dims)
+     * @param pointsUniform data points to be transformed base::DataMatrix (rows: # of samples, columns: # of dims)
      */
     virtual void doTransformation(base::DataMatrix& pointsCdf,
             base::DataMatrix& pointsUniform);
@@ -45,11 +42,13 @@ public:
 //            base::DataMatrix& pointsUniform);
 
     /**
+     * Rosenblatt transformation for one data point with given samples and
+     * and kernel evaluations, see doTransformation for details.
      *
-     * @param x
-     * @param samples1d
-     * @param sigma
-     * @param kern
+     * @param x data point
+     * @param samples1d training samples in the dimension to be transformed
+     * @param sigma bandwidth of the kernels in the current dimension
+     * @param kern kernel evaluations
      */
     float_t doTransformation1D(float_t x, base::DataVector& samples1d,
             float_t sigma, base::DataVector& kern);
