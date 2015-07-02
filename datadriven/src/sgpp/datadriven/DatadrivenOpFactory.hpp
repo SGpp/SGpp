@@ -127,9 +127,11 @@ datadriven::OperationRosenblattTransformation* createOperationRosenblattTransfor
         base::Grid& grid);
 
 /**
+ * Factory method, returning an OperationRosenblattTransformation for the grid.
+ * Note: object has to be freed after use.
  *
- * @param grid
- * @return
+ * @param grid Grid which is to be used for the operation
+ * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid/**
  */
 datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(
         base::Grid& grid);
@@ -139,23 +141,26 @@ datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used for the operation
- * @return Pointer to new OperationRosenblattTransformation for the Grid grid
+ * @return Pointer to new OperationInverseRosenblattTransformation for the Grid grid
  */
 datadriven::OperationInverseRosenblattTransformation* createOperationInverseRosenblattTransformation(
         base::Grid& grid);
 
 /**
- *
- * @param grid
- * @return
+ * Factory method, returning an OperationInverseRosenblattTransformation1D for the grid.
+ * Note: object has to be freed after use.
+ * @param grid Grid which is to be used for the operation
+ * @return Pointer to new OperationInverseRosenblattTransformation1D for the Grid grid
  */
 datadriven::OperationTransformation1D* createOperationInverseRosenblattTransformation1D(
         base::Grid& grid);
 
 /**
+ * Factory method, returning an OperationRosenblattTransformationKDE for the kde.
+ * Note: object has to be freed after use.
  *
- * @param trainingSamples
- * @return
+ * @param kde GaussianKDE for which the Rosenblatt transformation should be computed
+ * @return Pointer to new OperationRosenblattTransformationKDE for the kde
  */
 datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
         datadriven::GaussianKDE& kde);

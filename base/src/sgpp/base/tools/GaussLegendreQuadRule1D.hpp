@@ -23,13 +23,11 @@ public:
     virtual ~GaussLegendreQuadRule1D();
 
     /**
-     * the coordinates are normalized to [a, b].
+     * the coordinates are normalized to [0, 1].
      *
-     * @param level
-     * @param coordinates
-     * @param weights
-     * @param a
-     * @param b
+     * @param level level of quadrature, is equal to the number of quadrature points
+     * @param coordinates returns the x-coordinates in [0, 1]
+     * @param weights returns the corresponding weights (scaled by 0.5)
      */
     void getLevelPointsAndWeightsNormalized(size_t level,
             base::DataVector& coordinates, base::DataVector& weights);
