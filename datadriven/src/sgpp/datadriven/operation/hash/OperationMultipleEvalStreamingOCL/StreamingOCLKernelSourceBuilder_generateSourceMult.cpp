@@ -12,12 +12,10 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-//#include "StreamingOCLParameters.hpp"
-
 namespace SGPP {
 namespace datadriven {
 
-std::string StreamingOCLKernelSourceBuilder::generateSourceMult(size_t dims) {
+std::string StreamingOCLKernelSourceBuilder::generateSourceMult() {
 
     if (parameters.getAsBoolean("REUSE_SOURCE")) {
         return this->reuseSource("StreamingOCL_mult.cl");
@@ -54,27 +52,39 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMult(size_t dims) {
                 << std::endl;
         sourceStream << " __local " << this->asString() << " locIndex[" << dims * localWorkgroupSize << "];"
                 << std::endl;
-        sourceStream << " __local " << this->asString() << " locAlpha[" << localWorkgroupSize << "];"
-                << std::endl;
+        sourceStream << " __local " << this->asString() << " locAlpha[" << localWorkgroupSize << "];" << std::endl;
         sourceStream << std::endl;
     }
 
-    sourceStream << " " << this->asString() << " eval, index_calc, abs, last, localSupport, curSupport;"
-            << std::endl << std::endl;
+    sourceStream << " " << this->asString() << " eval, index_calc, abs, last, localSupport, curSupport;" << std::endl
+            << std::endl;
     sourceStream << " " << this->asString() << " myResult = 0.0;" << std::endl << std::endl;
-    sourceStream << " // Create registers for the data" << std::endl;
 
-    if (dims > maxDimUnroll) {
-        sourceStream << " " << this->asString() << " data[" << dims << "];" << std::endl;
-        sourceStream << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-        sourceStream << "  data[d] = ptrData[globalIdx+(resultSize * d)];" << std::endl;
-        sourceStream << "}" << std::endl;
-    } else {
-        for (size_t d = 0; d < dims; d++) {
-            sourceStream << " " << this->asString() << " data_" << d << " = ptrData[globalIdx+(resultSize*" << d
-                    << ")];" << std::endl;
+
+    //caching data in register array, this also requires loading the data into the registers (in contrast using pointers to data directly)
+    if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
+        for (size_t i = 0; i < dataBlockSize; i++) {
+            sourceStream << indent << this->asString() << " data_" << i << "[" << dims << "];" << std::endl;
+        }
+        sourceStream << std::endl;
+        for (size_t i = 0; i < dataBlockSize; i++) {
+            for (size_t d = 0; d < dims; d++) {
+                sourceStream << indent << getData(d, i) << " = ptrData[" << i << " + (" << dataBlockSize
+                        << " * globalIdx) + (resultSize * " << d << ")];" << std::endl;
+            }
+            sourceStream << std::endl;
+        }
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        for (size_t i = 0; i < dataBlockSize; i++) {
+            for (size_t d = 0; d < dims; d++) {
+                sourceStream << indent << this->asString() << " " << getData(d, i) << " = ptrData[" << i << " + ("
+                        << dataBlockSize << " * globalIdx) + (resultSize * " << d << ")];" << std::endl;
+            }
+            sourceStream << std::endl;
         }
     }
+
+    sourceStream << indent << "size_t dimLevelIndex;" << std::endl;
 
     sourceStream << std::endl;
 
@@ -83,23 +93,23 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMult(size_t dims) {
         sourceStream << " uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
         sourceStream << " uint fastChunkSizeGrid = (chunkSizeGrid / " << localWorkgroupSize << ") * "
                 << localWorkgroupSize << ";" << std::endl;
-        sourceStream << " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+=" << localWorkgroupSize
-                << ")" << std::endl;
+        sourceStream << " for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+=" << localWorkgroupSize << ")"
+                << std::endl;
         sourceStream << " {" << std::endl;
 
         if (dims > maxDimUnroll) {
             sourceStream << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-            sourceStream << "   locLevel[(localIdx*" << dims << ")+ d] = ptrLevel[((j+localIdx)*" << dims
-                    << ")+ d];" << std::endl;
-            sourceStream << "   locIndex[(localIdx*" << dims << ")+ d] = ptrIndex[((j+localIdx)*" << dims
-                    << ")+ d];" << std::endl;
+            sourceStream << "   locLevel[(localIdx*" << dims << ")+ d] = ptrLevel[((j+localIdx)*" << dims << ")+ d];"
+                    << std::endl;
+            sourceStream << "   locIndex[(localIdx*" << dims << ")+ d] = ptrIndex[((j+localIdx)*" << dims << ")+ d];"
+                    << std::endl;
             sourceStream << "}" << std::endl;
         } else {
             for (size_t d = 0; d < dims; d++) {
-                sourceStream << "   locLevel[(localIdx*" << dims << ")+" << d << "] = ptrLevel[((j+localIdx)*"
-                        << dims << ")+" << d << "];" << std::endl;
-                sourceStream << "   locIndex[(localIdx*" << dims << ")+" << d << "] = ptrIndex[((j+localIdx)*"
-                        << dims << ")+" << d << "];" << std::endl;
+                sourceStream << "   locLevel[(localIdx*" << dims << ")+" << d << "] = ptrLevel[((j+localIdx)*" << dims
+                        << ")+" << d << "];" << std::endl;
+                sourceStream << "   locIndex[(localIdx*" << dims << ")+" << d << "] = ptrIndex[((j+localIdx)*" << dims
+                        << ")+" << d << "];" << std::endl;
             }
         }
 
@@ -109,93 +119,37 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMult(size_t dims) {
         sourceStream << "   for(int k = 0; k < " << localWorkgroupSize << "; k++)" << std::endl;
         sourceStream << "   {" << std::endl;
         sourceStream << "     curSupport = locAlpha[k];" << std::endl << std::endl;
+    } else {
+        sourceStream << "   for(int k = start_grid; k < end_grid; k++)" << std::endl;
+        sourceStream << "   {" << std::endl;
+        sourceStream << "     curSupport = ptrAlpha[k];" << std::endl << std::endl;
+    }
 
-        if (dims > maxDimUnroll) {
-            sourceStream << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-            sourceStream << "     eval = ((locLevel[(k*" << dims << ")+ d ]) * (data[d]));" << std::endl;
-            sourceStream << "     index_calc = eval - (locIndex[(k*" << dims << ")+ d]);" << std::endl;
-            sourceStream << "     abs = fabs(index_calc);" << std::endl;
-            sourceStream << "     last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-            sourceStream << "     localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-            sourceStream << "     curSupport *= localSupport;" << std::endl << std::endl;
-            sourceStream << "}" << std::endl;
-        } else {
-            for (size_t d = 0; d < dims; d++) {
-                sourceStream << "     eval = ((locLevel[(k*" << dims << ")+" << d << "]) * (data_" << d << "));"
-                        << std::endl;
-                sourceStream << "     index_calc = eval - (locIndex[(k*" << dims << ")+" << d << "]);"
-                        << std::endl;
-                sourceStream << "     abs = fabs(index_calc);" << std::endl;
-                sourceStream << "     last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-                sourceStream << "     localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-                sourceStream << "     curSupport *= localSupport;" << std::endl << std::endl;
-            }
+//    size_t evenDimensions = (dims / dataBlockSize) * dataBlockSize;
+//    size_t remainingDimensions = evenDimensions - remainingDimensions;
+//    sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, dims, "");
+
+    if (dims > maxDimUnroll) {
+        sourceStream << indent2 << "for (size_t unrollDim = 0; unrollDim < " << ((dims / maxDimUnroll) * maxDimUnroll)
+                << "; unrollDim += " << maxDimUnroll << ") {" << std::endl;
+        sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, std::min(maxDimUnroll, dims), "unrollDim");
+        sourceStream << indent2 << "}" << std::endl;
+
+        if (dims % maxDimUnroll != 0) {
+            sourceStream
+                    << this->unrolledBasisFunctionEvalulation(dims, (dims / maxDimUnroll) * maxDimUnroll, dims, "");
         }
+    } else {
+        sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, dims, "");
+    }
 
-        sourceStream << "     myResult += curSupport;" << std::endl;
-        sourceStream << "  }" << std::endl;
-        sourceStream << std::endl;
+    sourceStream << "     myResult += curSupport;" << std::endl;
+    sourceStream << "  }" << std::endl;
+    sourceStream << std::endl;
+
+    if (useLocalMemory) {
         sourceStream << "  barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
         sourceStream << " }" << std::endl;
-        sourceStream << std::endl;
-        sourceStream << " // Iterate over all grid points (slow ones, without cache)" << std::endl;
-        sourceStream << " for(int m = start_grid + fastChunkSizeGrid; m < end_grid; m++)" << std::endl;
-        sourceStream << " {" << std::endl;
-        sourceStream << "   curSupport = ptrAlpha[m];" << std::endl << std::endl;
-
-        if (dims > maxDimUnroll) {
-            sourceStream << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-            sourceStream << "   eval = ((ptrLevel[(m*" << dims << ")+ d]) * (data[d]));" << std::endl;
-            sourceStream << "   index_calc = eval - (ptrIndex[(m*" << dims << ")+ d]);" << std::endl;
-            sourceStream << "   abs = fabs(index_calc);" << std::endl;
-            sourceStream << "   last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-            sourceStream << "   localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-            sourceStream << "   curSupport *= localSupport;" << std::endl << std::endl;
-            sourceStream << "}" << std::endl;
-        } else {
-            for (size_t d = 0; d < dims; d++) {
-                sourceStream << "   eval = ((ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << "));"
-                        << std::endl;
-                sourceStream << "   index_calc = eval - (ptrIndex[(m*" << dims << ")+" << d << "]);" << std::endl;
-                sourceStream << "   abs = fabs(index_calc);" << std::endl;
-                sourceStream << "   last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-                sourceStream << "   localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-                sourceStream << "   curSupport *= localSupport;" << std::endl << std::endl;
-            }
-        }
-
-        sourceStream << "   myResult += curSupport;" << std::endl;
-        sourceStream << " }" << std::endl;
-    } else {
-        sourceStream << " // Iterate over all grid points (without cache)" << std::endl;
-        sourceStream << " for(int m = start_grid; m < end_grid; m++)" << std::endl;
-        sourceStream << " {" << std::endl;
-        sourceStream << "   curSupport = ptrAlpha[m];" << std::endl << std::endl;
-
-        if (dims > maxDimUnroll) {
-            sourceStream << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-            sourceStream << "   eval = ((ptrLevel[(m*" << dims << ") + d]) * (data[d]));" << std::endl;
-            sourceStream << "   index_calc = eval - (ptrIndex[(m*" << dims << ")+ d]);" << std::endl;
-            sourceStream << "   abs = fabs(index_calc);" << std::endl;
-            sourceStream << "   last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-            sourceStream << "   localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-            sourceStream << "   curSupport *= localSupport;" << std::endl << std::endl;
-            sourceStream << "}" << std::endl;
-        } else {
-            for (size_t d = 0; d < dims; d++) {
-                sourceStream << "   eval = ((ptrLevel[(m*" << dims << ")+" << d << "]) * (data_" << d << "));"
-                        << std::endl;
-                sourceStream << "   index_calc = eval - (ptrIndex[(m*" << dims << ")+" << d << "]);" << std::endl;
-                sourceStream << "   abs = fabs(index_calc);" << std::endl;
-                sourceStream << "   last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-                sourceStream << "   localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-                sourceStream << "   curSupport *= localSupport;" << std::endl << std::endl;
-            }
-        }
-
-        sourceStream << "   myResult += curSupport;" << std::endl;
-        sourceStream << " }" << std::endl;
-
     }
 
     sourceStream << std::endl;

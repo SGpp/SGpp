@@ -60,7 +60,7 @@ public:
 
     StreamingOCLKernelImpl(size_t dims, base::OCLManager& manager, base::OCLConfigurationParameters parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
-                    parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
+                    parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
                     manager, this->parameters) {
 
         this->dims = dims;
@@ -150,8 +150,8 @@ public:
         double time = 0.0;
 
         if (kernel_mult[0] == nullptr) {
-            this->createMult(this->dims, parameters.getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
-                    kernel_mult);
+            std::string program_src = kernelSourceBuilder.generateSourceMult();
+            manager.buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel_mult);
         }
 
         initOCLBuffers(level, index, gridSize, dataset, datasetSize);
@@ -294,8 +294,8 @@ public:
         double time = 0.0;
 
         if (kernel_multTrans[0] == nullptr) {
-            this->createMultTrans(this->dims, parameters.getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
-                    kernel_multTrans);
+            std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
+            manager.buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel_multTrans);
         }
 
         initOCLBuffers(level, index, gridSize, dataset, datasetSize);
@@ -428,18 +428,6 @@ public:
         return time;
     }
 private:
-
-    void createMultTrans(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
-            cl_device_id* device_ids, cl_kernel* kernel) {
-        std::string program_src = kernelSourceBuilder.generateSourceMultTrans(dims);
-        manager.buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel);
-    }
-
-    void createMult(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
-            cl_device_id* device_ids, cl_kernel* kernel) {
-        std::string program_src = kernelSourceBuilder.generateSourceMult(dims);
-        manager.buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel);
-    }
 
     void releaseGridBuffers() {
         this->deviceLevel.freeBuffer();

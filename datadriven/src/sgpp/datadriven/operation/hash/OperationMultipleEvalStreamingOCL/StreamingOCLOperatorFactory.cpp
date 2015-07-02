@@ -20,7 +20,7 @@ base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base
 
     if (parameters == nullptr) {
         std::map<std::string, std::string> defaultParameter;
-        defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
+        defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "false";
         defaultParameter["KERNEL_MAX_DIM_UNROLL"] = "10";
         defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
