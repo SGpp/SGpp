@@ -32,12 +32,6 @@ public:
     virtual void doTransformation(base::DataMatrix& pointsCdf,
             base::DataMatrix& pointsUniform);
 
-//    /**
-//     * Rosenblatt Transformation with fixed starting dimension
-//     *
-//     * @param pointsUniform data points to be transformed base::DataMatrix (rows: # of samples, columns: # of dims)
-//     * @param pointsCdf Output base::DataMatrix (rows: # of samples, columns: # of dims)
-//     */
 //    virtual void doShuffeledTransformation(base::DataMatrix& pointsCdf,
 //            base::DataMatrix& pointsUniform);
 
