@@ -17,7 +17,7 @@
 namespace SGPP {
 namespace datadriven {
 
-std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans(size_t dims) {
+std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
 
     if (parameters.getAsBoolean("REUSE_SOURCE")) {
         return this->reuseSource("StreamingOCL_multTrans.cl");

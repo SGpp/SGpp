@@ -38,14 +38,15 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
   std::string fileName = "debugging.arff";
-  //std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 3;
+  //std::string fileName = "friedman_4d.arff";
+
+  uint32_t level = 1;
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 10;
+  adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
@@ -88,7 +89,8 @@ int main(int argc, char** argv) {
   SGPP::base::DataVector alpha(gridStorage->size());
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    alpha[i] = dist(mt);
+//    alpha[i] = dist(mt);
+    alpha[i] = static_cast<double>(i) + 1.0;
   }
 
   std::cout << "creating operation with unrefined grid" << std::endl;

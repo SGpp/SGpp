@@ -22,7 +22,8 @@ namespace datadriven {
 template<typename T>
 class OperationMultiEvalStreamingModOCLFastMultiPlatform: public base::OperationMultipleEval {
 protected:
-    size_t dims;SGPP::base::DataMatrix preparedDataset;
+    size_t dims;
+    SGPP::base::DataMatrix preparedDataset;
     base::OCLConfigurationParameters parameters;
     T* kernelDataset = nullptr;
     size_t datasetSize = 0;
@@ -46,6 +47,14 @@ public:
             base::OCLConfigurationParameters parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
+
+        if (parameters["KERNEL_STORE_DATA"].compare("register") == 0 &&
+                dataset.getNcols() > parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
+            std::stringstream errorString;
+            errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+            errorString << " to be greater than the dimension of the data set" << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
 
         this->manager = new base::OCLManagerMultiPlatform(parameters);
 

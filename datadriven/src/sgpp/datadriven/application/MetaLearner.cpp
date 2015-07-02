@@ -216,7 +216,7 @@ namespace SGPP {
       }
 
       if (verbose) {
-        std::cout << "testInstanceCounter: " << testInstanceCounter << std::endl;
+        std::cout << "testInstanceCounter: " << (testInstanceCounter + 1) << std::endl;
         std::cout << "predicting..." << std::endl;
       }
 
@@ -242,6 +242,14 @@ namespace SGPP {
         float_t temp = fabs(computedClasses.get(i) - referenceClasses.get(i));
         temp *= temp;
         squareSum += temp;
+
+        for (size_t d = 0; d < this->gridConfig.dim_; d++) {
+            if (d > 0) {
+                std::cout << ",";
+            }
+            std::cout << testTrainingData.get(i, d);
+        }
+        std::cout << std::endl;
 
         //        std::cout << "value: " << computedClasses.get(i) << std::endl;
         //        std::cout << "reference: " << referenceClasses.get(i) << std::endl;

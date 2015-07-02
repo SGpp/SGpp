@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
-    SLESolverConfigFinal.maxIterations_ = 40;
+    SLESolverConfigFinal.maxIterations_ = 10;
     SLESolverConfigFinal.threshold_ = -1.0;
     SLESolverConfigFinal.type_ = sg::solver::CG;
 
