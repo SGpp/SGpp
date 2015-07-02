@@ -23,7 +23,7 @@ public:
     /**
      * Constructor
      *
-     * @param storage the grid's GridStorage object
+     * @param grid the grid
      * @param degree the polynom's max. degree
      * @param dataset Dataset
      */

@@ -28,11 +28,11 @@ public:
      * to a given mean and standard deviation. The weights are normalized
      * to 1.
      *
-     * @param level
-     * @param coordinates
-     * @param weights
-     * @param mean
-     * @param stdd
+     * @param level level of quadrature, is equal to the number of quadrature points
+     * @param coordinates returns the x-coordinates in [-infty, infty]
+     * @param weights returns the corresponding weights (scaled by sqrt(2))
+     * @param mean mean of the normal distribution the coordinates should be transformed to
+     * @param stdd standard deviation of the normal distribution the coordinates should be transformed to
      */
     void getLevelPointsAndWeightsNormalized(size_t level,
             base::DataVector& coordinates, base::DataVector& weights,
