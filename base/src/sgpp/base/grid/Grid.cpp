@@ -15,6 +15,7 @@
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
@@ -82,6 +83,10 @@ namespace SGPP {
 
     Grid* Grid::createPolyGrid(size_t dim, size_t degree) {
       return new PolyGrid(dim, degree);
+    }
+
+    Grid* Grid::createPolyTruncatedBoundaryGrid(size_t dim, size_t degree) {
+        return new PolyTruncatedBoundaryGrid(dim, degree);
     }
 
     Grid* Grid::createWaveletGrid(size_t dim) {

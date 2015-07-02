@@ -3,11 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef POLYGRID_HPP
-#define POLYGRID_HPP
+#ifndef POLYTRUNCATEDBOUNDARYGRID_HPP
+#define POLYTRUNCATEDBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 
@@ -15,11 +16,11 @@ namespace SGPP {
   namespace base {
 
     /**
-     * grid with polynomial base functions
+     * trapezoid boundary grid with polynomial base functions
      */
-    class PolyGrid : public Grid {
+    class PolyTruncatedBoundaryGrid : public Grid {
       protected:
-        PolyGrid(std::istream& istr);
+        PolyTruncatedBoundaryGrid(std::istream& istr);
 
       public:
         /**
@@ -28,15 +29,15 @@ namespace SGPP {
          * @param dim the dimension of the grid
          * @param degree the max. polynom's degree
          */
-        PolyGrid(size_t dim, size_t degree);
+        PolyTruncatedBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * Destructor
          */
-        virtual ~PolyGrid();
+        virtual ~PolyTruncatedBoundaryGrid();
 
-        virtual const char* getType();
         virtual const SBasis& getBasis();
+        virtual const char* getType();
         virtual void serialize(std::ostream& ostr);
 
         virtual GridGenerator* createGridGenerator();
@@ -47,10 +48,10 @@ namespace SGPP {
       protected:
         /// max. polynom's degree
         size_t degree;
-        const SPolyBase* basis_;
+        const SPolyBoundaryBase* basis_;
     };
 
   }
 }
 
-#endif /* POLYGRID_HPP */
+#endif /* POLYTRUNCATEDBOUNDARYGRID_HPP */

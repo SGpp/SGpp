@@ -1,0 +1,69 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#ifndef OPERATIONDENSITYMARGINALIZEKDE_HPP
+#define OPERATIONDENSITYMARGINALIZEKDE_HPP
+
+#include <sgpp/datadriven/application/GaussianKDE.hpp>
+
+#include <sgpp/globaldef.hpp>
+
+namespace SGPP {
+namespace datadriven {
+
+/**
+ * Marginalize Probability Density Function
+ */
+
+class OperationDensityMarginalizeKDE {
+public:
+    OperationDensityMarginalizeKDE(datadriven::GaussianKDE& kde) :
+            kde(&kde) {
+    }
+    virtual ~OperationDensityMarginalizeKDE() {
+    }
+
+    /**
+     * Marginalizes (Density) functions in dimension mdim
+     *
+     * @param mdim marginalize in dimension mdim
+     * @param kde marginalized kernel density
+     */
+    void doMarginalize(size_t mdim, datadriven::GaussianKDE& marginalizedKDE);
+
+    /**
+     * Marginalizes (Density) functions in all dimensions mdims
+     * @param mdims marginalized in all dimensions in mdims
+     * @param kde marginalized kernel density
+     */
+    void doMarginalize(std::vector<size_t>& mdims,
+            datadriven::GaussianKDE& marginalizedKDE);
+
+    /**
+     * Keep applying marginalizes to (Density) Functions, until it's reduced to 1 dimension (dim_x)
+     *
+     * @param dim_x Target dimension, all other dimensions will be marginalized
+     * @param kde result of marginalization
+     */
+    void margToDimX(size_t dim_x, datadriven::GaussianKDE& kde);
+
+    /**
+     * Keep applying marginalizes to (Density) Functions, until it's reduced to
+     * the dimensions in mdims
+     *
+     * @param mdims Target dimensions, all other dimensions will be marginalized
+     * @param kde result of marginalization
+     */
+
+    void margToDimXs(std::vector<size_t>& mdims,
+            datadriven::GaussianKDE& marginalizedKDE);
+
+private:
+    datadriven::GaussianKDE* kde;
+};
+
+}
+}
+#endif /* OPERATIONDENSITYMARGINALIZEKDE_HPP */
