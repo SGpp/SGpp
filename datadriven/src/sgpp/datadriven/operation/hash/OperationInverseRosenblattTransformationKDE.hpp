@@ -31,7 +31,7 @@ public:
     virtual ~OperationInverseRosenblattTransformationKDE();
 
     /**
-     * Rosenblatt Transformation with mixed starting dimension
+     * inverse Rosenblatt Transformation with mixed starting dimension
      *
      * @param pointsUniform data points to be transformed DataMatrix (rows: # of samples, columns: # of dims)
      * @param pointsCdf Output DataMatrix (rows: # of samples, columns: # of dims)
@@ -39,12 +39,6 @@ public:
     virtual void doTransformation(base::DataMatrix& pointsUniform,
             base::DataMatrix& pointsCdf);
 
-//    /**
-//     * Rosenblatt Transformation with fixed starting dimension
-//     *
-//     * @param pointsUniform data points to be transformed DataMatrix (rows: # of samples, columns: # of dims)
-//     * @param pointsCdf Output DataMatrix (rows: # of samples, columns: # of dims)
-//     */
 //    virtual void doShuffeledTransformation(base::DataMatrix* pointsUniform,
 //            base::DataMatrix* pointsCdf);
 
