@@ -26,7 +26,9 @@ class TestOperationNaiveEval(unittest.TestCase):
                  pysgpp.Grid.createModLinearGrid(d),
                  pysgpp.Grid.createWaveletGrid(d),
                  pysgpp.Grid.createWaveletTruncatedBoundaryGrid(d),
-                 pysgpp.Grid.createModWaveletGrid(d)]
+                 pysgpp.Grid.createModWaveletGrid(d),
+                 pysgpp.Grid.createPolyGrid(d, p),
+                 pysgpp.Grid.createPolyTruncatedBoundaryGrid(d, p), ]
         
         bases = [pysgpp.SBsplineBase(p),
                  pysgpp.SBsplineBoundaryBase(p),
@@ -38,12 +40,14 @@ class TestOperationNaiveEval(unittest.TestCase):
                  pysgpp.SLinearModifiedBase(),
                  pysgpp.SWaveletBase(),
                  pysgpp.SWaveletBoundaryBase(),
-                 pysgpp.SWaveletModifiedBase()]
+                 pysgpp.SWaveletModifiedBase(),
+                 pysgpp.SPolyBase(p),
+                 pysgpp.SPolyBoundaryBase(p)]
         
         for grid, basis in zip(grids, bases):
             # don't test gradients for linear function
-            has_gradients = ("linear" not in grid.getType())
-            
+            has_gradients = ("linear" not in grid.getType() and
+                             "poly" not in grid.getType())
             # create regular sparse grid
             grid.createGridGenerator().regular(l)
             n = grid.getSize()
@@ -77,7 +81,10 @@ class TestOperationNaiveEval(unittest.TestCase):
                     gp = grid.getStorage().get(i)
                     val = alpha[i]
                     for t in range(d):
-                        val *= basis.eval(gp.getLevel(t), gp.getIndex(t), x[t])
+                        if "poly" in grid.getType():
+                            val *= basis.evalSave(gp.getLevel(t), gp.getIndex(t), x[t])
+                        else:
+                            val *= basis.eval(gp.getLevel(t), gp.getIndex(t), x[t])
                     fx += val
                     
                     if not has_gradients: continue
@@ -134,3 +141,7 @@ class TestOperationNaiveEval(unittest.TestCase):
                         for t2 in range(d):
                             # test Hessian evaluation
                             self.assertAlmostEqual(ddfx[t1*d+t2], ddfx2.get(t1, t2), places=2) 
+
+# Run tests for this file if executed as application
+if __name__ == '__main__':
+    unittest.main()

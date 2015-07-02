@@ -21,12 +21,13 @@ namespace std {
     %template(IntIntVector) vector< vector<int> >; 
     %template(BoolVector) vector<bool>;
     %template(DoubleVector) vector<SGPP::float_t>;
+    %template(IndexVector) vector<size_t>;
     %template(IndexValPair) pair<size_t, SGPP::float_t>;
-        %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
-        // For OnlinePredictiveRefinementDimension
-        %template(refinement_key) std::pair<size_t, unsigned int>;
-        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, SGPP::float_t>;
-
+    %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
+    %template(IndexList) list<size_t>;
+    // For OnlinePredictiveRefinementDimension
+    %template(refinement_key) std::pair<size_t, unsigned int>;
+    %template(refinement_map) std::map<std::pair<size_t, unsigned int>, SGPP::float_t>;
 }
 
 //TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
@@ -138,6 +139,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
@@ -148,7 +150,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp"
 
-
+%include "base/src/sgpp/base/tools/QuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
 
 // static factory methods
 %include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
@@ -164,6 +168,7 @@ namespace std {
 %template(SLinearStretchedBoundaryBase) SGPP::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearModifiedBase) SGPP::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) SGPP::base::PolyBasis<unsigned int, unsigned int>;
+%template(SPolyBoundaryBase) SGPP::base::PolyBoundaryBasis<unsigned int, unsigned int>;
 //%template(SPolyModifiedBase) SGPP::base::PolyModifiedBasis<unsigned int, unsigned int>;
 %template(SWaveletBase) SGPP::base::WaveletBasis<unsigned int, unsigned int>;
 %template(SWaveletBoundaryBase) SGPP::base::WaveletBoundaryBasis<unsigned int, unsigned int>;

@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef POLY_BASE_HPP
-#define POLY_BASE_HPP
+#ifndef POLYBOUNDARY_BASE_HPP
+#define POLYBOUNDARY_BASE_HPP
 
 #include <cmath>
 #include <vector>
@@ -19,26 +19,27 @@ namespace SGPP {
 namespace base {
 
 /**
- * Polynomial basis functions.
+ * Polynomial basis functions with boundaries.
  *
  * @version $HEAD$
  */
 template<class LT, class IT>
-class PolyBasis: public Basis<LT, IT> {
+class PolyBoundaryBasis: public Basis<LT, IT> {
 public:
     /**
      * Constructor
      *
      * @param degree the polynom's max. degree
      */
-    PolyBasis(size_t degree) :
+    PolyBoundaryBasis(size_t degree) :
             degree(degree) {
         if (degree < 2) {
-            throw factory_exception("PolyBasis: degree < 2");
+            throw factory_exception("PolyBoundaryBasis: degree < 2");
         }
 
         if (degree > 20) {
-            throw factory_exception("PolyBasis: degree > 20 is not supported");
+            throw factory_exception(
+                    "PolyBoundaryBasis: degree > 20 is not supported");
         }
 
         idxtable = new int[4];
@@ -51,35 +52,30 @@ public:
     /**
      * Destructor
      */
-    ~PolyBasis() {
+    ~PolyBoundaryBasis() {
         delete idxtable;
     }
 
-    /**
-     * Evaluates all the hierarchical ancestors of the node defined by level
-     * and index. NOTE: It does not evaluate the current node itself.
-     *
-     * @param level
-     * @param index
-     * @param coeffs
-     * @param pos
-     * @return
-     */
     float_t evalHierToTop(LT level, IT index, DataVector& coeffs, float_t pos) {
         float_t result = 0.0;
 
-        // just evaluate the hierarchical ancestors -> so start with the
-        // parent node
-        level--;
-        index >>= 1;
-        index |= 1;
+        if (level > 0) {
+            // add left and right boundary point
+            result += coeffs[0] * eval(0, 0, pos) + coeffs[1] * eval(0, 1, pos);
 
-        for (; level >= 1; level--) {
-            result += coeffs[level] * eval(level, index, pos);
+            // just evaluate the hierarchical ancestors -> so start with the
+            // parent node
+            level--;
             index >>= 1;
             index |= 1;
-            //        index = ((index - 1) / 2);
-            //        index = (index % 2 == 0) ? (index + 1) : index;
+        }
+
+        for (; level >= 1; level--) {
+            // the coefficients are shifted by one due to the two boundary points
+            // ergo: coeffs = [<left boundary, <right boundary>, 1, 2, ...]
+            result += coeffs[level + 1] * eval(level, index, pos);
+            index >>= 1; // == ((index - 1) / 2)
+            index |= 1; // == (index % 2 == 0) ? (index + 1) : index;
         }
 
         return result;
@@ -99,6 +95,15 @@ public:
      * polynomial bottom up.
      */
     float_t eval(LT level, IT index, float_t p) {
+        if (level == 0) {
+            if (index == 0) {
+                return 1 - p;
+            } else {
+                // index == 1
+                return p;
+            }
+        }
+
         // degree of polynomial, limited with level of grid point
         size_t deg = std::min<size_t>(degree, level + 1);
         // get the position in units of h of the current maximum level
@@ -122,7 +127,6 @@ public:
         // the polynomial. the reference point is now the last one stored in root, which
         // is the right neighbor of p. So here we need to go 2 units of h to the left.
         root -= 2;
-
         // p - 1 runs in this loop: so in total the polynomial has a degree of p taking
         // into account that the first root has been added already
         for (size_t j = 2; j < (1 << deg); j *= 2) {
@@ -141,7 +145,6 @@ public:
             // the same again until we reach the maximum polynomial degree.
             id >>= 1;
         }
-
         return eval;
     }
 
@@ -150,14 +153,24 @@ public:
         float_t h = 1.0f / (1 << level);
 
         // check if p is out of bounds
-        if (p <= h * (index - 1) || p >= h * (index + 1)) {
+        if (p <= h * (index - 1) || p >= h * (index + 1))
             return 0.0f;
-        } else {
+        else
             return eval(level, index, p);
-        }
+    }
+
+    float_t eval(LT level, IT index, float_t p, float_t offset, float_t width) {
+        // for bounding box evaluation
+        // scale p in [offset, offset + width] linearly to [0, 1] and do simple
+        // evaluation
+        return eval(level, index, (p - offset) / width);
     }
 
     float_t getIntegral(LT level, IT index) {
+        if (level == 0) {
+            return 0.5;
+        }
+
         // grid spacing
         float_t h = 1.0f / (1 << level);
 
@@ -188,7 +201,7 @@ public:
 protected:
     /// the polynom's max degree
     size_t degree;
-    // compute values for roots
+    /// compute values for roots
     int* idxtable;
 private:
     /// gauss legendre quadrature rule to compute the integral of the bases
@@ -196,9 +209,9 @@ private:
 };
 
 // default type-def (unsigned int for level and index)
-typedef PolyBasis<unsigned int, unsigned int> SPolyBase;
+typedef PolyBoundaryBasis<unsigned int, unsigned int> SPolyBoundaryBase;
 
 }
 }
 
-#endif /* POLY_BASE_HPP */
+#endif /* POLYBOUNDARY_BASE_HPP */

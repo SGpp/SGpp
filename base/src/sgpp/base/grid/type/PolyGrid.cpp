@@ -14,56 +14,54 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL)  {
-      istr >> degree;
+PolyGrid::PolyGrid(std::istream& istr) :
+        Grid(istr), degree(1 << 16), basis_(NULL) {
+    istr >> degree;
+}
+
+PolyGrid::PolyGrid(size_t dim, size_t degree) :
+        degree(degree), basis_(NULL) {
+    this->storage = new GridStorage(dim);
+}
+
+PolyGrid::~PolyGrid() {
+}
+
+const char* PolyGrid::getType() {
+    return "poly";
+}
+
+const SBasis& PolyGrid::getBasis() {
+    if (basis_ == NULL) {
+      basis_ = new SPolyBase(degree);
     }
 
-    PolyGrid::PolyGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL)  {
-      this->storage = new GridStorage(dim);
-    }
+    return *basis_;
+}
 
-    PolyGrid::~PolyGrid() {
-      if (basis_ != NULL) {
-        delete basis_;
-      }
-    }
+size_t PolyGrid::getDegree() const {
+    return this->degree;
+}
 
-    const char* PolyGrid::getType() {
-      return "poly";
-    }
+Grid* PolyGrid::unserialize(std::istream& istr) {
+    return new PolyGrid(istr);
+}
 
-    const SBasis& PolyGrid::getBasis() {
-      if (basis_ == NULL) {
-        basis_ = new SPolyBase(degree);
-      }
+void PolyGrid::serialize(std::ostream& ostr) {
+    this->Grid::serialize(ostr);
+    ostr << degree << std::endl;
+}
 
-      return *basis_;
-    }
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* PolyGrid::createGridGenerator() {
+    return new StandardGridGenerator(this->storage);
+}
 
-    size_t PolyGrid::getDegree() const {
-      return this->degree;
-    }
-
-    Grid* PolyGrid::unserialize(std::istream& istr) {
-      return new PolyGrid(istr);
-    }
-
-    void PolyGrid::serialize(std::ostream& ostr) {
-      this->Grid::serialize(ostr);
-      ostr << degree << std::endl;
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* PolyGrid::createGridGenerator() {
-      return new StandardGridGenerator(this->storage);
-    }
-
-  }
+}
 }
