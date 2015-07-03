@@ -3,16 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/quadrature/sample/HaltonSampleGenerator.hpp>
+#include "HaltonSampleGenerator.hpp"
+#include <sgpp/quadrature/Random.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cmath>
 
-#include <sgpp/quadrature/Random.hpp>
-
 using namespace SGPP::base;
-
-#include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
   namespace quadrature {

@@ -9,8 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/quadrature/sample/SampleGenerator.hpp>
-
+#include "SampleGenerator.hpp"
 
 namespace SGPP {
   namespace quadrature {
