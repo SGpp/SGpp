@@ -61,7 +61,7 @@ def testHierarchisationDehierarchisation(obj, grid, level, function,
 
   # test dehierarchisation
   obj.assertAlmostEqual(testHierarchisationResults(node_values, node_values_back),
-              0.0, places=places)
+                        0.0, places=places)
 
 #-------------------------------------------------------------------------------
 # # Hierarchise and dechierarchise a regular sparse grid for a given function and test
@@ -278,6 +278,28 @@ class TestHierarchisation(unittest.TestCase):
 
       for degree in [1, 3, 5]:
         grid = pysgpp.Grid.createModFundamentalSplineGrid(dim, degree)
+        evalOp = pysgpp.createOperationNaiveEval(grid)
+        testHierarchisationDehierarchisation(self, grid, level, function,
+                                             evalOp)
+
+  def testHierarchisationPoly(self):
+    level = 5
+    for dim in [1, 3]:
+      function = buildParabola(dim)
+
+      for degree in [2, 3, 5, 8]:
+        grid = pysgpp.Grid.createPolyGrid(dim, degree)
+        evalOp = pysgpp.createOperationNaiveEval(grid)
+        testHierarchisationDehierarchisation(self, grid, level, function,
+                                             evalOp)
+
+  def testHierarchisationPolyTruncatedBoundary(self):
+    level = 5
+    for dim in [1, 3]:
+      function = buildParabola(dim)
+
+      for degree in [2, 3, 5, 8]:
+        grid = pysgpp.Grid.createPolyTruncatedBoundaryGrid(dim, degree)
         evalOp = pysgpp.createOperationNaiveEval(grid)
         testHierarchisationDehierarchisation(self, grid, level, function,
                                              evalOp)

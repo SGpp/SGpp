@@ -33,6 +33,7 @@ namespace SGPP {
       LinearGeneralizedTruncatedBoundary,
       ModLinear,
       Poly,
+      PolyTruncatedBoundary,
       ModPoly,
       ModWavelet,
       ModBspline,
@@ -157,13 +158,22 @@ namespace SGPP {
         static Grid* createModLinearGrid(size_t dim);
 
         /**
-         * creates a mod polynomial grid
+         * creates a polynomial grid
          *
          * @param dim the grid's dimension
          * @param degree the polynom's max. degree
          * @return grid
          */
         static Grid* createPolyGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a polynomial grid with truncated boundary
+         *
+         * @param dim the grid's dimension
+         * @param degree the polynom's max. degree
+         * @return grid
+         */
+        static Grid* createPolyTruncatedBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * creates a poly grid

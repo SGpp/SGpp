@@ -8,9 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
-
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -39,9 +36,8 @@ namespace SGPP {
         virtual ~PolyGrid();
 
         virtual const char* getType();
-        virtual void serialize(std::ostream& ostr);
-
         virtual const SBasis& getBasis();
+        virtual void serialize(std::ostream& ostr);
 
         virtual GridGenerator* createGridGenerator();
 
@@ -51,7 +47,6 @@ namespace SGPP {
       protected:
         /// max. polynom's degree
         size_t degree;
-
         const SPolyBase* basis_;
     };
 

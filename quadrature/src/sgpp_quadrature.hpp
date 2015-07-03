@@ -6,7 +6,6 @@
 #ifndef QUADRATURE_HPP
 #define QUADRATURE_HPP
 
-
 #include "sgpp/quadrature/Random.hpp"
 #include "sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp"
 #include "sgpp/quadrature/sample/HaltonSampleGenerator.hpp"

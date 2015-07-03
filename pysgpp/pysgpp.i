@@ -10,6 +10,7 @@
 
 %include "stl.i"
 %include "std_vector.i"
+%include "std_list.i"
 %include "std_pair.i"
 %include "std_complex.i"
 %include "std_map.i"
