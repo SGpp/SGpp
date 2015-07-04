@@ -8,23 +8,26 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-float_t OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
-    float_t res = 0;
-    float_t tmpres = 0;
-    GridIndex* gp;
+    float_t OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
+      float_t res = 0;
+      float_t tmpres = 0;
+      GridIndex* gp;
 
-    for (size_t i = 0; i < alpha.getSize(); i++) {
+      for (size_t i = 0; i < alpha.getSize(); i++) {
         gp = storage->get(i);
         tmpres = 1.;
-        for (size_t d = 0; d < storage->dim(); d++) {
-            tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
-        }
-        res += alpha[i] * tmpres;
-    }
-    return res;
-}
 
-}
+        for (size_t d = 0; d < storage->dim(); d++) {
+          tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
+        }
+
+        res += alpha[i] * tmpres;
+      }
+
+      return res;
+    }
+
+  }
 }

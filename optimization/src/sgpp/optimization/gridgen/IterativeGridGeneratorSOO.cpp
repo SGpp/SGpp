@@ -17,18 +17,28 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, size_t maxLevel) :
+      ObjectiveFunction& f, base::Grid& grid, size_t N,
+      float_t adaptivity, size_t maxLevel) :
       IterativeGridGenerator(f, grid, N),
       maxLevel(maxLevel) {
+      setAdaptivity(adaptivity);
     }
 
-    /*float_t IterativeGridGeneratorSOO::getGamma() const {
-      return gamma;
+    IterativeGridGeneratorSOO::AdaptivityFunction
+    IterativeGridGeneratorSOO::getAdaptivity() const {
+      return hMax;
     }
 
-    void IterativeGridGeneratorSOO::setGamma(float_t gamma) {
-      this->gamma = gamma;
-    }*/
+    void IterativeGridGeneratorSOO::setAdaptivity(float_t adaptivity) {
+      hMax = [adaptivity](size_t n) {
+        return std::pow(n, adaptivity);
+      };
+    }
+
+    void IterativeGridGeneratorSOO::setAdaptivity(
+      IterativeGridGeneratorSOO::AdaptivityFunction adaptivity) {
+      hMax = adaptivity;
+    }
 
     size_t IterativeGridGeneratorSOO::getMaxLevel() const {
       return maxLevel;
@@ -93,9 +103,6 @@ namespace SGPP {
 
       size_t depthBoundOffset = 0;
       size_t n = 0;
-      auto depthBound = [](size_t n) {
-        return std::pow(n, 0.5);
-      };
       bool breakLoop = false;
 
       // iteration counter
@@ -115,7 +122,7 @@ namespace SGPP {
 
         const size_t curDepthBound =
           std::min(depthMap.size() - 1,
-                   static_cast<size_t>(depthBound(n)) + depthBoundOffset);
+                   static_cast<size_t>(hMax(n)) + depthBoundOffset);
         float_t nuMin = INFINITY;
 
         for (size_t depth = 0; depth <= curDepthBound; depth++) {

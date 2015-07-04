@@ -19,7 +19,7 @@ namespace SGPP {
      * Quadrature on sparse grid, polynomial grid without boundaries
      */
     class OperationQuadraturePolyBoundary : public OperationQuadrature {
-    public:
+      public:
         /**
          * Constructor of OperationQuadraturePoly
          *

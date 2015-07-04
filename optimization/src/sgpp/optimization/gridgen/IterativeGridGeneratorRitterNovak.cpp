@@ -38,19 +38,19 @@ namespace SGPP {
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
       ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t gamma, size_t maxLevel, PowMethod powMethod) :
+      float_t adaptivity, size_t maxLevel, PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
-      gamma(gamma),
+      gamma(adaptivity),
       maxLevel(maxLevel),
       powMethod(powMethod) {
     }
 
-    float_t IterativeGridGeneratorRitterNovak::getGamma() const {
+    float_t IterativeGridGeneratorRitterNovak::getAdaptivity() const {
       return gamma;
     }
 
-    void IterativeGridGeneratorRitterNovak::setGamma(float_t gamma) {
-      this->gamma = gamma;
+    void IterativeGridGeneratorRitterNovak::setAdaptivity(float_t adaptivity) {
+      this->gamma = adaptivity;
     }
 
     size_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {

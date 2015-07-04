@@ -13,57 +13,57 @@
 #include <iostream>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-PolyTruncatedBoundaryGrid::PolyTruncatedBoundaryGrid(std::istream& istr) :
-        Grid(istr), degree(1 << 16), basis_(NULL) {
-    istr >> degree;
-}
+    PolyTruncatedBoundaryGrid::PolyTruncatedBoundaryGrid(std::istream& istr) :
+      Grid(istr), degree(1 << 16), basis_(NULL) {
+      istr >> degree;
+    }
 
-PolyTruncatedBoundaryGrid::PolyTruncatedBoundaryGrid(size_t dim,
+    PolyTruncatedBoundaryGrid::PolyTruncatedBoundaryGrid(size_t dim,
         size_t degree) :
-        degree(degree), basis_(NULL) {
-    this->storage = new GridStorage(dim);
-}
-
-PolyTruncatedBoundaryGrid::~PolyTruncatedBoundaryGrid() {
-    if (basis_ != NULL) {
-      delete basis_;
-    }
-}
-
-const SBasis& PolyTruncatedBoundaryGrid::getBasis() {
-    if (basis_ == NULL) {
-      basis_ = new SPolyBoundaryBase(degree);
+      degree(degree), basis_(NULL) {
+      this->storage = new GridStorage(dim);
     }
 
-    return *basis_;
-}
+    PolyTruncatedBoundaryGrid::~PolyTruncatedBoundaryGrid() {
+      if (basis_ != NULL) {
+        delete basis_;
+      }
+    }
 
-const char* PolyTruncatedBoundaryGrid::getType() {
-    return "polyTruncatedBoundary";
-}
+    const SBasis& PolyTruncatedBoundaryGrid::getBasis() {
+      if (basis_ == NULL) {
+        basis_ = new SPolyBoundaryBase(degree);
+      }
 
-size_t PolyTruncatedBoundaryGrid::getDegree() const {
-    return this->degree;
-}
+      return *basis_;
+    }
 
-Grid* PolyTruncatedBoundaryGrid::unserialize(std::istream& istr) {
-    return new PolyTruncatedBoundaryGrid(istr);
-}
+    const char* PolyTruncatedBoundaryGrid::getType() {
+      return "polyTruncatedBoundary";
+    }
 
-void PolyTruncatedBoundaryGrid::serialize(std::ostream& ostr) {
-    this->Grid::serialize(ostr);
-    ostr << degree << std::endl;
-}
+    size_t PolyTruncatedBoundaryGrid::getDegree() const {
+      return this->degree;
+    }
 
-/**
- * Creates new GridGenerator
- * This must be changed if we add other storage types
- */
-GridGenerator* PolyTruncatedBoundaryGrid::createGridGenerator() {
-    return new TruncatedBoundaryGridGenerator(this->storage);
-}
+    Grid* PolyTruncatedBoundaryGrid::unserialize(std::istream& istr) {
+      return new PolyTruncatedBoundaryGrid(istr);
+    }
 
-}
+    void PolyTruncatedBoundaryGrid::serialize(std::ostream& ostr) {
+      this->Grid::serialize(ostr);
+      ostr << degree << std::endl;
+    }
+
+    /**
+     * Creates new GridGenerator
+     * This must be changed if we add other storage types
+     */
+    GridGenerator* PolyTruncatedBoundaryGrid::createGridGenerator() {
+      return new TruncatedBoundaryGridGenerator(this->storage);
+    }
+
+  }
 }

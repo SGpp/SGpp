@@ -7,6 +7,7 @@
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORSOO_HPP
 
 #include <cstddef>
+#include <functional>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
@@ -19,8 +20,10 @@ namespace SGPP {
      */
     class IterativeGridGeneratorSOO : public IterativeGridGenerator {
       public:
+        typedef std::function<size_t(size_t)> AdaptivityFunction;
+
         /// default adaptivity
-        //static constexpr float_t DEFAULT_GAMMA = 0.85;
+        static constexpr float_t DEFAULT_ADAPTIVITY = 0.5;
         /// default maximal level of grid points
         static const size_t DEFAULT_MAX_LEVEL = 20;
 
@@ -31,12 +34,13 @@ namespace SGPP {
          * @param f             objective function
          * @param grid          grid (should be empty)
          * @param N             maximal number of grid points
+         * @param adaptivity    adaptivity (positive number)
          * @param maxLevel      maximal level of grid points
          */
         IterativeGridGeneratorSOO(ObjectiveFunction& f,
                                   base::Grid& grid,
                                   size_t N,
-                                  //float_t gamma = DEFAULT_GAMMA,
+                                  float_t adaptivity = DEFAULT_ADAPTIVITY,
                                   size_t maxLevel = DEFAULT_MAX_LEVEL);
 
         /**
@@ -47,14 +51,21 @@ namespace SGPP {
         bool generate();
 
         /*
-         * @return      adaptivity
+         * @return            adaptivity (function of the form
+         *                    "iteration number --> maximal refinement depth")
          */
-        //float_t getGamma() const;
+        AdaptivityFunction getAdaptivity() const;
 
         /*
-         * @param gamma adaptivity
+         * @param adaptivity  adaptivity (positive number)
          */
-        //void setGamma(float_t gamma);
+        void setAdaptivity(float_t adaptivity);
+
+        /*
+         * @param adaptivity  adaptivity (function of the form
+         *                    "iteration number --> maximal refinement depth")
+         */
+        void setAdaptivity(AdaptivityFunction adaptivity);
 
         /**
          * @return          maximal level of grid points
@@ -68,7 +79,7 @@ namespace SGPP {
 
       protected:
         /// adaptivity
-        //float_t gamma;
+        AdaptivityFunction hMax;
         /// maximal level of grid points
         size_t maxLevel;
     };
