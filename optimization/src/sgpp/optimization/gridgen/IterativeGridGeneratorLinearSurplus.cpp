@@ -27,9 +27,9 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t gamma) :
+      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
       IterativeGridGenerator(f, grid, N),
-      gamma(gamma) {
+      gamma(adaptivity) {
       if ((std::strcmp(grid.getType(),
                        "bspline") == 0) ||
           (std::strcmp(grid.getType(),
@@ -75,12 +75,12 @@ namespace SGPP {
       }
     }
 
-    float_t IterativeGridGeneratorLinearSurplus::getGamma() const {
+    float_t IterativeGridGeneratorLinearSurplus::getAdaptivity() const {
       return gamma;
     }
 
-    void IterativeGridGeneratorLinearSurplus::setGamma(float_t gamma) {
-      this->gamma = gamma;
+    void IterativeGridGeneratorLinearSurplus::setAdaptivity(float_t adaptivity) {
+      this->gamma = adaptivity;
     }
 
     bool IterativeGridGeneratorLinearSurplus::generate() {
@@ -130,7 +130,6 @@ namespace SGPP {
         gridGen->regular(3);
       }
 
-      const size_t d = gridStorage.dim();
       size_t currentN = gridStorage.size();
       // coeffs always has as much elements as there are grid points in
       // the grid, but fX has N elements (no resizing during the main loop)

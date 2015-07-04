@@ -34,17 +34,21 @@ class TestGridGen(unittest.TestCase):
                  pysgpp.Grid.createModLinearGrid(d),
                  pysgpp.Grid.createWaveletGrid(d),
                  pysgpp.Grid.createWaveletTruncatedBoundaryGrid(d),
-                 pysgpp.Grid.createModWaveletGrid(d)]
+                 pysgpp.Grid.createModWaveletGrid(d),
+                 pysgpp.Grid.createFundamentalSplineGrid(d, 3),
+                 pysgpp.Grid.createModFundamentalSplineGrid(d, 3)]
         
         for grid in grids:
             # repeat for Ritter-Novak and linear surplus grid generation
-            for k in range(2):
+            for k in range(3):
                 # empty grid
                 grid.getStorage().emptyStorage()
                 if k == 0:
                     gridgen = pysgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, 0.85)
-                else:
+                elif k == 1:
                     gridgen = pysgpp.OptIterativeGridGeneratorLinearSurplus(f, grid, N, 0.2)
+                else:
+                    gridgen = pysgpp.OptIterativeGridGeneratorSOO(f, grid, N, 0.5)
                 
                 # generate grid
                 self.assertTrue(gridgen.generate())
