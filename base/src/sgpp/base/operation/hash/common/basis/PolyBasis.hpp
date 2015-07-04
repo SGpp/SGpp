@@ -117,7 +117,8 @@ namespace SGPP {
           // away from the current one.
           root++;
           // add it to the Lagrange polynomial and normalize it
-          eval *= (p - root) / (base - root);
+          eval *= (p - static_cast<float_t>(root)) /
+                  (base - static_cast<float_t>(root));
           // go to the next left neighbor that must exist due to minimum degree of 2 of
           // the polynomial. the reference point is now the last one stored in root, which
           // is the right neighbor of p. So here we need to go 2 units of h to the left.
@@ -125,9 +126,10 @@ namespace SGPP {
 
           // p - 1 runs in this loop: so in total the polynomial has a degree of p taking
           // into account that the first root has been added already
-          for (size_t j = 2; j < (1 << deg); j *= 2) {
+          for (size_t j = 2; j < (static_cast<size_t>(1) << deg); j *= 2) {
             // add the next root to the polynomial
-            eval *= (p - root) / (base - root);
+            eval *= (p - static_cast<float_t>(root)) /
+                    (base - static_cast<float_t>(root));
             // take last two indices (id & 3): this gives you the information where to
             // look for the next root. The result needs to be scaled with j due to the fact
             // that we calculate the roots in units of h. We go bottom up, therefore the
@@ -147,7 +149,7 @@ namespace SGPP {
 
         float_t evalSave(LT level, IT index, float_t p) {
           // spacing on current level
-          float_t h = 1.0f / (1 << level);
+          float_t h = 1.0f / static_cast<float_t>(1 << level);
 
           // check if p is out of bounds
           if (p <= h * (index - 1) || p >= h * (index + 1)) {
