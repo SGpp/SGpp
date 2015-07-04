@@ -86,7 +86,7 @@ namespace SGPP {
     }
 
     Grid* Grid::createPolyTruncatedBoundaryGrid(size_t dim, size_t degree) {
-        return new PolyTruncatedBoundaryGrid(dim, degree);
+      return new PolyTruncatedBoundaryGrid(dim, degree);
     }
 
     Grid* Grid::createWaveletGrid(size_t dim) {

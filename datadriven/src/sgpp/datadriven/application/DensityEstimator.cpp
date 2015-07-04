@@ -12,47 +12,49 @@ using namespace std;
 using namespace SGPP::base;
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-// -------------------- constructors and desctructors --------------------
-DensityEstimator::DensityEstimator() :
-        samples(0, 0) {
-}
+    // -------------------- constructors and desctructors --------------------
+    DensityEstimator::DensityEstimator() :
+      samples(0, 0) {
+    }
 
-DensityEstimator::DensityEstimator(DataMatrix& samples) :
-        samples(samples) {
-}
+    DensityEstimator::DensityEstimator(DataMatrix& samples) :
+      samples(samples) {
+    }
 
-DensityEstimator::~DensityEstimator() {
-}
-// ----------------------------------------------------------------------
+    DensityEstimator::~DensityEstimator() {
+    }
+    // ----------------------------------------------------------------------
 
-DataMatrix* DensityEstimator::getSamples() {
-    return &samples;
-}
+    DataMatrix* DensityEstimator::getSamples() {
+      return &samples;
+    }
 
-void DensityEstimator::corrcoef(DataMatrix& corr) {
-    // get covariance matrix and ...
-    cov(corr);
+    void DensityEstimator::corrcoef(DataMatrix& corr) {
+      // get covariance matrix and ...
+      cov(corr);
 
-    // ... normalize it
-    float_t corrij = 0.0;
-    float_t sigmai = 0.0, sigmaj = 0.0;
-    size_t ndim = corr.getNcols();
+      // ... normalize it
+      float_t corrij = 0.0;
+      float_t sigmai = 0.0, sigmaj = 0.0;
+      size_t ndim = corr.getNcols();
 
-    for (size_t idim = 0; idim < ndim; idim++) {
+      for (size_t idim = 0; idim < ndim; idim++) {
         // normalize row idim but the diagonal element
         sigmai = sqrt(corr.get(idim, idim));
+
         for (size_t jdim = idim + 1; jdim < ndim; jdim++) {
-            sigmaj = sqrt(corr.get(jdim, jdim));
-            corrij = corr.get(idim, jdim) / (sigmai * sigmaj);
-            corr.set(idim, jdim, corrij);
-            corr.set(jdim, idim, corrij);
+          sigmaj = sqrt(corr.get(jdim, jdim));
+          corrij = corr.get(idim, jdim) / (sigmai * sigmaj);
+          corr.set(idim, jdim, corrij);
+          corr.set(jdim, idim, corrij);
         }
+
         // set the diagonal element
         corr.set(idim, idim, 1.0);
+      }
     }
-}
 
-} /* namespace datadriven */
+  } /* namespace datadriven */
 } /* namespace sg */

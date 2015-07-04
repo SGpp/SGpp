@@ -13,43 +13,43 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace base {
-
-/**
- * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
- */
-class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
-public:
-    /**
-     * Constructor
-     *
-     * @param grid the grid
-     * @param degree the polynom's max. degree
-     * @param dataset Dataset
-     */
-    OperationMultipleEvalPolyBoundary(Grid& grid, size_t degree,
-            DataMatrix& dataset) :
-            OperationMultipleEval(grid, dataset), base(degree) {
-        this->storage = grid.getStorage();
-    }
+  namespace base {
 
     /**
-     * Destructor
+     * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
      */
-    virtual ~OperationMultipleEvalPolyBoundary() {
-    }
+    class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
+      public:
+        /**
+         * Constructor
+         *
+         * @param grid the grid
+         * @param degree the polynom's max. degree
+         * @param dataset Dataset
+         */
+        OperationMultipleEvalPolyBoundary(Grid& grid, size_t degree,
+                                          DataMatrix& dataset) :
+          OperationMultipleEval(grid, dataset), base(degree) {
+          this->storage = grid.getStorage();
+        }
 
-    virtual void mult(DataVector& alpha, DataVector& result);
-    virtual void multTranspose(DataVector& source, DataVector& result);
+        /**
+         * Destructor
+         */
+        virtual ~OperationMultipleEvalPolyBoundary() {
+        }
 
-protected:
-    /// Pointer to GridStorage object
-    GridStorage* storage;
-    /// Poly Basis object
-    SPolyBoundaryBase base;
-};
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
-}
+      protected:
+        /// Pointer to GridStorage object
+        GridStorage* storage;
+        /// Poly Basis object
+        SPolyBoundaryBase base;
+    };
+
+  }
 }
 
 #endif /* OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP */
