@@ -14,39 +14,39 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-class OperationNaiveEvalPoly: public base::OperationNaiveEval {
-public:
+    class OperationNaiveEvalPoly: public base::OperationNaiveEval {
+      public:
 
-    /**
-     * Constructor.
-     *
-     * @param storage   storage of the sparse grid
-     * @param degree    polynomial degree
-     */
-    OperationNaiveEvalPoly(base::GridStorage* storage, size_t degree) :
-            storage(storage), base(degree) {
-    }
+        /**
+         * Constructor.
+         *
+         * @param storage   storage of the sparse grid
+         * @param degree    polynomial degree
+         */
+        OperationNaiveEvalPoly(base::GridStorage* storage, size_t degree) :
+          storage(storage), base(degree) {
+        }
 
-    virtual ~OperationNaiveEvalPoly() {
-    }
+        virtual ~OperationNaiveEvalPoly() {
+        }
 
-    /**
-     * @param alpha     coefficient vector
-     * @param point     evaluation point
-     * @return          value of linear combination
-     */
-    virtual float_t eval(base::DataVector& alpha, base::DataVector& point);
+        /**
+         * @param alpha     coefficient vector
+         * @param point     evaluation point
+         * @return          value of linear combination
+         */
+        virtual float_t eval(base::DataVector& alpha, base::DataVector& point);
 
-protected:
-    /// storage of the sparse grid
-    base::GridStorage* storage;
-    /// 1D B-spline basis
-    SPolyBase base;
-};
+      protected:
+        /// storage of the sparse grid
+        base::GridStorage* storage;
+        /// 1D B-spline basis
+        SPolyBase base;
+    };
 
-} /* namespace base */
+  } /* namespace base */
 } /* namespace SGPP */
 
 #endif /* BASE_SRC_SGPP_BASE_OPERATION_HASH_OPERATIONNAIVEEVALPOLY_HPP_ */

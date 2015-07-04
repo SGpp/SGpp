@@ -12,31 +12,31 @@
 #include <sgpp/base/algorithm/sweep.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-void OperationHierarchisationPolyBoundary::doHierarchisation(
-        DataVector& node_values) {
+    void OperationHierarchisationPolyBoundary::doHierarchisation(
+      DataVector& node_values) {
 
-    HierarchisationPolyBoundary func(this->storage, &this->base);
-    sweep<HierarchisationPolyBoundary> s(func, this->storage);
+      HierarchisationPolyBoundary func(this->storage, &this->base);
+      sweep<HierarchisationPolyBoundary> s(func, this->storage);
 
-    // Execute hierarchisation in every dimension of the grid
-    for (size_t i = 0; i < this->storage->dim(); i++) {
+      // Execute hierarchisation in every dimension of the grid
+      for (size_t i = 0; i < this->storage->dim(); i++) {
         s.sweep1D_Boundary(node_values, node_values, i);
+      }
     }
-}
 
-void OperationHierarchisationPolyBoundary::doDehierarchisation(
-        DataVector& alpha) {
-    DehierarchisationPolyBoundary func(this->storage, &this->base);
-    sweep<DehierarchisationPolyBoundary> s(func, this->storage);
+    void OperationHierarchisationPolyBoundary::doDehierarchisation(
+      DataVector& alpha) {
+      DehierarchisationPolyBoundary func(this->storage, &this->base);
+      sweep<DehierarchisationPolyBoundary> s(func, this->storage);
 
-    // Execute hierarchisation in every dimension of the grid
-    for (size_t i = 0; i < this->storage->dim(); i++) {
+      // Execute hierarchisation in every dimension of the grid
+      for (size_t i = 0; i < this->storage->dim(); i++) {
         DataVector source(alpha);
         s.sweep1D_Boundary(source, alpha, i);
+      }
     }
-}
 
-}
+  }
 }

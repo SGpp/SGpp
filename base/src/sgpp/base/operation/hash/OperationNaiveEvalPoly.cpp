@@ -6,34 +6,34 @@
 #include "OperationNaiveEvalPoly.hpp"
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-float_t OperationNaiveEvalPoly::eval(DataVector& alpha, DataVector& point) {
-    const size_t n = storage->size();
-    const size_t dim = storage->dim();
-    float_t result = 0.0;
+    float_t OperationNaiveEvalPoly::eval(DataVector& alpha, DataVector& point) {
+      const size_t n = storage->size();
+      const size_t dim = storage->dim();
+      float_t result = 0.0;
 
-    for (size_t i = 0; i < n; i++) {
+      for (size_t i = 0; i < n; i++) {
         const GridIndex* gp = storage->get(i);
         float_t cur_val = 1.0;
 
         for (size_t idim = 0; idim < dim; idim++) {
-            float_t val1d = base.evalSave(gp->getLevel(idim), gp->getIndex(idim),
-                    point[idim]);
+          float_t val1d = base.evalSave(gp->getLevel(idim), gp->getIndex(idim),
+                                        point[idim]);
 
-            if (val1d == 0.0) {
-                cur_val = 0.0;
-                break;
-            }
+          if (val1d == 0.0) {
+            cur_val = 0.0;
+            break;
+          }
 
-            cur_val *= val1d;
+          cur_val *= val1d;
         }
 
         result += alpha[i] * cur_val;
+      }
+
+      return result;
     }
 
-    return result;
-}
-
-} /* namespace base */
+  } /* namespace base */
 } /* namespace SGPP */
