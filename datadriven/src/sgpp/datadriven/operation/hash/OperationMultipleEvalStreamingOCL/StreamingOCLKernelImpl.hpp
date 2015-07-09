@@ -169,13 +169,13 @@ public:
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
-        cl_uint gpu_start_grid = (cl_uint) start_index_grid / (cl_uint) dataBlockingSize;
-        cl_uint gpu_end_grid = (cl_uint) end_index_grid / (cl_uint) dataBlockingSize;
+        cl_uint gpu_start_grid = (cl_uint) start_index_grid;
+        cl_uint gpu_end_grid = (cl_uint) end_index_grid;
         //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
         for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i];
-            cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i];
+            cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i] / (cl_uint) dataBlockingSize;
+            cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i] / (cl_uint) dataBlockingSize;
             //      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
             if (gpu_end_data > gpu_start_data) {

@@ -137,12 +137,18 @@ std::string StreamingOCLKernelSourceBuilder::unrolledBasisFunctionEvalulation(si
 
         output << indent3 << "dimLevelIndex = " << "(k * " << dims << ") + " << pointerAccess << ";" << std::endl;
 
-        output << "     eval = (" << levelAccess << " * " << getData(dString, 0) << ");" << std::endl;
-        output << "     index_calc = eval - " << indexAccess << ";" << std::endl;
-        output << "     abs = fabs(index_calc);" << std::endl;
-        output << "     last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-        output << "     localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-        output << "     curSupport *= localSupport;" << std::endl << std::endl;
+        for (size_t i = 0; i < dataBlockSize; i++) {
+            output << indent3 << "curSupport_" << i << " *= fmax(1.0" << this->constSuffix() << " - fabs((";
+            output << levelAccess << " * " << getData(dString, i) << ") - " << indexAccess << "), 0.0"
+                    << this->constSuffix() << ");" << std::endl;
+        }
+
+//        output << "     eval = (" << levelAccess << " * " << getData(dString, 0) << ");" << std::endl;
+//        output << "     index_calc = eval - " << indexAccess << ";" << std::endl;
+//        output << "     abs = fabs(index_calc);" << std::endl;
+//        output << "     last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
+//        output << "     localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
+//        output << "     curSupport *= localSupport;" << std::endl << std::endl;
 
     }
     return output.str();

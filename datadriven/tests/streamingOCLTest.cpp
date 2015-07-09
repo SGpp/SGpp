@@ -150,7 +150,8 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
-    std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
+    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+            "friedman_4d.arff.gz", 1E-26), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-24) };
 
     uint32_t level = 4;
     //  uint32_t level = 3;
@@ -172,16 +173,17 @@ BOOST_AUTO_TEST_CASE(Simple) {
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
     double mse;
 
-    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
     parameters["PLATFORM"] = "NVIDIA CUDA";
     parameters["SELECT_SPECIFIC_DEVICE"] = "0";
     parameters["MAX_DEVICES"] = "1";
-    for (std::string fileName : fileNames) {
-        mse = compareToReference(fileName, level, adaptConfig, configuration);
-        BOOST_CHECK(mse < 10E-14);
+    parameters["WRITE_SOURCE"] = "true";
+    for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
 
@@ -233,7 +235,8 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
-    std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
+    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+            "friedman_4d.arff.gz", 1E-26), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-24) };
 
     uint32_t level = 4;
     //  uint32_t level = 3;
@@ -256,16 +259,16 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
     double mse;
 
-    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
     parameters["PLATFORM"] = "NVIDIA CUDA";
     parameters["MAX_DEVICES"] = "1";
     parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
-    for (std::string fileName : fileNames) {
-        mse = compareToReference(fileName, level, adaptConfig, configuration);
-        BOOST_CHECK(mse < 10E-14);
+    for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
 
@@ -294,7 +297,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters["INTERNAL_PRECISION"] = "float";
     double mse;
 
-    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
@@ -333,7 +336,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters["INTERNAL_PRECISION"] = "float";
     double mse;
 
-    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
@@ -372,7 +375,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     parameters["INTERNAL_PRECISION"] = "float";
     double mse;
 
-    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
