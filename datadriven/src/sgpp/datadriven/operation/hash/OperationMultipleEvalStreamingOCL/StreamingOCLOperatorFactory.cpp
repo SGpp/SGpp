@@ -23,6 +23,9 @@ base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base
         defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "false";
         defaultParameter["KERNEL_MAX_DIM_UNROLL"] = "10";
         defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+        defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+        defaultParameter["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+        defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
         parameters = new base::OCLConfigurationParameters("StreamingOCL.cfg", defaultParameter);
     }

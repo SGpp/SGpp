@@ -201,6 +201,7 @@ private:
     SGPP::base::DataMatrix& dataset) {
 
         //TODO: padding has to be least common multiple of "LOCAL_SIZE" and "KERNEL_DATA_BLOCKING_SIZE" and "KERNEL_TRANS_DATA_BLOCK_SIZE"
+        //TODO: choose max from DATA_BLOCKING_SIZE and TRANS_DATA_BLOCKING_SIZE
         size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE")
                 * parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
 
