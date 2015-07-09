@@ -41,7 +41,7 @@ base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(ba
         std::cout << "KERNEL_DATA_BLOCKING_SIZE: " << (*parameters)["KERNEL_DATA_BLOCKING_SIZE"] << std::endl;
         std::cout << "KERNEL_TRANS_DATA_BLOCK_SIZE: " << (*parameters)["KERNEL_TRANS_DATA_BLOCK_SIZE"] << std::endl;
         std::cout << "KERNEL_TRANS_GRID_BLOCK_SIZE: " << (*parameters)["KERNEL_TRANS_GRID_BLOCK_SIZE"] << std::endl;
-        std::cout << "KERNEL_TRANS_UNROLL_1D: " << (*parameters)["KERNEL_TRANS_UNROLL_1D"] << std::endl;
+        std::cout << "KERNEL_MAX_DIM_UNROLL: " << (*parameters)["KERNEL_MAX_DIM_UNROLL"] << std::endl;
         std::cout << "KERNEL_STORE_DATA: " << (*parameters)["KERNEL_STORE_DATA"] << std::endl;
     }
 

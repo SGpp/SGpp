@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 //    std::string fileName = "debugging.arff";
     std::string fileName = "friedman_4d.arff";
 
-    uint32_t level = 9;
+    uint32_t level = 4;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -75,9 +75,9 @@ int main(int argc, char** argv) {
     std::cout << "number of grid points: " << gridStorage->size() << std::endl;
     std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
 
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(1, 100);
+//    std::random_device rd;
+//    std::mt19937 mt(rd());
+//    std::uniform_real_distribution<double> dist(1, 100);
 
     SGPP::base::DataVector dataSizeVector(dataset.getNumberInstances());
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     SGPP::base::OperationMultipleEval* eval =
     SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
 
-    doAllRefinements(adaptConfig, *grid, *gridGen, mt, dist);
+//    doAllRefinements(adaptConfig, *grid, *gridGen, mt, dist);
 
     std::cout << "number of grid points after refinement: " << gridStorage->size() << std::endl;
     std::cout << "grid set up" << std::endl;
@@ -115,8 +115,7 @@ int main(int argc, char** argv) {
     double mse = 0.0;
 
     for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
-        //    std::cout << "comp: " << (alphaResult[i] - alphaResultCompare[i])
-        //        << std::endl;
+        std::cout << "alphaRes: " << alphaResult[i] << " alphaResComp: " << alphaResultCompare[i] << std::endl;
         mse += (alphaResult[i] - alphaResultCompare[i]) * (alphaResult[i] - alphaResultCompare[i]);
     }
 

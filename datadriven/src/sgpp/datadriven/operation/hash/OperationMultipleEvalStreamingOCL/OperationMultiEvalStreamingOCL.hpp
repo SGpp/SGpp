@@ -184,7 +184,11 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+
+        size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
+        size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE") * blockingPadRequirements;
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -211,7 +215,12 @@ private:
         if (this->index != nullptr)
             delete this->index;
 
-        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+
+        size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
+
+        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE") * blockingPadRequirements;
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

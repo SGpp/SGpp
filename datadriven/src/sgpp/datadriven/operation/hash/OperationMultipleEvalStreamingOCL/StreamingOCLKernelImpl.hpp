@@ -60,8 +60,8 @@ public:
 
     StreamingOCLKernelImpl(size_t dims, base::OCLManager& manager, base::OCLConfigurationParameters parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
-                    parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
-                    manager, this->parameters) {
+                    parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
+                    this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
 
         this->dims = dims;
         this->num_devices = manager.num_devices;
@@ -162,13 +162,15 @@ public:
         size_t* gpu_end_index_data = new size_t[num_devices];
 
         multLoadBalancer.update(this->deviceTimingsMult);
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters.getAsUnsigned("LOCAL_SIZE"),
-                gpu_start_index_data, gpu_end_index_data);
+
+        size_t dataBlockingSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
+                parameters.getAsUnsigned("LOCAL_SIZE") * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
-        cl_uint gpu_start_grid = (cl_uint) start_index_grid;
-        cl_uint gpu_end_grid = (cl_uint) end_index_grid;
+        cl_uint gpu_start_grid = (cl_uint) start_index_grid / (cl_uint) dataBlockingSize;
+        cl_uint gpu_end_grid = (cl_uint) end_index_grid / (cl_uint) dataBlockingSize;
         //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
         for (size_t i = 0; i < num_devices; i++) {
@@ -199,11 +201,14 @@ public:
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
-            size_t rangeSize = gpu_end_index_data[i] - gpu_start_index_data[i];
+            size_t rangeSize = (gpu_end_index_data[i] / dataBlockingSize)
+                    - (gpu_start_index_data[i] / dataBlockingSize);
 
             if (rangeSize > 0) {
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i], &rangeSize,
-                        &local, 0, nullptr, &(clTimings[i]));
+
+                size_t dataOffset = gpu_start_index_data[i] / dataBlockingSize;
+                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &dataOffset, &rangeSize, &local, 0,
+                        nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
                     std::stringstream errorString;
@@ -292,6 +297,7 @@ public:
         }
 
         double time = 0.0;
+        size_t gridBlockingSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
         if (kernel_multTrans[0] == nullptr) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
@@ -307,12 +313,12 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters.getAsUnsigned("LOCAL_SIZE"), gpu_start_index_grid, gpu_end_index_grid);
+                parameters.getAsUnsigned("LOCAL_SIZE") * gridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
-        cl_uint gpu_start_data = (cl_uint) start_index_data;
-        cl_uint gpu_end_data = (cl_uint) end_index_data;
+        cl_uint gpu_start_data = (cl_uint) start_index_data / (cl_uint) gridBlockingSize;
+        cl_uint gpu_end_data = (cl_uint) end_index_data / (cl_uint) gridBlockingSize;
 
         //    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
@@ -322,6 +328,9 @@ public:
             //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
             if (gpu_end_grid > gpu_start_grid) {
+                //TODO: add this as argument for multi-platform support
+                //size_t resultOffset = gpu_start_index_grid[i] / gridBlockingSize; //based on work groups, cannot be transmitted through global_work_offset mechanism
+
                 if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
                 clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
                 clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
@@ -344,7 +353,8 @@ public:
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
-            size_t rangeSize = gpu_end_index_grid[i] - gpu_start_index_grid[i];
+            size_t rangeSize = (gpu_end_index_grid[i] / gridBlockingSize)
+                    - (gpu_start_index_grid[i] / gridBlockingSize);
 
             if (rangeSize > 0) {
                 //      std::cout << "enqueuing device: " << i << std::endl;

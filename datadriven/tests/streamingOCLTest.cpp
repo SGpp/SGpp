@@ -136,7 +136,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     double mse = 0.0;
 
     for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-        BOOST_TEST_MESSAGE("mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i]);
+//        BOOST_TEST_MESSAGE("mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i]);
         mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
                 * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
     }
@@ -146,46 +146,46 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     return mse;
 }
 
+BOOST_AUTO_TEST_CASE(Simple) {
+
+    //  std::string fileName = "friedman2_90000.arff";
+    //    std::string fileName = "debugging.arff";
+    std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
+
+    uint32_t level = 4;
+    //  uint32_t level = 3;
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 0;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
+    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+
+    SGPP::base::OCLConfigurationParameters parameters;
+    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
+    parameters["OCL_MANAGER_VERBOSE"] = "false";
+    parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+    double mse;
+
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_STORE_DATA"] = "array";
+    parameters["PLATFORM"] = "NVIDIA CUDA";
+    parameters["SELECT_SPECIFIC_DEVICE"] = "0";
+    parameters["MAX_DEVICES"] = "1";
+    for (std::string fileName : fileNames) {
+        mse = compareToReference(fileName, level, adaptConfig, configuration);
+        BOOST_CHECK(mse < 10E-14);
+    }
+}
+
 /*
- BOOST_AUTO_TEST_CASE(Simple) {
-
- //  std::string fileName = "friedman2_90000.arff";
- //    std::string fileName = "debugging.arff";
- std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
-
- uint32_t level = 4;
- //  uint32_t level = 3;
-
- SGPP::base::AdpativityConfiguration adaptConfig;
- adaptConfig.maxLevelType_ = false;
- adaptConfig.noPoints_ = 80;
- adaptConfig.numRefinements_ = 0;
- adaptConfig.percent_ = 200.0;
- adaptConfig.threshold_ = 0.0;
-
- SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
- configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
- configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
- SGPP::base::OCLConfigurationParameters parameters;
- configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
- parameters["OCL_MANAGER_VERBOSE"] = "false";
- parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
- double mse;
-
- parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
- parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
- parameters["KERNEL_STORE_DATA"] = "array";
- parameters["PLATFORM"] = "first";
- parameters["SELECT_SPECIFIC_DEVICE"] = "0";
- parameters["MAX_DEVICES"] = "1";
- for (std::string fileName : fileNames) {
- mse = compareToReference(fileName, level, adaptConfig, configuration);
- BOOST_CHECK(mse < 10E-14);
- }
- }
- */
-
 BOOST_AUTO_TEST_CASE(Blocking) {
 
     //  std::string fileName = "friedman2_90000.arff";
@@ -214,11 +214,12 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
-    parameters["KERNEL_STORE_DATA"] = "array";
-    parameters["PLATFORM"] = "first";
+    parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_STORE_DATA"] = "register";
+    parameters["PLATFORM"] = "NVIDIA CUDA";
     parameters["MAX_DEVICES"] = "1";
     parameters["WRITE_SOURCE"] = "true";
-    parameters["KERNEL_MAX_DIM_UNROLL"] = "1";
+    parameters["KERNEL_MAX_DIM_UNROLL"] = "10";
     parameters["SELECT_SPECIFIC_DEVICE"] = "0";
     parameters["REUSE_SOURCE"] = "false";
     for (std::string fileName : fileNames) {
@@ -226,153 +227,160 @@ BOOST_AUTO_TEST_CASE(Blocking) {
         BOOST_CHECK(mse < 10E-14);
     }
 }
+*/
+
+BOOST_AUTO_TEST_CASE(MultiDevice) {
+
+    //  std::string fileName = "friedman2_90000.arff";
+    //    std::string fileName = "debugging.arff";
+    std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
+
+    uint32_t level = 4;
+    //  uint32_t level = 3;
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 0;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
+    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+
+    SGPP::base::OCLConfigurationParameters parameters;
+    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
+    parameters["OCL_MANAGER_VERBOSE"] = "false";
+    parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+
+    double mse;
+
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_STORE_DATA"] = "array";
+    parameters["PLATFORM"] = "NVIDIA CUDA";
+    parameters["MAX_DEVICES"] = "1";
+    parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
+    for (std::string fileName : fileNames) {
+        mse = compareToReference(fileName, level, adaptConfig, configuration);
+        BOOST_CHECK(mse < 10E-14);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
+
+    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+            "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
+
+    uint32_t level = 4;
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 0;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
+    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+
+    SGPP::base::OCLConfigurationParameters parameters;
+    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
+    parameters["OCL_MANAGER_VERBOSE"] = "false";
+    parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+    parameters["INTERNAL_PRECISION"] = "float";
+    double mse;
+
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_STORE_DATA"] = "array";
+    parameters["PLATFORM"] = "NVIDIA CUDA";
+    parameters["MAX_DEVICES"] = "1";
+    parameters["SELECT_SPECIFIC_DEVICE"] = "0";
+    for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        BOOST_CHECK(mse < std::get<1>(fileNameError));
+    }
+}
+
 /*
- BOOST_AUTO_TEST_CASE(MultiDevice) {
+BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
- //  std::string fileName = "friedman2_90000.arff";
- //    std::string fileName = "debugging.arff";
- std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
+    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+            "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
 
- uint32_t level = 4;
- //  uint32_t level = 3;
+    uint32_t level = 4;
 
- SGPP::base::AdpativityConfiguration adaptConfig;
- adaptConfig.maxLevelType_ = false;
- adaptConfig.noPoints_ = 80;
- adaptConfig.numRefinements_ = 0;
- adaptConfig.percent_ = 200.0;
- adaptConfig.threshold_ = 0.0;
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 0;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
 
- SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
- configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
- configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
+    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 
- SGPP::base::OCLConfigurationParameters parameters;
- configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
- parameters["OCL_MANAGER_VERBOSE"] = "false";
- parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
- double mse;
+    SGPP::base::OCLConfigurationParameters parameters;
+    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
+    parameters["OCL_MANAGER_VERBOSE"] = "false";
+    parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+    parameters["INTERNAL_PRECISION"] = "float";
+    double mse;
 
- parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
- parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
- parameters["KERNEL_STORE_DATA"] = "array";
- parameters["PLATFORM"] = "first";
- parameters["MAX_DEVICES"] = "1";
- parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
- for (std::string fileName : fileNames) {
- mse = compareToReference(fileName, level, adaptConfig, configuration);
- BOOST_CHECK(mse < 10E-14);
- }
- }
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
+    parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_STORE_DATA"] = "array";
+    parameters["PLATFORM"] = "NVIDIA CUDA";
+    parameters["MAX_DEVICES"] = "1";
+    parameters["SELECT_SPECIFIC_DEVICE"] = "0";
+    for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        BOOST_CHECK(mse < std::get<1>(fileNameError));
+    }
+}
+*/
 
- BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
+BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
- std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
- "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
+    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+            "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
 
- uint32_t level = 4;
+    uint32_t level = 4;
 
- SGPP::base::AdpativityConfiguration adaptConfig;
- adaptConfig.maxLevelType_ = false;
- adaptConfig.noPoints_ = 80;
- adaptConfig.numRefinements_ = 0;
- adaptConfig.percent_ = 200.0;
- adaptConfig.threshold_ = 0.0;
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 0;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
 
- SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
- configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
- configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
+    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
 
- SGPP::base::OCLConfigurationParameters parameters;
- configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
- parameters["OCL_MANAGER_VERBOSE"] = "false";
- parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
- parameters["INTERNAL_PRECISION"] = "float";
- double mse;
+    SGPP::base::OCLConfigurationParameters parameters;
+    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
+    parameters["OCL_MANAGER_VERBOSE"] = "false";
+    parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
+    parameters["INTERNAL_PRECISION"] = "float";
+    double mse;
 
- parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
- parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
- parameters["KERNEL_STORE_DATA"] = "array";
- parameters["PLATFORM"] = "first";
- parameters["MAX_DEVICES"] = "1";
- parameters["SELECT_SPECIFIC_DEVICE"] = "0";
- for (std::tuple<std::string, double> fileNameError : fileNamesError) {
- mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
- BOOST_CHECK(mse < std::get<1>(fileNameError));
- }
- }
-
- BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
-
- std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
- "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
-
- uint32_t level = 4;
-
- SGPP::base::AdpativityConfiguration adaptConfig;
- adaptConfig.maxLevelType_ = false;
- adaptConfig.noPoints_ = 80;
- adaptConfig.numRefinements_ = 0;
- adaptConfig.percent_ = 200.0;
- adaptConfig.threshold_ = 0.0;
-
- SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
- configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
- configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
- SGPP::base::OCLConfigurationParameters parameters;
- configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
- parameters["OCL_MANAGER_VERBOSE"] = "false";
- parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
- parameters["INTERNAL_PRECISION"] = "float";
- double mse;
-
- parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
- parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
- parameters["KERNEL_STORE_DATA"] = "array";
- parameters["PLATFORM"] = "first";
- parameters["MAX_DEVICES"] = "1";
- parameters["SELECT_SPECIFIC_DEVICE"] = "0";
- for (std::tuple<std::string, double> fileNameError : fileNamesError) {
- mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
- BOOST_CHECK(mse < std::get<1>(fileNameError));
- }
- }
-
- BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
-
- std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
- "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
-
- uint32_t level = 4;
-
- SGPP::base::AdpativityConfiguration adaptConfig;
- adaptConfig.maxLevelType_ = false;
- adaptConfig.noPoints_ = 80;
- adaptConfig.numRefinements_ = 0;
- adaptConfig.percent_ = 200.0;
- adaptConfig.threshold_ = 0.0;
-
- SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
- configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
- configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
- SGPP::base::OCLConfigurationParameters parameters;
- configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
- parameters["OCL_MANAGER_VERBOSE"] = "false";
- parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
- parameters["INTERNAL_PRECISION"] = "float";
- double mse;
-
- parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
- parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
- parameters["KERNEL_STORE_DATA"] = "array";
- parameters["PLATFORM"] = "first";
- parameters["MAX_DEVICES"] = "1";
- parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
- for (std::tuple<std::string, double> fileNameError : fileNamesError) {
- mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
- BOOST_CHECK(mse < std::get<1>(fileNameError));
- }
- }
- */
+    parameters["KERNEL_USE_LOCAL_MEMORY"] = "true";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_STORE_DATA"] = "array";
+    parameters["PLATFORM"] = "NVIDIA CUDA";
+    parameters["MAX_DEVICES"] = "1";
+    parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
+    for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        BOOST_CHECK(mse < std::get<1>(fileNameError));
+    }
+}
