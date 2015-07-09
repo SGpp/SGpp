@@ -11,6 +11,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -27,15 +28,13 @@ namespace SGPP {
          *
          * @param grid      grid
          */
-        OperationMultipleHierarchisationFundamentalSpline(base::FundamentalSplineGrid& grid) :
-          grid(grid) {
-        }
+        OperationMultipleHierarchisationFundamentalSpline(
+          base::FundamentalSplineGrid& grid);
 
         /**
          * Virtual destructor.
          */
-        virtual ~OperationMultipleHierarchisationFundamentalSpline() {
-        }
+        virtual ~OperationMultipleHierarchisationFundamentalSpline();
 
         /**
          * @param[in,out] nodeValues before: vector of function values at
@@ -53,28 +52,25 @@ namespace SGPP {
         virtual void doDehierarchisation(base::DataVector& alpha);
 
         /**
-         * @param[in,out] nodeValues before: vector of function values at
+         * @param[in,out] nodeValues before: matrix of function values at
          *                           the grid points,
-         *                           after: vector of hierarchical coefficients
+         *                           after: matrix of hierarchical coefficients
          * @return                   whether hierarchisation was successful
          */
-        virtual bool doHierarchisation(
-          std::vector<base::DataVector>& nodeValues);
+        virtual bool doHierarchisation(base::DataMatrix& nodeValues);
 
         /**
-         * @param[in,out] alpha before: vector of hierarchical coefficients,
-         *                      after: vector of function values at
+         * @param[in,out] alpha before: matrix of hierarchical coefficients,
+         *                      after: matrix of function values at
          *                      the grid points
          */
-        virtual void doDehierarchisation(
-          std::vector<base::DataVector>& alpha);
+        virtual void doDehierarchisation(base::DataMatrix& alpha);
 
       protected:
         /// storage of the sparse grid
         base::FundamentalSplineGrid& grid;
-
-        bool doBFS(const std::vector<base::DataVector>& nodeValues,
-                   std::vector<base::DataVector>& alpha);
+        /// hierarchization operation
+        base::OperationHierarchisationFundamentalSpline op;
     };
 
   }

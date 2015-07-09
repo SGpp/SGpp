@@ -11,6 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 
 namespace SGPP {
@@ -57,24 +58,22 @@ namespace SGPP {
          * Pure virtual method for hierarchizing for multiple sets of
          * function values.
          *
-         * @param[in,out] nodeValues before: vector of function values at
+         * @param[in,out] nodeValues before: matrix of function values at
          *                           the grid points,
-         *                           after: vector of hierarchical coefficients
+         *                           after: matrix of hierarchical coefficients
          * @return                   whether hierarchisation was successful
          */
-        virtual bool doHierarchisation(
-          std::vector<base::DataVector>& nodeValues) = 0;
+        virtual bool doHierarchisation(base::DataMatrix& nodeValues) = 0;
 
         /**
          * Pure virtual method for dehierarchizing for multiple sets of
          * coefficients.
          *
-         * @param[in,out] alpha before: vector of hierarchical coefficients,
-         *                      after: vector of function values at
+         * @param[in,out] alpha before: matrix of hierarchical coefficients,
+         *                      after: matrix of function values at
          *                      the grid points
          */
-        virtual void doDehierarchisation(
-          std::vector<base::DataVector>& alpha) = 0;
+        virtual void doDehierarchisation(base::DataMatrix& alpha) = 0;
     };
 
   }

@@ -36,6 +36,9 @@ namespace SGPP {
         virtual void doHierarchisation(DataVector& node_values);
         virtual void doDehierarchisation(DataVector& alpha);
 
+        virtual void doHierarchisation(DataMatrix& node_values);
+        virtual void doDehierarchisation(DataMatrix& alpha);
+
       protected:
         /// grid
         FundamentalSplineGrid* grid;

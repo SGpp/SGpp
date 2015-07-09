@@ -22,14 +22,13 @@ namespace SGPP {
 
       bool Armadillo::solve(SLE& system, base::DataVector& b,
                             base::DataVector& x) const {
-        // place RHS in its own vector
-        std::vector<base::DataVector> B = {b};
-        std::vector<base::DataVector> X;
+        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+        base::DataMatrix X(B.getNrows(), B.getNcols());
 
         // call version for multiple RHSs
         if (solve(system, B, X)) {
-          x.resize(X[0].getSize());
-          x = X[0];
+          x.resize(X.getNrows());
+          X.getColumn(0, x);
           return true;
         } else {
           return false;
@@ -37,8 +36,8 @@ namespace SGPP {
       }
 
       bool Armadillo::solve(SLE& system,
-                            std::vector<base::DataVector>& B,
-                            std::vector<base::DataVector>& X) const {
+                            base::DataMatrix& B,
+                            base::DataMatrix& X) const {
 #ifdef USE_ARMADILLO
         printer.printStatusBegin("Solving linear system (Armadillo)...");
 
@@ -106,16 +105,17 @@ namespace SGPP {
           printer.printStatusNewLine();
         }
 
-        if (B.size() == 1) {
+        if (B.getNcols() == 1) {
           // only one RHS ==> use vector version of arma::solve
-          arma::vec bArmadillo(B[0].getPointer(), n);
+          arma::vec bArmadillo(B.getPointer(), n);
           arma::vec xArmadillo(n);
 
           printer.printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(xArmadillo, A, bArmadillo)) {
-            X.clear();
-            X.push_back(base::DataVector(xArmadillo.memptr(), n));
+            base::DataVector x(xArmadillo.memptr(), n);
+            X.resize(n, 1);
+            X.setColumn(0, x);
             printer.printStatusEnd();
             return true;
           } else {
@@ -124,23 +124,26 @@ namespace SGPP {
           }
         } else {
           // multiple RHSs ==> use matrix version of arma::solve
-          const arma::uword B_count = static_cast<arma::uword>(B.size());
+          const arma::uword B_count = static_cast<arma::uword>(B.getNcols());
           arma::mat BArmadillo(n, B_count);
           arma::mat XArmadillo(n, B_count);
+          base::DataVector b(n);
 
           // copy RHSs to Armadillo matrix
           for (arma::uword i = 0; i < B_count; i++) {
-            BArmadillo.col(i) = arma::vec(B[i].getPointer(), n);
+            B.getColumn(i, b);
+            BArmadillo.col(i) = arma::vec(b.getPointer(), n);
           }
 
           printer.printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(XArmadillo, A, BArmadillo)) {
-            X.clear();
+            X.resize(n, B_count);
 
             // convert solutions to base::DataVector
             for (arma::uword i = 0; i < B_count; i++) {
-              X.push_back(base::DataVector(XArmadillo.colptr(i), n));
+              base::DataVector x(XArmadillo.colptr(i), n);
+              X.setColumn(i, x);
             }
 
             printer.printStatusEnd();
