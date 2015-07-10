@@ -23,6 +23,7 @@ private:
     size_t localWorkgroupSize;
     bool useLocalMemory;
     size_t dataBlockSize;
+    size_t transGridBlockSize;
     uint64_t maxDimUnroll;
 
     std::string indent;
@@ -42,6 +43,12 @@ private:
     std::string getData(std::string dim, size_t dataBlockingIndex);
 
     std::string getData(size_t dim, size_t dataBlockingIndex);
+
+    std::string getDataTrans(std::string dim, size_t dataBlockingIndex);
+
+    std::string getLevelTrans(std::string dim, size_t gridBlockingIndex);
+
+    std::string getIndexTrans(std::string dim, size_t gridBlockingIndex);
 public:
     StreamingOCLKernelSourceBuilder(base::OCLConfigurationParameters parameters, size_t dims);
 
@@ -54,6 +61,9 @@ public:
     void writeSource(std::string fileName, std::string source);
 
     std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim, size_t endDim,
+            std::string unrollVariable);
+
+    std::string unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim, size_t endDim,
             std::string unrollVariable);
 
 }

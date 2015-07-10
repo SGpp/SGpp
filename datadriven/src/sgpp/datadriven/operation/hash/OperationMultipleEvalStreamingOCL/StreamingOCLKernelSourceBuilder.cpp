@@ -24,6 +24,7 @@ StreamingOCLKernelSourceBuilder::StreamingOCLKernelSourceBuilder(base::OCLConfig
     localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
     useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
     dataBlockSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+    transGridBlockSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
     maxDimUnroll = this->parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
 }
 
@@ -99,6 +100,49 @@ std::string StreamingOCLKernelSourceBuilder::getData(size_t dim, size_t dataBloc
     return this->getData(dimString, dataBlockingIndex);
 }
 
+std::string StreamingOCLKernelSourceBuilder::getLevelTrans(std::string dim,
+        size_t gridBlockingIndex) {
+    std::stringstream output;
+    if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
+        output << "level_" << gridBlockingIndex << "[" << dim << "]";
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        output << "level_" << gridBlockingIndex << "_" << dim;
+    } else if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
+        output << "ptrLevel[dimLevelIndex]";
+    } else {
+        throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
+    }
+    return output.str();
+}
+
+std::string StreamingOCLKernelSourceBuilder::getIndexTrans(std::string dim,
+        size_t gridBlockingIndex) {
+    std::stringstream output;
+    if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
+        output << "index_" << gridBlockingIndex << "[" << dim << "]";
+    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+        output << "index_" << gridBlockingIndex << "_" << dim;
+    } else if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
+        output << "ptrIndex[dimLevelIndex]";
+    } else {
+        throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
+    }
+    return output.str();
+}
+
+std::string StreamingOCLKernelSourceBuilder::getDataTrans(std::string dim,
+        size_t dataBlockingIndex) {
+    std::stringstream output;
+    if (parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY")) {
+        // (locData[(d * 128)+k])
+        output << "locData[(" << dim << " * " << localWorkgroupSize << ")+k]";
+    } else {
+        output << "ptrData[(" << dim << "* sourceSize) + k]";
+//        output << "ptrData[dimDataIndex + " << (localWorkgroupSize * dataBlockingIndex) << "]";
+    }
+    return output.str();
+}
+
 std::string StreamingOCLKernelSourceBuilder::unrolledBasisFunctionEvalulation(size_t dims, size_t startDim,
         size_t endDim, std::string unrollVariable) {
     std::stringstream output;
@@ -142,14 +186,55 @@ std::string StreamingOCLKernelSourceBuilder::unrolledBasisFunctionEvalulation(si
             output << levelAccess << " * " << getData(dString, i) << ") - " << indexAccess << "), 0.0"
                     << this->constSuffix() << ");" << std::endl;
         }
+    }
+    return output.str();
+}
 
-//        output << "     eval = (" << levelAccess << " * " << getData(dString, 0) << ");" << std::endl;
-//        output << "     index_calc = eval - " << indexAccess << ";" << std::endl;
-//        output << "     abs = fabs(index_calc);" << std::endl;
-//        output << "     last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
-//        output << "     localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
-//        output << "     curSupport *= localSupport;" << std::endl << std::endl;
+//        sourceStream << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
+//        if (useLocalMemory) {
+//            sourceStream << "     eval = (level[d] * (locData[(d * " << localWorkgroupSize << ")+k]));"
+//                    << std::endl;
+//        } else {
+//            sourceStream << "     eval = (level[d] * (ptrData[(d * sourceSize) + k]));" << std::endl;
+//        }
+//        sourceStream << "     index_calc = eval - index[d];" << std::endl;
+//        sourceStream << "     abs = fabs(index_calc);" << std::endl;
+//        sourceStream << "     last = 1.0" << this->constSuffix() << " - abs;" << std::endl;
+//        sourceStream << "     localSupport = fmax(last, 0.0" << this->constSuffix() << ");" << std::endl;
+//        sourceStream << "     curSupport *= localSupport;" << std::endl;
+//        sourceStream << "}" << std::endl;
 
+std::string StreamingOCLKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim,
+        size_t endDim, std::string unrollVariable) {
+    std::stringstream output;
+
+    for (size_t d = startDim; d < endDim; d++) {
+
+        std::stringstream dimElement;
+        dimElement << "(";
+        if (!unrollVariable.compare("") == 0) {
+            dimElement << unrollVariable << " + ";
+        }
+        dimElement << d;
+        dimElement << ")";
+        std::string pointerAccess = dimElement.str();
+
+        std::string dString;
+        if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+            std::stringstream stream;
+            stream << (d);
+            dString = stream.str();
+        } else {
+            dString = pointerAccess;
+        }
+
+//        output << indent3 << "dimLevelIndex = " << "(k * " << dims << ") + " << pointerAccess << ";" << std::endl;
+
+        for (size_t i = 0; i < dataBlockSize; i++) {
+            output << indent3 << "curSupport_" << i << " *= fmax(1.0" << this->constSuffix() << " - fabs((";
+            output << getLevelTrans(dString, 0) << " * " << getDataTrans(dString, i) << ") - " << getIndexTrans(dString, 0)
+                    << "), 0.0" << this->constSuffix() << ");" << std::endl;
+        }
     }
     return output.str();
 }
