@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
 //  std::string fileName = "debugging.arff";
-  std::string fileName = "friedman_10d.arff";
+  std::string fileName = "friedman_4d.arff";
   //std::string fileName = "debugging_small.arff";
 
   uint32_t level = 4;
@@ -127,8 +127,8 @@ int main(int argc, char** argv) {
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 
   double mse = 0.0;
-
   for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
+//    std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] << std::endl;
     mse += (alphaResult[i] - alphaResultCompare[i])
            * (alphaResult[i] - alphaResultCompare[i]);
   }

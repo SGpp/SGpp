@@ -171,7 +171,6 @@ BOOST_AUTO_TEST_CASE(Simple) {
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
-    double mse;
 
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
@@ -181,22 +180,19 @@ BOOST_AUTO_TEST_CASE(Simple) {
     parameters["SELECT_SPECIFIC_DEVICE"] = "0";
     parameters["MAX_DEVICES"] = "1";
     parameters["WRITE_SOURCE"] = "true";
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
 
-/*
 BOOST_AUTO_TEST_CASE(Blocking) {
 
-    //  std::string fileName = "friedman2_90000.arff";
-//    std::vector<std::string> fileNames = { "debugging.arff.gz" };
-    std::vector<std::string> fileNames = { "friedman_4d_small.arff.gz" };
-//    std::vector<std::string> fileNames = { "friedman_4d.arff.gz", "friedman_10d.arff.gz" };
+    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+            "friedman_4d.arff.gz", 1E-26), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-24) };
 
-    uint32_t level = 1;
-    //  uint32_t level = 3;
+    uint32_t level = 4;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -211,25 +207,22 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
     SGPP::base::OCLConfigurationParameters parameters;
     configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-    parameters["LOCAL_SIZE"] = "1";
-    parameters["OCL_MANAGER_VERBOSE"] = "true";
+    parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
-    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "4";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "register";
     parameters["PLATFORM"] = "NVIDIA CUDA";
     parameters["MAX_DEVICES"] = "1";
-    parameters["WRITE_SOURCE"] = "true";
     parameters["KERNEL_MAX_DIM_UNROLL"] = "10";
     parameters["SELECT_SPECIFIC_DEVICE"] = "0";
-    parameters["REUSE_SOURCE"] = "false";
-    for (std::string fileName : fileNames) {
-        double mse = compareToReference(fileName, level, adaptConfig, configuration);
-        BOOST_CHECK(mse < 10E-14);
+
+    for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+        double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
-*/
 
 BOOST_AUTO_TEST_CASE(MultiDevice) {
 
@@ -257,17 +250,15 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
-    double mse;
-
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
-    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "4";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
     parameters["PLATFORM"] = "NVIDIA CUDA";
-    parameters["MAX_DEVICES"] = "1";
     parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -295,7 +286,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
     parameters["INTERNAL_PRECISION"] = "float";
-    double mse;
+
 
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
     parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
@@ -304,13 +295,13 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters["PLATFORM"] = "NVIDIA CUDA";
     parameters["MAX_DEVICES"] = "1";
     parameters["SELECT_SPECIFIC_DEVICE"] = "0";
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
 
-/*
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
@@ -334,21 +325,20 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
     parameters["INTERNAL_PRECISION"] = "float";
-    double mse;
 
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
-    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "2";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "4";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
     parameters["PLATFORM"] = "NVIDIA CUDA";
     parameters["MAX_DEVICES"] = "1";
     parameters["SELECT_SPECIFIC_DEVICE"] = "0";
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
-*/
 
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
@@ -373,17 +363,16 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     parameters["OCL_MANAGER_VERBOSE"] = "false";
     parameters["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
     parameters["INTERNAL_PRECISION"] = "float";
-    double mse;
 
     parameters["KERNEL_USE_LOCAL_MEMORY"] = "false";
-    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "1";
+    parameters["KERNEL_DATA_BLOCKING_SIZE"] = "4";
     parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
     parameters["KERNEL_STORE_DATA"] = "array";
     parameters["PLATFORM"] = "NVIDIA CUDA";
-    parameters["MAX_DEVICES"] = "1";
     parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
+        double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
