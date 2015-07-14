@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 # import modules
@@ -41,3 +41,4 @@ p[0] = 0.52
 p[1] = 0.73
 opEval = createOperationEval(grid)
 print "u(0.52, 0.73) = {}".format(opEval.eval(alpha, p))
+print "f(0.52, 0.73) = {}".format(f(p[0], p[1]))
