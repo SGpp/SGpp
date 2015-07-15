@@ -297,7 +297,7 @@ public:
         }
 
         double time = 0.0;
-        size_t gridBlockingSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+        size_t transGridBlockingSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
         if (kernel_multTrans[0] == nullptr) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
@@ -313,18 +313,18 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters.getAsUnsigned("LOCAL_SIZE") * gridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
+                parameters.getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
-        cl_uint gpu_start_data = (cl_uint) start_index_data / (cl_uint) gridBlockingSize;
-        cl_uint gpu_end_data = (cl_uint) end_index_data / (cl_uint) gridBlockingSize;
+        cl_uint gpu_start_data = (cl_uint) start_index_data;
+        cl_uint gpu_end_data = (cl_uint) end_index_data;
 
         //    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
         for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i];
-            cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
+            cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i] / (cl_uint) transGridBlockingSize;
+            cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i] / (cl_uint) transGridBlockingSize;
             //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
             if (gpu_end_grid > gpu_start_grid) {
@@ -353,8 +353,8 @@ public:
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
-            size_t rangeSize = (gpu_end_index_grid[i] / gridBlockingSize)
-                    - (gpu_start_index_grid[i] / gridBlockingSize);
+            size_t rangeSize = (gpu_end_index_grid[i] / transGridBlockingSize)
+                    - (gpu_start_index_grid[i] / transGridBlockingSize);
 
             if (rangeSize > 0) {
                 //      std::cout << "enqueuing device: " << i << std::endl;

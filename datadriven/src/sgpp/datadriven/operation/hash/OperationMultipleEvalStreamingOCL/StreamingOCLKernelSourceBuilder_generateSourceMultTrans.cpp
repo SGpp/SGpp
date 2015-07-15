@@ -48,7 +48,10 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
     sourceStream << indent << "int localIdx = get_local_id(0);" << std::endl;
     sourceStream << std::endl;
 
-    sourceStream << indent << this->asString() << " myResult = ptrResult[globalIdx];" << std::endl << std::endl;
+    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+        sourceStream << indent << this->asString() << " myResult_" << gridIndex << " = 0.0;" << std::endl;
+    }
+    sourceStream << std::endl;
 
     if (useLocalMemory) {
         sourceStream << indent << "__local " << this->asString() << " locData[" << dims * localWorkgroupSize << "];"
@@ -64,10 +67,10 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
 
             for (size_t d = 0; d < dims; d++) {
-                sourceStream << indent << "level_" << gridIndex << "[" << d << "] = ptrLevel[(globalIdx*" << dims
-                        << ")+" << d << "];" << std::endl;
-                sourceStream << indent << "index_" << gridIndex << "[" << d << "] = ptrIndex[(globalIdx*" << dims
-                        << ")+" << d << "];" << std::endl;
+                sourceStream << indent << "level_" << gridIndex << "[" << d << "] = ptrLevel[((" << transGridBlockSize << " * globalIdx + "
+                        << gridIndex << ") * " << dims << ")+" << d << "];" << std::endl;
+                sourceStream << indent << "index_" << gridIndex << "[" << d << "] = ptrIndex[((" << transGridBlockSize << " * globalIdx + "
+                        << gridIndex << ") * " << dims << ")+" << d << "];" << std::endl;
 
             }
             sourceStream << std::endl;
@@ -78,9 +81,9 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
 
             for (size_t d = 0; d < dims; d++) {
                 sourceStream << indent << this->asString() << " level_" << gridIndex << "_" << d
-                        << " = ptrLevel[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+                        << " = ptrLevel[(" << transGridBlockSize << " * globalIdx*" << dims << ")+" << d << "];" << std::endl;
                 sourceStream << indent << this->asString() << " index_" << gridIndex << "_" << d
-                        << " = ptrIndex[(globalIdx*" << dims << ")+" << d << "];" << std::endl;
+                        << " = ptrIndex[(" << transGridBlockSize << " * globalIdx*" << dims << ")+" << d << "];" << std::endl;
             }
             sourceStream << std::endl;
         }
@@ -109,11 +112,19 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
         sourceStream << indent2 << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl << std::endl;
         sourceStream << indent2 << "for(int k = 0; k < " << localWorkgroupSize << "; k++) {" << std::endl;
 
-        sourceStream << indent3 << this->asString() << " curSupport_0 = locSource[k];" << std::endl << std::endl;
+        for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+            sourceStream << indent3 << this->asString() << " curSupport_" << gridIndex << " = locSource[k];"
+                    << std::endl;
+        }
     } else {
         sourceStream << indent << "for(int k = start_data; k < end_data; k++) {" << std::endl;
-        sourceStream << indent2 << this->asString() << " curSupport_0 = ptrSource[k];" << std::endl << std::endl;
+
+        for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+            sourceStream << indent2 << this->asString() << " curSupport_" << gridIndex << " = ptrSource[k];"
+                    << std::endl;
+        }
     }
+    sourceStream << std::endl;
 
     if (dims > maxDimUnroll) {
         sourceStream << indent2 << "for (size_t unrollDim = 0; unrollDim < " << ((dims / maxDimUnroll) * maxDimUnroll)
@@ -132,7 +143,11 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
         sourceStream << this->unrolledBasisFunctionEvalulationTrans(dims, 0, dims, "");
     }
 
-    sourceStream << std::endl << indent2 << "myResult += curSupport_0;" << std::endl;
+    sourceStream << std::endl;
+
+    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+        sourceStream << indent2 << "myResult_" << gridIndex << " += curSupport_" << gridIndex << ";" << std::endl;
+    }
     sourceStream << indent << "}" << std::endl << std::endl;
 
     if (useLocalMemory) {
@@ -140,7 +155,11 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
         sourceStream << indent << "}" << std::endl;
     }
 
-    sourceStream << indent << "ptrResult[globalIdx] = myResult;" << std::endl;
+    for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
+
+        sourceStream << indent << "ptrResult[(" << transGridBlockSize << " * globalIdx) + " << gridIndex
+                << "] = myResult_" << gridIndex << ";" << std::endl;
+    }
     sourceStream << "}" << std::endl;
 
     if (parameters.getAsBoolean("WRITE_SOURCE")) {
