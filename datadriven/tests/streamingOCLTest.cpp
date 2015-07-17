@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
+            "friedman_4d.arff.gz", 10E-8), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-7) };
 
     uint32_t level = 4;
 
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
+            "friedman_4d.arff.gz", 10E-8), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-7) };
 
     uint32_t level = 4;
 
@@ -343,7 +343,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "friedman_4d.arff.gz", 10E-7), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-2) };
+            "friedman_4d.arff.gz", 10E-8), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-7) };
 
     uint32_t level = 4;
 

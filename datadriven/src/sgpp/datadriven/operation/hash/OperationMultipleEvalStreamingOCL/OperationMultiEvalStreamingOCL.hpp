@@ -167,7 +167,7 @@ public:
         this->duration = this->myTimer.stop();
     }
 
-    float_t getDuration() {
+    float_t getDuration() override {
         return this->duration;
     }
 

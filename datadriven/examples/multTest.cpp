@@ -40,9 +40,10 @@ int main(int argc, char** argv) {
 //  std::string fileName = "debugging.arff";
 
 //  std::string fileName = "friedman_4d.arff";
-  std::string fileName = "friedman_10d.arff";
+//  std::string fileName = "friedman_10d.arff";
+  std::string fileName = "DR5_train.arff";
 
-  uint32_t level = 6;
+  uint32_t level = 9;
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -112,6 +113,8 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating result" << std::endl;
   eval->mult(alpha, dataSizeVectorResult);
+
+  std::cout << "duration: " << eval->getDuration() << std::endl;
 
 //  std::cout << "calculating comparison values..." << std::endl;
 //
