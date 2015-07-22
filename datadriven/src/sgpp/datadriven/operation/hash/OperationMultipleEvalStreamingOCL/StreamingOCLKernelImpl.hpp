@@ -323,8 +323,8 @@ public:
         //    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
         for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i] / (cl_uint) transGridBlockingSize;
-            cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i] / (cl_uint) transGridBlockingSize;
+            cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i];
+            cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
             //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
             if (gpu_end_grid > gpu_start_grid) {
@@ -355,10 +355,14 @@ public:
         for (size_t i = 0; i < num_devices; i++) {
             size_t rangeSize = (gpu_end_index_grid[i] / transGridBlockingSize)
                     - (gpu_start_index_grid[i] / transGridBlockingSize);
+            size_t offset = gpu_start_index_grid[i] / transGridBlockingSize;
 
             if (rangeSize > 0) {
                 //      std::cout << "enqueuing device: " << i << std::endl;
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_grid[i],
+//                std::cout << "number of threads on device " << "\"" << i << "\": " << rangeSize << std::endl;
+
+                //TODO: check that all variables that are submitted by reference survive the loop
+                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &offset,
                         &rangeSize, &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {

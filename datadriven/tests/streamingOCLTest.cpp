@@ -6,7 +6,7 @@
  */
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE StreamingOCL
+#define BOOST_TEST_MODULE StreamingOCLMult
 #include <boost/test/unit_test.hpp>
 
 #include <random>
@@ -153,8 +153,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "friedman_4d.arff.gz", 1E-26), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-24) };
 
-    uint32_t level = 4;
-    //  uint32_t level = 3;
+    uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -192,7 +191,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "friedman_4d.arff.gz", 1E-26), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-24) };
 
-    uint32_t level = 4;
+    uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -229,10 +228,9 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "friedman_4d.arff.gz", 1E-26), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-24) };
+            "friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>("friedman_10d.arff.gz", 1E-18) };
 
-    uint32_t level = 4;
-    //  uint32_t level = 3;
+    uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -268,7 +266,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "friedman_4d.arff.gz", 10E-8), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-7) };
 
-    uint32_t level = 4;
+    uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -307,7 +305,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "friedman_4d.arff.gz", 10E-8), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-7) };
 
-    uint32_t level = 4;
+    uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -345,7 +343,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "friedman_4d.arff.gz", 10E-8), std::tuple<std::string, double>("friedman_10d.arff.gz", 10E-7) };
 
-    uint32_t level = 4;
+    uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;

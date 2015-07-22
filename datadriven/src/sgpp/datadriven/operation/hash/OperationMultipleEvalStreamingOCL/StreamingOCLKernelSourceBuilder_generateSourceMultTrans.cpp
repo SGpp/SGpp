@@ -81,9 +81,11 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
 
             for (size_t d = 0; d < dims; d++) {
                 sourceStream << indent << this->asString() << " level_" << gridIndex << "_" << d
-                        << " = ptrLevel[(" << transGridBlockSize << " * globalIdx*" << dims << ")+" << d << "];" << std::endl;
+                        << " = ptrLevel[((" << transGridBlockSize << " * globalIdx + "
+                        << gridIndex << ") * " << dims << ")+" << d << "];" << std::endl;
                 sourceStream << indent << this->asString() << " index_" << gridIndex << "_" << d
-                        << " = ptrIndex[(" << transGridBlockSize << " * globalIdx*" << dims << ")+" << d << "];" << std::endl;
+                        << " = ptrIndex[((" << transGridBlockSize << " * globalIdx + "
+                        << gridIndex << ") * " << dims << ")+" << d << "];" << std::endl;
             }
             sourceStream << std::endl;
         }
