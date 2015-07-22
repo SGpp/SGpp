@@ -399,7 +399,7 @@ public:
                         - (gpuStartGrid / gridBlockingSize);
 
                 if (rangeSize > 0) {
-                    size_t totalWorkItems = rangeSize * local;
+                    size_t totalWorkItems = rangeSize * local; //TODO: possible bug -> variable might be reallocated, the kernel uses a reference...
                     //TODO: don't forget the "reqd_work_group_size" kernel attribute
                     err = clEnqueueNDRangeKernel(platform.commandQueues[i], kernelsMultTrans[platform.platformId][i], 1,
                             &gpu_start_index_grid[platform.platformId][i], &totalWorkItems, &local, 0, nullptr,
