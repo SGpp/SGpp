@@ -103,6 +103,10 @@ namespace SGPP {
 
         virtual size_t getAlignment() = 0;
 
+        virtual float_t getDuration () {
+          return this->duration;
+        }
+
         static inline size_t getChunkGridPoints() {
           return 12;
         }
