@@ -45,10 +45,10 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
                  
-#env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])               
+env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])               
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        LIBPATH = [BUILD_DIR, '#/lib/alglib'],
+                        #LIBPATH = [BUILD_DIR, '#/lib/alglib'],
                         LIBS=libs)
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")

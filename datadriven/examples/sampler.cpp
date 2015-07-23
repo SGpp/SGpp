@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
@@ -69,6 +69,23 @@ int main(int argc, char** argv) {
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
   configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
   configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+
+  if ( argc == 2 )
+  {
+    if ( strcmp(argv[1], "streaming" ) == 0 )
+    {
+      configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
+      std::cout << "EvalType::STREAMING" << std::endl;
+    }
+    else if (strcmp(argv[1], "subspace" ) == 0)
+    {
+      configuration.type = SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
+      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::COMBINED;
+      std::cout << "EvalType::SUBSPACE" << std::endl;
+    }
+  }
+
   //  learner.learn(configuration, fileName);
   //learner.learnReference(fileName);
 

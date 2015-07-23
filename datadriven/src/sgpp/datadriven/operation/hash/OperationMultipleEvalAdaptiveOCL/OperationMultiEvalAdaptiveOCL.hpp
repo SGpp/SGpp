@@ -103,7 +103,7 @@ public:
       alphaArray[i] = 0.0;
     }
     this->alphas = alphaArray;
-    recalculateLevelAndIndex();
+    //recalculateLevelAndIndex();
 
     T *resultArray = new T[this->datasetSize];
     for (size_t i = 0; i < this->datasetSize; i++) {
@@ -142,7 +142,7 @@ public:
       //printf("source: %f \n", sourceArray[i]);
     }
     this->alphas = sourceArray;
-    recalculateLevelAndIndex();
+    //recalculateLevelAndIndex();
 
     T *resultArray = new T[this->gridSize];
     for (size_t i = 0; i < this->gridSize; i++) {
@@ -252,6 +252,8 @@ private:
 
     this->numSubspaces = 0;
 
+    std::vector<uint32_t> flatLevelOrder;
+
     for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
       SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
@@ -270,10 +272,15 @@ private:
 
       if ( flatLevelEntry == flatLevelList.end() ) {
         std::vector<uint32_t> indexList;
+        flatLevelOrder.push_back(flatLevel);
 
         for (size_t d = 0; d < this->dims; d++) {
           indexList.push_back(level[d]);
         }
+        /*printf("new subspace added! flatLevel: %i \n", flatLevel);
+        printf("level: %i \t %i \t %i \t %i \n", level[0], level[1], level[2], level[3]);
+        printf("index: %i \t %i \t %i \t %i \n", index[0], index[1], index[2], index[3]);
+        printf("gridindex: %i \n", gridIndex);*/
 
         indexList.push_back((uint32_t)gridIndex);
 
@@ -289,6 +296,11 @@ private:
         for (size_t d = 0; d < this->dims; d++) {
             flatLevelEntry->second.push_back(index[d]);
         }
+
+
+        /*printf("level: %i \t %i \t %i \t %i \n", flatLevelEntry->second[0], flatLevelEntry->second[1], flatLevelEntry->second[2], flatLevelEntry->second[3]);
+        printf("index: %i \t %i \t %i \t %i \n", index[0], index[1], index[2], index[3]);
+        printf("gridindex: %i \n", gridIndex);*/
       }
     }
 
@@ -301,8 +313,13 @@ private:
     size_t indexCounter = 0;
     size_t levelCounter = 0;
 
-    for ( auto& kv : flatLevelList ) {
-      size_t numIndices = (kv.second.size() - this->dims)/(this->dims+1);
+    typedef std::map<uint32_t, std::vector<uint32_t> >::iterator it_type;
+    for ( auto &flatLevel : flatLevelOrder) {
+
+
+      it_type kv = flatLevelList.find(flatLevel);
+
+      size_t numIndices = (kv->second.size() - this->dims)/(this->dims+1);
 
       //store the number of corresponding indices in front of the level-vector
       this->levels[(levelCounter*(this->dims+1))] = (T)(indexCounter + numIndices);
@@ -311,17 +328,21 @@ private:
       //read and store level
       for ( int d = 0; d < this->dims; d++) {
 
-        this->levels[(levelCounter*(this->dims+1))+d+1] = (T)(kv.second[d]);
+        this->levels[(levelCounter*(this->dims+1))+d+1] = (T)(kv->second[d]);
       }
+
+      //printf("flat_level: %i \n", kv->first);
+      //printf("level_stored: %i \t %i \t %i \t %i \n", kv->second[0], kv->second[1], kv->second[2], kv->second[3]);
+
       //read and store indices
       for ( int i = 0; i < numIndices; i++) {
 
         //store alpha index
-        T alpha_idx = (T)(kv.second[(this->dims) + (i*(this->dims+1))]);
+        T alpha_idx = (T)(kv->second[(this->dims) + (i*(this->dims+1))]);
         this->indices[(indexCounter+i)*(this->dims +1)] = alpha_idx;
 
         for ( int d = 0; d < this->dims; d++) {
-          T tmpVal = (T)(kv.second[(this->dims) + (i*(this->dims+1)) + d + 1]);
+          T tmpVal = (T)(kv->second[(this->dims) + (i*(this->dims+1)) + d + 1]);
           this->indices[(indexCounter+i)*(this->dims + 1) + d + 1] = tmpVal;
         }
       }
