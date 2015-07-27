@@ -80,6 +80,8 @@ public:
 
     std::stringstream stream_program_src;
 
+    std::string strType = AdaptiveOCL::getType<real_type>::asString();
+
     if (AdaptiveOCL::getType<real_type>::asString() == "double") {
       stream_program_src << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl << std::endl;
     }
@@ -88,10 +90,10 @@ public:
     stream_program_src << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))" << std::endl;
     stream_program_src << "void multOCL(__global const " << AdaptiveOCL::getType<real_type>::asString() << "* ptrLevel,"
         << std::endl;
-    stream_program_src << "           __global const " << AdaptiveOCL::getType<real_type>::asString() << "* ptrIndex," << std::endl;
-    stream_program_src << "           __global const " << AdaptiveOCL::getType<real_type>::asString() << "* ptrData," << std::endl;
-    stream_program_src << "           __global const " << AdaptiveOCL::getType<real_type>::asString() << "* ptrAlpha," << std::endl;
-    stream_program_src << "           __global       " << AdaptiveOCL::getType<real_type>::asString() << "* ptrResult," << std::endl;
+    stream_program_src << "           __global const " << strType << "* ptrIndex," << std::endl;
+    stream_program_src << "           __global const " << strType << "* ptrData," << std::endl;
+    stream_program_src << "           __global const " << strType << "* ptrAlpha," << std::endl;
+    stream_program_src << "           __global       " << strType << "* ptrResult," << std::endl;
     stream_program_src << "           uint resultSize," << std::endl;
     stream_program_src << "           uint start_grid," << std::endl;
     stream_program_src << "           uint end_grid," << std::endl;
@@ -111,19 +113,19 @@ public:
           << std::endl;
       stream_program_src << std::endl;
     }*/
-    stream_program_src << "  " << AdaptiveOCL::getType<real_type>::asString()
+    stream_program_src << "  " << strType
         << "  index_calc, abs, last, localSupport, curSupport;" << std::endl << std::endl;
-    stream_program_src << "  " << AdaptiveOCL::getType<real_type>::asString() << " myResult = 0.0;" << std::endl << std::endl;
+    stream_program_src << "  " << strType << " myResult = 0.0;" << std::endl << std::endl;
     stream_program_src << "  // Create registers for the data" << std::endl;
 
     if (dims > maxDimUnroll) {
-      stream_program_src << "  " << AdaptiveOCL::getType<real_type>::asString() << " data[" << dims << "];" << std::endl;
+      stream_program_src << "  " << strType << " data[" << dims << "];" << std::endl;
       stream_program_src << "  for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
       stream_program_src << "    data[d] = ptrData[globalIdx+(resultSize * d)];" << std::endl;
       stream_program_src << "  }" << std::endl;
     } else {
       for (size_t d = 0; d < dims; d++) {
-        stream_program_src << "  " << AdaptiveOCL::getType<real_type>::asString() << " data_" << d
+        stream_program_src << "  " << strType << " data_" << d
             << " = ptrData[globalIdx+(resultSize*" << d << ")];" << std::endl;
       }
     }
@@ -228,39 +230,58 @@ public:
       stream_program_src << "  {" << std::endl;
       //create level variable
       if (dims > maxDimUnroll) {
-            stream_program_src << "    " << AdaptiveOCL::getType<real_type>::asString() << " level[" << dims << "];" << std::endl;
-            stream_program_src << "    " << AdaptiveOCL::getType<real_type>::asString() << " eval[" << dims << "];" << std::endl;
+            stream_program_src << "    " << strType << " level[" << dims << "];" << std::endl;
+            stream_program_src << "    " << strType << " eval[" << dims << "];" << std::endl;
             stream_program_src << "    for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
             stream_program_src << "      level[d] = ptrLevel[l*" << dims+1 << " + d + 1];" << std::endl;
             stream_program_src << "      eval[d] = (pow(2,level[d]) * (data[d]));" << std::endl;
             stream_program_src << "    }" << std::endl;
          } else {
             for (size_t d = 0; d < dims; d++) {
-              stream_program_src << "    " << AdaptiveOCL::getType<real_type>::asString() << " level_" << d
+              stream_program_src << "    " << strType << " level_" << d
                   << " = ptrLevel[l*" << dims+1 << " + " << d << "+ 1];" << std::endl;
-              stream_program_src << "    " << AdaptiveOCL::getType<real_type>::asString() << " eval_" << d
+              stream_program_src << "    " << strType << " eval_" << d
                                 << " = (pow(2,level_" << d << ") * (data_" << d << "));" << std::endl;
          }
        }
+
+      //TODO unroll
       stream_program_src << "    int numIndices = (int)ptrLevel[l*" << dims+1 << "];" << std::endl;
+      stream_program_src << "    //calc relevant index" << std::endl;
+      stream_program_src << "    int floored = 0;" << std::endl;
+      stream_program_src << "    " << strType << " index[10];" << std::endl;
+      stream_program_src << "    for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
+      stream_program_src << "      floored = (int)(data[d]*pow(2,level[d]));" << std::endl;
+      stream_program_src << "      index[d] = (" << strType << ")(floored | 0x1);" << std::endl;
+      stream_program_src << "    }" << std::endl << std::endl;
 
-      stream_program_src << "    for (size_t i = index_start; i < numIndices; i++)" << std::endl;
-      stream_program_src << "    {" << std::endl;
+      stream_program_src << "    //calc linear index of gridpoint (relative to subspace)" << std::endl;
+      stream_program_src << "    " << strType << " result = 0.0f;" << std::endl;
+      stream_program_src << "    " << strType << " index_half = 0.0f;" << std::endl;
+      stream_program_src << "    " << strType << " level_calc = 0.0f;" << std::endl;
+      stream_program_src << "    for (size_t d = 0; d < "<< dims-1<< "; d++) {" << std::endl;
+      stream_program_src << "      index_half = (int)index[d] >> 1;" << std::endl;
+      stream_program_src << "      level_calc = pow(2.0" << AdaptiveOCL::getType<real_type>::constSuffix() << ", level[d+1]-1);" << std::endl;
+      stream_program_src << "      result += index_half;" << std::endl;
+      stream_program_src << "      result *= level_calc;" << std::endl;
+      stream_program_src << "    }" << std::endl;
+      stream_program_src << "    result += (int)index["<< dims - 1 <<"] >> 1;" << std::endl;
+      stream_program_src << "    size_t linIndex = (size_t)result;" << std::endl << std::endl;
 
-      stream_program_src << "      curSupport = ptrAlpha[(int)ptrIndex[i*"<< dims+1 <<"]];;" << std::endl << std::endl;
+      stream_program_src << "    curSupport = ptrAlpha[(int)ptrIndex[(index_start + linIndex)*"<< dims+1 <<"]];;" << std::endl << std::endl;
 
       if (dims > maxDimUnroll) {
-        stream_program_src << "      for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-        stream_program_src << "        index_calc = eval[d] - (ptrIndex[(i*" << dims+1 << ")+ d + 1]);" << std::endl;
-        stream_program_src << "        abs = fabs(index_calc);" << std::endl;
-        stream_program_src << "        last = 1.0" << AdaptiveOCL::getType<real_type>::constSuffix() << " - abs;" << std::endl;
-        stream_program_src << "        localSupport = fmax(last, 0.0" << AdaptiveOCL::getType<real_type>::constSuffix() << ");"
+        stream_program_src << "    for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
+        stream_program_src << "      index_calc = eval[d] - index[d];" << std::endl;
+        stream_program_src << "      abs = fabs(index_calc);" << std::endl;
+        stream_program_src << "      last = 1.0" << AdaptiveOCL::getType<real_type>::constSuffix() << " - abs;" << std::endl;
+        stream_program_src << "      localSupport = fmax(last, 0.0" << AdaptiveOCL::getType<real_type>::constSuffix() << ");"
             << std::endl;
-        stream_program_src << "        curSupport *= localSupport;" << std::endl << std::endl;
-        stream_program_src << "      }" << std::endl;
+        stream_program_src << "      curSupport *= localSupport;" << std::endl << std::endl;
+        stream_program_src << "    }" << std::endl;
       } else {
         for (size_t d = 0; d < dims; d++) {
-          stream_program_src << "      index_calc = eval_"<< d <<" - (ptrIndex[(i*" << dims+1 << ")+"<< d <<"+ 1]);" << std::endl;
+          stream_program_src << "      index_calc = eval_"<< d <<" - index[d];" << std::endl;
           stream_program_src << "      abs = fabs(index_calc);" << std::endl;
           stream_program_src << "      last = 1.0" << AdaptiveOCL::getType<real_type>::constSuffix() << " - abs;" << std::endl;
           stream_program_src << "      localSupport = fmax(last, 0.0" << AdaptiveOCL::getType<real_type>::constSuffix() << ");" << std::endl;
@@ -268,8 +289,7 @@ public:
         }
       }
 
-      stream_program_src << "      myResult += curSupport;" << std::endl;
-      stream_program_src << "    }" << std::endl;
+      stream_program_src << "    myResult += curSupport;" << std::endl;
       stream_program_src << "    index_start = numIndices;" << std::endl;
       stream_program_src << "  }" << std::endl;
     //}
