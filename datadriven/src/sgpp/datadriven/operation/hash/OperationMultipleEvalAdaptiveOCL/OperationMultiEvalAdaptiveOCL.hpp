@@ -178,7 +178,12 @@ private:
   size_t padDataset(
   SGPP::base::DataMatrix& dataset) {
 
-    size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE");
+    size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+    size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+
+    size_t blockingSize = std::max(dataBlocking, transGridBlocking);
+
+    size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE") * blockingSize;
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
@@ -233,10 +238,16 @@ private:
     if (this->index != nullptr)
       delete this->index;
 
-    uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE");
+    size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+    size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+
+    size_t blockingSize = std::max(dataBlocking, transGridBlocking);
+
+    uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE") * blockingSize;
 
     size_t remainder = this->storage->size() % localWorkSize;
     size_t padding = 0;
+
     if (remainder != 0) {
       padding = localWorkSize - remainder;
     }
@@ -254,17 +265,28 @@ private:
 
     std::vector<uint32_t> flatLevelOrder;
 
-    for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
+    for (size_t gridIndex = 0; gridIndex < this->gridSize; gridIndex++) {
       SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
 
       uint32_t* level = new uint32_t[this->dims];
       uint32_t* index = new uint32_t[this->dims];
 
-      for (size_t d = 0; d < this->dims; d++) {
-        point->get(d, curLevel, curIndex);
-        level[d] = curLevel;
-        index[d] = curIndex;
+      if (gridIndex < this->storage->size())
+      {
+        for (size_t d = 0; d < this->dims; d++) {
+          point->get(d, curLevel, curIndex);
+          level[d] = curLevel;
+          index[d] = curIndex;
+        }
+      }
+      //add points for padding that dont affect evaluation
+      else
+      {
+        for (size_t d = 0; d < this->dims; d++) {
+          level[d] = 1.0f;
+          index[d] = 1.0f;
+        }
       }
 
       uint32_t flatLevel = flattenLevel(this->dims, level, maxLevel);
