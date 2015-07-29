@@ -108,7 +108,7 @@ namespace SGPP {
 
       //as data in input is provided as a string containing all lines: split them at '\n' to vector data to iterate over
       vector <string> data;
-      int start = 0, end = 0;
+      size_t start = 0, end = 0;
 
       while ((end = input.find('\n', start)) != string::npos) {
         data.push_back(input.substr(start, end - start));
@@ -197,7 +197,7 @@ namespace SGPP {
       //calc factors
       float sum = 0.0f;
 
-      for (int i = 0; i < count; i++) {
+      for (size_t i = 0; i < count; i++) {
         if (batchConf.wMode == 0)
           factors.push_back((float)1);//temp: all alphas are equal
         else if (batchConf.wMode == 1)
@@ -205,7 +205,7 @@ namespace SGPP {
         else if (batchConf.wMode == 2)
           factors.push_back((float)pow(batchConf.wArgument, (i + 1))); //exp
         else if (batchConf.wMode == 3)
-          factors.push_back((float)batchConf.wArgument / (i + 1)); //1/x bzw arg/x
+          factors.push_back((float)batchConf.wArgument / (float)(i + 1)); //1/x bzw arg/x
         else if (batchConf.wMode != 4 && batchConf.wMode != 5) { //4 and 5 treated elsewhere
           cout << "unsupported weighting mode (mode/arg): " << batchConf.wMode << "/" << batchConf.wArgument << endl;
           throw 42;
