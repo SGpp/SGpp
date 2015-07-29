@@ -57,7 +57,7 @@ namespace SGPP {
       base::DataMatrix& nodeValues) {
       HierarchisationSLE system(grid);
       sle_solver::Auto solver;
-      base::DataMatrix B(nodeValues.getPointer(), system.getDimension(), 1);
+      base::DataMatrix B(nodeValues);
       return solver.solve(system, B, nodeValues);
     }
 
