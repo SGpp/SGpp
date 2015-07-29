@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/BatchLearner.hpp>
@@ -41,7 +41,7 @@ int main (int argc, char** args) {
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;//not used by BatchLearner
-  adaptConfig.noPoints_ = atoi(argsMap["pts"].c_str());
+  adaptConfig.noPoints_ = std::stoi(argsMap["pts"]);
   adaptConfig.numRefinements_ = 1;//not used by BatchLearner
   adaptConfig.percent_ = 10.0;//not used by BatchLearner
   adaptConfig.threshold_ = 0.001;
@@ -54,19 +54,19 @@ int main (int argc, char** args) {
 
   // Set parameters for the batchLearner
   batchConfig.filename = argsMap["input"].c_str();
-  batchConfig.batchsize = atoi(argsMap["bs"].c_str());
+  batchConfig.batchsize = std::stoi(argsMap["bs"]);
   batchConfig.samples = 500;
   batchConfig.seed = 42;
-  batchConfig.wMode = atoi(argsMap["mode"].c_str());;
-  batchConfig.wArgument = atof(argsMap["arg"].c_str());
-  batchConfig.refineEvery = atoi(argsMap["ref"].c_str());
+  batchConfig.wMode = std::stoi(argsMap["mode"]);;
+  batchConfig.wArgument = std::stof(argsMap["arg"]);
+  batchConfig.refineEvery = std::stoi(argsMap["ref"]);
   batchConfig.verbose = true;
   batchConfig.stack = 0;
-  batchConfig.testsize = atoi(argsMap["ts"].c_str());
+  batchConfig.testsize = std::stoi(argsMap["ts"]);
   batchConfig.lambda = 0.0001f;
 
   //set up the grid config
-  gridConfig.level_ = atoi(argsMap["level"].c_str());
+  gridConfig.level_ = std::stoi(argsMap["level"]);
 
   //init the learner
   sg::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig, adaptConfig);
@@ -79,7 +79,7 @@ int main (int argc, char** args) {
     long int start_l = clock();
     learner.trainBatch();
     long int stop_l = clock();
-    cout << "trainBatch() took: " << (stop_l - start_l) / double(CLOCKS_PER_SEC) * 1000 << endl;
+    cout << "trainBatch() took: " << double(stop_l - start_l) / double(CLOCKS_PER_SEC) * 1000 << endl;
 
     //If testsize > 0, the learner will test on testsize items following the batch; in the next batch these items will be included and the batch is filled with new items until batchsize is reached. This will be done after every batch.
     //AC = accuracy of the current batch
