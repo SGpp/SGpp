@@ -225,14 +225,14 @@ namespace SGPP {
                                  << "(as_" << getType<real_type>::intAsString()
                                  << "(index_calc) | as_" << getType<real_type>::intAsString()
                                  << "(locMask[(k*" << dims << ")+ d]));" << std::endl;
-//              stream_program_src << "     abs = fabs(index_calc);"
-//                                 << std::endl;
+              //              stream_program_src << "     abs = fabs(index_calc);"
+              //                                 << std::endl;
               stream_program_src << "     last = locOffset[(k*" << dims
                                  << ")+ d] + abs;"
                                  << std::endl;
-//              stream_program_src << "     last = 1.0"
-//                                 << getType<real_type>::constSuffix() << " - abs;"
-//                                 << std::endl;
+              //              stream_program_src << "     last = 1.0"
+              //                                 << getType<real_type>::constSuffix() << " - abs;"
+              //                                 << std::endl;
               stream_program_src << "     localSupport = fmax(last, 0.0"
                                  << getType<real_type>::constSuffix() << ");"
                                  << std::endl;
@@ -251,14 +251,14 @@ namespace SGPP {
                                    << "(as_" << getType<real_type>::intAsString()
                                    << "(index_calc) | as_" << getType<real_type>::intAsString()
                                    << "(locMask[(k*" << dims << ")+" << d << "]));" << std::endl;
-//                stream_program_src << "     abs = fabs(index_calc);"
-//                                   << std::endl;
+                //                stream_program_src << "     abs = fabs(index_calc);"
+                //                                   << std::endl;
                 stream_program_src << "     last = locOffset[(k*" << dims
                                    << ")+" << d << "] + abs;"
                                    << std::endl;
-//                stream_program_src << "     last = 1.0"
-//                                   << getType<real_type>::constSuffix() << " - abs;"
-//                                   << std::endl;
+                //                stream_program_src << "     last = 1.0"
+                //                                   << getType<real_type>::constSuffix() << " - abs;"
+                //                                   << std::endl;
                 stream_program_src << "     localSupport = fmax(last, 0.0"
                                    << getType<real_type>::constSuffix() << ");"
                                    << std::endl;
@@ -295,13 +295,13 @@ namespace SGPP {
                                  << "(as_" << getType<real_type>::intAsString()
                                  << "(index_calc) | as_" << getType<real_type>::intAsString()
                                  << "(locMask[(k*" << dims << ")+ d]));" << std::endl;
-//              stream_program_src << "   abs = fabs(index_calc);" << std::endl;
+              //              stream_program_src << "   abs = fabs(index_calc);" << std::endl;
               stream_program_src << "     last = locOffset[(k*" << dims
                                  << ")+ d] + abs;"
                                  << std::endl;
-//              stream_program_src << "   last = 1.0"
-//                                 << getType<real_type>::constSuffix() << " - abs;"
-//                                 << std::endl;
+              //              stream_program_src << "   last = 1.0"
+              //                                 << getType<real_type>::constSuffix() << " - abs;"
+              //                                 << std::endl;
               stream_program_src << "   localSupport = fmax(last, 0.0"
                                  << getType<real_type>::constSuffix() << ");"
                                  << std::endl;
@@ -319,14 +319,14 @@ namespace SGPP {
                                    << "(as_" << getType<real_type>::intAsString()
                                    << "(index_calc) | as_" << getType<real_type>::intAsString()
                                    << "(locMask[(k*" << dims << ")+" << d << "]));" << std::endl;
-//                stream_program_src << "   abs = fabs(index_calc);"
-//                                   << std::endl;
+                //                stream_program_src << "   abs = fabs(index_calc);"
+                //                                   << std::endl;
                 stream_program_src << "     last = locOffset[(k*" << dims
                                    << ")+" << d << "] + abs;"
                                    << std::endl;
-//                stream_program_src << "   last = 1.0"
-//                                   << getType<real_type>::constSuffix() << " - abs;"
-//                                   << std::endl;
+                //                stream_program_src << "   last = 1.0"
+                //                                   << getType<real_type>::constSuffix() << " - abs;"
+                //                                   << std::endl;
                 stream_program_src << "   localSupport = fmax(last, 0.0"
                                    << getType<real_type>::constSuffix() << ");"
                                    << std::endl;
@@ -358,13 +358,13 @@ namespace SGPP {
                                  << "(as_" << getType<real_type>::intAsString()
                                  << "(index_calc) | as_" << getType<real_type>::intAsString()
                                  << "(locMask[(k*" << dims << ")+ d]));" << std::endl;
-//              stream_program_src << "   abs = fabs(index_calc);" << std::endl;
+              //              stream_program_src << "   abs = fabs(index_calc);" << std::endl;
               stream_program_src << "     last = locOffset[(k*" << dims
                                  << ")+ d] + abs;"
                                  << std::endl;
-//              stream_program_src << "   last = 1.0"
-//                                 << getType<real_type>::constSuffix() << " - abs;"
-//                                 << std::endl;
+              //              stream_program_src << "   last = 1.0"
+              //                                 << getType<real_type>::constSuffix() << " - abs;"
+              //                                 << std::endl;
               stream_program_src << "   localSupport = fmax(last, 0.0"
                                  << getType<real_type>::constSuffix() << ");"
                                  << std::endl;
@@ -384,14 +384,14 @@ namespace SGPP {
                                    << "(as_" << getType<real_type>::intAsString()
                                    << "(index_calc) | as_" << getType<real_type>::intAsString()
                                    << "(locMask[(k*" << dims << ")+" << d << "]));" << std::endl;
-//                stream_program_src << "   abs = fabs(index_calc);"
-//                                   << std::endl;
+                //                stream_program_src << "   abs = fabs(index_calc);"
+                //                                   << std::endl;
                 stream_program_src << "     last = locOffset[(k*" << dims
                                    << ")+" << d << "] + abs;"
                                    << std::endl;
-//                stream_program_src << "   last = 1.0"
-//                                   << getType<real_type>::constSuffix() << " - abs;"
-//                                   << std::endl;
+                //                stream_program_src << "   last = 1.0"
+                //                                   << getType<real_type>::constSuffix() << " - abs;"
+                //                                   << std::endl;
                 stream_program_src << "   localSupport = fmax(last, 0.0"
                                    << getType<real_type>::constSuffix() << ");"
                                    << std::endl;
@@ -592,13 +592,13 @@ namespace SGPP {
                                << "(as_" << getType<real_type>::intAsString()
                                << "(index_calc) | as_" << getType<real_type>::intAsString()
                                << "(locMask[(k*" << dims << ")+ d]));" << std::endl;
-//            stream_program_src << "     abs = fabs(index_calc);" << std::endl;
+            //            stream_program_src << "     abs = fabs(index_calc);" << std::endl;
             stream_program_src << "     last = locOffset[(k*" << dims
                                << ")+ d] + abs;"
                                << std::endl;
-//            stream_program_src << "     last = 1.0"
-//                               << getType<real_type>::constSuffix() << " - abs;"
-//                               << std::endl;
+            //            stream_program_src << "     last = 1.0"
+            //                               << getType<real_type>::constSuffix() << " - abs;"
+            //                               << std::endl;
             stream_program_src << "     localSupport = fmax(last, 0.0"
                                << getType<real_type>::constSuffix() << ");" << std::endl;
             stream_program_src << "     curSupport *= localSupport;"
@@ -622,14 +622,14 @@ namespace SGPP {
                                  << "(as_" << getType<real_type>::intAsString()
                                  << "(index_calc) | as_" << getType<real_type>::intAsString()
                                  << "(locMask[(k*" << dims << ")+" << d << "]));" << std::endl;
-//              stream_program_src << "     abs = fabs(index_calc);"
-//                                 << std::endl;
+              //              stream_program_src << "     abs = fabs(index_calc);"
+              //                                 << std::endl;
               stream_program_src << "     last = locOffset[(k*" << dims
                                  << ")+" << d << "] + abs;"
                                  << std::endl;
-//              stream_program_src << "     last = 1.0"
-//                                 << getType<real_type>::constSuffix() << " - abs;"
-//                                 << std::endl;
+              //              stream_program_src << "     last = 1.0"
+              //                                 << getType<real_type>::constSuffix() << " - abs;"
+              //                                 << std::endl;
               stream_program_src << "     localSupport = fmax(last, 0.0"
                                  << getType<real_type>::constSuffix() << ");"
                                  << std::endl;
