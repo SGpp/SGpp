@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/test/Rosenbrock.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
