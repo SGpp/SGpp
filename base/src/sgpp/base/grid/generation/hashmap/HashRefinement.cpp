@@ -207,7 +207,7 @@ namespace SGPP {
     }
 
     void HashRefinement::refineGridpoint(GridStorage* storage, size_t refine_index) {
-      index_type index((*storage)[refine_index]);
+      index_type index(*(*storage)[refine_index]);
       //Sets leaf property of index, which is refined to false
       (*storage)[refine_index]->setLeaf(false);
 

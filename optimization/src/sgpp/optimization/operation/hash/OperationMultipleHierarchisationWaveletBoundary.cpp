@@ -63,7 +63,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < storage.size(); i++) {
         for (size_t j = 0; j < storage.size(); j++) {
-          const base::GridIndex& gp = storage.get(j);
+          const base::GridIndex& gp = *storage.get(j);
 
           for (size_t t = 0; t < d; t++) {
             x[t] = gp.getCoord(t);

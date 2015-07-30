@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
   s.set(0, 1, 1);
   s.set(0, 2, 3);
 
-  HashGridIndex s2(&s);
+  HashGridIndex s2(s);
 
   BOOST_CHECK_EQUAL(s.getLevel(0), s2.getLevel(0));
   BOOST_CHECK_EQUAL(s.getIndex(0), s2.getIndex(0));

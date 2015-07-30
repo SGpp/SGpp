@@ -60,9 +60,9 @@ namespace SGPP {
         /**
          * Copy-Constructor
          *
-         * @param o constant pointer to HashGridIndex object
+         * @param o constant reference to HashGridIndex object
          */
-        HashGridIndex(const HashGridIndex* o);
+        HashGridIndex(const HashGridIndex& o);
 
         /**
          * Serialisation-Constructor
