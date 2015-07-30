@@ -3,7 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import unittest, tools
+import unittest
+import datadriven.tools as tools
 from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
