@@ -74,7 +74,7 @@ if env['BOOST_TESTS']:
         if fnmatch.fnmatch(fileName, "*.cpp"):
             testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
     if len(testObjects) > 0:
-        test = test_env.Program(os.path.join("tests", "test_base"), testObjects)
+        test = test_env.Program(os.path.join("tests", "test_base_boost"), testObjects)
         test_env.Requires(test, libInstall)
 
 libraryTargetList.append(lib)
