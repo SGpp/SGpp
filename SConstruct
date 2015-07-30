@@ -73,8 +73,8 @@ vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trail
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
-vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile, but not run, the test cases written using Boost Test.', True))
-vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Compile and run the test cases written using Boost Test.', True))
+vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
+vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
 
 vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
