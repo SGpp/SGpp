@@ -171,30 +171,36 @@ env.Depends(os.path.join("#", BUILD_DIR.path, "libsgppbase.so"), alglibinst)
 
 env.Append(CPPPATH=['#/tools'])
 
+# set up paths (Only Tested on Ubuntu!)
+env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
+    env["ENV"].get("LD_LIBRARY_PATH", ""),
+    BUILD_DIR.abspath,
+    ALGLIB_BUILD_PATH.abspath])
+env["ENV"]["PYTHONPATH"] = ":".join([
+    env["ENV"].get("PYTHONPATH", ""),
+    PYSGPP_BUILD_PATH.abspath])
+
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    # set up paths (Only Tested on Ubuntu!)
-    env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
-        env["ENV"].get("LD_LIBRARY_PATH", ""),
-        BUILD_DIR.abspath,
-        ALGLIB_BUILD_PATH.abspath])
-    env["ENV"]["PYTHONPATH"] = ":".join([
-        env["ENV"].get("PYTHONPATH", ""),
-        PYSGPP_BUILD_PATH.abspath])
-
     # do the actual thing
     builder = Builder(action="python $SOURCE.file", chdir=1)
     env.Append(BUILDERS={'Test' : builder})
     builder = Builder(action="python $SOURCE")
     env.Append(BUILDERS={'SimpleTest' : builder})
 
+if env['BOOST_TESTS']:
+    builder = Builder(action="./$SOURCE")
+    env.Append(BUILDERS={'BoostTest' : builder})
+
 libraryTargetList = []
 installTargetList = []
 testTargetList = []
+boostTestTargetList = []
 exampleTargetList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
 env.Export('testTargetList')
+env.Export('boostTestTargetList')
 env.Export('exampleTargetList')
 
 # compile selected modules
@@ -227,6 +233,15 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
       dependency = testTarget
     else:
       #print testTarget, 'depends on', dependency
+      env.Depends(testTarget, dependency)
+      dependency = testTarget
+
+if env['BOOST_TESTS']:
+  for testTarget in boostTestTargetList:
+    env.Requires(testTarget, installTargetList)
+    if dependency is None:
+      dependency = testTarget
+    else:
       env.Depends(testTarget, dependency)
       dependency = testTarget
 
