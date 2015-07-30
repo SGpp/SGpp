@@ -56,10 +56,6 @@ namespace SGPP {
                         new PenalizedObjectiveFunction(*this));
             }
 
-            float_t getMu() const {
-              return mu;
-            }
-
             void setMu(float_t mu) {
               this->mu = mu;
             }
@@ -121,10 +117,6 @@ namespace SGPP {
             void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
               clone = std::unique_ptr<ObjectiveGradient>(
                         new PenalizedObjectiveGradient(*this));
-            }
-
-            float_t getMu() const {
-              return mu;
             }
 
             void setMu(float_t mu) {
