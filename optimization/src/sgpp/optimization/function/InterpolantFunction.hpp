@@ -11,6 +11,7 @@
 #include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <cstring>
