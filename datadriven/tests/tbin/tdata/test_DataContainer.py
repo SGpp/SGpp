@@ -11,21 +11,21 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.data.DataEntry import DataEntry
+from datadriven.data.DataEntry import DataEntry
 from pysgpp import DataVector
-from bin.data.DataContainer import DataContainer
+from datadriven.data.DataContainer import DataContainer
 
 
 ##
 # @package tests.tbin.test_DataContainer
-# Contains class test_DataContainer::TestDataContainer with unittests for @link bin.data.DataContainer.DataContainer DataContainer @endlink
+# Contains class test_DataContainer::TestDataContainer with unittests for @link datadriven.data.DataContainer.DataContainer DataContainer @endlink
 
 ##
-# Class with unittests for @link bin.data.DataContainer.DataContainer DataContainer @endlink
+# Class with unittests for @link datadriven.data.DataContainer.DataContainer DataContainer @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link bin.data.DataContainer.DataContainer DataContainer @endlink
+# @test Unittests for @link datadriven.data.DataContainer.DataContainer DataContainer @endlink
 class TestDataContainer(unittest.TestCase):
     
     
@@ -52,7 +52,7 @@ class TestDataContainer(unittest.TestCase):
     
     
     ##
-    # Tests the function @link bin.data.DataContainer.DataContainer.next() DataContainer.next() @endlink
+    # Tests the function @link datadriven.data.DataContainer.DataContainer.next() DataContainer.next() @endlink
     def testNext(self):
         c = 0
         for entry in self.container:
@@ -65,7 +65,7 @@ class TestDataContainer(unittest.TestCase):
 
 
     ##
-    # Tests the function @link bin.data.DataContainer.DataContainer.getTrainDataset() DataContainer.getTrainDataset() @endlink
+    # Tests the function @link datadriven.data.DataContainer.DataContainer.getTrainDataset() DataContainer.getTrainDataset() @endlink
     def testGetTrainDataset(self):
         c = 0
         trainContainer = self.container.getTrainDataset()
@@ -78,7 +78,7 @@ class TestDataContainer(unittest.TestCase):
 
 
     ##
-    # Tests the function @link bin.data.DataContainer.DataContainer.getTestDataset() DataContainer.getTestDataset() @endlink
+    # Tests the function @link datadriven.data.DataContainer.DataContainer.getTestDataset() DataContainer.getTestDataset() @endlink
     def testGetTestDataset(self):
         container = DataContainer(points=self.container.getPoints(), values=self.container.getValues(), name=DataContainer.TEST_CATEGORY)
         c = 0
@@ -98,7 +98,7 @@ class TestDataContainer(unittest.TestCase):
 
     
     ##
-    # Tests the function @link bin.data.DataContainer.DataContainer.combine() DataContainer.combine() @endlink
+    # Tests the function @link datadriven.data.DataContainer.DataContainer.combine() DataContainer.combine() @endlink
     def testCombine(self):
         container = DataContainer(points=self.container.getPoints(), values=self.container.getValues(), name=DataContainer.TEST_CATEGORY)
         self.container = self.container.combine(container)
@@ -107,7 +107,7 @@ class TestDataContainer(unittest.TestCase):
 
 
     ##
-    # Tests the function @link bin.data.DataContainer.DataContainer.createNullVector() DataContainer.createNullVector() @endlink
+    # Tests the function @link datadriven.data.DataContainer.DataContainer.createNullVector() DataContainer.createNullVector() @endlink
     def testCreateNullVector(self):
         vector = self.container.createNullVector(self.size, self.dim)
         entry = DataVector(self.dim)
