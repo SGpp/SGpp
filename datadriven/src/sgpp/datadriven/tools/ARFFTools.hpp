@@ -43,7 +43,7 @@ namespace SGPP {
         static void readARFFSize(const std::string& filename, size_t& numberInstances, size_t& dimension);
 
         static void readARFFSizeFromString(const std::string& content,
-                                     size_t& numberInstances, size_t& dimension);
+                                           size_t& numberInstances, size_t& dimension);
 
 
 
