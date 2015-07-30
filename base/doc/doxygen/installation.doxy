@@ -5,7 +5,7 @@ Compilation, installation and dependecies.
 <!---
 things to mention:
 ~/sgpp/trunk$ echo $LD_LIBRARY_PATH
-/home/baurms/sgpp/trunk/lib/alglib:/home/baurms/sgpp/trunk/lib/sgpp
+/home/baurms/sgpp/trunk/lib/sgpp
 :~/sgpp/trunk$ echo $PYTHONPATH
 /home/baurms/sgpp/trunk/bin:/home/baurms/sgpp/trunk/lib/pysgpp:
 has to be set
@@ -47,7 +47,7 @@ To obtain help on parameters for compilation, type
   scons --help
 @endverbatim
 
-@todo rewrite test code to prevent this, add /home/baurms/sgpp/trunk/lib/alglib:/home/baurms/sgpp/trunk/lib/sgpp
+@todo rewrite test code to prevent this, add /home/baurms/sgpp/trunk/lib/sgpp
 
 After compilation all unit-tests (located in the <tt>tests</tt>-folder of each module) are executed.
 If they fail, please make sure that you have followed all the instructions below, because almost all unit tests are written in python and require those steps.

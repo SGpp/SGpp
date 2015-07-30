@@ -149,11 +149,6 @@ Export('EXAMPLE_DIR')
 if not env.GetOption('clean'):
     SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
-# add #/lib/sgpp and #/lib/alglib to LIBPATH
-# (to add corresponding -L... flags to linker calls)
-ALGLIB_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'))
-env.Append(LIBPATH=[BUILD_DIR, ALGLIB_BUILD_PATH])
-
 # add C++ defines for all modules
 cppdefines = []
 for module in moduleNames:
@@ -163,21 +158,9 @@ env.Append(CPPDEFINES=cppdefines)
 # environement setup finished, export environment
 Export('env')
 
-# Install alglib
-libalglib, alglibstatic = SConscript(os.path.join('tools', 'SConscriptAlglib'),
-                                      variant_dir=os.path.join('tmp', 'build_alglib'),
-                                      duplicate=0)
-alglibinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'),
-                         [libalglib, alglibstatic])
-env.Depends(os.path.join("#", BUILD_DIR.path, "libsgppbase.so"), alglibinst)
-
 env.Append(CPPPATH=['#/tools'])
 
 # set up paths (Only Tested on Ubuntu!)
-env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
-    env["ENV"].get("LD_LIBRARY_PATH", ""),
-    BUILD_DIR.abspath,
-    ALGLIB_BUILD_PATH.abspath])
 env["ENV"]["PYTHONPATH"] = ":".join([
     env["ENV"].get("PYTHONPATH", ""),
     PYSGPP_BUILD_PATH.abspath])
@@ -262,7 +245,6 @@ def finish(target, source, env):
     instructionsTemplate = Template(fd.read())
     fd.close()
     s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                             ALGLIB_BUILD_PATH=ALGLIB_BUILD_PATH.abspath,
                                              PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
                                              SGPP_HOME=os.getcwd())
     print
