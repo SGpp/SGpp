@@ -63,6 +63,19 @@ for fileName in os.listdir("examples"):
         env.Requires(example, libInstall)
         env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
+        
+# build unit tests
+if env['BOOST_TESTS']:
+    test_env = env.Clone()
+    test_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
+    testObjects = []
+    for fileName in os.listdir("tests"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+    if len(testObjects) > 0:
+        test = test_env.Program(os.path.join("tests", "test_base"), testObjects)
+        test_env.Requires(test, libInstall)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
