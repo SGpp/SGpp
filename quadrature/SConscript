@@ -50,7 +50,6 @@ for fileName in os.listdir("examples"):
                               LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
-        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
 
 libraryTargetList.append(lib)
