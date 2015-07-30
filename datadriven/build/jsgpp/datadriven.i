@@ -19,7 +19,6 @@
 %include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerDensityCluster.hpp"
 #endif
 
 //%apply std::string *INPUT { std::string& istr };

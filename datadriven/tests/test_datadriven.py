@@ -8,9 +8,6 @@ import unittest, sys
 import test_BBT
 
 import test_BT
-#import test_RefinementANOVA
-
-import test_periodic
 
 import tbin.tlearner.testsuite as learnertests
 import tbin.tdata.testsuite as datatests

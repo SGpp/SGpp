@@ -218,7 +218,6 @@ class Sampler:
     
     # setup environment
     my_env = os.environ.copy()
-    my_env['LD_LIBRARY_PATH'] = 'lib/sgpp:lib/alglib'
     my_env['PYTHONPATH'] = 'lib/pysgpp'
 
     for envParameter in envParameters:
