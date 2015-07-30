@@ -31,6 +31,8 @@ namespace SGPP {
          */
         static Dataset readARFF(const std::string& filename);
 
+        static Dataset readARFFFromString(const std::string& content);
+
         /**
          * Reads the size of an ARFF file.
          *
@@ -39,6 +41,11 @@ namespace SGPP {
          * @param[out] dimension number of dimensions in the dataset
          */
         static void readARFFSize(const std::string& filename, size_t& numberInstances, size_t& dimension);
+
+        static void readARFFSizeFromString(const std::string& content,
+                                     size_t& numberInstances, size_t& dimension);
+
+
 
       private:
         /**
