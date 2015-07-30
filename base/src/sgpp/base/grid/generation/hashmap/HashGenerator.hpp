@@ -290,7 +290,7 @@ namespace SGPP {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // calculate current level-sum - 1
               level_t level_sum = idx.getLevelSum() - 1;
@@ -361,7 +361,7 @@ namespace SGPP {
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
               bool skip = false;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // calculate current level-sum - 1
               level_t level_sum = idx.getLevelSum() - 1;
@@ -465,7 +465,7 @@ namespace SGPP {
               // add missing Level 1
               level_t level_sum = (level_t)((storage->dim() - 1) - d);
               bool has_level_zero = false;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // Calculate level-sum
               for (size_t sd = 0; sd < d; sd++) {
@@ -555,7 +555,7 @@ namespace SGPP {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // Calculate level-sum
               level_t level_sum = idx.getLevelSum() - 1;
@@ -643,7 +643,7 @@ namespace SGPP {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // add remaining level-index pairs in current dimension d
               for (level_t l = 1; l <= n; l++) {
@@ -726,7 +726,7 @@ namespace SGPP {
 
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // add remaining level-index pairs in current dimension d
               for (level_t l = 1; l <= n; l++) {

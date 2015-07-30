@@ -123,7 +123,7 @@ namespace SGPP {
           //            single.set(j, 0.0);
 
 
-          GridIndex predGridIdx = predictiveGridStorage->get(j);
+          GridIndex& predGridIdx = *predictiveGridStorage->get(j);
 
           for (size_t point_idx = 0; point_idx < numData; point_idx++) {
             float_t prod = 1.0;

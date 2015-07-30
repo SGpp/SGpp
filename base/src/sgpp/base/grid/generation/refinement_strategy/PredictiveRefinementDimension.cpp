@@ -101,7 +101,7 @@ namespace SGPP {
 
 
         if (max_value.second > functor->start() && max_value.second >= threshold) {
-          index_type index((*storage)[max_index]);
+          index_type index(*(*storage)[max_index]);
           //Sets leaf property of index, which is refined to false
           (*storage)[max_index]->setLeaf(false);
           std::cout << "Refining grid point " << max_index << " value " << max_value.second << std::endl;

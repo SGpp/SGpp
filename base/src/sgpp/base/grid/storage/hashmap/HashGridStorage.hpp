@@ -492,7 +492,7 @@ namespace SGPP {
 
     HashGridStorage::index_pointer
     inline HashGridStorage::create(index_type& index) {
-      index_pointer insert = new HashGridIndex(&index);
+      index_pointer insert = new HashGridIndex(index);
       return insert;
     }
 

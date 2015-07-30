@@ -30,19 +30,19 @@ namespace SGPP {
       Leaf = false;
     }
 
-    HashGridIndex::HashGridIndex(const HashGridIndex* o) :
-      DIM(o->DIM), level(NULL), index(NULL), distr(Normal), hash_value(0) {
+    HashGridIndex::HashGridIndex(const HashGridIndex& o) :
+      DIM(o.DIM), level(NULL), index(NULL), distr(Normal), hash_value(0) {
       level = new level_type[DIM];
       index = new index_type[DIM];
       Leaf = false;
 
       for (size_t d = 0; d < DIM; d++) {
-        level[d] = o->level[d];
-        index[d] = o->index[d];
+        level[d] = o.level[d];
+        index[d] = o.index[d];
       }
 
-      distr = o->distr;
-      Leaf = o->Leaf;
+      distr = o.distr;
+      Leaf = o.Leaf;
       rehash();
     }
 

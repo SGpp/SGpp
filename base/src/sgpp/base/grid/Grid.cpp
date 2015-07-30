@@ -341,7 +341,7 @@ namespace SGPP {
 
     void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf) {
       //create HashGridIndex object for the point
-      GridIndex pointIndex = new GridIndex(dim);
+      GridIndex pointIndex(dim);
 
       for (unsigned int i = 0; i < dim - 1; i++) {
         pointIndex.push(i, levels[i], indices[i]);

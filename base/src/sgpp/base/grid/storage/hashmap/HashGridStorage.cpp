@@ -340,7 +340,7 @@ namespace SGPP {
 
     size_t
     HashGridStorage::insert(index_type& index) {
-      index_pointer insert = new HashGridIndex(&index);
+      index_pointer insert = new HashGridIndex(index);
       list.push_back(insert);
       return (map[insert] = this->seq() - 1);
     }
@@ -353,7 +353,7 @@ namespace SGPP {
         map.erase(del);
         delete del;
         // Insert update
-        index_pointer insert = new HashGridIndex(&index);
+        index_pointer insert = new HashGridIndex(index);
         list[pos] = insert;
         map[insert] = pos;
       }
