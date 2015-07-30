@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createFundamentalSplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createFundamentalSplineGrid(d, p))));
+                              base::Grid::createModFundamentalSplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createLinearGrid(d))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
