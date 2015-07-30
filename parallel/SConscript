@@ -8,7 +8,6 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
-Import('EXAMPLE_DIR')
 Import('moduleName')
 
 env_parallel = env.Clone()
@@ -118,13 +117,9 @@ lib = env_parallel.SharedLibrary(target="sgpp" + moduleName,
                                  source=objs,
                                  LIBPATH=BUILD_DIR,
                                  LIBS=libs)
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])                        
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppdatadriven.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppdatadriven" + env["SHLIBSUFFIX"])
-#env_parallel.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppsolver" + env["SHLIBSUFFIX"])
 libInstall = env_parallel.Install(BUILD_DIR, lib)
 

@@ -8,10 +8,14 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
+Import('PYSGPP_BUILD_PATH')
 Import('EXAMPLE_DIR')
 Import('moduleName')
+Import('libraryTargetList')
+Import('installTargetList')
+Import('exampleTargetList')
 
-libs = ['sgppbase', 'sgpppde', 'sgppdatadriven']
+libs = ['sgppbase', 'sgpppde']
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
@@ -38,7 +42,6 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   env.Requires(moduleTest, libInstall)
   testTargetList.append(moduleTest)
 
-Import('exampleTargetList')
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
@@ -47,7 +50,6 @@ for fileName in os.listdir("examples"):
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
 
-Import('libraryTargetList')
-Import('installTargetList')
+
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

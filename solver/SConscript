@@ -33,9 +33,7 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         LIBPATH = [BUILD_DIR],
                         LIBS=libs)
 
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
 
 libInstall = env.Install(BUILD_DIR, lib)

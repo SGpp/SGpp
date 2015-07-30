@@ -8,7 +8,6 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
-Import('EXAMPLE_DIR')
 Import('PYSGPP_BUILD_PATH')
 Import('moduleName')
 Import('libraryTargetList')
@@ -33,7 +32,6 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         LIBPATH=BUILD_DIR,
                         LIBS=libs)
                         
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
 
 libInstall = env.Install(BUILD_DIR, lib)

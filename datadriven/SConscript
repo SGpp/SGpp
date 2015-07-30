@@ -29,7 +29,7 @@ def isAVXFolder(folder):
             return True
     return False
 
-libs = ['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde']
+libs = ['sgppbase', 'sgppsolver', 'sgpppde']
 if env['USE_OCL']:
     libs += ['OpenCL']
 
@@ -45,21 +45,15 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
 
-env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+env.AppendUnique(LIBPATH=[BUILD_DIR])
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        # LIBPATH = [BUILD_DIR, '#/lib/alglib'],
                         LIBS=libs)
 
 
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
-#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppsolver" + env["SHLIBSUFFIX"])
-#env.Depends(lib, "#/lib/alglib" + "/libalglib.so")
-env.Depends(lib, "#/lib/alglib" + "/" + env["LIBPREFIX"] + "alglib" + env["SHLIBSUFFIX"])
 
 libInstall = env.Install(BUILD_DIR, lib)
 
@@ -85,7 +79,7 @@ for fileName in os.listdir("examples"):
 if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
-    test_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+    test_env.AppendUnique(LIBPATH=[BUILD_DIR])
     test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])
     testObjects = []
     for fileName in os.listdir("tests"):
