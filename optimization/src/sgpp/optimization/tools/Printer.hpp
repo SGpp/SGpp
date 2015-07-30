@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <cstddef>
 #include <stack>
-#include <sys/time.h>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 #include <sgpp/optimization/sle/system/SLE.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
@@ -202,8 +202,8 @@ namespace SGPP {
         bool cursorInClearLine;
         /// length of the last status message in characters
         size_t lastMsgLength;
-        /// stack of the starting times (time of printStatusBegin() calls)
-        std::stack<timespec> startTimes;
+        /// stack of stop watches (started at time of printStatusBegin() calls)
+        std::stack<base::SGppStopwatch> watches;
         /// length of last operation in seconds
         float_t lastDuration;
 
