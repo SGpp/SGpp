@@ -78,6 +78,15 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
             sys.exit(1)
+        
+        # make sure swig version is new enough
+        from SCons.Script.SConscript import SConsEnvironment
+        import warnings
+        sconsenv = SConsEnvironment()
+        swig_ver = sconsenv._get_major_minor_revision(re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0])
+        if swig_ver < (3, 0, 0):
+          sys.stderr.write("Error: swig version too old! Use swig >= 3.0.0\n")
+          sys.exit(1)
 
         print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0]
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
