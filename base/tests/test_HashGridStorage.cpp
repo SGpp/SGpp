@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
 
   bool* srcLeaf = new bool[s->size()];
 
-  for (int i = 0; i < static_cast<int>(s->size()); ++i) {
+  for (unsigned int i = 0; i < s->size(); ++i) {
     srcLeaf[i] = s->get(i)->isLeaf();
   }
 
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
 
   BOOST_CHECK_EQUAL(s->size(), s2->size());
 
-  for (int i = 0; i < static_cast<int>(s->size()); ++i) {
+  for (unsigned int i = 0; i < s->size(); ++i) {
     BOOST_CHECK_EQUAL(s2->get(i)->isLeaf(), srcLeaf[i]);
   }
 
@@ -425,7 +425,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
 
   DataVector d(17);
 
-  for (int i = 0; i < static_cast<int>(d.getSize()); ++i) {
+  for (unsigned int i = 0; i < d.getSize(); ++i) {
     d[i] = 0.0;
   }
 
