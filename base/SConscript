@@ -71,7 +71,7 @@ if env['COMPILE_BOOST_TESTS']:
     testObjects = []
     for currentFolder, subdirNames, fileNames in os.walk("tests", topdown=True):
       for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        objs.append(env.SharedObject(os.path.join(currentFolder, fileName)))
+        testObjects.append(env.SharedObject(os.path.join(currentFolder, fileName)))
             
     if len(testObjects) > 0:
         fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
