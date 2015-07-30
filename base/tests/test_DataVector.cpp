@@ -1,6 +1,4 @@
 #define BOOST_TEST_DYN_LINK
-//#define BOOST_TEST_MODULE DataVector
-//#define BOOST_TEST_MODULE SGppBaseModule
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
