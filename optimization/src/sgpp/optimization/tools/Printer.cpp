@@ -49,9 +49,7 @@ namespace SGPP {
       printStatusNewLine();
 
       // timing
-      timespec ts;
-      clock_gettime(CLOCK_MONOTONIC, &ts);
-      startTimes.push(ts);
+      watches.push(base::SGppStopwatch());
 
       lastMsgLength = 0;
       cursorInClearLine = true;
@@ -130,10 +128,8 @@ namespace SGPP {
       printStatusIdentation();
 
       // timing
-      timespec ts1 = startTimes.top(), ts2;
-      clock_gettime(CLOCK_MONOTONIC, &ts2);
-      lastDuration = static_cast<float_t>(ts2.tv_sec - ts1.tv_sec) +
-                     static_cast<float_t>(ts2.tv_nsec - ts1.tv_nsec) / 1e9;
+      base::SGppStopwatch watch = watches.top();
+      lastDuration = watch.stop();
 
       // print message
       std::string time_msg =
@@ -148,7 +144,7 @@ namespace SGPP {
 
       printStatusNewLine();
       lastMsgLength = 0;
-      startTimes.pop();
+      watches.pop();
       cursorInClearLine = true;
     }
 
