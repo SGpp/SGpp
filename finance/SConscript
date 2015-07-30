@@ -8,13 +8,10 @@ import fnmatch
 
 Import('env')
 Import('BUILD_DIR')
-Import('PYSGPP_BUILD_PATH')
+Import('EXAMPLE_DIR')
 Import('moduleName')
-Import('libraryTargetList')
-Import('installTargetList')
-Import('exampleTargetList')
 
-libs = ['sgppbase', 'sgpppde']
+libs = ['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppfinance']
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
@@ -26,12 +23,18 @@ objs = []
 for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
 
-lib = env.SharedLibrary(target="sgpp%s" % moduleName,
+lib = env.SharedLibrary(target="sgpp" + moduleName,
                         source=objs,
                         LIBPATH=BUILD_DIR,
                         LIBS=libs)
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
+#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])                        
+#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgpppde.so")
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
+#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppdatadriven.so")
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppdatadriven" + env["SHLIBSUFFIX"])
+#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppfinance.so")
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppfinance" + env["SHLIBSUFFIX"])
 libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
@@ -40,13 +43,17 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   env.Requires(moduleTest, libInstall)
   testTargetList.append(moduleTest)
 
+Import('exampleTargetList')
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
                               LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
+        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
 
+Import('libraryTargetList')
+Import('installTargetList')
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

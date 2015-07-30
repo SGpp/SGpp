@@ -29,7 +29,10 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         LIBPATH=BUILD_DIR,
                         LIBS=libs)
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+                        
+#env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
+
 libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
