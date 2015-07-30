@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(testDotProduct) {
   DataVector d = DataVector(3);
   SGPP::float_t x = 0;
 
-  for (int i = 0; i < static_cast<int>(d.getSize()); ++i) {
+  for (unsigned int i = 0; i < d.getSize(); ++i) {
     d[i] = i + 1;
     x += d[i] * d[i];
   }
