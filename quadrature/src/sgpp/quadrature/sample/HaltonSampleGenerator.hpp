@@ -29,6 +29,11 @@ namespace SGPP {
         HaltonSampleGenerator(size_t dimension);
 
         /**
+         * Destructor
+         */
+        ~HaltonSampleGenerator();
+
+        /**
          * This method generates one sample .
          * Implementation of the abstract Method getSample from SampelGenerator.
          *
@@ -38,10 +43,10 @@ namespace SGPP {
 
       private:
         int index;
-        int* base_vektor;
-        float_t* i_vektor;
-        float_t* f_vektor;
-        float_t* result_vektor;
+        std::vector<size_t> baseVector;
+        std::vector<float_t> iVector;
+        std::vector<float_t> fVector;
+        std::vector<float_t> resultVector;
 
     };
 

@@ -10,66 +10,69 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sample/SampleGenerator.hpp>
 
-
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
+
+/**
+ * The class StratifiedSampleGenerator subdivides every dimension in a given
+ * number of strata. For each strata one sample point is generated. In case
+ * one sample has already been generated for every strata, the next requested
+ * sample will be placed into the first strata.
+ */
+class StratifiedSampleGenerator: public SampleGenerator {
+
+public:
 
     /**
-     * The class StratifiedSampleGenerator subdivides every dimension in a given
-     * number of strata. For each strata one sample point is generated. In case
-     * one sample has already been generated for every strata, the next requested
-     * sample will be placed into the first strata.
+     * Standard constructor
+     *
+     * @param dimensions number of dimensions used for sample generation
+     * @param strataPerDimension array holding the number of strata used to
+     * subdivide the specific dimension
      */
-    class StratifiedSampleGenerator : public SampleGenerator {
 
-      public:
+    StratifiedSampleGenerator(std::vector<size_t>& strataPerDimension,
+            int seed = -1);
 
-        /**
-         * Standard constructor
-         *
-         * @param dimensions number of dimensions used for sample generation
-         * @param strataPerDimension array holding the number of strata used to
-         * subdivide the specific dimension
-         */
+    /**
+     * Destructor
+     */
+    virtual ~StratifiedSampleGenerator();
 
-        StratifiedSampleGenerator(size_t dimensions, long long int* strataPerDimension);
+    /**
+     * This method generates one sample .
+     * Implementation of the abstract Method getSample from SampelGenerator.
+     *
+     * @param sample DataVector storing the new generated sample vector.
+     */
 
+    void getSample(SGPP::base::DataVector& sample);
 
-        /**
-         * This method generates one sample .
-         * Implementation of the abstract Method getSample from SampelGenerator.
-         *
-         * @param sample DataVector storing the new generated sample vector.
-         */
+private:
+    // Array containing the number of strata per dimension
+    std::vector<size_t> numberOfStrata;
+    // Array containing the current strata number for every dimension
+    std::vector<size_t> currentStrata;
 
-        void getSample(SGPP::base::DataVector& sample);
+    // total number of samples which can be generated for given strata configuration
+    size_t numberOfSamples;
+    // index number of current sample [0..numberOfSamples-1]
+    size_t numberOfCurrentSample;
 
-      private:
-        // Array containing the number of strata per dimension
-        size_t* numberOfStrata;
-        // Array containing the current strata number for every dimension
-        size_t* currentStrata;
+    // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]
+    std::vector<float_t> sizeOfStrata;
 
-        // total number of samples which can be generated for given strata configuration
-        size_t numberOfSamples;
-        // index number of current sample [0..numberOfSamples-1]
-        size_t numberOfCurrentSample;
+    /**
+     * This method computes in which strata the next sample should be generated.
+     * Dimension after dimension each stratum is used to generate one sample point. As soon
+     * as one dimension is completed the algorithm will start at the beginning of this dimension and
+     * counts up the next dimension by 1.
+     */
+    void getNextStrata();
 
-        // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]
-        float_t* sizeOfStrata;
+};
 
-        /**
-         * This method computes in which strata the next sample should be generated.
-         * Dimension after dimension each stratum is used to generate one sample point. As soon
-         * as one dimension is completed the algorithm will start at the beginning of this dimension and
-         * counts up the next dimension by 1.
-         */
-
-        void getNextStrata();
-
-    };
-
-  }
+}
 }
 
 #endif /* STRATIFIEDSAMPLEGENERATOR_HPP */

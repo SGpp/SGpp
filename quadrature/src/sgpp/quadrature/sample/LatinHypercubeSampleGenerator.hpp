@@ -34,7 +34,13 @@ namespace SGPP {
          * @param numberOfSamples number of samples to be drawn
          */
 
-        LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples);
+        LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples,
+                int seed = -1);
+
+        /**
+         * Destructor
+         */
+        virtual ~LatinHypercubeSampleGenerator();
 
         /**
          * This method generates one sample .

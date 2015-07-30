@@ -30,7 +30,12 @@ namespace SGPP {
          *
          * @param dimension number of dimensions used for sample generation
          */
-        NaiveSampleGenerator(size_t dimension): SampleGenerator(dimension) {};
+        NaiveSampleGenerator(size_t dimension, int seed = -1);
+
+        /**
+         * Destructor
+         */
+        virtual ~NaiveSampleGenerator();
 
         /**
          * This method generates one sample .

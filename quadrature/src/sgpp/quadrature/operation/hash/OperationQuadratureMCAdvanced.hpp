@@ -36,7 +36,7 @@ namespace SGPP {
          * @param grid Reference to the grid object
          * @param numberOfSamples Number of Monte Carlo samples
          */
-        OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, int numberOfSamples);
+        OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, size_t numberOfSamples);
 
         /**
          * @brief Constructor of OperationQuadratureMCAdvanced, specifying dimensions
@@ -45,10 +45,12 @@ namespace SGPP {
          * @param dimensions dimensionality of this problem
          * @param numberOfSamples Number of Monte Carlo samples
          */
-        OperationQuadratureMCAdvanced(size_t dimensions, int numberOfSamples);
+        OperationQuadratureMCAdvanced(size_t dimensions, size_t numberOfSamples);
 
-        virtual ~OperationQuadratureMCAdvanced() {
-        }
+        /**
+         * Descructor
+         */
+        virtual ~OperationQuadratureMCAdvanced();
 
         /**
          * @brief Quadrature using advanced MC in @f$\Omega=[0,1]^d@f$.
@@ -85,25 +87,11 @@ namespace SGPP {
         void useNaiveMonteCarlo();
 
         /**
-         * Initialize SampleGenerator for QuasiMC
-         */
-        void useQuasiMonteCarlo();
-
-        /**
-         * Initialize SampleGenerator for QuasiMC_Scrambled
-         */
-        void useQuasiMonteCarloScrambled();
-
-        /**
          * @brief Initialize SampleGenerator for StratifiedMC
          *
          * @param n Array of dimension proerties
          */
-        void useStratifiedMonteCarlo(long long int* n);
-        void useStratifiedMonteCarlo(long long int* n, int dim) {
-          useStratifiedMonteCarlo(n);
-        }
-        ;
+        void useStratifiedMonteCarlo(std::vector<size_t>& n);
 
         /**
          * @brief Initialize SampleGenerator for LatinHypercubeMC
@@ -111,11 +99,9 @@ namespace SGPP {
         void useLatinHypercubeMonteCarlo();
 
         /**
-         * @brief Initialize SampleGenerator for SSobol
-         *
-         * @param scrambling The Type of scrambling to use, according to SSOBOL
+         * @brief Initialize SampleGenerator for HaltonSequenceGenerator
          */
-        void useSSobol(int scrambling = 1);
+        void useQuasiMonteCarloWithHaltonSequences();
 
         /**
          * @brief Method returns the total number of samples which can be generated

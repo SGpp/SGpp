@@ -12,45 +12,49 @@
 using namespace SGPP::base;
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions) : SampleGenerator(dimensions) {
-      int basePrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
+HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions) :
+        SampleGenerator(dimensions),
+        index(1),
+        baseVector(dimensions),
+        iVector(dimensions),
+        fVector(dimensions),
+        resultVector(dimensions) {
+    size_t basePrimes[] =
+            { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47 };
 
-      base_vektor = new int[dimensions];
-
-      f_vektor = new float_t[dimensions];
-      i_vektor = new float_t[dimensions];
-      result_vektor = new float_t[dimensions];
-
-      for (size_t i = 0; i < dimensions; i++) {
-        base_vektor[i] = basePrimes[Random::random() % 15];
-        f_vektor[i] = 1. / ((float_t)base_vektor[i]);
-
-        index = 1;
-        result_vektor[i] = 0.;
-      }
+    for (size_t i = 0; i < dimensions; i++) {
+        baseVector[i] = basePrimes[Random::random() % 15];
+        fVector[i] = 1. / static_cast<float_t>(baseVector[i]);
+        resultVector[i] = 0.;
     }
+}
 
-    void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
+HaltonSampleGenerator::~HaltonSampleGenerator() {
+}
 
-      for (size_t i = 0; i < dimensions; i++) {
+void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
 
-        result_vektor[i] = 0.;
-        f_vektor[i] = 1. / ((float_t)base_vektor[i]);
-        i_vektor[i] = index;
+    for (size_t i = 0; i < dimensions; i++) {
+        resultVector[i] = 0.;
+        fVector[i] = 1. / static_cast<float_t>(baseVector[i]);
+        iVector[i] = index;
 
-        while (i_vektor[i] > 0) {
-          result_vektor[i] = result_vektor[i] + f_vektor[i] * ((float_t)((int)i_vektor[i] % base_vektor[i]));
-          i_vektor[i] = floor(((float_t)i_vektor[i]) / ((float_t)base_vektor[i]));
-          f_vektor[i] = f_vektor[i] / ((float_t)base_vektor[i]);
+        while (iVector[i] > 0) {
+            resultVector[i] = resultVector[i]
+                    + fVector[i]
+                            * ((float_t) ((size_t) iVector[i] % baseVector[i]));
+            iVector[i] = floor(
+                    ((float_t) iVector[i]) / ((float_t) baseVector[i]));
+            fVector[i] = fVector[i] / ((float_t) baseVector[i]);
         }
 
-        dv[i] = result_vektor[i];
-      }
-
-      index++;
+        dv[i] = resultVector[i];
     }
 
-  }
+    index++;
+}
+
+}
 }
