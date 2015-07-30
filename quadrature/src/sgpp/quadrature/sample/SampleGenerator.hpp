@@ -30,10 +30,8 @@ namespace SGPP {
          * @param dimensions number of dimensions used for sample generation
          */
 
-        SampleGenerator(size_t dimensions) :
-          dimensions(dimensions) {
-        }
-        ;
+        SampleGenerator(size_t dimensions, int seed = -1);
+        virtual ~SampleGenerator();
 
         /**
          * Abstract Method which has to be implemented by each sample generator
@@ -77,6 +75,9 @@ namespace SGPP {
       protected:
         // number of dimensions for sample generation
         size_t dimensions;
+
+        // seed for random number generator
+        int seed;
     };
   }
 }

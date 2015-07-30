@@ -13,41 +13,41 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    bool Random::is_seeded = false;
+bool Random::is_seeded = false;
 #ifdef USE_STD_RANDOM
-    std::mt19937 Random::gen = std::mt19937();
-    std::uniform_int_distribution<int> Random::dist = std::uniform_int_distribution<int>(0, RAND_MAX);
+std::mt19937 Random::gen = std::mt19937();
+std::uniform_int_distribution<int> Random::dist = std::uniform_int_distribution<int>(0, RAND_MAX);
 #endif
 
-
-    void Random::seed(int seed_value) {
+void Random::seed(int seed_value) {
+    if (seed_value >= 0) {
 #ifdef USE_STD_RANDOM
-      gen.seed(seed_value);
+        gen.seed(seed_value);
 #else
-      srand(seed_value);
+        srand(seed_value);
 #endif
-      is_seeded = true;
+        is_seeded = true;
     }
+}
 
-    int Random::random() {
-      if (!is_seeded) {
-        seed((int)std::time(NULL));
-      }
+int Random::random() {
+    if (!is_seeded) {
+        seed((int) std::time(NULL));
+    }
 
 #ifdef USE_STD_RANDOM
-      return dist(gen);
+    return dist(gen);
 #else
-      return rand();
+    return rand();
 #endif
-    }
+}
 
-    float_t Random::random_double() {
-      return (float_t)(random()) / RAND_MAX;
-    }
+float_t Random::random_double() {
+    return (float_t) (random()) / RAND_MAX;
+}
 
-  }
+}
 }
