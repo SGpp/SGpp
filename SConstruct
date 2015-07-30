@@ -13,7 +13,7 @@ from Helper import *
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 7)
 # check scons
-EnsureSConsVersion(2, 0)
+EnsureSConsVersion(2, 1)
 print "Using SCons", SCons.__version__
 
 # to ignore folders containing a SConscript file, do the following:
