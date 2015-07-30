@@ -11,6 +11,7 @@ from SCons.Script.SConscript import SConsEnvironment
 import warnings
 
 from Helper import *
+from posix import chdir
 
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 7)
@@ -253,3 +254,24 @@ for exampleTarget in exampleTargetList:
   else:
     env.Depends(exampleTarget, dependency)
     dependency = exampleTarget
+
+# final output
+def finish(target, source, env):
+    from string import Template
+    fd = open("INSTRUCTIONS")
+    instructionsTemplate = Template(fd.read())
+    fd.close()
+    s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+                                             ALGLIB_BUILD_PATH=ALGLIB_BUILD_PATH.abspath,
+                                             PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
+                                             SGPP_HOME=os.getcwd())
+    print
+    print s
+
+moduleFinish = env.Command('finish', [], finish)
+# env.Requires(moduleFinish, installTargetList)
+# # testTargetList.append(moduleFinish)
+if dependency is not None:
+    env.Depends(moduleFinish, dependency)
+# env.Default(moduleFinish)
+  
