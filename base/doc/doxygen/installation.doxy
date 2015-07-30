@@ -98,7 +98,7 @@ Use
 @code{bash}
 scons SG_ALL=1
 @endcode
-to compile all modules (the ddefault).
+to compile all modules (the default).
 
 Additionally, you can pass some specific flags to the compiler using CPPFLAGS environment variable:
 @code{bash}
