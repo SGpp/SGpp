@@ -7,6 +7,8 @@ import glob
 import SCons
 import os
 import SGppConfigure
+from SCons.Script.SConscript import SConsEnvironment
+import warnings
 
 from Helper import *
 
@@ -15,6 +17,11 @@ EnsurePythonVersion(2, 7)
 # check scons
 EnsureSConsVersion(2, 1)
 print "Using SCons", SCons.__version__
+
+sconsenv = SConsEnvironment()
+scons_ver = sconsenv._get_major_minor_revision(SCons.__version__)
+if scons_ver < (2, 3, 0):
+  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports, that it also compiles with scons >= 2.1.0")
 
 # to ignore folders containing a SConscript file, do the following:
 # ignoreFolders = ["jsgpp"]
