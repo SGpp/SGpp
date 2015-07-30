@@ -149,6 +149,10 @@ Export('EXAMPLE_DIR')
 if not env.GetOption('clean'):
     SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
+# add #/lib/sgpp to LIBPATH
+# (to add corresponding -L... flags to linker calls)
+env.Append(LIBPATH=[BUILD_DIR])
+
 # add C++ defines for all modules
 cppdefines = []
 for module in moduleNames:
@@ -161,6 +165,9 @@ Export('env')
 env.Append(CPPPATH=['#/tools'])
 
 # set up paths (Only Tested on Ubuntu!)
+env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
+    env["ENV"].get("LD_LIBRARY_PATH", ""),
+    BUILD_DIR.abspath])
 env["ENV"]["PYTHONPATH"] = ":".join([
     env["ENV"].get("PYTHONPATH", ""),
     PYSGPP_BUILD_PATH.abspath])
