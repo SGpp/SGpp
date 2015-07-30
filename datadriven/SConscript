@@ -69,7 +69,6 @@ for fileName in os.listdir("examples"):
                               # LIBS=libs + ["sgpp%s" % moduleName]
                               )
         example_env.Requires(example, libInstall)
-        example_env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
 
 # build unit tests
@@ -77,7 +76,7 @@ if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
     test_env.AppendUnique(LIBPATH=[BUILD_DIR])
-    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
+    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])
     testObjects = []
     for fileName in os.listdir("tests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
