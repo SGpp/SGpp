@@ -212,6 +212,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         # the python binding (pysgpp) requires lpython and a flat namespace
         # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
         env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
+        env.AppendUnique(CPPPATH="/usr/local/include")
+        env.AppendUnique(LIBPATH="/usr/local/lib")
         env['SHLIBSUFFIX'] = '.dylib'
     elif env['PLATFORM'] == 'cygwin':
         pass
