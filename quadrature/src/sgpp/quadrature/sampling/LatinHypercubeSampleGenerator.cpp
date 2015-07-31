@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LatinHypercubeSampleGenerator.hpp"
+#include "../sampling/LatinHypercubeSampleGenerator.hpp"
 
 #include <cmath>
 #include <list>

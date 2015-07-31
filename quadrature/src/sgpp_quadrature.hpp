@@ -8,10 +8,12 @@
 
 #include "sgpp/quadrature/Random.hpp"
 #include "sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp"
-#include "sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/NaiveSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
-#include "sgpp/quadrature/sample/StratifiedSampleGenerator.hpp"
+#include "sgpp/quadrature/sampling/SamplerTypes.hpp"
+#include "sgpp/quadrature/sampling/HaltonSampleGenerator.hpp"
+#include "sgpp/quadrature/sampling/HaltonSampleGenerator.hpp"
+#include "sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp"
+#include "sgpp/quadrature/sampling/NaiveSampleGenerator.hpp"
+#include "sgpp/quadrature/sampling/SamplerTypes.hpp"
+#include "sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp"
 
 #endif /* QUADRATURE_HPP */

@@ -9,7 +9,7 @@
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/quadrature/sample/SampleGenerator.hpp>
+#include "../../sampling/SampleGenerator.hpp"
 
 
 namespace SGPP {
