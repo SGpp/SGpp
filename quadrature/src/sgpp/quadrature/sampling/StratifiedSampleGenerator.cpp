@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "StratifiedSampleGenerator.hpp"
+#include "../sampling/StratifiedSampleGenerator.hpp"
+
 #include <cmath>
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/globaldef.hpp>

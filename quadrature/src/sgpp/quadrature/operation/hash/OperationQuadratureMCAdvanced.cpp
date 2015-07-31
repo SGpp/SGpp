@@ -10,12 +10,12 @@
 #include <cmath>
 #include <iostream>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp>
-#include <sgpp/quadrature/sample/NaiveSampleGenerator.hpp>
 #include <sgpp/quadrature/Random.hpp>
-#include <sgpp/quadrature/sample/StratifiedSampleGenerator.hpp>
-#include <sgpp/quadrature/sample/HaltonSampleGenerator.hpp>
-#include <sgpp/quadrature/sample/SampleGenerator.hpp>
+#include "../../sampling/HaltonSampleGenerator.hpp"
+#include "../../sampling/LatinHypercubeSampleGenerator.hpp"
+#include "../../sampling/NaiveSampleGenerator.hpp"
+#include "../../sampling/SampleGenerator.hpp"
+#include "../../sampling/StratifiedSampleGenerator.hpp"
 
 namespace SGPP {
 namespace quadrature {
