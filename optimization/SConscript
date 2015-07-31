@@ -13,11 +13,12 @@ Import("moduleName")
 Import("libraryTargetList")
 Import("installTargetList")
 Import("exampleTargetList")
+Import("config")
 
 
 
 libs = ["sgppbase"]
-config = env.Configure()
+#config = env.Configure()
 
 if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
     if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
