@@ -46,11 +46,8 @@ for wrapper in languageSupport:
     elif wrapper == "jsgpp":
       languageSupportNames.append('SG_JAVA')
 
-print moduleFolders
-print moduleNames
-
-print languageSupport
-print languageSupportNames
+print "Available modules:", ", ".join(moduleNames)
+print "Available language support:", ", ".join(languageSupportNames)
 
 vars = Variables("custom.py")
 
