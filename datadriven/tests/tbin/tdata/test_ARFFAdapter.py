@@ -76,7 +76,7 @@ class TestARFFAdapter(unittest.TestCase):
                     self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
                 else:
                     self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
-            self.assertEqual(values[colIdx], testValues[colIdx])
+            self.assertEqual(values[rowIdx], testValues[rowIdx])
         
     
     ##
@@ -109,7 +109,7 @@ class TestARFFAdapter(unittest.TestCase):
                     self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
                 else:
                     self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
-            self.assertEqual(values[colIdx], testValues[colIdx])
+            self.assertEqual(values[rowIdx], testValues[rowIdx])
         
 
     ##
