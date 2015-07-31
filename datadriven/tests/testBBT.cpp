@@ -43,7 +43,7 @@ DataMatrix* generateBBTMatrix(Grid* grid, DataMatrix& training) {
 
 void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
 
-#ifdef USE_DOUBLE_PRECISION
+#if USE_DOUBLE_PRECISION
   double tolerance = 1E-5;
 #else
   double tolerance = 1E-5;
