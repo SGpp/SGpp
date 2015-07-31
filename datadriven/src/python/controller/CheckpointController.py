@@ -24,9 +24,6 @@ import gzip, copy
 
 
 ##
-# @package datadriven.controller
-
-##
 # Class for handling events for storing and restoring of checkpoints.
 # Responsible for storing of checkpoints during learning process and restoring 
 # of learning from some checkpoint.
@@ -193,7 +190,7 @@ class CheckpointController(LearnerEventController):
 
 
     ## Setter for the current LearnedKnowledge object
-    #@param knowledge: @link datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@param knowledge: @link datadriven.src.python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
 
@@ -209,7 +206,7 @@ class CheckpointController(LearnerEventController):
 
     ## Loads knowledge from the checkpoint of given iteration
     #@param iteration: integer iteration number
-    #@return @link datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@return @link datadriven.src.python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def loadLearnedKnowledge(self, iteration):
         knowledgeFile = self.composeName(iteration) + ".arff.gz"
         knowledgeMemento = LearnedKnowledgeFormatter().deserializeFromFile(knowledgeFile)
@@ -292,7 +289,7 @@ class CheckpointController(LearnerEventController):
         return learner
     
     
-    ## Learning event @link LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
+    ## Learning event @link datadriven.src.python.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
     def handleLearningEvent(self, subject, status):  
         if status == LearnerEvents.LEARNING_STEP_COMPLETE or status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
             if subject.iteration % self.interval == 0:
