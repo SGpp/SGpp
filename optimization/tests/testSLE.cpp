@@ -71,7 +71,7 @@ void testSLESolution(const base::DataMatrix& A,
     bNormSquared += b.get(i) * b.get(i);
   }
 
-#ifdef USE_DOUBLE_PRECISION
+#if USE_DOUBLE_PRECISION
   const bool doublePrecision = true;
 #else
   const bool doublePrecision = false;
@@ -79,7 +79,7 @@ void testSLESolution(const base::DataMatrix& A,
 
   // test relative residual
   BOOST_CHECK_SMALL(std::sqrt(rNormSquared / bNormSquared),
-                    (doublePrecision ? 1e-6 : 1e-4));
+                    (doublePrecision ? float_t(1e-6) : float_t(1e-3) ));
 }
 
 BOOST_AUTO_TEST_CASE(TestSLESolvers) {
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
     for (const auto& solver : solvers) {
       if ((dynamic_cast<sle_solver::BiCGStab*>(solver.get()) != nullptr) &&
           (n >
-#ifdef USE_DOUBLE_PRECISION
+#if USE_DOUBLE_PRECISION
            20
 #else
            8
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
          */
         continue;
       } else if ((dynamic_cast<sle_solver::Gmmpp*>(solver.get()) != nullptr) &&
-#ifdef USE_DOUBLE_PRECISION
+#if USE_DOUBLE_PRECISION
                  true
 #else
                  false
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(TestHierarchization) {
       }
 
       // test infinity norm of difference roughly
-      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x), 0.3);
+      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x), float_t(0.3) );
     }
   }
 }

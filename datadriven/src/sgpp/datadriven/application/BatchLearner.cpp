@@ -139,7 +139,7 @@ namespace SGPP {
 
         if (mapData) {
           if (dataInBatch.find(lineClass) == dataInBatch.end())//first data entry for this class in this batch
-            dataInBatch.insert(std::pair<int, DataMatrix*>(lineClass, new DataMatrix(0, dimensions, -1.0)));
+            dataInBatch.insert(std::pair<int, DataMatrix*>(lineClass, new DataMatrix(0, dimensions, float_t(-1.0) )));
 
           //add found data entry to correct DataMatrix in map
           dataInBatch.at(lineClass)->appendRow(lineData);

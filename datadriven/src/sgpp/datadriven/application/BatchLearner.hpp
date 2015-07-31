@@ -25,6 +25,8 @@
 #include <map>
 #include "BatchConfiguration.hpp"
 
+using namespace SGPP::base;
+using namespace std;
 
 namespace SGPP {
   namespace datadriven {

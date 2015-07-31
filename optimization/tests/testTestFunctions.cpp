@@ -111,7 +111,11 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
 
     // test displaceVector/reverseDisplaceVector
     for (size_t t = 0; t < d; t++) {
+#if USE_DOUBLE_PRECISION == 1
       BOOST_CHECK_CLOSE(xl[t], x[t], 1e-10);
+#else
+      BOOST_CHECK_CLOSE(xl[t], x[t], 1e-5);
+#endif
     }
 
     // test eval/evalUndisplaced
@@ -128,7 +132,11 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
       BOOST_CHECK_LE(xOpt[t], 1.0);
     }
 
-    BOOST_CHECK_EQUAL(fOpt, fcn->eval(xOpt));
+#if USE_DOUBLE_PRECISION == 1
+    BOOST_CHECK_EQUAL(fOpt, fcn->eval(xOpt) );
+#else
+    BOOST_CHECK_SMALL( std::abs( fOpt-fcn->eval(xOpt) ), float_t(1e-6) );
+#endif
 
     // test if xopt is minimal point for a sample of random points
     for (size_t i = 0; i < 1000; i++) {

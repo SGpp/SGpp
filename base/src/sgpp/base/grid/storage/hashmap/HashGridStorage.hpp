@@ -417,6 +417,8 @@ namespace SGPP {
          */
         void getLevelIndexArraysForEval(DataMatrix& level, DataMatrix& index);
 
+        void getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index);
+
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative Laplace Calculations: the level

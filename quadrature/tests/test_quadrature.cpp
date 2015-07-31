@@ -112,7 +112,11 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
     SGPP::op_factory::createOperationQuadrature(*grid);
   SGPP::float_t analyticIntegral = opQuad->doQuadrature(alpha);
 
-  BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, 1e-12);
+#if USE_DOUBLE_PRECISION == 1
+  BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, float_t(1e-12) );
+#else
+  BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, float_t(1e-5) );
+#endif
 
   NaiveSampleGenerator pNSampler(dim, seed);
   HaltonSampleGenerator pHSampler(dim);

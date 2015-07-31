@@ -1069,11 +1069,19 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   OperationMultipleEval* opb = SGPP::op_factory::createOperationMultipleEval( *factory, p );
   opb->multTranspose( beta, alpha );
 
-  BOOST_CHECK_CLOSE(alpha[0], 1.038461538, 1e-6 );
-  BOOST_CHECK_CLOSE(alpha[1], -0.038461538461538464, 1e-6 );
-  BOOST_CHECK_CLOSE(alpha[2], -0.18237143795284394, 1e-6 );
-  BOOST_CHECK_CLOSE(alpha[3], -0.53513915, 1e-6 );
-  BOOST_CHECK_CLOSE(alpha[4], 0.0, 1e-6 );
+#if USE_DOUBLE_PRECISION == 1
+  BOOST_CHECK_CLOSE(alpha[0], float_t(1.038461538), float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[1], float_t(-0.038461538461538464), float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[2], float_t(-0.18237143795284394), float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[3], float_t(-0.53513915), float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[4], float_t(0.0), float_t(1e-6) );
+#else
+  BOOST_CHECK_CLOSE(alpha[0], float_t(1.038461538), float_t(1e-5) );
+  BOOST_CHECK_CLOSE(alpha[1], float_t(-0.038461538461538464), float_t(1e-5) );
+  BOOST_CHECK_CLOSE(alpha[2], float_t(-0.18237143795284394), float_t(1e-4) );
+  BOOST_CHECK_CLOSE(alpha[3], float_t(-0.53513915), float_t(1e-4) );
+  BOOST_CHECK_CLOSE(alpha[4], float_t(0.0), float_t(1e-6) );
+#endif
 
   alpha.setAll(0.0);
   alpha[2] = 1.0;
@@ -1083,7 +1091,11 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   beta[0] = 0.0;
 
   opb->mult( alpha, beta );
-  BOOST_CHECK_CLOSE( beta[0], -0.182371437, 1e-6 );
+#if USE_DOUBLE_PRECISION == 1
+  BOOST_CHECK_CLOSE( beta[0], float_t(-0.182371437), float_t(1e-6) );
+#else
+  BOOST_CHECK_CLOSE( beta[0], float_t(-0.182371437), float_t(1e-4) );
+#endif
 
   delete gen;
   delete factory;
@@ -1140,7 +1152,11 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
 
   OperationEval* eval = SGPP::op_factory::createOperationEval( *factory );
 
-  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), 0.8176285620, 1e-8 );
+#if USE_DOUBLE_PRECISION == 1
+  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), float_t(0.8176285620), float_t(1e-8) );
+#else
+  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), float_t(0.8176285620), float_t(1e-5) );
+#endif
 
   delete gen;
   delete factory;

@@ -66,7 +66,13 @@ void orthogonalityTest(base::DataMatrix& A) {
         entry += A.get(i, l) * A.get(j, l);
       }
 
-      BOOST_CHECK_SMALL(entry - ((i == j) ? 1.0 : 0.0), 1e-10);
+#if USE_DOUBLE_PRECISION
+      BOOST_CHECK_SMALL(entry - ((i == j) ? float_t(1.0) : float_t(0.0) ),
+			float_t(1e-10) );
+#else
+      BOOST_CHECK_SMALL(entry - ((i == j) ? float_t(1.0) : float_t(0.0) ),
+			float_t(1e-6) );
+#endif
     }
   }
 }
@@ -100,7 +106,11 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
         entry2 += V.get(i, l) * B.get(l, j);
       }
 
+#if USE_DOUBLE_PRECISION
       BOOST_CHECK_CLOSE(entry1, entry2, 5e-5);
+#else
+      BOOST_CHECK_CLOSE(entry1, entry2, 1.0 );
+#endif
     }
   }
 }
@@ -290,8 +300,15 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
       BOOST_CHECK_LE(numbers[i], 1.0);
     }
 
-    BOOST_CHECK_SMALL(calculateMean(numbers) - 0.5, 1e-3);
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - 1.0 / 12.0, 1e-3);
+#if USE_DOUBLE_PRECISION
+    BOOST_CHECK_SMALL(calculateMean(numbers) - float_t(0.5), float_t(1e-3) );
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - float_t(1.0) / float_t(12.0)
+		      , float_t(1e-3) );
+#else
+    BOOST_CHECK_SMALL(calculateMean(numbers) - float_t(0.5), float_t(1e-2) );
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - float_t(1.0) / float_t(12.0)
+		      , float_t(1e-3) );
+#endif
   }
 
   // test Gaussian random numbers
@@ -304,9 +321,9 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
         numbers[i] = randomNumberGenerator.getGaussianRN(sigmas[k], mus[k]);
       }
 
-      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k], 0.1 * sigmas[k]);
+      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k], float_t(0.1) * sigmas[k]);
       BOOST_CHECK_SMALL(calculateVariance(numbers) - sigmas[k] * sigmas[k],
-                        0.1 * sigmas[k] * sigmas[k]);
+			float_t(0.1) * sigmas[k] * sigmas[k]);
     }
   }
 
@@ -321,9 +338,10 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
     }
 
     SGPP::float_t kDbl = static_cast<SGPP::float_t>(k);
-    BOOST_CHECK_SMALL(calculateMean(numbers) - (kDbl - 1.0) / 2.0, 0.01 * kDbl);
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - (kDbl * kDbl - 1.0) / 12.0,
-                      0.01 * kDbl * kDbl);
+    BOOST_CHECK_SMALL(calculateMean(numbers) - (kDbl - float_t(1.0)) / float_t(2.0)
+		      , float_t(0.01) * kDbl);
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - (kDbl * kDbl - float_t(1.0)) / float_t(12.0),
+		      float_t(0.01) * kDbl * kDbl);
   }
 }
 
@@ -353,7 +371,11 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
         entry += Q.get(i - p, l - p) * A.get(l, q);
       }
 
-      BOOST_CHECK_SMALL(entry, 1e-10);
+#if USE_DOUBLE_PRECISION
+      BOOST_CHECK_SMALL(entry, float_t(1e-10) );
+#else
+      BOOST_CHECK_SMALL(entry, float_t(1e-6) );
+#endif
     }
   }
 }
@@ -373,7 +395,7 @@ BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
 
   for (size_t i = 2; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(H.get(i, j), 1e-10);
+      BOOST_CHECK_SMALL(H.get(i, j), float_t(1e-10) );
     }
   }
 }
@@ -392,7 +414,7 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 
   for (size_t i = 1; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(R.get(i, j), 1e-10);
+      BOOST_CHECK_SMALL(R.get(i, j), float_t(1e-10) );
     }
   }
 
@@ -404,7 +426,11 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
         entry += Q.get(i, l) * R.get(l, j);
       }
 
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, 1e-10);
+#if USE_DOUBLE_PRECISION
+      BOOST_CHECK_CLOSE(A.get(i, j), entry, float_t(1e-10) );
+#else
+      BOOST_CHECK_CLOSE(A.get(i, j), entry, float_t(1e-2) );
+#endif
     }
   }
 }
@@ -432,7 +458,11 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
       if (i != j) {
-        BOOST_CHECK_SMALL(S.get(i, j), 1e-8);
+#if USE_DOUBLE_PRECISION == 1
+        BOOST_CHECK_SMALL(S.get(i, j), float_t(1e-9) );
+#else
+        BOOST_CHECK_SMALL(S.get(i, j), float_t(1e-5) );
+#endif
       }
     }
   }

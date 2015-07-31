@@ -258,7 +258,7 @@ namespace SGPP {
         if (ref < adaptivityConfig.numRefinements_) {
           cout << "# LearnerSGDE: Refine grid ... ";
           //Weight surplus with function evaluation at grid points
-          OperationEval* opEval = sg::op_factory::createOperationEval(grid);
+          OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
           GridIndex* gp;
           DataVector p(dim);
           DataVector alphaWeight(alpha.getSize());

@@ -44,7 +44,7 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
 #if USE_DOUBLE_PRECISION
   double tolerance = 1E-5;
 #else
-  double tolerance = 1E-5;
+  double tolerance = 1E-3;
 #endif
 
   // check dimensions
