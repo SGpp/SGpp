@@ -18,14 +18,14 @@ from pysgpp import DataVector, DataMatrix
 
 ##
 # @package tests.tbin.test_SequentialFoldingPolicy
-# Contains class test_SequentialFoldingPolicy::TestSequentialFoldingPolicy with unittests for @link datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# Contains class test_SequentialFoldingPolicy::TestSequentialFoldingPolicy with unittests for @link datadriven.src.python.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# Class with unittests for @link datadriven.src.python.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# @test Unittests for @link datadriven.src.python.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 class TestSequentialFoldingPolicy(unittest.TestCase):
     
     
@@ -43,7 +43,7 @@ class TestSequentialFoldingPolicy(unittest.TestCase):
     
     
     ##
-    # Tests the function @link datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() SequentialFoldingPolicy.next() @endlink
+    # Tests the function @link datadriven.src.python.learner.folding.FoldingPolicy.FoldingPolicy.next() SequentialFoldingPolicy.next() @endlink
     def testNext(self):
         self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:

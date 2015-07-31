@@ -7,8 +7,6 @@ from pysgpp import *
 
 from utils.GzipSerializer import GzipSerializer
 
-##
-# @package datadriven.learner.formatter
 
 ## Provides functionality for the runtime serialization of the Grid object
 #

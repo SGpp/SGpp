@@ -3,16 +3,16 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from datadriven.earner.solver.LinearSolver import LinearSolverEvents
-from datadriven.earner.Learner import LearnerEvents
-from datadriven.ontroller.LearnerEventController import LearnerEventController
-from datadriven.ontroller.SolverEventController import SolverEventController
+from datadriven.src.python.learner.solver.LinearSolver import LinearSolverEvents
+from datadriven.src.python.learner.Learner import LearnerEvents
+from datadriven.src.python.controller.LearnerEventController import LearnerEventController
+from datadriven.src.python.controller.SolverEventController import SolverEventController
 import matplotlib
 matplotlib.use('Agg') #to prevent the bug with matplot unable to open display
 from matplotlib import pyplot
 from matplotlib.lines import Line2D
 
-# @package datadriven.ontroller
+# @package datadriven.src.python.controller
 ## This class processes the information about the current state of the learning 
 # process and presents it in form of a graph.
 # In order to use this class the <a href="http://matplotlib.sourceforge.net" target="new">matplotlib library</a> is required.

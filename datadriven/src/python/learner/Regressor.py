@@ -9,8 +9,6 @@ from pysgpp import DataVector, SurplusRefinementFunctor
 
 from  math import sqrt
 
-##
-# @package datadriven.earner
 
 ## Subclass of Learner, responsible for regression.
 # The methods specific for regression are implemented here.

@@ -5,7 +5,7 @@
 
 ## Abstract class of Subscribers of LearnerEvents. The classes that wants to obtain
 # the progress notifications from Learner should implement this class. See @link
-# datadriven.earner.Learner.Learner documentation of Learner@endlink for details.
+# datadriven.src.python.learner.Learner.Learner documentation of Learner@endlink for details.
 class LearnerEventController(object):
 
     ##

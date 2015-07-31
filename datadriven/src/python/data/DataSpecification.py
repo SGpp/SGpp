@@ -3,13 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-#from DataContainer import DataContainer
-
 from time import time
 import random
-
-##
-# @package datadriven.ata
 
 ## The class encapsulates the description of the data set, like names of dimensions
 # and source file.

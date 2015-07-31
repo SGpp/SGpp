@@ -12,8 +12,6 @@ from utils.GzipSerializer import GzipSerializer
 from learner.LearnedKnowledge import LearnedKnowledge
 from pysgpp import DataVector, DataMatrix
 
-##
-# @package datadriven.learner.formatter
 
 ## Provides functionality for the runtime serialization of the LearnedKnowledge object
 #

@@ -16,14 +16,14 @@ from datadriven.learner.LearnedKnowledge import LearnedKnowledge
 
 ##
 # @package tests.tbin.test_TrainingSpecification
-# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link datadriven.src.python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 
 ##
-# Class with unittests for @link datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Class with unittests for @link datadriven.src.python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# @test Unittests for @link datadriven.src.python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 # @todo (khakhutv) implement the test case for TrainingSpecification
 class TestTrainingSpecification(unittest.TestCase):
 

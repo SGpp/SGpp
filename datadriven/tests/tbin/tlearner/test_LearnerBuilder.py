@@ -20,24 +20,24 @@ from datadriven.controller import InfoToFile
 
 ##
 # @package tests.tbin.test_LearnerBuilder
-# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 
 ##
-# Class with unittests for @link datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Class with unittests for @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# @test Unittests for @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 class TestLearnerBuilder(unittest.TestCase):
     
     
     ## Set up the variables and
-    # test the functions @link datadriven.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
+    # test the functions @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
     def setUp(self):
         self.builder = LearnerBuilder()
         self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\

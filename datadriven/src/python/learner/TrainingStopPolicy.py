@@ -6,9 +6,6 @@
 
 import types
 
-##
-# @package datadriven.earner
-
 ## The class implements heuristics for testing if the learn process should be finished before learner is overfitted.
 #  
 # The test is made by calling method <code>

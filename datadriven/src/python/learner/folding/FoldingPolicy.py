@@ -5,8 +5,6 @@
 
 import math
 
-##
-# @package datadriven.learner.folding
 
 ## Abstract class for providing functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs

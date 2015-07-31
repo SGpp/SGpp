@@ -4,7 +4,6 @@
 # sgpp.sparsegrids.org
 
 ##
-# @package datadriven.learner.solver
 # @brief A collection of helper functions.
 # @version $CURR$
 

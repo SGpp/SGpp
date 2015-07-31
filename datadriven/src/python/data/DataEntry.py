@@ -6,9 +6,6 @@
 from pysgpp import DataVector
 from DataSpecification import DataSpecification
 
-##
-# @package datadriven.ata
-
 ## A container for tuple of a point and its corresponding value
 class DataEntry(object):
 

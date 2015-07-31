@@ -3,8 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##
-# @package datadriven.learner.solver
 
 ## Abstract class for solution of system of linear equations. 
 #

@@ -4,8 +4,6 @@
 # sgpp.sparsegrids.org
 
 
-##
-# @package datadriven.earner
 
 ## Constants for types of grid borders
 class BorderTypes(object):
