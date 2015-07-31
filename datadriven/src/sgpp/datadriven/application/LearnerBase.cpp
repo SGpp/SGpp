@@ -108,7 +108,7 @@ namespace SGPP {
                                      const SGPP::base::RegularGridConfiguration& GridConfig,
                                      const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                      const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                                     const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float_t lambda) {
+                                     const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float_t lambdaRegularization) {
       LearnerTiming result;
 
       if (trainDataset.getNrows() != classes.getSize()) {
@@ -147,7 +147,7 @@ namespace SGPP {
         return result;
 
       // create DMSystem
-      SGPP::datadriven::DMSystemMatrixBase* DMSystem = createDMSystem(trainDataset, lambda);
+      SGPP::datadriven::DMSystemMatrixBase* DMSystem = createDMSystem(trainDataset, lambdaRegularization);
 
       // check if System was created
       if (DMSystem == NULL)
@@ -293,7 +293,7 @@ namespace SGPP {
 
     LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::base::DataVector& classes,
                                      const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-                                     const float_t lambda) {
+                                     const float_t lambdaRegularization) {
       SGPP::base::AdpativityConfiguration AdaptConfig;
 
       AdaptConfig.maxLevelType_ = false;
@@ -302,7 +302,7 @@ namespace SGPP {
       AdaptConfig.percent_ = 0.0;
       AdaptConfig.threshold_ = 0.0;
 
-      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
+      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambdaRegularization);
     }
 
     void LearnerBase::predict(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classesComputed) {

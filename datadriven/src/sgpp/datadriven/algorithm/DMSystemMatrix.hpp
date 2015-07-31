@@ -41,9 +41,9 @@ namespace SGPP {
          * @param grid reference to the sparse grid
          * @param trainData reference to SGPP::base::DataVector that contains the training data
          * @param C the regression functional
-         * @param lambda the lambda, the regression parameter
+         * @param lambdaRegression the lambda, the regression parameter
          */
-        DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambda);
+        DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambdaRegression);
 
         /**
          * Std-Destructor
