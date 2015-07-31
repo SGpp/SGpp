@@ -22,10 +22,8 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 
 #include <deque>
+#include <map>
 #include "BatchConfiguration.hpp"
-
-using namespace sg::base;
-using namespace std;
 
 
 namespace SGPP {
@@ -39,20 +37,20 @@ namespace SGPP {
         SGPP::base::RegularGridConfiguration gridConf;//!< configuration for the grids
         SGPP::solver::SLESolverConfiguration solverConf;//!< configuration for the solver
         SGPP::base::AdpativityConfiguration adaptConf;//!< configuration for the adaptivity
-        fstream reader;//!< stream to read in the arff file
+        std::fstream reader;//!< stream to read in the arff file
         bool reachedData = false;//!< flag if "\@DATA" has been reached in the arff
         int batchnum = 0;//!< number of the current batch
         size_t dimensions = 0;//!< count of dimensions in the data
-        map<int, DataMatrix*> dataInBatch;//!< mapping of data in each batch to label
-        map<int, DataVector*> alphaVectors;//!< mapping of alpha vectors to label
-        map<int, LinearGrid*> grids;//!< mapping of grids to label
-        map<int, double> normFactors;//!< mapping of factors for the normalization to label
-        map<int, size_t> occurences;//!< mapping of count of items to label
-        map<int, deque<DataVector> > alphaStorage;//!< mapping used to store the previous alphas
+        std::map<int, SGPP::base::DataMatrix*> dataInBatch;//!< mapping of data in each batch to label
+        std::map<int, SGPP::base::DataVector*> alphaVectors;//!< mapping of alpha vectors to label
+        std::map<int, SGPP::base::LinearGrid*> grids;//!< mapping of grids to label
+        std::map<int, float_t> normFactors;//!< mapping of factors for the normalization to label
+        std::map<int, size_t> occurences;//!< mapping of count of items to label
+        std::map<int, std::deque<SGPP::base::DataVector> > alphaStorage;//!< mapping used to store the previous alphas
 
         int dataLine = 0;//!< stores the current line number from \@DATA
         unsigned int bs = 0; //!< count of lines read for the batch
-        string batch; //!< because testdata is added to the following batch: save batch global
+        std::string batch; //!< because testdata is added to the following batch: save batch global
         int t_total = 0;//!< total items tested
         int t_correct = 0;//!< items predicted correct
         SGPP::solver::SLESolver* myCG;//!< solver
@@ -63,13 +61,13 @@ namespace SGPP {
          * @param alpha recent alpha that has to be taken into account for the calculation
          * @param grid the class the alphas referes to
          */
-        DataVector applyWeight(DataVector alpha, int grid);
+        SGPP::base::DataVector applyWeight(SGPP::base::DataVector alpha, int grid);
 
         /**
          * function that processes the data provided as string, learns the new data and refines the grids (if wanted by user)
          * @param workData string containing the items separated by '\n', data is separated by ',', the last entry per item is the class as int
          */
-        void processBatch(string workData);
+        void processBatch(std::string workData);
 
         /**
          * function that parses a string to data and class
@@ -77,7 +75,7 @@ namespace SGPP {
          * @param dataFound the data found in the string
          * @param classFound the class found in the string
          */
-        void stringToDataVector(string input, DataVector& dataFound, int& classFound);
+        void stringToDataVector(std::string input, SGPP::base::DataVector& dataFound, int& classFound);
 
         /**
          * function that parses a string containing many items
@@ -88,11 +86,11 @@ namespace SGPP {
          * @param classesFound DataVector that will contain the found classes afterwards (will be cleared before usage)
          * @param mapData controls whether data is mapped to dataInBatch or saved to dataFound and classesFound
         */
-        void stringToDataMatrix(string& input, DataMatrix& dataFound, DataVector& classesFound, bool mapData);
+        void stringToDataMatrix(std::string& input, SGPP::base::DataMatrix& dataFound, SGPP::base::DataVector& classesFound, bool mapData);
 
         bool isFinished = false; //!< indicates whether the stream has been read to the end
-        double acc_global = -1.0; //!< accuracy over all predictions done so far (including the ones if batchConfig.testsize > 0 )
-        double acc_current = -1.0; //!< accuracy of the last call of predict(..)
+        float_t acc_global = -1.0; //!< accuracy over all predictions done so far (including the ones if batchConfig.testsize > 0 )
+        float_t acc_current = -1.0; //!< accuracy of the last call of predict(..)
       public:
         /**
          * constructor taking all relevant parameters
@@ -124,14 +122,14 @@ namespace SGPP {
         /**
                            * Get the accuracy of the last batch predicted
                            */
-        double getAccCurrent() {
+        float_t getAccCurrent() {
           return acc_current;
         }
 
         /**
                            * Get the accuracy over all predictions
                            */
-        double getAccGlobal() {
+        float_t getAccGlobal() {
           return acc_global;
         }
 
@@ -140,7 +138,7 @@ namespace SGPP {
          * @param entries DataMatrix containing the data to test
          * @param updateNorm should the normalization factors be updated before predicting?
                */
-        DataVector predict(DataMatrix& entries, bool updateNorm);
+        SGPP::base::DataVector predict(SGPP::base::DataMatrix& entries, bool updateNorm);
 
         /**
                * read all lines needed for one batch (and maybe test data), call processBatch(..)

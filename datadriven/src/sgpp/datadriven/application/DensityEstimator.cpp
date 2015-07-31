@@ -31,6 +31,10 @@ namespace SGPP {
       return &samples;
     }
 
+    float_t DensityEstimator::std_deviation() {
+        return std::sqrt(variance());
+    }
+
     void DensityEstimator::corrcoef(DataMatrix& corr) {
       // get covariance matrix and ...
       cov(corr);
