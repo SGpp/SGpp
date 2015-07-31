@@ -9,15 +9,15 @@ import test_BBT
 
 import test_BT
 
-import tbin.tlearner.testsuite as learnertests
-import tbin.tdata.testsuite as datatests
-import tbin.tcontroller.testsuite as controllertests
+#import tbin.tlearner.testsuite as learnertests
+#import tbin.tdata.testsuite as datatests
+#import tbin.tcontroller.testsuite as controllertests
 
 if __name__ == '__main__':
     sys.stdout.write("Running unit tests. ")
 
     alltests = unittest.TestSuite([
-            unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
+            #unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
             #unittest.defaultTestLoader.loadTestsFromModule(test_BT),
             #unittest.defaultTestLoader.suiteClass(learnertests.alltests),
             #unittest.defaultTestLoader.suiteClass(datatests.alltests),
