@@ -7,9 +7,12 @@ from LinearSolver import LinearSolver, LinearSolverEvents
 from pysgpp import *
 import types
 
+##
+# @package datadriven.learner.solver
+
 ## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sg::ConjugateGradients class.
 # The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
-# described in @link bin.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
+# described in @link datadriven.src.python.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
 # end deserialization.
 #
 # In order to combine high performance of C++ code and flexibility of Subscription pattern
@@ -26,15 +29,7 @@ class CGSolver(ConjugateGradients, LinearSolver):
     
     ##maximal number of iterations used in CG
     DEFAULT_IMAX = 400          
-    
-    ##norm of initial residual
-    #(khakhutv) I'm not sure if I should delete the start residuum, as it's not used anywhere
-#    delta_0 = 0         
-    
-    ##norm of current residual
-    #(khakhutv) I'm not sure if I should delete the start residuum, as there is ConjugateGradients.getResiduum() 
-#    delta_new = 0    
-    
+      
     ##result vector   
     alpha = None  
     
@@ -63,15 +58,15 @@ class CGSolver(ConjugateGradients, LinearSolver):
         self.__reuse = value
 
     
-    ## Returns the @link bin::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter
-    # @return the @link bin::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter 
+    ## Returns the @link datadriven::src::python::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter
+    # @return the @link datadriven::src::python::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter 
     def getThreshold(self):
         return self.max_threshold
     
     
-    ##Sets the @link bin::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter
+    ##Sets the @link datadriven::src::python::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter
     #
-    # @param threshold: float value of @link bin::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter
+    # @param threshold: float value of @link datadriven::src::python::learner::solver::CGSolver::CGSolver.max_threshold threshold@endlink parameter
     # @return: CG Solver itself
     def setThreshold(self, threshold):
         self.max_threshold = threshold

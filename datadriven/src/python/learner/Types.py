@@ -4,6 +4,8 @@
 # sgpp.sparsegrids.org
 
 
+##
+# @package datadriven.learner
 
 ## Constants for types of grid borders
 # @todo (khakhutv) here may be a good place for detailed description of different boundary types

@@ -8,6 +8,8 @@
 #############################################################################
 from datadriven.data.DataContainer import DataContainer
 
+##
+# @package datadriven.controller
 
 import ConfigParser, os
 from optparse import OptionParser

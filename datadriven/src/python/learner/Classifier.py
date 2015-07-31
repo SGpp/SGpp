@@ -6,6 +6,8 @@
 from Learner import Learner, LearnerEvents
 from pysgpp import SurplusRefinementFunctor, createOperationTest
 
+##
+# @package datadriven.learner
 
 ## The class implements the abstract methods from Learner and allows to accomplish
 # basic classification tasks.

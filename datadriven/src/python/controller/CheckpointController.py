@@ -23,7 +23,9 @@ except ImportError: pass
 import gzip, copy
 
 
-## Class for handling events for storing and restoring of checkpoints.
+##
+# @package datadriven.controller
+# Class for handling events for storing and restoring of checkpoints.
 # Responsible for storing of checkpoints during learning process and restoring 
 # of learning from some checkpoint.
 #
@@ -218,7 +220,6 @@ class CheckpointController(LearnerEventController):
     #@param iteration: integer iteration number
     def saveGrid(self, iteration):
         gridFilename = self.composeName(iteration) + ".grid.gz"
-        # @todo (khakhutv) (low) is there a good reason for Grid to be a Memento object for itself?
         gridMemento = self.grid.createMemento()
         GridFormatter().serializeToFile(gridMemento, gridFilename)
 
@@ -309,7 +310,6 @@ class CheckpointController(LearnerEventController):
     # validation computations. The script can be then lunched using
     # \<code\>qsub -t 1-XXX \<scriptname\>.sge.job
     # @param email String with email-address, the status information from SGE should be sent to
-    # @todo (khakhutv) write a test for this method
     def generateFoldValidationJob(self, email=""):
         
         if not self.learner.iteration == None:
@@ -344,7 +344,6 @@ class CheckpointController(LearnerEventController):
         self.fold = currentFold
             
         # generate SGE script 
-        # @todo (khakhutv) how to manage the case where job file and checkpoints are in different directories?
         script = """
 #!/bin/bash
 #$-N %s

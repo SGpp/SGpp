@@ -12,7 +12,7 @@ matplotlib.use('Agg') #to prevent the bug with matplot unable to open display
 from matplotlib import pyplot
 from matplotlib.lines import Line2D
 
-
+# @package datadriven.controller
 ## This class processes the information about the current state of the learning 
 # process and presents it in form of a graph.
 # In order to use this class the <a href="http://matplotlib.sourceforge.net" target="new">matplotlib library</a> is required.

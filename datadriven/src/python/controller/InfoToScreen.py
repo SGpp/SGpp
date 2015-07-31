@@ -8,7 +8,7 @@ from datadriven.learner.Learner import LearnerEvents
 from datadriven.controller.LearnerEventController import LearnerEventController
 from datadriven.controller.SolverEventController import SolverEventController
 
-
+# @package datadriven.controller
 ## The class processes the progress information from Learner and LinearSolver and
 # shows it on the terminal screen.
 class InfoToScreen(LearnerEventController, SolverEventController):

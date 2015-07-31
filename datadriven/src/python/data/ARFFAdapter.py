@@ -16,6 +16,8 @@ from pysgpp import DataVector, DataMatrix
 
 from DataContainer import DataContainer
 
+##
+# @package datadriven.data
 
 ## Class implements the interface of DataAdapter for storing and restoring of input
 # data into / from files in <a href="http://www.cs.waikato.ac.nz/~ml/weka/arff.html" 

@@ -12,13 +12,16 @@ from utils.GzipSerializer import GzipSerializer
 from learner.LearnedKnowledge import LearnedKnowledge
 from pysgpp import DataVector, DataMatrix
 
+##
+# @package datadriven.learner.formatter
+
 ## Provides functionality for the runtime serialization of the LearnedKnowledge object
 #
 # This design intends to separate the binary object representation and its
 # business logic from the text representation that can be saved into file.
 # The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern" 
 # target="new">Memento design pattern</a> described in details in @link 
-# bin.controller.CheckpointController.CheckpointController CheckpointController
+# datadriven.src.python.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
 # 
 # Currently, the LearnerKnowledge memento object is DataVector object with 
