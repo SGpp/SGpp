@@ -48,7 +48,12 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid *grid, size_t level, 
   else {
     OperationEval* op = SGPP::op_factory::createOperationEval(*grid);
     for(size_t n = 0; n < gridStore->size(); n++) {
-      gridStore->get(n)->getCoords(coords);
+      if(doStretch) {
+        gridStore->get(n)->getCoordsStretching(coords, *stretch);
+      }
+      else {
+        gridStore->get(n)->getCoords(coords);
+      }
       SGPP::float_t eval = op->eval(alpha, coords);
       BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
     }
@@ -176,15 +181,17 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
 	int level = 5;
 	Stretching1D *str1d = new Stretching1D();
 	str1d->type = "log";
-	str1d->x_0 = 0;
+	str1d->x_0 = 0.;
 	str1d->xsi = 10;
 	DimensionBoundary *dimBound = new DimensionBoundary();
 	dimBound->leftBoundary = 0.00001;
-	dimBound->rightBoundary = 1;
+	dimBound->rightBoundary = 1.;
 	Stretching stretch(dim, dimBound, str1d);
 	Grid *grid = Grid::createLinearStretchedTruncatedBoundaryGrid(dim);
 	grid->getStorage()->setStretching(stretch);
-	testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 6.0, false, true);
+	testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13, false, true);
+	delete str1d;
+	delete dimBound;
 }
 
 BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
@@ -192,11 +199,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
 	int level = 5;
 	Stretching1D str1d;// = new Stretching1D();
 	str1d.type = "sinh";
-	str1d.x_0 = 1;
+	str1d.x_0 = 1.;
 	str1d.xsi = 10;
 	DimensionBoundary dimBound;// = new DimensionBoundary();
 	dimBound.leftBoundary = 0.001;
-	dimBound.rightBoundary = 1;
+	dimBound.rightBoundary = 1.;
 	
 	std::vector<Stretching1D> stretch_vec;
 	stretch_vec.push_back(str1d);
@@ -210,7 +217,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
 	Stretching stretch(dim, dimBound_vec, stretch_vec);
 	Grid *grid = Grid::createLinearStretchedTruncatedBoundaryGrid(dim);
 	grid->getStorage()->setStretching(stretch);
-	testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 7.0, false, true);
+	testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12, false, true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
