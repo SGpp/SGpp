@@ -14,14 +14,14 @@ if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 ##
 # @package tests.tbin.test_DataSpecification
-# Contains class test_DataSpecification::TestDataSpecification with unittests for @link datadriven.data.DataSpecification.DataSpecification DataSpecification @endlink
+# Contains class test_DataSpecification::TestDataSpecification with unittests for @link datadriven.src.python.data.DataSpecification.DataSpecification DataSpecification @endlink
 
 ##
-# Class with unittests for @link datadriven.data.DataSpecification.DataSpecification DataSpecification @endlink
+# Class with unittests for @link datadriven.src.python.data.DataSpecification.DataSpecification DataSpecification @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.data.DataSpecification.DataSpecification DataSpecification @endlink
+# @test Unittests for @link datadriven.src.python.data.DataSpecification.DataSpecification DataSpecification @endlink
 # @todo (khakhutv) implement the test for DataSpecification
 class TestDataSpecification(unittest.TestCase):
     pass
