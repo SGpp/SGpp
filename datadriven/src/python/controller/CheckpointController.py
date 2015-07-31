@@ -24,7 +24,7 @@ import gzip, copy
 
 
 ##
-# @package datadriven.ontroller
+# @package datadriven.controller
 
 ##
 # Class for handling events for storing and restoring of checkpoints.
@@ -193,7 +193,7 @@ class CheckpointController(LearnerEventController):
 
 
     ## Setter for the current LearnedKnowledge object
-    #@param knowledge: @link datadriven.arner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@param knowledge: @link datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
 
@@ -209,7 +209,7 @@ class CheckpointController(LearnerEventController):
 
     ## Loads knowledge from the checkpoint of given iteration
     #@param iteration: integer iteration number
-    #@return @link datadriven.arner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@return @link datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def loadLearnedKnowledge(self, iteration):
         knowledgeFile = self.composeName(iteration) + ".arff.gz"
         knowledgeMemento = LearnedKnowledgeFormatter().deserializeFromFile(knowledgeFile)
