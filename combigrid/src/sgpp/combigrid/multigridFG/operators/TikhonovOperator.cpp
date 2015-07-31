@@ -448,6 +448,6 @@ void combigrid::TikhonovOperator::doSmoothing(int nrIt ,
 
 void combigrid::TikhonovOperator::setNewLambda(double lambda) {
   // reinitialize the matrix by subtracting the old_lambda*C and then adding the new_lambda*C
-	throw new SGPP::base::operation_exception(
-	            "error: combigrid::TikhonovOperator::setNewLambda(double lambda): is not implemented");
+  throw new SGPP::base::operation_exception(
+    "error: combigrid::TikhonovOperator::setNewLambda(double lambda): is not implemented");
 }

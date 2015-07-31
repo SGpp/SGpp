@@ -32,7 +32,7 @@ namespace SGPP {
     }
 
     float_t DensityEstimator::std_deviation() {
-        return std::sqrt(variance());
+      return std::sqrt(variance());
     }
 
     void DensityEstimator::corrcoef(DataMatrix& corr) {

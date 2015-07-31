@@ -1,3 +1,6 @@
+#ifndef OBJECTIVE_FUNCTIONS_HPP
+#define OBJECTIVE_FUNCTIONS_HPP
+
 #include <cmath>
 
 #include <sgpp/optimization/function/ObjectiveFunction.hpp>
@@ -388,3 +391,5 @@ class G8ConstraintGradient : public SGPP::optimization::ConstraintGradient {
                 new G8ConstraintGradient(*this));
     }
 };
+
+#endif /* OBJECTIVE_FUNCTIONS_HPP */
