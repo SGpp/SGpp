@@ -4,12 +4,12 @@
 # sgpp.sparsegrids.org
 
 
-from datadriven.ontroller.InfoToScreen import InfoToScreen
-from datadriven.earner.Learner import LearnerEvents
+from datadriven.controller.InfoToScreen import InfoToScreen
+from datadriven.learner.Learner import LearnerEvents
 
-# @package datadriven.ontroller
+# @package datadriven.src.python.controller
 ## Prints some regression specific information together with information 
-# processed by @link datadriven.ontroller.InfoToScreen.InfoToScreen InfoToScreen @endlink
+# processed by @link datadriven.src.python.controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
 class InfoToScreenRegressor(InfoToScreen):
     
    

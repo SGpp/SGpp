@@ -8,8 +8,6 @@ from utils.GzipSerializer import GzipSerializer
 from learner import Classifier, Regressor
 import utils.json as json
 
-##
-# @package datadriven.learner.formatter
 
 ## Provides functionality for the runtime serialization of the Learner subclasses.
 #

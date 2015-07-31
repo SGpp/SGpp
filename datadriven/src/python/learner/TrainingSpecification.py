@@ -5,8 +5,6 @@
 
 import types
 
-##
-# @package datadriven.earner
 
 ## Collection of parameters, which specify the learning process.
 # An object of the class is aggregated by the Learner object.

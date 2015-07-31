@@ -18,9 +18,6 @@ from pysgpp import DataVector, DataMatrix
 from DataContainer import DataContainer
 
 
-##
-# @package datadriven.ata
-
 ## Class implements the interface of DataAdapter for storing and restoring of input
 # data into / from files in CSV-format.
 class CSVAdapter(DataAdapter):

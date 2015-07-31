@@ -3,9 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-##
-# @package datadriven.ata
-
 ## Abstract class defines the interface for storing and loading of input data.
 class DataAdapter(object):
 

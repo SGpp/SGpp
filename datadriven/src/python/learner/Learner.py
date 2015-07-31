@@ -13,8 +13,6 @@ from TrainingSpecification import TrainingSpecification
 from data.DataContainer import DataContainer
 import types
 
-##
-# @package datadriven.learner
 
 ## The class implements the routines common for classifier and regressor.
 # However, since some methods are defined and note implemented, this class is
@@ -39,7 +37,7 @@ import types
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from LinearSolver. 
-# See documentation of @link datadriven.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+# See documentation of @link datadriven.src.pythonlearner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 #
 class Learner(object):
     

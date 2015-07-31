@@ -12,8 +12,6 @@ from bin.learner.formatter import GridFormatter
 import matplotlib.pyplot as plt 
 from numpy import zeros, sqrt, ceil, floor
 
-##
-# @package datadriven.learner.formatter
 
 class GridImageFormatter(GridFormatter):
 

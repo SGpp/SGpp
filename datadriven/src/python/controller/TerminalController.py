@@ -6,10 +6,8 @@
 #############################################################################
                                     #
 #############################################################################
-from datadriven.ata.DataContainer import DataContainer
+from datadriven.src.python.data.DataContainer import DataContainer
 
-##
-# @package datadriven.ontroller
 
 import ConfigParser, os
 from optparse import OptionParser
@@ -20,11 +18,11 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.ontroller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
-from datadriven.earner.LearnerBuilder import LearnerBuilder
-from datadriven.ata.ARFFAdapter import ARFFAdapter
-from datadriven.ata.DataContainer import DataContainer
-from datadriven.earner.Types import BorderTypes
+from datadriven.controller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
+from datadriven.learner.LearnerBuilder import LearnerBuilder
+from datadriven.data.ARFFAdapter import ARFFAdapter
+from datadriven.data.DataContainer import DataContainer
+from datadriven.learner.Types import BorderTypes
 import types
 
 

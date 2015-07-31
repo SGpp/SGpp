@@ -3,12 +3,11 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from datadriven.earner.solver.LinearSolver import LinearSolverEvents
-from datadriven.earner.Learner import LearnerEvents
-from datadriven.ontroller.LearnerEventController import LearnerEventController
-from datadriven.ontroller.SolverEventController import SolverEventController
+from datadriven.learner.solver.LinearSolver import LinearSolverEvents
+from datadriven.learner.Learner import LearnerEvents
+from datadriven.controller.LearnerEventController import LearnerEventController
+from datadriven.controller.SolverEventController import SolverEventController
 
-# @package datadriven.ontroller
 ## The class processes the progress information from Learner and LinearSolver and
 # shows it on the terminal screen.
 class InfoToScreen(LearnerEventController, SolverEventController):
