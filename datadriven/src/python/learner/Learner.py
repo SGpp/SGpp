@@ -37,7 +37,7 @@ import types
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from LinearSolver. 
-# See documentation of @link datadriven.src.pythonlearner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+# See documentation of @link datadriven.src.python.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 #
 class Learner(object):
     

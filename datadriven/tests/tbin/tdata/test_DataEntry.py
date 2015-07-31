@@ -17,14 +17,14 @@ from pysgpp import DataVector
 
 ##
 # @package tests.tbin.test_DataEntry
-# Contains class test_DataEntry::TestDataEntry with unittests for @link datadriven.data.DataEntry.DataEntry DataEntry @endlink
+# Contains class test_DataEntry::TestDataEntry with unittests for @link datadriven.src.python.data.DataEntry.DataEntry DataEntry @endlink
 
 ##
-# Class with unittests for @link datadriven.data.DataEntry.DataEntry DataEntry @endlink
+# Class with unittests for @link datadriven.src.python.data.DataEntry.DataEntry DataEntry @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.data.DataEntry.DataEntry DataEntry @endlink
+# @test Unittests for @link datadriven.src.python.data.DataEntry.DataEntry DataEntry @endlink
 class TestDataEntry(unittest.TestCase):
     
     ## Set up the variables
@@ -34,13 +34,13 @@ class TestDataEntry(unittest.TestCase):
        
        
     ##
-    # Tests the function @link datadriven.data.DataEntry.DataEntry.getValue() DataEntry.getValue() @endlink 
+    # Tests the function @link datadriven.src.python.data.DataEntry.DataEntry.getValue() DataEntry.getValue() @endlink 
     def testGetValue(self):
         self.assertEqual(self.dataEntry.getValue(), 2.0)
     
     
     ##
-    # Tests the function @link datadriven.data.DataEntry.DataEntry.getPoint() DataEntry.getPoint() @endlink
+    # Tests the function @link datadriven.src.python.data.DataEntry.DataEntry.getPoint() DataEntry.getPoint() @endlink
     def testGetPoint(self):
         self.assertEqual(self.dataEntry.getPoint(), self.dataVector)
         
