@@ -26,6 +26,7 @@ is a Makefile replacement that facilitates quite a few things.
 - swig (>= 3.0.0), http://www.swig.org/, if you want to use SGpp within python
 or java, this program creates bindings from C/C++ functions in order to make
 them available as a python module or prepare them to be called from java code.
+Note that swig 3.0 is not yet available as a package in Ubuntu 14.X. For Linux, go to https://launchpad.net/ubuntu/utopic/amd64/swig3.0/3.0.2-1ubuntu1, download the .deb file and install it via <tt>sudo dpkg -i debfile</tt>. 
 - doxygen, http://www.doxygen.nl/index.html, is required to create and compile
 the documentation. Essentially, what can be found at http://sgpp.sparsegrids.org
 - dot, in the Graphviz package, http://www.graphviz.org/, is optional
