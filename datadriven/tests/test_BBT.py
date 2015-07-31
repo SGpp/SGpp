@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 import unittest
-import datadriven.tools as tools
+import tools
 from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
@@ -668,17 +668,17 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
     def testOperationTest_test(self):
         from pysgpp import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
 
-         str1d = Stretching1D()
-    str1d.type='log'
-    str1d.x_0=1
-    str1d.xsi=10
-    dimBound = DimensionBoundary() 
-     dimBound.leftBoundary=0.5
-    dimBound.rightBoundary=7
-    stretch=Stretching(1,dimBound,str1d)
+        str1d = Stretching1D()
+        str1d.type='log'
+        str1d.x_0=1
+        str1d.xsi=10
+        dimBound = DimensionBoundary() 
+        dimBound.leftBoundary=0.5
+        dimBound.rightBoundary=7
+        stretch=Stretching(1,dimBound,str1d)
 
         factory = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
-    factory.getStorage().setStretching(stretch)
+        factory.getStorage().setStretching(stretch)
         gen = factory.createGridGenerator()
         gen.regular(1)
         
@@ -698,7 +698,7 @@ class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
         c = testOP.test(alpha, data, classes)
         #print c
         self.failUnless(c > 0.0)
-        
+    
         alpha[0] = 0.0
         alpha[1] = 0.0
         alpha[2] = -1.0
