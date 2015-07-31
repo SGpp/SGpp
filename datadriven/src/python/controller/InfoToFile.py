@@ -10,7 +10,7 @@
 from datadriven.controller.InfoToScreen import InfoToScreen
 import sys
 
-
+# @package datadriven.controller
 ## The class processes the progress information from Learner and LinearSolver and
 # stores it into the file.
 class InfoToFile(InfoToScreen):

@@ -7,9 +7,9 @@
 from datadriven.controller.InfoToScreen import InfoToScreen
 from datadriven.learner.Learner import LearnerEvents
 
-
+# @package datadriven.controller
 ## Prints some regression specific information together with information 
-# processed by @link datadriven.controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
+# processed by @link datadriven..controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
 class InfoToScreenRegressor(InfoToScreen):
     
    

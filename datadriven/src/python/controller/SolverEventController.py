@@ -3,9 +3,12 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
+##
+# @package datadriven.controller
+
 ## Abstract class of Subscribers of LinearSolverEvents. The classes that wants to obtain
 # the progress notifications from LinearSolver subclasses should implement this class. See @link
-# datadriven.learner.solver.LinearSolver.LinearSolver documentation of Learner@endlink for details.
+# datadriven.src.python.learner.solver.LinearSolver.LinearSolver documentation of Learner@endlink for details.
 class SolverEventController(object):
 
     ##
@@ -26,6 +29,5 @@ class SolverEventController(object):
     ##Returns a string that represents the object.
     #
     # @return A string that represents the object.
-    # @todo (khakhutv) write a test for this method
     def __repr__(self):
         return '{' + self.toString().lstrip("{").rstrip("}\n") + '}'

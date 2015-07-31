@@ -3,8 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-## @package tools
-# @ingroup bin
+##
+# @package datadriven.learner.solver
 # @brief A collection of helper functions.
 # @version $CURR$
 

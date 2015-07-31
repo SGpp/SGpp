@@ -9,6 +9,8 @@
 
 from pysgpp import DataVector
 
+##
+# @package datadriven.learner
 
 ## Class keeps all information, which was learned during the learning process.
 # Currently, only the alpha vector is stored, by in the future more information may come.

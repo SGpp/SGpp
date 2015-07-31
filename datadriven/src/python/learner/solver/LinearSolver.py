@@ -3,6 +3,9 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
+##
+# @package datadriven.learner.solver
+
 ## Abstract class for solution of system of linear equations. 
 #
 # The class defines the methods that have to be implemented in class of with 
@@ -27,7 +30,7 @@
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from Learner. See documentation of
-# @link bin.learner.Learner.Learner Learner@endlink for more information.
+# @link datadriven.src.python.learner.Learner.Learner Learner@endlink for more information.
 class LinearSolver(object):
     
     ##list of object listening to the solver events

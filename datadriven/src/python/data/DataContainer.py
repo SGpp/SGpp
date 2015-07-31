@@ -16,6 +16,8 @@ from DataEntry import DataEntry
 import ARFFAdapter
 import types
 
+##
+# @package datadriven.data
 
 ## A collection of data
 # It can contain data sets for different categories, like "train"

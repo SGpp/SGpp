@@ -10,6 +10,9 @@
 from FoldingPolicy import FoldingPolicy
 import math
 
+##
+# @package datadriven.learner.folding
+
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs with equal distribution
 # of points from two different classes between folds.

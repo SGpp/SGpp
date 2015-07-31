@@ -5,6 +5,9 @@
 
 import types
 
+##
+# @package datadriven.learner
+
 ## Collection of parameters, which specify the learning process.
 # An object of the class is aggregated by the Learner object.
 class TrainingSpecification(object):

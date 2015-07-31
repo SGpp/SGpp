@@ -11,6 +11,9 @@ from FoldingPolicy import FoldingPolicy
 from data.DataContainer import DataContainer
 import math
 
+##
+# @package datadriven.learner.folding
+
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs from the set of files
 # This class corresponds to the old doFoldf() method.

@@ -8,6 +8,8 @@
 from time import time
 import random
 
+##
+# @package datadriven.data
 
 ## The class encapsulates the description of the data set, like names of dimensions
 # and source file.
