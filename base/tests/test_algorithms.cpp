@@ -18,7 +18,7 @@ using namespace SGPP;
 using namespace SGPP::base;
 
 const bool use_double_precision =
-#ifdef USE_DOUBLE_PRECISION
+#if USE_DOUBLE_PRECISION
   true;
 #else
   false;
