@@ -104,8 +104,10 @@ class SimulationLearner(Learner):
         @param trainUQSetting: UQSetting
         @param testUQSetting: UQSetting
         @param dtype: KnowledgeType
-        @todo: improve the UQSetting such that it returns just the
-        last computed chunk of samples
+
+        WARNING: This method has severe performance issues. It needs
+        to be improved such that it returns just the last computed
+        chunk of samples.
         """
         # load time steps and quantity of interest
         toi = self.getTimeStepsOfInterest()

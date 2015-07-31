@@ -18,7 +18,6 @@ class PiecewiseConstantIntegralStrategy(EstimationStrategy):
             val = evalSGFunction(grid, alpha, p)
             return val ** k
 
-        # @todo: improve this interpolation
         n_grid, n_alpha = discretize(grid, alpha, f, refnums=0)
 
         # add the density measure
