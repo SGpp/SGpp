@@ -2,21 +2,22 @@
 @mainpage SG++ Documentation
 Welcome to the Sparse Grid ++ (SG++ or SGpp) documentation.
 
-@version (Stable Beta) Revision 0.9.0 -- Beta, as still some
-interfaces could change in the very near future towards version 1.0
-
 @image html teaser.gif "Images taken from [1]"
 
 <div align="center">
-  <table width="600">
+  <table width="600" border="1">
     <tr>
       <td>
-        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see section \ref copyright).
+        <br/>
+        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see the \ref copyright).
+	<br/>
       </td>
      </tr>
   </table>
 </div>
 
+<!-- ############################################################# -->
+@section mainpage__overview Overview
 
 SG++ is a toolbox allowing to employ spatially adaptive sparse grids
 straightforward, flexibly, and without the vast initial overhead that
@@ -43,84 +44,123 @@ and C++, of course.
 To name a few special features:
 - Different types of basis functions are supported which enable to
 cope with the characteristics of special applications.
-- Modern shared-memory multi-core systems are supported via OpenMP to
-speed-up computations.
+- Modern shared-memory multi-core systems are supported to
+speed-up computations for some performance critical operations.
 - Adaptive refinement criteria can easily specified as functor
 objects.
 - The underlying data structure (which is, per default, hash-based)
 is encapsulated so that it can be exchanged by other choices.
 - Template-based support for fast realizations of typical sparse-grid
-algorithms that make use of the tensor product structure of the
+algorithms are provided that make use of the tensor product structure of the
 underlying basis.
 
 SG++ is open source software and delivered as source code. For
 questions, contributions, and requests, please <a
 href="mailto:dirk.pflueger@ipvs.informatik.uni-stuttgart.de">contact us</a>.
 
-
-
-<!-- ############################################################# -->
-@section mainpage__overview Overview
-
-- @subpage development
-- @subpage manual
-
 The documentation of the SG++ toolbox is structured in two main
 parts. The first one, @ref development, addresses all those who
 want to contribute to SG++ or who are involved in its
 development. There, the styleguide can be found, references to useful
-tools and utilities are provided, and a few issues that did arise at
-the initial development at the Chair of Scientific Computing at the TU
-Munich are gathered.
+tools and utilities are provided, and a few current issues are gathered.
 
 The second one, @ref manual, is dedicated to users of
 SG++. For example, installation instructions are provided as well
 as short use cases as a quick-start to using SG++.
 
+See also:
+- @subpage development
+- @subpage manual
+- @subpage copyright
+- @subpage downloads
 
-<!-- ############################################################# -->
-@section mainpage__history Version History
-
-@subsection mainpage_history_100 Version 1.0.0
-
-What will be there for Release Version 1.0 (scheduled later this year)
-- Automatic check for requirements in SCons for compilation
-- Release of further modules bejond the base package (module sgppbase)
-- Extended parallelization support
-- New types of basis functions
-- More documentation, especially on adaptive refinement
-- And much more...
-
-@subsection mainpage_history_092 Version 0.9.2
-- minor fixes
-- changes in basic API
-
-@subsection mainpage_history_091 Version 0.9.1
-- Compilation support for auto detection of settings.
-- Extended use of DataVector from Python.
-- GridDataBase class.
-
-@subsection mainpage_history_090 Version 0.9.0
-- Provides everything that is necessary to use spatially adaptive
-sparse grids for interpolation, optimization, ...
-- Several types of piecewise linear basis functions
-  - Different boundary treatment
-  - Modified boundary basis functions
-- Grids (handling, creation, modification, ...)
-- Adaptivity
-- Hash-based grid storage
 
 <!-- ############################################################# -->
 @section mainpage__literature Literature
 
-The following publications address SG++:
+Please cite one of the corresponding publications (BibTeX snippets below):
 
-- D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Dissertation, Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
-- ...
+- For a general reference to SG++:
+  - D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
+- For spatially adaptive refinement:
+  - D. Pfl&uuml;ger, Spatially Adaptive Refinement. In J. Garcke and M. Griebel (ed.), Sparse Grids and Applications of Lecture Notes in Computational Science and Engineering, p. 243–262. Springer, Berlin Heidelberg, October 2012.
+- For data mining:
+  - D. Pflüger, B. Peherstorfer and H.-J. Bungartz: Spatially adaptive sparse grids for high-dimensional data-driven problems. In Journal of Complexity, Volume 26(5), p. 508––522. Academic Press, Inc., Orlando, FL, USA, October 2010. published online April 2010.
+- For clustering:
+  - B. Peherstorfer, D. Pflüger and H.-J. Bungartz: Clustering Based on Density Estimation with Sparse Grids. In KI 2012: Advances in Artificial Intelligence, Volume 7526 of Lecture Notes in Computer Science. Springer, October 2012.
+- For parallelization.
+  - A. Heinecke and D. Pflüger: Multi- and Many-Core Data Mining with Adaptive Sparse Grids. In Proceedings of the 8th ACM International Conference on Computing Frontiers, p. 29:1–29:10. ACM, New York, USA, May 2011.
+
+@subsection mainpage__bibtex BibTeX
+@verbatim
+@book{pflueger10spatially,
+    address = {M{\"{u}}nchen},
+    author = {Pfl{\"{u}}ger, Dirk},
+    institution = {Institut f{\"{u}}r Informatik, Technische Universit{\"{a}}t M{\"{u}}nchen},
+    month = aug,
+    publisher = {Verlag Dr. Hut},
+    title = {Spatially Adaptive Sparse Grids for High-Dimensional Problems},
+    year = {2010},
+    ISBN = {9783868535556},
+    URL = {http://www5.in.tum.de/pub/pflueger10spatially.pdf}
+}
+@inproceedings{pflueger12spatially,
+    address = {Berlin Heidelberg},
+    author = {Pfl{\"{u}}ger, Dirk},
+    booktitle = {Sparse Grids and Applications},
+    editor = {Garcke, Jochen and Griebel, Michael},
+    month = oct,
+    pages = {243--262},
+    publisher = {Springer},
+    series = {Lecture Notes in Computational Science and Engineering},
+    title = {Spatially Adaptive Refinement},
+    year = {2012},
+    URL = {http://www5.in.tum.de/pub/pflueger12spatially_preprint.pdf}
+}
+@article{pflueger10spatially,
+    address = {Orlando, FL, USA},
+    author = {Pfl{\"{u}}ger, Dirk and Peherstorfer, Benjamin and Bungartz, Hans-Joachim},
+    journal = {Journal of Complexity},
+    month = oct,
+    note = {published online April 2010},
+    number = {5},
+    pages = {508----522},
+    publisher = {Academic Press, Inc.},
+    title = {Spatially adaptive sparse grids for high-dimensional data-driven problems},
+    volume = {26},
+    year = {2010},
+    ISSN = {0885-064X}
+}
+@inproceedings{peherstorfer12clustering,
+    author = {Peherstorfer, Benjamin and Pfl{\"{u}}ger, Dirk and Bungartz, Hans-Joachim},
+    booktitle = {KI 2012: Advances in Artificial Intelligence},
+    month = oct,
+    publisher = {Springer},
+    series = {Lecture Notes in Computer Science},
+    title = {Clustering Based on Density Estimation with Sparse Grids},
+    volume = {7526},
+    year = {2012}
+}
+@inproceedings{heinecke11multi,
+    address = {New York, USA},
+    author = {Heinecke, Alexander and Pfl{\"{u}}ger, Dirk},
+    booktitle = {Proceedings of the 8th ACM International Conference on Computing Frontiers},
+    month = may,
+    pages = {29:1--29:10},
+    publisher = {ACM},
+    title = {Multi- and Many-Core Data Mining with Adaptive Sparse Grids},
+    year = {2011},
+    ISBN = {9781450306980}
+}
+@endverbatim
+
 
 <!-- ############################################################# -->
 @section mainpage__references References
 
-[1] D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Dissertation, Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
+[1] D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
 
 */
+
+
+
