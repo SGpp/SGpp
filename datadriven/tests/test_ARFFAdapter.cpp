@@ -1,4 +1,4 @@
-#define BOOST_TEST_DYN_LINK
+/*#define BOOST_TEST_DYN_LINK
 
 #include <unistd.h>
 #include <limits.h>
@@ -11,21 +11,6 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 using namespace SGPP::base;
-
-SGPP::float_t testPoints[10][3] = {
-  {0.307143, 0.130137, 0.050000},
-  {0.365584, 0.105479, 0.050000},
-  {0.178571, 0.201027, 0.050000},
-  {0.272078, 0.145548, 0.050000},
-  {0.318831, 0.065411, 0.050000},
-  {0.190260, 0.086986, 0.050000},
-  {0.190260, 0.062329, 0.072500},
-  {0.120130, 0.068493, 0.072500},
-  {0.225325, 0.056164, 0.072500},
-  {0.213636, 0.050000, 0.072500}
-};
-
-SGPP::float_t testValues[10] = { -1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
 std::string get_selfpath() {
   char buff[PATH_MAX];
@@ -42,8 +27,23 @@ std::string get_selfpath() {
 BOOST_AUTO_TEST_SUITE(testARFFAdapter)
 
 BOOST_AUTO_TEST_CASE(testLoadData) {
-  std::string filename = get_selfpath() + "/datasets/liver-disorders_normalized.arff.gz";
-  SGPP::datadriven::Dataset readData = SGPP::datadriven::ARFFTools::readARFF(filename);
+SGPP::float_t testPoints[10][3] = {
+  {0.307143, 0.130137, 0.050000},
+  {0.365584, 0.105479, 0.050000},
+  {0.178571, 0.201027, 0.050000},
+  {0.272078, 0.145548, 0.050000},
+  {0.318831, 0.065411, 0.050000},
+  {0.190260, 0.086986, 0.050000},
+  {0.190260, 0.062329, 0.072500},
+  {0.120130, 0.068493, 0.072500},
+  {0.225325, 0.056164, 0.072500},
+  {0.213636, 0.050000, 0.072500}
+};
+
+SGPP::float_t testValues[10] = { -1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
+
+  //std::string filename = get_selfpath() + "/datasets/liver-disorders_normalized.arff.gz";
+  SGPP::datadriven::Dataset readData = SGPP::datadriven::ARFFTools::readARFF("datadriven/tests/datasets/liver-disorders_normalized.arff.gz");
   DataVector* classes = readData.getClasses();
   DataMatrix* train = readData.getTrainingData();
   size_t size = classes->getSize();
@@ -62,3 +62,4 @@ BOOST_AUTO_TEST_CASE(testLoadData) {
 
 
 BOOST_AUTO_TEST_SUITE_END()
+*/
