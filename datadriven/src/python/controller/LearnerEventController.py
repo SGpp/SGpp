@@ -3,10 +3,10 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-# @package datadriven.controller
+# @package datadriven.ontroller
 ## Abstract class of Subscribers of LearnerEvents. The classes that wants to obtain
 # the progress notifications from Learner should implement this class. See @link
-# datadriven.learner.Learner.Learner documentation of Learner@endlink for details.
+# datadriven.earner.Learner.Learner documentation of Learner@endlink for details.
 class LearnerEventController(object):
 
     ##

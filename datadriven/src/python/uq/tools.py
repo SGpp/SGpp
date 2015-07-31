@@ -3,7 +3,7 @@ import re
 import gzip
 
 from pysgpp import DataMatrix, DataVector, Grid
-from datadriven.learner.Types import BorderTypes
+from datadriven.earner.Types import BorderTypes
 import numpy as np
 from math import log, trunc, exp
 

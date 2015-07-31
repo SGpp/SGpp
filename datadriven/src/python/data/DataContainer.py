@@ -17,7 +17,7 @@ import ARFFAdapter
 import types
 
 ##
-# @package datadriven.data
+# @package datadriven.ata
 
 ## A collection of data
 # It can contain data sets for different categories, like "train"
@@ -159,7 +159,6 @@ class DataContainer(object):
             raise Exception("Argument list is empty")
         try:
             if kwargs.has_key('adapter'): #takes (adapter: DataAdapter)
-                # @todo (khakhutv) implement test for this part
                 adapter = kwargs['adapter']
                 container = adapter.loadData()
                 self.points = container.points
@@ -371,7 +370,6 @@ class DataContainer(object):
         # load data for other categories
         for category, specification in jsonObject.items():
             if not ( category == 'module' or category == 'train') :
-                # @todo (khakhutv) implement test for the branch
                 container = ARFFAdapter.ARFFAdapter(specification['filename']).loadData(category)
                 resultContainer = resultContainer.combine(container)
 

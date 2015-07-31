@@ -10,7 +10,7 @@
 from pysgpp import DataVector
 
 ##
-# @package datadriven.learner
+# @package datadriven.earner
 
 ## Class keeps all information, which was learned during the learning process.
 # Currently, only the alpha vector is stored, by in the future more information may come.
@@ -36,7 +36,6 @@ class LearnedKnowledge(object):
     #
     #@return a new memento
     def createMemento(self):
-        # @todo (khakhutv) maybe a better Memento as just DataVector object required?
         return self.__alphas
 
 
