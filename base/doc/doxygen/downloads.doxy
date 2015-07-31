@@ -1,0 +1,50 @@
+/**
+@page downloads Downloads and Version History
+
+If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see the \ref copyright). If you publish any results obtained based on or with any help of SG++ or its documentation, you have to cite a corresponding publication listed at http://sgpp.sparsegrids.org.
+
+<!-- ############################################################# -->
+@section downloads__history Version History
+
+@subsection downloads_history_100 Version 1.0.0 
+- Download: <a href="http://sgpp.sparsegrids.org/downloads/release_100.tgz">release_1.0.0.tgz</a>
+
+Finally, it's out there!
+
+Please note that release version 1.0.0 contains a major restructuring. Interfaces habe been redesigned, factory methods restructured, and a lot of improvements have been done.
+
+Features of Release Version 1.0.0
+- Automatic check for requirements in SCons for compilation
+- Full module support
+- Release of further and extended modules (optimization, pde, solver, datadriven, ...)
+- Extended parallelization support
+- New types of basis functions
+- More documentation, especially on adaptive refinement
+- And much more ...
+
+@subsection downloads_history_092 Version 0.9.2
+- Download:  <a href="http://sgpp.sparsegrids.org/downloads/release_092.tgz">release_0.9.2.tgz</a>
+
+- minor fixes
+- changes in basic API
+
+@subsection downloads_history_091 Version 0.9.1 
+- Download: <a href="http://sgpp.sparsegrids.org/downloads/release_091.tgz">release_0.9.1.tgz</a>
+
+- Compilation support for auto detection of settings.
+- Extended use of DataVector from Python.
+- GridDataBase class.
+
+@subsection downloads_history_090 Version 0.9.0 
+- Download: <a href="http://sgpp.sparsegrids.org/downloads/release_090.tgz">release_0.9.0.tgz</a>
+
+- Provides everything that is necessary to use spatially adaptive
+sparse grids for interpolation, optimization, ...
+- Several types of piecewise linear basis functions
+  - Different boundary treatment
+  - Modified boundary basis functions
+- Grids (handling, creation, modification, ...)
+- Adaptivity
+- Hash-based grid storage
+
+*/
