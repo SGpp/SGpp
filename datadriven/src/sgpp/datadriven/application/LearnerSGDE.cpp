@@ -108,10 +108,6 @@ void LearnerSGDE::cov(DataMatrix& cov) {
     return;
 }
 
-void LearnerSGDE::corrcoef(DataMatrix& corr) {
-    return;
-}
-
 DataVector* LearnerSGDE::getSamples(size_t dim) {
     DataVector* isamples = new DataVector(getNsamples());
     samples->getColumn(dim, *isamples);
