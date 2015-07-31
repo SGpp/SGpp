@@ -4,24 +4,14 @@
 #include <vector>
 #include <random>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include "BasisEval.hpp"
 
 using namespace SGPP;
 using namespace SGPP::base;
@@ -42,98 +32,6 @@ SGPP::float_t basisEval(SBasis& basis,
   } else {
     return basis.eval(l, i, x);
   }
-}
-
-SGPP::float_t basisEvalDx(SBasis& basis,
-                          GridIndex::level_type l,
-                          GridIndex::index_type i,
-                          SGPP::float_t x) {
-  SBsplineBase* bsplineBasis =
-    dynamic_cast<SBsplineBase*>(&basis);
-  SBsplineBoundaryBase* bsplineBoundaryBasis =
-    dynamic_cast<SBsplineBoundaryBase*>(&basis);
-  SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
-    dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
-  SBsplineModifiedBase* bsplineModifiedBasis =
-    dynamic_cast<SBsplineModifiedBase*>(&basis);
-  SFundamentalSplineBase* fundamentalSplineBasis =
-    dynamic_cast<SFundamentalSplineBase*>(&basis);
-  SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
-    dynamic_cast<SFundamentalSplineModifiedBase*>(&basis);
-  SWaveletBase* waveletBasis =
-    dynamic_cast<SWaveletBase*>(&basis);
-  SWaveletBoundaryBase* waveletBoundaryBasis =
-    dynamic_cast<SWaveletBoundaryBase*>(&basis);
-  SWaveletModifiedBase* waveletModifiedBasis =
-    dynamic_cast<SWaveletModifiedBase*>(&basis);
-
-  if (bsplineBasis != nullptr) {
-    return bsplineBasis->evalDx(l, i, x);
-  } else if (bsplineBoundaryBasis != nullptr) {
-    return bsplineBoundaryBasis->evalDx(l, i, x);
-  } else if (bsplineClenshawCurtisBasis != nullptr) {
-    return bsplineClenshawCurtisBasis->evalDx(l, i, x);
-  } else if (bsplineModifiedBasis != nullptr) {
-    return bsplineModifiedBasis->evalDx(l, i, x);
-  } else if (fundamentalSplineBasis != nullptr) {
-    return fundamentalSplineBasis->evalDx(l, i, x);
-  } else if (fundamentalSplineModifiedBasis != nullptr) {
-    return fundamentalSplineModifiedBasis->evalDx(l, i, x);
-  } else if (waveletBasis != nullptr) {
-    return waveletBasis->evalDx(l, i, x);
-  } else if (waveletBoundaryBasis != nullptr) {
-    return waveletBoundaryBasis->evalDx(l, i, x);
-  } else if (waveletModifiedBasis != nullptr) {
-    return waveletModifiedBasis->evalDx(l, i, x);
-  }
-
-  return NAN;
-}
-
-SGPP::float_t basisEvalDxDx(SBasis& basis,
-                            GridIndex::level_type l,
-                            GridIndex::index_type i,
-                            SGPP::float_t x) {
-  SBsplineBase* bsplineBasis =
-    dynamic_cast<SBsplineBase*>(&basis);
-  SBsplineBoundaryBase* bsplineBoundaryBasis =
-    dynamic_cast<SBsplineBoundaryBase*>(&basis);
-  SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
-    dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
-  SBsplineModifiedBase* bsplineModifiedBasis =
-    dynamic_cast<SBsplineModifiedBase*>(&basis);
-  SFundamentalSplineBase* fundamentalSplineBasis =
-    dynamic_cast<SFundamentalSplineBase*>(&basis);
-  SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
-    dynamic_cast<SFundamentalSplineModifiedBase*>(&basis);
-  SWaveletBase* waveletBasis =
-    dynamic_cast<SWaveletBase*>(&basis);
-  SWaveletBoundaryBase* waveletBoundaryBasis =
-    dynamic_cast<SWaveletBoundaryBase*>(&basis);
-  SWaveletModifiedBase* waveletModifiedBasis =
-    dynamic_cast<SWaveletModifiedBase*>(&basis);
-
-  if (bsplineBasis != nullptr) {
-    return bsplineBasis->evalDxDx(l, i, x);
-  } else if (bsplineBoundaryBasis != nullptr) {
-    return bsplineBoundaryBasis->evalDxDx(l, i, x);
-  } else if (bsplineClenshawCurtisBasis != nullptr) {
-    return bsplineClenshawCurtisBasis->evalDxDx(l, i, x);
-  } else if (bsplineModifiedBasis != nullptr) {
-    return bsplineModifiedBasis->evalDxDx(l, i, x);
-  } else if (fundamentalSplineBasis != nullptr) {
-    return fundamentalSplineBasis->evalDxDx(l, i, x);
-  } else if (fundamentalSplineModifiedBasis != nullptr) {
-    return fundamentalSplineModifiedBasis->evalDxDx(l, i, x);
-  } else if (waveletBasis != nullptr) {
-    return waveletBasis->evalDxDx(l, i, x);
-  } else if (waveletBoundaryBasis != nullptr) {
-    return waveletBoundaryBasis->evalDxDx(l, i, x);
-  } else if (waveletModifiedBasis != nullptr) {
-    return waveletModifiedBasis->evalDxDx(l, i, x);
-  }
-
-  return NAN;
 }
 
 BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {

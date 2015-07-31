@@ -234,8 +234,8 @@ namespace SGPP {
          wfunctor->setTrainDataset(mainTrainDataset);
          wfunctor->setClasses(mainClasses);*/
 
-    	  throw new SGPP::base::application_exception(
-    	              "error: LearnerOnlineSGD::train(): support of the refinementType WEIGHTED_ERROR_ALL is not implemented yet.");
+        throw new SGPP::base::application_exception(
+          "error: LearnerOnlineSGD::train(): support of the refinementType WEIGHTED_ERROR_ALL is not implemented yet.");
       }
 
       else if (config.refinementType == "PERSISTENT_ERROR") {
