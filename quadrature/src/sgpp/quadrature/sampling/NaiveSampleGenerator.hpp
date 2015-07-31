@@ -29,6 +29,7 @@ namespace SGPP {
          * Standard constructor
          *
          * @param dimension number of dimensions used for sample generation
+         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
          */
         NaiveSampleGenerator(size_t dimension, int seed = -1);
 

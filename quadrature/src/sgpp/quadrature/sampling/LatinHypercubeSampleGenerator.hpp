@@ -32,6 +32,7 @@ namespace SGPP {
          *
          * @param dimensions number of dimensions used for sample generation
          * @param numberOfSamples number of samples to be drawn
+         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
          */
 
         LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples,

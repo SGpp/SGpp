@@ -29,6 +29,7 @@ namespace SGPP {
          * @param dimensions number of dimensions used for sample generation
          * @param strataPerDimension array holding the number of strata used to
          * subdivide the specific dimension
+         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
          */
 
         StratifiedSampleGenerator(std::vector<size_t>& strataPerDimension,
