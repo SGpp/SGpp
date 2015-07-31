@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include "TikhonovOperator.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 #include <math.h>
 
 
@@ -446,6 +447,7 @@ void combigrid::TikhonovOperator::doSmoothing(int nrIt ,
 }
 
 void combigrid::TikhonovOperator::setNewLambda(double lambda) {
-  // todo: implement this
   // reinitialize the matrix by subtracting the old_lambda*C and then adding the new_lambda*C
+	throw new SGPP::base::operation_exception(
+	            "error: combigrid::TikhonovOperator::setNewLambda(double lambda): is not implemented");
 }

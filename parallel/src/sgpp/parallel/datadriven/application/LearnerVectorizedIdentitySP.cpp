@@ -32,7 +32,6 @@ namespace SGPP {
     LearnerVectorizedIdentitySP::LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename,
         const VectorizationType vecType, const bool isRegression, const bool verbose)
       : SGPP::datadriven::LearnerBaseSP(tGridFilename, tAlphaFilename, isRegression, verbose), vecType_(vecType) {
-      // @TODO implement
     }
 
     LearnerVectorizedIdentitySP::~LearnerVectorizedIdentitySP() {

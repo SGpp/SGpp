@@ -35,9 +35,9 @@ namespace SGPP {
       return &(this->bufferList[deviceNumber]);
     }
 
-    //TODO: current multidevice strategy: allocate everything everywere, use only range specified for device
+    //current multidevice strategy: allocate everything everywere, use only range specified for device
 
-    //TODO: read/write-flags
+    //read/write-flags are missing
 
     void OCLStretchedBuffer::initializeBuffer(size_t sizeofType, size_t elements) {
       cl_int err;
@@ -63,7 +63,6 @@ namespace SGPP {
         }
       }
 
-      //TODO: why command queue 0?
       void* hostPinnedMemory = clEnqueueMapBuffer(manager.command_queue[0], hostBuffer, CL_TRUE, CL_MAP_READ | CL_MAP_WRITE,
                                0, sizeofType * elements, 0, nullptr, nullptr, &err);
 

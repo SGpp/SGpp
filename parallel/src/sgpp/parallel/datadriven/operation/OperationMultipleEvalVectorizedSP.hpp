@@ -47,7 +47,6 @@ namespace SGPP {
         /// Timer object to handle time measurements
         SGPP::base::SGppStopwatch* myTimer_;
 
-        /// @todo add boundaries to constructor of this class
         size_t m_gridFrom;
         size_t m_gridTo;
         size_t m_datasetFrom;

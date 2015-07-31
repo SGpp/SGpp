@@ -94,7 +94,6 @@ namespace SGPP {
           }
         }
 
-        //TODO: consider inactive device due to nothing to do?
         void update(double* timings) {
           bool setVerboseLoadBalancing = parameters.getAsBoolean(
                                            "LINEAR_LOAD_BALANCING_VERBOSE");

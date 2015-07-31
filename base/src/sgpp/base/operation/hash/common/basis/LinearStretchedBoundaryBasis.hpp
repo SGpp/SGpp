@@ -93,7 +93,7 @@ namespace SGPP {
           return (p - pos0) / (pos1 - pos0);
         }
 
-        ///TODO: Index and level is not necessary, maybe function could be changed
+        /// Index and level rae not necessary, maybe function could be changed
         /*
          * evaluate a basis function
          * Has a dependence on the position of two grid points with values 1 and 0 and the

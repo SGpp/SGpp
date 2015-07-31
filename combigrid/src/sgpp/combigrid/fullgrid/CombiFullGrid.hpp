@@ -275,7 +275,6 @@ namespace combigrid {
           tmp_val = levels_[k];
 
           if ( indexes[k] != 0 ) {
-            // todo: these operations can be optimized
             while ( indexes[k] % 2 == 0 ) {
               indexes[k] = indexes[k] / 2;
               tmp_val--;

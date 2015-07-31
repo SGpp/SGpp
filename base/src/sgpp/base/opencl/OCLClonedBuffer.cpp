@@ -32,8 +32,6 @@ namespace SGPP {
       return &(this->bufferList[deviceNumber]);
     }
 
-    //TODO: current multidevice strategy: allocate everything everywere, use only range specified for device
-
     void OCLClonedBuffer::writeToBuffer(void* hostData, size_t* offsets) {
       cl_int err;
       cl_event* actionDone = new cl_event[this->manager.num_devices];
@@ -90,8 +88,7 @@ namespace SGPP {
       }
     }
 
-    //TODO: read/write-flags
-
+    //read/write-flags are missing
     void OCLClonedBuffer::initializeBuffer(void* initialValues, size_t sizeofType, size_t elements) {
       cl_int err;
       cl_mem* bufferList = new cl_mem[manager.num_devices];
