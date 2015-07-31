@@ -42,7 +42,6 @@ namespace SGPP {
          *
          * @param node_values the functions values in the node base
          *
-         * @todo Implement the hierarchisation on the sparse grid with mod bspline base functions
          */
         virtual void doHierarchisation(DataVector& node_values);
 
@@ -51,7 +50,6 @@ namespace SGPP {
          *
          * @param alpha the coefficients of the sparse grid's base functions
          *
-         * @todo Implement the dehierarchisation on the sparse grid with mod bspline base functions
          */
         virtual void doDehierarchisation(DataVector& alpha);
 

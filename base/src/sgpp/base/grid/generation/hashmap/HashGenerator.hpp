@@ -31,12 +31,8 @@ namespace SGPP {
      * 1. the classic sparse grid with level 0 and a diagonal
      * cut through the sub space scheme.
      *
-     * @todo (heinecke, nice) add picture here
-     *
      * 2. a modified boundary grid with level 0 and a pentagon cut
      * trough the sub space scheme.
-     *
-     * @todo (heinecke, nice) add picture here
      *
      * Furthermore, the creation of full grids (in the hierarchical basis) is supported.
      */
@@ -49,8 +45,6 @@ namespace SGPP {
 
         /**
          * Generates a regular sparse grid of level levels, without boundaries
-         *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
          *
          * @param storage Hashmap that stores the grid points
          * @param level Grid level (non-negative value)
@@ -69,8 +63,6 @@ namespace SGPP {
         * Generates a regular sparse grid of level levels, without boundaries
         * where dimensions are splitted into a groups with only certain number
         * of dimensions completely connected in a clique
-        *
-        * @todo (blank) level should be of type level_t but swig doesnt want that
         *
         * @param storage Hashmap that stores the grid points
         * @param level Grid level (non-negative value)
@@ -93,8 +85,6 @@ namespace SGPP {
         /**
          * Generates a full grid of level @p level, without boundaries.
          *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
-         *
          * @param storage Hashmap that stores the grid points
          * @param level Grid level (non-negative value)
          */
@@ -109,8 +99,6 @@ namespace SGPP {
         /**
          * Generates a full grid of level @p level, with boundary grid points.
          *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
-         *
          * @param storage Hashmap that stores the grid points
          * @param level Grid level (non-negative value)
          */
@@ -124,8 +112,6 @@ namespace SGPP {
 
         /**
          * Generates a regular sparse grid of level levels with boundaries
-         *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)
@@ -172,8 +158,6 @@ namespace SGPP {
 
         /**
          * Generates a regular sparse grid of level levels with boundaries
-         *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)

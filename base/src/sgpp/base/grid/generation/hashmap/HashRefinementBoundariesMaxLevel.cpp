@@ -61,7 +61,6 @@ namespace SGPP {
         //std::cout << index.toString() << " " << refineCandidate << std::endl;
 
         if (refineCandidate == true) {
-          // @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
           for (size_t d = 0; d < storage->dim(); d++) {
             index_t source_index;
             level_t source_level;
@@ -278,7 +277,6 @@ namespace SGPP {
       //Sets leaf property of index, which is refined to false
       (*storage)[refine_index]->setLeaf(false);
 
-      // @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
       for (size_t d = 0; d < storage->dim(); d++) {
         refineGridpoint1D(storage, index, d, maxLevel);
       }

@@ -52,7 +52,6 @@ namespace SGPP {
      * Descending recursively in the d-th dimension, one can propagate the value of the intermediate function
      * evaluation for the first d-1 dimensions that have already been looked at.
      *
-     * @todo (heinecke) add bounding box support for every grid type
      */
     template<class BASIS>
     class GetAffectedBasisFunctions {
@@ -130,9 +129,10 @@ namespace SGPP {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
-          // @todo (blank) Remove 'magic' number
-          level_type src_level = static_cast<level_type> (sizeof(index_type) * 8
-                                 - 1);
+          const unsigned int BITS_IN_BYTE = 8;
+		  // maximum possible level for the index type
+		  const level_type max_level = static_cast<level_type> (
+								   sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -164,8 +164,8 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
-            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            bool right = (src_index & (1 << (max_level - work_level))) > 0;
             ++work_level;
 
             if (right) {
@@ -241,9 +241,10 @@ namespace SGPP {
           float_t tmpValue;
           size_t tmpSeq;
 
-          // TODO: Remove 'magic' number
-          level_type src_level = static_cast<level_type> (sizeof(index_type) * 8
-                                 - 1);
+          const unsigned int BITS_IN_BYTE = 8;
+		   // maximum possible level for the index type
+		   const level_type max_level = static_cast<level_type> (
+									   sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -345,8 +346,8 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
-            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            bool right = (src_index & (1 << (max_level - work_level))) > 0;
             ++work_level;
 
             if (right) {
@@ -417,8 +418,10 @@ namespace SGPP {
           float_t tmpValue;
           size_t tmpSeq;
 
-          // TODO: Remove 'magic' number
-          level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
+          const unsigned int BITS_IN_BYTE = 8;
+		   // maximum possible level for the index type
+		   const level_type max_level = static_cast<level_type> (
+									   sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -510,8 +513,8 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
-            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            bool right = (src_index & (1 << (max_level - work_level))) > 0;
             ++work_level;
 
             if (right) {
@@ -624,7 +627,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -716,7 +719,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -859,7 +862,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               //        level_type h = 0;
@@ -1091,7 +1094,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -1219,7 +1222,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -1311,7 +1314,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;

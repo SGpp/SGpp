@@ -84,7 +84,6 @@ namespace SGPP {
       }
     }
 
-    // TODO David
 #if USE_DOUBLE_PRECISION==0
 
 

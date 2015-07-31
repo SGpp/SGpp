@@ -19,7 +19,6 @@ namespace SGPP {
 
     /**
      * Grid with Bspline basis functions
-     * @todo (pflueged) include for factory exception is missing in several classes which use it. It only works, as it is include by a header loaded previously.
      */
     class BsplineGrid : public Grid {
       protected:

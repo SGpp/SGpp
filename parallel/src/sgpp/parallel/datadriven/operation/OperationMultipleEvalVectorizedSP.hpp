@@ -16,7 +16,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-// TODO David
 #if USE_DOUBLE_PRECISION==0
 
 namespace SGPP {

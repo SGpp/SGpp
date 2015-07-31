@@ -109,7 +109,6 @@ namespace SGPP {
         // a pointer of this class to access the respective objects
         friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
         friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
-        // TODO David
 #if USE_DOUBLE_PRECISION==0
 #endif
 

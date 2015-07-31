@@ -327,7 +327,6 @@ namespace SGPP {
     }
 
     void Grid::refine(DataVector* vector, int numOfPoints) {
-      // @todo (khakhutv) (low) different refinemente Functors
       this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
     }
 

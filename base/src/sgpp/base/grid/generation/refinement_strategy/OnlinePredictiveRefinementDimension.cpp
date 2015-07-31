@@ -98,13 +98,11 @@ namespace SGPP {
 
 
         // All numerators
-        // FIXME: should be initiated only once
         DataVector numerators(predictiveGridSize);
         eval->multTranspose(*errors, numerators);
         //numerators.sqr();
 
         // All denominators
-        // FIXME: should be initiated only once
         DataVector denominators(predictiveGridSize);
         denominators.setAll(0.0);
 
