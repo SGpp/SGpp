@@ -121,7 +121,7 @@ namespace SGPP {
                                        const SGPP::base::RegularGridConfiguration& GridConfig,
                                        const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                        const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                                       const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float lambda) {
+                                       const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float lambdaRegularization) {
       LearnerTiming result;
 
       if (trainDataset.getNrows() != classes.getSize()) {
@@ -160,7 +160,7 @@ namespace SGPP {
         return result;
 
       // create DMSystem
-      SGPP::datadriven::DMSystemMatrixBaseSP* DMSystem = createDMSystem(trainDataset, lambda);
+      SGPP::datadriven::DMSystemMatrixBaseSP* DMSystem = createDMSystem(trainDataset, lambdaRegularization);
 
       // check if System was created
       if (DMSystem == NULL)
@@ -294,7 +294,7 @@ namespace SGPP {
 
     LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset, SGPP::base::DataVectorSP& classes,
                                        const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverSPConfiguration& SolverConfig,
-                                       const float lambda) {
+                                       const float lambdaRegularization) {
       SGPP::base::AdpativityConfiguration AdaptConfig;
 
       AdaptConfig.maxLevelType_ = false;
@@ -303,7 +303,7 @@ namespace SGPP {
       AdaptConfig.percent_ = 0.0;
       AdaptConfig.threshold_ = 0.0;
 
-      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
+      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambdaRegularization);
     }
 
     SGPP::base::DataVectorSP LearnerBaseSP::predict(SGPP::base::DataMatrixSP& testDataset) {
