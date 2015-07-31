@@ -142,13 +142,14 @@ class SphereHessian : public SGPP::optimization::ObjectiveHessian {
 
 
 
-/*class G3ObjectiveFunction : public SGPP::optimization::ObjectiveFunction {
+class G3ObjectiveFunction : public SGPP::optimization::ObjectiveFunction {
   public:
-    G3ObjectiveFunction(size_t d) : G3ObjectiveFunction(d) {
+    G3ObjectiveFunction(size_t d) : ObjectiveFunction(d) {
     }
 
     SGPP::float_t eval(const SGPP::base::DataVector& x) {
-      SGPP::float_t fx = std::pow(d, d / 2.0);
+      const SGPP::float_t dDbl = static_cast<SGPP::float_t>(d);
+      SGPP::float_t fx = std::pow(dDbl, dDbl / 2.0);
 
       for (size_t t = 0; t < d; t++) {
         if ((x.get(0) >= 0.0) && (x.get(1) <= 1.0)) {
@@ -163,7 +164,7 @@ class SphereHessian : public SGPP::optimization::ObjectiveHessian {
 
     virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
       clone = std::unique_ptr<ObjectiveFunction>(
-          new G3ObjectiveFunction(*this));
+                new G3ObjectiveFunction(*this));
     }
 };
 
@@ -174,7 +175,8 @@ class G3ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
 
     SGPP::float_t eval(const SGPP::base::DataVector& x,
                        SGPP::base::DataVector& gradient) {
-      SGPP::float_t fx = std::pow(d, d / 2.0);
+      const SGPP::float_t dDbl = static_cast<SGPP::float_t>(d);
+      SGPP::float_t fx = std::pow(dDbl, dDbl / 2.0);
 
       for (size_t t = 0; t < d; t++) {
         if ((x.get(0) >= 0.0) && (x.get(1) <= 1.0)) {
@@ -187,9 +189,9 @@ class G3ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
       for (size_t t = 0; t < d; t++) {
         for (size_t t2 = 0; t2 < d; t2++) {
           if (t2 != t) {
-            gradient[t2] *= x[t];
+            gradient[t2] *= x.get(t);
           } else {
-            fx *= x[t];
+            fx *= x.get(t);
           }
         }
       }
@@ -199,7 +201,7 @@ class G3ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
 
     virtual void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
       clone = std::unique_ptr<ObjectiveGradient>(
-          new G3ObjectiveGradient(*this));
+                new G3ObjectiveGradient(*this));
     }
 };
 
@@ -207,61 +209,182 @@ class G3ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
 
 class G3ConstraintFunction : public SGPP::optimization::ConstraintFunction {
   public:
-    G3ConstraintFunction(size_t d) : ConstraintFunction(d) {
+    G3ConstraintFunction(size_t d) : ConstraintFunction(d, 1) {
     }
 
-    SGPP::float_t eval(const SGPP::base::DataVector& x) {
-      SGPP::float_t fx = std::pow(d, d / 2.0);
+    void eval(const SGPP::base::DataVector& x,
+              SGPP::base::DataVector& value) {
+      SGPP::float_t gx = -1.0;
 
       for (size_t t = 0; t < d; t++) {
         if ((x.get(0) >= 0.0) && (x.get(1) <= 1.0)) {
-          fx *= x.get(t);
+          gx += x.get(t) * x.get(t);
         } else {
-          return INFINITY;
+          value[0] = INFINITY;
+          return;
         }
       }
 
-      return fx;
+      value[0] = gx;
     }
 
     virtual void clone(std::unique_ptr<ConstraintFunction>& clone) const {
       clone = std::unique_ptr<ConstraintFunction>(
-          new G3ConstraintFunction(*this));
+                new G3ConstraintFunction(*this));
     }
 };
 
 class G3ConstraintGradient : public SGPP::optimization::ConstraintGradient {
   public:
-    G3ConstraintGradient(size_t d) : ConstraintGradient(d) {
+    G3ConstraintGradient(size_t d) : ConstraintGradient(d, 1) {
     }
 
-    SGPP::float_t eval(const SGPP::base::DataVector& x,
-                       SGPP::base::DataVector& gradient) {
-      SGPP::float_t fx = std::pow(d, d / 2.0);
+    void eval(const SGPP::base::DataVector& x,
+              SGPP::base::DataVector& value,
+              SGPP::base::DataMatrix& gradient) {
+      SGPP::float_t gx = -1.0;
 
       for (size_t t = 0; t < d; t++) {
         if ((x.get(0) >= 0.0) && (x.get(1) <= 1.0)) {
-          gradient[t] = fx;
+          gx += x.get(t) * x.get(t);
+          gradient.set(0, t, 2.0 * x.get(t));
         } else {
-          return INFINITY;
+          value[0] = INFINITY;
+          return;
         }
       }
 
-      for (size_t t = 0; t < d; t++) {
-        for (size_t t2 = 0; t2 < d; t2++) {
-          if (t2 != t) {
-            gradient[t2] *= x[t];
-          } else {
-            fx *= x[t];
-          }
-        }
-      }
-
-      return fx;
+      value[0] = gx;
     }
 
     virtual void clone(std::unique_ptr<ConstraintGradient>& clone) const {
       clone = std::unique_ptr<ConstraintGradient>(
-          new G3ConstraintGradient(*this));
+                new G3ConstraintGradient(*this));
     }
-};*/
+};
+
+
+
+class G8ObjectiveFunction : public SGPP::optimization::ObjectiveFunction {
+  public:
+    G8ObjectiveFunction() : ObjectiveFunction(2) {
+    }
+
+    SGPP::float_t eval(const SGPP::base::DataVector& x) {
+      if ((x.get(0) >= 0.0) && (x.get(0) <= 1.0) &&
+          (x.get(1) >= 0.0) && (x.get(1) <= 1.0)) {
+        const SGPP::float_t x0 = 10.0 * x.get(0);
+        const SGPP::float_t x1 = 10.0 * x.get(1);
+        const SGPP::float_t fx = -std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+                                 std::sin(2.0 * M_PI * x1) / (std::pow(x0, 3.0) * (x0 + x1));
+        return fx;
+      } else {
+        return INFINITY;
+      }
+    }
+
+    virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
+      clone = std::unique_ptr<ObjectiveFunction>(
+                new G8ObjectiveFunction(*this));
+    }
+};
+
+class G8ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
+  public:
+    G8ObjectiveGradient() : ObjectiveGradient(2) {
+    }
+
+    SGPP::float_t eval(const SGPP::base::DataVector& x,
+                       SGPP::base::DataVector& gradient) {
+      if ((x.get(0) >= 0.0) && (x.get(0) <= 1.0) &&
+          (x.get(1) >= 0.0) && (x.get(1) <= 1.0)) {
+        const SGPP::float_t x0 = 10.0 * x.get(0);
+        const SGPP::float_t x1 = 10.0 * x.get(1);
+        const SGPP::float_t fx = -std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+                                 std::sin(2.0 * M_PI * x1) / (std::pow(x0, 3.0) * (x0 + x1));
+        gradient[0] = 6.0 * M_PI * std::cos(2.0 * M_PI * x0) *
+                      std::pow(std::sin(2.0 * M_PI * x0), 2.0) *
+                      std::sin(2.0 * M_PI * x1) / ((x0 + x1) * std::pow(x0, 3.0)) -
+                      3.0 * std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+                      std::sin(2.0 * M_PI * x1) / ((x0 + x1) * std::pow(x0, 4.0)) -
+                      std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+                      std::sin(2.0 * M_PI * x1) /
+                      (std::pow(x0 + x1, 2.0) * std::pow(x0, 3.0));
+        gradient[1] = 2.0 * M_PI * std::cos(2.0 * M_PI * x1) *
+                      std::pow(std::sin(2.0 * M_PI * x0), 3.0) /
+                      ((x0 + x1) * std::pow(x0, 3.0)) -
+                      std::pow(std::sin(2.0 * M_PI * x0), 3.0) *
+                      std::sin(2.0 * M_PI * x1) /
+                      (std::pow(x0 + x1, 2.0) * std::pow(x0, 3.0));
+        gradient[0] *= -10.0;
+        gradient[1] *= -10.0;
+        return fx;
+      } else {
+        return INFINITY;
+      }
+    }
+
+    virtual void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
+      clone = std::unique_ptr<ObjectiveGradient>(
+                new G8ObjectiveGradient(*this));
+    }
+};
+
+
+
+class G8ConstraintFunction : public SGPP::optimization::ConstraintFunction {
+  public:
+    G8ConstraintFunction() : ConstraintFunction(2, 2) {
+    }
+
+    void eval(const SGPP::base::DataVector& x,
+              SGPP::base::DataVector& value) {
+      if ((x.get(0) >= 0.0) && (x.get(0) <= 1.0) &&
+          (x.get(1) >= 0.0) && (x.get(1) <= 1.0)) {
+        const SGPP::float_t x0 = 10.0 * x.get(0);
+        const SGPP::float_t x1 = 10.0 * x.get(1);
+        value[0] = std::pow(x0, 2.0) - x1 + 1.0;
+        value[1] = 1.0 - x0 + std::pow(x1 - 4.0, 2.0);
+      } else {
+        value[0] = INFINITY;
+        value[1] = INFINITY;
+        return;
+      }
+    }
+
+    virtual void clone(std::unique_ptr<ConstraintFunction>& clone) const {
+      clone = std::unique_ptr<ConstraintFunction>(
+                new G8ConstraintFunction(*this));
+    }
+};
+
+class G8ConstraintGradient : public SGPP::optimization::ConstraintGradient {
+  public:
+    G8ConstraintGradient() : ConstraintGradient(2, 2) {
+    }
+
+    void eval(const SGPP::base::DataVector& x,
+              SGPP::base::DataVector& value,
+              SGPP::base::DataMatrix& gradient) {
+      if ((x.get(0) >= 0.0) && (x.get(0) <= 1.0) &&
+          (x.get(1) >= 0.0) && (x.get(1) <= 1.0)) {
+        const SGPP::float_t x0 = 10.0 * x.get(0);
+        const SGPP::float_t x1 = 10.0 * x.get(1);
+        value[0] = std::pow(x0, 2.0) - x1 + 1.0;
+        value[1] = 1.0 - x0 + std::pow(x1 - 4.0, 2.0);
+        gradient.set(0, 0, 2.0 * x0 * 10.0);
+        gradient.set(0, 1, -1.0 * 10.0);
+        gradient.set(1, 0, -1.0 * 10.0);
+        gradient.set(1, 1, 2.0 * (x1 - 4.0) * 10.0);
+      } else {
+        value[0] = INFINITY;
+        value[1] = INFINITY;
+        return;
+      }
+    }
+
+    virtual void clone(std::unique_ptr<ConstraintGradient>& clone) const {
+      clone = std::unique_ptr<ConstraintGradient>(
+                new G8ConstraintGradient(*this));
+    }
+};
