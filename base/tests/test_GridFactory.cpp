@@ -1070,17 +1070,17 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   opb->multTranspose( beta, alpha );
 
 #if USE_DOUBLE_PRECISION == 1
-  BOOST_CHECK_CLOSE(alpha[0], float_t(1.038461538), float_t(1e-6) );
-  BOOST_CHECK_CLOSE(alpha[1], float_t(-0.038461538461538464), float_t(1e-6) );
-  BOOST_CHECK_CLOSE(alpha[2], float_t(-0.18237143795284394), float_t(1e-6) );
-  BOOST_CHECK_CLOSE(alpha[3], float_t(-0.53513915), float_t(1e-6) );
-  BOOST_CHECK_CLOSE(alpha[4], float_t(0.0), float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[0], SGPP::float_t(1.038461538), SGPP::float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[1], SGPP::float_t(-0.038461538461538464), SGPP::float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[2], SGPP::float_t(-0.18237143795284394), SGPP::float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[3], SGPP::float_t(-0.53513915), SGPP::float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[4], SGPP::float_t(0.0), SGPP::float_t(1e-6) );
 #else
-  BOOST_CHECK_CLOSE(alpha[0], float_t(1.038461538), float_t(1e-5) );
-  BOOST_CHECK_CLOSE(alpha[1], float_t(-0.038461538461538464), float_t(1e-5) );
-  BOOST_CHECK_CLOSE(alpha[2], float_t(-0.18237143795284394), float_t(1e-4) );
-  BOOST_CHECK_CLOSE(alpha[3], float_t(-0.53513915), float_t(1e-4) );
-  BOOST_CHECK_CLOSE(alpha[4], float_t(0.0), float_t(1e-6) );
+  BOOST_CHECK_CLOSE(alpha[0], SGPP::float_t(1.038461538), SGPP::float_t(1e-5) );
+  BOOST_CHECK_CLOSE(alpha[1], SGPP::float_t(-0.038461538461538464), SGPP::float_t(1e-5) );
+  BOOST_CHECK_CLOSE(alpha[2], SGPP::float_t(-0.18237143795284394), SGPP::float_t(1e-4) );
+  BOOST_CHECK_CLOSE(alpha[3], SGPP::float_t(-0.53513915), SGPP::float_t(1e-4) );
+  BOOST_CHECK_CLOSE(alpha[4], SGPP::float_t(0.0), SGPP::float_t(1e-6) );
 #endif
 
   alpha.setAll(0.0);
@@ -1092,9 +1092,9 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
   opb->mult( alpha, beta );
 #if USE_DOUBLE_PRECISION == 1
-  BOOST_CHECK_CLOSE( beta[0], float_t(-0.182371437), float_t(1e-6) );
+  BOOST_CHECK_CLOSE( beta[0], SGPP::float_t(-0.182371437), SGPP::float_t(1e-6) );
 #else
-  BOOST_CHECK_CLOSE( beta[0], float_t(-0.182371437), float_t(1e-4) );
+  BOOST_CHECK_CLOSE( beta[0], SGPP::float_t(-0.182371437), SGPP::float_t(1e-4) );
 #endif
 
   delete gen;
@@ -1153,9 +1153,9 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   OperationEval* eval = SGPP::op_factory::createOperationEval( *factory );
 
 #if USE_DOUBLE_PRECISION == 1
-  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), float_t(0.8176285620), float_t(1e-8) );
+  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), SGPP::float_t(0.8176285620), SGPP::float_t(1e-8) );
 #else
-  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), float_t(0.8176285620), float_t(1e-5) );
+  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), SGPP::float_t(0.8176285620), SGPP::float_t(1e-5) );
 #endif
 
   delete gen;

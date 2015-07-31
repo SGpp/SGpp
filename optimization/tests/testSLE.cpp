@@ -79,7 +79,7 @@ void testSLESolution(const base::DataMatrix& A,
 
   // test relative residual
   BOOST_CHECK_SMALL(std::sqrt(rNormSquared / bNormSquared),
-                    (doublePrecision ? float_t(1e-6) : float_t(1e-3) ));
+                    (doublePrecision ? SGPP::float_t(1e-6) : SGPP::float_t(1e-3) ));
 }
 
 BOOST_AUTO_TEST_CASE(TestSLESolvers) {
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(TestHierarchization) {
       }
 
       // test infinity norm of difference roughly
-      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x), float_t(0.3) );
+      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x), SGPP::float_t(0.3) );
     }
   }
 }
