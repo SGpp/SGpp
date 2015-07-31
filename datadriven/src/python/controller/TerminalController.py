@@ -6,10 +6,10 @@
 #############################################################################
                                     #
 #############################################################################
-from datadriven.data.DataContainer import DataContainer
+from datadriven.ata.DataContainer import DataContainer
 
 ##
-# @package datadriven.controller
+# @package datadriven.ontroller
 
 import ConfigParser, os
 from optparse import OptionParser
@@ -20,11 +20,11 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.controller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
-from datadriven.learner.LearnerBuilder import LearnerBuilder
-from datadriven.data.ARFFAdapter import ARFFAdapter
-from datadriven.data.DataContainer import DataContainer
-from datadriven.learner.Types import BorderTypes
+from datadriven.ontroller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
+from datadriven.earner.LearnerBuilder import LearnerBuilder
+from datadriven.ata.ARFFAdapter import ARFFAdapter
+from datadriven.ata.DataContainer import DataContainer
+from datadriven.earner.Types import BorderTypes
 import types
 
 
@@ -44,8 +44,6 @@ import types
 # @endcode
 # for help to the console parameters.
 #
-# @todo (khakhutv) implement the test case for terminal controller
-# @todo (khakhutv) load initial alpha from file as configuration file parameter
 class TerminalController:
  
     ## Initial processing of input parameters
@@ -279,7 +277,6 @@ class TerminalController:
         
         #dataset options
         if len(options.data) == 1:
-            #@todo (khakhutv) it may make sense for crossfold validation to separate data set into chunks and then use the same chunks for different instance
             builder.withTrainingDataFromARFFFile(options.data[0])
         elif len(options.data) > 1:
             fileCounter = 0
@@ -342,7 +339,6 @@ class TerminalController:
             else:
                 builder.withProgressPresenter(InfoToScreen())
         if options.stats:
-            # @todo (khakhutv) implement info presenter to output information in the format of old statistic files
             builder.withProgressPresenter(InfoToFile(options.stats))
             
                     
@@ -377,7 +373,6 @@ class TerminalController:
         elif options.mode in ['fold', 'folds', 'foldstratified', 'foldf', 'foldr']:
             builder.getCheckpointController().generateFoldValidationJob('PUT_YOUR_EMAIL_HERE')
         elif options.mode in ['eval', 'evalstdin']:
-            # @todo (khakhutv) does it have to be implemented?
             raise Exception('This action is not implemented yet')
         else: raise Exception('Incorrect action configuration')
     
@@ -432,7 +427,6 @@ class TerminalController:
         
         #dataset options
         if len(options.data) == 1:
-            #@todo (khakhutv) it may make sense for crossfold validation to separate data set into chunks and then use the same chunks for different instance
             code += "builder.withTrainingDataFromARFFFile('%s')\n" % options.data[0]
         elif len(options.data) > 1:
             fileCounter = 0
@@ -496,7 +490,6 @@ class TerminalController:
             else:
                 code += "builder.withProgressPresenter(InfoToScreen())\n"
         if options.stats:
-            # @todo (khakhutv) implement info presenter to output information in the format of old statistic files
             code += "builder.withProgressPresenter(InfoToFile('%s'))\n" % options.stats
             
                     

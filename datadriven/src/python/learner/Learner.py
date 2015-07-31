@@ -14,7 +14,7 @@ from data.DataContainer import DataContainer
 import types
 
 ##
-# @package datadriven.learner
+# @package datadriven.earner
 
 ## The class implements the routines common for classifier and regressor.
 # However, since some methods are defined and note implemented, this class is
@@ -39,9 +39,8 @@ import types
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from LinearSolver. 
-# See documentation of@link datadriven..learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+# See documentation of @link datadriven.arner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 #
-# @todo Right now it is not tested if the datasets were transposed for use with the vectorized algorithms. If the intereset will be present, the feature will be implemented.
 class Learner(object):
     
     ##list of object listening to the learning events

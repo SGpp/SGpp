@@ -6,7 +6,7 @@
 import gzip, re
 
 ##
-# @package datadriven.utils
+# @package datadriven.tils
 
 ##The class provides the method, used by subclasses to work with gzip-compressed
 # files 

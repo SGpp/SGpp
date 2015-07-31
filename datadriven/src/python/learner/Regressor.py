@@ -10,11 +10,10 @@ from pysgpp import DataVector, SurplusRefinementFunctor
 from  math import sqrt
 
 ##
-# @package datadriven.learner
+# @package datadriven.earner
 
 ## Subclass of Learner, responsible for regression.
 # The methods specific for regression are implemented here.
-# @todo (khakhutv) implement a test case
 class Regressor(Learner):
     
     ## Errors per basis function
@@ -102,13 +101,5 @@ class Regressor(Learner):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
         
         pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
-        # @todo (khakhutv) (low) develop a way to simplify interfaces and use different functors
         self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.errors, pointsNum, self.specification.getAdaptThreshold()) )
 
-
-    ## Creates Regressor object without any parameter set
-    # @param jsonObject: A json object.
-    # @return: Regressor object without any parameter set
-#    @classmethod
-#    def fromJson(cls, jsonObject):
-#        return Regressor()

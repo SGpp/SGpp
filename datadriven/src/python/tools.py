@@ -490,8 +490,6 @@ def split_n_folds(data, num_partitions, seed=None):
         for rowNum in xrange(size_fold):
             data["data"].getRow(seq[index], cv)
             dvec[i].setRow(rowNum, cv)
-#            dvec[i][element*dim + d] = data["data"][d][seq[index]]
-#@todo: this doesn't work for regression, because the last parameter is not necessary class
             cvec[i][rowNum] = data["classes"][seq[index]]
             index += 1
         size_left = size_left-size_fold
@@ -1006,7 +1004,6 @@ base_types = {
 
 ## Class Matrix that incorporates settings and actions for applying
 # the matrix C and computing the RHS b.
-# @todo fully update to pysgpp
 class Matrix:
     def __init__(self, grid, x, l, mode, Hk, base = None):
         self.grid = grid

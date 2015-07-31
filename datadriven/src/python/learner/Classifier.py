@@ -7,7 +7,7 @@ from Learner import Learner, LearnerEvents
 from pysgpp import SurplusRefinementFunctor, createOperationTest
 
 ##
-# @package datadriven.learner
+# @package datadriven.earner
 
 ## The class implements the abstract methods from Learner and allows to accomplish
 # basic classification tasks.
@@ -53,14 +53,6 @@ class Classifier(Learner):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
         pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
         
-        # @todo (khakhutv) (low) develop a way to simplify interfaces and use different functors
         self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.alpha, pointsNum, self.specification.getAdaptThreshold()) )
         
-    ## Creates Classifier object without any parameter set
-    # @param jsonObject: A json object.
-    # @return: Classifier object without any parameter set
-#    @classmethod
-#    def fromJson(cls, jsonObject):
-#        return Classifier()
-                            
 

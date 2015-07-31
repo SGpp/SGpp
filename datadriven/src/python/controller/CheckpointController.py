@@ -8,23 +8,25 @@
 #############################################################################
 
 from pysgpp import createOperationLaplace, createOperationIdentity
-from datadriven.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
-from datadriven.controller.LearnerEventController import LearnerEventController
-#from datadriven.data.ARFFAdapter import ARFFAdapter
+from datadriven.earner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
+from datadriven.ontroller.LearnerEventController import LearnerEventController
+#from datadriven.ata.ARFFAdapter import ARFFAdapter
 
 import utils.json as json
-from datadriven.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
-from datadriven.controller.InfoToScreenRegressor import InfoToScreenRegressor
-from datadriven.controller.InfoToScreen import InfoToScreen
-from datadriven.controller.InfoToFile import InfoToFile
+from datadriven.earner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
+from datadriven.ontroller.InfoToScreenRegressor import InfoToScreenRegressor
+from datadriven.ontroller.InfoToScreen import InfoToScreen
+from datadriven.ontroller.InfoToFile import InfoToFile
 try:
-    from datadriven.controller.InfoToGraph import InfoToGraph
+    from datadriven.ontroller.InfoToGraph import InfoToGraph
 except ImportError: pass
 import gzip, copy
 
 
 ##
-# @package datadriven.controller
+# @package datadriven.ontroller
+
+##
 # Class for handling events for storing and restoring of checkpoints.
 # Responsible for storing of checkpoints during learning process and restoring 
 # of learning from some checkpoint.
@@ -191,7 +193,7 @@ class CheckpointController(LearnerEventController):
 
 
     ## Setter for the current LearnedKnowledge object
-    #@param knowledge: @link datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@param knowledge: @link datadriven.arner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
 
@@ -207,7 +209,7 @@ class CheckpointController(LearnerEventController):
 
     ## Loads knowledge from the checkpoint of given iteration
     #@param iteration: integer iteration number
-    #@return @link datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@return @link datadriven.arner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def loadLearnedKnowledge(self, iteration):
         knowledgeFile = self.composeName(iteration) + ".arff.gz"
         knowledgeMemento = LearnedKnowledgeFormatter().deserializeFromFile(knowledgeFile)
@@ -353,7 +355,7 @@ class CheckpointController(LearnerEventController):
 #$-m e
 #$-v SGPP,OPT_TMP,PATH,LD_LIBRARY_PATH
 . /etc/profile
-echo "from datadriven.controller.CheckpointController import CheckpointController\nlearner = CheckpointController('""" \
+echo "from datadriven.ontroller.CheckpointController import CheckpointController\nlearner = CheckpointController('""" \
 + self.title + """', '.', 1, $SGE_TASK_ID).loadAll(0)\nlearner.learnDataWithTest()" | python
 
 echo "JOB_ID: $JOB_ID"

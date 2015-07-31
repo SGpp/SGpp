@@ -45,7 +45,6 @@ class GridImageFormatter(GridFormatter):
     #
     #@param memento: the Grid memento object
     #@param filename The name of file where the Grid object should be serialized to.
-    #@todo (khakhutv) make the same variable names across similar functions
     def serializeToFile(self, memento, filename):
         fstream = self.gzOpen(filename, "w")
         
