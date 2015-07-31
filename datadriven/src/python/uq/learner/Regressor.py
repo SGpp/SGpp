@@ -11,7 +11,6 @@ class Regressor(Learner):
     """
     Subclass of Learner, responsible for regression.
     The methods specific for regression are implemented here.
-    @todo (khakhutv) implement a test case
     """
 
     def __init__(self):
@@ -118,8 +117,6 @@ class Regressor(Learner):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
         refinableNum = self.grid.createGridGenerator().getNumberOfRefinablePoints()
         pointsNum = self.getNumOfPointsToRefine(refinableNum)
-        # @todo (khakhutv) (low) develop a way to simplify interfaces and
-        # use different functors
         functor = SurplusRefinementFunctor(self.errors, pointsNum,
                                            self.getAdaptThreshold())
         self.grid.createGridGenerator().refine(functor)

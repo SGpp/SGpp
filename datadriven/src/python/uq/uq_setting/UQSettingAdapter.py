@@ -25,7 +25,8 @@ class UQSettingAdapter(DataAdapter):
         default "train"
         @param dtype: knowledge type
         @return dictionary {dtype: {t: <DataContainer>}}
-        @todo: dtype parameter not supported
+
+        WARNING: dtype parameter not supported
         """
         # read from file
         s = UQSettingFormatter().deserializeFromFile(self.__filename)

@@ -39,8 +39,10 @@ class SimulationLearnerBuilder(LearnerBuilder):
     def withTestingDataFromUQSettingFile(self, filename):
         """
         Use this file as testing data set
+
+        WARNING: this functionality is not tested
+
         @param filename: string file name
-        @todo: add unit test
         """
         if not os.path.exists(filename):
             raise AttributeError('the file "%s" does not exist' % filename)

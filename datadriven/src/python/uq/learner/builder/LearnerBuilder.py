@@ -48,7 +48,7 @@ import utils.json as json
 #import learner.LearnerBuilder as LearnerBuilder
 #builder = LearnerBuilder()
 #builder = builder.buildClassifier()
-# @endcode  
+# @endcode
 # or regression
 # @code
 #builder = builder.buildRegressor()
@@ -56,7 +56,7 @@ import utils.json as json
 #
 # LearnerBuilder is implementing <a href="http://en.wikipedia.org/wiki/Fluent_interface" target="parent">Fluent Interface design pattern</a>
 # it means it operates as an automata, switching in some state
-# where you can set all parameters associated with some category. For example to 
+# where you can set all parameters associated with some category. For example to
 # define the grid parameters you switch the builder into GridDescriptor set with
 # @code
 #builder = builder.withGrid()...
@@ -74,7 +74,7 @@ import utils.json as json
 # @code
 #builder.andGetResult()
 # @endcode
-# 
+#
 # The complete construction could look like following:
 # @code
 #classifier = builder.buildClassifier()\
@@ -164,7 +164,6 @@ class LearnerBuilder(object):
         Signals to use data from ARFF file for testing dataset
         @param filename: Filename where to read the data from
         @return: LearnerBuilder object itself
-        @todo (khakhutv) implement test for the method
         """
         adapter = ARFFAdapter(filename)
         dataContainer = adapter.loadData(DataContainer.TEST_CATEGORY)
@@ -194,7 +193,6 @@ class LearnerBuilder(object):
         Signals to use data from CSV file for testing dataset
         @param filename: Filename where to read the data from
         @return: LearnerBuilder object itself
-        @todo (khakhutv) implement test for the method
         """
         adapter = CSVAdapter(filename)
         dataContainer = adapter.loadData(DataContainer.TEST_CATEGORY)
@@ -209,7 +207,6 @@ class LearnerBuilder(object):
         """
         Signals to use initial data for alpha vector from ARFF file
         @param filename: Filename where to read the data from
-        @todo (khakhutv) implement test for the method
         """
         alpha = LearnedKnowledgeFormatter().deserializeFromFile(filename)
         self._learner.alpha = alpha
@@ -245,7 +242,6 @@ class LearnerBuilder(object):
         Returns the builded learner (regressor or interpolant),
         should be called in the and of construction
         """
-        # @todo (khakhutv) construction of default parameters should be done
         # here
         if self._gridDescriptor is None:
             raise AttributeError('No grid is specified')
