@@ -15,8 +15,8 @@ namespace SGPP {
   namespace datadriven {
 
     DMSystemMatrix::DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C,
-                                   float_t lambda) :
-      DMSystemMatrixBase(trainData, lambda), grid(grid) {
+                                   float_t lambdaRegression) :
+      DMSystemMatrixBase(trainData, lambdaRegression), grid(grid) {
       // create the operations needed in ApplyMatrix
       this->C = &C;
       //this->B = SGPP::op_factory::createOperationMultiEval(grid);
