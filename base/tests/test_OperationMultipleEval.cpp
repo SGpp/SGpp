@@ -59,9 +59,15 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   result_ref[1] = 2.72;
   result_ref[2] = 1.64;
 
+#if USE_DOUBLE_PRECISION == 1
   BOOST_CHECK_CLOSE(result[0], result_ref[0], 1e-7);
   BOOST_CHECK_CLOSE(result[1], result_ref[1], 1e-7);
   BOOST_CHECK_CLOSE(result[2], result_ref[2], 1e-7);
+#else
+  BOOST_CHECK_CLOSE(result[0], result_ref[0], 1e-7);
+  BOOST_CHECK_CLOSE(result[1], result_ref[1], 1e-7);
+  BOOST_CHECK_CLOSE(result[2], result_ref[2], 1e-4);
+#endif
 
   delete grid;
   delete multiEvalOp;

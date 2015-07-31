@@ -485,6 +485,26 @@ namespace SGPP {
     }
 
     void
+    HashGridStorage::getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index) {
+      index_type::level_type curLevel;
+      index_type::level_type curIndex;
+
+      // Parallelization may lead to segfaults.... comment on your own risk
+      //    #pragma omp parallel
+      //    {
+      //      #pragma omp for schedule (static) private(curLevel, curIndex)
+      for (size_t i = 0; i < list.size(); i++) {
+        for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+          (list[i])->get(current_dim, curLevel, curIndex);
+          level.set(i, current_dim, static_cast<float_t>(1 << curLevel));
+          index.set(i, current_dim, static_cast<float_t>(curIndex));
+        }
+      }
+
+      //    }
+    }
+
+    void
     HashGridStorage::getLevelForIntegral(DataMatrix& level) {
       index_type::level_type curLevel;
       index_type::level_type curIndex;

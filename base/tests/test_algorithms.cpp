@@ -115,10 +115,13 @@ void linearClenshawCurtisTest(SBasis& basis) {
     0.75, ccKnot(2, 3), 0.0, 0.125, ccKnot(3, 1), 0.25
   };
 
-  const std::vector<SGPP::float_t> testValues = {
-    1.0, 0.5, 0.25, 0.0, 0.0, 0.0, 0.25 / (ccKnot(2, 3) - 0.5), 1.0, 0.0,
-    1.0 - (0.125 - ccKnot(3, 1)) / (ccKnot(3, 2) - ccKnot(3, 1)), 1.0, 0.0
-  };
+  const std::vector<double> testValuesDouble = {
+      1.0, 0.5, 0.25, 0.0, 0.0, 0.0, 0.25 / (double(ccKnot(2, 3)) - 0.5), 1.0, 0.0,
+      1.0 - (0.125 - double(ccKnot(3, 1))) / (double(ccKnot(3, 2) - ccKnot(3, 1))), 1.0, 0.0
+    };
+
+  const std::vector<SGPP::float_t> testValues( testValuesDouble.begin(),
+					       testValuesDouble.end() );
 
   basisTest(basis, levels, indices, points, testValues);
 }
@@ -127,7 +130,7 @@ void errorTest(SGPP::float_t x, SGPP::float_t y, SGPP::float_t tol) {
   if (std::abs(x) >= 10.0) {
     BOOST_CHECK_SMALL((x - y) / x, tol);
   } else {
-    BOOST_CHECK_SMALL(x - y, 10.0 * tol);
+    BOOST_CHECK_SMALL(x - y, float_t(10.0) * tol);
   }
 }
 
@@ -216,7 +219,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1,
   // Test basic B-spline properties (mixed monotonicity, bounds) for
   // level >= start_level.
   const SGPP::float_t tol =
-#ifdef USE_DOUBLE_PRECISION
+#if USE_DOUBLE_PRECISION
     0.0;
 #else
     1e-4;
@@ -274,7 +277,11 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
           const SGPP::float_t x = static_cast<SGPP::float_t>(i2) /
                                   static_cast<SGPP::float_t>(hInv);
           const SGPP::float_t fx = basis.eval(l, i, x);
+#if USE_DOUBLE_PRECISION
           BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0), 1e-10);
+#else
+          BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0), 1e-2);
+#endif
         }
 
         // test sign
@@ -289,9 +296,17 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
             const SGPP::float_t fx = basis.eval(l, i, x);
 
             if (sign == 1.0) {
+#if USE_DOUBLE_PRECISION
               BOOST_CHECK_GE(fx, -1e-10);
+#else
+              BOOST_CHECK_GE(fx, -1e-10);
+#endif
             } else {
+#if USE_DOUBLE_PRECISION
               BOOST_CHECK_LE(fx, 1e-10);
+#else
+              BOOST_CHECK_LE(fx, 1e-10);
+#endif
             }
           }
         }

@@ -202,7 +202,7 @@ namespace SGPP {
           fx = fxNew;
 
           // increase step size
-          alpha = std::min(rhoAlphaPlus * alpha, 1.0);
+          alpha = std::min(rhoAlphaPlus * alpha, float_t(1.0) );
 
           // decrease damping
           lambda *= rhoLambdaMinus;

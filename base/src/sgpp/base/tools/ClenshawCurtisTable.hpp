@@ -75,7 +75,7 @@ namespace SGPP {
          * @param i       index of the grid point (can be even)
          */
         inline float_t calculatePoint(index_type hInv, index_type i) const {
-          return calculatePoint(1.0 / static_cast<float_t>(hInv), i);
+          return calculatePoint( static_cast<float_t>(1.0) / static_cast<float_t>(hInv), i);
         }
 
         /**

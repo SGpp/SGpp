@@ -180,11 +180,11 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     h->eval(x, hx);
 
     for (size_t i = 0; i < gx.getSize(); i++) {
-      BOOST_CHECK_LT(gx[i], 1e-6);
+      BOOST_CHECK_LT(gx[i], float_t(1e-6) );
     }
 
     for (size_t i = 0; i < hx.getSize(); i++) {
-      BOOST_CHECK_SMALL(hx[i], 1e-6);
+      BOOST_CHECK_SMALL(hx[i], float_t(1e-6) );
     }
   }
 }

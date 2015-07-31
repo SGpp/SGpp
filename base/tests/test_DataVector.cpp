@@ -108,7 +108,11 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.componentwise_div(d2);
 
   for (int i = 0; i < N; ++i) {
-    BOOST_CHECK_EQUAL(d_rand[i] / (i + 1.0), d[i]);
+#if USE_DOUBLE_PRECISION == 1
+    BOOST_CHECK_CLOSE( d_rand[i] / (i + 1.0), d[i], float_t(1e-12) );
+#else
+    BOOST_CHECK_CLOSE( d_rand[i] / (i + 1.0), d[i], float_t(1e-5) );
+#endif
   }
 }
 
