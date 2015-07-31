@@ -73,12 +73,6 @@ namespace SGPP {
             break;
           }
 
-          // DEBUG
-          /*std::cout << "\nk = " << k << "\n";
-          std::cout << "x = " << x.toString() << "\n";
-          std::cout << "fx = " << fx << "\n";
-          std::cout << "gradFx = " << gradFx.toString() << "\n";*/
-
           for (size_t i = 0; i < d; i++) {
             dir[i] = 0.0;
 
@@ -145,13 +139,6 @@ namespace SGPP {
           alpha *= rhoAlphaPlus;
 
           const float_t deltaTimesY = delta.dotProduct(y);
-          // DEBUG
-          /*std::cout << "xNew = " << xNew.toString() << "\n";
-          std::cout << "fxNew = " << fxNew << "\n";
-          std::cout << "gradFxNew = " << gradFxNew.toString() << "\n";
-          std::cout << "delta = " << delta.toString() << "\n";
-          std::cout << "y = " << y.toString() << "\n";
-          std::cout << "deltaTimesY = " << deltaTimesY << "\n";*/
 
           if (deltaTimesY != 0.0) {
             for (size_t i = 0; i < d; i++) {

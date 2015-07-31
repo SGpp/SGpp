@@ -35,7 +35,7 @@ namespace SGPP {
          */
 
         LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples,
-                int seed = -1);
+                                      int seed = -1);
 
         /**
          * Destructor

@@ -68,6 +68,17 @@ namespace SGPP {
           float_t optimize(base::DataVector& xOpt);
 
           /**
+           * Try to find a feasible initial point by solving an auxiliary
+           * problem.
+           * However, it is not guaranteed that the method works, i.e.,
+           * it should be checked afterwards that the returned point is
+           * actually feasible.
+           *
+           * @return feasible point in \f$[0, 1]^d\f$
+           */
+          base::DataVector findFeasiblePoint() const;
+
+          /**
            * @return objective function gradient
            */
           ObjectiveGradient& getObjectiveGradient() const;

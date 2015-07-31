@@ -10,19 +10,19 @@
 using namespace SGPP::base;
 
 struct F {
-  F(){};
-  ~F(){};
+  F() {};
+  ~F() {};
 
   void baseTest( SBasis& basis,
-		 std::vector< level_t >& levels,
-		 std::vector< index_t >& indices,
-		 std::vector< SGPP::float_t >& points,
-		 std::vector< SGPP::float_t >& testvals ){
+                 std::vector< level_t >& levels,
+                 std::vector< index_t >& indices,
+                 std::vector< SGPP::float_t >& points,
+                 std::vector< SGPP::float_t >& testvals ) {
     BOOST_CHECK( levels.size() == indices.size() );
     BOOST_CHECK( points.size() == indices.size() );
     BOOST_CHECK( testvals.size() == indices.size() );
 
-    for( size_t i=0; i<levels.size(); ++i ){
+    for ( size_t i = 0; i < levels.size(); ++i ) {
       SGPP::float_t val = basis.eval( levels[i], indices[i], points[i] );
 
       // here it is possible to set different tolerances for float and double
@@ -35,9 +35,9 @@ struct F {
   }
 
   void derivativesTest( SBasis& b,
-			  unsigned int deg=2,
-			  level_t start_level=1,
-			  unsigned int max_discontinuities_count=0 ){
+                        unsigned int deg = 2,
+                        level_t start_level = 1,
+                        unsigned int max_discontinuities_count = 0 ) {
     /*
 
     # levels
@@ -80,13 +80,13 @@ struct F {
         self.assertLessEqual(discontinuities, max_discontinuities_count)
      */
 
-   /* Test derivatives (up to order deg, max. 2) of basis functions for
-    * level >= start_level. Allow for max_discontinuities_count discontinuities
-    * (e.g. for Wavelets which are cut off).
-    */
+    /* Test derivatives (up to order deg, max. 2) of basis functions for
+     * level >= start_level. Allow for max_discontinuities_count discontinuities
+     * (e.g. for Wavelets which are cut off).
+     */
 
-   // skip test when using single precision, because then
-   // the derivatives are not exact enough
+    // skip test when using single precision, because then
+    // the derivatives are not exact enough
 #ifndef USING_DOUBLE_PRECISION
     return;
 #endif
@@ -100,17 +100,17 @@ struct F {
     // df = lambda y: b.evalDx(l, i, y)
 
     // levels
-    for( level_t l = start_level; l<6; ++l ){
+    for ( level_t l = start_level; l < 6; ++l ) {
       // indices
-      for( level_t i=1; i<static_cast<level_t>( std::pow(2,l) ); i+=2 ){
-	if( deg >= 1 ){
-	  //test first derivative at boundary (central difference quotient)
-	    /*
-	  errorTest(
-	      ( b.eval( l, i, 2.0*dx ) - b.eval( l, i, 0.0) ) / (2.0*dx),
-	      b.evalDx( l, i, dx ), tol1 );*/
-	  //errorTest( (f(1.0) - f(1.0-2.0*dx)) / (2.0*dx), df(1.0-dx), tol1 );
-	}
+      for ( level_t i = 1; i < static_cast<level_t>( std::pow(2, l) ); i += 2 ) {
+        if ( deg >= 1 ) {
+          //test first derivative at boundary (central difference quotient)
+          /*
+          errorTest(
+            ( b.eval( l, i, 2.0*dx ) - b.eval( l, i, 0.0) ) / (2.0*dx),
+            b.evalDx( l, i, dx ), tol1 );*/
+          //errorTest( (f(1.0) - f(1.0-2.0*dx)) / (2.0*dx), df(1.0-dx), tol1 );
+        }
 
 
 
@@ -119,23 +119,24 @@ struct F {
     }
   }
 
-  void errorTest( SGPP::float_t x, SGPP::float_t y, SGPP::float_t tol ){
-    if( std::abs(x) >= 10.0 ){
-	BOOST_CHECK( std::abs( x - y) / std::abs(x) < tol );
+  void errorTest( SGPP::float_t x, SGPP::float_t y, SGPP::float_t tol ) {
+    if ( std::abs(x) >= 10.0 ) {
+      BOOST_CHECK( std::abs( x - y) / std::abs(x) < tol );
     } else {
-	BOOST_CHECK_SMALL( std::abs(x - y), 10.0*tol );
+      BOOST_CHECK_SMALL( std::abs(x - y), 10.0 * tol );
     }
   }
 
-  void linearUniformUnmodifiedTest( SBasis& basis ){
+  void linearUniformUnmodifiedTest( SBasis& basis ) {
     std::vector< level_t > levels = { 1, 1, 1, 1, 1, 2, 2, 3, 3, 3 };
     std::vector< index_t > indices = { 1, 1, 1, 1, 1, 1, 3, 1, 1, 1 };
 
     std::vector< SGPP::float_t > points = { 0.5, 0.75, 0.875, 0.0, 1.0,
-					    0.75, 0.75, 0.0, 0.125, 0.25 };
+                                            0.75, 0.75, 0.0, 0.125, 0.25
+                                          };
 
     std::vector< SGPP::float_t > testvals { 1.0, 0.5, 0.25, 0.0, 0.0,
-					    0.0, 1.0, 0.0, 1.0, 0.0 };
+                                            0.0, 1.0, 0.0, 1.0, 0.0 };
 
     baseTest( basis, levels, indices, points, testvals );
   }
@@ -145,7 +146,7 @@ BOOST_AUTO_TEST_SUITE(Algorithms)
 
 BOOST_FIXTURE_TEST_SUITE( TestBase, F )
 
-BOOST_AUTO_TEST_CASE(testLinear){
+BOOST_AUTO_TEST_CASE(testLinear) {
   /*
    *   def testLinear(self):
     from pysgpp import SLinearBase

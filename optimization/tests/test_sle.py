@@ -154,7 +154,9 @@ class TestSLE(unittest.TestCase):
                  pysgpp.Grid.createModLinearGrid(d),
                  pysgpp.Grid.createWaveletGrid(d),
                  pysgpp.Grid.createWaveletTruncatedBoundaryGrid(d),
-                 pysgpp.Grid.createModWaveletGrid(d)]
+                 pysgpp.Grid.createModWaveletGrid(d),
+                 pysgpp.Grid.createFundamentalSplineGrid(d, 3),
+                 pysgpp.Grid.createModFundamentalSplineGrid(d, 3)]
         
         for grid in grids:
             # generate regular sparse grid

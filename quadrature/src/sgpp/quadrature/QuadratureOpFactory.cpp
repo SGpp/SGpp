@@ -7,11 +7,11 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace op_factory {
+  namespace op_factory {
 
     quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples) {
-        return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples);
+      return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples);
     }
 
-} /* namespace op_factory */
+  } /* namespace op_factory */
 } /* namespace SGPP */

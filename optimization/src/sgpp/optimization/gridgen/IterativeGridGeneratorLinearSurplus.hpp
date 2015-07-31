@@ -25,21 +25,22 @@ namespace SGPP {
     class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
       public:
         /// default adaptivity
-        static constexpr float_t DEFAULT_GAMMA = 0.2;
+        static constexpr float_t DEFAULT_ADAPTIVITY = 0.2;
 
         /**
          * Constructor.
          * Do not destruct the grid before this object!
          *
-         * @param f         objective function
-         * @param grid      grid (should be empty)
-         * @param N         maximal number of grid points
-         * @param gamma     adaptivity
+         * @param f           objective function
+         * @param grid        grid (should be empty)
+         * @param N           maximal number of grid points
+         * @param adaptivity  adaptivity between 0 and 1
          */
-        IterativeGridGeneratorLinearSurplus(ObjectiveFunction& f,
-                                            base::Grid& grid,
-                                            size_t N,
-                                            float_t gamma = DEFAULT_GAMMA);
+        IterativeGridGeneratorLinearSurplus(
+          ObjectiveFunction& f,
+          base::Grid& grid,
+          size_t N,
+          float_t adaptivity = DEFAULT_ADAPTIVITY);
 
         /**
          * Generate the grid.
@@ -49,14 +50,14 @@ namespace SGPP {
         bool generate();
 
         /**
-         * @return      adaptivity
+         * @return            adaptivity between 0 and 1
          */
-        float_t getGamma() const;
+        float_t getAdaptivity() const;
 
         /**
-         * @param gamma adaptivity
+         * @param adaptivity  adaptivity between 0 and 1
          */
-        void setGamma(float_t gamma);
+        void setAdaptivity(float_t adaptivity);
 
       protected:
         /// pointer to a linear grid (of the same type as the "real" grid)

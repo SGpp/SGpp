@@ -11,37 +11,38 @@
 using namespace SGPP::base;
 
 namespace SGPP {
-namespace quadrature {
+  namespace quadrature {
 
-SampleGenerator::SampleGenerator(size_t dimensions, int seed) :
-        dimensions(dimensions), seed(seed) {
-    Random::seed(seed);
-}
+    SampleGenerator::SampleGenerator(size_t dimensions, int seed) :
+      dimensions(dimensions), seed(seed) {
+      Random::seed(seed);
+    }
 
-SampleGenerator::~SampleGenerator() {
-}
+    SampleGenerator::~SampleGenerator() {
+    }
 
-void SampleGenerator::getSamples(DataMatrix& samples) {
+    void SampleGenerator::getSamples(DataMatrix& samples) {
 
-    // Number of columns has to correspond to the number of dimensions
-    if (samples.getNcols() != dimensions)
+      // Number of columns has to correspond to the number of dimensions
+      if (samples.getNcols() != dimensions)
         return;
 
-    // generate one sample for every row of the given DataMatrix
-    DataVector dv(dimensions);
-    for (size_t i = 0; i < samples.getNrows(); i++) {
+      // generate one sample for every row of the given DataMatrix
+      DataVector dv(dimensions);
+
+      for (size_t i = 0; i < samples.getNrows(); i++) {
         getSample(dv);
         samples.setRow(i, dv);
+      }
     }
-}
 
-size_t SampleGenerator::getDimensions() {
-    return dimensions;
-}
+    size_t SampleGenerator::getDimensions() {
+      return dimensions;
+    }
 
-void SampleGenerator::setDimensions(size_t dimensions) {
-    this->dimensions = dimensions;
-}
+    void SampleGenerator::setDimensions(size_t dimensions) {
+      this->dimensions = dimensions;
+    }
 
-}
+  }
 }

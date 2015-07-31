@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace op_factory {
+  namespace op_factory {
 
     /**
      * Creates an OperationQuadratureMCAdvanced, specifying a grid
@@ -26,7 +26,7 @@ namespace op_factory {
      */
     quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples);
 
-} /* namespace op_factory */
+  } /* namespace op_factory */
 } /* namespace SGPP */
 
 #endif /* QUADRATUREOPFACTORY_HPP_ */

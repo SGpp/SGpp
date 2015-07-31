@@ -99,14 +99,6 @@ namespace SGPP {
             break;
           }
 
-          // DEBUG
-          /*std::cout << "\nk = " << k << "\n";
-          std::cout << "x = " << x.toString() << "\n";
-          std::cout << "fx = " << fx << "\n";
-          std::cout << "gradFx = " << gradFx.toString() << "\n";
-          std::cout << "hessianFx = " << hessianFx.toString() << "\n";
-          std::cout << "lambda = " << lambda << "\n";*/
-
           for (size_t t = 0; t < d; t++) {
             // RHS of linear system to be solved
             b[t] = -gradFx[t];
@@ -144,10 +136,6 @@ namespace SGPP {
               dir[t] = b[t] / gradFxNorm;
             }
           }
-
-          // DEBUG
-          /*std::cout << "lsSolved = " << lsSolved << "\n";
-          std::cout << "dir = " << dir.toString() << "\n";*/
 
           inDomain = true;
 
@@ -212,9 +200,6 @@ namespace SGPP {
           // save new point
           x = xNew;
           fx = fxNew;
-
-          // DEBUG
-          //std::cout << "alpha = " << alpha << "\n";
 
           // increase step size
           alpha = std::min(rhoAlphaPlus * alpha, 1.0);

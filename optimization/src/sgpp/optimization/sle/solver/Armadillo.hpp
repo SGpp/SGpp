@@ -32,13 +32,13 @@ namespace SGPP {
 
           /**
            * @param       system  system to be solved
-           * @param       B       vector of right-hand sides
-           * @param[out]  X       vector of solutions to the systems
+           * @param       B       matrix of right-hand sides
+           * @param[out]  X       matrix of solutions to the systems
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, std::vector<base::DataVector>& B,
-                     std::vector<base::DataVector>& X) const;
+          bool solve(SLE& system, base::DataMatrix& B,
+                     base::DataMatrix& X) const;
       };
 
     }

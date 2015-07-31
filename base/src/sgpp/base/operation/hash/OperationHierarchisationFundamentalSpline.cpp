@@ -37,5 +37,22 @@ namespace SGPP {
       DataVector alphaCopy(alpha);
       bfs.execute(alphaCopy, alpha);
     }
+
+    void OperationHierarchisationFundamentalSpline::doHierarchisation(
+      DataMatrix& node_values) {
+      HierarchisationFundamentalSpline func(grid);
+      BreadthFirstSearch<HierarchisationFundamentalSpline>
+      bfs(func, grid->getStorage());
+      bfs.execute(node_values, node_values);
+    }
+
+    void OperationHierarchisationFundamentalSpline::doDehierarchisation(
+      DataMatrix& alpha) {
+      DehierarchisationFundamentalSpline func(grid);
+      BreadthFirstSearch<DehierarchisationFundamentalSpline>
+      bfs(func, grid->getStorage());
+      DataMatrix alphaCopy(alpha);
+      bfs.execute(alphaCopy, alpha);
+    }
   }
 }
