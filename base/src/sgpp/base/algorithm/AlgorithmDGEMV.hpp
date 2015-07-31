@@ -28,7 +28,6 @@ namespace SGPP {
      * @f[ (B)_{i,j} = \varphi_i(x_j). @f]
      * (The common known name for this operation is the BLAS routine DGEMV.)
      *
-     * @todo (blank) check if it is possible to have some functor for the BASIS type
      */
     template<class BASIS>
     class AlgorithmDGEMV {
@@ -38,8 +37,6 @@ namespace SGPP {
          * Performs the DGEMV Operation on the grid
          *
          * This operation can be executed in parallel by setting the USEOMP define
-         *
-         * @todo (heinecke, nice) add mathematical description
          *
          * @param storage GridStorage object that contains the grid's points information
          * @param basis a reference to a class that implements a specific basis
@@ -88,7 +85,6 @@ namespace SGPP {
          *
          * This operation can be executed in parallel by setting the USEOMP define
          *
-         * @todo (heinecke, nice) add mathematical description
          *
          * @param storage GridStorage object that contains the grid's points information
          * @param basis a reference to a class that implements a specific basis

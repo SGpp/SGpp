@@ -38,7 +38,6 @@ namespace SGPP {
                                  const bool isVerbose) :
       alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(
         0.0), GFlop_(0.0), GByte_(0.0) {
-      // @TODO (heinecke) implement
       throw base::application_exception("LearnerBaseSP::LearnerBaseSP: This construct isn't implemented, yet!");
     }
 
@@ -328,7 +327,6 @@ namespace SGPP {
     }
 
     void LearnerBaseSP::store(std::string tGridFilename, std::string tAlphaFilename) {
-      // @TODO (heinecke) implement
       throw base::application_exception("LearnerBaseSP::store: This method isn't implemented, yet!");
     }
 

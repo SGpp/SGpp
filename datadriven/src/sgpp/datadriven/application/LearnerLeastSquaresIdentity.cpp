@@ -88,7 +88,6 @@ namespace SGPP {
       SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
       myStopwatch->start();
 
-      //TODO could be wrong
       MultEval->mult(*alpha_, classesComputed);
       float_t stopTime = myStopwatch->stop();
       this->execTime_ += stopTime;

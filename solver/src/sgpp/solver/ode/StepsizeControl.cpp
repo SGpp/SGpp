@@ -24,7 +24,7 @@ namespace SGPP {
       this->residuum = 0.0;
       this->myEps = eps;
       this->mySC = sc;
-      useCoarsen = true; // todo
+      useCoarsen = true;
 
     }
 

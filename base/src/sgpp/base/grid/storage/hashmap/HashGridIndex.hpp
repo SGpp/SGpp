@@ -280,8 +280,7 @@ namespace SGPP {
         bool equals(const HashGridIndex& rhs) const;
 
         /**
-         * This is just wrapper for operator= until I cant get swig to wrap it
-         * @todo who is "I"?????? --> (heinecke) I guess Joerg Blank ;-)
+         * A wrapper for operator=
          *
          * @param rhs a reference to a HashGridIndex that contains the values that should be copied
          *
@@ -293,8 +292,6 @@ namespace SGPP {
          * operator to assign the current grid point with the values of another one
          *
          * @param rhs a reference to a HashGridIndex that contains the values that should be copied
-         *
-         * @todo (blank) generate working swig-wrapper
          *
          * @return returns a reference HashGridIndex
          */
