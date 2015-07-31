@@ -120,10 +120,10 @@ namespace SGPP {
          * @param grid grid
          * @param alpha coefficient vector
          * @param train sample set
-         * @param lambda regularization parameter
+         * @param lambdaReg regularization parameter
          */
         void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& train,
-                   float_t lambda);
+                   float_t lambdaReg);
 
         /**
          * generates a regular grid
@@ -147,11 +147,11 @@ namespace SGPP {
          * @param grid grid
          * @param alpha coefficient vector
          * @param test test set
-         * @param lambda regularization parameters
+         * @param lambdaReg regularization parameters
          * @return
          */
         float_t computeResidual(base::Grid& grid, base::DataVector& alpha,
-                                base::DataMatrix& test, float_t lambda);
+                                base::DataMatrix& test, float_t lambdaReg);
 
         /**
          * generates the regularization matrix

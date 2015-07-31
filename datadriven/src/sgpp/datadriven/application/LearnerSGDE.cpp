@@ -58,15 +58,15 @@ void LearnerSGDE::initialize(SGPP::base::DataMatrix& psamples) {
     alpha.resize(grid->getSize());
 
     // optimize the regularization parameter
-    float_t lambda = 0.0;
+    float_t lambdaReg = 0.0;
     if (learnerSGDEConfig.doCrossValidation_) {
-        lambda = optimizeLambdaCV();
+        lambdaReg = optimizeLambdaCV();
     } else {
-        lambda = learnerSGDEConfig.lambda_;
+        lambdaReg = learnerSGDEConfig.lambda_;
     }
 
     // learn the data -> do the density estimation
-    train(*grid, alpha, *samples, lambda);
+    train(*grid, alpha, *samples, lambdaReg);
 }
 
 // ---------------------------------------------------------------------------
@@ -226,7 +226,7 @@ float_t LearnerSGDE::optimizeLambdaCV() {
 }
 
 void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
-        float_t lambda) {
+        float_t lambdaReg) {
     size_t dim = train.getNcols();
 
     GridStorage* gridStorage = grid.getStorage();
@@ -240,7 +240,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
     for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
         OperationMatrix* C = computeRegularizationMatrix(grid);
 
-        SGPP::datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambda);
+        SGPP::datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambdaReg);
         SMatrix.generateb(rhs);
         cout << "# LearnerSGDE: Solving " << endl;
         SGPP::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
@@ -281,12 +281,12 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
 }
 
 float_t LearnerSGDE::computeResidual(Grid& grid, DataVector& alpha,
-        DataMatrix& test, float_t lambda) {
+        DataMatrix& test, float_t lambdaReg) {
     OperationMatrix* C = computeRegularizationMatrix(grid);
 
     DataVector rhs(grid.getSize());
     DataVector res(grid.getSize());
-    SGPP::datadriven::DensitySystemMatrix SMatrix(grid, test, *C, lambda);
+    SGPP::datadriven::DensitySystemMatrix SMatrix(grid, test, *C, lambdaReg);
     SMatrix.generateb(rhs);
 
     SMatrix.mult(alpha, res);
