@@ -1,6 +1,8 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <boost/lexical_cast.hpp>
+
+
+#include <zlib.h>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -13,33 +15,33 @@
 using namespace SGPP::base;
 using namespace SGPP::datadriven;
 
-
-DataMatrix *generateBTMatrix(Grid *grid, DataMatrix &training) {
+DataMatrix *generateBBTMatrix(Grid *grid, DataMatrix &training) {
 
   GridStorage *storage = grid->getStorage();
 
   OperationMultipleEval *b = SGPP::op_factory::createOperationMultipleEval(*grid, training);
 
   DataVector alpha(storage->size());
+  DataVector erg(storage->size());
   DataVector temp(training.getNrows());
 
   // create BT matrix
-  DataMatrix *m = new DataMatrix(training.getNrows(), storage->size());
+  DataMatrix *m = new DataMatrix(storage->size(), storage->size());
 
   for (size_t i = 0; i < storage->size(); i++) {
     temp.setAll(0.0);
+    erg.setAll(0.0);
     alpha.setAll(0.0);
     alpha[i] = 1.0;
     b->mult(alpha, temp);
-
-    m->setColumn(i, temp);
-
+    b->multTranspose(temp, erg);
+    m->setColumn(i, erg);
   }
 
   return m;
 }
 
-void compareBTMatrices(DataMatrix *m1, DataMatrix *m2) {
+void compareBBTMatrices(DataMatrix *m1, DataMatrix *m2) {
 
 #ifdef USE_DOUBLE_PRECISION
   double tolerance = 1E-5;
@@ -51,9 +53,32 @@ void compareBTMatrices(DataMatrix *m1, DataMatrix *m2) {
   BOOST_CHECK_EQUAL(m1->getNrows(), m2->getNrows());
   BOOST_CHECK_EQUAL(m1->getNcols(), m2->getNcols());
 
+
   size_t rows = m1->getNrows(); //was n
 
   size_t cols = m1->getNcols(); //was m
+
+  // check diagonal
+  std::vector<SGPP::float_t> valuesDiag;
+
+  for (size_t i = 0; i < rows; i++) {
+    valuesDiag.push_back(m1->get(i, i));
+  }
+
+  std::sort(valuesDiag.begin(), valuesDiag.end());
+
+  std::vector<SGPP::float_t> valuesDiagReference;
+
+  for (size_t i = 0; i < rows; i++) {
+    std::cout << "diag[" << i << "] = " << m2->get(i, i) << std::endl;
+    valuesDiagReference.push_back(m2->get(i, i));
+  }
+
+  std::sort(valuesDiagReference.begin(), valuesDiagReference.end());
+
+  for (size_t i = 0; i < rows; i++) {
+    BOOST_CHECK_CLOSE(valuesDiag[i], valuesDiagReference[i], tolerance);
+  }
 
   // check row sum
   DataVector v(cols);
@@ -106,7 +131,7 @@ void compareBTMatrices(DataMatrix *m1, DataMatrix *m2) {
   }
 }
 
-BOOST_AUTO_TEST_SUITE(TestOperationBTModLinear)
+BOOST_AUTO_TEST_SUITE(TestOperationBBTModLinear)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
@@ -125,13 +150,14 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
+/*
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t level = 5;
@@ -149,11 +175,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
@@ -173,11 +199,11 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
@@ -197,16 +223,16 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
-
+*/
 BOOST_AUTO_TEST_SUITE_END()
-
-BOOST_AUTO_TEST_SUITE(TestOperationBTLinear)
+/*
+BOOST_AUTO_TEST_SUITE(TestOperationBBTLinear)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
@@ -225,11 +251,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 
@@ -250,11 +276,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
@@ -274,11 +300,11 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
@@ -298,16 +324,16 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE(TestOperationBTLinearBoundary)
+BOOST_AUTO_TEST_SUITE(TestOperationBBTLinearBoundary)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
@@ -326,11 +352,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 
@@ -351,11 +377,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
@@ -375,11 +401,11 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
@@ -399,16 +425,16 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE(TestOperationBTLinearTruncatedBoundary)
+BOOST_AUTO_TEST_SUITE(TestOperationBBTLinearTruncatedBoundary)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
@@ -427,13 +453,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
-
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
@@ -452,11 +477,11 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
@@ -476,11 +501,11 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
@@ -500,11 +525,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage *gridStorage = grid->getStorage();
 
-  DataMatrix *m = generateBTMatrix(grid, *trainingData);
+  DataMatrix *m = generateBBTMatrix(grid, *trainingData);
 
   DataMatrix *mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
-  compareBTMatrices(m, mRef);
+  compareBBTMatrices(m, mRef);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+*/

@@ -18,12 +18,15 @@ if __name__ == '__main__':
 
     alltests = unittest.TestSuite([
             unittest.defaultTestLoader.loadTestsFromModule(test_BBT),
-            unittest.defaultTestLoader.loadTestsFromModule(test_BT),
+            #unittest.defaultTestLoader.loadTestsFromModule(test_BT),
+            #unittest.defaultTestLoader.suiteClass(learnertests.alltests),
+            #unittest.defaultTestLoader.suiteClass(datatests.alltests),
+            #unittest.defaultTestLoader.suiteClass(controllertests.alltests)
+            
+            # disabled tests
             #unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
             #unittest.defaultTestLoader.loadTestsFromModule(test_periodic),
-            unittest.defaultTestLoader.suiteClass(learnertests.alltests),
-            unittest.defaultTestLoader.suiteClass(datatests.alltests),
-            #unittest.defaultTestLoader.suiteClass(controllertests.alltests)
+
             ])
 
     result = unittest.TextTestRunner(verbosity=9).run(alltests)
