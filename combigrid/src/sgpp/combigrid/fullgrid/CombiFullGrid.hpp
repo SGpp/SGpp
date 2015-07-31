@@ -393,9 +393,9 @@ namespace combigrid {
       }
 
       /** copies the input vector to the full grid vector
-       * @param in [IN] input vector*/
-      void setElementVector(std::vector<FG_ELEMENT> in) {
-        fullgridVector_ = in;
+       * @param input [IN] input vector*/
+      void setElementVector(std::vector<FG_ELEMENT> input) {
+        fullgridVector_ = input;
       }
 
     private:
