@@ -9,7 +9,6 @@
 import sys
 import math
 # append trunk/bin to search path for modules
-sys.path.append('../lib/pysgpp')
 from pysgpp import *
 import matplotlib.pyplot as plotter
 from mpl_toolkits.mplot3d import Axes3D
@@ -48,8 +47,6 @@ for i in xrange(rows):
             dataSet.set(i*cols+j,1,j*1.0/cols)
             vals[i*cols+j] = f(i*1.0/rows,j*1.0/cols)
             
-#print(vals)
-
 
 def calculateError(dataSet,f,grid,alpha,error):
     print "calculating error"
@@ -59,16 +56,11 @@ def calculateError(dataSet,f,grid,alpha,error):
     for i in xrange(dataSet.getNrows()):
         dataSet.getRow(i,vec)
         error[i] = pow(f(dataSet.get(i,0),dataSet.get(i,1))-opEval.eval(alpha,vec),2)
-        #print "Evaluating grid @ %4f;%4f - %f" % (vec[0],vec[1], error[i])
-    
-    #print "error = "
-    #print error
     return error
           
 #store old files
 xCoordsOld = []
 yCoordsOld = []
-#zCoordsOld = []
  
 opEval = createOperationEval(grid)
 for i in xrange(HashGridStorage.size()):
@@ -76,7 +68,6 @@ for i in xrange(HashGridStorage.size()):
         HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordsOld.append(gridPointCoordinates[0])
         yCoordsOld.append(gridPointCoordinates[1])
-        #zCoordsOld.append(opEval.eval(alpha,gridPointCoordinates))
  
 # now refine adaptively 5 times
 for refnum in range(20):
@@ -89,9 +80,6 @@ for refnum in range(20):
     createOperationHierarchisation(grid).doHierarchisation(alpha)
     
     #initialize plotter
-    #fig = plotter.figure()
-    #ax =  fig.add_subplot(111, projection='3d')
-    #bx =  fig.gca(projection="3d")
     plotter.hold(True)
      
   
@@ -109,16 +97,11 @@ for refnum in range(20):
         xCoordinates.append(gridPointCoordinates[0])
         yCoordinates.append(gridPointCoordinates[1])
         bla = opEval.eval(alpha,gridPointCoordinates)
-     #   zCoordinates.append(bla)
-        #print "Evaluating grid @ %4f;%4f - %f" % (xCoordinates[-1],yCoordinates[-1], zCoordinates[-1])
       
-    #ax.scatter(xCoordinates, yCoordinates, zCoordinates, c='b')
-    #ax.scatter(xCoordsOld, yCoordsOld, zCoordsOld, c='r')
     plotter.scatter(xCoordinates, yCoordinates, c='b')
     plotter.scatter(xCoordsOld, yCoordsOld, c='r')
     xCoordsOld = xCoordinates
     yCoordsOld = yCoordinates
-    #zCoordsOld = zCoordinates
   
     #show plot
   
@@ -133,11 +116,9 @@ for refnum in range(20):
     refinement = HashRefinement()
     decorator = PredictiveRefinement(refinement)
     # refine a single grid point each time
-    #print "Error vector ="
     print "ErrorVector = %s" % errorVector
     indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
     decorator.free_refine(HashGridStorage,indicator)
-    #decorator.createSubspace(HashGridStorage,)
     
     print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.size())
      
