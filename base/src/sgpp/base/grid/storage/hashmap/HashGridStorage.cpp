@@ -36,7 +36,7 @@ namespace SGPP {
       , boundingBox(new BoundingBox(creationBoundingBox))
       , stretching(nullptr)
       , bUseStretching(false) {
-      //TODO gerrit: this look like a bug, creationBoundingBox not used
+      //this look like a bug, creationBoundingBox not used
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
       }
@@ -51,7 +51,7 @@ namespace SGPP {
       , boundingBox(nullptr)
       , stretching(new Stretching(creationStretching))
       , bUseStretching(true) {
-      //TODO gerrit: this look like a bug, creationBoundingBox not used
+      // this look like a bug, creationBoundingBox not used
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
       }

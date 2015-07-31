@@ -48,7 +48,6 @@ namespace SGPP {
       //  std::cout<<"BSSolverWithStretching\n";
       this->tBoundaryType = "freeBoundaries";
 
-      // @todo set to random value to remove compiler warnings due to uninitialized members
       this->myStretching = NULL;
     }
 

@@ -100,7 +100,6 @@ namespace SGPP {
           float_t* y_store = x_store + 2;
 
           float_t y_val = y_store[deg - 1];
-          // @todo (blank) scale val back into the right range
           float_t x_val = x_store[0] + val * pow(2.0, -(1.0) * (static_cast<float_t>(deg)));
 
           //Horner

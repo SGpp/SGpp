@@ -15,7 +15,7 @@ namespace SGPP {
 
     DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda, SGPP::base::DataVector& w, VectorizationType vecMode) {
       // handle unsupported vector extensions
-      // @TODO (heinecke) find a better way to determine vectorwidth
+      // one may find a better way to determine vectorwidth
       if (this->vecMode == parallel::X86SIMD) {
         this->vecWidth = 24;
       } else if (this->vecMode == parallel::OpenCL) {

@@ -284,13 +284,11 @@ namespace SGPP {
       std::string build_opts;
 
       if (parameters.getAsBoolean("ENABLE_OPTIMIZATIONS")) {
-        //TODO: user should be able to change
         build_opts = parameters["OPTIMIZATION_FLAGS"]; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
       } else {
         build_opts = "-cl-opt-disable"; // -g
       }
 
-      //TODO: check multi device support
       // compiling the program
       err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 

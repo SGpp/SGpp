@@ -28,7 +28,6 @@ namespace SGPP {
     }
 
     OperationDensitySampling1DLinear::~OperationDensitySampling1DLinear() {
-      // TODO Auto-generated destructor stub
     }
 
     void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, unsigned int* seedp) {

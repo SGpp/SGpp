@@ -20,6 +20,7 @@
 #include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -131,7 +132,7 @@ namespace SGPP {
 
       testTrainDataset = &testTrainDataset_;
 
-      // TODO: auf chunksize anpassen
+      // this should be adjusted to the chunksize
       DataMatrix testDatasetT(*testTrainDataset);
       testDatasetT.transpose();
 
@@ -223,7 +224,7 @@ namespace SGPP {
       }
 
       else if (config.refinementType == "WEIGHTED_ERROR_ALL") {
-        // FIXME: this case is not accounted for
+        // this case is not accounted for
         // e_j = sum_{i\in alldata} r_i^2 \phi_j (x_i)
         /*functor = new WeightedErrorRefinementFunctor(alpha_, grid_,
          RefineConfig.refinementNumPoints, 0.0);
@@ -232,6 +233,9 @@ namespace SGPP {
 
          wfunctor->setTrainDataset(mainTrainDataset);
          wfunctor->setClasses(mainClasses);*/
+
+    	  throw new SGPP::base::application_exception(
+    	              "error: LearnerOnlineSGD::train(): support of the refinementType WEIGHTED_ERROR_ALL is not implemented yet.");
       }
 
       else if (config.refinementType == "PERSISTENT_ERROR") {
@@ -375,7 +379,7 @@ namespace SGPP {
               || config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION" ||
               config.hashRefinementType == "ONLINE_PREDICTIVE_REFINEMENT_DIMENSION_OLD"
              ) {
-            // FIXME: add different cases!!!!!!!
+            // different cases need to be added
             // computation of the error vector on minibatch
             float_t accuracy = getError(minibatchTrainDataset,
                                         minibatchClasses,
@@ -413,22 +417,13 @@ namespace SGPP {
 
           size_t totalIterations = currentRunIterations + countRun * numMainData;
 
-          //float_t err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
-          // FIXME: make sure to compute it only once
+          // this can be modified such that it is only evaluated once
           float_t err1 = getError(&mainTrainDatasetT, mainClasses, config.errorType, NULL, true);
           float_t err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
-          // float_t err0 = getError(minibatchTrainDataset, minibatchClasses, config.errorType, NULL, false);
-          // float_t err1 = getError(mainTrainDataset, mainClasses, config.errorType, NULL, false);
-          // float_t err2 = getError(testTrainDataset, testClasses, config.errorType, NULL, false);
-
-          /*
-          ferr0 << totalIterations << "," << err0 << std::endl;
           ferr1 << totalIterations << "," << err1 << std::endl;
           ferr2 << totalIterations << "," << err2 << std::endl;
-          */
 
           size_t numGridPoints = grid_->getStorage()->size();
-          //ferr0 << numGridPoints << "," << err0 << std::endl;
           ferr1 << numGridPoints << "," << err1 << std::endl;
           ferr2 << numGridPoints << "," << err2 << std::endl;
 

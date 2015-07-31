@@ -10,8 +10,6 @@
 //#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-//TODO how do I construct the operation here (type/subtype)
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/globaldef.hpp>

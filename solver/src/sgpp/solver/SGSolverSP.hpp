@@ -19,7 +19,6 @@ namespace SGPP {
     /**
      * Abstract class that defines a solver used in Sparse Grids
      * Applications
-     * @todo (pflueged) move public variables to protected scope, add setters and getters
      */
     class SGSolverSP {
       protected:

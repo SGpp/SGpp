@@ -69,7 +69,7 @@ namespace SGPP {
       if (grid_ != NULL)
         delete grid_;
 
-      // @TODO (heinecke) grid copy constructor
+      // can be solved better with a grid copy constructor
       grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
       alpha_ = new SGPP::base::DataVectorSP(*(copyMe.alpha_));
     }
@@ -241,7 +241,6 @@ namespace SGPP {
         result.timeMultCompute_ = tmp2;
         result.timeMultTransComplete_ = tmp3;
         result.timeMultTransCompute_ = tmp4;
-        // @TODO fix regularization timings, if needed
         result.timeRegularization_ = 0.0;
         result.GFlop_ = GFlop_;
         result.GByte_ = GByte_;

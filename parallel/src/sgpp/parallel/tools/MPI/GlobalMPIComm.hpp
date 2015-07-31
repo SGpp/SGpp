@@ -13,7 +13,7 @@
 
 namespace SGPP {
   namespace parallel {
-    // @todo MPI (heinecke) Hack, remove if possible
+    // Hack, remove if possible
     extern MPICommunicator* myGlobalMPIComm;
   }
 }

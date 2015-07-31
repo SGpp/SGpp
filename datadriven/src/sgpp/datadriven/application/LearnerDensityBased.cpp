@@ -303,7 +303,6 @@ namespace SGPP {
           result.timeMultCompute_ = tmp2;
           result.timeMultTransComplete_ = tmp3;
           result.timeMultTransCompute_ = tmp4;*/
-        // @TODO fix regularization timings, if needed
         result.timeRegularization_ = 0.0;
         result.GFlop_ = GFlop_;
         result.GByte_ = GByte_;

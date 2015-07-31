@@ -53,8 +53,6 @@ namespace SGPP {
         }
       }
 
-      //@TODO make MPI version of this
-
       this->myTimer_->start();
       this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
       this->completeTimeMultTrans_ += this->myTimer_->stop();

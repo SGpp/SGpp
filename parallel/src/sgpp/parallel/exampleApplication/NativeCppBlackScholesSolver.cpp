@@ -16,7 +16,6 @@
 #include <iomanip>
 #include <cmath>
 
-// @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 
