@@ -212,6 +212,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         # the python binding (pysgpp) requires lpython and a flat namespace
         # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
         env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
+        #The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
+        #From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
+        #Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
+        env.Append(CPPFLAGS=['-Wa,-q'])
         env.AppendUnique(CPPPATH="/usr/local/include")
         env.AppendUnique(LIBPATH="/usr/local/lib")
         env['SHLIBSUFFIX'] = '.dylib'
