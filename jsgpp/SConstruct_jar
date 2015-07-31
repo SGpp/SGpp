@@ -28,9 +28,8 @@ if os.path.exists(os.path.join("java", "sgpp")):
         if fnmatch.fnmatch(filename, "*.class"):
             os.remove(os.path.join("java", "sgpp", filename))
 
-j_env.Install("java", "LoadJSGPPLib.java")
 javaClasses = j_env.Java(target="java",
-                         source="java")
+                         source=["java", "LoadJSGPPLib.java"])
 
 jar = j_env.Jar(target="jsgpp.jar",
                 source=os.path.join("java", "sgpp"),
