@@ -115,7 +115,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
             sys.stderr.write('Warning: Numpy doesn\'t seem to be installed. Disabling unit tests\n')
             env['NO_UNIT_TESTS'] = True
     else:
-        print 'Warning: Python extension ("SG_PYTHON") not enabled, skipping python unit tests'
+        print 'Warning: Python extension ("SG_PYTHON") not enabled.'
 
     if env['SG_JAVA']:
         # check for $JAVA_HOME; prepend to search path
@@ -142,7 +142,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                  + "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
                 sys.exit(1)
     else:
-        print "Info: Compiling without java support"
+        print 'Warning: Java support ("SG_JAVA") not enabled.'
 
     # now set up all further environment settings that should never fail
     # compiler setup should be always after checking headers and flags, as they can make the checks invalid
