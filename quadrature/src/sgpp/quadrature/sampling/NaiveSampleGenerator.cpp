@@ -11,22 +11,22 @@
 using namespace SGPP::base;
 
 namespace SGPP {
-namespace quadrature {
+  namespace quadrature {
 
-NaiveSampleGenerator::NaiveSampleGenerator(size_t dimension, int seed) :
-        SampleGenerator(dimension, seed) {
-}
-
-NaiveSampleGenerator::~NaiveSampleGenerator() {
-}
-
-void NaiveSampleGenerator::getSample(DataVector& dv) {
-    // generate random sample with dimensionality corresponding to the
-    // size of the given datavector (in 0 to 1)
-    for (size_t i = 0; i < dv.getSize(); i++) {
-        dv[i] = Random::random_double();
+    NaiveSampleGenerator::NaiveSampleGenerator(size_t dimension, int seed) :
+      SampleGenerator(dimension, seed) {
     }
-}
 
-}
+    NaiveSampleGenerator::~NaiveSampleGenerator() {
+    }
+
+    void NaiveSampleGenerator::getSample(DataVector& dv) {
+      // generate random sample with dimensionality corresponding to the
+      // size of the given datavector (in 0 to 1)
+      for (size_t i = 0; i < dv.getSize(); i++) {
+        dv[i] = Random::random_double();
+      }
+    }
+
+  }
 }

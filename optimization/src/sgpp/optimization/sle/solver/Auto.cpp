@@ -43,20 +43,21 @@ namespace SGPP {
 
       bool Auto::solve(SLE& system, base::DataVector& b,
                        base::DataVector& x) const {
-        std::vector<base::DataVector> B = {b};
-        std::vector<base::DataVector> X = {x};
+        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+        base::DataMatrix X(B.getNrows(), B.getNcols());
 
+        // call version for multiple RHSs
         if (solve(system, B, X)) {
-          x.resize(X[0].getSize());
-          x = X[0];
+          x.resize(X.getNrows());
+          X.getColumn(0, x);
           return true;
         } else {
           return false;
         }
       }
 
-      bool Auto::solve(SLE& system, std::vector<base::DataVector>& B,
-                       std::vector<base::DataVector>& X) const {
+      bool Auto::solve(SLE& system, base::DataMatrix& B,
+                       base::DataMatrix& X) const {
         printer.printStatusBegin(
           "Solving linear system (automatic method)...");
 

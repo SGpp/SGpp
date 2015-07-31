@@ -9,6 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/sle/system/SLE.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <vector>
 
@@ -52,22 +54,26 @@ namespace SGPP {
            * right-hand side multiple times.
            *
            * @param       system  system to be solved
-           * @param       B       vector of right-hand sides
-           * @param[out]  X       vector of solutions to the systems
+           * @param       B       matrix of right-hand sides
+           * @param[out]  X       matrix of solutions to the systems
            * @return              whether all went well
            *                      (false if errors occurred)
            */
           virtual bool solve(SLE& system,
-                             std::vector<base::DataVector>& B,
-                             std::vector<base::DataVector>& X) const {
-            base::DataVector x(system.getDimension());
-            X.clear();
+                             base::DataMatrix& B,
+                             base::DataMatrix& X) const {
+            const size_t n = system.getDimension();
+            const size_t m = B.getNcols();
+            base::DataVector b(n);
+            base::DataVector x(n);
+            X.resize(n, m);
 
-            for (size_t i = 0; i < B.size(); i++) {
-              if (solve(system, B[i], x)) {
-                X.push_back(x);
+            for (size_t i = 0; i < m; i++) {
+              B.getColumn(i, b);
+
+              if (solve(system, b, x)) {
+                X.setColumn(i, x);
               } else {
-                X.clear();
                 return false;
               }
             }

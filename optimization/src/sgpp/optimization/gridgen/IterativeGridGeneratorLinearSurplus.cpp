@@ -27,9 +27,9 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t gamma) :
+      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
       IterativeGridGenerator(f, grid, N),
-      gamma(gamma) {
+      gamma(adaptivity) {
       if ((std::strcmp(grid.getType(),
                        "bspline") == 0) ||
           (std::strcmp(grid.getType(),
@@ -75,12 +75,12 @@ namespace SGPP {
       }
     }
 
-    float_t IterativeGridGeneratorLinearSurplus::getGamma() const {
+    float_t IterativeGridGeneratorLinearSurplus::getAdaptivity() const {
       return gamma;
     }
 
-    void IterativeGridGeneratorLinearSurplus::setGamma(float_t gamma) {
-      this->gamma = gamma;
+    void IterativeGridGeneratorLinearSurplus::setAdaptivity(float_t adaptivity) {
+      this->gamma = adaptivity;
     }
 
     bool IterativeGridGeneratorLinearSurplus::generate() {
@@ -130,7 +130,6 @@ namespace SGPP {
         gridGen->regular(3);
       }
 
-      const size_t d = gridStorage.dim();
       size_t currentN = gridStorage.size();
       // coeffs always has as much elements as there are grid points in
       // the grid, but fX has N elements (no resizing during the main loop)
@@ -148,42 +147,10 @@ namespace SGPP {
       }
 
       // parallel evaluation of f in the initial grid points
-      #pragma omp parallel shared(fX, coeffs, currentN, gridStorage) \
-      default(none)
-      {
-        base::DataVector x(d);
-        ObjectiveFunction* curFPtr = &f;
-#ifdef _OPENMP
-        std::unique_ptr<ObjectiveFunction> curF;
+      evalFunction();
 
-        if (omp_get_max_threads() > 1) {
-          f.clone(curF);
-          curFPtr = curF.get();
-        }
-
-#endif /* _OPENMP */
-
-        #pragma omp for
-
-        for (size_t i = 0; i < currentN; i++) {
-          // convert grid point to coordinate vector
-          #pragma omp critical
-          {
-            base::GridIndex& gp = *gridStorage.get(i);
-
-            for (size_t t = 0; t < d; t++) {
-              x[t] = gp.getCoord(t);
-            }
-          }
-
-          float_t fx = curFPtr->eval(x);
-
-          #pragma omp critical
-          {
-            fX[i] = fx;
-            coeffs[i] = fx;
-          }
-        }
+      for (size_t i = 0; i < currentN; i++) {
+        coeffs[i] = fX[i];
       }
 
       // initial hierarchization
@@ -249,13 +216,7 @@ namespace SGPP {
         if (newN > N) {
           // too many new points ==> undo refinement and try again with
           // refineFactor halved
-          std::list<size_t> indicesToRemove;
-
-          for (size_t i = currentN; i < newN; i++) {
-            indicesToRemove.push_back(i);
-          }
-
-          gridStorage.deletePoints(indicesToRemove);
+          undoRefinement(currentN);
 
           if (ptsToBeRefinedCount == 1) {
             break;
@@ -268,44 +229,14 @@ namespace SGPP {
 
         coeffs.resize(newN);
 
-        // parallel evaluation of f in the new grid points
-        #pragma omp parallel shared(fX, currentN, newN, gridStorage, distr) \
-        default(none)
-        {
-          base::DataVector x(d);
-          ObjectiveFunction* curFPtr = &f;
-#ifdef _OPENMP
-          std::unique_ptr<ObjectiveFunction> curF;
-
-          if (omp_get_max_threads() > 1) {
-            f.clone(curF);
-            curFPtr = curF.get();
-          }
-
-#endif /* _OPENMP */
-
-          #pragma omp for
-
-          for (size_t i = currentN; i < newN; i++) {
-            // convert grid point to coordinate vector
-            #pragma omp critical
-            {
-              base::GridIndex& gp = *gridStorage.get(i);
-              // set point distribution accordingly to normal/Clenshaw-Curtis
-              // grids
-              gp.setPointDistribution(distr);
-
-              for (size_t t = 0; t < d; t++) {
-                x[t] = gp.getCoord(t);
-              }
-            }
-
-            float_t fx = curFPtr->eval(x);
-
-            #pragma omp critical
-            fX[i] = fx;
-          }
+        for (size_t i = currentN; i < newN; i++) {
+          // set point distribution accordingly to
+          // normal/Clenshaw-Curtis grids
+          gridStorage.get(i)->setPointDistribution(distr);
         }
+
+        // evaluation of f in the new grid points
+        evalFunction(currentN);
 
         // forward substitution
         // (hierSLE should always be a lower triangular matrix)

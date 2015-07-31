@@ -51,12 +51,6 @@ namespace SGPP {
           fx = fGradient.eval(x, gradFx);
           xOld = x;
 
-          // DEBUG
-          /*std::cout << "\nk = " << k << "\n";
-          std::cout << "x = " << x.toString() << "\n";
-          std::cout << "fx = " << fx << "\n";
-          std::cout << "gradFx = " << gradFx.toString() << "\n";*/
-
           for (size_t t = 0; t < d; t++) {
             const float_t dir = gradFx[t];
             const float_t dirProduct = dir * gradFxOld[t];
@@ -94,10 +88,6 @@ namespace SGPP {
               x[t] = newXt;
             }
           }
-
-          // DEBUG
-          /*std::cout << "alpha = " << alpha.toString() << "\n";
-          std::cout << "gradFxOld = " << gradFxOld.toString() << "\n";*/
 
           // status printing
           printer.printStatusUpdate(

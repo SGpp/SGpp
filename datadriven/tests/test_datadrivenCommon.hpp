@@ -13,4 +13,4 @@
 
 std::string uncompressFile(std::string fileName);
 
-SGPP::base::DataMatrix *readReferenceMatrix(SGPP::base::GridStorage *storage, std::string fileName);
+SGPP::base::DataMatrix* readReferenceMatrix(SGPP::base::GridStorage* storage, std::string fileName);

@@ -32,9 +32,9 @@ namespace SGPP {
     class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
       public:
         /// default adaptivity
-        static constexpr float_t DEFAULT_GAMMA = 0.85;
+        static constexpr float_t DEFAULT_ADAPTIVITY = 0.85;
         /// default maximal level of grid points
-        static const size_t DEFAULT_MAX_LEVEL = 15;
+        static const size_t DEFAULT_MAX_LEVEL = 20;
 
         /// exponentiation methods
         enum PowMethod {
@@ -48,18 +48,19 @@ namespace SGPP {
          * @param f             objective function
          * @param grid          grid (should be empty)
          * @param N             maximal number of grid points
-         * @param gamma         adaptivity
+         * @param adaptivity    adaptivity between 0 and 1
          * @param maxLevel      maximal level of grid points
          * @param powMethod     exponentiation method
          *                      (fastPow is faster than std::pow,
          *                      but only approximative)
          */
-        IterativeGridGeneratorRitterNovak(ObjectiveFunction& f,
-                                          base::Grid& grid,
-                                          size_t N,
-                                          float_t gamma = DEFAULT_GAMMA,
-                                          size_t maxLevel = DEFAULT_MAX_LEVEL,
-                                          PowMethod powMethod = STD_POW);
+        IterativeGridGeneratorRitterNovak(
+          ObjectiveFunction& f,
+          base::Grid& grid,
+          size_t N,
+          float_t adaptivity = DEFAULT_ADAPTIVITY,
+          size_t maxLevel = DEFAULT_MAX_LEVEL,
+          PowMethod powMethod = STD_POW);
 
         /**
          * Generate the grid.
@@ -69,14 +70,14 @@ namespace SGPP {
         bool generate();
 
         /**
-         * @return      adaptivity
+         * @return            adaptivity between 0 and 1
          */
-        float_t getGamma() const;
+        float_t getAdaptivity() const;
 
         /**
-         * @param gamma adaptivity
+         * @param adaptivity  adaptivity between 0 and 1
          */
-        void setGamma(float_t gamma);
+        void setAdaptivity(float_t adaptivity);
 
         /**
          * @return          maximal level of grid points

@@ -71,14 +71,13 @@ namespace SGPP {
 
       bool UMFPACK::solve(SLE& system, base::DataVector& b,
                           base::DataVector& x) const {
-        // place RHS in its own vector
-        std::vector<base::DataVector> B = {b};
-        std::vector<base::DataVector> X;
+        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+        base::DataMatrix X(B.getNrows(), B.getNcols());
 
         // call version for multiple RHSs
         if (solve(system, B, X)) {
-          x.resize(X[0].getSize());
-          x = X[0];
+          x.resize(X.getNrows());
+          X.getColumn(0, x);
           return true;
         } else {
           return false;
@@ -86,8 +85,8 @@ namespace SGPP {
       }
 
       bool UMFPACK::solve(SLE& system,
-                          std::vector<base::DataVector>& B,
-                          std::vector<base::DataVector>& X) const {
+                          base::DataMatrix& B,
+                          base::DataMatrix& X) const {
 #ifdef USE_UMFPACK
         printer.printStatusBegin("Solving linear system (UMFPACK)...");
 
@@ -226,23 +225,25 @@ namespace SGPP {
         umfpack_dl_free_symbolic(&symbolic);
 
         base::DataVector x(n);
-        X.clear();
+        base::DataVector b(n);
+        X.resize(n, B.getNcols());
 
         // call umfpack_dl_solve for each RHS
-        for (size_t i = 0; i < B.size(); i++) {
-          base::DataVector& b = B[i];
+        for (size_t i = 0; i < B.getNcols(); i++) {
+          B.getColumn(i, b);
           printer.printStatusNewLine();
 
-          if (B.size() == 1) {
+          if (B.getNcols() == 1) {
             printer.printStatusUpdate("step 4: umfpack_dl_solve");
           } else {
             printer.printStatusUpdate("step 4: umfpack_dl_solve (RHS " +
                                       std::to_string(i + 1) +
-                                      " of " + std::to_string(B.size()) + ")");
+                                      " of " + std::to_string(B.getNcols()) +
+                                      ")");
           }
 
           if (solveInternal(numeric, Ap, Ai, Ax, b, x)) {
-            X.push_back(x);
+            X.setColumn(i, x);
           } else {
             printer.printStatusEnd("error: could solve via umfpack_dl_solve, "
                                    "error code " + std::to_string(result));

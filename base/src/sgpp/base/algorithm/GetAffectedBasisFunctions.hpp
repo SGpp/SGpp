@@ -130,9 +130,9 @@ namespace SGPP {
           typedef GridStorage::index_type::index_type index_type;
 
           const unsigned int BITS_IN_BYTE = 8;
-		  // maximum possible level for the index type
-		  const level_type max_level = static_cast<level_type> (
-								   sizeof(index_type) * BITS_IN_BYTE - 1);
+          // maximum possible level for the index type
+          const level_type max_level = static_cast<level_type> (
+                                         sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -242,9 +242,9 @@ namespace SGPP {
           size_t tmpSeq;
 
           const unsigned int BITS_IN_BYTE = 8;
-		   // maximum possible level for the index type
-		   const level_type max_level = static_cast<level_type> (
-									   sizeof(index_type) * BITS_IN_BYTE - 1);
+          // maximum possible level for the index type
+          const level_type max_level = static_cast<level_type> (
+                                         sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -419,9 +419,9 @@ namespace SGPP {
           size_t tmpSeq;
 
           const unsigned int BITS_IN_BYTE = 8;
-		   // maximum possible level for the index type
-		   const level_type max_level = static_cast<level_type> (
-									   sizeof(index_type) * BITS_IN_BYTE - 1);
+          // maximum possible level for the index type
+          const level_type max_level = static_cast<level_type> (
+                                         sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;

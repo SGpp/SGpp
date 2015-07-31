@@ -42,10 +42,11 @@ namespace SGPP {
            *              objective function evaluations
            *              (depending on the implementation)
            */
-          ConstrainedOptimizer(ObjectiveFunction& f,
-                               ConstraintFunction& g,
-                               ConstraintFunction& h,
-                               size_t N = DEFAULT_N) :
+          ConstrainedOptimizer(
+            ObjectiveFunction& f,
+            ConstraintFunction& g,
+            ConstraintFunction& h,
+            size_t N = DEFAULT_N) :
             UnconstrainedOptimizer(f, N),
             g(g),
             h(h) {
@@ -56,6 +57,12 @@ namespace SGPP {
            */
           virtual ~ConstrainedOptimizer() {
           }
+
+          /**
+           * @param[out] xOpt optimal point
+           * @return          optimal objective function value
+           */
+          float_t optimize(base::DataVector& xOpt) = 0;
 
           /**
            * @return inequality constraint function

@@ -292,11 +292,11 @@ namespace SGPP {
                      t + static_cast<float_t>(k), p));
           }*/
 
-          int kMin = std::max(static_cast<int>(std::floor(t)) -
-                              static_cast<int>(p + 1) + 1,
-                              1 - static_cast<int>(coefficients.size()));
-          int kMax = std::min(static_cast<int>(std::floor(t)),
-                              static_cast<int>(coefficients.size()) - 1);
+          const int kMin = std::max(static_cast<int>(std::floor(t)) -
+                                    static_cast<int>(p + 1) + 1,
+                                    1 - static_cast<int>(coefficients.size()));
+          const int kMax = std::min(static_cast<int>(std::floor(t)),
+                                    static_cast<int>(coefficients.size()) - 1);
 
           float_t y = 0;
 
@@ -332,11 +332,11 @@ namespace SGPP {
                      t + static_cast<float_t>(k), p));
           }*/
 
-          int kMin = std::max(static_cast<int>(std::floor(t)) -
-                              static_cast<int>(p + 1) + 1,
-                              1 - static_cast<int>(coefficients.size()));
-          int kMax = std::min(static_cast<int>(std::floor(t)),
-                              static_cast<int>(coefficients.size()) - 1);
+          const int kMin = std::max(static_cast<int>(std::floor(t)) -
+                                    static_cast<int>(p + 1) + 1,
+                                    1 - static_cast<int>(coefficients.size()));
+          const int kMax = std::min(static_cast<int>(std::floor(t)),
+                                    static_cast<int>(coefficients.size()) - 1);
 
           float_t y = 0;
 
@@ -373,11 +373,11 @@ namespace SGPP {
                      t + static_cast<float_t>(k), p));
           }*/
 
-          int kMin = std::max(static_cast<int>(std::floor(t)) -
-                              static_cast<int>(p + 1) + 1,
-                              1 - static_cast<int>(coefficients.size()));
-          int kMax = std::min(static_cast<int>(std::floor(t)),
-                              static_cast<int>(coefficients.size()) - 1);
+          const int kMin = std::max(static_cast<int>(std::floor(t)) -
+                                    static_cast<int>(p + 1) + 1,
+                                    1 - static_cast<int>(coefficients.size()));
+          const int kMax = std::min(static_cast<int>(std::floor(t)),
+                                    static_cast<int>(coefficients.size()) - 1);
 
           float_t y = 0;
 
