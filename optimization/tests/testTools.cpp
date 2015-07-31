@@ -67,11 +67,11 @@ void orthogonalityTest(base::DataMatrix& A) {
       }
 
 #if USE_DOUBLE_PRECISION
-      BOOST_CHECK_SMALL(entry - ((i == j) ? float_t(1.0) : float_t(0.0) ),
-			float_t(1e-10) );
+      BOOST_CHECK_SMALL(entry - ((i == j) ? SGPP::float_t(1.0) : SGPP::float_t(0.0) ),
+			SGPP::float_t(1e-10) );
 #else
-      BOOST_CHECK_SMALL(entry - ((i == j) ? float_t(1.0) : float_t(0.0) ),
-			float_t(1e-6) );
+      BOOST_CHECK_SMALL(entry - ((i == j) ? SGPP::float_t(1.0) : SGPP::float_t(0.0) ),
+			SGPP::float_t(1e-6) );
 #endif
     }
   }
@@ -301,13 +301,13 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
     }
 
 #if USE_DOUBLE_PRECISION
-    BOOST_CHECK_SMALL(calculateMean(numbers) - float_t(0.5), float_t(1e-3) );
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - float_t(1.0) / float_t(12.0)
-		      , float_t(1e-3) );
+    BOOST_CHECK_SMALL(calculateMean(numbers) - SGPP::float_t(0.5), SGPP::float_t(1e-3) );
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - SGPP::float_t(1.0) / SGPP::float_t(12.0)
+		      , SGPP::float_t(1e-3) );
 #else
-    BOOST_CHECK_SMALL(calculateMean(numbers) - float_t(0.5), float_t(1e-2) );
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - float_t(1.0) / float_t(12.0)
-		      , float_t(1e-3) );
+    BOOST_CHECK_SMALL(calculateMean(numbers) - SGPP::float_t(0.5), SGPP::float_t(1e-2) );
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - SGPP::float_t(1.0) / SGPP::float_t(12.0)
+		      , SGPP::float_t(1e-3) );
 #endif
   }
 
@@ -321,9 +321,9 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
         numbers[i] = randomNumberGenerator.getGaussianRN(sigmas[k], mus[k]);
       }
 
-      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k], float_t(0.1) * sigmas[k]);
+      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k], SGPP::float_t(0.1) * sigmas[k]);
       BOOST_CHECK_SMALL(calculateVariance(numbers) - sigmas[k] * sigmas[k],
-			float_t(0.1) * sigmas[k] * sigmas[k]);
+			SGPP::float_t(0.1) * sigmas[k] * sigmas[k]);
     }
   }
 
@@ -338,10 +338,10 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
     }
 
     SGPP::float_t kDbl = static_cast<SGPP::float_t>(k);
-    BOOST_CHECK_SMALL(calculateMean(numbers) - (kDbl - float_t(1.0)) / float_t(2.0)
-		      , float_t(0.01) * kDbl);
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - (kDbl * kDbl - float_t(1.0)) / float_t(12.0),
-		      float_t(0.01) * kDbl * kDbl);
+    BOOST_CHECK_SMALL(calculateMean(numbers) - (kDbl - SGPP::float_t(1.0)) / SGPP::float_t(2.0)
+		      , SGPP::float_t(0.01) * kDbl);
+    BOOST_CHECK_SMALL(calculateVariance(numbers) - (kDbl * kDbl - SGPP::float_t(1.0)) / SGPP::float_t(12.0),
+		      SGPP::float_t(0.01) * kDbl * kDbl);
   }
 }
 
@@ -372,9 +372,9 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
       }
 
 #if USE_DOUBLE_PRECISION
-      BOOST_CHECK_SMALL(entry, float_t(1e-10) );
+      BOOST_CHECK_SMALL(entry, SGPP::float_t(1e-10) );
 #else
-      BOOST_CHECK_SMALL(entry, float_t(1e-6) );
+      BOOST_CHECK_SMALL(entry, SGPP::float_t(1e-6) );
 #endif
     }
   }
@@ -395,7 +395,7 @@ BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
 
   for (size_t i = 2; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(H.get(i, j), float_t(1e-10) );
+      BOOST_CHECK_SMALL(H.get(i, j), SGPP::float_t(1e-10) );
     }
   }
 }
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 
   for (size_t i = 1; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(R.get(i, j), float_t(1e-10) );
+      BOOST_CHECK_SMALL(R.get(i, j), SGPP::float_t(1e-10) );
     }
   }
 
@@ -427,9 +427,9 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
       }
 
 #if USE_DOUBLE_PRECISION
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, float_t(1e-10) );
+      BOOST_CHECK_CLOSE(A.get(i, j), entry, SGPP::float_t(1e-10) );
 #else
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, float_t(1e-2) );
+      BOOST_CHECK_CLOSE(A.get(i, j), entry, SGPP::float_t(1e-2) );
 #endif
     }
   }
@@ -459,9 +459,9 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
     for (size_t j = 0; j < n; j++) {
       if (i != j) {
 #if USE_DOUBLE_PRECISION == 1
-        BOOST_CHECK_SMALL(S.get(i, j), float_t(1e-9) );
+        BOOST_CHECK_SMALL(S.get(i, j), SGPP::float_t(1e-8) );
 #else
-        BOOST_CHECK_SMALL(S.get(i, j), float_t(1e-5) );
+        BOOST_CHECK_SMALL(S.get(i, j), SGPP::float_t(1e-5) );
 #endif
       }
     }

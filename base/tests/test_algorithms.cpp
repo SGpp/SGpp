@@ -130,7 +130,7 @@ void errorTest(SGPP::float_t x, SGPP::float_t y, SGPP::float_t tol) {
   if (std::abs(x) >= 10.0) {
     BOOST_CHECK_SMALL((x - y) / x, tol);
   } else {
-    BOOST_CHECK_SMALL(x - y, float_t(10.0) * tol);
+    BOOST_CHECK_SMALL(x - y, SGPP::float_t(10.0) * tol);
   }
 }
 
