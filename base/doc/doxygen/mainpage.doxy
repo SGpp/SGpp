@@ -1,6 +1,6 @@
 /**
 @mainpage SG++ Documentation
-Welcome to the Sparse Grid ++ (SG++ or SGpp) documentation.
+Welcome to the SG++ documentation.
 
 @image html teaser.gif "Images taken from [1]"
 
@@ -9,12 +9,17 @@ Welcome to the Sparse Grid ++ (SG++ or SGpp) documentation.
     <tr>
       <td>
         <br/>
-        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see the \ref copyright).
-	<br/>
+        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see the \ref copyright). This includes that you have to cite one of the papers dealing with sparse grids when publishing work with the help of SG++ (see below).
+	<br/><br/>
       </td>
      </tr>
   </table>
 </div>
+
+<!-- ############################################################# -->
+@section mainpage__downloads Downloads
+
+The current version can be found at @subpage downloads.
 
 <!-- ############################################################# -->
 @section mainpage__overview Overview
