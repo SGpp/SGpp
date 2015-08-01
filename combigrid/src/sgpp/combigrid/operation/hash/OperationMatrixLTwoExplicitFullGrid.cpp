@@ -10,14 +10,14 @@
 namespace combigrid {
 
   OperationMatrixLTwoExplicitFullGrid::OperationMatrixLTwoExplicitFullGrid(SGPP::base::DataMatrix* m,
-      combigrid::FullGrid<double>* grid) :
+      combigrid::FullGrid<SGPP::float_t>* grid) :
     ownsMatrix_(false) {
     m_ = m;
     buildMatrix(grid);
   }
 
   OperationMatrixLTwoExplicitFullGrid::OperationMatrixLTwoExplicitFullGrid(
-    combigrid::FullGrid<double>* grid) :
+    combigrid::FullGrid<SGPP::float_t>* grid) :
     ownsMatrix_(true) {
     m_ = new SGPP::base::DataMatrix(grid->getNrElements(), grid->getNrElements());
     buildMatrix(grid);
@@ -29,7 +29,7 @@ namespace combigrid {
   }
 
   void OperationMatrixLTwoExplicitFullGrid::buildMatrix(
-    combigrid::FullGrid<double>* grid) {
+    combigrid::FullGrid<SGPP::float_t>* grid) {
     unsigned int gridSize = grid->getNrElements();
     unsigned int gridDim = grid->getDimension();
 
@@ -42,7 +42,7 @@ namespace combigrid {
       for (unsigned int j = i; j < gridSize; j++) {
         std::vector<int> j_indexes(gridDim);
         grid->getVectorIndex(j, j_indexes);
-        double res = 1;
+        SGPP::float_t res = 1;
 
         for (unsigned int k = 0; k < gridDim; k++) {
           if (i_indexes[k] == j_indexes[k]) {
@@ -76,10 +76,10 @@ namespace combigrid {
       throw SGPP::base::data_exception("Dimensions do not match!");
     }
 
-    double* data = m_->getPointer();
+    SGPP::float_t* data = m_->getPointer();
 
     //Standard matrix multiplication:
-    double temp = 0.;
+    SGPP::float_t temp = 0.;
     unsigned int acc = 0;
 
     for (unsigned int i = 0; i < nrows; i++) {

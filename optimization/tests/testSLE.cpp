@@ -18,6 +18,13 @@
 
 #include "ObjectiveFunctions.hpp"
 
+const bool use_double_precision =
+#if USE_DOUBLE_PRECISION
+  true;
+#else
+  false;
+#endif /* USE_DOUBLE_PRECISION */
+
 using namespace SGPP;
 using namespace SGPP::optimization;
 
@@ -71,15 +78,10 @@ void testSLESolution(const base::DataMatrix& A,
     bNormSquared += b.get(i) * b.get(i);
   }
 
-#if USE_DOUBLE_PRECISION
-  const bool doublePrecision = true;
-#else
-  const bool doublePrecision = false;
-#endif /* USE_DOUBLE_PRECISION */
-
   // test relative residual
   BOOST_CHECK_SMALL(std::sqrt(rNormSquared / bNormSquared),
-                    (doublePrecision ? SGPP::float_t(1e-6) : SGPP::float_t(1e-3) ));
+                    (use_double_precision ? static_cast<SGPP::float_t>(1e-6) :
+                     static_cast<SGPP::float_t>(1e-3)));
 }
 
 BOOST_AUTO_TEST_CASE(TestSLESolvers) {
@@ -135,13 +137,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
 
     for (const auto& solver : solvers) {
       if ((dynamic_cast<sle_solver::BiCGStab*>(solver.get()) != nullptr) &&
-          (n >
-#if USE_DOUBLE_PRECISION
-           20
-#else
-           8
-#endif /* USE_DOUBLE_PRECISION */
-          )) {
+          (n > (use_double_precision ? 20 : 8))) {
         /*
          * BiCGStab is really weak and can't solve bigger systems
          * (a bug in the implementation is unlikely as MATLAB
@@ -151,12 +147,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
          */
         continue;
       } else if ((dynamic_cast<sle_solver::Gmmpp*>(solver.get()) != nullptr) &&
-#if USE_DOUBLE_PRECISION
-                 true
-#else
-                 false
-#endif /* USE_DOUBLE_PRECISION */
-                 && (n == 200)) {
+                 (!use_double_precision) && (n == 200)) {
         // Gmm++ doesn't converge using single precision for larger systems
         continue;
       }
@@ -263,7 +254,8 @@ BOOST_AUTO_TEST_CASE(TestHierarchization) {
       }
 
       // test infinity norm of difference roughly
-      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x), SGPP::float_t(0.3) );
+      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x),
+                        static_cast<SGPP::float_t>(0.3));
     }
   }
 }

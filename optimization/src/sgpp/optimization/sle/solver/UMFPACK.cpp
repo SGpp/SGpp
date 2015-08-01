@@ -40,7 +40,7 @@ namespace SGPP {
                          base::DataVector& x) {
         const size_t n = b.getSize();
 
-#if USE_DOUBLE_PRECISION == 1
+#if USE_DOUBLE_PRECISION
         x = std::vector<double>(n, 0.0);
 
         sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
@@ -56,7 +56,7 @@ namespace SGPP {
                                          numeric, NULL, NULL);
 
         if (result == UMFPACK_OK) {
-          for (size_t i = 0; i < xDbl.getSize(); i++) {
+          for (size_t i = 0; i < xDbl.size(); i++) {
             x[i] = static_cast<float>(xDbl[i]);
           }
 

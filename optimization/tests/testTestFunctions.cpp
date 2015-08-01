@@ -26,6 +26,13 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
+const bool use_double_precision =
+#if USE_DOUBLE_PRECISION
+  true;
+#else
+  false;
+#endif /* USE_DOUBLE_PRECISION */
+
 using namespace SGPP;
 using namespace SGPP::optimization;
 
@@ -111,11 +118,7 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
 
     // test displaceVector/reverseDisplaceVector
     for (size_t t = 0; t < d; t++) {
-#if USE_DOUBLE_PRECISION == 1
-      BOOST_CHECK_CLOSE(xl[t], x[t], 1e-10);
-#else
-      BOOST_CHECK_CLOSE(xl[t], x[t], 1e-5);
-#endif
+      BOOST_CHECK_CLOSE(xl[t], x[t], (use_double_precision ? 1e-10 : 1e-5));
     }
 
     // test eval/evalUndisplaced
@@ -133,9 +136,9 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
     }
 
 #if USE_DOUBLE_PRECISION == 1
-    BOOST_CHECK_EQUAL(fOpt, fcn->eval(xOpt) );
+    BOOST_CHECK_EQUAL(fOpt, fcn->eval(xOpt));
 #else
-    BOOST_CHECK_SMALL( std::abs( fOpt-fcn->eval(xOpt) ), float_t(1e-6) );
+    BOOST_CHECK_SMALL(fOpt - fcn->eval(xOpt), static_cast<SGPP::float_t>(1e-6));
 #endif
 
     // test if xopt is minimal point for a sample of random points
