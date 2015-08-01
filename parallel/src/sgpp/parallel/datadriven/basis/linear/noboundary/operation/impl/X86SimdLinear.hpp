@@ -29,6 +29,7 @@ namespace SGPP {
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION
           double* ptrLevel = level->getPointer();
           double* ptrIndex = index->getPointer();
           double* ptrAlpha = alpha.getPointer();
@@ -269,6 +270,11 @@ namespace SGPP {
 #endif
             }
           }
+
+#else /* USE_DOUBLE_PRECISION */
+          throw std::logic_error("Not implemented when compiling with single "
+                                 "precision support, use SPX86SimdLinear instead.");
+#endif /* USE_DOUBLE_PRECISION */
         }
 
         static inline void multTransposeImpl(
@@ -283,6 +289,7 @@ namespace SGPP {
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION
           double* ptrLevel = level->getPointer();
           double* ptrIndex = index->getPointer();
           double* ptrSource = source.getPointer();
@@ -502,6 +509,11 @@ namespace SGPP {
 
 #endif
           }
+
+#else /* USE_DOUBLE_PRECISION */
+          throw std::logic_error("Not implemented when compiling with single "
+                                 "precision support, use SPX86SimdLinear instead.");
+#endif /* USE_DOUBLE_PRECISION */
         }
     };
 
@@ -520,6 +532,7 @@ namespace SGPP {
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION
           double* ptrLevel = level->getPointer();
           double* ptrIndex = index->getPointer();
           double* ptrAlpha = alpha.getPointer();
@@ -559,6 +572,11 @@ namespace SGPP {
               }
             }
           }
+
+#else /* USE_DOUBLE_PRECISION */
+          throw std::logic_error("Not implemented when compiling with single "
+                                 "precision support, use SPX86SimdLinear instead.");
+#endif /* USE_DOUBLE_PRECISION */
         }
 
         static inline void multTransposeImpl(
@@ -573,6 +591,7 @@ namespace SGPP {
           const size_t end_index_grid,
           const size_t start_index_data,
           const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION
           double* ptrLevel = level->getPointer();
           double* ptrIndex = index->getPointer();
           double* ptrSource = source.getPointer();
@@ -603,6 +622,11 @@ namespace SGPP {
               }
             }
           }
+
+#else /* USE_DOUBLE_PRECISION */
+          throw std::logic_error("Not implemented when compiling with single "
+                                 "precision support, use SPX86SimdLinear instead.");
+#endif /* USE_DOUBLE_PRECISION */
         }
     };
 

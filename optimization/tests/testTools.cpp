@@ -10,6 +10,13 @@
 
 #include "ObjectiveFunctions.hpp"
 
+const bool use_double_precision =
+#if USE_DOUBLE_PRECISION
+  true;
+#else
+  false;
+#endif /* USE_DOUBLE_PRECISION */
+
 using namespace SGPP;
 using namespace SGPP::optimization;
 
@@ -66,13 +73,9 @@ void orthogonalityTest(base::DataMatrix& A) {
         entry += A.get(i, l) * A.get(j, l);
       }
 
-#if USE_DOUBLE_PRECISION
-      BOOST_CHECK_SMALL(entry - ((i == j) ? SGPP::float_t(1.0) : SGPP::float_t(0.0) ),
-			SGPP::float_t(1e-10) );
-#else
-      BOOST_CHECK_SMALL(entry - ((i == j) ? SGPP::float_t(1.0) : SGPP::float_t(0.0) ),
-			SGPP::float_t(1e-6) );
-#endif
+      BOOST_CHECK_SMALL(entry - ((i == j) ? static_cast<SGPP::float_t>(1.0) :
+                                 static_cast<SGPP::float_t>(0.0)),
+                        static_cast<SGPP::float_t>(use_double_precision ? 1e-10 : 1e-6));
     }
   }
 }
@@ -106,11 +109,7 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
         entry2 += V.get(i, l) * B.get(l, j);
       }
 
-#if USE_DOUBLE_PRECISION
-      BOOST_CHECK_CLOSE(entry1, entry2, 5e-5);
-#else
-      BOOST_CHECK_CLOSE(entry1, entry2, 1.0 );
-#endif
+      BOOST_CHECK_CLOSE(entry1, entry2, (use_double_precision ? 5e-5 : 1.0));
     }
   }
 }
@@ -300,15 +299,13 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
       BOOST_CHECK_LE(numbers[i], 1.0);
     }
 
-#if USE_DOUBLE_PRECISION
-    BOOST_CHECK_SMALL(calculateMean(numbers) - SGPP::float_t(0.5), SGPP::float_t(1e-3) );
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - SGPP::float_t(1.0) / SGPP::float_t(12.0)
-		      , SGPP::float_t(1e-3) );
-#else
-    BOOST_CHECK_SMALL(calculateMean(numbers) - SGPP::float_t(0.5), SGPP::float_t(1e-2) );
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - SGPP::float_t(1.0) / SGPP::float_t(12.0)
-		      , SGPP::float_t(1e-3) );
-#endif
+    BOOST_CHECK_SMALL(calculateMean(numbers) - static_cast<SGPP::float_t>(0.5),
+                      static_cast<SGPP::float_t>(
+                        use_double_precision ? 1e-3 : 1e-2));
+    BOOST_CHECK_SMALL(calculateVariance(numbers) -
+                      static_cast<SGPP::float_t>(1.0) /
+                      static_cast<SGPP::float_t>(12.0),
+                      static_cast<SGPP::float_t>(1e-3));
   }
 
   // test Gaussian random numbers
@@ -321,9 +318,11 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
         numbers[i] = randomNumberGenerator.getGaussianRN(sigmas[k], mus[k]);
       }
 
-      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k], SGPP::float_t(0.1) * sigmas[k]);
+      BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k],
+                        static_cast<SGPP::float_t>(0.1) * sigmas[k]);
       BOOST_CHECK_SMALL(calculateVariance(numbers) - sigmas[k] * sigmas[k],
-			SGPP::float_t(0.1) * sigmas[k] * sigmas[k]);
+                        static_cast<SGPP::float_t>(0.1) *
+                        sigmas[k] * sigmas[k]);
     }
   }
 
@@ -338,10 +337,14 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
     }
 
     SGPP::float_t kDbl = static_cast<SGPP::float_t>(k);
-    BOOST_CHECK_SMALL(calculateMean(numbers) - (kDbl - SGPP::float_t(1.0)) / SGPP::float_t(2.0)
-		      , SGPP::float_t(0.01) * kDbl);
-    BOOST_CHECK_SMALL(calculateVariance(numbers) - (kDbl * kDbl - SGPP::float_t(1.0)) / SGPP::float_t(12.0),
-		      SGPP::float_t(0.01) * kDbl * kDbl);
+    BOOST_CHECK_SMALL(calculateMean(numbers) -
+                      (kDbl - static_cast<SGPP::float_t>(1.0)) /
+                      static_cast<SGPP::float_t>(2.0),
+                      static_cast<SGPP::float_t>(0.01) * kDbl);
+    BOOST_CHECK_SMALL(calculateVariance(numbers) -
+                      (kDbl * kDbl - static_cast<SGPP::float_t>(1.0)) /
+                      static_cast<SGPP::float_t>(12.0),
+                      static_cast<SGPP::float_t>(0.01) * kDbl * kDbl);
   }
 }
 
@@ -371,11 +374,8 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
         entry += Q.get(i - p, l - p) * A.get(l, q);
       }
 
-#if USE_DOUBLE_PRECISION
-      BOOST_CHECK_SMALL(entry, SGPP::float_t(1e-10) );
-#else
-      BOOST_CHECK_SMALL(entry, SGPP::float_t(1e-6) );
-#endif
+      BOOST_CHECK_SMALL(entry, static_cast<SGPP::float_t>(
+                          use_double_precision ? 1e-10 : 1e-6));
     }
   }
 }
@@ -395,7 +395,7 @@ BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
 
   for (size_t i = 2; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(H.get(i, j), SGPP::float_t(1e-10) );
+      BOOST_CHECK_SMALL(H.get(i, j), static_cast<SGPP::float_t>(1e-10));
     }
   }
 }
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 
   for (size_t i = 1; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(R.get(i, j), SGPP::float_t(1e-10) );
+      BOOST_CHECK_SMALL(R.get(i, j), static_cast<SGPP::float_t>(1e-10));
     }
   }
 
@@ -426,11 +426,8 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
         entry += Q.get(i, l) * R.get(l, j);
       }
 
-#if USE_DOUBLE_PRECISION
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, SGPP::float_t(1e-10) );
-#else
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, SGPP::float_t(1e-2) );
-#endif
+      BOOST_CHECK_CLOSE(A.get(i, j), entry, static_cast<SGPP::float_t>(
+                          use_double_precision ? 1e-10 : 1e-2));
     }
   }
 }
@@ -458,11 +455,8 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
       if (i != j) {
-#if USE_DOUBLE_PRECISION == 1
-        BOOST_CHECK_SMALL(S.get(i, j), SGPP::float_t(1e-8) );
-#else
-        BOOST_CHECK_SMALL(S.get(i, j), SGPP::float_t(1e-5) );
-#endif
+        BOOST_CHECK_SMALL(S.get(i, j), static_cast<SGPP::float_t>(
+                            use_double_precision ? 1e-8 : 1e-5));
       }
     }
   }

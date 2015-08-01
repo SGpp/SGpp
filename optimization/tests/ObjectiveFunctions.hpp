@@ -230,11 +230,6 @@ class G3ConstraintFunction : public SGPP::optimization::ConstraintFunction {
 
       value[0] = gx;
     }
-
-    virtual void clone(std::unique_ptr<ConstraintFunction>& clone) const {
-      clone = std::unique_ptr<ConstraintFunction>(
-                new G3ConstraintFunction(*this));
-    }
 };
 
 class G3ConstraintGradient : public SGPP::optimization::ConstraintGradient {
@@ -258,11 +253,6 @@ class G3ConstraintGradient : public SGPP::optimization::ConstraintGradient {
       }
 
       value[0] = gx;
-    }
-
-    virtual void clone(std::unique_ptr<ConstraintGradient>& clone) const {
-      clone = std::unique_ptr<ConstraintGradient>(
-                new G3ConstraintGradient(*this));
     }
 };
 
@@ -354,11 +344,6 @@ class G8ConstraintFunction : public SGPP::optimization::ConstraintFunction {
         return;
       }
     }
-
-    virtual void clone(std::unique_ptr<ConstraintFunction>& clone) const {
-      clone = std::unique_ptr<ConstraintFunction>(
-                new G8ConstraintFunction(*this));
-    }
 };
 
 class G8ConstraintGradient : public SGPP::optimization::ConstraintGradient {
@@ -384,11 +369,6 @@ class G8ConstraintGradient : public SGPP::optimization::ConstraintGradient {
         value[1] = INFINITY;
         return;
       }
-    }
-
-    virtual void clone(std::unique_ptr<ConstraintGradient>& clone) const {
-      clone = std::unique_ptr<ConstraintGradient>(
-                new G8ConstraintGradient(*this));
     }
 };
 

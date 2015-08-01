@@ -116,12 +116,12 @@ void linearClenshawCurtisTest(SBasis& basis) {
   };
 
   const std::vector<double> testValuesDouble = {
-      1.0, 0.5, 0.25, 0.0, 0.0, 0.0, 0.25 / (double(ccKnot(2, 3)) - 0.5), 1.0, 0.0,
-      1.0 - (0.125 - double(ccKnot(3, 1))) / (double(ccKnot(3, 2) - ccKnot(3, 1))), 1.0, 0.0
-    };
+    1.0, 0.5, 0.25, 0.0, 0.0, 0.0, 0.25 / (double(ccKnot(2, 3)) - 0.5), 1.0, 0.0,
+    1.0 - (0.125 - double(ccKnot(3, 1))) / (double(ccKnot(3, 2) - ccKnot(3, 1))), 1.0, 0.0
+  };
 
-  const std::vector<SGPP::float_t> testValues( testValuesDouble.begin(),
-					       testValuesDouble.end() );
+  const std::vector<SGPP::float_t> testValues(testValuesDouble.begin(),
+      testValuesDouble.end());
 
   basisTest(basis, levels, indices, points, testValues);
 }
@@ -130,7 +130,7 @@ void errorTest(SGPP::float_t x, SGPP::float_t y, SGPP::float_t tol) {
   if (std::abs(x) >= 10.0) {
     BOOST_CHECK_SMALL((x - y) / x, tol);
   } else {
-    BOOST_CHECK_SMALL(x - y, SGPP::float_t(10.0) * tol);
+    BOOST_CHECK_SMALL(x - y, static_cast<SGPP::float_t>(10.0) * tol);
   }
 }
 
@@ -218,12 +218,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1,
                            bool modified = false) {
   // Test basic B-spline properties (mixed monotonicity, bounds) for
   // level >= start_level.
-  const SGPP::float_t tol =
-#if USE_DOUBLE_PRECISION
-    0.0;
-#else
-    1e-4;
-#endif
+  const SGPP::float_t tol = (use_double_precision ? 0.0 : 1e-4);
 
   for (level_t l = 0; l < 6; l++) {
     const index_t hInv = static_cast<index_t>(1) << l;
@@ -232,7 +227,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1,
       // test bounds
       const SGPP::float_t upperBound =
         (((!modified) || ((i > 1) && (i < hInv - 1))) ? 1.0 : 2.02);
-      boundTest(basis, l, i, 0.0, upperBound);
+      boundTest(basis, l, i, -tol, upperBound);
 
       // rising at the beginning
       bool falling = false;
@@ -260,6 +255,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1,
 
 void fundamentalSplineTest(SBasis& basis, bool modified = false) {
   const level_t startLevel = 1;
+  const SGPP::float_t tol = (use_double_precision ? 1e-10 : 1e-2);
 
   for (level_t l = startLevel; l < 6; l++) {
     const index_t hInv = static_cast<index_t>(1) << l;
@@ -268,7 +264,7 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
       // test bounds
       const SGPP::float_t upperBound =
         (((!modified) || ((i > 1) && (i < hInv - 1))) ? 1.0 : 2.3);
-      boundTest(basis, l, i, -0.3, upperBound + 1e-10);
+      boundTest(basis, l, i, -0.3, upperBound + tol);
 
       for (index_t i2 = 0; i2 <= hInv; i2++) {
         // test Lagrange property
@@ -277,11 +273,9 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
           const SGPP::float_t x = static_cast<SGPP::float_t>(i2) /
                                   static_cast<SGPP::float_t>(hInv);
           const SGPP::float_t fx = basis.eval(l, i, x);
-#if USE_DOUBLE_PRECISION
-          BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0), 1e-10);
-#else
-          BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0), 1e-2);
-#endif
+
+          BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0),
+                            (use_double_precision ? 1e-10 : 1e-2));
         }
 
         // test sign
@@ -296,17 +290,9 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
             const SGPP::float_t fx = basis.eval(l, i, x);
 
             if (sign == 1.0) {
-#if USE_DOUBLE_PRECISION
-              BOOST_CHECK_GE(fx, -1e-10);
-#else
-              BOOST_CHECK_GE(fx, -1e-10);
-#endif
+              BOOST_CHECK_GE(fx, (use_double_precision ? -1e-10 : -1e-2));
             } else {
-#if USE_DOUBLE_PRECISION
-              BOOST_CHECK_LE(fx, 1e-10);
-#else
-              BOOST_CHECK_LE(fx, 1e-10);
-#endif
+              BOOST_CHECK_LE(fx, (use_double_precision ? 1e-10 : 1e-2));
             }
           }
         }

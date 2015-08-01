@@ -119,9 +119,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModLinearWithBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createModLinearGrid(dim);
 #if USE_DOUBLE_PRECISION
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
 #else
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4, true);
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4, true);
 #endif
   }
 }
@@ -132,9 +132,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationTruncatedBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createLinearTruncatedBoundaryGrid(dim);
 #if USE_DOUBLE_PRECISION
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
 #else
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4, true);
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4, true);
 #endif
   }
 }
@@ -145,9 +145,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createLinearBoundaryGrid(dim);
 #if USE_DOUBLE_PRECISION
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
 #else
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4 );
 #endif
   }
 }
@@ -158,9 +158,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPrewavelet) {
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createPrewaveletGrid(dim);
 #if USE_DOUBLE_PRECISION
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
 #else
-      testHierarchisationDehierarchisation(grid, level, &parabola, 1e-3 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-3 );
 #endif
   }
 }

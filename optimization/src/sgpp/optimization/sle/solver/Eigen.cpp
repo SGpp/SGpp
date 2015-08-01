@@ -22,7 +22,7 @@ namespace SGPP {
 
 #ifdef USE_EIGEN
 
-#if USE_DOUBLE_PRECISION == 1
+#if USE_DOUBLE_PRECISION
       typedef ::Eigen::VectorXd EigenVector;
       typedef ::Eigen::MatrixXd EigenMatrix;
 #else

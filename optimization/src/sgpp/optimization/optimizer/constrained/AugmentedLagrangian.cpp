@@ -292,11 +292,6 @@ namespace SGPP {
               }
             }
 
-            void clone(std::unique_ptr<ConstraintFunction>& clone) const {
-              clone = std::unique_ptr<ConstraintFunction>(
-                        new AuxiliaryConstraintFunction(*this));
-            }
-
           protected:
             ConstraintFunction& g;
             ConstraintFunction& h;
@@ -379,11 +374,6 @@ namespace SGPP {
                 gradient.set(j, d, -(sMax - sMin));
                 gradient.set(j + 1, d, -(sMax - sMin));
               }
-            }
-
-            void clone(std::unique_ptr<ConstraintGradient>& clone) const {
-              clone = std::unique_ptr<ConstraintGradient>(
-                        new AuxiliaryConstraintGradient(*this));
             }
 
           protected:
