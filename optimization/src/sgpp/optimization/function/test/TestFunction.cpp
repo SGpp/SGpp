@@ -53,11 +53,7 @@ namespace SGPP {
       }
 
       void TestFunction::displaceVector(base::DataVector& x) const {
-        if (x.getSize() != d) {
-          // one could use exceptions for that...
-          std::cerr << "TestFunction::displaceVector: x doesn't match size\n";
-          return;
-        }
+        x.resize(d);
 
         for (size_t t = 0; t < d; t++) {
           x[t] += displacement.get(t);
@@ -65,12 +61,7 @@ namespace SGPP {
       }
 
       void TestFunction::reverseDisplaceVector(base::DataVector& x) const {
-        if (x.getSize() != d) {
-          // one could use exceptions for that...
-          std::cerr << "TestFunction::reverseDisplaceVector: "
-                    << "x doesn't match size\n";
-          return;
-        }
+        x.resize(d);
 
         for (size_t t = 0; t < d; t++) {
           x[t] -= displacement.get(t);

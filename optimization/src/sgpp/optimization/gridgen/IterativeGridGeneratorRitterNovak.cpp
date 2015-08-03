@@ -38,7 +38,7 @@ namespace SGPP {
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
       ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t adaptivity, size_t maxLevel, PowMethod powMethod) :
+      float_t adaptivity, base::level_t maxLevel, PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
       gamma(adaptivity),
       maxLevel(maxLevel),
@@ -53,12 +53,22 @@ namespace SGPP {
       this->gamma = adaptivity;
     }
 
-    size_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
+    base::level_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
       return maxLevel;
     }
 
-    void IterativeGridGeneratorRitterNovak::setMaxLevel(size_t maxLevel) {
+    void IterativeGridGeneratorRitterNovak::setMaxLevel(base::level_t maxLevel) {
       this->maxLevel = maxLevel;
+    }
+
+    IterativeGridGeneratorRitterNovak::PowMethod
+    IterativeGridGeneratorRitterNovak::getPowMethod() const {
+      return powMethod;
+    }
+
+    void IterativeGridGeneratorRitterNovak::setPowMethod(
+      IterativeGridGeneratorRitterNovak::PowMethod powMethod) {
+      this->powMethod = powMethod;
     }
 
     bool IterativeGridGeneratorRitterNovak::generate() {
@@ -190,8 +200,8 @@ namespace SGPP {
             base::GridIndex& gp = *gridStorage.get(i);
 
             {
-              base::GridIndex::index_type sourceIndex, childIndex;
-              base::GridIndex::level_type sourceLevel, childLevel;
+              base::index_t sourceIndex, childIndex;
+              base::level_t sourceLevel, childLevel;
 
               // for each dimension
               for (size_t t = 0; t < d; t++) {

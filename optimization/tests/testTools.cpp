@@ -3,6 +3,10 @@
 
 #include <cstdio>
 
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/optimization/function/test/Sphere.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
+#include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -122,6 +126,62 @@ void generateRandomMatrix(base::DataMatrix& A) {
   }
 }
 
+template <class T>
+void randomMatrixEntry(T& x) {
+  x = static_cast<T>(randomNumberGenerator.getUniformIndexRN(100));
+}
+
+template <>
+void randomMatrixEntry(float& x) {
+  x = static_cast<float>(randomNumberGenerator.getUniformRN(-100.0, 100.0));
+}
+
+template <>
+void randomMatrixEntry(double& x) {
+  x = static_cast<double>(randomNumberGenerator.getUniformRN(-100.0, 100.0));
+}
+
+template <>
+void randomMatrixEntry(std::string& x) {
+  const size_t length = randomNumberGenerator.getUniformIndexRN(100);
+  x.clear();
+
+  for (size_t i = 0; i < length; i++) {
+    x += static_cast<char>(32 + randomNumberGenerator.getUniformIndexRN(96));
+  }
+}
+
+template <class T>
+void testReadWriteMatrix(std::vector<T>& A1, size_t m1, size_t n1) {
+  std::vector<T> A2;
+  A1.clear();
+
+  for (size_t i = 0; i < m1; i++) {
+    for (size_t j = 0; j < n1; j++) {
+      T entry;
+      randomMatrixEntry(entry);
+      A1.push_back(entry);
+    }
+  }
+
+  size_t m2, n2;
+
+  {
+    const std::string fileName = "testTools_matrix.tmp";
+    file_io::writeMatrix(fileName, A1, m1, n1);
+    file_io::readMatrix(fileName, A2, m2, n2);
+    std::remove(fileName.c_str());
+  }
+
+  BOOST_CHECK_EQUAL(m1, m2);
+  BOOST_CHECK_EQUAL(n1, n2);
+  BOOST_CHECK_EQUAL(A1.size(), A2.size());
+
+  for (size_t k = 0; k < A1.size(); k++) {
+    BOOST_CHECK_EQUAL(A1[k], A2[k]);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
   // Test SGPP::optimization::file_io::readGrid/writeGrid.
   printer.setVerbosity(-1);
@@ -146,7 +206,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
     base::DataVector functionValues2(0);
 
     for (size_t k = 0; k < functionValues1.getSize(); k++) {
-      functionValues1[k] = randomNumberGenerator.getUniformRN(0.0, 1.0);
+      functionValues1[k] = randomNumberGenerator.getUniformRN();
     }
 
     {
@@ -173,32 +233,45 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
   const size_t m1 = 100;
   const size_t n1 = 200;
 
-  // test read/write with std::vector<SGPP::float_t>
+  // test read/write with std::vector<T>
   {
-    std::vector<SGPP::float_t> A1, A2;
+    std::vector<SGPP::float_t> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
 
-    for (size_t i = 0; i < m1; i++) {
-      for (size_t j = 0; j < n1; j++) {
-        A1.push_back(randomNumberGenerator.getUniformRN(0.0, 1.0));
-      }
-    }
+  {
+    std::vector<float> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
 
-    size_t m2, n2;
+  {
+    std::vector<double> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
 
-    {
-      const std::string fileName = "testTools_matrix.tmp";
-      file_io::writeMatrix(fileName, A1, m1, n1);
-      file_io::readMatrix(fileName, A2, m2, n2);
-      std::remove(fileName.c_str());
-    }
+  {
+    std::vector<uint8_t> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
 
-    BOOST_CHECK_EQUAL(m1, m2);
-    BOOST_CHECK_EQUAL(n1, n2);
-    BOOST_CHECK_EQUAL(A1.size(), A2.size());
+  {
+    std::vector<uint16_t> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
 
-    for (size_t k = 0; k < A1.size(); k++) {
-      BOOST_CHECK_EQUAL(A1[k], A2[k]);
-    }
+  {
+    std::vector<uint32_t> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
+
+  {
+    std::vector<uint64_t> A1;
+    testReadWriteMatrix(A1, m1, n1);
+  }
+
+  {
+    std::vector<std::string> A1;
+    testReadWriteMatrix(A1, m1, n1);
   }
 
   // test read/write with DataMatrix
@@ -460,4 +533,45 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
       }
     }
   }
+}
+
+BOOST_AUTO_TEST_CASE(TestPrinter) {
+  // Test SGPP::optimization::Printer.
+
+  // redirect std::cout to not confuse the user
+  const std::string fileName = "testTools_printer.tmp";
+  std::ofstream outStream(fileName);
+  printer.setStream(&outStream);
+
+  printer.setVerbosity(2);
+  printer.printStatusBegin("Testing status printing...");
+  printer.printStatusUpdate("Test status update 1");
+  printer.printStatusUpdate("Test status update 2");
+  printer.printStatusEnd("Testing status printing ended.");
+
+  printer.getMutex();
+
+  const SGPP::float_t duration = printer.getLastDurationSecs();
+  BOOST_CHECK_GE(duration, 0.0);
+  BOOST_CHECK_LE(duration, 0.01);
+
+  base::DataMatrix A(3, 3, 0.0);
+  A.set(0, 1, 12.3);
+  A.set(1, 2, 42.1337);
+  FullSLE sle(A);
+  printer.printSLE(sle);
+
+  const size_t d = 1;
+  const size_t p = 5;
+  const size_t N = 10;
+  test_functions::Sphere f(d);
+  std::unique_ptr<base::Grid> grid(base::Grid::createModBsplineGrid(d, p));
+  IterativeGridGeneratorRitterNovak gridGen(f, *grid, N, 0.85);
+  BOOST_CHECK(gridGen.generate());
+  printer.printIterativeGridGenerator(gridGen);
+
+  // undo redirection
+  outStream.close();
+  std::remove(fileName.c_str());
+  printer.setStream(&std::cout);
 }

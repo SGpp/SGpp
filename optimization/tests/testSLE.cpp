@@ -17,6 +17,7 @@
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include "ObjectiveFunctions.hpp"
+#include "GridCreator.hpp"
 
 const bool use_double_precision =
 #if USE_DOUBLE_PRECISION
@@ -89,6 +90,8 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
   printer.setVerbosity(-1);
   randomNumberGenerator.setSeed(42);
 
+  const size_t m = 4;
+
   // default solvers
   std::vector<std::unique_ptr<sle_solver::SLESolver>> solvers;
   solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
@@ -116,6 +119,31 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
                                 new sle_solver::UMFPACK())));
 #endif /* USE_UMFPACK */
 
+  // test getters/setters
+  {
+    sle_solver::BiCGStab biCGStab;
+
+    const size_t maxItCount = 42;
+    biCGStab.setMaxItCount(maxItCount);
+    BOOST_CHECK_EQUAL(biCGStab.getMaxItCount(), maxItCount);
+
+    const SGPP::float_t tolerance = 0.42;
+    biCGStab.setTolerance(tolerance);
+    BOOST_CHECK_EQUAL(biCGStab.getTolerance(), tolerance);
+
+    base::DataVector startingPoint(3);
+    startingPoint[0] = 1.2;
+    startingPoint[1] = 3.4;
+    startingPoint[2] = 5.6;
+    biCGStab.setStartingPoint(startingPoint);
+    base::DataVector startingPoint2 = biCGStab.getStartingPoint();
+    BOOST_CHECK_EQUAL(startingPoint.getSize(), startingPoint2.getSize());
+
+    for (size_t t = 0; t < startingPoint.getSize(); t++) {
+      BOOST_CHECK_EQUAL(startingPoint[t], startingPoint2[t]);
+    }
+  }
+
   // test various SLE dimensions
   for (size_t n : {
          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 50, 100, 200
@@ -123,9 +151,14 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
     // generate random matrix and RHS
     base::DataMatrix A(n, n);
     base::DataVector b(n);
+    base::DataMatrix B(n, m);
 
     for (size_t i = 0; i < n; i++) {
       b[i] = randomNumberGenerator.getUniformRN(-1.0, 1.0);
+
+      for (size_t j = 0; j < m; j++) {
+        B.set(i, j, randomNumberGenerator.getUniformRN(-1.0, 1.0));
+      }
 
       for (size_t j = 0; j < n; j++) {
         A.set(i, j, randomNumberGenerator.getUniformRN(-1.0, 1.0));
@@ -137,7 +170,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
 
     for (const auto& solver : solvers) {
       if ((dynamic_cast<sle_solver::BiCGStab*>(solver.get()) != nullptr) &&
-          (n > (use_double_precision ? 20 : 8))) {
+          (n > (use_double_precision ? 20 : 6))) {
         /*
          * BiCGStab is really weak and can't solve bigger systems
          * (a bug in the implementation is unlikely as MATLAB
@@ -147,23 +180,53 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
          */
         continue;
       } else if ((dynamic_cast<sle_solver::Gmmpp*>(solver.get()) != nullptr) &&
-                 (!use_double_precision) && (n == 200)) {
+                 (!use_double_precision) && (n > 50)) {
         // Gmm++ doesn't converge using single precision for larger systems
         continue;
       }
 
+      // solve system and test solution
       base::DataVector x(0);
-
-      // solve system
       BOOST_CHECK(solver->solve(system, b, x));
-
-      // test solution
       testSLESolution(A, x, b);
+
+      base::DataMatrix X(0, 0);
+      BOOST_CHECK(solver->solve(system, B, X));
+
+      for (size_t j = 0; j < m; j++) {
+        X.getColumn(j, x);
+        B.getColumn(j, b);
+        testSLESolution(A, x, b);
+      }
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE(TestHierarchization) {
+BOOST_AUTO_TEST_CASE(TestFullSLE) {
+  // Test SGPP::optimization::FullSLE.
+  base::DataMatrix A(3, 3, 0.0);
+  A.set(0, 1, 12.3);
+  A.set(1, 2, 42.1337);
+
+  FullSLE sle(A);
+  std::unique_ptr<CloneableSLE> sle2(nullptr);
+  sle.clone(sle2);
+
+  BOOST_CHECK_EQUAL(sle2->countNNZ(), 2);
+
+  if (use_double_precision) {
+    BOOST_CHECK_EQUAL(sle2->getMatrixEntry(0, 1), 12.3);
+    BOOST_CHECK_EQUAL(sle2->getMatrixEntry(1, 2), 42.1337);
+  } else {
+    BOOST_CHECK_CLOSE(sle2->getMatrixEntry(0, 1), 12.3, 1e-5);
+    BOOST_CHECK_CLOSE(sle2->getMatrixEntry(1, 2), 42.1337, 1e-5);
+  }
+
+  BOOST_CHECK(sle2->isMatrixEntryNonZero(1, 2));
+  BOOST_CHECK(!sle2->isMatrixEntryNonZero(2, 2));
+}
+
+BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
   // Test SGPP::optimization::HierarchisationSLE.
   printer.setVerbosity(-1);
   randomNumberGenerator.setSeed(42);
@@ -173,62 +236,16 @@ BOOST_AUTO_TEST_CASE(TestHierarchization) {
   const size_t l = 4;
 
   base::DataVector x(d);
-  ExampleFunction f;
   sle_solver::Auto solver;
+  ExampleFunction f;
 
   // Test All The Grids!
   std::vector<std::unique_ptr<base::Grid>> grids;
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineTruncatedBoundaryGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineClenshawCurtisGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearTruncatedBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearClenshawCurtisGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createWaveletGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createWaveletTruncatedBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModWaveletGrid(d))));
+  createSupportedGrids(d, p, grids);
 
   for (auto& grid : grids) {
-    // generate regular sparse grid
-    std::unique_ptr<base::GridGenerator> gridGen(grid->createGridGenerator());
-    gridGen->regular(l);
-    const size_t n = grid->getSize();
-    base::DataVector functionValues(n);
-
-    for (size_t i = 0; i < n; i++) {
-      base::GridIndex& gp = *grid->getStorage()->get(i);
-
-      // don't forget to set the point distribution to Clenshaw-Curtis
-      // if necessary (currently not done automatically)
-      if ((std::string(grid->getType()) == "bsplineClenshawCurtis") ||
-          (std::string(grid->getType()) == "linearClenshawCurtis")) {
-        gp.setPointDistribution(
-          base::GridIndex::PointDistribution::ClenshawCurtis);
-      }
-
-      for (size_t t = 0; t < d; t++) {
-        x[t] = gp.getCoord(t);
-      }
-
-      functionValues[i] = f.eval(x);
-    }
+    base::DataVector functionValues(0);
+    createSampleGrid(*grid, l, f, functionValues);
 
     // create hierarchization system
     HierarchisationSLE system(*grid);
@@ -247,6 +264,10 @@ BOOST_AUTO_TEST_CASE(TestHierarchization) {
     // create interpolant
     InterpolantFunction ft(*grid, alpha);
 
+    // test InterpolantFunction::clone()
+    std::unique_ptr<ObjectiveFunction> ft2(nullptr);
+    ft.clone(ft2);
+
     for (size_t i = 0; i < 100; i++) {
       for (size_t t = 0; t < d; t++) {
         // don't go near the boundary (should suffice)
@@ -254,7 +275,7 @@ BOOST_AUTO_TEST_CASE(TestHierarchization) {
       }
 
       // test infinity norm of difference roughly
-      BOOST_CHECK_SMALL(f.eval(x) - ft.eval(x),
+      BOOST_CHECK_SMALL(f.eval(x) - ft2->eval(x),
                         static_cast<SGPP::float_t>(0.3));
     }
   }

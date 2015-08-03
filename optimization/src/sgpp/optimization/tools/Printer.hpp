@@ -48,11 +48,7 @@ namespace SGPP {
      */
     inline std::ostream& operator<<(std::ostream& stream,
                                     const base::DataVector& x) {
-      for (size_t i = 0; i < x.getSize(); i++) {
-        stream << ((i > 0) ? ", " : "[") << x.get(i);
-      }
-
-      return stream << "]";
+      return stream << x.toString();
     }
 
     /**
@@ -63,12 +59,14 @@ namespace SGPP {
      * @return          stream
      */
     inline std::ostream& operator<<(std::ostream& stream,
-                                    SGPP::base::GridIndex& x) {
+                                    const SGPP::base::GridIndex& x) {
+      base::DataVector xCoord(x.dim());
+
       for (size_t t = 0; t < x.dim(); t++) {
-        stream << ((t > 0) ? ", " : "[") << x.getCoord(t);
+        xCoord[t] = x.getCoord(t);
       }
 
-      return stream << "]";
+      return stream << xCoord;
     }
 
     /**
@@ -174,6 +172,16 @@ namespace SGPP {
         MutexType& getMutex();
 
         /**
+         * @return stream used for printing (default std::cout)
+         */
+        std::ostream* getStream() const;
+
+        /**
+         * @param stream stream used for printing (default std::cout)
+         */
+        void setStream(std::ostream* stream);
+
+        /**
          * Print a grid (grid points and function values).
          *
          * @param gridGen       grid to be printed
@@ -209,6 +217,9 @@ namespace SGPP {
 
         /// internal mutex
         MutexType mutex;
+
+        /// stream used for printing (default std::cout)
+        std::ostream* stream;
     };
 
     /// singleton printer instance

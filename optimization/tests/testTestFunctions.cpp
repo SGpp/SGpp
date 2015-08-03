@@ -100,6 +100,18 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
 
   for (const auto& fcn : testFunctions) {
     const size_t d = fcn->getDimension();
+
+    // test cloning
+    std::unique_ptr<ObjectiveFunction> fcn2(nullptr);
+    fcn->clone(fcn2);
+
+    // check displacement
+    const SGPP::float_t stdDev = 0.01;
+    fcn->generateDisplacement(stdDev);
+    BOOST_CHECK_EQUAL(fcn->getStandardDeviation(), stdDev);
+    base::DataVector displacement(0);
+    fcn->getDisplacement(displacement);
+
     // displace function randomly
     fcn->generateDisplacement();
 
@@ -138,7 +150,8 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
 #if USE_DOUBLE_PRECISION == 1
     BOOST_CHECK_EQUAL(fOpt, fcn->eval(xOpt));
 #else
-    BOOST_CHECK_SMALL(fOpt - fcn->eval(xOpt), static_cast<SGPP::float_t>(1e-6));
+    BOOST_CHECK_SMALL(fOpt - fcn->eval(xOpt),
+                      static_cast<SGPP::float_t>(1e-6));
 #endif
 
     // test if xopt is minimal point for a sample of random points
@@ -147,7 +160,8 @@ BOOST_AUTO_TEST_CASE(TestFunctions) {
         x[t] = randomNumberGenerator.getUniformRN();
       }
 
-      BOOST_CHECK_GE(fcn->eval(x), fOpt);
+      // use cloned function to test the cloning
+      BOOST_CHECK_GE(fcn2->eval(x), fOpt);
     }
   }
 }
