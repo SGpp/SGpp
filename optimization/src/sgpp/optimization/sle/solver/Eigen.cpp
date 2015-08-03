@@ -42,12 +42,19 @@ namespace SGPP {
         const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
         base::DataVector& b,
         base::DataVector& x) {
+        const SGPP::float_t tolerance =
+#if USE_DOUBLE_PRECISION
+          1e-12;
+#else
+          1e-4;
+#endif
+
         // solve system
         EigenVector bEigen = EigenVector::Map(b.getPointer(), b.getSize());
         EigenVector xEigen = A_QR.solve(bEigen);
 
         // check solution
-        if ((A * xEigen).isApprox(bEigen)) {
+        if ((A * xEigen).isApprox(bEigen, tolerance)) {
           x = base::DataVector(xEigen.data(), xEigen.size());
           return true;
         } else {

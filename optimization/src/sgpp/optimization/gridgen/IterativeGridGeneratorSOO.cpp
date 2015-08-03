@@ -18,9 +18,8 @@ namespace SGPP {
 
     IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
       ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t adaptivity, size_t maxLevel) :
-      IterativeGridGenerator(f, grid, N),
-      maxLevel(maxLevel) {
+      float_t adaptivity) :
+      IterativeGridGenerator(f, grid, N) {
       setAdaptivity(adaptivity);
     }
 
@@ -38,14 +37,6 @@ namespace SGPP {
     void IterativeGridGeneratorSOO::setAdaptivity(
       IterativeGridGeneratorSOO::AdaptivityFunction adaptivity) {
       hMax = adaptivity;
-    }
-
-    size_t IterativeGridGeneratorSOO::getMaxLevel() const {
-      return maxLevel;
-    }
-
-    void IterativeGridGeneratorSOO::setMaxLevel(size_t maxLevel) {
-      this->maxLevel = maxLevel;
     }
 
     bool IterativeGridGeneratorSOO::generate() {

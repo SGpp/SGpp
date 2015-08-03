@@ -25,8 +25,6 @@ namespace SGPP {
 
         /// default adaptivity
         static constexpr float_t DEFAULT_ADAPTIVITY = 0.5;
-        /// default maximal level of grid points
-        static const size_t DEFAULT_MAX_LEVEL = 20;
 
         /**
          * Constructor.
@@ -41,8 +39,7 @@ namespace SGPP {
         IterativeGridGeneratorSOO(ObjectiveFunction& f,
                                   base::Grid& grid,
                                   size_t N,
-                                  float_t adaptivity = DEFAULT_ADAPTIVITY,
-                                  size_t maxLevel = DEFAULT_MAX_LEVEL);
+                                  float_t adaptivity = DEFAULT_ADAPTIVITY);
 
         /**
          * Generate the grid.
@@ -68,21 +65,9 @@ namespace SGPP {
          */
         void setAdaptivity(AdaptivityFunction adaptivity);
 
-        /**
-         * @return          maximal level of grid points
-         */
-        size_t getMaxLevel() const;
-
-        /**
-         * @param maxLevel  maximal level of grid points
-         */
-        void setMaxLevel(size_t maxLevel);
-
       protected:
         /// adaptivity
         AdaptivityFunction hMax;
-        /// maximal level of grid points
-        size_t maxLevel;
     };
 
   }
