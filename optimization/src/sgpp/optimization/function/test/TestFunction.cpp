@@ -19,7 +19,8 @@ namespace SGPP {
       TestFunction::TestFunction(size_t d) :
         ObjectiveFunction(d),
         stdDev(0.0),
-        displacement(base::DataVector(d, 0.0)) {
+        displacement(base::DataVector(d, 0.0)),
+        xTmp(base::DataVector(d)) {
       }
 
       TestFunction::~TestFunction() {
@@ -27,14 +28,14 @@ namespace SGPP {
 
       float_t TestFunction::eval(const base::DataVector& x) {
         // displace vector before evaluation
-        base::DataVector x_displaced(x);
-        displaceVector(x_displaced);
-        return evalUndisplaced(x_displaced);
+        xTmp = x;
+        displaceVector(xTmp);
+        return evalUndisplaced(xTmp);
       }
 
       float_t TestFunction::getOptimalPoint(base::DataVector& x) {
         // reverse displace optimal point
-        float_t fx = getOptimalPointUndisplaced(x);
+        const float_t fx = getOptimalPointUndisplaced(x);
         reverseDisplaceVector(x);
         return fx;
       }
