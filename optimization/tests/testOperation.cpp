@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
   printer.setVerbosity(-1);
   randomNumberGenerator.setSeed(42);
 
-  const size_t d = 3;
+  const size_t d = 2;
   const size_t p = 5;
   const size_t l = 4;
   const size_t m = 4;
