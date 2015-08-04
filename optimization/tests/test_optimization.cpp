@@ -4,7 +4,7 @@
 #include <omp.h>
 
 struct GlobalFixture {
-  const int MAX_NUM_THREADS = 2;
+  const int MAX_NUM_THREADS = 1;
 
   GlobalFixture() {
     // limit number of OpenMP threads, because if chosen too high,
