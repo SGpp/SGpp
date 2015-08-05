@@ -153,7 +153,8 @@ env.Append(LIBPATH=[BUILD_DIR])
 # add C++ defines for all modules
 cppdefines = []
 for module in moduleNames:
-    cppdefines.append(module)
+    if env[module]:
+        cppdefines.append(module)
 env.Append(CPPDEFINES=cppdefines)
 
 # environement setup finished, export environment
