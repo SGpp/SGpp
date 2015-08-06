@@ -129,7 +129,7 @@ namespace SGPP {
         gp.setPointDistribution(distr);
         // prepare fXOrder and rank
         fXOrder[i] = i;
-        rank[i] = i;
+        rank[i] = i + 1;
 
         // calculate sum of levels
         for (size_t t = 0; t < d; t++) {
@@ -147,7 +147,7 @@ namespace SGPP {
       });
       std::sort(rank.begin(), rank.begin() + currentN,
       [&](size_t a, size_t b) {
-        return (fXOrder[a] < fXOrder[b]);
+        return (fXOrder[a - 1] < fXOrder[b - 1]);
       });
 
       // determine fXSorted
@@ -306,7 +306,7 @@ namespace SGPP {
 
           // update rank and fXOrder by insertion sort
           // ==> go through fX from greatest entry to lowest
-          for (size_t j = i - 1; j-- > 0; ) {
+          for (size_t j = i; j-- > 0; ) {
             if (fXSorted[j] < fXi) {
               // new function value is greater than current one ==> insert here
               fXOrder.insert(fXOrder.begin() + (j + 1), i);
