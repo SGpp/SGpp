@@ -15,8 +15,7 @@
 
 int main(int argc, char** argv) {
 
-  //  std::string fileName = "friedman_4d_2000.arff";
-  std::string fileName = "debugging.arff";
+  std::string fileName = "../tests/data/friedman_4d_2000.arff";
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

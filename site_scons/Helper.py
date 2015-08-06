@@ -59,7 +59,7 @@ def prepareDoxyfile(modules):
     # create Doxyfile
     with open('Doxyfile_template', 'r') as doxyFileTemplate:
         with open('Doxyfile', 'w') as doxyFile:
-            inputPaths = 'INPUT = bin/ doc/'
+            inputPaths = 'INPUT ='
             examplePaths = 'EXAMPLE_PATH ='
             imagePaths = 'IMAGE_PATH ='
 

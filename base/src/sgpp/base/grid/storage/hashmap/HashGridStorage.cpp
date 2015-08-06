@@ -36,7 +36,7 @@ namespace SGPP {
       , boundingBox(new BoundingBox(creationBoundingBox))
       , stretching(nullptr)
       , bUseStretching(false) {
-      //TODO gerrit: this look like a bug, creationBoundingBox not used
+      //this look like a bug, creationBoundingBox not used
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
       }
@@ -51,7 +51,7 @@ namespace SGPP {
       , boundingBox(nullptr)
       , stretching(new Stretching(creationStretching))
       , bUseStretching(true) {
-      //TODO gerrit: this look like a bug, creationBoundingBox not used
+      // this look like a bug, creationBoundingBox not used
       for (size_t i = 0; i < DIM; i++) {
         algoDims.push_back(i);
       }
@@ -340,7 +340,7 @@ namespace SGPP {
 
     size_t
     HashGridStorage::insert(index_type& index) {
-      index_pointer insert = new HashGridIndex(&index);
+      index_pointer insert = new HashGridIndex(index);
       list.push_back(insert);
       return (map[insert] = this->seq() - 1);
     }
@@ -353,7 +353,7 @@ namespace SGPP {
         map.erase(del);
         delete del;
         // Insert update
-        index_pointer insert = new HashGridIndex(&index);
+        index_pointer insert = new HashGridIndex(index);
         list[pos] = insert;
         map[insert] = pos;
       }
@@ -485,6 +485,26 @@ namespace SGPP {
     }
 
     void
+    HashGridStorage::getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index) {
+      index_type::level_type curLevel;
+      index_type::level_type curIndex;
+
+      // Parallelization may lead to segfaults.... comment on your own risk
+      //    #pragma omp parallel
+      //    {
+      //      #pragma omp for schedule (static) private(curLevel, curIndex)
+      for (size_t i = 0; i < list.size(); i++) {
+        for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+          (list[i])->get(current_dim, curLevel, curIndex);
+          level.set(i, current_dim, static_cast<float>(1 << curLevel));
+          index.set(i, current_dim, static_cast<float>(curIndex));
+        }
+      }
+
+      //    }
+    }
+
+    void
     HashGridStorage::getLevelForIntegral(DataMatrix& level) {
       index_type::level_type curLevel;
       index_type::level_type curIndex;
@@ -576,6 +596,47 @@ namespace SGPP {
             uint32_t intmask = 0x80000000;
 #endif
             mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
+            offset.set(i, current_dim, 1.0);
+          }
+        }
+      }
+    }
+
+    void
+    HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
+        DataMatrixSP& mask, DataMatrixSP& offset) {
+      index_type::level_type curLevel;
+      index_type::level_type curIndex;
+
+      for (size_t i = 0; i < list.size(); i++) {
+        for (size_t current_dim = 0; current_dim < DIM; current_dim++) {
+          (list[i])->get(current_dim, curLevel, curIndex);
+
+          if (curLevel == 1) {
+            level.set(i, current_dim, 0.0);
+            index.set(i, current_dim, 0.0);
+            uint32_t intmask = 0x00000000;
+            mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+            offset.set(i, current_dim, 1.0);
+          } else if (curIndex == 1) {
+            level.set(i, current_dim, (-1.0f) *
+                      static_cast<float>(1 << curLevel));
+            index.set(i, current_dim, 0.0);
+            uint32_t intmask = 0x00000000;
+            mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+            offset.set(i, current_dim, 2.0);
+          } else if (curIndex
+                     == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+            level.set(i, current_dim, static_cast<float>(1 << curLevel));
+            index.set(i, current_dim, static_cast<float>(curIndex));
+            uint32_t intmask = 0x00000000;
+            mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+            offset.set(i, current_dim, 1.0);
+          } else {
+            level.set(i, current_dim, static_cast<float>(1 << curLevel));
+            index.set(i, current_dim, static_cast<float>(curIndex));
+            uint32_t intmask = 0x80000000;
+            mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
             offset.set(i, current_dim, 1.0);
           }
         }

@@ -3,7 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import unittest, tools
+import unittest
+import tools
 from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
@@ -577,7 +578,132 @@ class TestOperationBBTLinearTruncatedBoundary(unittest.TestCase):
 
         # compare
         compareBBTMatrices(self, m, m_ref)
+    
+class TestLinearGrid(unittest.TestCase):        
+    def testOperationTest_test(self):
+        from pysgpp import Grid, DataVector, DataMatrix
 
+        factory = Grid.createLinearGrid(1)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        
+        data = DataMatrix(1,1)
+        data.setAll(0.25)
+        classes = DataVector(1)
+        classes.setAll(1.0)
+
+        testOP = createOperationTest(factory)
+
+        alpha.setAll(1.0)
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c > 0.0)
+        
+        alpha.setAll(-1.0)
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c == 0.0)
+        
+class TestLinearTruncatedBoundaryGrid(unittest.TestCase):
+    def testOperationTest_test(self):
+        from pysgpp import Grid, DataVector, DataMatrix
+
+        factory = Grid.createLinearTruncatedBoundaryGrid(1)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        
+        data = DataMatrix(1,1)
+        data.setAll(0.25)
+        classes = DataVector(1)
+        classes.setAll(1.0)
+
+        testOP = createOperationTest(factory)
+
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = 1.0
+        
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c > 0.0)
+        
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = -1.0
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c == 0.0)
+        
+class TestLinearBoundaryGrid(unittest.TestCase):
+    def testOperationTest_test(self):
+        from pysgpp import Grid, DataVector, DataMatrix
+
+        factory = Grid.createLinearBoundaryGrid(1)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        
+        data = DataMatrix(1,1)
+        data.setAll(0.25)
+        classes = DataVector(1)
+        classes.setAll(1.0)
+
+        testOP = createOperationTest(factory)
+
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = 1.0
+        
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c > 0.0)
+        
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = -1.0
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c == 0.0)
+
+class TestLinearStretchedTruncatedBoundaryGrid(unittest.TestCase):
+    def testOperationTest_test(self):
+        from pysgpp import Grid, DataVector, DataMatrix, Stretching, Stretching1D, DimensionBoundary
+
+        str1d = Stretching1D()
+        str1d.type='log'
+        str1d.x_0=1
+        str1d.xsi=10
+        dimBound = DimensionBoundary() 
+        dimBound.leftBoundary=0.5
+        dimBound.rightBoundary=7
+        stretch=Stretching(1,dimBound,str1d)
+
+        factory = Grid.createLinearStretchedTruncatedBoundaryGrid(1)
+        factory.getStorage().setStretching(stretch)
+        gen = factory.createGridGenerator()
+        gen.regular(1)
+        
+        alpha = DataVector(factory.getStorage().size())        
+        
+        data = DataMatrix(1,1)
+        data.setAll(0.25)
+        classes = DataVector(1)
+        classes.setAll(1.0)
+
+        testOP = createOperationTest(factory)
+
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = 1.0
+        
+        c = testOP.test(alpha, data, classes)
+        #print c
+        self.failUnless(c > 0.0)
+    
+        alpha[0] = 0.0
+        alpha[1] = 0.0
+        alpha[2] = -1.0
+        c = testOP.test(alpha, data, classes)
+        self.failUnless(c == 0.0)
 
 # Run tests for this file if executed as application
 if __name__ == '__main__':

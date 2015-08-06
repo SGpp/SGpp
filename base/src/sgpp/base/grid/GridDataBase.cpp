@@ -81,7 +81,7 @@ namespace SGPP {
 
       if (ind == _map.end()) {
         // create copy and store
-        index_pointer cpy = new GridIndex(gi);
+        index_pointer cpy = new GridIndex(*gi);
         _map[cpy] = value;
       } else {
         // just overwrite value

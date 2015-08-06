@@ -34,9 +34,6 @@ namespace SGPP {
             }
 
             float_t eval(const base::DataVector& x) {
-              // DEBUG
-              //std::cout << "PenalizedObjectiveFunction.eval(): x = " << x.toString() << "\n";
-
               for (size_t t = 0; t < d; t++) {
                 if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
                   return INFINITY;
@@ -51,16 +48,6 @@ namespace SGPP {
               base::DataVector hx(mH);
               h.eval(x, hx);
 
-              // DEBUG
-              /*std::cout << "mu = " << mu << "\n";
-              std::cout << "lambda = " << lambda << "\n";
-              std::cout << "mG = " << mG << "\n";
-              std::cout << "mH = " << mH << "\n";
-              std::cout << "x = " << x.toString() << "\n";
-              std::cout << "fx = " << fx << "\n";
-              std::cout << "gx = " << gx.toString() << "\n";
-              std::cout << "hx = " << hx.toString() << "\n";*/
-
               float_t value = fx;
 
               for (size_t i = 0; i < mG; i++) {
@@ -74,9 +61,6 @@ namespace SGPP {
               for (size_t i = 0; i < mH; i++) {
                 value += (mu * hx[i] + lambda[i]) * hx[i];
               }
-
-              // DEBUG
-              //std::cout << "value = " << value << "\n";
 
               return value;
             }
@@ -119,9 +103,6 @@ namespace SGPP {
 
             float_t eval(const base::DataVector& x,
                          base::DataVector& gradient) {
-              // DEBUG
-              //std::cout << "PenalizedObjectiveGradient.eval(): x = " << x.toString() << "\n";
-
               for (size_t t = 0; t < d; t++) {
                 if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
                   return INFINITY;
@@ -138,19 +119,6 @@ namespace SGPP {
               base::DataVector hx(mH);
               base::DataMatrix gradHx(mH, d);
               hGradient.eval(x, hx, gradHx);
-
-              // DEBUG
-              /*std::cout << "mu = " << mu << "\n";
-              std::cout << "lambda = " << lambda << "\n";
-              std::cout << "mG = " << mG << "\n";
-              std::cout << "mH = " << mH << "\n";
-              std::cout << "x = " << x.toString() << "\n";
-              std::cout << "fx = " << fx << "\n";
-              std::cout << "gradFx = " << gradFx.toString() << "\n";
-              std::cout << "gx = " << gx.toString() << "\n";
-              std::cout << "gradGx = " << gradGx.toString() << "\n";
-              std::cout << "hx = " << hx.toString() << "\n";
-              std::cout << "gradHx = " << gradHx.toString() << "\n";*/
 
               float_t value = fx;
               gradient.resize(d);
@@ -188,10 +156,6 @@ namespace SGPP {
                 }
               }
 
-              // DEBUG
-              /*std::cout << "value = " << value << "\n";
-              std::cout << "gradient = " << gradient.toString() << "\n";*/
-
               return value;
             }
 
@@ -224,8 +188,6 @@ namespace SGPP {
 
             float_t eval(const base::DataVector& x) {
               const size_t d = this->d - 1;
-              // DEBUG
-              //std::cout << "AuxiliaryObjectiveFunction.eval(): x = " << x.toString() << ", d = " << d << "\n";
 
               for (size_t t = 0; t < d + 1; t++) {
                 if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
@@ -257,8 +219,6 @@ namespace SGPP {
             float_t eval(const base::DataVector& x,
                          base::DataVector& gradient) {
               const size_t d = this->d - 1;
-              // DEBUG
-              //std::cout << "AuxiliaryObjectiveGradient.eval(): x = " << x.toString() << ", d = " << d << "\n";
 
               for (size_t t = 0; t < d + 1; t++) {
                 if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
@@ -303,8 +263,6 @@ namespace SGPP {
                       base::DataVector& value) {
               const size_t d = this->d - 1;
               base::DataVector xPart(d);
-              // DEBUG
-              //std::cout << "AuxiliaryConstraintFunction.eval(): x = " << x.toString() << ", d = " << d << "\n";
 
               for (size_t t = 0; t < d + 1; t++) {
                 if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
@@ -332,11 +290,6 @@ namespace SGPP {
                 value[2 * i + mG + 1] = hx[i] - s;
                 value[2 * i + mG + 2] = -hx[i] - s;
               }
-            }
-
-            void clone(std::unique_ptr<ConstraintFunction>& clone) const {
-              clone = std::unique_ptr<ConstraintFunction>(
-                        new AuxiliaryConstraintFunction(*this));
             }
 
           protected:
@@ -421,11 +374,6 @@ namespace SGPP {
                 gradient.set(j, d, -(sMax - sMin));
                 gradient.set(j + 1, d, -(sMax - sMin));
               }
-            }
-
-            void clone(std::unique_ptr<ConstraintGradient>& clone) const {
-              clone = std::unique_ptr<ConstraintGradient>(
-                        new AuxiliaryConstraintGradient(*this));
             }
 
           protected:
@@ -579,13 +527,6 @@ namespace SGPP {
 
         auxX[d] = (s0 - sMin) / (sMax - sMin);
 
-        // DEBUG
-        /*std::cout << "sMin = " << sMin << "\n";
-        std::cout << "sMax = " << sMax << "\n";
-        std::cout << "mG = " << mG << "\n";
-        std::cout << "mH = " << mH << "\n";
-        std::cout << "auxX0 = " << auxX << "\n";*/
-
         AugmentedLagrangian optimizer(
           auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
           emptyConstraintFunction, emptyConstraintGradient);
@@ -595,10 +536,6 @@ namespace SGPP {
         for (size_t t = 0; t < d; t++) {
           x[t] = auxX[t];
         }
-
-        // DEBUG
-        /*std::cout << "auxX = " << auxX << "\n";
-        std::cout << "auxFX = " << auxFX << "\n";*/
 
         return x;
       }

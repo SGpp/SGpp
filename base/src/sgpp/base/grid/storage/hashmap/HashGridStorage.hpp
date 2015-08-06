@@ -419,6 +419,16 @@ namespace SGPP {
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
+         * with modification to speed up iterative function evaluation. The Level
+         * array won't contain the levels, it contains the level to the power of two
+         *
+         * @param level DataMatrix to store the grid's level to the power of two
+         * @param index DataMatrix to store the grid's indices
+         */
+        void getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index);
+
+        /**
+         * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative Laplace Calculations: the level
          * won't contain the levels, it contains 2 to the neagative power of the level.
          *
@@ -431,7 +441,6 @@ namespace SGPP {
          * returns the max. depth in all dimension of the grid
          */
         size_t getMaxLevel() const;
-
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -447,6 +456,21 @@ namespace SGPP {
          */
         void getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index,
                                                DataMatrix& mask, DataMatrix& offset);
+
+        /**
+         * Converts this storage from AOS (array of structures) to SOA (structure of array)
+         * with modification to speed up iterative function evaluation. The Level
+         * array won't contain the levels, it contains the level to the power of two.
+         *
+         * The returned format is only useful for a multi-evaluation of modlinear grids
+         *
+         * @param level DataMatrixSP to store the grid's level to the power of two
+         * @param index DataMatrixSP to store the grid's indices
+         * @param mask DataMatrixSP to store masks of operations
+         * @param offset DataMatrixSP to store offset for operations
+         */
+        void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
+                                               DataMatrixSP& mask, DataMatrixSP& offset);
 
       protected:
         /**
@@ -492,7 +516,7 @@ namespace SGPP {
 
     HashGridStorage::index_pointer
     inline HashGridStorage::create(index_type& index) {
-      index_pointer insert = new HashGridIndex(&index);
+      index_pointer insert = new HashGridIndex(index);
       return insert;
     }
 

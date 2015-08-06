@@ -50,7 +50,6 @@ namespace SGPP {
       this->dim_BS = 0;
       this->dim_HW = 1;
 
-      // @todo set to random value to remove compiler warnings due to uninitialized members
       this->a = 0.0;
       this->coarsenPercent = 0.0;
       this->mus = NULL;

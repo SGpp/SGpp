@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 %module(directors="1") pysgpp
+%feature("autodoc", "2"); 
 %feature("docstring");
 
 %include "base/src/sgpp/globaldef.hpp"

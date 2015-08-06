@@ -11,21 +11,21 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.folding import RandomFoldingPolicy
-from bin.data.DataContainer import DataContainer
+from datadriven.learner.folding import RandomFoldingPolicy
+from datadriven.data.DataContainer import DataContainer
 from pysgpp import DataVector, DataMatrix
 
 
 ##
 # @package tests.tbin.test_RandomFoldingPolicy
-# Contains class test_RandomFoldingPolicy::TestRandomFoldingPolicy with unittests for @link bin.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# Contains class test_RandomFoldingPolicy::TestRandomFoldingPolicy with unittests for @link datadriven.src.python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link bin.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# Class with unittests for @link datadriven.src.python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link bin.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# @test Unittests for @link datadriven.src.python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 class TestRandomFoldingPolicy(unittest.TestCase):
 
     
@@ -44,7 +44,7 @@ class TestRandomFoldingPolicy(unittest.TestCase):
     
     
     ##
-    # Tests the function @link bin.learner.folding.FoldingPolicy.FoldingPolicy.next() RandomFoldingPolicy.next() @endlink    
+    # Tests the function @link datadriven.src.python.learner.folding.FoldingPolicy.FoldingPolicy.next() RandomFoldingPolicy.next() @endlink    
     def testNext(self):
         self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:

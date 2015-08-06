@@ -66,8 +66,6 @@ namespace SGPP {
          * all superfluous entries are removed.
          *
          * @param size New number of elements of the DataVector
-         * @todo (pflueged) Check that no wrong usage of reize is left which assumes that new entries are zero.
-         * @todo (pflueged) Optimize implementation, consider unused elements!
          */
         void resize(size_t size);
 

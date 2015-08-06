@@ -13,35 +13,27 @@
 #include <sgpp/datadriven/application/BatchConfiguration.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
 
 /**
  * This programm demonstrates the usage of the BatchLearner class. After the parameters are set, the method trainBatch() is called until the end of the file has been reached.
  */
 
-using namespace sg::base;
-using namespace sg::datadriven;
+using namespace SGPP::base;
+using namespace SGPP::datadriven;
 using namespace std;
 
 
 int main (int argc, char** args) {
-  cout << "parameters: bs(batch size), ts (test size), input, mode(weighting), arg(for weighting), level, pts(to refine every refinement), ref(refine every xth batch, 0=never)" << endl;
-
-  std::map<string, string> argsMap;
-
-  for (int i = 1; i < argc; i += 2) {
-    argsMap[args[i]] = args[i + 1];
-  }
-
-
   //set variables
-  sg::base::BatchConfiguration batchConfig;
-  sg::solver::SLESolverConfiguration solverConfig;
-  sg::base::AdpativityConfiguration adaptConfig;
-  sg::base::RegularGridConfiguration gridConfig;
+  SGPP::base::BatchConfiguration batchConfig;
+  SGPP::solver::SLESolverConfiguration solverConfig;
+  SGPP::base::AdpativityConfiguration adaptConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;//not used by BatchLearner
-  adaptConfig.noPoints_ = std::stoi(argsMap["pts"]);
+  adaptConfig.noPoints_ = 2;
   adaptConfig.numRefinements_ = 1;//not used by BatchLearner
   adaptConfig.percent_ = 10.0;//not used by BatchLearner
   adaptConfig.threshold_ = 0.001;
@@ -50,26 +42,26 @@ int main (int argc, char** args) {
   solverConfig.eps_ = 0;
   solverConfig.maxIterations_ = 20;
   solverConfig.threshold_ = -1.0;//not used by BatchLearner
-  solverConfig.type_ = sg::solver::CG;
+  solverConfig.type_ = SGPP::solver::CG;
 
   // Set parameters for the batchLearner
-  batchConfig.filename = argsMap["input"].c_str();
-  batchConfig.batchsize = std::stoi(argsMap["bs"]);
+  batchConfig.filename = "../tests/data/friedman_4d_2000.arff";
+  batchConfig.batchsize = 500;
   batchConfig.samples = 500;
   batchConfig.seed = 42;
-  batchConfig.wMode = std::stoi(argsMap["mode"]);;
-  batchConfig.wArgument = std::stof(argsMap["arg"]);
-  batchConfig.refineEvery = std::stoi(argsMap["ref"]);
+  batchConfig.wMode = 5;
+  batchConfig.wArgument = 1.0;
+  batchConfig.refineEvery = 0;
   batchConfig.verbose = true;
   batchConfig.stack = 0;
-  batchConfig.testsize = std::stoi(argsMap["ts"]);
+  batchConfig.testsize = 200;
   batchConfig.lambda = 0.0001f;
 
   //set up the grid config
-  gridConfig.level_ = std::stoi(argsMap["level"]);
+  gridConfig.level_ = 4;
 
   //init the learner
-  sg::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig, adaptConfig);
+  SGPP::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig, adaptConfig);
 
 
   int i = 0;

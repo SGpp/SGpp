@@ -534,6 +534,7 @@ class TestLinearGrid(unittest.TestCase):
         opb.mult(alpha, beta)
         self.failUnlessAlmostEqual(beta[0], 0.5)
 
+    #moved to datadriven
     def testOperationTest_test(self):
         from pysgpp import Grid, DataVector, DataMatrix
 

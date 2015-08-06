@@ -66,7 +66,6 @@ namespace SGPP {
       this->current_time = 0.0;
       this->tBoundaryType = "freeBoundaries";
 
-      // @todo set to random value to remove compiler warnings due to uninitialized members
       this->dStrike = 0.0;
       this->hMatrix = NULL;
       this->kappas = NULL;

@@ -8,17 +8,17 @@ import fnmatch
 
 Import("env")
 Import("BUILD_DIR")
-Import("EXAMPLE_DIR")
 Import("PYSGPP_BUILD_PATH")
 Import("moduleName")
 Import("libraryTargetList")
 Import("installTargetList")
 Import("exampleTargetList")
+Import("config")
 
 
 
 libs = ["sgppbase"]
-config = env.Configure()
+#config = env.Configure()
 
 if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
     if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
@@ -81,7 +81,9 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         LIBPATH=BUILD_DIR,
                         LIBS=libs)
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
+
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
+
 libInstall = env.Install(BUILD_DIR, lib)
 
 libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
@@ -91,20 +93,30 @@ libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
 env.Depends(libStatic, "#/" + BUILD_DIR.path + "/libsgppbasestatic.a")
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 
-if not env["NO_UNIT_TESTS"] and env["SG_PYTHON"]:
-    Import("testTargetList")
-    moduleTest = env.Test(os.path.join("tests", "test_%s.py" % moduleName))
-    env.Requires(moduleTest, libInstall)
-    testTargetList.append(moduleTest)
-
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
                               LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
-        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
+
+# build unit tests
+if env['COMPILE_BOOST_TESTS']:
+    Import('boostTestTargetList')
+    test_env = env.Clone()
+    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
+    testObjects = []
+    for fileName in os.listdir("tests"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+    if len(testObjects) > 0:
+        fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
+        test = test_env.Program(fileName, testObjects)
+        test_env.Requires(test, libInstall)
+        if env['RUN_BOOST_TESTS']:
+            testRun = test_env.BoostTest(fileName + "_run", source=fileName)
+            boostTestTargetList.append(testRun)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

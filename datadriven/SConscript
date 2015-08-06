@@ -20,8 +20,8 @@ avxFolders = ['src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/
 avx_env = env.Clone()
 avxCPPFLAGS = filter(lambda flag: flag != '-msse3', avx_env['CPPFLAGS'])
 avx_env['CPPFLAGS'] = avxCPPFLAGS
-#avx_env.Remove(CPPFLAGS = '-msse3')
-avx_env.Append(CPPFLAGS = '-mavx')
+# avx_env.Remove(CPPFLAGS = '-msse3')
+avx_env.Append(CPPFLAGS='-mavx')
 
 def isAVXFolder(folder):
     for avxFolder in avxFolders:
@@ -29,7 +29,7 @@ def isAVXFolder(folder):
             return True
     return False
 
-libs = ['sgppbase', 'sgppsolver', 'libalglib', 'sgpppde']
+libs = ['sgppbase', 'sgppsolver', 'sgpppde']
 if env['USE_OCL']:
     libs += ['OpenCL']
 
@@ -45,14 +45,16 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
 
-env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+env.AppendUnique(LIBPATH=[BUILD_DIR])
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        #LIBPATH = [BUILD_DIR, '#/lib/alglib'],
                         LIBS=libs)
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppsolver.so")
-env.Depends(lib, "#/lib/alglib" + "/libalglib.so")
+
+
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppsolver" + env["SHLIBSUFFIX"])
+
 libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
@@ -67,12 +69,29 @@ example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = example_env.Program(source=os.path.join("examples", fileName),
-                              #LIBPATH=[BUILD_DIR, "#/lib/alglib"],
-                              #LIBS=libs + ["sgpp%s" % moduleName]
+                              # LIBPATH=[BUILD_DIR, "#/lib/alglib"],
+                              # LIBS=libs + ["sgpp%s" % moduleName]
                               )
         example_env.Requires(example, libInstall)
-        example_env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
+
+# build unit tests
+if env['COMPILE_BOOST_TESTS']:
+    Import('boostTestTargetList')
+    test_env = env.Clone()
+    test_env.AppendUnique(LIBPATH=[BUILD_DIR])
+    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])
+    testObjects = []
+    for fileName in os.listdir("tests"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+    if len(testObjects) > 0:
+        fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
+        test = test_env.Program(fileName, testObjects)
+        test_env.Requires(test, libInstall)
+        if env['RUN_BOOST_TESTS']:
+            testRun = test_env.BoostTest(fileName + "_run", source=fileName)
+            boostTestTargetList.append(testRun)
 
 Import('libraryTargetList')
 Import('installTargetList')

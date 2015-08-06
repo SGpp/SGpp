@@ -56,7 +56,7 @@ namespace SGPP {
         /**
          * @return      seed
          */
-        size_t getSeed();
+        size_t getSeed() const;
 
         /**
          * Reseeds with time-dependent seed.

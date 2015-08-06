@@ -52,7 +52,7 @@ namespace SGPP {
         refine_index = max_indices[i];
 
         if (refinement_value > functor->start() && fabs(refinement_value) >= threshold) {
-          index_type index((*storage)[refine_index]);
+          index_type index(*(*storage)[refine_index]);
           index.setLeaf(false);
 
           for (size_t dim = 0; dim < storage->dim(); dim++) {

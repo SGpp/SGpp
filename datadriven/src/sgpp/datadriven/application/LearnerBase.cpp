@@ -35,7 +35,6 @@ namespace SGPP {
                              const bool isVerbose) :
       alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression), isTrained_(false), execTime_(
         0.0), stepExecTime_(0.0), GFlop_(0.0), stepGFlop_(0.0), GByte_(0.0), stepGByte_(0.0), currentRefinementStep(0) {
-      // @TODO (heinecke) implement
       throw base::application_exception("LearnerBase::LearnerBase: This construct isn't implemented, yet!");
     }
 
@@ -58,8 +57,6 @@ namespace SGPP {
       if (grid_ != NULL)
         delete grid_;
 
-      // TODO (pfandedd) how are modificatons to grid transmitted to an existing operation?
-      // TODO (heinecke) grid copy constructor
       grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
       alpha_ = new SGPP::base::DataVector(*(copyMe.alpha_));
     }
@@ -111,7 +108,7 @@ namespace SGPP {
                                      const SGPP::base::RegularGridConfiguration& GridConfig,
                                      const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                      const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                                     const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float_t lambda) {
+                                     const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float_t lambdaRegularization) {
       LearnerTiming result;
 
       if (trainDataset.getNrows() != classes.getSize()) {
@@ -150,7 +147,7 @@ namespace SGPP {
         return result;
 
       // create DMSystem
-      SGPP::datadriven::DMSystemMatrixBase* DMSystem = createDMSystem(trainDataset, lambda);
+      SGPP::datadriven::DMSystemMatrixBase* DMSystem = createDMSystem(trainDataset, lambdaRegularization);
 
       // check if System was created
       if (DMSystem == NULL)
@@ -242,7 +239,6 @@ namespace SGPP {
         result.timeMultCompute_ = tmp2;
         result.timeMultTransComplete_ = tmp3;
         result.timeMultTransCompute_ = tmp4;
-        // @TODO fix regularization timings, if needed
         result.timeRegularization_ = 0.0;
         result.GFlop_ = GFlop_;
         result.GByte_ = GByte_;
@@ -297,7 +293,7 @@ namespace SGPP {
 
     LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset, SGPP::base::DataVector& classes,
                                      const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverConfiguration& SolverConfig,
-                                     const float_t lambda) {
+                                     const float_t lambdaRegularization) {
       SGPP::base::AdpativityConfiguration AdaptConfig;
 
       AdaptConfig.maxLevelType_ = false;
@@ -306,7 +302,7 @@ namespace SGPP {
       AdaptConfig.percent_ = 0.0;
       AdaptConfig.threshold_ = 0.0;
 
-      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
+      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambdaRegularization);
     }
 
     void LearnerBase::predict(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classesComputed) {
@@ -318,7 +314,6 @@ namespace SGPP {
     }
 
     void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
-      // @TODO (heinecke) implement
       throw base::application_exception("LearnerBase::store: This method isn't implemented, yet!");
     }
 

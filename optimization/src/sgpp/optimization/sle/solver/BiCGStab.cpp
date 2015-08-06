@@ -142,6 +142,7 @@ namespace SGPP {
       }
 
       void BiCGStab::setStartingPoint(const base::DataVector& startingPoint) {
+        x0.resize(startingPoint.getSize());
         x0 = startingPoint;
       }
 

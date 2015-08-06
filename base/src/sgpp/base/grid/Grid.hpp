@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      * enum to address different gridtypes in a standardized way
      *
-     * @todo: use this also for unserialization!
      */
     enum GridType {
       Linear,
@@ -312,7 +311,6 @@ namespace SGPP {
 
         /**
          * reads a grid out of a stream
-         * @todo check for empty istream - error message is not very meaningful
          * @param istr inputstream that contains the grid information
          * @return grid
          */
@@ -381,8 +379,6 @@ namespace SGPP {
 
         /**
          * Returns a string that identifies the grid type uniquely
-         *
-         * @todo use enum instead!!
          *
          * @return string that identifies the grid type uniquely
          */

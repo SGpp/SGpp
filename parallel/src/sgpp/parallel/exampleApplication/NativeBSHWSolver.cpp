@@ -16,7 +16,6 @@
 #include <iomanip>
 #include <cmath>
 
-// @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.data";
 
@@ -231,8 +230,8 @@ double calculatetheta(double a, double sigma, double T, int t) {
  *
  * @param d dimensions
  * @param l the number of levels used in the Sparse Grid
- * @param sigma TODO: missing
- * @param a TODO: missing
+ * @param sigma
+ * @param a
  * @param fileStoch the stochastic data (theta, sigmahw, sigmabs, a)
  * @param fileBound the grid's bounding box - domain boundary(min,max)
  * @param payoffType method that is used to determine the multidimensional payoff function
@@ -242,10 +241,10 @@ double calculatetheta(double a, double sigma, double T, int t) {
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- * @param T TODO: missing
- * @param dStrike TODO: missing
- * @param isLogSolve TODO: missing
+ * @param Solver specifies the solver that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param T
+ * @param dStrike
+ * @param isLogSolve
  */
 void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch, std::string fileBound, std::string payoffType,
               size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver, double T, double dStrike, bool isLogSolve) {
@@ -459,8 +458,8 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
  * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
- * @param T TODO: missing
- * @param dStrike TODO: missing
+ * @param T
+ * @param dStrike
  * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  * @param refinementMode the mode selected for surplus refinement: available: classic, maxLevel
  * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the grid is refined

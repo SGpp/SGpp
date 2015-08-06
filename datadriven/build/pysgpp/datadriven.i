@@ -19,7 +19,6 @@
 %include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerDensityCluster.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 #endif

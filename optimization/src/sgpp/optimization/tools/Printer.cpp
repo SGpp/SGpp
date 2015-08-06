@@ -24,7 +24,8 @@ namespace SGPP {
       indentationLevel(0),
       cursorInClearLine(true),
       lastMsgLength(0),
-      lastDuration(0.0) {
+      lastDuration(0.0),
+      stream(&std::cout) {
     }
 
     void Printer::printStatusBegin(const std::string& msg) {
@@ -45,13 +46,11 @@ namespace SGPP {
       printStatusIdentation();
 
       // print message
-      std::cout << msg;
+      (*stream) << msg;
       printStatusNewLine();
 
       // timing
-      timespec ts;
-      clock_gettime(CLOCK_MONOTONIC, &ts);
-      startTimes.push(ts);
+      watches.push(base::SGppStopwatch());
 
       lastMsgLength = 0;
       cursorInClearLine = true;
@@ -73,16 +72,16 @@ namespace SGPP {
       }
 
       // go back to start of last message and overwrite it with the new message
-      std::cout << std::string(lastMsgLength, '\b') << msg;
+      (*stream) << std::string(lastMsgLength, '\b') << msg;
 
       // new message is too short ==> print spaces to hide the old one and
       // go back again
       if (lastMsgLength > msg.length()) {
-        std::cout << std::string(lastMsgLength - msg.length(), ' ') <<
+        (*stream) << std::string(lastMsgLength - msg.length(), ' ') <<
                   std::string(lastMsgLength - msg.length(), '\b');
       }
 
-      std::cout << std::flush;
+      (*stream) << std::flush;
       lastMsgLength = msg.length();
       cursorInClearLine = false;
     }
@@ -93,7 +92,7 @@ namespace SGPP {
         return;
       }
 
-      std::cout << std::endl;
+      (*stream) << std::endl;
       lastMsgLength = 0;
       cursorInClearLine = true;
     }
@@ -106,7 +105,7 @@ namespace SGPP {
 
       // print indentation
       for (int i = 0; i < indentationLevel; i++) {
-        std::cout << "    ";
+        (*stream) << "    ";
       }
     }
 
@@ -130,10 +129,8 @@ namespace SGPP {
       printStatusIdentation();
 
       // timing
-      timespec ts1 = startTimes.top(), ts2;
-      clock_gettime(CLOCK_MONOTONIC, &ts2);
-      lastDuration = static_cast<float_t>(ts2.tv_sec - ts1.tv_sec) +
-                     static_cast<float_t>(ts2.tv_nsec - ts1.tv_nsec) / 1e9;
+      base::SGppStopwatch watch = watches.top();
+      lastDuration = watch.stop();
 
       // print message
       std::string time_msg =
@@ -141,14 +138,14 @@ namespace SGPP {
         std::to_string(static_cast<size_t>(1000.0 * lastDuration)) + "ms";
 
       if (msg == "") {
-        std::cout << time_msg << ".";
+        (*stream) << time_msg << ".";
       } else {
-        std::cout << time_msg << ", " << msg;
+        (*stream) << time_msg << ", " << msg;
       }
 
       printStatusNewLine();
       lastMsgLength = 0;
-      startTimes.pop();
+      watches.pop();
       cursorInClearLine = true;
     }
 
@@ -172,6 +169,14 @@ namespace SGPP {
       return mutex;
     }
 
+    std::ostream* Printer::getStream() const {
+      return stream;
+    }
+
+    void Printer::setStream(std::ostream* stream) {
+      this->stream = stream;
+    }
+
     void Printer::printIterativeGridGenerator(
       const IterativeGridGenerator& grid_gen) const {
       base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
@@ -180,37 +185,37 @@ namespace SGPP {
 
       for (size_t i = 0; i < gridStorage.size(); i++) {
         if (i > 0) {
-          std::cout << "\n";
+          (*stream) << "\n";
         }
 
         // print grid point and function value
-        std::cout << *gridStorage.get(i) << ", " << functionValues.get(i);
+        (*stream) << *gridStorage.get(i) << ", " << functionValues.get(i);
       }
 
-      std::cout << "\n";
+      (*stream) << "\n";
     }
 
     void Printer::printSLE(SLE& system) const {
       const size_t n = system.getDimension();
 
-      std::cout << "A = [";
+      (*stream) << "A = [";
 
       // print matrix
       for (size_t i = 0; i < n; i++) {
         if (i > 0) {
-          std::cout << ";\n";
+          (*stream) << ";\n";
         }
 
         for (size_t j = 0; j < n; j++) {
           if (j > 0) {
-            std::cout << ", ";
+            (*stream) << ", ";
           }
 
-          std::cout << system.getMatrixEntry(i, j);
+          (*stream) << system.getMatrixEntry(i, j);
         }
       }
 
-      std::cout << "]\n";
+      (*stream) << "]\n";
     }
 
   }

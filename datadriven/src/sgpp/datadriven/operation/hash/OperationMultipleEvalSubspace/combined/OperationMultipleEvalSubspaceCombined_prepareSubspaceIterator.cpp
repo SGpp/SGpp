@@ -218,7 +218,7 @@ namespace SGPP {
         // for predecessors that changed in the "u" array, jump to the current node
         // they also update the jump map
         for (size_t j = recomputeComponentPreviousNode + 1; j < dim; j++) {
-          jumpIndexMap[j] = static_cast<uint32_t>(i); //TODO ugly conversion
+          jumpIndexMap[j] = static_cast<uint32_t>(i);
         }
 
       }

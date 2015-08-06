@@ -50,6 +50,7 @@ namespace SGPP {
       #pragma omp parallel shared(fX, oldGridSize, gridStorage) \
       default(none)
       {
+        base::GridIndex* gp;
         base::DataVector x(d);
         ObjectiveFunction* curFPtr = &f;
 #ifdef _OPENMP
@@ -66,18 +67,13 @@ namespace SGPP {
 
         for (size_t i = oldGridSize; i < curGridSize; i++) {
           // convert grid point to coordinate vector
-          #pragma omp critical
-          {
-            base::GridIndex& gp = *gridStorage.get(i);
+          gp = gridStorage.get(i);
 
-            for (size_t t = 0; t < d; t++) {
-              x[t] = gp.getCoord(t);
-            }
+          for (size_t t = 0; t < d; t++) {
+            x[t] = gp->getCoord(t);
           }
 
-          float_t fx = curFPtr->eval(x);
-
-          #pragma omp critical
+          const float_t fx = curFPtr->eval(x);
           fX[i] = fx;
         }
       }

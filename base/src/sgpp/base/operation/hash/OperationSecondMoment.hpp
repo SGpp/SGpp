@@ -15,7 +15,7 @@ namespace SGPP {
   namespace base {
 
     /**
-     * This class provides the first moment of a sparse grid function
+     * This class provides the second moment of a sparse grid function
      */
     class OperationSecondMoment {
       public:
