@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>

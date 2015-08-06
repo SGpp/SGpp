@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace quadrature {
 
@@ -23,19 +22,20 @@ namespace SGPP {
     std::uniform_int_distribution<int> Random::dist = std::uniform_int_distribution<int>(0, RAND_MAX);
 #endif
 
-
     void Random::seed(int seed_value) {
+      if (seed_value >= 0) {
 #ifdef USE_STD_RANDOM
-      gen.seed(seed_value);
+        gen.seed(seed_value);
 #else
-      srand(seed_value);
+        srand(seed_value);
 #endif
-      is_seeded = true;
+        is_seeded = true;
+      }
     }
 
     int Random::random() {
       if (!is_seeded) {
-        seed((int)std::time(NULL));
+        seed((int) std::time(NULL));
       }
 
 #ifdef USE_STD_RANDOM
@@ -46,7 +46,7 @@ namespace SGPP {
     }
 
     float_t Random::random_double() {
-      return (float_t)(random()) / RAND_MAX;
+      return (float_t) (random()) / RAND_MAX;
     }
 
   }

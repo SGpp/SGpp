@@ -145,13 +145,13 @@ namespace SGPP {
          * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
          * @param AdaptConfig configuration of the adaptivity strategy
          * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
-         * @param lambda regularization parameter lambda
+         * @param lambdaRegularization regularization parameter lambda
          */
         virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
                                     const SGPP::base::RegularGridConfiguration& GridConfig,
                                     const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                     const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                                    const SGPP::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt, const float_t lambda);
+                                    const SGPP::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt, const float_t lambdaRegularization);
 
         /**
          * Learning a dataset with regular sparse grids
@@ -160,11 +160,11 @@ namespace SGPP {
          * @param classes classes corresponding to the training dataset
          * @param GridConfig configuration of the regular grid
          * @param SolverConfig configuration of the SLE solver
-         * @param lamda regularization parameter lambda
+         * @param lambdaRegularization regularization parameter lambda
          */
         LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
                             const SGPP::base::RegularGridConfiguration& GridConfig,
-                            const SGPP::solver::SLESolverConfiguration& SolverConfig, const float_t lamda);
+                            const SGPP::solver::SLESolverConfiguration& SolverConfig, const float_t lambdaRegularization);
 
         /**
          * executes a Regression test for a given dataset and returns the result

@@ -21,7 +21,6 @@ namespace SGPP {
      *
      * @param node_values the functions values in the node base
      *
-     * @todo (heinecke, nice) Implement the hierarchisation on the sparse grid with mod linear base functions
      */
     void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values) {
       HierarchisationModLinear func(this->storage);
@@ -38,7 +37,6 @@ namespace SGPP {
      *
      * @param alpha the coefficients of the sparse grid's base functions
      *
-     * @todo (heinecke, nice) Implement the dehierarchisation on the sparse grid with mod linear base functions
      */
     void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
       DehierarchisationModLinear func(this->storage);

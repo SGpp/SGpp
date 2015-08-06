@@ -78,6 +78,15 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
             sys.exit(1)
+        
+        # make sure swig version is new enough
+        from SCons.Script.SConscript import SConsEnvironment
+        import warnings
+        sconsenv = SConsEnvironment()
+        swig_ver = sconsenv._get_major_minor_revision(re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0])
+        if swig_ver < (3, 0, 0):
+          sys.stderr.write("Error: swig version too old! Use swig >= 3.0.0\n")
+          sys.exit(1)
 
         print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0]
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
@@ -106,7 +115,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
             sys.stderr.write('Warning: Numpy doesn\'t seem to be installed. Disabling unit tests\n')
             env['NO_UNIT_TESTS'] = True
     else:
-        print 'Warning: Python extension ("SG_PYTHON") not enabled, skipping python unit tests'
+        print 'Warning: Python extension ("SG_PYTHON") not enabled.'
 
     if env['SG_JAVA']:
         # check for $JAVA_HOME; prepend to search path
@@ -133,7 +142,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                  + "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
                 sys.exit(1)
     else:
-        print "Info: Compiling without java support"
+        print 'Warning: Java support ("SG_JAVA") not enabled.'
 
     # now set up all further environment settings that should never fail
     # compiler setup should be always after checking headers and flags, as they can make the checks invalid
@@ -203,6 +212,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         # the python binding (pysgpp) requires lpython and a flat namespace
         # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
         env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
+        #The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
+        #From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
+        #Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
+        env.Append(CPPFLAGS=['-Wa,-q'])
+        env.AppendUnique(CPPPATH="/usr/local/include")
+        env.AppendUnique(LIBPATH="/usr/local/lib")
         env['SHLIBSUFFIX'] = '.dylib'
     elif env['PLATFORM'] == 'cygwin':
         pass

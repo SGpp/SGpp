@@ -13,7 +13,7 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.controller.TerminalController import TerminalController
+from datadriven.controller.TerminalController import TerminalController
 
 import os
 from subprocess import *
@@ -21,19 +21,19 @@ from subprocess import *
 
 ##
 # @package tests.tbin.test_TerminalController
-# Contains class test_TerminalController::TestTerminalController with unittests for @link bin.controller.TerminalController.TerminalController TerminalController @endlink
+# Contains class test_TerminalController::TestTerminalController with unittests for @link datadriven.src.python.controller.TerminalController.TerminalController TerminalController @endlink
 
 ##
-# Class with unittests for @link bin.controller.TerminalController.TerminalController TerminalController @endlink
+# Class with unittests for @link datadriven.src.python.controller.TerminalController.TerminalController TerminalController @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link bin.controller.TerminalController.TerminalController TerminalController @endlink
+# @test Unittests for @link datadriven.src.python.controller.TerminalController.TerminalController TerminalController @endlink
 class TestTerminalController(unittest.TestCase):
     
     
     ##
-    # Tests the function @link bin.controller.TerminalController.TerminalController.constructObjectsFromFile TerminalController @endlink
+    # Tests the function @link datadriven.src.python.controller.TerminalController.TerminalController.constructObjectsFromFile TerminalController @endlink
     def testConstructObjectsFromFile(self,):
         jobfile = 'testsettings.job'
         

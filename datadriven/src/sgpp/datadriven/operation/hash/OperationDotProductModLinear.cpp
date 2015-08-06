@@ -24,7 +24,7 @@ namespace SGPP {
       //GridStorage::grid_iterator working;
       //for (GridStorage::grid_iterator working = storage->begin(); working != storage->end(); working++){
       for (size_t i = 0; i < storage->size(); i++) {
-        GridStorage::index_type working = storage->get(i);
+        GridStorage::index_type working = *storage->get(i);
         float_t value1 = 1.0;
         float_t value2 = 1.0;
 

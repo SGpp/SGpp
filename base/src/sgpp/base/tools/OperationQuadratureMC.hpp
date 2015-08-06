@@ -35,7 +35,6 @@ namespace SGPP {
          * @param grid Reference to the grid object
          * @param mcPaths Number of Monte Carlo samples
          *
-         * @todo (pflueged) extend to error computation / arbitrary functions
          */
         OperationQuadratureMC(SGPP::base::Grid& grid, int mcPaths);
 

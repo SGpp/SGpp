@@ -75,7 +75,7 @@ namespace SGPP {
          * @param i       index of the grid point (can be even)
          */
         inline float_t calculatePoint(index_type hInv, index_type i) const {
-          return calculatePoint(1.0 / static_cast<float_t>(hInv), i);
+          return calculatePoint( static_cast<float_t>(1.0) / static_cast<float_t>(hInv), i);
         }
 
         /**
@@ -85,13 +85,6 @@ namespace SGPP {
         inline float_t calculatePoint(float_t h, index_type i) const {
           return (std::cos(
                     M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
-          // TODO
-          /*constexpr float_t delta = 0.0;
-          //constexpr float_t delta = 0.2;
-          constexpr float_t yScale = std::cos(delta * M_PI / 2.0);
-          return (1.0 - std::cos(
-                    M_PI * ((1.0 - delta) * (static_cast<float_t>(i) * h) +
-                            delta / 2.0)) / yScale) / 2.0;*/
         }
     };
 

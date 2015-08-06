@@ -61,7 +61,6 @@ namespace SGPP {
     }
 
     void SystemMatrixLeastSquaresIdentity::prepareGrid() {
-      //TODO call to prepare not modeled
       this->B->prepare();
     }
 

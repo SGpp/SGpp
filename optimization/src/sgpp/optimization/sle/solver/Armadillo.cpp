@@ -11,6 +11,15 @@
 
 #ifdef USE_ARMADILLO
 #include <armadillo>
+
+#if USE_DOUBLE_PRECISION
+typedef arma::vec ArmadilloVector;
+typedef arma::mat ArmadilloMatrix;
+#else
+typedef arma::fvec ArmadilloVector;
+typedef arma::fmat ArmadilloMatrix;
+#endif
+
 #endif /* USE_ARMADILLO */
 
 #include <cstddef>
@@ -42,7 +51,7 @@ namespace SGPP {
         printer.printStatusBegin("Solving linear system (Armadillo)...");
 
         const arma::uword n = static_cast<arma::uword>(system.getDimension());
-        arma::mat A(n, n);
+        ArmadilloMatrix A(n, n);
         size_t nnz = 0;
 
         A.zeros();
@@ -107,8 +116,8 @@ namespace SGPP {
 
         if (B.getNcols() == 1) {
           // only one RHS ==> use vector version of arma::solve
-          arma::vec bArmadillo(B.getPointer(), n);
-          arma::vec xArmadillo(n);
+          ArmadilloVector bArmadillo(B.getPointer(), n);
+          ArmadilloVector xArmadillo(n);
 
           printer.printStatusUpdate("solving with Armadillo");
 
@@ -125,14 +134,14 @@ namespace SGPP {
         } else {
           // multiple RHSs ==> use matrix version of arma::solve
           const arma::uword B_count = static_cast<arma::uword>(B.getNcols());
-          arma::mat BArmadillo(n, B_count);
-          arma::mat XArmadillo(n, B_count);
+          ArmadilloMatrix BArmadillo(n, B_count);
+          ArmadilloMatrix XArmadillo(n, B_count);
           base::DataVector b(n);
 
           // copy RHSs to Armadillo matrix
           for (arma::uword i = 0; i < B_count; i++) {
             B.getColumn(i, b);
-            BArmadillo.col(i) = arma::vec(b.getPointer(), n);
+            BArmadillo.col(i) = ArmadilloVector(b.getPointer(), n);
           }
 
           printer.printStatusUpdate("solving with Armadillo");

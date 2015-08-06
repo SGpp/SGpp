@@ -34,7 +34,7 @@ namespace combigrid {
        * be used in rare cases.*/
       CombigridLevelVector(std::vector<int> level, double coef);
       /** Creates a complete set of fullgrids including their coefficients.*/
-      CombigridLevelVector(std::vector<std::vector<int> > in,
+      CombigridLevelVector(std::vector<std::vector<int> > input,
                            std::vector<double> coef);
 
       /** Returns all full Grid level vectors*/
@@ -92,18 +92,18 @@ namespace combigrid {
        * provided in the Combigridlevelvectors
        */
       static CombigridLevelVector getCombiLevels(
-        std::vector<CombigridLevelVector> in);
+        std::vector<CombigridLevelVector> input);
       /**
        * Function creating the levels of a combigrid containing all subgrids
        * provided in the Combigridlevelvectors
        */
       static CombigridLevelVector getCombiLevels(
-        std::vector<std::vector<int> > in);
+        std::vector<std::vector<int> > input);
       /**
        * Function creating the levels of a combigrid containing all subgrids
        * provided in the Combigridlevelvectors
        */
-      static CombigridLevelVector getCombiLevels(CombigridLevelVector in);
+      static CombigridLevelVector getCombiLevels(CombigridLevelVector input);
 
       /** Add new active full grid. The changes of the combischeme are returned */
       CombigridLevelVector getChanges(std::vector<int> newFullGridLevels);

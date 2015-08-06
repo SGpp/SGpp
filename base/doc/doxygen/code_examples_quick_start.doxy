@@ -43,7 +43,7 @@ found in the directory @c base/examples/, which we then discuss line by line.
 @include python_simple.py
 which can be executed by
 @code
-export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib"
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
 export PYTHONPATH="/path/to/SGpp/trunk/lib/pysgpp"
 python python_simple.py
 @endcode 
@@ -199,7 +199,7 @@ For the compilation and execution of the example,
 we change to the directory @c base/examples/ and run
 @code
 javac -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar java_simple.java
-export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/jsgpp"
 java -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar java_simple
 @endcode 
 Note that you have to set the @c LD_LIBRARY_PATH
@@ -291,7 +291,7 @@ After adding this line, we can start MATLAB.
 However, we have to set the environment variables @c LD_LIBRARY_PATH and
 @c LD_PRELOAD:
 @code
-export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/jsgpp"
 export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
 matlab
 @endcode

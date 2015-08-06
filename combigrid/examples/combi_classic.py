@@ -8,7 +8,7 @@ Python example for the combination technique. Be sure that the folder containing
 pysgpp.py can be found in the PYTHONPATH
 '''
 
-from pysgpp.combigrid import SerialCombiGrid,S_CT,DoubleVector
+from pysgpp import SerialCombiGrid,S_CT,DoubleVector
 
 def f_3D(coords):
     return 1.0 + (0.25 * (coords[0] - 0.7) * (coords[0] - 0.7) + 2.0)\

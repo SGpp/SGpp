@@ -34,7 +34,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
-using namespace sg::base;
+using namespace SGPP::base;
 using namespace std;
 
 
@@ -61,7 +61,7 @@ namespace SGPP {
         throw base::application_exception("BatchLearner: An unsupported SLE solver type was chosen!");
 
       //open file
-      reader.open(batchConf.filename);
+      reader.open(batchConf.filename.c_str());
 
       if (!reader) {
         cout << "ERROR: file does not exist: " << batchConf.filename << endl;
@@ -74,7 +74,7 @@ namespace SGPP {
       size_t cur_pos = 0;
       size_t cur_find = 0;
       string cur_value;
-      double dbl_cur_value;
+      float_t dbl_cur_value;
 
       DataVector temprow(dimensions);
 
@@ -139,7 +139,7 @@ namespace SGPP {
 
         if (mapData) {
           if (dataInBatch.find(lineClass) == dataInBatch.end())//first data entry for this class in this batch
-            dataInBatch.insert(std::pair<int, DataMatrix*>(lineClass, new DataMatrix(0, dimensions, -1.0)));
+            dataInBatch.insert(std::pair<int, DataMatrix*>(lineClass, new DataMatrix(0, dimensions, float_t(-1.0) )));
 
           //add found data entry to correct DataMatrix in map
           dataInBatch.at(lineClass)->appendRow(lineData);
@@ -165,9 +165,9 @@ namespace SGPP {
 
       //wMode 5: weigh old alpha with new alpha by occurences
       if (batchConf.wMode == 5) {
-        double k = (double) dataInBatch.at(grid)->getNrows();
-        double n = (double) occurences.at(grid);
-        double wNew = max(k / (n + k), (double)batchConf.wArgument);
+        float_t k = (float_t) dataInBatch.at(grid)->getNrows();
+        float_t n = (float_t) occurences.at(grid);
+        float_t wNew = max(k / (n + k), (float_t)batchConf.wArgument);
 
         if (batchConf.verbose)
           cout << "old weight: " << 1.0 - wNew << " new weight: " << wNew << endl;
@@ -191,21 +191,21 @@ namespace SGPP {
       }
 
       size_t count = alphaStorage.at(grid).size();//count of old alphas available for calculation
-      vector<float> factors;
+      vector<float_t> factors;
 
       //previous alphas exist
       //calc factors
-      float sum = 0.0f;
+      float_t sum = 0.0f;
 
       for (size_t i = 0; i < count; i++) {
         if (batchConf.wMode == 0)
-          factors.push_back((float)1);//temp: all alphas are equal
+          factors.push_back((float_t)1);//temp: all alphas are equal
         else if (batchConf.wMode == 1)
-          factors.push_back((float)(i + 1)*batchConf.wArgument); //linear
+          factors.push_back((float_t)(i + 1)*batchConf.wArgument); //linear
         else if (batchConf.wMode == 2)
-          factors.push_back((float)pow(batchConf.wArgument, (i + 1))); //exp
+          factors.push_back((float_t)pow(batchConf.wArgument, (i + 1))); //exp
         else if (batchConf.wMode == 3)
-          factors.push_back((float)batchConf.wArgument / (float)(i + 1)); //1/x bzw arg/x
+          factors.push_back((float_t)batchConf.wArgument / (float_t)(i + 1)); //1/x bzw arg/x
         else if (batchConf.wMode != 4 && batchConf.wMode != 5) { //4 and 5 treated elsewhere
           cout << "unsupported weighting mode (mode/arg): " << batchConf.wMode << "/" << batchConf.wArgument << endl;
           throw 42;
@@ -238,7 +238,7 @@ namespace SGPP {
         //update norm factors
         for (auto const& p : grids) {
           //for each grid
-          double evalsum = 0;
+          float_t evalsum = 0;
 
           for (float x = 0; x < batchConf.samples; x++) {
             //generate points per grid
@@ -250,7 +250,7 @@ namespace SGPP {
 
             //add norm factor
             OperationEval* opEval = SGPP::op_factory::createOperationEval(*grids.at(p.first));
-            double temp = opEval->eval(*alphaVectors.at(p.first), pt);
+            float_t temp = opEval->eval(*alphaVectors.at(p.first), pt);
 
             if (batchConf.verbose && abs(temp) > 100)
               cout << "warning abs>100: " << temp << " for " << pt.toString() << endl;
@@ -258,7 +258,7 @@ namespace SGPP {
             evalsum += temp;
           }
 
-          evalsum = evalsum / (double) batchConf.samples;
+          evalsum = evalsum / (float_t) batchConf.samples;
           //update the normFactor
           normFactors.at(p.first) = evalsum;
 
@@ -276,12 +276,12 @@ namespace SGPP {
         testDataset.getRow(i, pt);
         //Compute maximum of all density functions:
         int max_index = -1;
-        double max = -1.0f * numeric_limits<double>::max();
+        float_t max = -1.0f * numeric_limits<float_t>::max();
 
         for (auto const& g : grids) {
           SGPP::base::OperationEval* Eval = SGPP::op_factory::createOperationEval(*g.second);
           //posterior = likelihood*prior
-          double res = Eval->eval(*alphaVectors.at(g.first), pt);
+          float_t res = Eval->eval(*alphaVectors.at(g.first), pt);
           delete Eval;
 
           if (batchConf.samples != 0)
@@ -322,7 +322,7 @@ namespace SGPP {
 
           alphaVectors.insert(std::pair<int, DataVector*>(p.first, new DataVector(grids.at(p.first)->getSize())));
           alphaVectors.at(p.first)->setAll(0.0);
-          normFactors.insert(std::pair<int, float>(p.first, 1));
+          normFactors.insert(std::pair<int, float_t>(p.first, 1));
         }
 
 
@@ -434,8 +434,8 @@ namespace SGPP {
           //calc accuracy for this batch and all tests
           t_total += (int)result.getSize();
           t_correct += correct;
-          acc_current = (double)(100.0 * correct / (double)result.getSize());
-          acc_global = (double)(100.0 * t_correct / (double)t_total);
+          acc_current = (float_t)(100.0 * correct / (float_t)result.getSize());
+          acc_global = (float_t)(100.0 * t_correct / (float_t)t_total);
           //output accuracy
           cout << "batch:\t" << acc_current << "% (" << correct << "/" << result.getSize() << ")" << endl;
           cout << "total:\t" << acc_global << "% (" << t_correct << "/" << t_total << ")" << endl;

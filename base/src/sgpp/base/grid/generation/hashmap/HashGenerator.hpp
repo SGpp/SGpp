@@ -31,12 +31,8 @@ namespace SGPP {
      * 1. the classic sparse grid with level 0 and a diagonal
      * cut through the sub space scheme.
      *
-     * @todo (heinecke, nice) add picture here
-     *
      * 2. a modified boundary grid with level 0 and a pentagon cut
      * trough the sub space scheme.
-     *
-     * @todo (heinecke, nice) add picture here
      *
      * Furthermore, the creation of full grids (in the hierarchical basis) is supported.
      */
@@ -49,8 +45,6 @@ namespace SGPP {
 
         /**
          * Generates a regular sparse grid of level levels, without boundaries
-         *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
          *
          * @param storage Hashmap that stores the grid points
          * @param level Grid level (non-negative value)
@@ -69,8 +63,6 @@ namespace SGPP {
         * Generates a regular sparse grid of level levels, without boundaries
         * where dimensions are splitted into a groups with only certain number
         * of dimensions completely connected in a clique
-        *
-        * @todo (blank) level should be of type level_t but swig doesnt want that
         *
         * @param storage Hashmap that stores the grid points
         * @param level Grid level (non-negative value)
@@ -93,8 +85,6 @@ namespace SGPP {
         /**
          * Generates a full grid of level @p level, without boundaries.
          *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
-         *
          * @param storage Hashmap that stores the grid points
          * @param level Grid level (non-negative value)
          */
@@ -109,8 +99,6 @@ namespace SGPP {
         /**
          * Generates a full grid of level @p level, with boundary grid points.
          *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
-         *
          * @param storage Hashmap that stores the grid points
          * @param level Grid level (non-negative value)
          */
@@ -124,8 +112,6 @@ namespace SGPP {
 
         /**
          * Generates a regular sparse grid of level levels with boundaries
-         *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)
@@ -172,8 +158,6 @@ namespace SGPP {
 
         /**
          * Generates a regular sparse grid of level levels with boundaries
-         *
-         * @todo (blank) level should be of type level_t but swig doesnt want that
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)
@@ -290,7 +274,7 @@ namespace SGPP {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // calculate current level-sum - 1
               level_t level_sum = idx.getLevelSum() - 1;
@@ -361,7 +345,7 @@ namespace SGPP {
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
               bool skip = false;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // calculate current level-sum - 1
               level_t level_sum = idx.getLevelSum() - 1;
@@ -465,7 +449,7 @@ namespace SGPP {
               // add missing Level 1
               level_t level_sum = (level_t)((storage->dim() - 1) - d);
               bool has_level_zero = false;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // Calculate level-sum
               for (size_t sd = 0; sd < d; sd++) {
@@ -555,7 +539,7 @@ namespace SGPP {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // Calculate level-sum
               level_t level_sum = idx.getLevelSum() - 1;
@@ -643,7 +627,7 @@ namespace SGPP {
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
               bool first = true;
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // add remaining level-index pairs in current dimension d
               for (level_t l = 1; l <= n; l++) {
@@ -726,7 +710,7 @@ namespace SGPP {
 
             // loop over all current grid points
             for (size_t g = 0; g < grid_size; g++) {
-              index_type idx(storage->get(g));
+              index_type idx(*storage->get(g));
 
               // add remaining level-index pairs in current dimension d
               for (level_t l = 1; l <= n; l++) {

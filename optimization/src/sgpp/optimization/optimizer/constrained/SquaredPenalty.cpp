@@ -44,12 +44,6 @@ namespace SGPP {
               base::DataVector hx(mH);
               h.eval(x, hx);
 
-              // DEBUG
-              /*std::cout << "x = " << x.toString() << "\n";
-              std::cout << "fx = " << fx << "\n";
-              std::cout << "gx = " << gx.toString() << "\n";
-              std::cout << "hx = " << hx.toString() << "\n";*/
-
               float_t value = fx;
 
               for (size_t i = 0; i < mG; i++) {
@@ -61,9 +55,6 @@ namespace SGPP {
               for (size_t i = 0; i < mH; i++) {
                 value += mu * hx[i] * hx[i];
               }
-
-              // DEBUG
-              //std::cout << "value = " << value << "\n";
 
               return value;
             }
@@ -120,18 +111,6 @@ namespace SGPP {
               base::DataMatrix gradHx(mH, d);
               hGradient.eval(x, hx, gradHx);
 
-              // DEBUG
-              /*std::cout << "mu = " << mu << "\n";
-              std::cout << "mG = " << mG << "\n";
-              std::cout << "mH = " << mH << "\n";
-              std::cout << "x = " << x.toString() << "\n";
-              std::cout << "fx = " << fx << "\n";
-              std::cout << "gradFx = " << gradFx.toString() << "\n";
-              std::cout << "gx = " << gx.toString() << "\n";
-              std::cout << "gradGx = " << gradGx.toString() << "\n";
-              std::cout << "hx = " << hx.toString() << "\n";
-              std::cout << "gradHx = " << gradHx.toString() << "\n";*/
-
               float_t value = fx;
               gradient.resize(d);
               gradient = gradFx;
@@ -156,10 +135,6 @@ namespace SGPP {
                   gradient[t] += mu * 2.0 * hxi * gradHx.get(i, t);
                 }
               }
-
-              // DEBUG
-              /*std::cout << "value = " << value << "\n";
-              std::cout << "gradient = " << gradient.toString() << "\n";*/
 
               return value;
             }

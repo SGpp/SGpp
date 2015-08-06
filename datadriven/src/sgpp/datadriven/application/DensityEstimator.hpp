@@ -28,7 +28,7 @@ namespace SGPP {
 
         virtual float_t mean() = 0;
         virtual float_t variance() = 0;
-        virtual float_t std_deviation() = 0;
+        virtual float_t std_deviation();
         virtual void cov(base::DataMatrix& cov) = 0;
         virtual void corrcoef(base::DataMatrix& corr);
 

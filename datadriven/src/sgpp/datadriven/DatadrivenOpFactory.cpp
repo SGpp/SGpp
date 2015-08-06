@@ -44,7 +44,7 @@
 
 #ifdef USE_OCL
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingMaskOCL/StreamingMaskOCLOperatorFactory.hpp>
+//#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingMaskOCL/StreamingMaskOCLOperatorFactory.hpp>
 #endif
 
 

@@ -5,13 +5,13 @@
 
 // The Good, i.e. without any modifications
 %include "quadrature/src/sgpp/quadrature/Random.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/SampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/NaiveSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/LatinHypercubeSampleGenerator.hpp"
-//TODO franzefn
+%include "quadrature/src/sgpp/quadrature/sampling/SampleGenerator.hpp"
+%include "quadrature/src/sgpp/quadrature/sampling/NaiveSampleGenerator.hpp"
+%include "quadrature/src/sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp"
+%include "quadrature/src/sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp"
+%include "quadrature/src/sgpp/quadrature/sampling/HaltonSampleGenerator.hpp"
+
 //%apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
-%include "quadrature/src/sgpp/quadrature/sample/StratifiedSampleGenerator.hpp"
-%include "quadrature/src/sgpp/quadrature/sample/HaltonSampleGenerator.hpp"
 
 //%apply std::string *INPUT { std::string& istr };
 

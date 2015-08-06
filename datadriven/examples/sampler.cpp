@@ -6,18 +6,14 @@
 
 int main(int argc, char** argv) {
 
-  //  int maxLevel = 9;
   int maxLevel = 9;
 
-  //  std::string fileName = "debugging.arff";
-  //  std::string fileName = "friedman_4d_2000.arff";
-  std::string fileName = "friedman2_90000.arff";
-  //  std::string fileName = "bigger.arff";
+  std::string fileName = "../tests/data/friedman_4d_2000.arff";
 
   //sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -30,13 +26,13 @@ int main(int argc, char** argv) {
   SLESolverConfigRefine.eps_ = 0;
   SLESolverConfigRefine.maxIterations_ = 0;
   SLESolverConfigRefine.threshold_ = -1.0;
-  SLESolverConfigRefine.type_ = sg::solver::CG;
+  SLESolverConfigRefine.type_ = SGPP::solver::CG;
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
   SLESolverConfigFinal.maxIterations_ = 20;
   SLESolverConfigFinal.threshold_ = -1.0;
-  SLESolverConfigFinal.type_ = sg::solver::CG;
+  SLESolverConfigFinal.type_ = SGPP::solver::CG;
 
   std::string metaInformation = "refine: "
                                 + std::to_string((unsigned long long) adaptConfig.numRefinements_)

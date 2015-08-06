@@ -8,9 +8,9 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
   namespace datadriven {
@@ -46,8 +46,7 @@ namespace SGPP {
       return dataset;
     }
 
-    void ARFFTools::readARFFSize(const std::string& filename,
-                                 size_t& numberInstances, size_t& dimension) {
+    void ARFFTools::readARFFSize(const std::string& filename, size_t& numberInstances, size_t& dimension) {
       std::string line;
       std::ifstream myfile(filename.c_str());
       dimension = 0;
@@ -77,7 +76,64 @@ namespace SGPP {
       myfile.close();
     }
 
-    void ARFFTools::writeNewTrainingDataEntry(const std::string& arffLine, SGPP::base::DataMatrix& destination, size_t instanceNo) {
+    void ARFFTools::readARFFSizeFromString(const std::string& content, size_t& numberInstances, size_t& dimension) {
+      std::string line;
+      std::istringstream contentStream(content);
+
+      dimension = 0;
+      numberInstances = 0;
+
+      while (!contentStream.eof()) {
+        std::getline(contentStream, line);
+        std::transform(line.begin(), line.end(), line.begin(), toupper);
+
+        if (line.find("@ATTRIBUTE class", 0) != line.npos) {
+          dimension--;
+        } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
+          dimension++;
+        } else if (line.find("@DATA", 0) != line.npos) {
+          numberInstances = 0;
+        } else if (!line.empty()) {
+          numberInstances++;
+        }
+      }
+
+      // the class is not regarded when getting the dimension
+      //dimension--;
+    }
+
+    Dataset ARFFTools::readARFFFromString(const std::string& content) {
+      std::string line;
+      std::stringstream contentStream;
+      contentStream << content;
+      size_t numberInstances;
+      size_t dimension;
+      bool dataReached = false;
+      size_t instanceNo = 0;
+
+      ARFFTools::readARFFSizeFromString(content, numberInstances, dimension);
+      Dataset dataset(numberInstances, dimension);
+
+      while (!contentStream.eof()) {
+        std::getline(contentStream, line);
+        std::transform(line.begin(), line.end(), line.begin(), toupper);
+
+        if (dataReached && !line.empty()) {
+          writeNewClass(line, *dataset.getClasses(), instanceNo);
+          writeNewTrainingDataEntry(line, *dataset.getTrainingData(), instanceNo);
+          instanceNo++;
+        }
+
+        if (line.find("@DATA", 0) != line.npos) {
+          dataReached = true;
+        }
+      }
+
+      return dataset;
+    }
+
+    void ARFFTools::writeNewTrainingDataEntry(const std::string& arffLine, SGPP::base::DataMatrix& destination,
+        size_t instanceNo) {
       size_t cur_pos = 0;
       size_t cur_find = 0;
       size_t dim = destination.getNcols();

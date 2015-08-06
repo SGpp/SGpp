@@ -18,7 +18,7 @@ namespace combigrid {
       /** Initializes the arbitrary scheme from a set of active set level vectors*/
       CombiArbitraryScheme(std::vector<std::vector<int> > level_vectors);
       /** Initializes the arbitrary scheme from a CombigridLevelVector as acitve set.*/
-      CombiArbitraryScheme(CombigridLevelVector in);
+      CombiArbitraryScheme(CombigridLevelVector input);
 
   };
 
