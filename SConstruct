@@ -189,7 +189,7 @@ if env['COMPILE_BOOST_TESTS']:
         print """"****************************************************
 No Boost Unit Test Headers found. Omitting Boost unit tests. 
 Please install the corresponding package, e.g. using command on Ubuntu
-> sudo apt-get install libbost-test-dev
+> sudo apt-get install libboost-test-dev
 ****************************************************
 """
         
@@ -199,7 +199,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         print """"****************************************************
 No Boost Unit Test library found. Omitting Boost unit tests. 
 Please install the corresponding package, e.g. using command on Ubuntu
-> sudo apt-get install libbost-test-dev
+> sudo apt-get install libboost-test-dev
 ****************************************************
 """
         
