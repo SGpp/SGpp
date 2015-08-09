@@ -29,7 +29,8 @@ namespace SGPP {
         res = 1.0;
 
         for (size_t d = 0; d < dim; d++) {
-          res *= pow(2, (2 * k - 1) * gi->getLevel(d) - 1);
+          res *= pow(2, (2 * k - 1) *
+                     static_cast<float_t>(gi->getLevel(d)) - 1);
         }
 
         diagonal[i] = res;
@@ -48,7 +49,8 @@ namespace SGPP {
 
         for (size_t d = 0; d < dim; d++) {
           // Hk in dimension d
-          resd = pow(2, (2 * k - 1) * gi->getLevel(d) - 1);
+          resd = pow(2, (2 * k - 1) *
+                     static_cast<float_t>(gi->getLevel(d)) - 1);
 
           // "H0" in remaining dimensions
           for (size_t d2 = 0; d2 < d; d2++) {

@@ -23,32 +23,33 @@ namespace SGPP {
       LinearModifiedBasis<unsigned int, unsigned int> base;
       GetAffectedBasisFunctions<LinearModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
-  	  /* Scale point to bounding box */
+      /* Scale point to bounding box */
 
-  	  // Initialize a copy of point
-  	  DataVector point_bb = DataVector(point.getSize());
-  	  point_bb.copyFrom(point);
+      // Initialize a copy of point
+      DataVector point_bb = DataVector(point.getSize());
+      point_bb.copyFrom(point);
 
-  	  // Get bounding box
-  	  BoundingBox* bb = storage->getBoundingBox();
-  	  size_t dim = bb->getDimensions();
+      // Get bounding box
+      BoundingBox* bb = storage->getBoundingBox();
+      size_t dim = bb->getDimensions();
 
-  	  if (bb != NULL) {
-  		for (size_t d = 0; d < dim; ++d) {
-  			DimensionBoundary dimbb = bb->getBoundary(d);
+      if (bb != NULL) {
+        for (size_t d = 0; d < dim; ++d) {
+          DimensionBoundary dimbb = bb->getBoundary(d);
 
-  			if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
-  				continue;
-  			}
-  			if (!(dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary)) {
-  				return 0.0;
-  			}
+          if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
+            continue;
+          }
 
-  			point_bb[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
-  		}
-  	  }
+          if (!(dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary)) {
+            return 0.0;
+          }
 
-  	  ga(base, point_bb, vec);
+          point_bb[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
+        }
+      }
+
+      ga(base, point_bb, vec);
 
       float_t result = 0.0;
 

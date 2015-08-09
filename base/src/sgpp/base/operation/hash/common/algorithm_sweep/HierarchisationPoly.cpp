@@ -41,7 +41,8 @@ namespace SGPP {
       index.get(dim, cur_lev, cur_ind);
 
       // hierarchisation
-      float_t x = static_cast<float_t>(cur_ind) / (1 << cur_lev);
+      float_t x = static_cast<float_t>(cur_ind) /
+                  static_cast<float_t>(1 << cur_lev);
       result[seq] = source[seq]
                     - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
 

@@ -7,7 +7,7 @@
 
 %inline %{
 /*
-* Memory managment function used in sg::base::DataVector::__array()
+* Memory managment function used in SGPP::base::DataVector::__array()
 * it simply decrements the number of references to the PyObject datavector 
 * every time a referencing ndarray is deleted.
 * After reference counter reaches 0, the memory of DataVector will be deallocated 

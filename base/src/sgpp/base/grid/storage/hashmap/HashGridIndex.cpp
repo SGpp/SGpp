@@ -290,7 +290,8 @@ namespace SGPP {
     HashGridIndex::getCoordsStretching(DataVector& p, Stretching& stretch) const {
       for (size_t d = 0; d < DIM; d++) {
         if (level[d] == 0) {
-          p.set(d, stretch.getIntervalWidth(d) * index[d] + stretch.getIntervalOffset(d));
+          p.set(d, stretch.getIntervalWidth(d) *
+                static_cast<float_t>(index[d]) + stretch.getIntervalOffset(d));
         } else {
           p.set(d, stretch.getCoordinates(level[d], index[d], d));
         }

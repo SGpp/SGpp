@@ -5,6 +5,13 @@
 
 #include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
 #include <sgpp/optimization/function/EmptyConstraintGradient.hpp>
+#include <sgpp/optimization/function/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/ObjectiveGradient.hpp>
+#include <sgpp/optimization/function/ObjectiveHessian.hpp>
+#include <sgpp/optimization/function/InterpolantFunction.hpp>
+#include <sgpp/optimization/function/InterpolantGradient.hpp>
+#include <sgpp/optimization/function/InterpolantHessian.hpp>
+#include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
@@ -20,6 +27,7 @@
 #include <sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
+#include "GridCreator.hpp"
 #include "ObjectiveFunctions.hpp"
 
 using namespace SGPP;
@@ -33,30 +41,20 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   ExampleGradient fGradient;
   ExampleHessian fHessian;
 
+  const size_t d = f.getDimension();
+  const size_t p = 3;
+  const size_t l = 6;
   const size_t N = 1000;
 
-  // Test All the Optimizers!
-  std::vector<std::unique_ptr<optimizer::UnconstrainedOptimizer>> optimizers;
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::GradientDescent(f, fGradient, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::NLCG(f, fGradient, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::Newton(f, fHessian, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::AdaptiveGradientDescent(f, fGradient, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::AdaptiveNewton(f, fHessian, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::BFGS(f, fGradient, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::Rprop(f, fGradient, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::NelderMead(f, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::MultiStart(f, N))));
-  optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                   new optimizer::DifferentialEvolution(f, N))));
+  std::unique_ptr<base::Grid> grid(base::Grid::createModBsplineGrid(d, p));
+  base::DataVector alpha(0);
+  createSampleGrid(*grid, l, f, alpha);
+  std::unique_ptr<OperationMultipleHierarchisation> op(
+    op_factory::createOperationMultipleHierarchisation(*grid));
+  op->doHierarchisation(alpha);
+  InterpolantFunction ft(*grid, alpha);
+  InterpolantGradient ftGradient(*grid, alpha);
+  InterpolantHessian ftHessian(*grid, alpha);
 
   // test getters/setters
   {
@@ -298,23 +296,62 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
                       populationSize);
   }
 
-  for (auto& optimizer : optimizers) {
-    base::DataVector xOpt(0);
+  for (size_t k = 0; k < 2; k++) {
+    std::unique_ptr<ObjectiveFunction> curF;
+    std::unique_ptr<ObjectiveGradient> curFGradient;
+    std::unique_ptr<ObjectiveHessian> curFHessian;
 
-    // set starting point
-    base::DataVector x0(2);
-    x0[0] = 0.8;
-    x0[1] = 0.5;
-    optimizer->setStartingPoint(x0);
+    if (k == 0) {
+      f.clone(curF);
+      fGradient.clone(curFGradient);
+      fHessian.clone(curFHessian);
+    } else {
+      ft.clone(curF);
+      ftGradient.clone(curFGradient);
+      ftHessian.clone(curFHessian);
+    }
 
-    // optimize
-    const SGPP::float_t fOpt = optimizer->optimize(xOpt);
+    // Test All the Optimizers!
+    std::vector<std::unique_ptr<optimizer::UnconstrainedOptimizer>> optimizers;
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::GradientDescent(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::NLCG(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::Newton(*curF, *curFHessian, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::AdaptiveGradientDescent(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::AdaptiveNewton(*curF, *curFHessian, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::BFGS(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::Rprop(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::NelderMead(*curF, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::MultiStart(*curF, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::DifferentialEvolution(*curF, N))));
 
-    // test xOpt and fOpt
-    BOOST_CHECK_EQUAL(xOpt.getSize(), 2);
-    BOOST_CHECK_CLOSE(xOpt[0], 3.0 / 16.0 * M_PI, 0.1);
-    BOOST_CHECK_CLOSE(xOpt[1], 3.0 / 14.0 * M_PI, 0.1);
-    BOOST_CHECK_CLOSE(fOpt, -2.0, 1e-4);
+    for (auto& optimizer : optimizers) {
+      base::DataVector xOpt(0);
+
+      // set starting point
+      base::DataVector x0(2);
+      x0[0] = 0.8;
+      x0[1] = 0.5;
+      optimizer->setStartingPoint(x0);
+
+      // optimize
+      const SGPP::float_t fOpt = optimizer->optimize(xOpt);
+
+      // test xOpt and fOpt
+      BOOST_CHECK_EQUAL(xOpt.getSize(), 2);
+      BOOST_CHECK_CLOSE(xOpt[0], 3.0 / 16.0 * M_PI, 0.1);
+      BOOST_CHECK_CLOSE(xOpt[1], 3.0 / 14.0 * M_PI, 0.1);
+      BOOST_CHECK_CLOSE(fOpt, -2.0, 1e-4);
+    }
   }
 }
 

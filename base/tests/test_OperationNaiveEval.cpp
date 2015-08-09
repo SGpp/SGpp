@@ -55,6 +55,8 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createModBsplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
+                              Grid::createModBsplineClenshawCurtisGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createFundamentalSplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createModFundamentalSplineGrid(d, p))));
@@ -86,6 +88,8 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
                               new SBsplineClenshawCurtisBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
                               new SBsplineModifiedBase(p))));
+  bases.push_back(std::move(std::unique_ptr<SBasis>(
+                              new SBsplineModifiedClenshawCurtisBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
                               new SFundamentalSplineBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
@@ -130,6 +134,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
       if ((std::string(grid.getType()) == "bsplineClenshawCurtis") ||
+          (std::string(grid.getType()) == "modBsplineClenshawCurtis") ||
           (std::string(grid.getType()) == "linearClenshawCurtis")) {
         gp.setPointDistribution(GridIndex::PointDistribution::ClenshawCurtis);
       }
@@ -251,7 +256,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
                             alpha, x, t), fxGradient[t], 1e-10);
 #else
         BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(
-                            alpha, x, t), fxGradient[t], 1e-3);
+                            alpha, x, t), fxGradient[t], 2e-3);
 #endif
       }
 

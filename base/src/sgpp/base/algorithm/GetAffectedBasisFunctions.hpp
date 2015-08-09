@@ -89,7 +89,8 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] *
+                                 static_cast<float_t>(1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type> (temp - 1);
@@ -210,7 +211,8 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] *
+                                 static_cast<float_t>(1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type> (temp - 1);
@@ -391,7 +393,8 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] *
+                                 static_cast<float_t>(1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type>(temp - 1);

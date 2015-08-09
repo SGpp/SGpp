@@ -40,7 +40,7 @@ namespace SGPP {
       for (size_t i = 0; i < dimensions; i++) {
         resultVector[i] = 0.;
         fVector[i] = 1. / static_cast<float_t>(baseVector[i]);
-        iVector[i] = index;
+        iVector[i] = static_cast<float_t>(index);
 
         while (iVector[i] > 0) {
           resultVector[i] = resultVector[i]
