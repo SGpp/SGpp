@@ -158,7 +158,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
        env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
     if env['TARGETCPU'] == 'default':
-        print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
+        gcc_ver_str = commands.getoutput(env['CXX'] + ' -dumpversion')
+        gcc_ver = sconsenv._get_major_minor_revision(gcc_ver_str)
+        print "Using default gcc " + gcc_ver_str
 
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
             -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
@@ -185,8 +187,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
         
-        if not env['USE_DOUBLE_PRECISION']:
+        if (not env['USE_DOUBLE_PRECISION']) and (gcc_ver >= (4, 9, 0)):
            # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
+           # (-Wno-float-conversion was introduced with g++ 4.9)
            env.Append(CPPFLAGS=['-Wno-float-conversion'])
 
         if env.has_key('MARCH'):
