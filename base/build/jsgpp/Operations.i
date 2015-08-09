@@ -113,8 +113,8 @@ public:
 class OperationMultipleEvalVectorized
 {
 public:
-	virtual double multVectorized(sg::base::DataVector& alpha, sg::base::DataVector& result) = 0;
-	virtual double multTransposeVectorized(sg::base::DataVector& source, sg::base::DataVector& result) = 0;
+	virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
+	virtual double multTransposeVectorized(SGPP::base::DataVector& source, SGPP::base::DataVector& result) = 0;
 	virtual void rebuildLevelAndIndex() = 0;
 };
 

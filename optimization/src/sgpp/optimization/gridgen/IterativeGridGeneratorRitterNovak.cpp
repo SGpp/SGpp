@@ -24,13 +24,14 @@ namespace SGPP {
      * @param b     exponent
      * @return      approximation to \f$a^b\f$
      */
-    inline float_t fastPow(float_t a, float_t b) {
+    inline double fastPow(double a, double b) {
       union {
-        float_t d;
+        double d;
         int x[2];
       } u = {a};
 
-      u.x[1] = static_cast<int>(b * (u.x[1] - 1072632447) + 1072632447);
+      u.x[1] = static_cast<int>(
+                 b * static_cast<double>(u.x[1] - 1072632447) + 1072632447);
       u.x[0] = 0;
 
       return u.d;
@@ -187,9 +188,9 @@ namespace SGPP {
                          gamma) *
                 std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
           } else {
-            g = fastPow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
+            g = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0,
                         gamma) *
-                fastPow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
+                fastPow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
           }
 
           if (g < gBest) {

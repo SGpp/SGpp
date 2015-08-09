@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   SGPP::float_t lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = gS->get(i)->getLevelSum();
+    lSum = static_cast<SGPP::float_t>(gS->get(i)->getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
 

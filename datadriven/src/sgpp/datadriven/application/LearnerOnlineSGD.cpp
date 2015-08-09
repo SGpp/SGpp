@@ -431,7 +431,8 @@ namespace SGPP {
           grid_->serialize(grid_str);
           fgrid << grid_str << std::endl;
 
-          float_t percent = (float_t) totalIterations / ((int) numMainData * config.numRuns);
+          float_t percent = static_cast<float_t>(totalIterations) /
+                            static_cast<float_t>((int) numMainData * config.numRuns);
           percent *= 100;
 
           if (percent > 100) {

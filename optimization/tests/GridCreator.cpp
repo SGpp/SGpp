@@ -13,6 +13,8 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createModBsplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
+                              base::Grid::createModBsplineClenshawCurtisGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createFundamentalSplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createModFundamentalSplineGrid(d, p))));
@@ -52,6 +54,7 @@ void createSampleGrid(base::Grid& grid, size_t l, ObjectiveFunction& f,
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
     if ((std::string(grid.getType()) == "bsplineClenshawCurtis") ||
+        (std::string(grid.getType()) == "modBsplineClenshawCurtis") ||
         (std::string(grid.getType()) == "linearClenshawCurtis")) {
       gp.setPointDistribution(
         base::GridIndex::PointDistribution::ClenshawCurtis);

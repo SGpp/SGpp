@@ -106,7 +106,7 @@ namespace SGPP {
           if (i == 1) {
             return modifiedBSplineDx(l, hInv, x, degree);
           } else if (i == hInv - 1) {
-            return modifiedBSplineDx(l, hInv, 1.0 - x, degree);
+            return -modifiedBSplineDx(l, hInv, 1.0 - x, degree);
           } else {
             constructKnots(l, i, hInv);
             return nonUniformBSplineDx(x, degree, 0);
@@ -459,7 +459,8 @@ namespace SGPP {
                 return (xi[k + 2] - x) / (xi[k + 2] - xi[k + 1]);
               }
 
-            case 2:
+            // for the sake of completeness...
+            /*case 2:
               if (x < xi[k + 1]) {
                 return std::pow(x - xi[k], 2)
                        / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]));
@@ -535,8 +536,7 @@ namespace SGPP {
               }
 
             case 6:
-
-            /*if (x < xi[k + 1]) {
+             if (x < xi[k + 1]) {
              return std::pow(x - xi[k], 6)/((xi[k] - xi[k + 1])*(xi[k] - xi[k + 2])*(xi[k] - xi[k + 3])*(xi[k] - xi[k + 4])*(xi[k] - xi[k + 5])*(xi[k] - xi[k + 6]));
              } else if (x < xi[k + 2]) {
              return -(x - xi[k])*((x - xi[k])*((x - xi[k])*((x - xi[k])*((x - xi[k])*(x - xi[k + 2])/((xi[k] - xi[k + 2])*(xi[k + 1] - xi[k + 2])) + (x - xi[k + 1])*(x - xi[k + 3])/((xi[k + 1] - xi[k + 2])*(xi[k + 1] - xi[k + 3])))/(xi[k] - xi[k + 3]) + std::pow(x - xi[k + 1], 2)*(x - xi[k + 4])/((xi[k + 1] - xi[k + 2])*(xi[k + 1] - xi[k + 3])*(xi[k + 1] - xi[k + 4])))/(xi[k] - xi[k + 4]) + std::pow(x - xi[k + 1], 3)*(x - xi[k + 5])/((xi[k + 1] - xi[k + 2])*(xi[k + 1] - xi[k + 3])*(xi[k + 1] - xi[k + 4])*(xi[k + 1] - xi[k + 5])))/(xi[k] - xi[k + 5]) + std::pow(x - xi[k + 1], 4)*(x - xi[k + 6])/((xi[k + 1] - xi[k + 2])*(xi[k + 1] - xi[k + 3])*(xi[k + 1] - xi[k + 4])*(xi[k + 1] - xi[k + 5])*(xi[k + 1] - xi[k + 6])))/(xi[k] - xi[k + 6]) - std::pow(x - xi[k + 1], 5)*(x - xi[k + 7])/((xi[k + 1] - xi[k + 2])*(xi[k + 1] - xi[k + 3])*(xi[k + 1] - xi[k + 4])*(xi[k + 1] - xi[k + 5])*(xi[k + 1] - xi[k + 6])*(xi[k + 1] - xi[k + 7]));
@@ -1171,7 +1171,8 @@ namespace SGPP {
                 return 1.0 / (xi[k + 1] - xi[k + 2]);
               }
 
-            case 2:
+            // for the sake of completeness...
+            /*case 2:
               if (x < xi[k + 1]) {
                 return 2.0 * (x - xi[k]) / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]));
               } else if (x < xi[k + 2]) {
@@ -1341,7 +1342,7 @@ namespace SGPP {
                           * (xi[k + 3] - xi[k + 5]) * (xi[k + 4] - xi[k + 5]));
               }
 
-            /*case 6:
+            case 6:
              if (x < xi[k + 1]) {
              return 6.0*std::pow(x - xi[k], 5)/((xi[k] - xi[k + 1])*(xi[k] - xi[k + 2])*(xi[k] - xi[k + 3])*(xi[k] - xi[k + 4])*(xi[k] - xi[k + 5])*(xi[k] - xi[k + 6]));
              } else if (x < xi[k + 2]) {
@@ -2373,7 +2374,8 @@ namespace SGPP {
             case 1:
               return 0.0;
 
-            case 2:
+            // for the sake of completeness...
+            /*case 2:
               if (x < xi[k + 1]) {
                 return 2.0 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]));
               } else if (x < xi[k + 2]) {
@@ -2599,7 +2601,7 @@ namespace SGPP {
                           * (xi[k + 3] - xi[k + 5]) * (xi[k + 4] - xi[k + 5]));
               }
 
-            /*case 6:
+            case 6:
              if (x < xi[k + 1]) {
              return 30.0*std::pow(x - xi[k], 4)/((xi[k] - xi[k + 1])*(xi[k] - xi[k + 2])*(xi[k] - xi[k + 3])*(xi[k] - xi[k + 4])*(xi[k] - xi[k + 5])*(xi[k] - xi[k + 6]));
              } else if (x < xi[k + 2]) {

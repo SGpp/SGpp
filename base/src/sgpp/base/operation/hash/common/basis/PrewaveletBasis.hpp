@@ -42,7 +42,8 @@ namespace SGPP {
         static const float_t border_stamp[];
 
         float_t inline evalNormalHat(LT level, IT index, float_t p) {
-          return 1.0 - fabs((1 << level) * p - index);
+          return 1.0 - fabs(static_cast<float_t>(1 << level) * p -
+                            static_cast<float_t>(index));
         }
 
       public:
@@ -73,7 +74,8 @@ namespace SGPP {
             return evalNormalHat(level, index, p);
           } else if (1 == index) { //left border
             //Index of the affected hatbasis. The affected bases are ab and ab + 1
-            int ab = static_cast<int>(floor(p * (1 << level)));
+            int ab = static_cast<int>(
+                       floor(p * static_cast<float_t>(1 << level)));
 
             if (ab == 0) {
               return 0.9 * evalNormalHat(level, 1, p);
@@ -85,7 +87,8 @@ namespace SGPP {
             }
           } else if ((unsigned int)(1 << level) - 1 == index) { //right border
             //Index of the affected hatbasis. The affected bases are ab and ab + 1
-            int ab = static_cast<int>(floor(p * (1 << level)));
+            int ab = static_cast<int>(
+                       floor(p * static_cast<float_t>(1 << level)));
 
             if (ab == (1 << level) - 1) {
               return 0.9 * evalNormalHat(level, (1 << level) - 1, p);
@@ -98,7 +101,8 @@ namespace SGPP {
             }
           } else {
             //Index of the affected hatbasis. The affected bases are ab and ab + 1
-            unsigned int ab = static_cast<int>(floor(p * (1 << level)));
+            unsigned int ab = static_cast<int>(
+                                floor(p * static_cast<float_t>(1 << level)));
 
             if (ab == index - 3) {
               return normal_stamp[0] * evalNormalHat(level, ab + 1, p);

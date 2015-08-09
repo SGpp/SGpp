@@ -16,8 +16,9 @@ const bool USING_DOUBLE_PRECISION;
 
 namespace std {
     %template(DoubleVector) vector<double>;
-    %template(IndexValPair) pair<size_t, double>;
-    %template(IndexValVector) vector<pair<size_t, double> >;
+    %template(FloatVector) vector<float>;
+    %template(IndexValPair) pair<size_t, SGPP::float_t>;
+    %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
     %template(SizeTVector) vector<size_t>;
 }
 

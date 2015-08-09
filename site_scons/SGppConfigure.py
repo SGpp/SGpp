@@ -153,6 +153,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
        env.Append(CPPFLAGS=['-O3'])
     else:
        env.Append(CPPFLAGS=['-g', '-O0'])
+    
+    if not env['USE_DOUBLE_PRECISION']:
+       env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
     if env['TARGETCPU'] == 'default':
         print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
@@ -181,6 +184,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
+        
+        if not env['USE_DOUBLE_PRECISION']:
+           # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
+           env.Append(CPPFLAGS=['-Wno-float-conversion'])
 
         if env.has_key('MARCH'):
             env.Append(CPPFLAGS=('-march=' + env['MARCH']))

@@ -13,6 +13,8 @@ SGPP::float_t basisEvalDx(
     dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
   SBsplineModifiedBase* bsplineModifiedBasis =
     dynamic_cast<SBsplineModifiedBase*>(&basis);
+  SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
+    dynamic_cast<SBsplineModifiedClenshawCurtisBase*>(&basis);
   SFundamentalSplineBase* fundamentalSplineBasis =
     dynamic_cast<SFundamentalSplineBase*>(&basis);
   SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
@@ -32,6 +34,8 @@ SGPP::float_t basisEvalDx(
     return bsplineClenshawCurtisBasis->evalDx(l, i, x);
   } else if (bsplineModifiedBasis != nullptr) {
     return bsplineModifiedBasis->evalDx(l, i, x);
+  } else if (bsplineModifiedClenshawCurtisBasis != nullptr) {
+    return bsplineModifiedClenshawCurtisBasis->evalDx(l, i, x);
   } else if (fundamentalSplineBasis != nullptr) {
     return fundamentalSplineBasis->evalDx(l, i, x);
   } else if (fundamentalSplineModifiedBasis != nullptr) {
@@ -58,6 +62,8 @@ SGPP::float_t basisEvalDxDx(
     dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
   SBsplineModifiedBase* bsplineModifiedBasis =
     dynamic_cast<SBsplineModifiedBase*>(&basis);
+  SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
+    dynamic_cast<SBsplineModifiedClenshawCurtisBase*>(&basis);
   SFundamentalSplineBase* fundamentalSplineBasis =
     dynamic_cast<SFundamentalSplineBase*>(&basis);
   SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
@@ -77,6 +83,8 @@ SGPP::float_t basisEvalDxDx(
     return bsplineClenshawCurtisBasis->evalDxDx(l, i, x);
   } else if (bsplineModifiedBasis != nullptr) {
     return bsplineModifiedBasis->evalDxDx(l, i, x);
+  } else if (bsplineModifiedClenshawCurtisBasis != nullptr) {
+    return bsplineModifiedClenshawCurtisBasis->evalDxDx(l, i, x);
   } else if (fundamentalSplineBasis != nullptr) {
     return fundamentalSplineBasis->evalDxDx(l, i, x);
   } else if (fundamentalSplineModifiedBasis != nullptr) {

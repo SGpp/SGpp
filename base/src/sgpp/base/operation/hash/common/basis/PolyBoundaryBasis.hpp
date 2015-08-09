@@ -107,7 +107,7 @@ namespace SGPP {
           // degree of polynomial, limited with level of grid point
           size_t deg = std::min<size_t>(degree, level + 1);
           // get the position in units of h of the current maximum level
-          p *= (1 << level);
+          p *= static_cast<float_t>(1 << level);
           // start with the current grid point
           size_t root = index;
           // copy of index: used to identify the path in the binary tree of grid
@@ -155,7 +155,8 @@ namespace SGPP {
           float_t h = 1.0f / static_cast<float_t>(1 << level);
 
           // check if p is out of bounds
-          if (p <= h * (index - 1) || p >= h * (index + 1))
+          if ((p <= h * static_cast<float_t>(index - 1)) ||
+              (p >= h * static_cast<float_t>(index + 1)))
             return 0.0f;
           else
             return eval(level, index, p);
@@ -192,7 +193,7 @@ namespace SGPP {
           for (size_t i = 0; i < n_roots; i++) {
             // scale the roots to the support of the basis:
             // [-1, 1] -> [0, 1] -> [a, b]
-            x = h * (roots[i] + index);
+            x = h * (roots[i] + static_cast<float_t>(index));
             // evaluate the polynom and weight it
             sum += weights[i] * eval(level, index, x);
           }

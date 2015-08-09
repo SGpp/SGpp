@@ -34,7 +34,8 @@ namespace SGPP {
           if (level == 0) {
             return fabs(2 * p - 1);
           } else {
-            return 1.0 - fabs((1 << level) * p - index);
+            return 1.0 - fabs(static_cast<float_t>(1 << level) * p -
+                              static_cast<float_t>(index));
           }
 
           // should not happen
