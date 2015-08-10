@@ -187,10 +187,14 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
         
-        if (not env['USE_DOUBLE_PRECISION']) and (gcc_ver >= (4, 9, 0)):
-           # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-           # (-Wno-float-conversion was introduced with g++ 4.9)
-           env.Append(CPPFLAGS=['-Wno-float-conversion'])
+        if not env['USE_DOUBLE_PRECISION']:
+            if gcc_ver >= (4, 9, 0):
+                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
+                # (-Wno-float-conversion was introduced with g++ 4.9)
+                env.Append(CPPFLAGS=['-Wno-float-conversion'])
+            else:
+                # disable all conversion warnings
+                env.Append(CPPFLAGS=['-Wno-conversion'])
 
         if env.has_key('MARCH'):
             env.Append(CPPFLAGS=('-march=' + env['MARCH']))
