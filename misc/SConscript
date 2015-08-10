@@ -10,7 +10,7 @@ Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
 
-libs = ['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppfinance','sgppsolver']
+libs = ['sgppbase', 'sgpppde', 'sgppfinance','sgppsolver', 'sgppdatadriven']
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
