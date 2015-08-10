@@ -8,17 +8,17 @@
 #############################################################################
 
 from pysgpp import createOperationLaplace, createOperationIdentity
-from datadriven.earner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
-from datadriven.ontroller.LearnerEventController import LearnerEventController
+from datadriven.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
+from datadriven.controller.LearnerEventController import LearnerEventController
 #from datadriven.ata.ARFFAdapter import ARFFAdapter
 
 import utils.json as json
-from datadriven.earner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
-from datadriven.ontroller.InfoToScreenRegressor import InfoToScreenRegressor
-from datadriven.ontroller.InfoToScreen import InfoToScreen
-from datadriven.ontroller.InfoToFile import InfoToFile
+from datadriven.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
+from datadriven.controller.InfoToScreenRegressor import InfoToScreenRegressor
+from datadriven.controller.InfoToScreen import InfoToScreen
+from datadriven.controller.InfoToFile import InfoToFile
 try:
-    from datadriven.ontroller.InfoToGraph import InfoToGraph
+    from datadriven.controller.InfoToGraph import InfoToGraph
 except ImportError: pass
 import gzip, copy
 
