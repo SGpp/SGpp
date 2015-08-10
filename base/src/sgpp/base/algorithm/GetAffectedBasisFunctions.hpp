@@ -88,14 +88,22 @@ namespace SGPP {
           index_type* source = new index_type[dim];
 
           for (size_t d = 0; d < dim; ++d) {
-            // This does not really work on grids with borders.
-            float_t temp = floor(point[d] *
-                                 static_cast<float_t>(1 << (bits - 2))) * 2;
 
+            // The fracture view for recursive descent doesn't work for the value 1.0, but we know that we always
+            // have to use the right basis function for the value 1.0.
+            // Temp has to be promoted to double to permit the subtraction of 1, otherwise the subtraction will
+            // be absorbed (see floating point absorbtion). This trick needs a mantissa with >= 32 bits.
+            // This will not work with 64 bit indices.
             if (point[d] == 1.0) {
-              source[d] = static_cast<index_type> (temp - 1);
+//              source[d] = static_cast<index_type> (static_cast<double>(temp) - 1.0);
+              source[d] = 0x7fffffff;
             } else {
-              source[d] = static_cast<index_type> (temp + 1);
+
+              // This does not really work on grids with borders.
+              float_t temp = floor(point[d] *
+                                   static_cast<float_t>(1 << (bits - 2))) * 2;
+              //TODO: (dirk) why the + 1?
+              source[d] = static_cast<index_type> (static_cast<double>(temp) + 1.0);
             }
 
           }

@@ -44,7 +44,7 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
 #if USE_DOUBLE_PRECISION
   double tolerance = 1E-5;
 #else
-  double tolerance = 1E-3;
+  double tolerance = 1E-2;
 #endif
 
   // check dimensions
@@ -63,18 +63,38 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
   for (size_t i = 0; i < rows; i++) {
     m1->getRow(i, v);
     values.push_back(v.sum());
+
+//    std::cout << "row[" << i << "]: ";
+//    for (size_t j = 0; j < v.getSize(); j++) {
+//      if (j > 0) {
+//        std::cout << ", ";
+//      }
+//      std::cout << "(" << v[j] << ")";
+//    }
+//    std::cout << std::endl;
   }
 
-  std::sort(values.begin(), values.end());
+//  std::cout << "------------------------------" << std::endl;
+
+  //std::sort(values.begin(), values.end());
 
   std::vector<SGPP::float_t> valuesReference;
 
   for (size_t i = 0; i < rows; i++) {
     m2->getRow(i, v);
     valuesReference.push_back(v.sum());
+
+//    std::cout << "row[" << i << "]: ";
+//    for (size_t j = 0; j < v.getSize(); j++) {
+//      if (j > 0) {
+//        std::cout << ", ";
+//      }
+//      std::cout << "(" << v[j] << ")";
+//    }
+//    std::cout << std::endl;
   }
 
-  std::sort(valuesReference.begin(), valuesReference.end());
+  //std::sort(valuesReference.begin(), valuesReference.end());
 
   for (size_t i = 0; i < rows; i++) {
     BOOST_CHECK_CLOSE(values[i], valuesReference[i], tolerance);
@@ -88,6 +108,8 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
   for (size_t i = 0; i < cols; i++) {
     m1->getColumn(i, vRows);
     values.push_back(vRows.sum());
+
+
   }
 
   std::sort(values.begin(), values.end());
@@ -97,6 +119,8 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
   for (size_t i = 0; i < cols; i++) {
     m2->getColumn(i, vRows);
     valuesReference.push_back(vRows.sum());
+
+
   }
 
   std::sort(valuesReference.begin(), valuesReference.end());
