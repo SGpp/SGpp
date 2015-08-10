@@ -51,7 +51,7 @@ namespace SGPP {
 
       //Level 2-----------------------------------------------------------
       l = 2;
-      h = 1 << l;
+      h = static_cast<float_t>(1 << l);
       temp_old = temp_current;
       temp_current = new float_t[3];
       index.leftChild(dim);
@@ -75,7 +75,7 @@ namespace SGPP {
 
       //All other levels--------------------------------------------------
       for (l = 3; l <= max_level; l++) {
-        h = 1 << l;
+        h = static_cast<float_t>(1 << l);
         index.set(dim, l, 1);
 
         //Calculate new temp-Variables ################################################

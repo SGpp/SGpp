@@ -34,7 +34,7 @@ namespace SGPP {
         const size_t d = f.getDimension();
 
         base::DataVector x(x0);
-        float_t fx;
+        float_t fx = f.eval(x);
         base::DataVector gradFx(d);
 
         base::DataVector xNew(d);

@@ -73,6 +73,7 @@ vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log'
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
 vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
+vars.Add(BoolVariable('USE_DOUBLE_PRECISION', 'If disabled, SG++ will compile using single precision (floats).', True))
 
 vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
@@ -88,12 +89,12 @@ if 'CC' in ARGUMENTS:
   print "CC: ", ARGUMENTS['CC']
   env['CC'] = ARGUMENTS['CC']
 if 'CPPFLAGS' in ARGUMENTS:
-  env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(" ")
+  env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(",")
 if 'CFLAGS' in ARGUMENTS:
   env['CFLAGS'] = ARGUMENTS['CFLAGS']
 if 'CPPDEFINES' in ARGUMENTS:
   defineDict = {}
-  for define in ARGUMENTS['CPPDEFINES'].split(" "):
+  for define in ARGUMENTS['CPPDEFINES'].split(","):
     key, value = define.split("=")
     defineDict[key] = value
   env.AppendUnique(CPPDEFINES = defineDict)

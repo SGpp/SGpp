@@ -62,7 +62,9 @@ namespace SGPP {
 
       for (size_t i = 0; i < size; i++) {
         gi = storage->get(i);
-        diagonal[i] = 0.5 * log(1. + gi->getLevelMax() / std::max(static_cast<int>(gi->getLevelMin()), 1) * (float_t)dim);
+        diagonal[i] = 0.5 * log(1. + static_cast<float_t>(gi->getLevelMax()) /
+                                static_cast<float_t>(std::max(static_cast<int>(gi->getLevelMin()), 1)) *
+                                static_cast<float_t>(dim));
       }
     }
 

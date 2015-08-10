@@ -20,7 +20,8 @@ namespace std {
     %template(IntVector) vector<int>;
     %template(IntIntVector) vector< vector<int> >; 
     %template(BoolVector) vector<bool>;
-    %template(DoubleVector) vector<SGPP::float_t>;
+    %template(DoubleVector) vector<double>;
+    %template(FloatVector) vector<float>;
     %template(IndexVector) vector<size_t>;
     %template(IndexValPair) pair<size_t, SGPP::float_t>;
     %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
@@ -52,13 +53,13 @@ namespace std {
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
-%ignore sg::base::BoundingBox::toString(std::string& text);
+%ignore SGPP::base::BoundingBox::toString(std::string& text);
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
-%ignore sg::base::HashGridIndex::operator=;
+%ignore SGPP::base::HashGridIndex::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
-%ignore sg::base::HashGridStorage::operator[];
+%ignore SGPP::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"

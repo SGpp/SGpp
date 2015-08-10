@@ -26,6 +26,10 @@ elif env['PLATFORM'] == 'darwin':
 
 # build python module with swig
 py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']])
+
+if not py_env['USE_DOUBLE_PRECISION']:
+    py_env.AppendUnique(SWIGFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
+
 libPython = py_env.SharedLibrary(target='pysgpp',
                      source=["pysgpp.i"],
                      SHLIBPREFIX='_',

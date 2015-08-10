@@ -80,8 +80,8 @@ namespace SGPP {
 
         //#pragma omp parallel for schedule(static)
         for (size_t k = 0; k < dim; k++ ) {
-          float_t index = gridIndex->getIndex(k);
-          float_t level = gridIndex->getLevel(k);
+          float_t index = static_cast<float_t>(gridIndex->getIndex(k));
+          float_t level = static_cast<float_t>(gridIndex->getLevel(k));
           float_t intval = pow(2.0, -level);
           //std::cout << "level " << level << " intval " << intval << std::endl;
 

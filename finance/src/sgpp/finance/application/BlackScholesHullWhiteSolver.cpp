@@ -294,7 +294,7 @@ namespace SGPP {
             float_t PT = 0;
 
             for (int k = (timeT + 1); k <= endtime; k++) {
-              PT = exp(0.04 * (timeT - k) + 0.04 * (1 - exp(-a * (k - timeT))) / a - pow(sigma, 2.0) * pow((exp(-a * k) - exp(-a * timeT)), 2.0) * (exp(2 * a * timeT) - 1) / (4 * pow(a, 3.0)) - (1 - exp(-a * (k - timeT))) * dblFuncValues[this->dim_HW] / a);
+              PT = exp(0.04 * (timeT - k) + 0.04 * (1 - exp(-a * static_cast<float_t>(k - timeT))) / a - pow(sigma, 2.0) * pow((exp(-a * static_cast<float_t>(k)) - exp(-a * static_cast<float_t>(timeT))), 2.0) * (exp(2 * a * static_cast<float_t>(timeT)) - 1) / (4 * pow(a, 3.0)) - (1 - exp(-a * static_cast<float_t>(k - timeT))) * dblFuncValues[this->dim_HW] / a);
               PB = PB + c * PT;
             }
 
