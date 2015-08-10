@@ -159,7 +159,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
     if env['TARGETCPU'] == 'default':
         gcc_ver_str = commands.getoutput(env['CXX'] + ' -dumpversion')
-        gcc_ver = sconsenv._get_major_minor_revision(gcc_ver_str)
+        gcc_ver = env._get_major_minor_revision(gcc_ver_str)
         print "Using default gcc " + gcc_ver_str
 
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
