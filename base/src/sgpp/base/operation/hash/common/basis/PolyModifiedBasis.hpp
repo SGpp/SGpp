@@ -74,7 +74,8 @@ namespace SGPP {
           size_t id = (((index & idMask) >> 1) | (1 << (deg - 1))) - 1;
 
           // scale p to a value in [-1.0,1.0]
-          float_t val = (1 << level) * p - index;
+          float_t val = static_cast<float_t>(1 << level) * p -
+                        static_cast<float_t>(index);
           return evalPolynom(id, deg, val);
         }
 

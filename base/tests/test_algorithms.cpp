@@ -51,7 +51,7 @@ void stretchedBasisTest(SLinearStretchedBase& basis,
   BOOST_CHECK_EQUAL(testValues.size(), n);
 
   for (size_t i = 0; i < n; i++) {
-    SGPP::float_t val = basis.eval(p[i], pos0[i], pos1[i]);
+    SGPP::float_t val = basis.stretchedEval(p[i], pos0[i], pos1[i]);
     BOOST_CHECK_CLOSE(val, testValues[i], 1e-10);
   }
 }
@@ -95,7 +95,9 @@ void linearLevelZeroTest(SBasis& basis) {
   for (index_t i = 0; i <= 1; i++) {
     for (size_t j = 0; j <= 4; j++) {
       const SGPP::float_t x = static_cast<SGPP::float_t>(j) / 4.0;
-      BOOST_CHECK_EQUAL(basis.eval(0, i, x), i * x + (1 - i) * (1.0 - x));
+      BOOST_CHECK_EQUAL(basis.eval(0, i, x),
+                        static_cast<SGPP::float_t>(i) * x +
+                        static_cast<SGPP::float_t>(1 - i) * (1.0 - x));
     }
   }
 }
@@ -393,6 +395,17 @@ BOOST_AUTO_TEST_CASE(TestBsplineModifiedBasis) {
 
   for (size_t p = 2; p <= pMax; p++) {
     SBsplineModifiedBase basis(p);
+    bsplinePropertiesTest(basis, 1, true);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestBsplineClenshawCurtisModifiedBasis) {
+  // Test modified B-spline ClenshawCurtis basis.
+  const size_t pMax = (use_double_precision ? 11 : 6);
+
+  for (size_t p = 2; p <= pMax; p++) {
+    SBsplineModifiedClenshawCurtisBase basis(p);
     bsplinePropertiesTest(basis, 1, true);
     derivativesTest(basis, basis.getDegree() - 1);
   }

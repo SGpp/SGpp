@@ -145,7 +145,7 @@ namespace SGPP {
           dataInBatch.at(lineClass)->appendRow(lineData);
         } else {
           dataFound.appendRow(lineData);
-          classesFound.append(lineClass);
+          classesFound.append(static_cast<float_t>(lineClass));
         }
       }
     }
@@ -294,7 +294,7 @@ namespace SGPP {
           }
         }
 
-        result[i] = max_index;
+        result[i] = static_cast<float_t>(max_index);
       }
 
       return result;

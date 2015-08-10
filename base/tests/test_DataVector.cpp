@@ -89,13 +89,13 @@ BOOST_AUTO_TEST_CASE(testOps) {
   DataVector d2 = DataVector(N);
 
   for (int i = 0; i < N; ++i) {
-    d2[i] = i;
+    d2[i] = static_cast<SGPP::float_t>(i);
   }
 
   d.componentwise_mult(d2);
 
   for (int i = 0; i < N; ++i) {
-    BOOST_CHECK_EQUAL(d_rand[i] * i, d[i]);
+    BOOST_CHECK_EQUAL(d_rand[i] * static_cast<SGPP::float_t>(i), d[i]);
   }
 
   // componentwise div
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(testDotProduct) {
   SGPP::float_t x = 0;
 
   for (unsigned int i = 0; i < d.getSize(); ++i) {
-    d[i] = i + 1;
+    d[i] = static_cast<SGPP::float_t>(i + 1);
     x += d[i] * d[i];
   }
 

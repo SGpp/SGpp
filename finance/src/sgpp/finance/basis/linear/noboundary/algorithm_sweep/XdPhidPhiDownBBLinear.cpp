@@ -91,7 +91,7 @@ namespace SGPP {
 
       float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
 
-      float_t diagonal = (2 * (i * h * q + t)) / (q * h);
+      float_t diagonal = (2 * (static_cast<float_t>(i) * h * q + t)) / (q * h);
 
       // integration
       result[seq] = (  (0.5 * q * (fl - fr)) + (diagonal * alpha_value) );

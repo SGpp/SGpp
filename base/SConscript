@@ -53,12 +53,6 @@ libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
                               LIBS=libs)
 libStaticInstall = env.Install(BUILD_DIR, libStatic)
 
-if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-  Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
-  testTargetList.append(moduleTest)
-
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),

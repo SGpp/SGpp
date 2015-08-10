@@ -182,7 +182,8 @@ namespace SGPP {
 
         //compute prior
         if (this->withPrior) {
-          prior.push_back((*it).second / (float_t)classes.getSize());
+          prior.push_back(static_cast<float_t>((*it).second) /
+                          static_cast<float_t>(classes.getSize()));
         } else {
           prior.push_back(1.);
         }

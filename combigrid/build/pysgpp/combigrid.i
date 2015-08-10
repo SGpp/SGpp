@@ -48,5 +48,5 @@
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
-%apply std::vector<double> *INPUT { std::vector<double>& point }; 
+%apply std::vector<std::pair<size_t, SGPP::float_t> > *OUTPUT { std::vector<std::pair<size_t, SGPP::float_t> >& result };
+%apply std::vector<SGPP::float_t> *INPUT { std::vector<SGPP::float_t>& point }; 
