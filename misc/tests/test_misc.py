@@ -11,12 +11,9 @@ if __name__ == '__main__':
         
     alltests = unittest.TestSuite()    
     
-    try:
-        from pysgpp import createOperationLaplaceEnhanced
-        import test_laplace
-        alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_laplace),)
-    except ImportError:
-        pass
+    from pysgpp import createOperationLaplaceEnhanced
+    import test_laplace
+    alltests.addTests(unittest.defaultTestLoader.loadTestsFromModule(test_laplace),)
 
     result = unittest.TextTestRunner(verbosity=9).run(alltests)
     
