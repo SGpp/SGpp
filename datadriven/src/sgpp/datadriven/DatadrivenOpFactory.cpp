@@ -43,6 +43,7 @@
 
 #ifdef USE_OCL
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/StreamingOCLMultiPlatformOperatorFactory.hpp>
 #include "operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
@@ -180,14 +181,14 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
-            } /*else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM) {
+            } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLMP) {
 #ifdef USE_OCL
-                return datadriven::createStreamingOCLMPConfigured(grid, dataset,
+                return datadriven::createStreamingOCLMultiPlatformConfigured(grid, dataset,
                         (base::OCLConfigurationParameters *) configuration.parameters);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
-            }*/
+            }
         } else if (configuration.type == datadriven::OperationMultipleEvalType::SUBSPACELINEAR) {
             if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT
                     || configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::COMBINED) {

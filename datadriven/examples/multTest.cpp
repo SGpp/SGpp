@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
   //  std::string fileName = "friedman2_90000.arff";
 //  std::string fileName = "debugging.arff";
 
-//  std::string fileName = "friedman_4d.arff";
+  std::string fileName = "friedman_4d.arff";
 //  std::string fileName = "friedman_10d.arff";
-  std::string fileName = "DR5_train.arff";
+//  std::string fileName = "DR5_train.arff";
 
   uint32_t level = 9;
 
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     if ( strcmp(argv[1], "streaming" ) == 0 )
   	{
       configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+      configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
       std::cout << "EvalType::STREAMING" << std::endl;
   	}
   }

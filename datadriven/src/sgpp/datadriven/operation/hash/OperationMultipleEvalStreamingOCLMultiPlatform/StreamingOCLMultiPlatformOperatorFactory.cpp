@@ -8,27 +8,27 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
-#include "OperationMultiEvalStreamingOCL.hpp"
+#include "OperationMultiEvalStreamingOCLMultiPlatform.hpp"
 
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
+base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(base::Grid& grid, base::DataMatrix& dataset,
         base::OCLConfigurationParameters *parameters) {
 
     if (parameters == nullptr) {
         std::map<std::string, std::string> defaultParameter;
         defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "false";
-        defaultParameter["KERNEL_MAX_DIM_UNROLL"] = "10";
         defaultParameter["KERNEL_STORE_DATA"] = "array";
+        defaultParameter["KERNEL_MAX_DIM_UNROLL"] = "10";
         defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
         defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
         defaultParameter["KERNEL_TRANS_GRID_BLOCKING_SIZE"] = "1";
         defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
 
-        parameters = new base::OCLConfigurationParameters("StreamingOCL.cfg", defaultParameter);
+        parameters = new base::OCLConfigurationParameters("StreamingOCLMultiPlatform.cfg", defaultParameter);
     }
 
     if (parameters->getAsBoolean("KERNEL_VERBOSE")) {
@@ -42,12 +42,12 @@ base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base
     }
 
     if ((*parameters)["INTERNAL_PRECISION"] == "float") {
-        return new datadriven::OperationMultiEvalStreamingOCL<float>(grid, dataset, *parameters);
+        return new datadriven::OperationMultiEvalStreamingOCLMultiPlatform<float>(grid, dataset, *parameters);
     } else if ((*parameters)["INTERNAL_PRECISION"] == "double") {
-        return new datadriven::OperationMultiEvalStreamingOCL<double>(grid, dataset, *parameters);
+        return new datadriven::OperationMultiEvalStreamingOCLMultiPlatform<double>(grid, dataset, *parameters);
     } else {
         throw base::factory_exception(
-                "Error creating operation\"OperationMultiEvalStreamingOCL\": invalid value for parameter \"INTERNAL_PRECISION\"");
+                "Error creating operation\"OperationMultiEvalStreamingOCLMultiPlatform\": invalid value for parameter \"INTERNAL_PRECISION\"");
     }
 }
 
