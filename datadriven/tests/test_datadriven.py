@@ -5,10 +5,6 @@
 
 import unittest, sys
 
-import test_BBT
-
-import test_BT
-
 import tbin.tlearner.testsuite as learnertests
 import tbin.tdata.testsuite as datatests
 import tbin.tcontroller.testsuite as controllertests
