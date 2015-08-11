@@ -150,7 +150,7 @@ void compareStiffnessMatrices(DataMatrix* m1, DataMatrix* m2) {
 #if USE_DOUBLE_PRECISION
   double tolerance = 1E-5;
 #else
-  float tolerance = 1E-5;
+  float tolerance = 1E-4;
 #endif
 
   // check dimensions
