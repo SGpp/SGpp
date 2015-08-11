@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
   const size_t p = 5;
   const size_t l = 4;
   const size_t m = 4;
-  const SGPP::float_t tol = (use_double_precision ? 1e-4 : 5e-3);
+  const SGPP::float_t tol = (use_double_precision ? 1e-4 : 1e-1);
 
   test_functions::Sphere f(d);
 
