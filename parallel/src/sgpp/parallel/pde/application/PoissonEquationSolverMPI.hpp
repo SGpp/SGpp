@@ -38,7 +38,6 @@ namespace SGPP {
      *
      * This version offers support for MPI!
      *
-     * @version $HEAD$
      */
     class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
       private:

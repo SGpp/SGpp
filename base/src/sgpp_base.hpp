@@ -13,6 +13,7 @@
 #include "sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
@@ -21,6 +22,9 @@
 #include "sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
+#include "sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
 #include "sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 #include "sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
@@ -83,6 +87,9 @@
 #include "sgpp/base/tools/EvalCuboidGenerator.hpp"
 #include "sgpp/base/tools/EvalCuboidGeneratorForStretching.hpp"
 #include "sgpp/base/tools/StdNormalDistribution.hpp"
+#include "sgpp/base/tools/QuadRule1D.hpp"
+#include "sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
+#include "sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
 
 #include "sgpp/base/operation/BaseOpFactory.hpp"
 

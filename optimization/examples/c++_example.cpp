@@ -9,26 +9,50 @@
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
 
+/**
+ * Example test function.
+ */
 class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
   public:
+    /**
+     * Constructor.
+     */
     ExampleFunction() : ObjectiveFunction(2) {
     }
 
+    /**
+     * Evaluates the test function.
+     *
+     * @param x     point \f$\vec{x} \in [0, 1]^2\f$
+     * @return      \f$f(\vec{x})\f$
+     */
     SGPP::float_t eval(const SGPP::base::DataVector& x) {
       // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
       return std::sin(8.0 * x.get(0)) + std::sin(7.0 * x.get(1));
     }
 
+    /**
+     * @param[out] clone pointer to cloned object
+     */
     virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
       clone = std::unique_ptr<ObjectiveFunction>(new ExampleFunction(*this));
     }
 };
 
+/**
+ * Prints a separator line.
+ */
 void printLine() {
   std::cout << "----------------------------------------"
             "----------------------------------------\n";
 }
 
+/**
+ * Main method.
+ *
+ * @param argc ignored
+ * @param argv ignored
+ */
 int main(int argc, const char* argv[]) {
   (void)argc;
   (void)argv;
@@ -88,7 +112,7 @@ int main(int argc, const char* argv[]) {
   std::cout << "Optimizing smooth interpolant...\n\n";
   SGPP::optimization::InterpolantFunction ft(grid, coeffs);
   SGPP::optimization::InterpolantGradient ftGradient(grid, coeffs);
-  SGPP::optimization::optimizer::GradientMethod gradientMethod(ft, ftGradient);
+  SGPP::optimization::optimizer::GradientDescent gradientMethod(ft, ftGradient);
   SGPP::base::DataVector x0(d);
   SGPP::float_t fX0;
   SGPP::float_t ftX0;

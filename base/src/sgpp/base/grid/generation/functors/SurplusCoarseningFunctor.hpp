@@ -18,7 +18,6 @@ namespace SGPP {
 
     /**
      * A coarsening functor, removing points according to the minimal absolute values in a DataVector provided.
-     * @version $HEAD$
      */
     class SurplusCoarseningFunctor : public CoarseningFunctor {
       public:

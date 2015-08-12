@@ -43,62 +43,63 @@ namespace SGPP {
 
       bool Auto::solve(SLE& system, base::DataVector& b,
                        base::DataVector& x) const {
-        std::vector<base::DataVector> B = {b};
-        std::vector<base::DataVector> X = {x};
+        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+        base::DataMatrix X(B.getNrows(), B.getNcols());
 
+        // call version for multiple RHSs
         if (solve(system, B, X)) {
-          x.resize(X[0].getSize());
-          x = X[0];
+          x.resize(X.getNrows());
+          X.getColumn(0, x);
           return true;
         } else {
           return false;
         }
       }
 
-      bool Auto::solve(SLE& system, std::vector<base::DataVector>& B,
-                       std::vector<base::DataVector>& X) const {
+      bool Auto::solve(SLE& system, base::DataMatrix& B,
+                       base::DataMatrix& X) const {
         printer.printStatusBegin(
           "Solving linear system (automatic method)...");
 
         Armadillo solverArmadillo;
         Eigen solverEigen;
-        UMFPACK solverUmfpack;
+        UMFPACK solverUMFPACK;
         Gmmpp solverGmmpp;
-        BiCGStab solverBicgstab;
+        BiCGStab solverBiCGStab;
         GaussianElimination solverGaussianElimination;
 
         std::map<SLESolver*, bool> supports;
 
-        // by default, only BiCGStab is supported
+        // by default, only BiCGStab and GaussianElimination supported
         supports[&solverArmadillo] = false;
         supports[&solverEigen] = false;
-        supports[&solverUmfpack] = false;
+        supports[&solverUMFPACK] = false;
         supports[&solverGmmpp] = false;
-        supports[&solverBicgstab] = true;
+        supports[&solverBiCGStab] = true;
         supports[&solverGaussianElimination] = true;
 
-#ifdef USEARMADILLO
+#ifdef USE_ARMADILLO
         supports[&solverArmadillo] = true;
-#endif /* USEARMADILLO */
+#endif /* USE_ARMADILLO */
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
         supports[&solverEigen] = true;
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
 
-#ifdef USEUMFPACK
-        supports[&solverUmfpack] = true;
-#endif /* USEUMFPACK */
+#ifdef USE_UMFPACK
+        supports[&solverUMFPACK] = true;
+#endif /* USE_UMFPACK */
 
-#ifdef USEGMMPP
+#ifdef USE_GMMPP
         supports[&solverGmmpp] = true;
-#endif /* USEGMMPP */
+#endif /* USE_GMMPP */
 
         // solvers to be used, the solver which should be tried first
         // should be the first element
         std::vector<SLESolver*> solvers;
         const size_t n = system.getDimension();
 
-        if (supports[&solverUmfpack] || supports[&solverGmmpp]) {
+        if (supports[&solverUMFPACK] || supports[&solverGmmpp]) {
           // if at least one of the sparse solvers is supported
           // ==> estimate sparsity ratio of matrix by considering
           // every inc-th row
@@ -134,21 +135,9 @@ namespace SGPP {
             printer.printStatusNewLine();
           }
 
-          if ((n > MAX_DIM_FOR_FULL) ||
-              (nnzRatio <= MAX_NNZ_RATIO_FOR_GMMPP)) {
-            if (B.size() == 1) {
-              // prefer Gmm++ over UMFPACK
-              addSLESolver(&solverGmmpp, solvers, supports);
-              addSLESolver(&solverUmfpack, solvers, supports);
-            } else {
-              // prefer UMFPACK over Gmm++
-              // (UMFPACK can solve multiple systems simultaneously)
-              addSLESolver(&solverUmfpack, solvers, supports);
-              addSLESolver(&solverGmmpp, solvers, supports);
-            }
-          } else if (nnzRatio <= MAX_NNZ_RATIO_FOR_SPARSE) {
+          if (nnzRatio <= MAX_NNZ_RATIO_FOR_SPARSE) {
             // prefer UMFPACK over Gmm++
-            addSLESolver(&solverUmfpack, solvers, supports);
+            addSLESolver(&solverUMFPACK, solvers, supports);
             addSLESolver(&solverGmmpp, solvers, supports);
           }
         }
@@ -156,9 +145,9 @@ namespace SGPP {
         // add all remaining solvers (prefer Armadillo over Eigen)
         addSLESolver(&solverArmadillo, solvers, supports);
         addSLESolver(&solverEigen, solvers, supports);
+        addSLESolver(&solverUMFPACK, solvers, supports);
         addSLESolver(&solverGmmpp, solvers, supports);
-        addSLESolver(&solverUmfpack, solvers, supports);
-        addSLESolver(&solverBicgstab, solvers, supports);
+        addSLESolver(&solverBiCGStab, solvers, supports);
         addSLESolver(&solverGaussianElimination, solvers, supports);
 
         for (size_t i = 0; i < solvers.size(); i++) {

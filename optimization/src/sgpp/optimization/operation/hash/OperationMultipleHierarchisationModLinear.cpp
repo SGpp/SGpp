@@ -15,12 +15,20 @@
 namespace SGPP {
   namespace optimization {
 
-    void OperationMultipleHierarchisationModLinear::doHierarchisation(
+    OperationMultipleHierarchisationModLinear::OperationMultipleHierarchisationModLinear(
+      base::ModLinearGrid& grid) :
+      grid(grid) {
+    }
+
+    OperationMultipleHierarchisationModLinear::~OperationMultipleHierarchisationModLinear() {
+    }
+
+    bool OperationMultipleHierarchisationModLinear::doHierarchisation(
       base::DataVector& nodeValues) {
       HierarchisationSLE system(grid);
       sle_solver::Auto solver;
       base::DataVector b(nodeValues);
-      solver.solve(system, b, nodeValues);
+      return solver.solve(system, b, nodeValues);
     }
 
     void OperationMultipleHierarchisationModLinear::doDehierarchisation(
@@ -45,35 +53,37 @@ namespace SGPP {
       alpha = nodeValues;
     }
 
-    void OperationMultipleHierarchisationModLinear::doHierarchisation(
-      std::vector<base::DataVector>& nodeValues) {
+    bool OperationMultipleHierarchisationModLinear::doHierarchisation(
+      base::DataMatrix& nodeValues) {
       HierarchisationSLE system(grid);
       sle_solver::Auto solver;
-      std::vector<base::DataVector> B(nodeValues);
-      solver.solve(system, B, nodeValues);
+      base::DataMatrix B(nodeValues);
+      return solver.solve(system, B, nodeValues);
     }
 
     void OperationMultipleHierarchisationModLinear::doDehierarchisation(
-      std::vector<base::DataVector>& alpha) {
+      base::DataMatrix& alpha) {
       base::GridStorage& storage = *grid.getStorage();
       const size_t d = storage.dim();
       base::OperationNaiveEvalModLinear opNaiveEval(&storage);
       base::DataVector nodeValues(storage.size(), 0.0);
       base::DataVector x(d, 0.0);
+      base::DataVector alpha1(storage.size(), 0.0);
 
-      for (size_t i = 0; i < storage.size(); i++) {
+      for (size_t i = 0; i < alpha.getNcols(); i++) {
+        alpha.getColumn(i, alpha1);
+
         for (size_t j = 0; j < storage.size(); j++) {
-          const base::GridIndex& gp = storage.get(j);
+          const base::GridIndex& gp = *storage.get(j);
 
           for (size_t t = 0; t < d; t++) {
             x[t] = gp.getCoord(t);
           }
 
-          nodeValues[j] = opNaiveEval.eval(alpha[i], x);
+          nodeValues[j] = opNaiveEval.eval(alpha1, x);
         }
 
-        alpha[i].resize(storage.size());
-        alpha[i] = nodeValues;
+        alpha.setColumn(i, nodeValues);
       }
     }
 

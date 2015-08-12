@@ -1,0 +1,11 @@
+# ------------------------------------------------------------------------
+# SG++ was successfully compiled. Update the your environment variables by
+# executing the following code or adding it to your ~/.bashrc file
+
+export LD_LIBRARY_PATH=$SGPP_BUILD_PATH:$LD_LIBRARY_PATH
+
+# If you installed Python support execute the following code or add add it
+# to your ~/.bashrc file
+
+export PYTHONPATH=$SGPP_HOME:$PYSGPP_BUILD_PATH:$PYTHONPATH
+# ------------------------------------------------------------------------

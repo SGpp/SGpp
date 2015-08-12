@@ -27,16 +27,29 @@ ConfigurationParameters::ConfigurationParameters(std::string fileName,
     this->readFromFile(fileName);
 }
 
-std::string &ConfigurationParameters::operator[](std::string key) {
-//    if (this->parameters.find(key) == this->parameters.end()) {
-//        std::stringstream errorString;
-//        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
-//        throw SGPP::base::operation_exception(errorString.str());
-//    }
+bool ConfigurationParameters::empty() {
+    return this->parameters.empty();
+}
+
+void ConfigurationParameters::set(std::string key, std::string value) {
+    this->parameters[key] = value;
+}
+
+std::string &ConfigurationParameters::get(const std::string &key) {
+    if (this->parameters.count(key) != 1) {
+        std::stringstream errorString;
+        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+    }
     return this->parameters[key];
 }
 
-bool ConfigurationParameters::getAsBoolean(std::string key) {
+bool ConfigurationParameters::getAsBoolean(const std::string &key) {
+    if (this->parameters.count(key) != 1) {
+        std::stringstream errorString;
+        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+    }
     bool asBool;
     std::stringstream converter(parameters[key]);
     converter >> std::boolalpha;
@@ -44,7 +57,12 @@ bool ConfigurationParameters::getAsBoolean(std::string key) {
     return asBool;
 }
 
-uint64_t ConfigurationParameters::getAsUnsigned(std::string key) {
+uint64_t ConfigurationParameters::getAsUnsigned(const std::string &key) {
+    if (this->parameters.count(key) != 1) {
+        std::stringstream errorString;
+        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+    }
     uint32_t asUnsigned;
     std::istringstream(parameters[key]) >> asUnsigned;
     return asUnsigned;
@@ -62,7 +80,7 @@ std::vector<std::string> ConfigurationParameters::split(const std::string& s, ch
     return splitted;
 }
 
-void ConfigurationParameters::readFromMap(std::map<std::string, std::string> parametersMap) {
+void ConfigurationParameters::readFromMap(std::map<std::string, std::string> &parametersMap) {
     for (auto pair : parametersMap) {
         this->parameters[pair.first] = pair.second;
     }

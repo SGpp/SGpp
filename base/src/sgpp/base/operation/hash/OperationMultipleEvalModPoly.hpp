@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * This class implements OperationMultipleEval for a grids with mod poly basis ansatzfunctions
      *
-     * @version $HEAD$
      */
     class OperationMultipleEvalModPoly: public OperationMultipleEval {
       public:

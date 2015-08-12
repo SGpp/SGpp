@@ -41,16 +41,16 @@ namespace SGPP {
         /**
          * Evaluation of the function, its gradient and its Hessian.
          *
-         * @param      x        point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] gradient gradient
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @param[out] hessian  Hessian matrix
          *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline float_t evalHessian(const base::DataVector& x,
-                                   base::DataVector& gradient,
-                                   base::DataMatrix& hessian) {
+        inline float_t eval(const base::DataVector& x,
+                            base::DataVector& gradient,
+                            base::DataMatrix& hessian) {
           // copy x, necessary due to non-existing const correctness
           // in SGPP::base
           base::DataVector y(x);
@@ -66,6 +66,7 @@ namespace SGPP {
         }
 
       protected:
+        /// sparse grid
         base::Grid& grid;
         /// pointer to evaluation operation
         std::unique_ptr<base::OperationNaiveEvalHessian> opEvalHessian;

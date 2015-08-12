@@ -16,6 +16,7 @@ namespace SGPP {
 
     OCLConfigurationParameters::OCLConfigurationParameters(std::string fileName,
         std::map<std::string, std::string> defaultParameters) {
+
       this->parameters["LOCAL_SIZE"] = "64";
       this->parameters["ENABLE_OPTIMIZATIONS"] = "true";
       this->parameters["OPTIMIZATION_FLAGS"] = "-cl-finite-math-only -cl-fast-relaxed-math";
@@ -26,7 +27,11 @@ namespace SGPP {
       this->parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
       this->parameters["REUSE_SOURCE"] = "false";
       this->parameters["WRITE_SOURCE"] = "false";
+      // sets the kernel to verbose
+      this->parameters["VERBOSE"] = "true";
+      // sets the manager to verbose
       this->parameters["OCL_MANAGER_VERBOSE"] = "false";
+      this->parameters["LOAD_BALANCING_VERBOSE"] = "false";
       this->parameters["SHOW_BUILD_LOG"] = "false";
 
       this->readFromMap(defaultParameters);
@@ -44,7 +49,11 @@ namespace SGPP {
       this->parameters["SELECT_SPECIFIC_DEVICE"] = "DISABLED";
       this->parameters["REUSE_SOURCE"] = "false";
       this->parameters["WRITE_SOURCE"] = "false";
+      // sets the kernel to verbose
+      this->parameters["VERBOSE"] = "false";
+      // sets the manager to verbose
       this->parameters["OCL_MANAGER_VERBOSE"] = "false";
+      this->parameters["LOAD_BALANCING_VERBOSE"] = "false";
       this->parameters["SHOW_BUILD_LOG"] = "false";
     }
 

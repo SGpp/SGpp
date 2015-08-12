@@ -61,7 +61,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMultTran
     }
 
     // create a register storage for the level and index of the grid points of the work item
-    if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
+    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
             sourceStream << indent << this->asString() << " level_" << gridIndex << "[" << dims << "];" << std::endl;
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
@@ -76,7 +76,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMultTran
             sourceStream << std::endl;
         }
         sourceStream << std::endl;
-    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
 
             for (size_t d = 0; d < dims; d++) {

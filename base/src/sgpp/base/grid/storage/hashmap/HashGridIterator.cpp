@@ -56,19 +56,25 @@ namespace SGPP {
     }
 
     void
-    HashGridIterator::left_levelzero(size_t dim) {
+    HashGridIterator::resetToLeftLevelZero(size_t dim) {
       index.set(dim, 0, 0);
       this->seq_ = storage->seq(&index);
     }
 
     void
-    HashGridIterator::right_levelzero(size_t dim) {
+    HashGridIterator::resetToRightLevelZero(size_t dim) {
       index.set(dim, 0, 1);
       this->seq_ = storage->seq(&index);
     }
 
     void
-    HashGridIterator::left_child(size_t dim) {
+    HashGridIterator::resetToLevelOne(size_t d) {
+      index.set(d, 1, 1);
+      this->seq_ = storage->seq(&index);
+    }
+
+    void
+    HashGridIterator::leftChild(size_t dim) {
       index_type::level_type l;
       index_type::index_type i;
       index.get(dim, l, i);
@@ -77,17 +83,11 @@ namespace SGPP {
     }
 
     void
-    HashGridIterator::right_child(size_t dim) {
+    HashGridIterator::rightChild(size_t dim) {
       index_type::level_type l;
       index_type::index_type i;
       index.get(dim, l, i);
       index.set(dim, l + 1, 2 * i + 1);
-      this->seq_ = storage->seq(&index);
-    }
-
-    void
-    HashGridIterator::top(size_t d) {
-      index.set(d, 1, 1);
       this->seq_ = storage->seq(&index);
     }
 
@@ -105,7 +105,7 @@ namespace SGPP {
     }
 
     void
-    HashGridIterator::step_left(size_t d) {
+    HashGridIterator::stepLeft(size_t d) {
       index_type::level_type l;
       index_type::index_type i;
       index.get(d, l, i);
@@ -115,7 +115,7 @@ namespace SGPP {
     }
 
     void
-    HashGridIterator::step_right(size_t d) {
+    HashGridIterator::stepRight(size_t d) {
       index_type::level_type l;
       index_type::index_type i;
       index.get(d, l, i);
@@ -125,7 +125,7 @@ namespace SGPP {
     }
 
     bool
-    HashGridIterator::isInnerPoint() {
+    HashGridIterator::isInnerPoint() const {
       return index.isInnerPoint();
     }
 
@@ -135,7 +135,7 @@ namespace SGPP {
     }
 
     bool
-    HashGridIterator::hint_left(size_t d) {
+    HashGridIterator::hintLeft(size_t d) {
       index_type::level_type l;
       index_type::index_type i;
       bool hasIndex = true;
@@ -152,7 +152,7 @@ namespace SGPP {
     }
 
     bool
-    HashGridIterator::hint_right(size_t d) {
+    HashGridIterator::hintRight(size_t d) {
       index_type::level_type l;
       index_type::index_type i;
       bool hasIndex = true;
@@ -182,6 +182,12 @@ namespace SGPP {
     }
 
     void
+    HashGridIterator::set(const index_type& point) {
+      index = point;
+      this->seq_ = storage->seq(&index);
+    }
+
+    void
     HashGridIterator::push(size_t d, index_type::level_type l,
                            index_type::index_type i) {
       index.push(d, l, i);
@@ -202,12 +208,12 @@ namespace SGPP {
       index.get(dim, orig_level, orig_index);
 
       while (true) {
-        if (this->hint_left(dim)) {
+        if (this->hintLeft(dim)) {
           depth++;
-          this->left_child(dim);
-        } else if (this->hint_right(dim)) {
+          this->leftChild(dim);
+        } else if (this->hintRight(dim)) {
           depth++;
-          this->right_child(dim);
+          this->rightChild(dim);
         } else {
 
           index.get(dim, cur_level, cur_index);
@@ -222,14 +228,14 @@ namespace SGPP {
 
             //does this index exist?
             if (!storage->end(this->seq())) {
-              if (this->hint_left(dim)) {
+              if (this->hintLeft(dim)) {
                 depth++;
-                this->left_child(dim);
+                this->leftChild(dim);
                 hasFound = true;
                 break;
-              } else if (this->hint_right(dim)) {
+              } else if (this->hintRight(dim)) {
                 depth++;
-                this->right_child(dim);
+                this->rightChild(dim);
                 hasFound = true;
                 break;
               }

@@ -169,6 +169,7 @@ namespace SGPP {
          * Dimensions have to match.
          *
          * @param matr the DataMatrix containing the data
+         * @return *this
          */
         DataMatrix& operator=(const DataMatrix& matr);
 
@@ -177,6 +178,7 @@ namespace SGPP {
          * For the 5th element in the third row, i would be 2*getNcols()+4.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float_t& operator[](size_t i) {
           return data[i];
@@ -229,7 +231,7 @@ namespace SGPP {
         void setRow(size_t row, const DataVector& vec);
 
         /**
-           * Copies the values of a column to the DataVector vec.
+         * Copies the values of a column to the DataVector vec.
          *
          * @param col The column
          * @param vec DataVector into which the data is written
@@ -237,7 +239,7 @@ namespace SGPP {
         void getColumn(size_t col, DataVector& vec) const;
 
         /**
-           * Sets a column of the DataMatrix to the values of a DataVector vec.
+         * Sets a column of the DataMatrix to the values of a DataVector vec.
          *
          * @param col The column which is to be overwritten
          * @param vec DataVector containing the data of the column

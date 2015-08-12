@@ -52,7 +52,6 @@ namespace SGPP {
      *   - linear functions of the combined LTwoDot+Laplace Operation, linear grids with boundaries
      *   - creation of the full matrix of the LTwoDot Operation, linear grids without boundaries
      * Internal data of the class is kept entirely in the global memory space within the SGPP::parallel::oclpdekernels namespace.
-     * @version $HEAD$
      */
     class OCLPDEKernels {
 

@@ -132,6 +132,8 @@ namespace SGPP {
           float_t stdDev;
           /// vector displacement
           base::DataVector displacement;
+          /// temporary vector for displacing
+          base::DataVector xTmp;
       };
 
     }

@@ -3,7 +3,8 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-import unittest, tools
+import unittest
+import tools
 from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------
@@ -49,6 +50,7 @@ def generateBTMatrix(factory, training, verbose=False):
     m = DataMatrix(training.getNrows(), storage.size())
     
     for i in xrange(storage.size()):
+      
         # apply unit vectors
         temp.setAll(0.0)
         alpha.setAll(0.0)
@@ -158,11 +160,13 @@ def compareBTMatrices(testCaseClass, m1, m2):
     for i in range(n):
         m1.getRow(i,v)
         values.append(v.sum())
+    
     values.sort()
     values_ref = []
     for i in range(n):
         m2.getRow(i,v)
         values_ref.append(v.sum())
+        
     values_ref.sort()
     for i in range(n):
         #print values_ref[i], values[i]

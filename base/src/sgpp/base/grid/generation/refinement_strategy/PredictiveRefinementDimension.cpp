@@ -39,7 +39,6 @@ namespace SGPP {
 
         GridStorage::grid_map_iterator child_iter;
 
-        // @todo (blank) Maybe it's possible to move predecessor/successor discovery into the storage concept
         // check for each grid point whether it can be refined (i.e., whether not all kids exist yet)
         // if yes, check whether it belongs to the refinements_num largest ones
         for (size_t d = 0; d < storage->dim(); d++) {
@@ -101,7 +100,7 @@ namespace SGPP {
 
 
         if (max_value.second > functor->start() && max_value.second >= threshold) {
-          index_type index((*storage)[max_index]);
+          index_type index(*(*storage)[max_index]);
           //Sets leaf property of index, which is refined to false
           (*storage)[max_index]->setLeaf(false);
           std::cout << "Refining grid point " << max_index << " value " << max_value.second << std::endl;

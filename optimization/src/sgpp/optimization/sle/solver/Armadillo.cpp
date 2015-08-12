@@ -9,9 +9,18 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#ifdef USEARMADILLO
+#ifdef USE_ARMADILLO
 #include <armadillo>
-#endif /* USEARMADILLO */
+
+#if USE_DOUBLE_PRECISION
+typedef arma::vec ArmadilloVector;
+typedef arma::mat ArmadilloMatrix;
+#else
+typedef arma::fvec ArmadilloVector;
+typedef arma::fmat ArmadilloMatrix;
+#endif
+
+#endif /* USE_ARMADILLO */
 
 #include <cstddef>
 #include <iostream>
@@ -22,14 +31,13 @@ namespace SGPP {
 
       bool Armadillo::solve(SLE& system, base::DataVector& b,
                             base::DataVector& x) const {
-        // place RHS in its own vector
-        std::vector<base::DataVector> B = {b};
-        std::vector<base::DataVector> X;
+        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+        base::DataMatrix X(B.getNrows(), B.getNcols());
 
         // call version for multiple RHSs
         if (solve(system, B, X)) {
-          x.resize(X[0].getSize());
-          x = X[0];
+          x.resize(X.getNrows());
+          X.getColumn(0, x);
           return true;
         } else {
           return false;
@@ -37,13 +45,13 @@ namespace SGPP {
       }
 
       bool Armadillo::solve(SLE& system,
-                            std::vector<base::DataVector>& B,
-                            std::vector<base::DataVector>& X) const {
-#ifdef USEARMADILLO
+                            base::DataMatrix& B,
+                            base::DataMatrix& X) const {
+#ifdef USE_ARMADILLO
         printer.printStatusBegin("Solving linear system (Armadillo)...");
 
         const arma::uword n = static_cast<arma::uword>(system.getDimension());
-        arma::mat A(n, n);
+        ArmadilloMatrix A(n, n);
         size_t nnz = 0;
 
         A.zeros();
@@ -106,16 +114,17 @@ namespace SGPP {
           printer.printStatusNewLine();
         }
 
-        if (B.size() == 1) {
+        if (B.getNcols() == 1) {
           // only one RHS ==> use vector version of arma::solve
-          arma::vec bArmadillo(B[0].getPointer(), n);
-          arma::vec xArmadillo(n);
+          ArmadilloVector bArmadillo(B.getPointer(), n);
+          ArmadilloVector xArmadillo(n);
 
           printer.printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(xArmadillo, A, bArmadillo)) {
-            X.clear();
-            X.push_back(base::DataVector(xArmadillo.memptr(), n));
+            base::DataVector x(xArmadillo.memptr(), n);
+            X.resize(n, 1);
+            X.setColumn(0, x);
             printer.printStatusEnd();
             return true;
           } else {
@@ -124,23 +133,26 @@ namespace SGPP {
           }
         } else {
           // multiple RHSs ==> use matrix version of arma::solve
-          const arma::uword B_count = static_cast<arma::uword>(B.size());
-          arma::mat BArmadillo(n, B_count);
-          arma::mat XArmadillo(n, B_count);
+          const arma::uword B_count = static_cast<arma::uword>(B.getNcols());
+          ArmadilloMatrix BArmadillo(n, B_count);
+          ArmadilloMatrix XArmadillo(n, B_count);
+          base::DataVector b(n);
 
           // copy RHSs to Armadillo matrix
           for (arma::uword i = 0; i < B_count; i++) {
-            BArmadillo.col(i) = arma::vec(B[i].getPointer(), n);
+            B.getColumn(i, b);
+            BArmadillo.col(i) = ArmadilloVector(b.getPointer(), n);
           }
 
           printer.printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(XArmadillo, A, BArmadillo)) {
-            X.clear();
+            X.resize(n, B_count);
 
             // convert solutions to base::DataVector
             for (arma::uword i = 0; i < B_count; i++) {
-              X.push_back(base::DataVector(XArmadillo.colptr(i), n));
+              base::DataVector x(XArmadillo.colptr(i), n);
+              X.setColumn(i, x);
             }
 
             printer.printStatusEnd();
@@ -155,7 +167,7 @@ namespace SGPP {
         std::cerr << "Error in sle_solver::Armadillo::solve: "
                   << "SG++ was compiled without Armadillo support!\n";
         return false;
-#endif /* USEARMADILLO */
+#endif /* USE_ARMADILLO */
       }
 
     }

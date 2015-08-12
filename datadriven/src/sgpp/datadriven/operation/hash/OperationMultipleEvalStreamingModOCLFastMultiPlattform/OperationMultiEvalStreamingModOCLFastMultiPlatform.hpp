@@ -48,7 +48,7 @@ public:
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
-        if (parameters["KERNEL_STORE_DATA"].compare("register") == 0 &&
+        if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0 &&
                 dataset.getNcols() > parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
             std::stringstream errorString;
             errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
@@ -124,7 +124,7 @@ public:
                 resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        if (parameters.getAsBoolean("KERNEL_VERBOSE")) {
+        if (parameters.getAsBoolean("VERBOSE")) {
             std::cout << "duration mult ocl mod fast: " << elapsed_seconds.count() << std::endl;
         }
 
@@ -170,7 +170,7 @@ public:
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
 
-        if (parameters.getAsBoolean("KERNEL_VERBOSE")) {
+        if (parameters.getAsBoolean("VERBOSE")) {
             std::cout << "duration multTranspose ocl mod fast: " << elapsed_seconds.count() << std::endl;
         }
 

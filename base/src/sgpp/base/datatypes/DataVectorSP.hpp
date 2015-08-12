@@ -66,8 +66,6 @@ namespace SGPP {
          * all superfluous entries are removed.
          *
          * @param size New number of elements of the DataVector
-         * @todo (pflueged) Check that no wrong usage of reize is left which assumes that new entries are zero.
-         * @todo (pflueged) Optimize implementation, consider unused elements!
          */
         void resize(size_t size);
 
@@ -153,6 +151,7 @@ namespace SGPP {
          * Dimensions have to match.
          *
          * @param vec the DataVector containing the data
+         * @return *this
          */
         DataVectorSP& operator=(const DataVectorSP& vec);
 
@@ -160,6 +159,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float& operator[](size_t i) {
           return data[i];
@@ -169,6 +169,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float get(size_t i) const {
           return data[i];

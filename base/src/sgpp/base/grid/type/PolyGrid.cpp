@@ -14,22 +14,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace base {
 
-    PolyGrid::PolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL)  {
+    PolyGrid::PolyGrid(std::istream& istr) :
+      Grid(istr), degree(1 << 16), basis_(NULL) {
       istr >> degree;
     }
 
-    PolyGrid::PolyGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL)  {
+    PolyGrid::PolyGrid(size_t dim, size_t degree) :
+      degree(degree), basis_(NULL) {
       this->storage = new GridStorage(dim);
     }
 
     PolyGrid::~PolyGrid() {
-      if (basis_ != NULL) {
-        delete basis_;
-      }
     }
 
     const char* PolyGrid::getType() {

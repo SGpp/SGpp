@@ -17,7 +17,6 @@ namespace SGPP {
     /**
      * Implementation of Laplace for mod linear functions
      *
-     * @version $HEAD$
      */
     class OperationLaplaceModLinear : public UpDownOneOpDim {
       public:

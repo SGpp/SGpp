@@ -37,7 +37,7 @@ namespace SGPP {
           if (level == 0) {
             // up
             if (index == 1) {
-              SGPP::base::GridIndex index_zero = (*storage)[i];
+              SGPP::base::GridIndex index_zero = *(*storage)[i];
               index_zero.set(dim, 0, 0);
 
               if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
@@ -56,7 +56,7 @@ namespace SGPP {
           if (level == 0) {
             // up
             if (index == 1) {
-              SGPP::base::GridIndex index_zero = (*storage)[i];
+              SGPP::base::GridIndex index_zero = *(*storage)[i];
               index_zero.set(dim, 0, 0);
 
               if (!boundingBox->hasDirichletBoundaryLeft(dim)) {

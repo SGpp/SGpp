@@ -47,7 +47,7 @@ public:
 
     void getPartitionSegments(size_t start, size_t end, size_t blockSize,
             std::map<cl_platform_id, size_t *> segmentStart, std::map<cl_platform_id, size_t *> segmentEnd) {
-        bool setVerboseLoadBalancing = parameters.getAsBoolean("LINEAR_LOAD_BALANCING_VERBOSE");
+        bool setVerboseLoadBalancing = parameters.getAsBoolean("LOAD_BALANCING_VERBOSE");
         size_t totalSize = end - start;
 
         // check for valid input
@@ -103,7 +103,7 @@ public:
 
     //TODO: consider inactive device due to nothing to do?
     void update(std::map<cl_platform_id, double *> timings) {
-        bool setVerboseLoadBalancing = parameters.getAsBoolean("LINEAR_LOAD_BALANCING_VERBOSE");
+        bool setVerboseLoadBalancing = parameters.getAsBoolean("LOAD_BALANCING_VERBOSE");
 
         //recalculate weights
         for (OCLPlatformWrapper platform : manager.platforms) {

@@ -17,7 +17,6 @@ namespace SGPP {
     /**
      *Implements the \f$(x \phi_i(x),\phi_j(x))\f$ operator on linear grids (no boundaries)
      *
-     * @version $HEAD$
      */
     class OperationLDLinear: public SGPP::pde::StdUpDown {
       public:

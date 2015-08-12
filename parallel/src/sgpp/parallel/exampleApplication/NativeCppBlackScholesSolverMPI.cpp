@@ -19,7 +19,6 @@
 #include <iomanip>
 #include <cmath>
 
-// @todo (heinecke) remove global variables
 std::string tFileEvalCuboid = "evalCuboid.MPI.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.MPI.data";
 

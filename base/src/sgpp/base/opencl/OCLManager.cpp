@@ -84,7 +84,7 @@ namespace SGPP {
             std::cout << "OCL Info: Platform " << ui << " name: " << platform_name << std::endl;
           }
 
-          if (parameters["PLATFORM"].compare(platform_name) == 0) {
+          if (parameters.get("PLATFORM").compare(platform_name) == 0) {
             platform_id = platform_ids[ui];
 
             if (verbose) {
@@ -98,7 +98,7 @@ namespace SGPP {
         std::cout << std::endl;
       }
 
-      if (parameters["PLATFORM"].compare("first") == 0) {
+      if (parameters.get("PLATFORM").compare("first") == 0) {
         if (verbose) {
           std::cout << "using first platform" << std::endl;
         }
@@ -107,7 +107,7 @@ namespace SGPP {
       }
 
       // Find out how many devices there are
-      if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_CPU") {
+      if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_CPU") {
         if (verbose) {
           std::cout << "OCL Info: looking for CPU device" << std::endl;
         }
@@ -117,7 +117,7 @@ namespace SGPP {
         device_ids = new cl_device_id[num_devices];
         // get the device ids
         err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, num_devices, device_ids, nullptr);
-      } else if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_GPU") {
+      } else if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_GPU") {
         if (verbose) {
           std::cout << "OCL Info: looking for GPU device" << std::endl;
         }
@@ -127,7 +127,7 @@ namespace SGPP {
         device_ids = new cl_device_id[num_devices];
         // get the device ids
         err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, nullptr);
-      } else if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_ACCELERATOR") {
+      } else if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ACCELERATOR") {
         if (verbose) {
           std::cout << "OCL Info: looking for device of accelerator type" << std::endl;
         }
@@ -137,7 +137,7 @@ namespace SGPP {
         device_ids = new cl_device_id[num_devices];
         // get the device ids
         err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, num_devices, device_ids, nullptr);
-      } else if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_ALL") {
+      } else if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ALL") {
         if (verbose) {
           std::cout << "OCL Info: looking for device of all available devices" << std::endl;
         }
@@ -164,7 +164,7 @@ namespace SGPP {
 
       cl_uint maxDevices = (cl_uint) parameters.getAsUnsigned("MAX_DEVICES");
 
-      if (parameters["SELECT_SPECIFIC_DEVICE"].compare("DISABLED") != 0) {
+      if (parameters.get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0) {
         if (maxDevices != 1) {
           std::stringstream errorString;
           errorString
@@ -270,7 +270,7 @@ namespace SGPP {
 
       if (parameters.getAsBoolean("ENABLE_OPTIMIZATIONS")) {
         //TODO: user should be able to change
-        build_opts = parameters["OPTIMIZATION_FLAGS"]; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
+        build_opts = parameters.get("OPTIMIZATION_FLAGS"); // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
       } else {
         build_opts = "-cl-opt-disable"; // -g
       }

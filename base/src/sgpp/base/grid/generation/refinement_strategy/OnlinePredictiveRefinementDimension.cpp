@@ -80,8 +80,8 @@ namespace SGPP {
 
         //#pragma omp parallel for schedule(static)
         for (size_t k = 0; k < dim; k++ ) {
-          float_t index = gridIndex->getIndex(k);
-          float_t level = gridIndex->getLevel(k);
+          float_t index = static_cast<float_t>(gridIndex->getIndex(k));
+          float_t level = static_cast<float_t>(gridIndex->getLevel(k));
           float_t intval = pow(2.0, -level);
           //std::cout << "level " << level << " intval " << intval << std::endl;
 
@@ -98,13 +98,11 @@ namespace SGPP {
 
 
         // All numerators
-        // FIXME: should be initiated only once
         DataVector numerators(predictiveGridSize);
         eval->multTranspose(*errors, numerators);
         //numerators.sqr();
 
         // All denominators
-        // FIXME: should be initiated only once
         DataVector denominators(predictiveGridSize);
         denominators.setAll(0.0);
 
@@ -123,7 +121,7 @@ namespace SGPP {
           //            single.set(j, 0.0);
 
 
-          GridIndex predGridIdx = predictiveGridStorage->get(j);
+          GridIndex& predGridIdx = *predictiveGridStorage->get(j);
 
           for (size_t point_idx = 0; point_idx < numData; point_idx++) {
             float_t prod = 1.0;

@@ -25,15 +25,20 @@ namespace SGPP {
         ConfigurationParameters(std::string fileName,
                                 std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
 
-        std::string &operator[](std::string key);
+        bool empty();
 
-        bool getAsBoolean(std::string key);
-        uint64_t getAsUnsigned(std::string key);
+        void set(const std::string key, std::string value);
 
-      protected:
-        void readFromMap(std::map<std::string, std::string> parametersMap);
+        std::string &get(const std::string &key);
+
+        bool getAsBoolean(const std::string &key);
+
+        uint64_t getAsUnsigned(const std::string &key);
+
+        void readFromMap(std::map<std::string, std::string> &parametersMap);
 
         void readFromFile(std::string fileName);
+
       private:
         std::vector<std::string> split(const std::string& s, char delim);
     };

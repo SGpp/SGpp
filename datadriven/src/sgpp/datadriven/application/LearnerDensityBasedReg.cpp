@@ -220,7 +220,6 @@ namespace SGPP {
       }
 
       result.timeComplete_ = execTime_;
-      //@TODO add other times if needed
 
       isTrained_ = true;
 

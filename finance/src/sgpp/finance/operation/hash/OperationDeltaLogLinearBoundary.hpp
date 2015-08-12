@@ -20,7 +20,6 @@ namespace SGPP {
      * (in the non-transformed case, this corresponds to matrix F in Master's thesis)
      * equation
      *
-     * @version $HEAD$
      */
     class OperationDeltaLogLinearBoundary: public SGPP::pde::UpDownOneOpDim {
       public:

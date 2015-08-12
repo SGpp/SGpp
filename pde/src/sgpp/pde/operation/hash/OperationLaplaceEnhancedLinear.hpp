@@ -18,7 +18,6 @@ namespace SGPP {
      * Implements the Laplace operator based on
      * the UpDownOneOpDimEnhanced method.
      *
-     * @version $HEAD$
      */
     class OperationLaplaceEnhancedLinear: public UpDownOneOpDimEnhanced {
       public:

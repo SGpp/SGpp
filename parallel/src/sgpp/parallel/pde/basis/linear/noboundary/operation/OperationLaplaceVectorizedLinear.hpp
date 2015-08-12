@@ -34,7 +34,6 @@ namespace SGPP {
     /**
      * Implementation for linear functions of Laplace Operation, linear grids without boundaries
      *
-     * @version $HEAD$
      */
     class OperationLaplaceVectorizedLinear: public SGPP::base::OperationMatrix {
       private:

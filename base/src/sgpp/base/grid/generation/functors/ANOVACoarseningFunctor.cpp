@@ -44,7 +44,7 @@ namespace SGPP {
           //Ignore the ANOVA Component f0
           float_t dim = static_cast<float_t>(storage->dim());
           L2_value = fabs(alpha->get(seq))
-                     * pow(2.0, static_cast<float_t>(dim - level_sum) / 2)
+                     * pow(2.0, (dim - static_cast<float_t>(level_sum)) / 2)
                      / pow(3.0, dim / 2.0);
           int anove_component = getANOVAComponentIndex(index);
           anova_variances[anove_component].value += L2_value;

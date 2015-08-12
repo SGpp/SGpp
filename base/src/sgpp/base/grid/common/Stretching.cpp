@@ -350,7 +350,8 @@ namespace SGPP {
         temp = leentvaarXform(level, index, dim);
       } else if (t == "fitob") {
         int pow2deltaL = static_cast<int>(pow(2.0, (level - LOOKUPMAX)));
-        float_t dIndex = (float_t)index / pow2deltaL;
+        float_t dIndex = static_cast<float_t>(index) /
+                         static_cast<float_t>(pow2deltaL);
         bool leftContinue = false, rightContinue = false;
         int rightLevel = LOOKUPMAX, leftLevel = LOOKUPMAX;
         int leftIndex = (int)floor(dIndex);
@@ -401,7 +402,7 @@ namespace SGPP {
 
         float_t posl = getCoordinates(leftLevel, leftIndex, dim);
         float_t posr = getCoordinates(rightLevel, rightIndex, dim);
-        float_t step = (posr - posl) / pow2deltaL;
+        float_t step = (posr - posl) / static_cast<float_t>(pow2deltaL);
         temp = posl + step * (dIndex - floor(dIndex)) * pow2deltaL;
       } else {
 
@@ -422,7 +423,8 @@ namespace SGPP {
 
         for (int i = 1; i <= elemPerLevel; i++) {
           str1D.lookup[idx++][0] =
-            exp (f_a + (float_t)(2 * i - 1) / (2 * elemPerLevel) * (f_b - f_a));
+            exp (f_a + static_cast<float_t>(2 * i - 1) /
+                 static_cast<float_t>(2 * elemPerLevel) * (f_b - f_a));
         }
       }
     }
@@ -432,7 +434,8 @@ namespace SGPP {
       float_t f_b = log(getBoundary(dim).rightBoundary);
       int elemPerLevel = static_cast<int>(pow(2.0, l - 1));
 
-      return exp (f_a + (float_t)(i) / (2 * elemPerLevel) * (f_b - f_a));
+      return exp (f_a + static_cast<float_t>(i) /
+                  static_cast<float_t>(2 * elemPerLevel) * (f_b - f_a));
     }
 
     void Stretching::leentvaarXform(Stretching1D& str1D, size_t dim) {
@@ -450,7 +453,9 @@ namespace SGPP {
 
         for (int i = 1; i <= elemPerLevel; i++) {
           str1D.lookup[idx++][0] =
-            (1 / str1D.xsi * sinh((f_a + (float_t)(2 * i - 1) / (2 * elemPerLevel) * (f_b - f_a))) + str1D.x_0);
+            (1 / str1D.xsi * sinh((f_a + static_cast<float_t>(2 * i - 1) /
+                                   static_cast<float_t>(2 * elemPerLevel) *
+                                   (f_b - f_a))) + str1D.x_0);
         }
       }
     }
@@ -464,7 +469,9 @@ namespace SGPP {
       float_t f_b = log(sinhArgumentb + sqrt(sinhArgumentb * sinhArgumentb + 1));
       int elemPerLevel = static_cast<int>(pow(2.0, l - 1));
 
-      return (1 / stretching1Ds[dim].xsi * sinh((f_a + (float_t)(i) / (2 * elemPerLevel) * (f_b - f_a))) + stretching1Ds[dim].x_0);
+      return (1 / stretching1Ds[dim].xsi * sinh((f_a + static_cast<float_t>(i) /
+              static_cast<float_t>(2 * elemPerLevel) *
+              (f_b - f_a))) + stretching1Ds[dim].x_0);
     }
 
     void Stretching::noXform(Stretching1D& str1D, size_t dim) {
@@ -477,7 +484,8 @@ namespace SGPP {
 
         for (int i = 1; i <= elemPerLevel; i++) {
           str1D.lookup[idx++][0] =
-            (f_a + (float_t)(2 * i - 1) / (2 * elemPerLevel) * (f_b - f_a));
+            (f_a + static_cast<float_t>(2 * i - 1) /
+             static_cast<float_t>(2 * elemPerLevel) * (f_b - f_a));
         }
       }
     }
@@ -487,7 +495,8 @@ namespace SGPP {
       float_t f_b = getBoundary(dim).rightBoundary;
       int elemPerLevel = static_cast<int>(pow(2.0, l - 1));
 
-      return (f_a + (float_t)(i) / (2 * elemPerLevel) * (f_b - f_a));
+      return (f_a + static_cast<float_t>(i) /
+              static_cast<float_t>(2 * elemPerLevel) * (f_b - f_a));
     }
 
 

@@ -34,7 +34,6 @@ namespace SGPP {
      * The class's aim is, to hide all complex details of solving the Hull White
      * Equation with Sparse Grids!
      *
-     * @version $HEAD$
      */
 
 

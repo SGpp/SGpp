@@ -21,7 +21,6 @@ namespace SGPP {
      * This class builds a cuboid in the d-dimension space. This
      * cuboid is discretesized by a regular full grid.
      *
-     * @version $HEAD$
      */
     class EvalCuboidGenerator {
       private:

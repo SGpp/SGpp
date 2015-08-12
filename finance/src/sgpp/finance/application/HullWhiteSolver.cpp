@@ -39,7 +39,6 @@ namespace SGPP {
       this->numCoarsenPoints = -1;
       this->refineMaxLevel = 0;
 
-      // @todo set to random value to remove compiler warnings due to uninitialized members
       this->a = 0.0;
       this->refineThreshold = 0.0;
       this->sigma = 0.0;

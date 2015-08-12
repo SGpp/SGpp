@@ -22,11 +22,12 @@ namespace SGPP {
       DEFAULT, SIMPLE, COMBINED, OCL, OCLFAST, OCLFASTMULTIPLATFORM, OCLMP
     };
 
+    //TODO: remove pointer and create constructor with parameters
     class OperationMultipleEvalConfiguration {
       public:
         OperationMultipleEvalType type = OperationMultipleEvalType::DEFAULT;
         OperationMultipleEvalSubType subType = OperationMultipleEvalSubType::DEFAULT;
-        base::ConfigurationParameters *parameters = nullptr;
+        base::ConfigurationParameters *parameters;
 
         //operational - can be set for easier reporting
         std::string name = "DEFAULT";

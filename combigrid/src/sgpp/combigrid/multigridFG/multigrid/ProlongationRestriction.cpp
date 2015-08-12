@@ -154,7 +154,6 @@ void combigrid::ProlongationRestriction::prolongation(
 
     tOffs = 0;
 
-    //todo: this part can be done much smarter, not to evaluate the basis function, pre-compute the possibilities
     for (i = 0 ; i < nrCellPoints ; i++) {
       tmp_D = 1.0;
       tOffs = 0;
@@ -163,7 +162,7 @@ void combigrid::ProlongationRestriction::prolongation(
       for (axis = 0 ; axis < dim ; axis++) {
         // calculate the index on this axis
         tmp_I2 = (i / combigrid::powerOfTwo[axis]) % 2;
-        // N-linear basis function , todo: we do not use the basis function of the full grid
+        // N-linear basis function
         tmp_D =  tmp_D * ((double)(tmp_I2) * axisDiv[axis] + (double)(1 - tmp_I2) * (1.0 - axisDiv[axis]));
         tOffs = tOffs + tmp_I2 * fgCoarse->getOffset(axis);
         //COMBIGRID_OUT_LEVEL2( verb , " Calc basis function, axis:"<< axis << " , tmp_I2:" << tmp_I2 << ",tmp_D:"<<tmp_D);

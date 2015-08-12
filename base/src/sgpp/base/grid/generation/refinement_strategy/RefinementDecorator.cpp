@@ -43,7 +43,7 @@ namespace SGPP {
 
     bool RefinementDecorator::checkAdmissibility(GridStorage* storage, index_type& index) {
       bool isAdmissible = true;
-      /* TODO
+      /*
       index_type gridPoint = index;
 
       size_t dim = 0;

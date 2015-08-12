@@ -234,7 +234,6 @@ namespace SGPP {
 
       // Creating the command queues
       for (size_t i = 0; i < num_devices; i++) {
-        // TODO FIXME whats the difference here?
 #ifdef USEOCL_CPU
         command_queue[i] = clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
 #else

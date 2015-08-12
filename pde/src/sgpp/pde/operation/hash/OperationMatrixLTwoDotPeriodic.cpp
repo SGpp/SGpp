@@ -17,7 +17,6 @@ namespace SGPP {
     }
 
     OperationMatrixLTwoDotPeriodic::~OperationMatrixLTwoDotPeriodic() {
-      //TODO: FZ: delete gridStorage?
     }
 
     void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {

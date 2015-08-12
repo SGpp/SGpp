@@ -167,26 +167,6 @@ namespace SGPP {
               double completeTime = this->myTimer_->stop();
               this->completeTimeMult_ += completeTime;
 
-              //        double communicationTime = completeTime - computationTime;
-              //        double maxComputationTime, minComputationTime;
-              //        double maxCompleteTime, minCompleteTime;
-              //        double maxCommunicationTime, minCommunicationTime;
-
-              //        MPI_Reduce(&computationTime, &maxComputationTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-              //        MPI_Reduce(&computationTime, &minComputationTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-              //        MPI_Reduce(&communicationTime, &maxCommunicationTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-              //        MPI_Reduce(&communicationTime, &minCommunicationTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-              //        MPI_Reduce(&completeTime, &maxCompleteTime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-              //        MPI_Reduce(&completeTime, &minCompleteTime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-              //        if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0 && false) {
-              //          std::cout << "size: " << _mpi_data_sizes[0]*sizeof(double) << "(sizeof (double): "<< sizeof(double) <<")" << std::endl;
-              //          std::cout << "computation     time min - max: " << minComputationTime << " - " << maxComputationTime << " (difference: " << (maxComputationTime - minComputationTime) << ") " << std::endl;
-              //          std::cout << "complete        time min - max: " << minCompleteTime << " - " << maxCompleteTime << " (difference: " << (maxCompleteTime - minCompleteTime) << ") " << std::endl;
-              //          std::cout << "communication   time min - max: " << minCommunicationTime << " - " << maxCommunicationTime << " (difference: " << (maxCommunicationTime - minCommunicationTime) << ") " << std::endl;
-              //          std::cout << std::endl;
-              //        }
-              //        /// @todo min/max mpireduce to see where the time is spent
-
               this->myTimer_->start();
 
             }

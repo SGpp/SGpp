@@ -91,8 +91,7 @@ namespace SGPP {
       }
     }
 
-    //TODO: read/write-flags
-
+    //read/write-flags are missing
     void OCLClonedBuffer::initializeBuffer(void* initialValues, size_t sizeofType, size_t elements) {
       cl_int err;
       cl_mem* bufferList = new cl_mem[manager.num_devices];

@@ -34,9 +34,12 @@ namespace SGPP {
      */
     class HashGridIndex {
       public:
+        /// level type
         typedef uint32_t level_type;
+        /// index type
         typedef uint32_t index_type;
 
+        /// how the coordinates of the points are calculated
         enum PointDistribution {
           Normal,
           ClenshawCurtis
@@ -57,9 +60,9 @@ namespace SGPP {
         /**
          * Copy-Constructor
          *
-         * @param o constant pointer to HashGridIndex object
+         * @param o constant reference to HashGridIndex object
          */
-        HashGridIndex(const HashGridIndex* o);
+        HashGridIndex(const HashGridIndex& o);
 
         /**
          * Serialisation-Constructor
@@ -95,7 +98,11 @@ namespace SGPP {
          * @param l the level of the ansatzfunction
          * @param i the index of the ansatzfunction
          */
-        void set(size_t d, level_type l, index_type i);
+        inline void set(size_t d, level_type l, index_type i) {
+          level[d] = l;
+          index[d] = i;
+          rehash();
+        }
 
         /**
          * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and rehashs the HashGridIndex object
@@ -105,7 +112,12 @@ namespace SGPP {
          * @param i the index of the ansatzfunction
          * @param isLeaf specifies if this gridpoint has any childrens in any dimension
          */
-        void set(size_t d, level_type l, index_type i, bool isLeaf);
+        inline void set(size_t d, level_type l, index_type i, bool isLeaf) {
+          level[d] = l;
+          index[d] = i;
+          Leaf = isLeaf;
+          rehash();
+        }
 
         /**
          * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and doesn't rehash the HashGridIndex object
@@ -114,7 +126,10 @@ namespace SGPP {
          * @param l the level of the ansatzfunction
          * @param i the index of the ansatzfunction
          */
-        void push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i);
+        inline void push(size_t d, level_type l, index_type i) {
+          level[d] = l;
+          index[d] = i;
+        }
 
         /**
          * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and the Leaf property and doesn't rehash the HashGridIndex object
@@ -124,7 +139,11 @@ namespace SGPP {
          * @param i the index of the ansatzfunction
          * @param isLeaf specifies if this gridpoint has any childrens in any dimension
          */
-        void push(size_t d, HashGridIndex::level_type l, HashGridIndex::index_type i, bool isLeaf);
+        inline void push(size_t d, level_type l, index_type i, bool isLeaf) {
+          level[d] = l;
+          index[d] = i;
+          Leaf = isLeaf;
+        }
 
         /**
          * gets level <i>l</i> and index <i>i</i> in dimension <i>d</i> by reference parameters
@@ -133,21 +152,30 @@ namespace SGPP {
          * @param l reference parameter for the level of the ansatz function
          * @param i reference parameter for the index of the ansatz function
          */
-        void get(size_t d, HashGridIndex::level_type& l, HashGridIndex::index_type& i) const;
+        inline void get(size_t d, level_type& l, index_type& i) const {
+          l = level[d];
+          i = index[d];
+        }
 
         /**
          * gets level <i>l</i> in dimension <i>d</i>
          *
          * @param d the dimension in which the ansatz function should be read
+         * @return level
          */
-        int getLevel(size_t d) const;
+        inline level_type getLevel(size_t d) const {
+          return level[d];
+        }
 
         /**
          * gets index <i>i</i> in dimension <i>d</i>
          *
          * @param d the dimension in which the ansatz function should be read
+         * @return index
          */
-        int getIndex(size_t d) const;
+        inline index_type getIndex(size_t d) const {
+          return index[d];
+        }
 
         /**
          * Gets the point distribution of the grid point.
@@ -212,7 +240,7 @@ namespace SGPP {
          *
          * @return true if the grid point is an inner grid point
          */
-        bool isInnerPoint();
+        bool isInnerPoint() const;
 
         /**
          * gets a Pointer to the instance of the HashGridIndex Object
@@ -252,8 +280,7 @@ namespace SGPP {
         bool equals(const HashGridIndex& rhs) const;
 
         /**
-         * This is just wrapper for operator= until I cant get swig to wrap it
-         * @todo who is "I"?????? --> (heinecke) I guess Joerg Blank ;-)
+         * A wrapper for operator=
          *
          * @param rhs a reference to a HashGridIndex that contains the values that should be copied
          *
@@ -266,8 +293,6 @@ namespace SGPP {
          *
          * @param rhs a reference to a HashGridIndex that contains the values that should be copied
          *
-         * @todo (blank) generate working swig-wrapper
-         *
          * @return returns a reference HashGridIndex
          */
         HashGridIndex& operator=(const HashGridIndex& rhs);
@@ -279,7 +304,7 @@ namespace SGPP {
          *
          * @returns string into which the gridpoint is written
          */
-        std::string toString();
+        std::string toString() const;
 
         /**
          * Generates a string with level and index of the gridpoint.
@@ -287,14 +312,14 @@ namespace SGPP {
          *
          * @param stream reference to a output stream
          */
-        void toString(std::ostream& stream);
+        void toString(std::ostream& stream) const;
 
         /**
          * Sets the entries of DataVector p to the coordinates of the gridpoint
          *
          * @param p the (result) DataVector p that should be overwritten
          */
-        void getCoords(DataVector& p);
+        void getCoords(DataVector& p) const;
 
         /**
          * Sets the entries of DataVector p to the coordinates of the gridpoint with bounding box
@@ -302,7 +327,7 @@ namespace SGPP {
          * @param p the (result) DataVector p that should be overwritten
          * @param BB reference to BoundingBox Object, that stores all boundaries for all dimensions
          */
-        void getCoordsBB(DataVector& p, BoundingBox& BB);
+        void getCoordsBB(DataVector& p, BoundingBox& BB) const;
 
         /**
          * Sets the entries of DataVector p to the coordinates of the gridpoint with stretching
@@ -310,7 +335,7 @@ namespace SGPP {
          * @param p the (result) DataVector p that should be overwritten
          * @param stretch reference to Stretching Object, that stores grid points in all dimensions
          */
-        void getCoordsStretching(DataVector& p, Stretching& stretch);
+        void getCoordsStretching(DataVector& p, Stretching& stretch) const;
 
         /**
          * Generates a string with all coordinates of the grid point.
@@ -318,7 +343,7 @@ namespace SGPP {
          *
          * @return returns a string with the coordinates of the grid point separated by whitespace
          */
-        std::string getCoordsString();
+        std::string getCoordsString() const;
 
         /**
          * Generates a string with all coordinates of the grid point with bounding box
@@ -330,7 +355,7 @@ namespace SGPP {
          *
          * @return returns a string with the coordinates of the grid point separated by whitespace
          */
-        std::string getCoordsStringBB(BoundingBox& BB);
+        std::string getCoordsStringBB(BoundingBox& BB) const;
 
         /**
          * Generates a string with all coordinates of the grid point with bounding box
@@ -342,28 +367,28 @@ namespace SGPP {
          *
          * @return returns a string with the coordinates of the grid point separated by whitespace
          */
-        std::string getCoordsStringStretching(Stretching& stretch);
+        std::string getCoordsStringStretching(Stretching& stretch) const;
 
         /**
          * Returns the sum of the one-dimensional levels, i.e., @f$ |\vec{l}|_1 @f$.
          *
          * @return the sum of the one-dimensional levels
          */
-        HashGridIndex::level_type getLevelSum();
+        level_type getLevelSum() const;
 
         /**
          * Returns the maximum of the one-dimensional levels, i.e., @f$ |\vec{l}|_\infty @f$.
          *
          * @return the maximum of the one-dimensional levels
          */
-        HashGridIndex::level_type getLevelMax();
+        level_type getLevelMax() const;
 
         /**
          * Returns the minimum of the one-dimensional levels.
          *
          * @return the minimum of the one-dimensional levels
          */
-        HashGridIndex::level_type getLevelMin();
+        level_type getLevelMin() const;
 
       private:
         /// the dimension of the gridpoint

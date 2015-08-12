@@ -3,6 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+%{
+#include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyTruncatedBoundaryGrid.hpp>
+%}
 
 %newobject SGPP::base::Grid::createLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearStretchedGrid(size_t dim);
@@ -14,6 +18,7 @@
 %newobject SGPP::base::Grid::createLinearStretchedTruncatedBoundaryGrid(SGPP::base::Stretching& BB);
 %newobject SGPP::base::Grid::createModLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createPolyGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createPolyTruncatedBoundaryGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createWaveletGrid(size_t dim);
 %newobject SGPP::base::Grid::createWaveletTruncatedBoundaryGrid(size_t dim);
@@ -22,6 +27,9 @@
 %newobject SGPP::base::Grid::createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createFundamentalSplineGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createModFundamentalSlineGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createSquareRootGrid(size_t dim);
 %newobject SGPP::base::Grid::createPrewaveletGrid(size_t dim);
@@ -60,19 +68,23 @@ typedef enum mail_ {
     LinearStretchedTruncatedBoundary = 4,
     ModLinear = 5,
     Poly = 6,
-    ModPoly = 7,
-    ModWavelet = 8,
-    ModBspline = 9,
-    Prewavelet = 10,
-    SquareRoot = 11,
-    LinearGeneralizedTruncatedBoundary = 12,
-    Periodic = 13,
-    LinearClenshawCurtis = 14,
-    Bspline = 15,
-    BsplineTruncatedBoundary = 16,
-    BsplineClenshawCurtis = 17,
-    Wavelet = 18,
-    WaveletTruncatedBoundary = 19
+    PolyTruncatedBoundary = 7,
+    ModPoly = 8,
+    ModWavelet = 9,
+    ModBspline = 10,
+    Prewavelet = 11,
+    SquareRoot = 12,
+    LinearGeneralizedTruncatedBoundary = 13,
+    Periodic = 14,
+    LinearClenshawCurtis = 15,
+    Bspline = 16,
+    BsplineTruncatedBoundary = 17,
+    BsplineClenshawCurtis = 18,
+    Wavelet = 19,
+    WaveletTruncatedBoundary = 20,
+    FundamentalSpline = 21,
+    ModFundamentalSpline = 22,
+    ModBsplineClenshawCurtis = 23
 } GridType;
 
 class Grid
@@ -86,6 +98,7 @@ public:
   static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
+  static Grid* createPolyTruncatedBoundaryGrid(size_t dim, size_t degree);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
   static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
@@ -94,6 +107,9 @@ public:
   static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
   static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
+  static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
+  static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
   static Grid* createSquareRootGrid(size_t dim);
   static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
   static Grid* createPrewaveletGrid(size_t dim);
@@ -138,4 +154,17 @@ public:
 	}
 };
 
-	
+// extend the grid by a function that returns the maximum degree of the basis
+// which is important for polynomials and bsplines
+%extend SGPP::base::Grid{
+    int getDegree() {
+        if (strcmp($self->getType(), "poly") == 0) {
+            return ((SGPP::base::PolyGrid*) $self)->getDegree();
+        };
+        if (strcmp($self->getType(), "polyTruncatedBoundary") == 0) {
+            return ((SGPP::base::PolyTruncatedBoundaryGrid*) $self)->getDegree();
+        };
+
+        return 1;
+    };
+};	

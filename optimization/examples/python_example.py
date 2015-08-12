@@ -77,9 +77,9 @@ if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
 
 printLine()
 print "Optimizing smooth interpolant...\n"
-ft = pysgpp.OptInterpolantFunction(d, grid, coeffs)
-ftGradient = pysgpp.OptInterpolantGradient(d, grid, coeffs)
-gradientMethod = pysgpp.OptGradientMethod(ft, ftGradient)
+ft = pysgpp.OptInterpolantFunction(grid, coeffs)
+ftGradient = pysgpp.OptInterpolantGradient(grid, coeffs)
+gradientMethod = pysgpp.OptGradientDescent(ft, ftGradient)
 x0 = pysgpp.DataVector(d)
 
 # determine best grid point as starting point

@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Hierarchisation on sparse grid, linear case with boundaries
      *
-     * @version $HEAD$
      */
     class OperationHierarchisationLinearBoundary : public OperationHierarchisation {
       public:

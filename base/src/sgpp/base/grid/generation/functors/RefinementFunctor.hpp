@@ -16,7 +16,6 @@ namespace SGPP {
 
     /**
      * Abstract class that defines the interface that refinement functors have to provide
-     * @version $HEAD$
      */
     class RefinementFunctor {
       public:

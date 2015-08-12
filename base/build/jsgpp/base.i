@@ -16,8 +16,9 @@ const bool USING_DOUBLE_PRECISION;
 
 namespace std {
     %template(DoubleVector) vector<double>;
-    %template(IndexValPair) pair<size_t, double>;
-    %template(IndexValVector) vector<pair<size_t, double> >;
+    %template(FloatVector) vector<float>;
+    %template(IndexValPair) pair<size_t, SGPP::float_t>;
+    %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
     %template(SizeTVector) vector<size_t>;
 }
 
@@ -163,6 +164,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
@@ -216,6 +220,9 @@ namespace std {
 %template(SBsplineBoundaryBase) SGPP::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
 %template(SBsplineClenshawCurtisBase) SGPP::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedClenshawCurtisBase) SGPP::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SFundamentalSplineBase) SGPP::base::FundamentalSplineBasis<unsigned int, unsigned int>;
+%template(SFundamentalSplineModifiedBase) SGPP::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 //%apply std::vector<std::pair<size_t, SGPP::float_t> > *OUTPUT { std::vector<std::pair<size_t, SGPP::float_t> >& result };

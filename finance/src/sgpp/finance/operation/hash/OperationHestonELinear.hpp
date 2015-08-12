@@ -19,7 +19,6 @@ namespace SGPP {
      * the solve the multidimensional Heston
      * equation, on grids with fix Dirichlet-0-Boundaries.
      *
-     * @version $HEAD$
      */
     class OperationHestonELinear : public SGPP::pde::UpDownOneOpDim {
       public:

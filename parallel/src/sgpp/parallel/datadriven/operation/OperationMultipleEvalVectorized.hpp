@@ -45,7 +45,6 @@ namespace SGPP {
         /// Timer object to handle time measurements
         SGPP::base::SGppStopwatch* myTimer_;
 
-        /// @todo add boundaries to constructor of this class
         size_t m_gridFrom;
         size_t m_gridTo;
         size_t m_datasetFrom;
@@ -109,7 +108,6 @@ namespace SGPP {
         // a pointer of this class to access the respective objects
         friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
         friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
-        // TODO David
 #if USE_DOUBLE_PRECISION==0
 #endif
 

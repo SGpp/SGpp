@@ -7,6 +7,7 @@ The example is written in C++.
 However, as the module is also incorporated in pysgpp, one can also use
 the Python interface.
 Via the Java interface (jsgpp), the module should be usable in MATLAB
+if compiled without support for Armadillo and UMFPACK
 (see below for instructions).
 
 \section code_examples_optimization_cpp C++
@@ -48,7 +49,7 @@ an iterative grid generator, which can generate the grid adaptively.
 
 With the iterative grid generator, we generate adaptively a sparse grid.
 
-\until coeffsDV
+\until }
 
 Then, we hierarchize the function values to get hierarchical B-spline
 coefficients of the B-spline sparse grid interpolant
@@ -118,6 +119,18 @@ When run, the example gives (nearly) the same output as the C++ example.
 The C++ code can be translated into the following MATLAB code:
 \include matlab_example.m
 
+Please note that in order to get SGPP::optimization to work with MATLAB,
+you have to disable support for Armadillo and UMFPACK when compiling SG++,
+i.e. set USE_ARMADILLO and USE_UMFPACK to "no".
+This is due to incompatible BLAS and LAPACK libraries
+of Armadillo/UMFPACK and MATLAB
+(MATLAB uses instead MKL versions of LAPACK and BLAS
+with different pointer sizes of 64 bits).
+You can somehow override MATLAB's choice of libraries with
+the environmental variables BLAS_VERSION and LAPACK_VERSION,
+but this is strongly discouraged as MATLAB itself may produce
+wrong results (e.g., det [1 2; 3 4] = 2).
+
 To run the MATLAB example, you first need to compile to \c ExampleFunction
 into a \c .jar file:
 \code
@@ -128,32 +141,16 @@ jar -cf ExampleFunction.jar ExampleFunction.class
 Second, you need to adjust \c /path/to/MATLAB/toolbox/local/librarypath.txt
 to include the \c /path/to/SGpp/trunk/lib/jsgpp directory.
 
-Third, you need to set environment variables to specific values
-(actual values may be different on your system):
+Third, you need to set environment variables to specific values:
 \code
 export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
 export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
-export BLAS_VERSION="/usr/lib/libblas.so.3"
-export LAPACK_VERSION="/usr/lib/liblapack.so.3"
 \endcode
 The first line tells MATLAB where to find the necessary libraries.
 The second line causes loading the system version of \c libstdc++
 and not MATLAB's version
-(for more info on the first two lines,
+(for more info on these two lines,
 see \ref code_examples_quick_start).
-The third and fourth lines are new.
-SGPP::optimization uses external linear algebra libraries to enable faster
-solutions of linear systems.
-These libraries (e.g. Armadillo) use, in turn, LAPACK and BLAS installed
-on the system.
-MATLAB uses instead MKL versions of LAPACK and BLAS
-with different pointer sizes (64 bits).
-Therefore, you have to override these versions to use the ones of the system
-(otherwise MATLAB segfaults randomly).
-The exact filenames can be found by examining the output of
-\code
-ldd /path/to/SGpp/trunk/lib/sgpp/libsgppoptimization.so
-\endcode
 
 Fourth, after setting the environment variables, you can start MATLAB.
 In MATLAB, run

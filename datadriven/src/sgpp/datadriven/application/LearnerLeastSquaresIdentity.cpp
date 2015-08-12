@@ -10,8 +10,6 @@
 //#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-//TODO how do I construct the operation here (type/subtype)
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -88,7 +86,6 @@ namespace SGPP {
       SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
       myStopwatch->start();
 
-      //TODO could be wrong
       MultEval->mult(*alpha_, classesComputed);
       float_t stopTime = myStopwatch->stop();
       this->execTime_ += stopTime;

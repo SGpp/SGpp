@@ -17,7 +17,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of an application failure
      *
-     * @version $HEAD$
      */
     class algorithm_exception : public std::exception {
       public:

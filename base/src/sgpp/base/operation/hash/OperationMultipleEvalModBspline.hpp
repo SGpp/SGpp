@@ -19,7 +19,6 @@ namespace SGPP {
     /**
      * This class implements OperationMultipleEval for a grid with modified Bspline basis functions
      *
-     * @version $HEAD$
      */
     class OperationMultipleEvalModBspline: public OperationMultipleEval {
       public:

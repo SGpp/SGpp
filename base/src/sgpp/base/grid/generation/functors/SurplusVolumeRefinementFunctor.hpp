@@ -19,8 +19,6 @@ namespace SGPP {
     /**
      * A refinement functor, refining according to the maximal absolute values in a DataVector provided,
      * weighted with the corresponding basis function's surplus, i.e., with @f$2^{-|\vec{l}|_1} = 2^{\sum_{k=1}^d l_d}@f$.
-     * @version $HEAD$
-     * @todo (pflueged) add unit tests
      */
     class SurplusVolumeRefinementFunctor : public RefinementFunctor {
       public:

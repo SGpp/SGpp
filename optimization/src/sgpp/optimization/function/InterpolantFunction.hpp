@@ -11,6 +11,7 @@
 #include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <cstring>
@@ -51,7 +52,7 @@ namespace SGPP {
         /**
          * Evaluation of the function.
          *
-         * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @return      \f$f(\vec{x})\f$
          */
         inline float_t eval(const base::DataVector& x) {

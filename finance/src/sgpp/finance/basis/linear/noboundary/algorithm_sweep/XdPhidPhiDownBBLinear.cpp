@@ -60,13 +60,13 @@ namespace SGPP {
       float_t fm = ((fl + fr) / 2.0) + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fl, fm);
         }
 
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fm, fr);
@@ -91,7 +91,7 @@ namespace SGPP {
 
       float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
 
-      float_t diagonal = (2 * (i * h * q + t)) / (q * h);
+      float_t diagonal = (2 * (static_cast<float_t>(i) * h * q + t)) / (q * h);
 
       // integration
       result[seq] = (  (0.5 * q * (fl - fr)) + (diagonal * alpha_value) );
@@ -100,13 +100,13 @@ namespace SGPP {
       float_t fm = ((fl + fr) / 2.0) + alpha_value;
 
       if (!index.hint()) {
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           recBB(source, result, index, dim, fl, fm, q, t);
         }
 
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           recBB(source, result, index, dim, fm, fr, q, t);

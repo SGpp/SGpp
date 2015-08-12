@@ -56,7 +56,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
     }
 
     // create a register storage for the level and index of the grid points of the work item
-    if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
+    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
             sourceStream << indent << this->asString() << " level_" << gridIndex << "[" << dims << "];" << std::endl;
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
@@ -70,7 +70,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
             sourceStream << std::endl;
         }
         sourceStream << std::endl;
-    } else if (parameters["KERNEL_STORE_DATA"].compare("register") == 0) {
+    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
 
 
@@ -87,7 +87,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
 
     sourceStream << indent << "size_t dimDataIndex;" << std::endl;
 
-    if (parameters["KERNEL_STORE_DATA"].compare("pointer") == 0) {
+    if (parameters.get("KERNEL_STORE_DATA").compare("pointer") == 0) {
         sourceStream << indent << "size_t dimLevelIndex;" << std::endl;
     }
 

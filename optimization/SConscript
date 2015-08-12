@@ -8,47 +8,59 @@ import fnmatch
 
 Import("env")
 Import("BUILD_DIR")
-Import("EXAMPLE_DIR")
 Import("PYSGPP_BUILD_PATH")
 Import("moduleName")
 Import("libraryTargetList")
 Import("installTargetList")
 Import("exampleTargetList")
+Import("config")
 
 
 
 libs = ["sgppbase"]
-config = env.Configure()
+#config = env.Configure()
 
-if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
-    libs.append("umfpack")
-    env.Append(CPPDEFINES=["USEUMFPACK"])
-    print "SGPP::optimization will be compiled with UMFPACK."
+if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
+    if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
+        libs.append("umfpack")
+        env.Append(CPPDEFINES=["USE_UMFPACK"])
+        print "SGPP::optimization will be compiled with UMFPACK."
+    else:
+        env.Append(CPPDEFINES=["DONT_USE_UMFPACK"])
+        print "SGPP::optimization will be compiled without UMFPACK (not found)."
 else:
-    env.Append(CPPDEFINES=["DONTUSEUMFPACK"])
-    print "SGPP::optimization will be compiled without UMFPACK (not found)."
+    print "SGPP::optimization will be compiled without UMFPACK."
 
-if config.CheckHeader("eigen3/Eigen/Dense", language="c++"):
-    env.Append(CPPDEFINES=["USEEIGEN"])
-    print "SGPP::optimization will be compiled with Eigen."
+if ("USE_EIGEN" in config.env) and config.env["USE_EIGEN"]:
+    if config.CheckHeader("eigen3/Eigen/Dense", language="c++"):
+        env.Append(CPPDEFINES=["USE_EIGEN"])
+        print "SGPP::optimization will be compiled with Eigen."
+    else:
+        env.Append(CPPDEFINES=["DONT_USE_EIGEN"])
+        print "SGPP::optimization will be compiled without Eigen (not found)."
 else:
-    env.Append(CPPDEFINES=["DONTUSEEIGEN"])
-    print "SGPP::optimization will be compiled without Eigen (not found)."
+    print "SGPP::optimization will be compiled without Eigen."
 
-if config.CheckHeader("armadillo", language="c++"):
-    libs.append("armadillo")
-    env.Append(CPPDEFINES=["USEARMADILLO"])
-    print "SGPP::optimization will be compiled with Armadillo."
+if ("USE_ARMADILLO" in config.env) and config.env["USE_ARMADILLO"]:
+    if config.CheckHeader("armadillo", language="c++"):
+        libs.append("armadillo")
+        env.Append(CPPDEFINES=["USE_ARMADILLO"])
+        print "SGPP::optimization will be compiled with Armadillo."
+    else:
+        env.Append(CPPDEFINES=["DONT_USE_ARMADILLO"])
+        print "SGPP::optimization will be compiled without Armadillo (not found)."
 else:
-    env.Append(CPPDEFINES=["DONTUSEARMADILLO"])
-    print "SGPP::optimization will be compiled without Armadillo (not found)."
+    print "SGPP::optimization will be compiled without Armadillo."
 
-if config.CheckHeader("gmm/gmm.h", language="c++"):
-    env.Append(CPPDEFINES=["USEGMMPP"])
-    print "SGPP::optimization will be compiled with Gmm++."
+if ("USE_GMMPP" in config.env) and config.env["USE_GMMPP"]:
+    if config.CheckHeader("gmm/gmm.h", language="c++"):
+        env.Append(CPPDEFINES=["USE_GMMPP"])
+        print "SGPP::optimization will be compiled with Gmm++."
+    else:
+        env.Append(CPPDEFINES=["DONT_USE_GMMPP"])
+        print "SGPP::optimization will be compiled without Gmm++ (not found)."
 else:
-    env.Append(CPPDEFINES=["DONTUSEGMMPP"])
-    print "SGPP::optimization will be compiled without Gmm++ (not found)."
+    print "SGPP::optimization will be compiled without Gmm++."
 
 
 
@@ -69,14 +81,10 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
                         LIBPATH=BUILD_DIR,
                         LIBS=libs)
-env.Depends(lib, "#/" + BUILD_DIR.path + "/libsgppbase.so")
-libInstall = env.Install(BUILD_DIR, lib)
 
-if not env["NO_UNIT_TESTS"] and env["SG_PYTHON"]:
-    Import("testTargetList")
-    moduleTest = env.Test(os.path.join("tests", "test_%s.py" % moduleName))
-    env.Requires(moduleTest, libInstall)
-    testTargetList.append(moduleTest)
+env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
+
+libInstall = env.Install(BUILD_DIR, lib)
 
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
@@ -84,8 +92,24 @@ for fileName in os.listdir("examples"):
                               LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
-        env.Install(os.path.join(EXAMPLE_DIR.abspath, moduleName), example)
         exampleTargetList.append(example)
+
+# build unit tests
+if env['COMPILE_BOOST_TESTS']:
+    Import('boostTestTargetList')
+    test_env = env.Clone()
+    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
+    testObjects = []
+    for fileName in os.listdir("tests"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+    if len(testObjects) > 0:
+        fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
+        test = test_env.Program(fileName, testObjects)
+        test_env.Requires(test, libInstall)
+        if env['RUN_BOOST_TESTS']:
+            testRun = test_env.BoostTest(fileName + "_run", source=fileName)
+            boostTestTargetList.append(testRun)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
