@@ -25,7 +25,6 @@ namespace SGPP {
      * The class's aim is, to hide all complex details of solving the Black Scholes
      * Equation with Sparse Grids!
      *
-     * @version $HEAD$
      */
     class BlackScholesSolverWithStretching : public BlackScholesSolver {
       private:

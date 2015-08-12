@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <cstddef>
 #include <stack>
-#include <sys/time.h>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 #include <sgpp/optimization/sle/system/SLE.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
@@ -27,6 +27,7 @@ namespace SGPP {
      *
      * @param stream    output stream
      * @param x         vector
+     * @return          stream
      */
     template <class T>
     inline std::ostream& operator<<(std::ostream& stream,
@@ -43,14 +44,11 @@ namespace SGPP {
      *
      * @param stream    output stream
      * @param x         vector
+     * @return          stream
      */
     inline std::ostream& operator<<(std::ostream& stream,
                                     const base::DataVector& x) {
-      for (size_t i = 0; i < x.getSize(); i++) {
-        stream << ((i > 0) ? ", " : "[") << x.get(i);
-      }
-
-      return stream << "]";
+      return stream << x.toString();
     }
 
     /**
@@ -58,14 +56,17 @@ namespace SGPP {
      *
      * @param stream    output stream
      * @param x         pointer to grid point
+     * @return          stream
      */
     inline std::ostream& operator<<(std::ostream& stream,
-                                    SGPP::base::GridIndex& x) {
+                                    const SGPP::base::GridIndex& x) {
+      base::DataVector xCoord(x.dim());
+
       for (size_t t = 0; t < x.dim(); t++) {
-        stream << ((t > 0) ? ", " : "[") << x.getCoord(t);
+        xCoord[t] = x.getCoord(t);
       }
 
-      return stream << "]";
+      return stream << xCoord;
     }
 
     /**
@@ -141,6 +142,11 @@ namespace SGPP {
         void disableStatusPrinting();
 
         /**
+         * @return          whether status printing is enabled or not
+         */
+        bool isStatusPrintingEnabled();
+
+        /**
          * @return          current verbosity level
          */
         inline int getVerbosity() const {
@@ -164,6 +170,16 @@ namespace SGPP {
          * @return  internal mutex
          */
         MutexType& getMutex();
+
+        /**
+         * @return stream used for printing (default std::cout)
+         */
+        std::ostream* getStream() const;
+
+        /**
+         * @param stream stream used for printing (default std::cout)
+         */
+        void setStream(std::ostream* stream);
 
         /**
          * Print a grid (grid points and function values).
@@ -194,13 +210,16 @@ namespace SGPP {
         bool cursorInClearLine;
         /// length of the last status message in characters
         size_t lastMsgLength;
-        /// stack of the starting times (time of printStatusBegin() calls)
-        std::stack<timespec> startTimes;
+        /// stack of stop watches (started at time of printStatusBegin() calls)
+        std::stack<base::SGppStopwatch> watches;
         /// length of last operation in seconds
         float_t lastDuration;
 
         /// internal mutex
         MutexType mutex;
+
+        /// stream used for printing (default std::cout)
+        std::ostream* stream;
     };
 
     /// singleton printer instance

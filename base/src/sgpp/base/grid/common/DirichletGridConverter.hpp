@@ -22,7 +22,6 @@ namespace SGPP {
      * are needed during solving the system (they constant because dirichlet boundary
      * conditions), so a lot of work can be saved if only the inner points are used.
      *
-     * @version $HEAD$
      */
     class DirichletGridConverter {
       private:

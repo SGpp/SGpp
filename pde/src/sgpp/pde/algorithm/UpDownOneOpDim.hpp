@@ -27,7 +27,6 @@ namespace SGPP {
      *
      * Parallelization with OpenMP 2 / 3 is supported!
      *
-     * @version $HEAD$
      */
     class UpDownOneOpDim: public SGPP::base::OperationMatrix {
       public:

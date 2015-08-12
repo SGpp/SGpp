@@ -4,12 +4,14 @@
 // sgpp.sparsegrids.org
 
 %module(directors="1") pysgpp
+%feature("autodoc", "2"); 
 %feature("docstring");
 
 %include "base/src/sgpp/globaldef.hpp"
 
 %include "stl.i"
 %include "std_vector.i"
+%include "std_list.i"
 %include "std_pair.i"
 %include "std_complex.i"
 %include "std_map.i"

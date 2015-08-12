@@ -22,7 +22,6 @@ namespace SGPP {
     /**
      * enum to address different gridtypes in a standardized way
      *
-     * @todo: use this also for unserialization!
      */
     enum GridType {
       Linear,
@@ -33,6 +32,7 @@ namespace SGPP {
       LinearGeneralizedTruncatedBoundary,
       ModLinear,
       Poly,
+      PolyTruncatedBoundary,
       ModPoly,
       ModWavelet,
       ModBspline,
@@ -44,7 +44,10 @@ namespace SGPP {
       BsplineTruncatedBoundary,
       BsplineClenshawCurtis,
       Wavelet,
-      WaveletTruncatedBoundary
+      WaveletTruncatedBoundary,
+      FundamentalSpline,
+      ModFundamentalSpline,
+      ModBsplineClenshawCurtis
     };
 
     /**
@@ -86,6 +89,7 @@ namespace SGPP {
          * creates a stencil for a linear grid without boundaries
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createLinearGridStencil(size_t dim);
 
@@ -93,6 +97,7 @@ namespace SGPP {
          * creates a stencil for a modified linear grid (without boundaries)
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createModLinearGridStencil(size_t dim);
 
@@ -100,6 +105,7 @@ namespace SGPP {
          * creates a linear grid without boundaries
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createLinearGrid(size_t dim);
 
@@ -107,6 +113,7 @@ namespace SGPP {
          * creates a linear stretched grid without boundaries
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createLinearStretchedGrid(size_t dim);
 
@@ -114,6 +121,7 @@ namespace SGPP {
          * creates a linear boundary grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createLinearBoundaryGrid(size_t dim);
 
@@ -121,6 +129,7 @@ namespace SGPP {
          * creates a linear truncated boundary grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 
@@ -135,6 +144,7 @@ namespace SGPP {
          * creates a linear Clenshaw-Curtis grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createLinearClenshawCurtisGrid(size_t dim);
 
@@ -142,22 +152,34 @@ namespace SGPP {
          * creates a mod linear grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createModLinearGrid(size_t dim);
 
         /**
-         * creates a mod polynomial grid
+         * creates a polynomial grid
          *
          * @param dim the grid's dimension
          * @param degree the polynom's max. degree
+         * @return grid
          */
         static Grid* createPolyGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a polynomial grid with truncated boundary
+         *
+         * @param dim the grid's dimension
+         * @param degree the polynom's max. degree
+         * @return grid
+         */
+        static Grid* createPolyTruncatedBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * creates a poly grid
          *
          * @param dim the grid's dimension
          * @param degree the polynom's max. degree
+         * @return grid
          */
         static Grid* createModPolyGrid(size_t dim, size_t degree);
 
@@ -165,6 +187,7 @@ namespace SGPP {
          * creates a wavelet grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createWaveletGrid(size_t dim);
 
@@ -179,6 +202,7 @@ namespace SGPP {
          * creates a mod wavelet grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createModWaveletGrid(size_t dim);
 
@@ -186,7 +210,8 @@ namespace SGPP {
          * creates a Bspline grid
          *
          * @param dim the grid's dimension
-         * @param degree the polynom's max. degree
+         * @param degree the B-spline degree
+         * @return grid
          */
         static Grid* createBsplineGrid(size_t dim, size_t degree);
 
@@ -194,7 +219,8 @@ namespace SGPP {
          * creates a Bspline trapezoid boundary grid
          *
          * @param dim the grid's dimension
-         * @param degree the polynom's max. degree
+         * @param degree the B-spline degree
+         * @return grid
          */
         static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
 
@@ -202,7 +228,8 @@ namespace SGPP {
          * creates a Bspline Clenshaw-Curtis grid
          *
          * @param dim the grid's dimension
-         * @param degree the polynom's max. degree
+         * @param degree the B-spline degree
+         * @return grid
          */
         static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 
@@ -210,34 +237,67 @@ namespace SGPP {
          * creates a mod-Bspline grid
          *
          * @param dim the grid's dimension
-         * @param degree the polynom's max. degree
+         * @param degree the B-spline degree
+         * @return grid
          */
         static Grid* createModBsplineGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a mod-Bspline Clenshaw-Curtis grid
+         *
+         * @param dim the grid's dimension
+         * @param degree the B-spline degree
+         * @return grid
+         */
+        static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a fundamental spline grid
+         *
+         * @param dim the grid's dimension
+         * @param degree the B-spline degree
+         * @return grid
+         */
+        static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
+
+        /**
+         * creates a mod-fundamental spline grid
+         *
+         * @param dim the grid's dimension
+         * @param degree the B-spline degree
+         * @return grid
+         */
+        static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
 
         /**
          * creates a prewavelet grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createPrewaveletGrid(size_t dim);
 
         /**
          * creates a square root grid(h-grid)
+         *
          * @param dim the grid's dimension
-         * */
+         * @return grid
+         */
         static Grid* createSquareRootGrid(size_t dim);
 
         /**
          * creates a truncated boundary grid=contains all the gridpoints of the fullgrids which have \f$|l|<level and li>=l_user\f$
          *
          * @param dim the grid's dimension
-         * */
+         * @return grid
+         */
         static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
 
         /**
          * creates a periodic grid
          *
          * @param dim the grid's dimension
+         * @return grid
          */
         static Grid* createPeriodicGrid(size_t dim);
 
@@ -245,13 +305,14 @@ namespace SGPP {
          * reads a grid out of a string
          *
          * @param istr string that contains the grid information
+         * @return grid
          */
         static Grid* unserialize(const std::string& istr);
 
         /**
          * reads a grid out of a stream
-         * @todo check for empty istream - error message is not very meaningful
          * @param istr inputstream that contains the grid information
+         * @return grid
          */
         static Grid* unserialize(std::istream& istr);
 
@@ -312,16 +373,12 @@ namespace SGPP {
         virtual void setStretching(Stretching& bb);
 
         /**
-         * gets a pointer to GridGenerator object
-         *
-         * @return pointer to the GrdGenerator object
+         * @return pointer to a GridGenerator object
          */
         virtual GridGenerator* createGridGenerator() = 0;
 
         /**
          * Returns a string that identifies the grid type uniquely
-         *
-         * @todo use enum instead!!
          *
          * @return string that identifies the grid type uniquely
          */

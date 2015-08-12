@@ -5,17 +5,23 @@
 
 import glob
 import SCons
-import fnmatch
 import os
 import SGppConfigure
+from SCons.Script.SConscript import SConsEnvironment
+import warnings
 
 from Helper import *
 
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 7)
 # check scons
-EnsureSConsVersion(2, 0)
+EnsureSConsVersion(2, 1)
 print "Using SCons", SCons.__version__
+
+sconsenv = SConsEnvironment()
+scons_ver = sconsenv._get_major_minor_revision(SCons.__version__)
+if scons_ver < (2, 3, 0):
+  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports, that it also compiles with scons >= 2.1.0")
 
 # to ignore folders containing a SConscript file, do the following:
 # ignoreFolders = ["jsgpp"]
@@ -32,18 +38,15 @@ languageSupportNames = []
 for moduleFolder in moduleFolders:
   moduleName = 'SG_' + moduleFolder.upper()
   moduleNames.append(moduleName)
-      
+
 for wrapper in languageSupport:
     if wrapper == "pysgpp":
       languageSupportNames.append('SG_PYTHON')
     elif wrapper == "jsgpp":
       languageSupportNames.append('SG_JAVA')
 
-print moduleFolders      
-print moduleNames
-
-print languageSupport
-print languageSupportNames
+print "Available modules:", ", ".join(moduleNames)
+print "Available language support:", ", ".join(languageSupportNames)
 
 vars = Variables("custom.py")
 
@@ -56,7 +59,6 @@ vars.Add('TARGETCPU', "Sets the processor you are compiling for. 'default' means
 vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
-vars.Add(BoolVariable('BOOST_TESTS', 'Build boost-based unit tests', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
 
@@ -70,6 +72,14 @@ vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log'
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
 vars.Add('OCL_INCLUDE_PATH', 'Specifies the location of the OpenCL header files (parent directory of "CL/").')
 vars.Add('OCL_LIBRARY_PATH', 'Specifies the location of the OpenCL library.')
+vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
+vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
+vars.Add(BoolVariable('USE_DOUBLE_PRECISION', 'If disabled, SG++ will compile using single precision (floats).', True))
+
+vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
@@ -80,12 +90,12 @@ if 'CC' in ARGUMENTS:
   print "CC: ", ARGUMENTS['CC']
   env['CC'] = ARGUMENTS['CC']
 if 'CPPFLAGS' in ARGUMENTS:
-  env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(" ")
+  env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(",")
 if 'CFLAGS' in ARGUMENTS:
   env['CFLAGS'] = ARGUMENTS['CFLAGS']
 if 'CPPDEFINES' in ARGUMENTS:
   defineDict = {}
-  for define in ARGUMENTS['CPPDEFINES'].split(" "):
+  for define in ARGUMENTS['CPPDEFINES'].split(","):
     key, value = define.split("=")
     defineDict[key] = value
   env.AppendUnique(CPPDEFINES = defineDict)
@@ -121,7 +131,7 @@ export LIBPATH=$LD_LIBRARY_PATH
 ---------------------------------------------------------------------
 
 Parameters are:
-""" + 
+""" +
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
@@ -140,40 +150,79 @@ if not env.GetOption('clean'):
     
 env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])    
 
+# add #/lib/sgpp to LIBPATH
+# (to add corresponding -L... flags to linker calls)
+env.Append(LIBPATH=[BUILD_DIR])
+
 # add C++ defines for all modules
 cppdefines = []
 for module in moduleNames:
-    cppdefines.append(module)
+    if env[module]:
+        cppdefines.append(module)
 env.Append(CPPDEFINES=cppdefines)
 
 # environement setup finished, export environment
 Export('env')
 
-# Install alglib
-libalglib, alglibstatic = SConscript(os.path.join('tools', 'SConscriptAlglib'),
-                                      variant_dir=os.path.join('tmp', 'build_alglib'),
-                                      duplicate=0)
-alglibinst = env.Install(os.path.join(env['OUTPUT_PATH'], 'lib', 'alglib'),
-                         [libalglib, alglibstatic])
-env.Depends(os.path.join("#", BUILD_DIR.path, "libsgppbase.so"), alglibinst)
-
 env.Append(CPPPATH=['#/tools'])
+config = env.Configure()
+Export('config')
+# set up paths (Only Tested on Ubuntu!)
+env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
+    env["ENV"].get("LD_LIBRARY_PATH", ""),
+    BUILD_DIR.abspath])
+env["ENV"]["PYTHONPATH"] = ":".join([
+    env["ENV"].get("PYTHONPATH", ""),
+    PYSGPP_BUILD_PATH.abspath])
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    # run tests
     builder = Builder(action="python $SOURCE.file", chdir=1)
     env.Append(BUILDERS={'Test' : builder})
     builder = Builder(action="python $SOURCE")
     env.Append(BUILDERS={'SimpleTest' : builder})
 
+# Check the availability of the boost unit test dependenciest
+if env['COMPILE_BOOST_TESTS']:
+    boost_header = False
+    boost_library = False
+    if config.CheckHeader("boost/test/unit_test.hpp", language="c++"):
+        boost_header = True
+    else:
+        print """"****************************************************
+No Boost Unit Test Headers found. Omitting Boost unit tests. 
+Please install the corresponding package, e.g. using command on Ubuntu
+> sudo apt-get install libboost-test-dev
+****************************************************
+"""
+        
+    if config.CheckLib('boost_unit_test_framework'):
+        boost_library = True
+    else:
+        print """"****************************************************
+No Boost Unit Test library found. Omitting Boost unit tests. 
+Please install the corresponding package, e.g. using command on Ubuntu
+> sudo apt-get install libboost-test-dev
+****************************************************
+"""
+        
+    if boost_header and boost_library:
+        builder = Builder(action="./$SOURCE")
+        env.Append(BUILDERS={'BoostTest' : builder})
+    else:
+        env['COMPILE_BOOST_TESTS'] = False
+
+    
+
 libraryTargetList = []
 installTargetList = []
 testTargetList = []
+boostTestTargetList = []
 exampleTargetList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
 env.Export('testTargetList')
+env.Export('boostTestTargetList')
 env.Export('exampleTargetList')
 
 # compile selected modules
@@ -194,7 +243,7 @@ if env['SG_JAVA']:
 # Unit tests
 #########################################################################
 
-# necessary to enforce an order on the final steps of the building of the wrapper    
+# necessary to enforce an order on the final steps of the building of the wrapper
 dependency = None
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   # serialize tests and move them at the end of the build
@@ -209,6 +258,15 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
       env.Depends(testTarget, dependency)
       dependency = testTarget
 
+if env['COMPILE_BOOST_TESTS'] and env['RUN_BOOST_TESTS']:
+  for testTarget in boostTestTargetList:
+    env.Requires(testTarget, installTargetList)
+    if dependency is None:
+      dependency = testTarget
+    else:
+      env.Depends(testTarget, dependency)
+      dependency = testTarget
+
 for exampleTarget in exampleTargetList:
   env.Requires(exampleTarget, installTargetList)
   if dependency is None:
@@ -216,3 +274,23 @@ for exampleTarget in exampleTargetList:
   else:
     env.Depends(exampleTarget, dependency)
     dependency = exampleTarget
+
+# final output
+def finish(target, source, env):
+    from string import Template
+    fd = open("INSTRUCTIONS")
+    instructionsTemplate = Template(fd.read())
+    fd.close()
+    s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+                                             PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
+                                             SGPP_HOME=os.getcwd())
+    print
+    print s
+
+moduleFinish = env.Command('finish', [], finish)
+# env.Requires(moduleFinish, installTargetList)
+# # testTargetList.append(moduleFinish)
+if dependency is not None:
+    env.Depends(moduleFinish, dependency)
+# env.Default(moduleFinish)
+  

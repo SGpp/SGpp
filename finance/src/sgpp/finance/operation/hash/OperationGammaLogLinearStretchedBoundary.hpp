@@ -21,7 +21,6 @@ namespace SGPP {
      * (in the non-transformed case, this corresponds to matrix E in Master's thesis)
      * equation
      *
-     * @version $HEAD$
      */
     class OperationGammaLogLinearStretchedBoundary: public SGPP::pde::UpDownTwoOpDims {
       public:

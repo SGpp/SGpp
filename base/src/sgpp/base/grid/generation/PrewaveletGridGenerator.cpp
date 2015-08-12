@@ -195,14 +195,14 @@ namespace SGPP {
         level_t save_level;
         iter.get(d, save_level, save_index); //Save current index
 
-        iter.left_child(d);
-        shadowIter.left_child(d);
+        iter.leftChild(d);
+        shadowIter.leftChild(d);
         addNeighbours(index, d, target_level, iter, shadowIter);
         iter.set(d, save_level, save_index); //reset index
         shadowIter.set(d, save_level, save_index); //reset index
 
-        iter.right_child(d);
-        shadowIter.right_child(d);
+        iter.rightChild(d);
+        shadowIter.rightChild(d);
         addNeighbours(index, d, target_level, iter, shadowIter);
         iter.set(d, save_level, save_index); //reset index
         shadowIter.set(d, save_level, save_index);

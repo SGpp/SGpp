@@ -46,7 +46,7 @@ public:
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
-        if (parameters["KERNEL_STORE_DATA"].compare("register") == 0
+        if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0
                 && dataset.getNcols() > parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
             std::stringstream errorString;
             errorString

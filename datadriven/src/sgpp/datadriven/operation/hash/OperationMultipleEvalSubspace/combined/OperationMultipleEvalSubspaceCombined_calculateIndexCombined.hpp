@@ -62,7 +62,6 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
     // size_t dataVectorIndex = 0;
 
     //for (size_t i = outer; i < min(outer + 4, dim); i++) {
-    //TODO is this a linear access? can I make it one? (also could use avx2 gather)
     __m256d dataTupleReg = _mm256_set_pd(dataTuplePtr[3][i], dataTuplePtr[2][i], dataTuplePtr[1][i],
                                          dataTuplePtr[0][i]);
 

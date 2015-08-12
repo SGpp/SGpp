@@ -15,32 +15,31 @@ namespace SGPP {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLFastConfigured(base::Grid& grid, base::DataMatrix& dataset,
-        base::OCLConfigurationParameters *parameters) {
+        base::OCLConfigurationParameters parameters) {
 
-    if (parameters == nullptr) {
-        std::map<std::string, std::string> defaultParameter;
-        defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
-        defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
-        defaultParameter["LINEAR_LOAD_BALANCING_VERBOSE"] = "false";
-        //  defaultParameter["KERNEL_GRID_BLOCK_SIZE"] = "1";
-        defaultParameter["KERNEL_TRANS_DATA_BLOCK_SIZE"] = "1";
-        defaultParameter["KERNEL_TRANS_UNROLL_1D"] = "true";
-        defaultParameter["KERNEL_STORE_DATA"] = "array";
+    if (parameters.empty()) {
+        parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
+        parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
+        parameters.set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
+        //  parameters.set("KERNEL_GRID_BLOCK_SIZE", "1");
+        parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "1");
+        parameters.set("KERNEL_TRANS_UNROLL_1D", "true");
+        parameters.set("KERNEL_STORE_DATA", "array");
 
-        parameters = new base::OCLConfigurationParameters("StreamingModOCLFast.cfg", defaultParameter);
+        parameters.readFromFile("StreamingModOCLFast.cfg");
     }
 
-    std::cout << "are optimizations on: " << parameters->getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;
-    std::cout << "is local memory on: " << parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY") << std::endl;
-    std::cout << "local size: " << parameters->getAsUnsigned("LOCAL_SIZE") << std::endl;
-    std::cout << "internal precision: " << (*parameters)["INTERNAL_PRECISION"] << std::endl;
-    std::cout << "platform is: " << (*parameters)["PLATFORM"] << std::endl;
-    std::cout << "device type is: " << (*parameters)["DEVICE_TYPE"] << std::endl;
+    std::cout << "are optimizations on: " << parameters.getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;
+    std::cout << "is local memory on: " << parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY") << std::endl;
+    std::cout << "local size: " << parameters.getAsUnsigned("LOCAL_SIZE") << std::endl;
+    std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION") << std::endl;
+    std::cout << "platform is: " << parameters.get("PLATFORM") << std::endl;
+    std::cout << "device type is: " << parameters.get("DEVICE_TYPE") << std::endl;
 
-    if ((*parameters)["INTERNAL_PRECISION"] == "float") {
-        return new datadriven::OperationMultiEvalStreamingModOCLFast<float>(grid, dataset, *parameters);
-    } else if ((*parameters)["INTERNAL_PRECISION"] == "double") {
-        return new datadriven::OperationMultiEvalStreamingModOCLFast<double>(grid, dataset, *parameters);
+    if (parameters.get("INTERNAL_PRECISION") == "float") {
+        return new datadriven::OperationMultiEvalStreamingModOCLFast<float>(grid, dataset, parameters);
+    } else if (parameters.get("INTERNAL_PRECISION") == "double") {
+        return new datadriven::OperationMultiEvalStreamingModOCLFast<double>(grid, dataset, parameters);
     } else {
         throw base::factory_exception(
                 "Error creating operation\"OperationMultiEvalStreamingModOCL\": invalid value for parameter \"INTERNAL_PRECISION\"");

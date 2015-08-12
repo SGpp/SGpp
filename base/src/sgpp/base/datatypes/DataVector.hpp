@@ -96,8 +96,6 @@ namespace SGPP {
          * all superfluous entries are removed.
          *
          * @param size New number of elements of the DataVector
-         * @todo (pflueged) Check that no wrong usage of reize is left which assumes that new entries are zero.
-         * @todo (pflueged) Optimize implementation, consider unused elements!
          */
         void resize(size_t size);
 
@@ -185,6 +183,7 @@ namespace SGPP {
          * vec.size() elements of the current vector are overwritten.
          *
          * @param vec the DataVector containing the data
+         * @return *this
          */
         //  void copySmall(const DataVector& vec);
         /**
@@ -199,6 +198,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float_t& operator[](size_t i) {
           return data[i];
@@ -209,6 +209,7 @@ namespace SGPP {
          * Returns the i-th element.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float_t get(size_t i) const {
           return data[i];

@@ -46,7 +46,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMult() {
     }
 
     //caching data in register array, this also requires loading the data into the registers (in contrast using pointers to data directly)
-    if (parameters["KERNEL_STORE_DATA"].compare("array") == 0) {
+    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
         for (size_t i = 0; i < dataBlockSize; i++) {
             sourceStream << indent << this->asString() << " data_" << i << "[" << dims << "];" << std::endl;
         }

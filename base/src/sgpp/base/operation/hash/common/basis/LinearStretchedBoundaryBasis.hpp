@@ -20,7 +20,6 @@ namespace SGPP {
      * linearstretched basis functions with boundaries
      * And here we have another implicit dependence on tensor products
      *
-     * @version $HEAD$
      */
     template<class LT, class IT>
     class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
@@ -90,11 +89,11 @@ namespace SGPP {
          * Has a dependence on the position of two grid points with values 1 and 0 and the
          * support position
          */
-        float_t eval(float_t p, float_t pos0, float_t pos1) {
+        float_t stretchedEval(float_t p, float_t pos0, float_t pos1) {
           return (p - pos0) / (pos1 - pos0);
         }
 
-        ///TODO: Index and level is not necessary, maybe function could be changed
+        /// Index and level rae not necessary, maybe function could be changed
         /*
          * evaluate a basis function
          * Has a dependence on the position of two grid points with values 1 and 0 and the

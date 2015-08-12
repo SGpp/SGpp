@@ -13,11 +13,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace base {
-
-
 
     /**
      * Class that implements the dehierarchisation on a polynomial sparse grid. Therefore
@@ -58,25 +55,23 @@ namespace SGPP {
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
+        virtual void operator()(DataVector& source, DataVector& result,
+                                grid_iterator& index, size_t dim);
 
       protected:
 
         /**
-         * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
-         *
-         * @todo add graphical explanation here
+         * Recursive dehierarchisation algorithm, this algorithms works in-place -> source should be equal to result
          *
          * @param source this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
          * @param result this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
-         * @param koeffs coefficient storage
+         * @param coeffs nodal coefficients computed so far
          */
-        void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs);
+        void rec(DataVector& source, DataVector& result, grid_iterator& index,
+                 size_t dim, DataVector& coeffs);
     };
-
-    // namespace detail
 
   } // namespace SGPP
 }

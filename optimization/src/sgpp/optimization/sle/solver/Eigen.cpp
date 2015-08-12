@@ -9,9 +9,9 @@
 #include <sgpp/optimization/sle/system/CloneableSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
 
 #include <cstddef>
 #include <iostream>
@@ -20,9 +20,9 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
 
-#if USE_DOUBLE_PRECISION == 1
+#if USE_DOUBLE_PRECISION
       typedef ::Eigen::VectorXd EigenVector;
       typedef ::Eigen::MatrixXd EigenMatrix;
 #else
@@ -42,30 +42,36 @@ namespace SGPP {
         const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
         base::DataVector& b,
         base::DataVector& x) {
+        const SGPP::float_t tolerance =
+#if USE_DOUBLE_PRECISION
+          1e-12;
+#else
+          1e-4;
+#endif
+
         // solve system
         EigenVector bEigen = EigenVector::Map(b.getPointer(), b.getSize());
         EigenVector xEigen = A_QR.solve(bEigen);
 
         // check solution
-        if ((A * xEigen).isApprox(bEigen)) {
+        if ((A * xEigen).isApprox(bEigen, tolerance)) {
           x = base::DataVector(xEigen.data(), xEigen.size());
           return true;
         } else {
           return false;
         }
       }
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
 
       bool Eigen::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
-        // place RHS in its own vector
-        std::vector<base::DataVector> B = {b};
-        std::vector<base::DataVector> X;
+        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+        base::DataMatrix X(B.getNrows(), B.getNcols());
 
         // call version for multiple RHSs
         if (solve(system, B, X)) {
-          x.resize(X[0].getSize());
-          x = X[0];
+          x.resize(X.getNrows());
+          X.getColumn(0, x);
           return true;
         } else {
           return false;
@@ -73,9 +79,9 @@ namespace SGPP {
       }
 
       bool Eigen::solve(SLE& system,
-                        std::vector<base::DataVector>& B,
-                        std::vector<base::DataVector>& X) const {
-#ifdef USEEIGEN
+                        base::DataMatrix& B,
+                        base::DataMatrix& X) const {
+#ifdef USE_EIGEN
         printer.printStatusBegin("Solving linear system (Eigen)...");
 
         const size_t n = system.getDimension();
@@ -145,23 +151,25 @@ namespace SGPP {
         ::Eigen::HouseholderQR<EigenMatrix> A_QR = A.householderQr();
 
         base::DataVector x(n);
-        X.clear();
+        base::DataVector b(n);
+        X.resize(n, B.getNcols());
 
         // solve system for each RHS
-        for (size_t i = 0; i < B.size(); i++) {
-          base::DataVector& b = B[i];
+        for (size_t i = 0; i < B.getNcols(); i++) {
+          B.getColumn(i, b);
           printer.printStatusNewLine();
 
-          if (B.size() == 1) {
+          if (B.getNcols() == 1) {
             printer.printStatusUpdate("step 2: solving");
           } else {
             printer.printStatusUpdate("step 2: solving (RHS " +
                                       std::to_string(i + 1) +
-                                      " of " + std::to_string(B.size()) + ")");
+                                      " of " + std::to_string(B.getNcols()) +
+                                      ")");
           }
 
           if (solveInternal(A, A_QR, b, x)) {
-            X.push_back(x);
+            X.setColumn(i, x);
           } else {
             printer.printStatusEnd("error: could not solve linear system!");
             return false;
@@ -174,7 +182,7 @@ namespace SGPP {
         std::cerr << "Error in sle_solver::Eigen::solve: "
                   << "SG++ was compiled without Eigen support!\n";
         return false;
-#endif /* USEEIGEN */
+#endif /* USE_EIGEN */
       }
 
     }

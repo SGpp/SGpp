@@ -11,21 +11,21 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
-from bin.data.DataContainer import DataContainer
+from datadriven.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from datadriven.data.DataContainer import DataContainer
 from pysgpp import DataVector, DataMatrix
 
 
 ##
 # @package tests.tbin.test_SequentialFoldingPolicy
-# Contains class test_SequentialFoldingPolicy::TestSequentialFoldingPolicy with unittests for @link bin.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# Contains class test_SequentialFoldingPolicy::TestSequentialFoldingPolicy with unittests for @link datadriven.src.python.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link bin.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# Class with unittests for @link datadriven.src.python.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link bin.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# @test Unittests for @link datadriven.src.python.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 class TestSequentialFoldingPolicy(unittest.TestCase):
     
     
@@ -43,7 +43,7 @@ class TestSequentialFoldingPolicy(unittest.TestCase):
     
     
     ##
-    # Tests the function @link bin.learner.folding.FoldingPolicy.FoldingPolicy.next() SequentialFoldingPolicy.next() @endlink
+    # Tests the function @link datadriven.src.python.learner.folding.FoldingPolicy.FoldingPolicy.next() SequentialFoldingPolicy.next() @endlink
     def testNext(self):
         self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:

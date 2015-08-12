@@ -17,7 +17,7 @@ namespace SGPP {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid,
-        base::DataMatrix& dataset, base::OCLConfigurationParameters *parameters = nullptr);
+        base::DataMatrix& dataset, base::OCLConfigurationParameters parameters);
 
 }
 }

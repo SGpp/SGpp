@@ -173,6 +173,7 @@ namespace SGPP {
          * Dimensions have to match.
          *
          * @param matr the DataMatrixSP containing the data
+         * @return *this
          */
         DataMatrixSP& operator=(const DataMatrixSP& matr);
 
@@ -181,6 +182,7 @@ namespace SGPP {
          * For the 5th element in the third row, i would be 2*getNcols()+4.
          *
          * @param i position of the element
+         * @return data[i]
          */
         inline float& operator[](size_t i) {
           return data[i];

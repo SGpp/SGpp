@@ -39,7 +39,7 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(base::OCLConfigurationParameter
         std::cout << "OCL Info: " << overallDeviceCount << " OpenCL devices have been found!" << std::endl;
     }
 
-    if (parameters["SELECT_SPECIFIC_DEVICE"].compare("DISABLED") != 0) {
+    if (parameters.get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0) {
         if (this->platforms.size() > 1) {
             std::stringstream errorString;
             errorString << "OCL Error: Can only select a specific device if only one platform is used" << std::endl;
@@ -157,7 +157,7 @@ void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const 
 
         if (parameters.getAsBoolean("ENABLE_OPTIMIZATIONS")) {
             //TODO: user should be able to change
-            build_opts = parameters["OPTIMIZATION_FLAGS"]; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
+            build_opts = parameters.get("OPTIMIZATION_FLAGS"); // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
         } else {
             build_opts = "-cl-opt-disable"; // -g
         }
@@ -275,7 +275,7 @@ void OCLManagerMultiPlatform::setupPlatforms() {
                 std::cout << "OCL Info: Platform " << i << " name: " << platform_name << std::endl;
             }
 
-            if (parameters["PLATFORM"].compare(platform_name) == 0) {
+            if (parameters.get("PLATFORM").compare(platform_name) == 0) {
                 selectedPlatformIndex = i;
                 found = true;
 
@@ -286,14 +286,14 @@ void OCLManagerMultiPlatform::setupPlatforms() {
         }
     }
 
-    if (parameters["PLATFORM"].compare("first") == 0) {
+    if (parameters.get("PLATFORM").compare("first") == 0) {
         if (verbose) {
             std::cout << "using first platform" << std::endl;
         }
         OCLPlatformWrapper selectedPlatform = platforms[0];
         platforms.clear();
         platforms.push_back(selectedPlatform);
-    } else if (parameters["PLATFORM"].compare("all") != 0) {
+    } else if (parameters.get("PLATFORM").compare("all") != 0) {
         if (found) {
             OCLPlatformWrapper selectedPlatform = platforms[selectedPlatformIndex];
             platforms.clear();
@@ -349,25 +349,25 @@ void OCLManagerMultiPlatform::setupDeviceIDs() {
 }
 
 void OCLManagerMultiPlatform::setDeviceType() {
-    if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_CPU") {
+    if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_CPU") {
         if (verbose) {
             std::cout << "OCL Info: looking for CPU device" << std::endl;
         }
 
         this->deviceType = CL_DEVICE_TYPE_CPU;
-    } else if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_GPU") {
+    } else if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_GPU") {
         if (verbose) {
             std::cout << "OCL Info: looking for GPU device" << std::endl;
         }
 
         this->deviceType = CL_DEVICE_TYPE_GPU;
-    } else if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_ACCELERATOR") {
+    } else if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ACCELERATOR") {
         if (verbose) {
             std::cout << "OCL Info: looking for device of accelerator type" << std::endl;
         }
 
         this->deviceType = CL_DEVICE_TYPE_ACCELERATOR;
-    } else if (parameters["DEVICE_TYPE"] == "CL_DEVICE_TYPE_ALL") {
+    } else if (parameters.get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ALL") {
         if (verbose) {
             std::cout << "OCL Info: looking for device of all available devices" << std::endl;
         }

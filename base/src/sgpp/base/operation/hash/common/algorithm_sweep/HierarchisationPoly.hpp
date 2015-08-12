@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 
   namespace base {
@@ -58,27 +57,28 @@ namespace SGPP {
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
+        virtual void operator()(DataVector& source, DataVector& result,
+                                grid_iterator& index, size_t dim);
 
       protected:
 
         /**
          * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
          *
-         * @todo add graphical explanation here
-         *
          * @param source this DataVector holds the node base coefficients of the function that should be applied to the sparse grid
          * @param result this DataVector holds the linear base coefficients of the sparse grid's ansatz-functions
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
-         * @param koeffs coefficients of the basis funktions as calculated so far
+         * @param coeffs coefficients of the basis functions as calculated so far
          */
-        void rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, DataVector& koeffs);
+        void rec(DataVector& source, DataVector& result, grid_iterator& index,
+                 size_t dim, DataVector& coeffs);
 
     };
 
-  } // namespace base
+  }
+  // namespace base
 
-} // namespace SGPP
+}// namespace SGPP
 
 #endif /* HIERARCHISATIONPOLY_HPP */

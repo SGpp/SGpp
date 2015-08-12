@@ -50,7 +50,7 @@ namespace SGPP {
         if (this->r != 0.0) {
           SGPP::base::DataVector myResult(result.getSize());
 
-          /// @todo (heinecke) discuss methods in order to avoid this cast
+          /// discuss methods in order to avoid this cast
           ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
 
           // no semaphore needed
@@ -64,7 +64,7 @@ namespace SGPP {
         {
           SGPP::base::DataVector myResult(result.getSize());
 
-          /// @todo (heinecke) discuss methods in order to avoid this cast
+          /// discuss methods in order to avoid this cast
           ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
           // semaphore
@@ -87,7 +87,7 @@ namespace SGPP {
             {
               SGPP::base::DataVector myResult(result.getSize());
 
-              /// @todo (heinecke) discuss methods in order to avoid this cast
+              /// discuss methods in order to avoid this cast
               ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
               // semaphore
@@ -135,7 +135,7 @@ namespace SGPP {
         if (this->r != 0.0) {
           SGPP::base::DataVector myResult(result.getSize());
 
-          /// @todo (heinecke) discuss methods in order to avoid this cast
+          /// discuss methods in order to avoid this cast
           ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
           // no semaphore needed
@@ -149,7 +149,7 @@ namespace SGPP {
         {
           SGPP::base::DataVector myResult(result.getSize());
 
-          /// @todo (heinecke) discuss methods in order to avoid this cast
+          /// discuss methods in order to avoid this cast
           ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
           // semaphore
@@ -172,7 +172,7 @@ namespace SGPP {
             {
               SGPP::base::DataVector myResult(result.getSize());
 
-              /// @todo (heinecke) discuss methods in order to avoid this cast
+              /// discuss methods in order to avoid this cast
               ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
               // semaphore

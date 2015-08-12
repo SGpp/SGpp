@@ -13,31 +13,31 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.LearnerBuilder import LearnerBuilder
-from bin.controller import InfoToScreen
-from bin.controller import InfoToFile
+from datadriven.learner.LearnerBuilder import LearnerBuilder
+from datadriven.controller import InfoToScreen
+from datadriven.controller import InfoToFile
 
 
 ##
 # @package tests.tbin.test_LearnerBuilder
-# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link bin.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 
 ##
-# Class with unittests for @link bin.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Class with unittests for @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link bin.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# @test Unittests for @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 class TestLearnerBuilder(unittest.TestCase):
     
     
     ## Set up the variables and
-    # test the functions @link bin.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
-    # @link bin.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
-    # @link bin.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
-    # @link bin.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
-    # @link bin.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
-    # @link bin.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
+    # test the functions @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
+    # @link datadriven.src.python.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
     def setUp(self):
         self.builder = LearnerBuilder()
         self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\

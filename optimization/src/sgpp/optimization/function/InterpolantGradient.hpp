@@ -39,13 +39,13 @@ namespace SGPP {
         /**
          * Evaluation of the function and its gradient.
          *
-         * @param      x        point \f$\vec{x} \in \mathbb{R}^d\f$
+         * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] gradient gradient
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline float_t evalGradient(const base::DataVector& x,
-                                    base::DataVector& gradient) {
+        inline float_t eval(const base::DataVector& x,
+                            base::DataVector& gradient) {
           // copy x, necessary due to non-existing const correctness
           // in SGPP::base
           base::DataVector y(x);

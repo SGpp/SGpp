@@ -18,7 +18,6 @@ namespace SGPP {
      * This class extends the PDESolver with functions that are needed to
      * solve parabolic PDEs
      *
-     * @version $HEAD$
      */
     class ParabolicPDESolver : public PDESolver {
       protected:

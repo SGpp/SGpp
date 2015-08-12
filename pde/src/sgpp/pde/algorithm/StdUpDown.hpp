@@ -25,7 +25,6 @@ namespace SGPP {
     /**
      * Implements a standard Up/Down Schema without any operation dim.
      *
-     * @version $HEAD$
      */
     class StdUpDown: public SGPP::base::OperationMatrix {
       public:

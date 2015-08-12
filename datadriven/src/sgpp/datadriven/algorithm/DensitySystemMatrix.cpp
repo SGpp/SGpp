@@ -18,9 +18,9 @@
 namespace SGPP {
   namespace datadriven {
 
-    DensitySystemMatrix::DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambda) {
+    DensitySystemMatrix::DensitySystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambdaRegression) {
       this->data = &trainData;
-      this->lambda = lambda;
+      this->lambda = lambdaRegression;
 
       this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid);
       this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data));

@@ -27,7 +27,6 @@ namespace SGPP {
     /**
      * Implements the Up/Down scheme with four dimensions with special operations: i,j,k,l
      *
-     * @version $HEAD$
      */
     class UpDownFourOpDims: public SGPP::base::OperationMatrix {
       public:

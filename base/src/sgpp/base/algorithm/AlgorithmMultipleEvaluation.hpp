@@ -31,7 +31,6 @@ namespace SGPP {
      * If there are @f$N@f$ basis functions @f$\varphi(\vec{x})@f$ and @f$m@f$ data points, then B is a (mxN) matrix, with
      * @f[ (B)_{j,i} = \varphi_i(x_j). @f]
      *
-     * @todo (blank) check if it is possible to have some functor for the BASIS type
      */
     template<class BASIS>
     class AlgorithmMultipleEvaluation {
@@ -39,8 +38,6 @@ namespace SGPP {
 
         /**
          * Performs a transposed mass evaluation
-         *
-         * @todo (heinecke, nice) add mathematical description
          *
          * @param storage GridStorage object that contains the grid's points information
          * @param basis a reference to a class that implements a specific basis
@@ -84,8 +81,6 @@ namespace SGPP {
 
         /**
          * Performs a mass evaluation
-         *
-         * @todo (heinecke, nice) add mathematical description
          *
          * @param storage GridStorage object that contains the grid's points information
          * @param basis a reference to a class that implements a specific basis

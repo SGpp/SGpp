@@ -182,7 +182,8 @@ namespace SGPP {
 
         //compute prior
         if (this->withPrior) {
-          prior.push_back((*it).second / (float_t)classes.getSize());
+          prior.push_back(static_cast<float_t>((*it).second) /
+                          static_cast<float_t>(classes.getSize()));
         } else {
           prior.push_back(1.);
         }
@@ -303,7 +304,6 @@ namespace SGPP {
           result.timeMultCompute_ = tmp2;
           result.timeMultTransComplete_ = tmp3;
           result.timeMultTransCompute_ = tmp4;*/
-        // @TODO fix regularization timings, if needed
         result.timeRegularization_ = 0.0;
         result.GFlop_ = GFlop_;
         result.GByte_ = GByte_;

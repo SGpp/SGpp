@@ -36,7 +36,6 @@ namespace SGPP {
      * The class's aim is, to hide all complex details of solving the
      * Heat Equation on Sparse Grids!
      *
-     * @version $HEAD$
      */
     class HeatEquationSolver : public ParabolicPDESolver {
       protected:

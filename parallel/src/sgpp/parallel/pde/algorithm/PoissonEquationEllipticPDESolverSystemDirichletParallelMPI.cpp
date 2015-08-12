@@ -47,7 +47,7 @@ namespace SGPP {
               {
                 SGPP::base::DataVector myResult(result.getSize());
 
-                /// @todo (heinecke) discuss methods in order to avoid this cast
+                /// discuss methods in order to avoid this cast
                 ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
                 #pragma omp critical
@@ -82,7 +82,7 @@ namespace SGPP {
 
                 SGPP::base::DataVector myResult(result.getSize());
 
-                /// @todo (heinecke) discuss methods in order to avoid this cast
+                /// discuss methods in order to avoid this cast
                 ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
                 #pragma omp critical

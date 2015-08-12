@@ -38,7 +38,6 @@ namespace SGPP {
      *
      * This version offers support for MPI parallelization!
      *
-     * @version $HEAD$
      */
     class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
       private:

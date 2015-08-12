@@ -27,7 +27,6 @@ namespace pde
  * $d$ Up/Downs are executed concurrently and the results are merged
  * afterwards.
  *
- * @version $HEAD$
  */
 class UpDownOneOpDimEnhanced: public sg::base::OperationMatrix
 {

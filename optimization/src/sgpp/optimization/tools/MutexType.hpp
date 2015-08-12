@@ -50,6 +50,7 @@ namespace SGPP {
          * Custom assignment operator to prevent copying the lock
          *
          * @param other     object to be assigned to
+         * @return          *this
          */
         MutexType& operator=(const MutexType& other) {
           (void)other;

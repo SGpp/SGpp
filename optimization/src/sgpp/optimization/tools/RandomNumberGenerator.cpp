@@ -33,7 +33,7 @@ namespace SGPP {
       return distr(generator);
     }
 
-    RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() {
+    RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const {
       return seed;
     }
 

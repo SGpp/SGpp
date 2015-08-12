@@ -17,7 +17,7 @@ namespace SGPP {
     class LinearLoadBalancer {
       private:
         size_t deviceCount;
-        base::OCLConfigurationParameters& parameters;
+		base::OCLConfigurationParameters& parameters;
         double* weights;
         double* partition;
       public:
@@ -41,7 +41,7 @@ namespace SGPP {
         void getPartitionSegments(size_t start, size_t end, size_t blockSize,
                                   size_t* segmentStart, size_t* segmentEnd) {
           bool setVerboseLoadBalancing = parameters.getAsBoolean(
-                                           "LINEAR_LOAD_BALANCING_VERBOSE");
+                                           "LOAD_BALANCING_VERBOSE");
           size_t totalSize = end - start;
 
           // check for valid input
@@ -97,7 +97,7 @@ namespace SGPP {
         //TODO: consider inactive device due to nothing to do?
         void update(double* timings) {
           bool setVerboseLoadBalancing = parameters.getAsBoolean(
-                                           "LINEAR_LOAD_BALANCING_VERBOSE");
+                                           "LOAD_BALANCING_VERBOSE");
 
           //recalculate weights
           for (size_t i = 0; i < this->deviceCount; i++) {

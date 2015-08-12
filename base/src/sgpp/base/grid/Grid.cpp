@@ -15,11 +15,15 @@
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/grid/type/WaveletTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
@@ -81,6 +85,10 @@ namespace SGPP {
       return new PolyGrid(dim, degree);
     }
 
+    Grid* Grid::createPolyTruncatedBoundaryGrid(size_t dim, size_t degree) {
+      return new PolyTruncatedBoundaryGrid(dim, degree);
+    }
+
     Grid* Grid::createWaveletGrid(size_t dim) {
       return new WaveletGrid(dim);
     }
@@ -107,6 +115,18 @@ namespace SGPP {
 
     Grid* Grid::createModBsplineGrid(size_t dim, size_t degree) {
       return new ModBsplineGrid(dim, degree);
+    }
+
+    Grid* Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+      return new ModBsplineClenshawCurtisGrid(dim, degree);
+    }
+
+    Grid* Grid::createFundamentalSplineGrid(size_t dim, size_t degree) {
+      return new FundamentalSplineGrid(dim, degree);
+    }
+
+    Grid* Grid::createModFundamentalSplineGrid(size_t dim, size_t degree) {
+      return new ModFundamentalSplineGrid(dim, degree);
     }
 
     Grid* Grid::createSquareRootGrid(size_t dim) {
@@ -193,6 +213,9 @@ namespace SGPP {
         tMap->insert(std::pair<std::string, Grid::Factory>("bsplineTruncatedBoundary", BsplineTruncatedBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("bsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("fundamentalSpline", FundamentalSplineGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modFundamentalSpline", ModFundamentalSplineGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
 #else
@@ -215,6 +238,9 @@ namespace SGPP {
         tMap->insert(std::make_pair("bsplineTruncatedBoundary", BsplineTruncatedBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("bsplineClenshawCurtis", BsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("modBspline", ModBsplineGrid::unserialize));
+        tMap->insert(std::make_pair("fundamentalSpline", FundamentalSplineGrid::unserialize));
+        tMap->insert(std::make_pair("modFundamentalSpline", ModFundamentalSplineGrid::unserialize));
+        tMap->insert(std::make_pair("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
         tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
 #endif
@@ -301,7 +327,6 @@ namespace SGPP {
     }
 
     void Grid::refine(DataVector* vector, int numOfPoints) {
-      // @todo (khakhutv) (low) different refinemente Functors
       this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector, numOfPoints));
     }
 
@@ -315,7 +340,7 @@ namespace SGPP {
 
     void Grid::insertPoint(size_t dim, unsigned int levels[], unsigned int indices[], bool isLeaf) {
       //create HashGridIndex object for the point
-      GridIndex pointIndex = new GridIndex(dim);
+      GridIndex pointIndex(dim);
 
       for (unsigned int i = 0; i < dim - 1; i++) {
         pointIndex.push(i, levels[i], indices[i]);

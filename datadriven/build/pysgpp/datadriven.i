@@ -19,7 +19,8 @@
 %include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
-%include "datadriven/src/sgpp/datadriven/application/LearnerDensityCluster.hpp"
+%include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
+%include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
 #endif
 
 %apply std::string *INPUT { std::string& istr };
@@ -33,6 +34,11 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
+
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityMarginalizeKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityConditionalKDE.hpp"
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {

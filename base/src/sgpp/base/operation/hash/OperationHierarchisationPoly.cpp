@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationHierarchisationPoly.hpp>
+#include "OperationHierarchisationPoly.hpp"
 
 #include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPoly.hpp>
 #include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPoly.hpp>
@@ -11,7 +11,6 @@
 #include <sgpp/base/algorithm/sweep.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
   namespace base {
@@ -33,7 +32,8 @@ namespace SGPP {
 
       // Execute hierarchisation in every dimension of the grid
       for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
+        DataVector source(alpha);
+        s.sweep1D(source, alpha, i);
       }
     }
 

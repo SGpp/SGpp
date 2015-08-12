@@ -29,7 +29,7 @@ namespace SGPP {
          * @param dataset Dataset
          */
         OperationMultipleEvalPoly(Grid& grid, size_t degree, DataMatrix& dataset) : OperationMultipleEval(grid, dataset), base(degree) {
-          this->storage = storage;
+          this->storage = grid.getStorage();
         }
 
         /**

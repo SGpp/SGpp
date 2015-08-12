@@ -15,6 +15,8 @@
 
 int main(int argc, char** argv) {
 
+#if USE_OCL==1
+
     std::map<std::string, std::string> defaultParameter;
     defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
     defaultParameter["KERNEL_DATA_BLOCKING_SIZE"] = "1";
@@ -35,7 +37,6 @@ int main(int argc, char** argv) {
     clonedBuffer.writeToBuffer(clonedBufferHost);
 
     clonedBuffer.readFromBuffer(clonedBufferHost);
-
 
     SGPP::base::OCLStretchedBufferMultiPlatform buffer(manager);
 
@@ -74,13 +75,15 @@ int main(int argc, char** argv) {
     buffer.combineBuffer(indexStart, indexEnd, manager.platforms[0].platformId);
     for (size_t i = 0; i < 100; i++) {
         if (i != 0) {
-            std::cout  << ", ";
+            std::cout << ", ";
         }
         std::cout << hostBuffer[i];
     }
     std::cout << std::endl;
 
     std::cout << "all done" << std::endl;
+
+#endif
 
 }
 

@@ -36,7 +36,6 @@ namespace SGPP {
      * The class's aim is, to hide all complex details of solving the
      * Poisson Equation on Sparse Grids!
      *
-     * @version $HEAD$
      */
     class PoissonEquationSolver : public EllipticPDESolver {
       private:

@@ -18,7 +18,6 @@ namespace SGPP {
     /**
      * Exception that is thrown in case of a grid failure
      *
-     * @version $HEAD$
      */
     class factory_exception : public std::exception {
       public:

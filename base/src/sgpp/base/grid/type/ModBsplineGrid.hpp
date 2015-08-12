@@ -19,10 +19,14 @@ namespace SGPP {
 
     /**
      * Grid with modified Bspline basis functions
-     * @todo (pflueged) include for factory exception is missing in several classes which use it. It only works, as it is include by a header loaded previously.
      */
     class ModBsplineGrid : public Grid {
       protected:
+        /**
+         * This constructor creates a new GridStorage out of the stream.
+         *
+         * @param istr inputstream that contains the grid information
+         */
         ModBsplineGrid(std::istream& istr);
 
       public:
@@ -35,25 +39,49 @@ namespace SGPP {
         ModBsplineGrid(size_t dim, size_t degree);
 
         /**
-         * Destructor
+         * Destructor.
          */
         virtual ~ModBsplineGrid();
 
+        /**
+         * @return string that identifies the grid type uniquely
+         */
         virtual const char* getType();
 
+        /**
+         * @return B-spline basis
+         */
         virtual const SBasis& getBasis();
 
+        /**
+         * @return pointer to a GridGenerator object
+         */
         virtual GridGenerator* createGridGenerator();
 
+        /**
+         * reads a grid out of a string
+         *
+         * @param istr string that contains the grid information
+         * @return grid
+         */
         static Grid* unserialize(std::istream& istr);
 
+        /**
+         * Serializes the grid.
+         *
+         * @param ostr stream to which the grid is written
+         */
         virtual void serialize(std::ostream& ostr);
+
+        /**
+         * @return B-spline degree
+         */
         virtual size_t getDegree();
 
       protected:
-        // degree of Bspline
+        /// B-spline degree
         size_t degree;
-
+        /// B-spline basis
         const SBsplineModifiedBase* basis_;
 
 

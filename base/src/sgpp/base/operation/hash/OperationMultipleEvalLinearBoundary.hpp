@@ -19,7 +19,6 @@ namespace SGPP {
      * This class implements OperationMultipleEval for a grids with linear basis ansatzfunctions
      * with boundaries
      *
-     * @version $HEAD$
      */
     class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
       public:

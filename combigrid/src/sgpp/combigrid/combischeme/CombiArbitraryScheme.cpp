@@ -15,8 +15,8 @@ combigrid::CombiArbitraryScheme::CombiArbitraryScheme(std::vector < std::vector 
 }
 
 combigrid::CombiArbitraryScheme::CombiArbitraryScheme(
-  combigrid::CombigridLevelVector in) :
-  combigrid::CombiSchemeBasis(in.getDim(), in.getLevelVec()[0]) {
-  levels_vector_ = in.getLevelVec();
-  cofficients_ = in.getCoef();
+  combigrid::CombigridLevelVector input) :
+  combigrid::CombiSchemeBasis(input.getDim(), input.getLevelVec()[0]) {
+  levels_vector_ = input.getLevelVec();
+  cofficients_ = input.getCoef();
 }

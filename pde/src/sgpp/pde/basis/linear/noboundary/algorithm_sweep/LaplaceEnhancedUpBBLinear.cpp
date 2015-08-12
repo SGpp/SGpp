@@ -137,13 +137,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec(fl, fml, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec(fmr, fr, dim, index);
@@ -212,7 +212,7 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
 #if 1
@@ -230,7 +230,7 @@ namespace SGPP {
 #endif
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
 #if 1
@@ -328,13 +328,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_GL(fl, fml, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_GL(fmr, fr, dim, index);
@@ -369,13 +369,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_LG(fl, fml, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_LG(fmr, fr, dim, index);
@@ -406,13 +406,13 @@ namespace SGPP {
       ptr_result_[(seq * this->numAlgoDims_) + dim] = 0.0;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_grad(dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_grad(dim, index);
@@ -433,13 +433,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB(fl, fml, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB(fmr, fr, dim, index);
@@ -475,13 +475,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LL(fl, fml, fl2, fml2, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LL(fmr, fr, fmr2, fr2, dim, index);
@@ -521,13 +521,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_GL(fl, fml, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_GL(fmr, fr, dim, index);
@@ -562,13 +562,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LG(fl, fml, dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           recBB_LG(fmr, fr, dim, index);
@@ -599,13 +599,13 @@ namespace SGPP {
       ptr_result_[(seq * this->numAlgoDims_) + dim] = 0.0;
 
       if (!index.hint()) {
-        index.left_child(cur_algo_dim_);
+        index.leftChild(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_grad(dim, index);
         }
 
-        index.step_right(cur_algo_dim_);
+        index.stepRight(cur_algo_dim_);
 
         if (!storage->end(index.seq())) {
           rec_grad(dim, index);

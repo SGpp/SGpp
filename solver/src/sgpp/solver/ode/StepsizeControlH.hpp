@@ -22,7 +22,6 @@ namespace SGPP {
      * This class implements a step size control using Crank-Nicolson with different step sizes
      * for solving ordinary partial equations
      *
-     * @version $HEAD$
      */
     class StepsizeControlH : public StepsizeControl {
       private:

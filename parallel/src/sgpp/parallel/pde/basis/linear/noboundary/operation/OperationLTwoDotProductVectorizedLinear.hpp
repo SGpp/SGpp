@@ -34,7 +34,6 @@ namespace SGPP {
     /**
     * Implementation for linear functions of LTwoDotProduct Operation, linear grids without boundaries
      *
-     * @version $HEAD$
      */
     class OperationLTwoDotProductVectorizedLinear: public SGPP::base::OperationMatrix {
       private:

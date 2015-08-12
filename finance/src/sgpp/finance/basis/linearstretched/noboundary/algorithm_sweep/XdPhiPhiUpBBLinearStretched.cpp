@@ -39,13 +39,13 @@ namespace SGPP {
       SGPP::base::GridStorage::index_type::index_type current_index;
 
       if (!index.hint()) {
-        index.left_child(dim);
+        index.leftChild(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fl, fml);
         }
 
-        index.step_right(dim);
+        index.stepRight(dim);
 
         if (!storage->end(index.seq())) {
           rec(source, result, index, dim, fmr, fr);

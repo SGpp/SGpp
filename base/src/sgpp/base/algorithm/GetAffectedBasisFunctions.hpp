@@ -13,6 +13,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 
 #include <vector>
 #include <utility>
@@ -51,7 +52,6 @@ namespace SGPP {
      * Descending recursively in the d-th dimension, one can propagate the value of the intermediate function
      * evaluation for the first d-1 dimensions that have already been looked at.
      *
-     * @todo (heinecke) add bounding box support for every grid type
      */
     template<class BASIS>
     class GetAffectedBasisFunctions {
@@ -88,13 +88,22 @@ namespace SGPP {
           index_type* source = new index_type[dim];
 
           for (size_t d = 0; d < dim; ++d) {
-            // This does not really work on grids with borders.
-            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
 
+            // The fracture view for recursive descent doesn't work for the value 1.0, but we know that we always
+            // have to use the right basis function for the value 1.0.
+            // Temp has to be promoted to double to permit the subtraction of 1, otherwise the subtraction will
+            // be absorbed (see floating point absorbtion). This trick needs a mantissa with >= 32 bits.
+            // This will not work with 64 bit indices.
             if (point[d] == 1.0) {
-              source[d] = static_cast<index_type> (temp - 1);
+//              source[d] = static_cast<index_type> (static_cast<double>(temp) - 1.0);
+              source[d] = 0x7fffffff;
             } else {
-              source[d] = static_cast<index_type> (temp + 1);
+
+              // This does not really work on grids with borders.
+              float_t temp = floor(point[d] *
+                                   static_cast<float_t>(1 << (bits - 2))) * 2;
+              //TODO: (dirk) why the + 1?
+              source[d] = static_cast<index_type> (static_cast<double>(temp) + 1.0);
             }
 
           }
@@ -129,9 +138,10 @@ namespace SGPP {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 
-          // @todo (blank) Remove 'magic' number
-          level_type src_level = static_cast<level_type> (sizeof(index_type) * 8
-                                 - 1);
+          const unsigned int BITS_IN_BYTE = 8;
+          // maximum possible level for the index type
+          const level_type max_level = static_cast<level_type> (
+                                         sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -163,19 +173,19 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
-            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            bool right = (src_index & (1 << (max_level - work_level))) > 0;
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };
@@ -209,7 +219,8 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] *
+                                 static_cast<float_t>(1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type> (temp - 1);
@@ -240,9 +251,10 @@ namespace SGPP {
           float_t tmpValue;
           size_t tmpSeq;
 
-          // TODO: Remove 'magic' number
-          level_type src_level = static_cast<level_type> (sizeof(index_type) * 8
-                                 - 1);
+          const unsigned int BITS_IN_BYTE = 8;
+          // maximum possible level for the index type
+          const level_type max_level = static_cast<level_type> (
+                                         sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -273,7 +285,7 @@ namespace SGPP {
                 result.push_back(std::make_pair(seq, value * new_value));
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 tmpSeq = working.seq();
 
                 if (!(storage->end(tmpSeq))) {
@@ -291,10 +303,10 @@ namespace SGPP {
 
                 }
 
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking Left Neighbour" << std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 tmpSeq = working.seq();
 
                 if (!(storage->end(tmpSeq))) {
@@ -312,29 +324,29 @@ namespace SGPP {
 
                 }
 
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
 
               } else {
                 rec(basis, point, current_dim + 1, value * new_value,
                     working, source, result);
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
                 rec(basis, point, current_dim + 1, value * new_value,
                     working, source, result);
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking left Neighbour"<< std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
                 rec(basis, point, current_dim + 1, value * new_value,
                     working, source, result);
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
               }
 
             }
@@ -344,19 +356,19 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
-            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            bool right = (src_index & (1 << (max_level - work_level))) > 0;
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };
@@ -389,7 +401,8 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            float_t temp = floor(point[d] * (1 << (bits - 2))) * 2;
+            float_t temp = floor(point[d] *
+                                 static_cast<float_t>(1 << (bits - 2))) * 2;
 
             if (point[d] == 1.0) {
               source[d] = static_cast<index_type>(temp - 1);
@@ -416,8 +429,10 @@ namespace SGPP {
           float_t tmpValue;
           size_t tmpSeq;
 
-          // TODO: Remove 'magic' number
-          level_type src_level = static_cast<level_type>(sizeof(index_type) * 8 - 1);
+          const unsigned int BITS_IN_BYTE = 8;
+          // maximum possible level for the index type
+          const level_type max_level = static_cast<level_type> (
+                                         sizeof(index_type) * BITS_IN_BYTE - 1);
           index_type src_index = source[current_dim];
 
           level_type work_level = 1;
@@ -447,7 +462,7 @@ namespace SGPP {
                 result.push_back(std::make_pair(seq, value * new_value));
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 tmpSeq = working.seq();
 
                 if ( !(storage->end(tmpSeq)) ) {
@@ -463,10 +478,10 @@ namespace SGPP {
 
                 }
 
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking Left Neighbour" << std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 tmpSeq = working.seq();
 
                 if (!(storage->end(tmpSeq)) ) {
@@ -482,24 +497,24 @@ namespace SGPP {
 
                 }
 
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
 
               } else {
                 rec(base, point, current_dim + 1, value * new_value, working, source, result);
 
                 //std::cout << "Checking Right Neighbour" << std::endl;
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = base.eval(work_level, work_index, point[current_dim]);
                 rec(base, point, current_dim + 1, value * new_value, working, source, result);
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
 
                 //std::cout << "Checking left Neighbour"<< std::endl;
-                working.step_left(current_dim);
+                working.stepLeft(current_dim);
                 working.get(current_dim, temp, work_index);
                 new_value = base.eval(work_level, work_index, point[current_dim]);
                 rec(base, point, current_dim + 1 , value * new_value, working, source, result);
-                working.step_right(current_dim);
+                working.stepRight(current_dim);
               }
 
             }
@@ -509,19 +524,19 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
-            bool right = (src_index & (1 << (src_level - work_level))) > 0;
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            bool right = (src_index & (1 << (max_level - work_level))) > 0;
             ++work_level;
 
             if (right) {
-              working.right_child(current_dim);
+              working.rightChild(current_dim);
             } else {
-              working.left_child(current_dim);
+              working.leftChild(current_dim);
             }
 
           }
 
-          working.top(current_dim);
+          working.resetToLevelOne(current_dim);
         }
 
     };
@@ -594,7 +609,7 @@ namespace SGPP {
               // handle boundaries if we are on level 0
               else {
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
@@ -605,7 +620,7 @@ namespace SGPP {
                 }
 
                 // level 0, index 1
-                working.right_levelzero(current_dim);
+                working.resetToRightLevelZero(current_dim);
                 size_t seq_lz_right = working.seq();
                 float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
 
@@ -623,7 +638,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -636,21 +651,21 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
                 break;
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
 
 
@@ -686,7 +701,7 @@ namespace SGPP {
               // handle boundaries if we are on level 0
               else {
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
@@ -697,7 +712,7 @@ namespace SGPP {
                 }
 
                 // level 0, index 1
-                working.right_levelzero(current_dim);
+                working.resetToRightLevelZero(current_dim);
                 size_t seq_lz_right = working.seq();
                 float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
 
@@ -715,7 +730,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -728,21 +743,21 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim)) + BB->getIntervalOffset(current_dim)))
                 break;
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
 
     };
@@ -827,7 +842,7 @@ namespace SGPP {
                 float_t left = stretch->getBoundary(current_dim).leftBoundary;
                 float_t right = stretch->getBoundary(current_dim).rightBoundary;
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 //float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
                 float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], right, left);
@@ -839,7 +854,7 @@ namespace SGPP {
                 }
 
                 // level 0, index 1
-                working.right_levelzero(current_dim);
+                working.resetToRightLevelZero(current_dim);
                 size_t seq_lz_right = working.seq();
                 //float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
                 float_t new_value_l_zero_right = basis.eval(0, 1,  point[current_dim], left, right);
@@ -858,7 +873,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               //        level_type h = 0;
@@ -871,9 +886,9 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               //if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim))+BB->getIntervalOffset(current_dim)))
@@ -883,13 +898,13 @@ namespace SGPP {
                 break;
               }
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
 
     };
@@ -971,9 +986,9 @@ namespace SGPP {
             level_type save_level;
             iter.get(d, save_level, save_index); //Save current index
 
-            if (iter.hint_left(d)) {
+            if (iter.hintLeft(d)) {
               //Handle left Child in dimension d
-              iter.left_child(d);
+              iter.leftChild(d);
               index_type current_index;
               level_type current_level;
               iter.get(d, current_level, current_index);
@@ -989,9 +1004,9 @@ namespace SGPP {
 
             iter.set(d, save_level, save_index); //reset index
 
-            if (iter.hint_right(d)) {
+            if (iter.hintRight(d)) {
               //Handle left Child in dimension d
-              iter.right_child(d);
+              iter.rightChild(d);
               index_type current_index;
               level_type current_level;
               iter.get(d, current_level, current_index);
@@ -1072,7 +1087,7 @@ namespace SGPP {
               // handle boundaries if we are on level 0
               else {
                 // level 0, index 0
-                working.left_levelzero(current_dim);
+                working.resetToLeftLevelZero(current_dim);
                 size_t seq_lz_left = working.seq();
                 float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
@@ -1090,7 +1105,7 @@ namespace SGPP {
             }
 
             // this decides in which direction we should descend by evaluating the corresponding bit
-            // the bits are coded from left to right starting with level 1 being in position src_level
+            // the bits are coded from left to right starting with level 1 being in position max_level
             if (work_level > 0) {
               float_t hat = 0.0;
               level_type h = 0;
@@ -1103,23 +1118,245 @@ namespace SGPP {
                 break;
 
               if (point[current_dim] < hat) {
-                working.left_child(current_dim);
+                working.leftChild(current_dim);
               } else {
-                working.right_child(current_dim);
+                working.rightChild(current_dim);
               }
             } else {
               if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
                 break;
 
-              working.top(current_dim);
+              working.resetToLevelOne(current_dim);
             }
 
             ++work_level;
           }
 
-          working.left_levelzero(current_dim);
+          working.resetToLeftLevelZero(current_dim);
         }
     };
+
+    /**
+     * Template Specialization for PolyBoundaryBasis basis.
+     */
+    template<>
+    class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > {
+        typedef PolyBoundaryBasis<unsigned int, unsigned int> SPolyBoundaryBase;
+      public:
+        GetAffectedBasisFunctions(GridStorage* storage) : storage(storage), BB(storage->getBoundingBox()) {
+        }
+
+        ~GetAffectedBasisFunctions() {}
+
+        void operator()(SPolyBoundaryBase& basis, DataVector& point, std::vector<std::pair<size_t, float_t> >& result) {
+          bool useBB = false;
+
+          // Check for special bounding box
+          if (!this->BB->isTrivialCube()) {
+            useBB = true;
+          }
+
+          GridStorage::grid_iterator working(storage);
+
+          working.resetToLevelZero();
+          result.clear();
+
+          if (useBB == false) {
+            rec(basis, point, 0, 1.0, working, result);
+          } else {
+            recBB(basis, point, 0, 1.0, working, result);
+          }
+        }
+
+      protected:
+        GridStorage* storage;
+        BoundingBox* BB;
+
+        void rec(SPolyBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+          typedef GridStorage::index_type::level_type level_type;
+          typedef GridStorage::index_type::index_type index_type;
+
+          level_type work_level = 0;
+
+          while (true) {
+            size_t seq = working.seq();
+            index_type global_work_index = 0;
+
+
+            if (storage->end(seq)) {
+              break;
+            } else {
+              index_type work_index;
+              level_type temp;
+
+              working.get(current_dim, temp, work_index);
+              global_work_index = work_index;
+
+              if (work_level > 0) {
+                float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
+
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq, value * new_value));
+                } else {
+                  rec(basis, point, current_dim + 1, value * new_value, working, result);
+                }
+              }
+              // handle boundaries if we are on level 0
+              else {
+                // level 0, index 0
+                working.resetToLeftLevelZero(current_dim);
+                size_t seq_lz_left = working.seq();
+                float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
+                } else {
+                  rec(basis, point, current_dim + 1, value * new_value_l_zero_left, working, result);
+                }
+
+                // level 0, index 1
+                working.resetToRightLevelZero(current_dim);
+                size_t seq_lz_right = working.seq();
+                float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
+
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
+                } else {
+                  rec(basis, point, current_dim + 1, value * new_value_l_zero_right, working, result);
+                }
+              }
+            }
+
+            // there are no levels left
+            if (working.hint()) {
+              break;
+            }
+
+            // this decides in which direction we should descend by evaluating the corresponding bit
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            if (work_level > 0) {
+              float_t hat = 0.0;
+              level_type h = 0;
+
+              h = 1 << work_level;
+
+              hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
+
+              if (point[current_dim] == hat)
+                break;
+
+              if (point[current_dim] < hat) {
+                working.leftChild(current_dim);
+              } else {
+                working.rightChild(current_dim);
+              }
+            } else {
+              if (point[current_dim] == 0.0 || point[current_dim] == 1.0)
+                break;
+
+              working.resetToLevelOne(current_dim);
+            }
+
+            ++work_level;
+          }
+
+          working.resetToLeftLevelZero(current_dim);
+        }
+
+
+        void recBB(SPolyBoundaryBase& basis, DataVector& point, size_t current_dim, float_t value, GridStorage::grid_iterator& working, std::vector<std::pair<size_t, float_t> >& result) {
+          typedef GridStorage::index_type::level_type level_type;
+          typedef GridStorage::index_type::index_type index_type;
+
+          level_type work_level = 0;
+
+          while (true) {
+            size_t seq = working.seq();
+            index_type global_work_index = 0;
+
+
+            if (storage->end(seq)) {
+              break;
+            } else {
+              index_type work_index;
+              level_type temp;
+
+              working.get(current_dim, temp, work_index);
+              global_work_index = work_index;
+
+              if (work_level > 0) {
+                float_t new_value = basis.eval(work_level, work_index, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq, value * new_value));
+                } else {
+                  recBB(basis, point, current_dim + 1, value * new_value, working, result);
+                }
+              }
+              // handle boundaries if we are on level 0
+              else {
+                // level 0, index 0
+                working.resetToLeftLevelZero(current_dim);
+                size_t seq_lz_left = working.seq();
+                float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
+                } else {
+                  recBB(basis, point, current_dim + 1, value * new_value_l_zero_left, working, result);
+                }
+
+                // level 0, index 1
+                working.resetToRightLevelZero(current_dim);
+                size_t seq_lz_right = working.seq();
+                float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim], BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+
+                if (current_dim == storage->dim() - 1) {
+                  result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
+                } else {
+                  recBB(basis, point, current_dim + 1, value * new_value_l_zero_right, working, result);
+                }
+              }
+            }
+
+            // there are no levels left
+            if (working.hint()) {
+              break;
+            }
+
+            // this decides in which direction we should descend by evaluating the corresponding bit
+            // the bits are coded from left to right starting with level 1 being in position max_level
+            if (work_level > 0) {
+              float_t hat = 0.0;
+              level_type h = 0;
+
+              h = 1 << work_level;
+
+              hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index))) + BB->getIntervalOffset(current_dim);
+
+              if (point[current_dim] == hat)
+                break;
+
+              if (point[current_dim] < hat) {
+                working.leftChild(current_dim);
+              } else {
+                working.rightChild(current_dim);
+              }
+            } else {
+              if (point[current_dim] == (BB->getIntervalOffset(current_dim)) || point[current_dim] == ((BB->getIntervalWidth(current_dim)) + BB->getIntervalOffset(current_dim)))
+                break;
+
+              working.resetToLevelOne(current_dim);
+            }
+
+            ++work_level;
+          }
+
+          working.resetToLeftLevelZero(current_dim);
+        }
+
+    };
+
   }
 }
 

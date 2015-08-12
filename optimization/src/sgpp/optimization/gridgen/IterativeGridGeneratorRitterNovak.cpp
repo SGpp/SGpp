@@ -24,13 +24,14 @@ namespace SGPP {
      * @param b     exponent
      * @return      approximation to \f$a^b\f$
      */
-    inline float_t fastPow(float_t a, float_t b) {
+    inline double fastPow(double a, double b) {
       union {
-        float_t d;
+        double d;
         int x[2];
       } u = {a};
 
-      u.x[1] = static_cast<int>(b * (u.x[1] - 1072632447) + 1072632447);
+      u.x[1] = static_cast<int>(
+                 b * static_cast<double>(u.x[1] - 1072632447) + 1072632447);
       u.x[0] = 0;
 
       return u.d;
@@ -38,27 +39,37 @@ namespace SGPP {
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
       ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t gamma, size_t maxLevel, PowMethod powMethod) :
+      float_t adaptivity, base::level_t maxLevel, PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
-      gamma(gamma),
+      gamma(adaptivity),
       maxLevel(maxLevel),
       powMethod(powMethod) {
     }
 
-    float_t IterativeGridGeneratorRitterNovak::getGamma() const {
+    float_t IterativeGridGeneratorRitterNovak::getAdaptivity() const {
       return gamma;
     }
 
-    void IterativeGridGeneratorRitterNovak::setGamma(float_t gamma) {
-      this->gamma = gamma;
+    void IterativeGridGeneratorRitterNovak::setAdaptivity(float_t adaptivity) {
+      this->gamma = adaptivity;
     }
 
-    size_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
+    base::level_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
       return maxLevel;
     }
 
-    void IterativeGridGeneratorRitterNovak::setMaxLevel(size_t maxLevel) {
+    void IterativeGridGeneratorRitterNovak::setMaxLevel(base::level_t maxLevel) {
       this->maxLevel = maxLevel;
+    }
+
+    IterativeGridGeneratorRitterNovak::PowMethod
+    IterativeGridGeneratorRitterNovak::getPowMethod() const {
+      return powMethod;
+    }
+
+    void IterativeGridGeneratorRitterNovak::setPowMethod(
+      IterativeGridGeneratorRitterNovak::PowMethod powMethod) {
+      this->powMethod = powMethod;
     }
 
     bool IterativeGridGeneratorRitterNovak::generate() {
@@ -72,6 +83,7 @@ namespace SGPP {
       HashRefinementMultiple refinement;
 
       if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
+          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
           (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
         // Clenshaw-Curtis grid
         distr = base::GridIndex::ClenshawCurtis;
@@ -118,7 +130,7 @@ namespace SGPP {
         gp.setPointDistribution(distr);
         // prepare fXOrder and rank
         fXOrder[i] = i;
-        rank[i] = i;
+        rank[i] = i + 1;
 
         // calculate sum of levels
         for (size_t t = 0; t < d; t++) {
@@ -126,40 +138,8 @@ namespace SGPP {
         }
       }
 
-      // parallel evaluation of f in the initial grid points
-      #pragma omp parallel shared(fX, currentN, gridStorage) default(none)
-      {
-        base::DataVector x(d);
-        ObjectiveFunction* curFPtr = &f;
-#ifdef _OPENMP
-        std::unique_ptr<ObjectiveFunction> curF;
-
-        if (omp_get_max_threads() > 1) {
-          f.clone(curF);
-          curFPtr = curF.get();
-        }
-
-#endif /* _OPENMP */
-
-        #pragma omp for
-
-        for (size_t i = 0; i < currentN; i++) {
-          // convert grid point to coordinate vector
-          #pragma omp critical
-          {
-            base::GridIndex& gp = *gridStorage.get(i);
-
-            for (size_t t = 0; t < d; t++) {
-              x[t] = gp.getCoord(t);
-            }
-          }
-
-          float_t fx = curFPtr->eval(x);
-
-          #pragma omp critical
-          fX[i] = fx;
-        }
-      }
+      // evaluation of f in the initial grid points
+      evalFunction();
 
       // determine fXOrder and rank (prepared above)
       std::sort(fXOrder.begin(), fXOrder.begin() + currentN,
@@ -168,7 +148,7 @@ namespace SGPP {
       });
       std::sort(rank.begin(), rank.begin() + currentN,
       [&](size_t a, size_t b) {
-        return (fXOrder[a] < fXOrder[b]);
+        return (fXOrder[a - 1] < fXOrder[b - 1]);
       });
 
       // determine fXSorted
@@ -208,9 +188,9 @@ namespace SGPP {
                          gamma) *
                 std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
           } else {
-            g = fastPow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
+            g = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0,
                         gamma) *
-                fastPow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
+                fastPow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
           }
 
           if (g < gBest) {
@@ -221,8 +201,8 @@ namespace SGPP {
             base::GridIndex& gp = *gridStorage.get(i);
 
             {
-              base::GridIndex::index_type sourceIndex, childIndex;
-              base::GridIndex::level_type sourceLevel, childLevel;
+              base::index_t sourceIndex, childIndex;
+              base::level_t sourceLevel, childLevel;
 
               // for each dimension
               for (size_t t = 0; t < d; t++) {
@@ -286,7 +266,7 @@ namespace SGPP {
         refinement.free_refine(&gridStorage, &refineFunc);
 
         // new grid size
-        size_t newN = gridStorage.size();
+        const size_t newN = gridStorage.size();
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)
@@ -298,13 +278,7 @@ namespace SGPP {
 
         if (newN > N) {
           // too many new points ==> undo refinement and exit
-          std::list<size_t> indicesToRemove;
-
-          for (size_t i = currentN; i < newN; i++) {
-            indicesToRemove.push_back(i);
-          }
-
-          gridStorage.deletePoints(indicesToRemove);
+          undoRefinement(currentN);
           break;
         }
 
@@ -325,48 +299,15 @@ namespace SGPP {
           }
         }
 
-        // parallel evaluation of f in the new grid points
-        #pragma omp parallel shared(fX, currentN, newN, gridStorage) \
-        default(none)
-        {
-          base::DataVector x(d);
-          ObjectiveFunction* curFPtr = &f;
-#ifdef _OPENMP
-          std::unique_ptr<ObjectiveFunction> curF;
-
-          if (omp_get_max_threads() > 1) {
-            f.clone(curF);
-            curFPtr = curF.get();
-          }
-
-#endif /* _OPENMP */
-
-          #pragma omp for
-
-          for (size_t i = currentN; i < newN; i++) {
-            // convert grid point to coordinate vector
-            #pragma omp critical
-            {
-              base::GridIndex& gp = *gridStorage.get(i);
-
-              for (size_t t = 0; t < d; t++) {
-                x[t] = gp.getCoord(t);
-              }
-            }
-
-            float_t fx = curFPtr->eval(x);
-
-            #pragma omp critical
-            fX[i] = fx;
-          }
-        }
+        // evaluation of f in the new grid points
+        evalFunction(currentN);
 
         for (size_t i = currentN; i < newN; i++) {
           const float_t fXi = fX[i];
 
           // update rank and fXOrder by insertion sort
           // ==> go through fX from greatest entry to lowest
-          for (size_t j = i - 1; j-- > 0; ) {
+          for (size_t j = i; j-- > 0; ) {
             if (fXSorted[j] < fXi) {
               // new function value is greater than current one ==> insert here
               fXOrder.insert(fXOrder.begin() + (j + 1), i);

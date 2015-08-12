@@ -20,13 +20,15 @@ namespace std {
     %template(IntVector) vector<int>;
     %template(IntIntVector) vector< vector<int> >; 
     %template(BoolVector) vector<bool>;
-    %template(DoubleVector) vector<SGPP::float_t>;
+    %template(DoubleVector) vector<double>;
+    %template(FloatVector) vector<float>;
+    %template(IndexVector) vector<size_t>;
     %template(IndexValPair) pair<size_t, SGPP::float_t>;
-        %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
-        // For OnlinePredictiveRefinementDimension
-        %template(refinement_key) std::pair<size_t, unsigned int>;
-        %template(refinement_map) std::map<std::pair<size_t, unsigned int>, SGPP::float_t>;
-
+    %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
+    %template(IndexList) list<size_t>;
+    // For OnlinePredictiveRefinementDimension
+    %template(refinement_key) std::pair<size_t, unsigned int>;
+    %template(refinement_map) std::map<std::pair<size_t, unsigned int>, SGPP::float_t>;
 }
 
 //TODO really evil hack, find a better solution! (used e.g. for HashGridIndex->get(dim), the one with a single argument), leads to output tuples to circumvent call-by-reference in python
@@ -51,13 +53,13 @@ namespace std {
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
 
 // The Good, i.e. without any modifications
-%ignore sg::base::BoundingBox::toString(std::string& text);
+%ignore SGPP::base::BoundingBox::toString(std::string& text);
 %include "base/src/sgpp/base/grid/common/BoundingBox.hpp"
 %include "base/src/sgpp/base/grid/common/Stretching.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/SerializationVersion.hpp"
-%ignore sg::base::HashGridIndex::operator=;
+%ignore SGPP::base::HashGridIndex::operator=;
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
-%ignore sg::base::HashGridStorage::operator[];
+%ignore SGPP::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
@@ -128,6 +130,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
@@ -135,6 +140,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
@@ -145,7 +151,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp"
 
-
+%include "base/src/sgpp/base/tools/QuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
+%include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
 
 // static factory methods
 %include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
@@ -161,6 +169,7 @@ namespace std {
 %template(SLinearStretchedBoundaryBase) SGPP::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearModifiedBase) SGPP::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) SGPP::base::PolyBasis<unsigned int, unsigned int>;
+%template(SPolyBoundaryBase) SGPP::base::PolyBoundaryBasis<unsigned int, unsigned int>;
 //%template(SPolyModifiedBase) SGPP::base::PolyModifiedBasis<unsigned int, unsigned int>;
 %template(SWaveletBase) SGPP::base::WaveletBasis<unsigned int, unsigned int>;
 %template(SWaveletBoundaryBase) SGPP::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
@@ -169,6 +178,9 @@ namespace std {
 %template(SBsplineBoundaryBase) SGPP::base::BsplineBoundaryBasis<unsigned int, unsigned int>;
 %template(SBsplineClenshawCurtisBase) SGPP::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SBsplineModifiedBase) SGPP::base::BsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SBsplineModifiedClenshawCurtisBase) SGPP::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SFundamentalSplineBase) SGPP::base::FundamentalSplineBasis<unsigned int, unsigned int>;
+%template(SFundamentalSplineModifiedBase) SGPP::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) SGPP::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, SGPP::float_t> > *OUTPUT { std::vector<std::pair<size_t, SGPP::float_t> >& result };

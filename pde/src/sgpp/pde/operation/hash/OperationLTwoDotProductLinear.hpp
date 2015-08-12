@@ -17,7 +17,6 @@ namespace SGPP {
     /**
      * Implements the standard L 2 scalar product on linear grids (no boundaries)
      *
-     * @version $HEAD$
      */
     class OperationLTwoDotProductLinear: public StdUpDown {
       public:

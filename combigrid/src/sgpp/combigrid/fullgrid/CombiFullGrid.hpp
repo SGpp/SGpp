@@ -275,7 +275,6 @@ namespace combigrid {
           tmp_val = levels_[k];
 
           if ( indexes[k] != 0 ) {
-            // todo: these operations can be optimized
             while ( indexes[k] % 2 == 0 ) {
               indexes[k] = indexes[k] / 2;
               tmp_val--;
@@ -394,9 +393,9 @@ namespace combigrid {
       }
 
       /** copies the input vector to the full grid vector
-       * @param in [IN] input vector*/
-      void setElementVector(std::vector<FG_ELEMENT> in) {
-        fullgridVector_ = in;
+       * @param input [IN] input vector*/
+      void setElementVector(std::vector<FG_ELEMENT> input) {
+        fullgridVector_ = input;
       }
 
     private:

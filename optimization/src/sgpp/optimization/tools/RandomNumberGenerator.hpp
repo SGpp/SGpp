@@ -56,7 +56,7 @@ namespace SGPP {
         /**
          * @return      seed
          */
-        size_t getSeed();
+        size_t getSeed() const;
 
         /**
          * Reseeds with time-dependent seed.
@@ -71,7 +71,9 @@ namespace SGPP {
         void setSeed(size_t seed);
 
       protected:
+        /// random number generator
         std::mt19937 generator;
+        /// seed
         SeedType seed;
     };
 

@@ -10,7 +10,6 @@
 #include <sgpp/globaldef.hpp>
 
 
-// TODO David
 #if USE_DOUBLE_PRECISION==0
 
 
@@ -19,7 +18,7 @@ namespace SGPP {
 
     DMWeightMatrixSPVectorizedIdentity::DMWeightMatrixSPVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrixSP& trainData, float lambda, SGPP::base::DataVectorSP& w, VectorizationType vecMode) {
       // handle unsupported vector extensions
-      // @TODO (heinecke) find a better way to determine vectorwidth
+      // one may find a better way to determine vectorwidth
       if (this->vecMode == parallel::X86SIMD) {
         this->vecWidth = 48;
       } else if (this->vecMode == parallel::OpenCL) {

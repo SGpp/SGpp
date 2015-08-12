@@ -13,20 +13,20 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from bin.learner.formatter.GridFormatter import GridFormatter
+from datadriven.learner.formatter.GridFormatter import GridFormatter
 from pysgpp import Grid
 
 
 ##
 # @package tests.tbin.test_GridFormatter
-# Contains class test_GridFormatter::TestGridFormatter with unittests for @link bin.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
+# Contains class test_GridFormatter::TestGridFormatter with unittests for @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
 
 ##
-# Class with unittests for @link bin.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
+# Class with unittests for @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link bin.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
+# @test Unittests for @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
 class TestGridFormatter(unittest.TestCase):
     
     
@@ -46,8 +46,8 @@ class TestGridFormatter(unittest.TestCase):
 
     
     ##
-    # Tests the functions @link bin.learner.formatter.GridFormatter.GridFormatter.serialize() GridFormatter.serialize() @endlink
-    # and  @link bin.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink
+    # Tests the functions @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter.serialize() GridFormatter.serialize() @endlink
+    # and  @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink
     def testLoad(self,):
         grid = self.__gridFormatter.deserializeFromFile(self.filename)
         test_str = grid.serialize()
@@ -55,8 +55,8 @@ class TestGridFormatter(unittest.TestCase):
     
     
     ##
-    # Tests the functions @link bin.learner.formatter.GridFormatter.GridFormatter.serializeToFile() GridFormatter.serializeToFile() @endlink
-    # and  @link bin.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink     
+    # Tests the functions @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter.serializeToFile() GridFormatter.serializeToFile() @endlink
+    # and  @link datadriven.src.python.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink     
     def testSave(self,):
         self.__gridFormatter.serializeToFile(self.grid, self.savefile)
         grid = self.__gridFormatter.deserializeFromFile(self.savefile)

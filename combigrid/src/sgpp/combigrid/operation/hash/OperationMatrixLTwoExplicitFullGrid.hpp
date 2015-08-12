@@ -24,7 +24,7 @@ namespace combigrid {
        * @param grid the full grid
        */
       OperationMatrixLTwoExplicitFullGrid(SGPP::base::DataMatrix* m,
-                                          combigrid::FullGrid<double>* grid);
+                                          combigrid::FullGrid<SGPP::float_t>* grid);
 
       /**
        * Constructor that creates an own matrix
@@ -32,7 +32,7 @@ namespace combigrid {
        *
        * @param grid the full grid
        */
-      OperationMatrixLTwoExplicitFullGrid(combigrid::FullGrid<double>* grid);
+      OperationMatrixLTwoExplicitFullGrid(combigrid::FullGrid<SGPP::float_t>* grid);
 
       /**
        * Destructor
@@ -52,7 +52,7 @@ namespace combigrid {
       /**
        * This method is used by both constructors to build the matrix
        */
-      void buildMatrix(combigrid::FullGrid<double>* grid);
+      void buildMatrix(combigrid::FullGrid<SGPP::float_t>* grid);
 
       SGPP::base::DataMatrix* m_;
       bool ownsMatrix_;
