@@ -95,7 +95,7 @@ namespace SGPP {
             // be absorbed (see floating point absorbtion). This trick needs a mantissa with >= 32 bits.
             // This will not work with 64 bit indices.
             if (point[d] == 1.0) {
-//              source[d] = static_cast<index_type> (static_cast<double>(temp) - 1.0);
+              //              source[d] = static_cast<index_type> (static_cast<double>(temp) - 1.0);
               source[d] = 0x7fffffff;
             } else {
 
