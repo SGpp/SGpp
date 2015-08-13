@@ -64,17 +64,17 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
     m1->getRow(i, v);
     values.push_back(v.sum());
 
-//    std::cout << "row[" << i << "]: ";
-//    for (size_t j = 0; j < v.getSize(); j++) {
-//      if (j > 0) {
-//        std::cout << ", ";
-//      }
-//      std::cout << "(" << v[j] << ")";
-//    }
-//    std::cout << std::endl;
+    //    std::cout << "row[" << i << "]: ";
+    //    for (size_t j = 0; j < v.getSize(); j++) {
+    //      if (j > 0) {
+    //        std::cout << ", ";
+    //      }
+    //      std::cout << "(" << v[j] << ")";
+    //    }
+    //    std::cout << std::endl;
   }
 
-//  std::cout << "------------------------------" << std::endl;
+  //  std::cout << "------------------------------" << std::endl;
 
   //std::sort(values.begin(), values.end());
 
@@ -84,14 +84,14 @@ void compareBTMatrices(DataMatrix* m1, DataMatrix* m2) {
     m2->getRow(i, v);
     valuesReference.push_back(v.sum());
 
-//    std::cout << "row[" << i << "]: ";
-//    for (size_t j = 0; j < v.getSize(); j++) {
-//      if (j > 0) {
-//        std::cout << ", ";
-//      }
-//      std::cout << "(" << v[j] << ")";
-//    }
-//    std::cout << std::endl;
+    //    std::cout << "row[" << i << "]: ";
+    //    for (size_t j = 0; j < v.getSize(); j++) {
+    //      if (j > 0) {
+    //        std::cout << ", ";
+    //      }
+    //      std::cout << "(" << v[j] << ")";
+    //    }
+    //    std::cout << std::endl;
   }
 
   //std::sort(valuesReference.begin(), valuesReference.end());

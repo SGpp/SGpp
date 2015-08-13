@@ -177,7 +177,7 @@ namespace SGPP {
           //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
           for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i] / dataBlockingSize;
+            cl_uint gpu_start_data = static_cast<cl_uint>(gpu_start_index_data[i]) / dataBlockingSize;
             cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i] / dataBlockingSize;
             //      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 

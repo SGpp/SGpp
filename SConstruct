@@ -182,37 +182,9 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     builder = Builder(action="python $SOURCE")
     env.Append(BUILDERS={'SimpleTest' : builder})
 
-# Check the availability of the boost unit test dependenciest
 if env['COMPILE_BOOST_TESTS']:
-    boost_header = False
-    boost_library = False
-    if config.CheckHeader("boost/test/unit_test.hpp", language="c++"):
-        boost_header = True
-    else:
-        print """"****************************************************
-No Boost Unit Test Headers found. Omitting Boost unit tests. 
-Please install the corresponding package, e.g. using command on Ubuntu
-> sudo apt-get install libboost-test-dev
-****************************************************
-"""
-        
-    if config.CheckLib('boost_unit_test_framework'):
-        boost_library = True
-    else:
-        print """"****************************************************
-No Boost Unit Test library found. Omitting Boost unit tests. 
-Please install the corresponding package, e.g. using command on Ubuntu
-> sudo apt-get install libboost-test-dev
-****************************************************
-"""
-        
-    if boost_header and boost_library:
-        builder = Builder(action="./$SOURCE")
-        env.Append(BUILDERS={'BoostTest' : builder})
-    else:
-        env['COMPILE_BOOST_TESTS'] = False
-
-    
+    builder = Builder(action="./$SOURCE --log_level=test_suite")
+    env.Append(BUILDERS={'BoostTest' : builder})
 
 libraryTargetList = []
 installTargetList = []
