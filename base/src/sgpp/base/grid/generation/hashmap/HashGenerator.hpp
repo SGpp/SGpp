@@ -226,10 +226,10 @@ namespace SGPP {
           }
 
           size_t mydim = storage->dim();
-          //level_t dimt = *reinterpret_cast<level_t*>(&mydim);
+
           index.setLeaf(true);
-          trunc_rec(storage, index, (mydim - 1), *reinterpret_cast<level_t*>(&mydim) * k,
-                    level + k * (*reinterpret_cast<level_t*>(&mydim) - 1), k);
+          trunc_rec(storage, index, (mydim - 1), static_cast<level_t>(mydim) * k,
+                    level + k * (static_cast<level_t>(mydim) - 1), k);
         }
 
       protected:
