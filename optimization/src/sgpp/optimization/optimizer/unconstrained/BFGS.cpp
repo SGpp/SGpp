@@ -50,7 +50,7 @@ namespace SGPP {
 
         for (size_t i = 0; i < d; i++) {
           for (size_t j = 0; j < d; j++) {
-            inverseHessian.set(i, j, (i == j ? 1.0 : 0.0));
+            inverseHessian(i, j) = (i == j ? 1.0 : 0.0);
           }
         }
 
@@ -77,7 +77,7 @@ namespace SGPP {
             dir[i] = 0.0;
 
             for (size_t j = 0; j < d; j++) {
-              dir[i] -= inverseHessian.get(i, j) * gradFx[j];
+              dir[i] -= inverseHessian(i, j) * gradFx[j];
             }
           }
 
@@ -143,8 +143,7 @@ namespace SGPP {
           if (deltaTimesY != 0.0) {
             for (size_t i = 0; i < d; i++) {
               for (size_t j = 0; j < d; j++) {
-                M.set(i, j, (i == j ? 1.0 : 0.0) -
-                      y[i] * delta[j] / deltaTimesY);
+                M(i, j) = (i == j ? 1.0 : 0.0) - y[i] * delta[j] / deltaTimesY;
               }
             }
 
@@ -154,12 +153,11 @@ namespace SGPP {
 
                 for (size_t p = 0; p < d; p++) {
                   for (size_t q = 0; q < d; q++) {
-                    entry +=
-                      M.get(p, i) * inverseHessian.get(p, q) * M.get(q, j);
+                    entry += M(p, i) * inverseHessian(p, q) * M(q, j);
                   }
                 }
 
-                inverseHessianNew.set(i, j, entry);
+                inverseHessianNew(i, j) = entry;
               }
             }
 

@@ -103,7 +103,7 @@ namespace SGPP {
             // RHS of linear system to be solved
             b[t] = -gradFx[t];
             // add damping
-            hessianFx.set(t, t, hessianFx.get(t, t) + lambda);
+            hessianFx(t, t) += lambda;
           }
 
           // solve linear system with damped Hessian as system matrix
@@ -167,7 +167,7 @@ namespace SGPP {
 
               for (size_t t = 0; t < d; t++) {
                 // add damping
-                hessianFx.set(t, t, hessianFx.get(t, t) - oldLambda + lambda);
+                hessianFx(t, t) += lambda - oldLambda;
               }
 
               // solve linear system with damped Hessian as system matrix

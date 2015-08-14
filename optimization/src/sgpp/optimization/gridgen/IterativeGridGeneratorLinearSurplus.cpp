@@ -27,7 +27,7 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
+      ScalarFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
       IterativeGridGenerator(f, grid, N),
       gamma(adaptivity) {
       if ((std::strcmp(grid.getType(),
@@ -143,7 +143,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < currentN; i++) {
         // set correct point distribution
-        gridStorage.get(i)->setPointDistribution(distr);
+        gridStorage[i]->setPointDistribution(distr);
       }
 
       // parallel evaluation of f in the initial grid points
@@ -232,7 +232,7 @@ namespace SGPP {
         for (size_t i = currentN; i < newN; i++) {
           // set point distribution accordingly to
           // normal/Clenshaw-Curtis grids
-          gridStorage.get(i)->setPointDistribution(distr);
+          gridStorage[i]->setPointDistribution(distr);
         }
 
         // evaluation of f in the new grid points

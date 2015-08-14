@@ -30,10 +30,10 @@ namespace SGPP {
         // set W := (A, b) at the beginning
         for (size_t i = 0; i < n; i++) {
           for (size_t j = 0; j < n; j++) {
-            W.set(i, j, system.getMatrixEntry(i, j));
+            W(i, j) = system.getMatrixEntry(i, j);
           }
 
-          W.set(i, n, b[i]);
+          W(i, n) = b[i];
         }
 
         // at the beginning of the l-th iteration, W should be of the form
@@ -58,7 +58,7 @@ namespace SGPP {
           size_t i = l;
 
           for (size_t j = l; j < n; j++) {
-            float_t entry = std::abs(W.get(j, l));
+            float_t entry = std::abs(W(j, l));
 
             if (entry > maxEntry) {
               maxEntry = entry;
@@ -75,27 +75,27 @@ namespace SGPP {
 
           // swap rows l and i
           for (size_t k = l; k <= n; k++) {
-            const float_t entry = W.get(l, k);
-            W.set(l, k, W.get(i, k));
-            W.set(i, k, entry);
+            const float_t entry = W(l, k);
+            W(l, k) = W(i, k);
+            W(i, k) = entry;
           }
 
           // divide l-th row by w_{l,l}
           {
-            const float_t wll = W.get(l, l);
+            const float_t wll = W(l, l);
 
             for (size_t k = l; k <= n; k++) {
-              W.set(l, k, W.get(l, k) / wll);
+              W(l, k) = W(l, k) / wll;
             }
           }
 
           // subtract w_{j,l} times l-th row from all rows j != l
           for (size_t j = 0; j < n; j++) {
             if (j != l) {
-              const float_t wjl = W.get(j, l);
+              const float_t wjl = W(j, l);
 
               for (size_t k = l; k <= n; k++) {
-                W.set(j, k, W.get(j, k) - wjl * W.get(l, k));
+                W(j, k) = W(j, k) - wjl * W(l, k);
               }
             }
           }

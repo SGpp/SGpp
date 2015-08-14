@@ -3,25 +3,25 @@
 
 #include <vector>
 
-#include <sgpp/optimization/function/test/Ackley.hpp>
-#include <sgpp/optimization/function/test/Beale.hpp>
-#include <sgpp/optimization/function/test/Branin.hpp>
-#include <sgpp/optimization/function/test/Easom.hpp>
-#include <sgpp/optimization/function/test/Eggholder.hpp>
-#include <sgpp/optimization/function/test/GoldsteinPrice.hpp>
-#include <sgpp/optimization/function/test/Griewank.hpp>
-#include <sgpp/optimization/function/test/Hartman3.hpp>
-#include <sgpp/optimization/function/test/Hartman6.hpp>
-#include <sgpp/optimization/function/test/Himmelblau.hpp>
-#include <sgpp/optimization/function/test/HoelderTable.hpp>
-#include <sgpp/optimization/function/test/Michalewicz.hpp>
-#include <sgpp/optimization/function/test/Mladineo.hpp>
-#include <sgpp/optimization/function/test/Rastrigin.hpp>
-#include <sgpp/optimization/function/test/Rosenbrock.hpp>
-#include <sgpp/optimization/function/test/SHCB.hpp>
-#include <sgpp/optimization/function/test/Schwefel.hpp>
-#include <sgpp/optimization/function/test/Sphere.hpp>
-#include <sgpp/optimization/function/test/TestFunction.hpp>
+#include <sgpp/optimization/function/scalar/test/Ackley.hpp>
+#include <sgpp/optimization/function/scalar/test/Beale.hpp>
+#include <sgpp/optimization/function/scalar/test/Branin.hpp>
+#include <sgpp/optimization/function/scalar/test/Easom.hpp>
+#include <sgpp/optimization/function/scalar/test/Eggholder.hpp>
+#include <sgpp/optimization/function/scalar/test/GoldsteinPrice.hpp>
+#include <sgpp/optimization/function/scalar/test/Griewank.hpp>
+#include <sgpp/optimization/function/scalar/test/Hartman3.hpp>
+#include <sgpp/optimization/function/scalar/test/Hartman6.hpp>
+#include <sgpp/optimization/function/scalar/test/Himmelblau.hpp>
+#include <sgpp/optimization/function/scalar/test/HoelderTable.hpp>
+#include <sgpp/optimization/function/scalar/test/Michalewicz.hpp>
+#include <sgpp/optimization/function/scalar/test/Mladineo.hpp>
+#include <sgpp/optimization/function/scalar/test/Rastrigin.hpp>
+#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
+#include <sgpp/optimization/function/scalar/test/SHCB.hpp>
+#include <sgpp/optimization/function/scalar/test/Schwefel.hpp>
+#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
+#include <sgpp/optimization/function/scalar/test/TestFunction.hpp>
 
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>

@@ -315,8 +315,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -343,8 +343,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineBoundaryFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -371,8 +371,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineClenshawCurtisFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -399,8 +399,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineModifiedFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -427,8 +427,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -455,8 +455,8 @@ namespace SGPP {
          */
         inline float_t evalFundamentalSplineFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -491,8 +491,8 @@ namespace SGPP {
          */
         inline float_t evalFundamentalSplineModifiedFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -527,8 +527,8 @@ namespace SGPP {
          */
         inline float_t evalLinearFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -555,8 +555,8 @@ namespace SGPP {
          */
         inline float_t evalLinearBoundaryFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -583,8 +583,8 @@ namespace SGPP {
          */
         inline float_t evalLinearClenshawCurtisFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -611,8 +611,8 @@ namespace SGPP {
          */
         inline float_t evalLinearModifiedFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -639,8 +639,8 @@ namespace SGPP {
          */
         inline float_t evalWaveletFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -667,8 +667,8 @@ namespace SGPP {
          */
         inline float_t evalWaveletBoundaryFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -695,8 +695,8 @@ namespace SGPP {
          */
         inline float_t evalWaveletModifiedFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {

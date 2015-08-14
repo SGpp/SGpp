@@ -50,7 +50,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         print "Using " + commands.getoutput('dot -V').splitlines()[0]
     
     if config.env['USE_OCL']:
-      
       if 'OCL_INCLUDE_PATH' in config.env['ENV']:
         config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
       else:
@@ -72,7 +71,27 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       config.env.AppendUnique(CPPDEFINES="USE_OCL")
     else:
       print "Info: OpenCL is not enabled"
-
+    
+    # Check the availability of the boost unit test dependencies
+    if env['COMPILE_BOOST_TESTS']:
+        if not config.CheckHeader("boost/test/unit_test.hpp", language="c++"):
+            env['COMPILE_BOOST_TESTS'] = False
+            print """****************************************************
+No Boost Unit Test Headers found. Omitting Boost unit tests. 
+Please install the corresponding package, e.g. using command on Ubuntu
+> sudo apt-get install libboost-test-dev
+****************************************************
+"""
+        
+        if not config.CheckLib('boost_unit_test_framework'):
+            env['COMPILE_BOOST_TESTS'] = False
+            print """****************************************************
+No Boost Unit Test library found. Omitting Boost unit tests. 
+Please install the corresponding package, e.g. using command on Ubuntu
+> sudo apt-get install libboost-test-dev
+****************************************************
+"""
+    
     if env["SG_PYTHON"]:
         # check whether swig installed
         if not config.CheckExec('swig'):

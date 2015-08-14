@@ -8,13 +8,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
-#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+
 
 namespace SGPP {
   namespace optimization {

@@ -178,15 +178,26 @@ namespace SGPP {
         DataMatrixSP& operator=(const DataMatrixSP& matr);
 
         /**
-         * Returns the i-th element.
-         * For the 5th element in the third row, i would be 2*getNcols()+4.
+         * Returns the value of the element at position [row,col]
          *
-         * @param i position of the element
-         * @return data[i]
+         * @param row Row
+         * @param col Column
+         * @return reference to the element
          */
-        inline float& operator[](size_t i) {
-          return data[i];
-        };
+        inline float& operator()(size_t row, size_t col) {
+          return data[row * ncols + col];
+        }
+
+        /**
+         * Returns the value of the element at position [row,col]
+         *
+         * @param row Row
+         * @param col Column
+         * @return constant reference to the element
+         */
+        inline const float& operator()(size_t row, size_t col) const {
+          return data[row * ncols + col];
+        }
 
         /**
          * Returns the value of the element at position [row,col]
@@ -197,7 +208,7 @@ namespace SGPP {
          */
         inline float get(size_t row, size_t col) const {
           return data[row * ncols + col];
-        };
+        }
 
         /**
          * Sets the element at position [row,col] to value.
@@ -208,7 +219,7 @@ namespace SGPP {
          */
         inline void set(size_t row, size_t col, float value) {
           data[row * ncols + col] = value;
-        };
+        }
 
         /**
          * Copies the values of a row to the DataVectorSP vec.
@@ -404,7 +415,7 @@ namespace SGPP {
          */
         inline size_t getSize() const {
           return ncols * nrows;
-        };
+        }
 
         /**
          * Returns the number of unused rows.
@@ -413,7 +424,7 @@ namespace SGPP {
          */
         inline size_t getUnused() const {
           return unused;
-        };
+        }
 
         /**
         * Determines the number of non-zero elements in the vector.

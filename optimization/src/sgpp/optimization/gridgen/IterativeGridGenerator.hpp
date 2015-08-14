@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -31,7 +31,7 @@ namespace SGPP {
          * @param N     maximal number of grid points
          */
         IterativeGridGenerator(
-          ObjectiveFunction& f, base::Grid& grid, size_t N);
+          ScalarFunction& f, base::Grid& grid, size_t N);
 
         /**
          * Virtual destructor.
@@ -57,7 +57,7 @@ namespace SGPP {
 
       protected:
         /// objective function
-        ObjectiveFunction& f;
+        ScalarFunction& f;
         /// underlying grid
         base::Grid& grid;
         /// maximal number of grid points

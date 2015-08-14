@@ -33,19 +33,17 @@ namespace SGPP {
           for (size_t it = 0; it < 100; it++) {
             // calculate shift: lambda is the eigenvalue of A(m-1:m,m-1:m)
             // which is closest to A(m,m)
-            const float_t dPlus = A.get(m - 1, m - 1) + A.get(m - 2, m - 2);
-            const float_t dMinus = A.get(m - 1, m - 1) - A.get(m - 2, m - 2);
+            const float_t dPlus = A(m - 1, m - 1) + A(m - 2, m - 2);
+            const float_t dMinus = A(m - 1, m - 1) - A(m - 2, m - 2);
             const float_t sigma = (dMinus >= 0.0) ? 1.0 : -1.0;
             const float_t lambda = dPlus / 2.0 + sigma / 2.0 * std::sqrt(
                                      dMinus * dMinus +
-                                     4.0 * A.get(m - 1, m - 2) *
-                                     A.get(m - 2, m - 1));
+                                     4.0 * A(m - 1, m - 2) * A(m - 2, m - 1));
 
             // calculate A(1:m,1:m) - lambda*eye(m)
             for (size_t i = 0; i < m; i++) {
               for (size_t j = 0; j < m; j++) {
-                AMinusLambdaI.set(i, j, A.get(i, j) -
-                                  ((i == j) ? lambda : 0.0));
+                AMinusLambdaI(i, j) = A(i, j) - ((i == j) ? lambda : 0.0);
               }
             }
 
@@ -67,10 +65,10 @@ namespace SGPP {
                 float_t entry = 0.0;
 
                 for (size_t l = 0; l < m; l++) {
-                  entry += A.get(i, l) * QTilde.get(l, j);
+                  entry += A(i, l) * QTilde(l, j);
                 }
 
-                ANew.set(i, j, entry);
+                ANew(i, j) = entry;
               }
             }
 
@@ -80,10 +78,10 @@ namespace SGPP {
                 float_t entry = 0.0;
 
                 for (size_t l = 0; l < m; l++) {
-                  entry += QTilde.get(l, i) * A.get(l, j);
+                  entry += QTilde(l, i) * A(l, j);
                 }
 
-                ANew.set(i, j, entry);
+                ANew(i, j) = entry;
               }
             }
 
@@ -94,11 +92,11 @@ namespace SGPP {
 
                 for (size_t p = 0; p < m; p++) {
                   for (size_t q = 0; q < m; q++) {
-                    entry += QTilde.get(p, i) * A.get(p, q) * QTilde.get(q, j);
+                    entry += QTilde(p, i) * A(p, q) * QTilde(q, j);
                   }
                 }
 
-                ANew.set(i, j, entry);
+                ANew(i, j) = entry;
               }
             }
 
@@ -110,10 +108,10 @@ namespace SGPP {
                 float_t entry = 0.0;
 
                 for (size_t l = 0; l < m; l++) {
-                  entry += V.get(i, l) * QTilde.get(l, j);
+                  entry += V(i, l) * QTilde(l, j);
                 }
 
-                VNew.set(i, j, entry);
+                VNew(i, j) = entry;
               }
             }
 
@@ -121,21 +119,21 @@ namespace SGPP {
 
             // break loop if lowest subdiagonal entry is small enough
             // ==> convergence
-            if (std::abs(A.get(m - 1, m - 2)) < 1e-8) {
+            if (std::abs(A(m - 1, m - 2)) < 1e-8) {
               break;
             }
           }
 
           // set lower entries explicitly to zero
           for (size_t i = m; i < n; i++) {
-            A.set(i, m - 1, 0.0);
-            ANew.set(i, m - 1, 0.0);
+            A(i, m - 1) = 0.0;
+            ANew(i, m - 1) = 0.0;
           }
         }
 
         // set lower entries explicitly to zero
         for (size_t i = 1; i < n; i++) {
-          A.set(i, 0, 0.0);
+          A(i, 0) = 0.0;
         }
       }
 
@@ -148,7 +146,7 @@ namespace SGPP {
         // set transformation matrix to the identity matrix
         for (size_t i = 0; i < n; i++) {
           for (size_t j = 0; j < n; j++) {
-            Q.set(i, j, (i == j) ? 1.0 : 0.0);
+            Q(i, j) = ((i == j) ? 1.0 : 0.0);
           }
         }
 
@@ -176,17 +174,17 @@ namespace SGPP {
               float_t entry = 0.0;
 
               for (size_t l = 0; l < m; l++) {
-                entry += QTilde.get(i - k, l) * A.get(l + k, j);
+                entry += QTilde(i - k, l) * A(l + k, j);
               }
 
-              ANew.set(i, j, entry);
+              ANew(i, j) = entry;
             }
           }
 
           // set values exactly to zero
           // (guaranteed by Householder transformation)
           for (size_t i = k + 1; i < n; i++) {
-            ANew.set(i, k, 0.0);
+            ANew(i, k) = 0.0;
           }
 
           A = ANew;
@@ -197,10 +195,10 @@ namespace SGPP {
               float_t entry = 0.0;
 
               for (size_t l = 0; l < m; l++) {
-                entry += Q.get(i, l + k) * QTilde.get(j - k, l);
+                entry += Q(i, l + k) * QTilde(j - k, l);
               }
 
-              QNew.set(i, j, entry);
+              QNew(i, j) = entry;
             }
           }
 
@@ -216,7 +214,7 @@ namespace SGPP {
         // set transformation matrix to the identity matrix
         for (size_t i = 0; i < n; i++) {
           for (size_t j = 0; j < n; j++) {
-            V.set(i, j, (i == j) ? 1.0 : 0.0);
+            V(i, j) = ((i == j) ? 1.0 : 0.0);
           }
         }
 
@@ -244,10 +242,10 @@ namespace SGPP {
               float_t entry = 0.0;
 
               for (size_t l = 0; l < m; l++) {
-                entry += A.get(i, l + k + 1) * QTilde.get(l, j - k - 1);
+                entry += A(i, l + k + 1) * QTilde(l, j - k - 1);
               }
 
-              ANew.set(i, j, entry);
+              ANew(i, j) = entry;
             }
           }
 
@@ -257,17 +255,17 @@ namespace SGPP {
               float_t entry = 0.0;
 
               for (size_t l = 0; l < m; l++) {
-                entry += QTilde.get(i - k - 1, l) * A.get(l + k + 1, j);
+                entry += QTilde(i - k - 1, l) * A(l + k + 1, j);
               }
 
-              ANew.set(i, j, entry);
+              ANew(i, j) = entry;
             }
           }
 
           // set values exactly to zero
           // (guaranteed by Householder transformation)
           for (size_t i = k + 2; i < n; i++) {
-            ANew.set(i, k, 0.0);
+            ANew(i, k) = 0.0;
           }
 
           // update lower right values
@@ -277,13 +275,13 @@ namespace SGPP {
 
               for (size_t p = 0; p < m; p++) {
                 for (size_t q = 0; q < m; q++) {
-                  entry += QTilde.get(i - k - 1, p) *
-                           A.get(p + k + 1, q + k + 1) *
-                           QTilde.get(q, j - k - 1);
+                  entry += QTilde(i - k - 1, p) *
+                           A(p + k + 1, q + k + 1) *
+                           QTilde(q, j - k - 1);
                 }
               }
 
-              ANew.set(i, j, entry);
+              ANew(i, j) = entry;
             }
           }
 
@@ -295,10 +293,10 @@ namespace SGPP {
               float_t entry = 0.0;
 
               for (size_t l = 0; l < m; l++) {
-                entry += V.get(i, l + k + 1) * QTilde.get(l, j - k - 1);
+                entry += V(i, l + k + 1) * QTilde(l, j - k - 1);
               }
 
-              VNew.set(i, j, entry);
+              VNew(i, j) = entry;
             }
           }
 
@@ -316,12 +314,12 @@ namespace SGPP {
         // normal vector to reflection hyperplane
         base::DataVector d(m);
 
-        const float_t c1 = A.get(i, j);
+        const float_t c1 = A(i, j);
         float_t cNorm = c1 * c1;
 
         // read from matrix
         for (size_t p = 1; p < m; p++) {
-          d[p] = A.get(p + i, j);
+          d[p] = A(p + i, j);
           cNorm += d[p] * d[p];
         }
 
@@ -333,7 +331,7 @@ namespace SGPP {
         // create transformation matrix
         for (size_t p = 0; p < m; p++) {
           for (size_t q = 0; q < m; q++) {
-            Q.set(p, q, ((p == q) ? 1.0 : 0.0) - d[p] * d[q] / r);
+            Q(p, q) = ((p == q) ? 1.0 : 0.0) - d[p] * d[q] / r;
           }
         }
       }

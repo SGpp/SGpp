@@ -31,7 +31,7 @@ namespace SGPP {
 
             float_t eval(const base::DataVector& x) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
                   return INFINITY;
                 }
               }
@@ -95,7 +95,7 @@ namespace SGPP {
             float_t eval(const base::DataVector& x,
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
                   return INFINITY;
                 }
               }
@@ -122,7 +122,7 @@ namespace SGPP {
                   value += mu * gxi * gxi;
 
                   for (size_t t = 0; t < d; t++) {
-                    gradient[t] += mu * 2.0 * gxi * gradGx.get(i, t);
+                    gradient[t] += mu * 2.0 * gxi * gradGx(i, t);
                   }
                 }
               }
@@ -132,7 +132,7 @@ namespace SGPP {
                 value += mu * hxi * hxi;
 
                 for (size_t t = 0; t < d; t++) {
-                  gradient[t] += mu * 2.0 * hxi * gradHx.get(i, t);
+                  gradient[t] += mu * 2.0 * hxi * gradHx(i, t);
                 }
               }
 
