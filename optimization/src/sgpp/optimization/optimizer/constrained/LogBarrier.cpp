@@ -7,8 +7,8 @@
 
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
-#include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
+#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -29,7 +29,7 @@ namespace SGPP {
 
             float_t eval(const base::DataVector& x) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
                   return INFINITY;
                 }
               }
@@ -82,7 +82,7 @@ namespace SGPP {
             float_t eval(const base::DataVector& x,
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
                   return INFINITY;
                 }
               }
@@ -104,7 +104,7 @@ namespace SGPP {
                   value -= mu * std::log(-gx[i]);
 
                   for (size_t t = 0; t < d; t++) {
-                    gradient[t] -= mu * gradGx.get(i, t) / gx[i];
+                    gradient[t] -= mu * gradGx(i, t) / gx[i];
                   }
                 } else {
                   return INFINITY;

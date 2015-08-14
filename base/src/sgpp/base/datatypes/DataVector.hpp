@@ -195,7 +195,7 @@ namespace SGPP {
         DataVector& operator=(const DataVector& vec);
 
         /**
-         * Returns the i-th element.
+         * Returns a reference to the i-th element.
          *
          * @param i position of the element
          * @return data[i]
@@ -203,7 +203,16 @@ namespace SGPP {
         inline float_t& operator[](size_t i) {
           return data[i];
         }
-        ;
+
+        /**
+         * Returns a constant reference to the i-th element.
+         *
+         * @param i position of the element
+         * @return data[i]
+         */
+        inline const float_t& operator[](size_t i) const {
+          return data[i];
+        }
 
         /**
          * Returns the i-th element.

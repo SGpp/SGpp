@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "GradientDescent.hpp"
+#include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 
 #include <sgpp/globaldef.hpp>
 

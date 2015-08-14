@@ -43,7 +43,7 @@ namespace SGPP {
         f.write(reinterpret_cast<const char*>(&d), sizeof(d));
 
         for (size_t j = 0; j < N; j++) {
-          const base::GridIndex& gp = *gridStorage.get(j);
+          const base::GridIndex& gp = *gridStorage[j];
 
           for (size_t t = 0; t < d; t++) {
             const float_t x = gp.getCoord(t);
@@ -57,7 +57,7 @@ namespace SGPP {
           }
 
           // function value at the current grid point
-          const float_t fX = functionValues.get(j);
+          const float_t fX = functionValues[j];
           f.write(reinterpret_cast<const char*>(&fX), sizeof(float_t));
         }
       }

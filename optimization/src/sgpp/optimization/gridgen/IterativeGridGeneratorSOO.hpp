@@ -35,7 +35,7 @@ namespace SGPP {
          * @param N             maximal number of grid points
          * @param adaptivity    adaptivity (positive number)
          */
-        IterativeGridGeneratorSOO(ObjectiveFunction& f,
+        IterativeGridGeneratorSOO(ScalarFunction& f,
                                   base::Grid& grid,
                                   size_t N,
                                   float_t adaptivity = DEFAULT_ADAPTIVITY);

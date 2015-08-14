@@ -1,16 +1,13 @@
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
 
-#include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
-#include <sgpp/optimization/function/EmptyConstraintGradient.hpp>
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
-#include <sgpp/optimization/function/InterpolantFunction.hpp>
-#include <sgpp/optimization/function/InterpolantGradient.hpp>
-#include <sgpp/optimization/function/InterpolantHessian.hpp>
+#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantObjectiveFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyConstraintGradient.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
@@ -52,9 +49,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   std::unique_ptr<OperationMultipleHierarchisation> op(
     op_factory::createOperationMultipleHierarchisation(*grid));
   op->doHierarchisation(alpha);
-  InterpolantFunction ft(*grid, alpha);
-  InterpolantGradient ftGradient(*grid, alpha);
-  InterpolantHessian ftHessian(*grid, alpha);
+  InterpolantObjectiveFunction ft(*grid, alpha);
+  InterpolantObjectiveGradient ftGradient(*grid, alpha);
+  InterpolantObjectiveHessian ftHessian(*grid, alpha);
 
   // test getters/setters
   {

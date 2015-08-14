@@ -156,14 +156,24 @@ namespace SGPP {
         DataVectorSP& operator=(const DataVectorSP& vec);
 
         /**
-         * Returns the i-th element.
+         * Returns a reference to the i-th element.
          *
          * @param i position of the element
          * @return data[i]
          */
         inline float& operator[](size_t i) {
           return data[i];
-        };
+        }
+
+        /**
+         * Returns a constant reference to the i-th element.
+         *
+         * @param i position of the element
+         * @return data[i]
+         */
+        inline const float& operator[](size_t i) const {
+          return data[i];
+        }
 
         /**
          * Returns the i-th element.
@@ -333,7 +343,7 @@ namespace SGPP {
          */
         inline size_t getSize() const {
           return size;
-        };
+        }
 
         /**
          * Returns the number of unused elements.
@@ -342,7 +352,7 @@ namespace SGPP {
          */
         inline size_t getUnused() const {
           return unused;
-        };
+        }
 
         /**
          * Determines the number of non-zero elements in the vector.

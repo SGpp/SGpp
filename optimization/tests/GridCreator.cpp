@@ -34,7 +34,7 @@ void createSupportedGrids(size_t d, size_t p,
                               base::Grid::createModWaveletGrid(d))));
 }
 
-void createSampleGrid(base::Grid& grid, size_t l, ObjectiveFunction& f,
+void createSampleGrid(base::Grid& grid, size_t l, ScalarFunction& f,
                       base::DataVector& functionValues) {
   base::GridStorage& gridStorage = *grid.getStorage();
   const size_t d = gridStorage.dim();
@@ -49,7 +49,7 @@ void createSampleGrid(base::Grid& grid, size_t l, ObjectiveFunction& f,
   functionValues.resize(n);
 
   for (size_t i = 0; i < n; i++) {
-    base::GridIndex& gp = *gridStorage.get(i);
+    base::GridIndex& gp = *gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)

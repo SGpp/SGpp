@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/function/test/Sphere.hpp>
+#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
@@ -34,10 +34,10 @@ void gridEqualityTest(base::Grid& grid1, base::Grid& grid2) {
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_EQUAL(storage1.get(k)->getLevel(t),
-                        storage2.get(k)->getLevel(t));
-      BOOST_CHECK_EQUAL(storage1.get(k)->getIndex(t),
-                        storage2.get(k)->getIndex(t));
+      BOOST_CHECK_EQUAL(storage1[k]->getLevel(t),
+                        storage2[k]->getLevel(t));
+      BOOST_CHECK_EQUAL(storage1[k]->getIndex(t),
+                        storage2[k]->getIndex(t));
     }
   }
 }
@@ -74,7 +74,7 @@ void orthogonalityTest(base::DataMatrix& A) {
       SGPP::float_t entry = 0.0;
 
       for (size_t l = 0; l < n; l++) {
-        entry += A.get(i, l) * A.get(j, l);
+        entry += A(i, l) * A(j, l);
       }
 
       BOOST_CHECK_SMALL(entry - ((i == j) ? static_cast<SGPP::float_t>(1.0) :
@@ -90,7 +90,7 @@ void symmetryTest(base::DataMatrix& A) {
 
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < i; j++) {
-      BOOST_CHECK_CLOSE(A.get(i, j), A.get(j, i), 1e-10);
+      BOOST_CHECK_CLOSE(A(i, j), A(j, i), 1e-10);
     }
   }
 }
@@ -109,8 +109,8 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
       SGPP::float_t entry1 = 0.0, entry2 = 0.0;
 
       for (size_t l = 0; l < n; l++) {
-        entry1 += A.get(i, l) * V.get(l, j);
-        entry2 += V.get(i, l) * B.get(l, j);
+        entry1 += A(i, l) * V(l, j);
+        entry2 += V(i, l) * B(l, j);
       }
 
       BOOST_CHECK_CLOSE(entry1, entry2, (use_double_precision ? 5e-5 : 1.0));
@@ -121,7 +121,7 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
 void generateRandomMatrix(base::DataMatrix& A) {
   for (size_t i = 0; i < A.getNrows(); i++) {
     for (size_t j = 0; j < A.getNcols(); j++) {
-      A.set(i, j, randomNumberGenerator.getGaussianRN());
+      A(i, j) = randomNumberGenerator.getGaussianRN();
     }
   }
 }
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
     for (size_t i = 0; i < m1; i++) {
       for (size_t j = 0; j < n1; j++) {
-        A1.set(i, j, randomNumberGenerator.getUniformRN());
+        A1(i, j) = randomNumberGenerator.getUniformRN();
       }
     }
 
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
     for (size_t i = 0; i < m1; i++) {
       for (size_t j = 0; j < n1; j++) {
-        BOOST_CHECK_EQUAL(A1.get(i, j), A2.get(i, j));
+        BOOST_CHECK_EQUAL(A1(i, j), A2(i, j));
       }
     }
   }
@@ -444,7 +444,7 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
       SGPP::float_t entry = 0.0;
 
       for (size_t l = p; l < n; l++) {
-        entry += Q.get(i - p, l - p) * A.get(l, q);
+        entry += Q(i - p, l - p) * A(l, q);
       }
 
       BOOST_CHECK_SMALL(entry, static_cast<SGPP::float_t>(
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
 
   for (size_t i = 2; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(H.get(i, j), static_cast<SGPP::float_t>(1e-10));
+      BOOST_CHECK_SMALL(H(i, j), static_cast<SGPP::float_t>(1e-10));
     }
   }
 }
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 
   for (size_t i = 1; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(R.get(i, j), static_cast<SGPP::float_t>(1e-10));
+      BOOST_CHECK_SMALL(R(i, j), static_cast<SGPP::float_t>(1e-10));
     }
   }
 
@@ -496,10 +496,10 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
       SGPP::float_t entry = 0.0;
 
       for (size_t l = 0; l < n; l++) {
-        entry += Q.get(i, l) * R.get(l, j);
+        entry += Q(i, l) * R(l, j);
       }
 
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, static_cast<SGPP::float_t>(
+      BOOST_CHECK_CLOSE(A(i, j), entry, static_cast<SGPP::float_t>(
                           use_double_precision ? 1e-10 : 1e-2));
     }
   }
@@ -514,7 +514,7 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
 
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < i; j++) {
-      A.set(i, j, A.get(j, i));
+      A(i, j) = A(j, i);
     }
   }
 
@@ -528,7 +528,7 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
       if (i != j) {
-        BOOST_CHECK_SMALL(S.get(i, j), static_cast<SGPP::float_t>(
+        BOOST_CHECK_SMALL(S(i, j), static_cast<SGPP::float_t>(
                             use_double_precision ? 1e-8 : 1e-5));
       }
     }
@@ -556,8 +556,8 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   BOOST_CHECK_LE(duration, 0.01);
 
   base::DataMatrix A(3, 3, 0.0);
-  A.set(0, 1, 12.3);
-  A.set(1, 2, 42.1337);
+  A(0, 1) = 12.3;
+  A(1, 2) = 42.1337;
   FullSLE sle(A);
   printer.printSLE(sle);
 

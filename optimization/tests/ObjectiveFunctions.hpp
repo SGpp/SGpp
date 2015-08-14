@@ -3,20 +3,20 @@
 
 #include <cmath>
 
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
-#include <sgpp/optimization/function/ConstraintFunction.hpp>
-#include <sgpp/optimization/function/ConstraintGradient.hpp>
+#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/vector/ConstraintFunction.hpp>
 
-class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
+using namespace SGPP;
+using namespace SGPP::optimization;
+
+class ExampleFunction : public ObjectiveFunction {
   public:
     ExampleFunction();
     SGPP::float_t eval(const SGPP::base::DataVector& x);
     virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const;
 };
 
-class ExampleGradient : public SGPP::optimization::ObjectiveGradient {
+class ExampleGradient : public ObjectiveGradient {
   public:
     ExampleGradient();
     SGPP::float_t eval(const SGPP::base::DataVector& x,
@@ -24,7 +24,7 @@ class ExampleGradient : public SGPP::optimization::ObjectiveGradient {
     virtual void clone(std::unique_ptr<ObjectiveGradient>& clone) const;
 };
 
-class ExampleHessian : public SGPP::optimization::ObjectiveHessian {
+class ExampleHessian : public ObjectiveHessian {
   public:
     ExampleHessian();
     SGPP::float_t eval(const SGPP::base::DataVector& x,
@@ -35,7 +35,7 @@ class ExampleHessian : public SGPP::optimization::ObjectiveHessian {
 
 
 
-class SphereGradient : public SGPP::optimization::ObjectiveGradient {
+class SphereGradient : public ObjectiveGradient {
   public:
     SphereGradient(size_t d);
     SGPP::float_t eval(const SGPP::base::DataVector& x,
@@ -43,7 +43,7 @@ class SphereGradient : public SGPP::optimization::ObjectiveGradient {
     virtual void clone(std::unique_ptr<ObjectiveGradient>& clone) const;
 };
 
-class SphereHessian : public SGPP::optimization::ObjectiveHessian {
+class SphereHessian : public ObjectiveHessian {
   public:
     SphereHessian(size_t d);
     SGPP::float_t eval(const SGPP::base::DataVector& x,
@@ -54,14 +54,14 @@ class SphereHessian : public SGPP::optimization::ObjectiveHessian {
 
 
 
-class G3ObjectiveFunction : public SGPP::optimization::ObjectiveFunction {
+class G3ObjectiveFunction : public ObjectiveFunction {
   public:
     G3ObjectiveFunction(size_t d);
     SGPP::float_t eval(const SGPP::base::DataVector& x);
     virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const;
 };
 
-class G3ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
+class G3ObjectiveGradient : public ObjectiveGradient {
   public:
     G3ObjectiveGradient(size_t d);
     SGPP::float_t eval(const SGPP::base::DataVector& x,
@@ -71,31 +71,33 @@ class G3ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
 
 
 
-class G3ConstraintFunction : public SGPP::optimization::ConstraintFunction {
+class G3ConstraintFunction : public ConstraintFunction {
   public:
     G3ConstraintFunction(size_t d);
     void eval(const SGPP::base::DataVector& x,
               SGPP::base::DataVector& value);
+    virtual void clone(std::unique_ptr<ConstraintFunction>& clone) const;
 };
 
-class G3ConstraintGradient : public SGPP::optimization::ConstraintGradient {
+class G3ConstraintGradient : public ConstraintGradient {
   public:
     G3ConstraintGradient(size_t d);
     void eval(const SGPP::base::DataVector& x,
               SGPP::base::DataVector& value,
               SGPP::base::DataMatrix& gradient);
+    virtual void clone(std::unique_ptr<ConstraintGradient>& clone) const;
 };
 
 
 
-class G8ObjectiveFunction : public SGPP::optimization::ObjectiveFunction {
+class G8ObjectiveFunction : public ObjectiveFunction {
   public:
     G8ObjectiveFunction();
     SGPP::float_t eval(const SGPP::base::DataVector& x);
     virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const;
 };
 
-class G8ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
+class G8ObjectiveGradient : public ObjectiveGradient {
   public:
     G8ObjectiveGradient();
     SGPP::float_t eval(const SGPP::base::DataVector& x,
@@ -105,19 +107,21 @@ class G8ObjectiveGradient : public SGPP::optimization::ObjectiveGradient {
 
 
 
-class G8ConstraintFunction : public SGPP::optimization::ConstraintFunction {
+class G8ConstraintFunction : public ConstraintFunction {
   public:
     G8ConstraintFunction();
     void eval(const SGPP::base::DataVector& x,
               SGPP::base::DataVector& value);
+    virtual void clone(std::unique_ptr<ConstraintFunction>& clone) const;
 };
 
-class G8ConstraintGradient : public SGPP::optimization::ConstraintGradient {
+class G8ConstraintGradient : public ConstraintGradient {
   public:
     G8ConstraintGradient();
     void eval(const SGPP::base::DataVector& x,
               SGPP::base::DataVector& value,
               SGPP::base::DataMatrix& gradient);
+    virtual void clone(std::unique_ptr<ConstraintGradient>& clone) const;
 };
 
 #endif /* OBJECTIVE_FUNCTIONS_HPP */
