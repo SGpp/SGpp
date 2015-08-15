@@ -33,7 +33,7 @@ namespace SGPP {
          * Constructor.
          *
          * @param d     dimension of the domain
-         * @param m     number of constraints
+         * @param m     number of components
          */
         VectorFunctionGradient(size_t d, size_t m) : d(d), m(m) {
         }
@@ -65,9 +65,9 @@ namespace SGPP {
         }
 
         /**
-         * @return number \f$m\f$ of constraints
+         * @return number \f$m\f$ of components
          */
-        size_t getNumberOfConstraints() const {
+        size_t getNumberOfComponents() const {
           return m;
         }
 
@@ -85,7 +85,7 @@ namespace SGPP {
       protected:
         /// dimension of the domain
         size_t d;
-        /// number of constraints
+        /// number of components
         size_t m;
     };
 

@@ -24,7 +24,7 @@ namespace SGPP {
               f(f),
               g(g),
               mu(mu),
-              m(g.getNumberOfConstraints()) {
+              m(g.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x) {
@@ -76,7 +76,7 @@ namespace SGPP {
               fGradient(fGradient),
               gGradient(gGradient),
               mu(mu),
-              m(gGradient.getNumberOfConstraints()) {
+              m(gGradient.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x,

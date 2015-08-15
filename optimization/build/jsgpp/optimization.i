@@ -59,8 +59,10 @@ const bool UMFPACK_ENABLED;
 
 %rename(OptVectorFunction)                  SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)          SGPP::optimization::VectorFunctionGradient;
+%rename(OptVectorFunctionHessian)           SGPP::optimization::VectorFunctionHessian;
 %rename(OptConstraintFunction)              SGPP::optimization::ConstraintFunction;
 %rename(OptConstraintGradient)              SGPP::optimization::ConstraintGradient;
+%rename(OptConstraintHessian)               SGPP::optimization::ConstraintHessian;
 %rename(OptEmptyConstraintFunction)         SGPP::optimization::EmptyConstraintFunction;
 %rename(OptEmptyConstraintFunctionInstance) SGPP::optimization::emptyConstraintFunction;
 %rename(OptEmptyConstraintGradient)         SGPP::optimization::EmptyConstraintGradient;
@@ -144,9 +146,16 @@ const bool UMFPACK_ENABLED;
 // classes with director interface
 %feature("director") SGPP::optimization::ConstraintFunction;
 %feature("director") SGPP::optimization::ConstraintGradient;
+%feature("director") SGPP::optimization::ConstraintHessian;
 %feature("director") SGPP::optimization::ObjectiveFunction;
 %feature("director") SGPP::optimization::ObjectiveGradient;
 %feature("director") SGPP::optimization::ObjectiveHessian;
+%feature("director") SGPP::optimization::ScalarFunction;
+%feature("director") SGPP::optimization::ScalarFunctionGradient;
+%feature("director") SGPP::optimization::ScalarFunctionHessian;
+%feature("director") SGPP::optimization::VectorFunction;
+%feature("director") SGPP::optimization::VectorFunctionGradient;
+%feature("director") SGPP::optimization::VectorFunctionHessian;
 %feature("director") SGPP::optimization::test_functions::TestFunction;
 %feature("director") SGPP::optimization::IterativeGridGenerator;
 %feature("director") SGPP::optimization::SLE;
