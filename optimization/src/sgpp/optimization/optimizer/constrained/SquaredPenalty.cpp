@@ -25,8 +25,8 @@ namespace SGPP {
               g(g),
               h(h),
               mu(mu),
-              mG(g.getNumberOfConstraints()),
-              mH(h.getNumberOfConstraints()) {
+              mG(g.getNumberOfComponents()),
+              mH(h.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x) {
@@ -88,8 +88,8 @@ namespace SGPP {
               gGradient(gGradient),
               hGradient(hGradient),
               mu(mu),
-              mG(gGradient.getNumberOfConstraints()),
-              mH(hGradient.getNumberOfConstraints()) {
+              mG(gGradient.getNumberOfComponents()),
+              mH(hGradient.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x,
@@ -184,8 +184,8 @@ namespace SGPP {
         printer.printStatusBegin("Optimizing (Squared Penalty)...");
 
         const size_t d = f.getDimension();
-        const size_t mG = g.getNumberOfConstraints();
-        const size_t mH = h.getNumberOfConstraints();
+        const size_t mG = g.getNumberOfComponents();
+        const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);

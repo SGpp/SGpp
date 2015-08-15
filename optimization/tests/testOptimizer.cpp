@@ -535,8 +535,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       dynamic_cast<optimizer::AugmentedLagrangian*>(optimizers.back().get());
 
     base::DataVector x = optimizer->findFeasiblePoint();
-    base::DataVector gx(g->getNumberOfConstraints());
-    base::DataVector hx(h->getNumberOfConstraints());
+    base::DataVector gx(g->getNumberOfComponents());
+    base::DataVector hx(h->getNumberOfComponents());
     g->eval(x, gx);
     h->eval(x, hx);
 

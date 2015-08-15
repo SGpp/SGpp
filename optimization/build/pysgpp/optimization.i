@@ -62,8 +62,10 @@ const bool UMFPACK_ENABLED;
 
 %rename(OptVectorFunction)                  SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)          SGPP::optimization::VectorFunctionGradient;
+%rename(OptVectorFunctionHessian)           SGPP::optimization::VectorFunctionHessian;
 %rename(OptConstraintFunction)              SGPP::optimization::ConstraintFunction;
 %rename(OptConstraintGradient)              SGPP::optimization::ConstraintGradient;
+%rename(OptConstraintHessian)               SGPP::optimization::ConstraintHessian;
 %rename(OptEmptyConstraintFunction)         SGPP::optimization::EmptyConstraintFunction;
 %rename(OptEmptyConstraintFunctionInstance) SGPP::optimization::emptyConstraintFunction;
 %rename(OptEmptyConstraintGradient)         SGPP::optimization::EmptyConstraintGradient;
@@ -147,9 +149,16 @@ const bool UMFPACK_ENABLED;
 // classes with director interface
 %feature("director") SGPP::optimization::ConstraintFunction;
 %feature("director") SGPP::optimization::ConstraintGradient;
+%feature("director") SGPP::optimization::ConstraintHessian;
 %feature("director") SGPP::optimization::ObjectiveFunction;
 %feature("director") SGPP::optimization::ObjectiveGradient;
 %feature("director") SGPP::optimization::ObjectiveHessian;
+%feature("director") SGPP::optimization::ScalarFunction;
+%feature("director") SGPP::optimization::ScalarFunctionGradient;
+%feature("director") SGPP::optimization::ScalarFunctionHessian;
+%feature("director") SGPP::optimization::VectorFunction;
+%feature("director") SGPP::optimization::VectorFunctionGradient;
+%feature("director") SGPP::optimization::VectorFunctionHessian;
 %feature("director") SGPP::optimization::IterativeGridGenerator;
 %feature("director") SGPP::optimization::SLE;
 %feature("director") SGPP::optimization::sle_solver::SLESolver;
@@ -164,6 +173,12 @@ const bool UMFPACK_ENABLED;
 %typemap(directorin) std::unique_ptr<SGPP::optimization::ConstraintGradient>& {
     clone = std::unique_ptr<SGPP::optimization::ConstraintGradient>(
         new SwigDirector_OptConstraintGradient(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::ConstraintHessian>& {
+    clone = std::unique_ptr<SGPP::optimization::ConstraintHessian>(
+        new SwigDirector_OptConstraintHessian(*this));
     return;
 }
 
@@ -182,6 +197,42 @@ const bool UMFPACK_ENABLED;
 %typemap(directorin) std::unique_ptr<SGPP::optimization::ObjectiveHessian>& {
     clone = std::unique_ptr<SGPP::optimization::ObjectiveHessian>(
         new SwigDirector_OptObjectiveHessian(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::ScalarFunction>& {
+    clone = std::unique_ptr<SGPP::optimization::ScalarFunction>(
+        new SwigDirector_OptScalarFunction(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::ScalarFunctionGradient>& {
+    clone = std::unique_ptr<SGPP::optimization::ScalarFunctionGradient>(
+        new SwigDirector_OptScalarFunctionGradient(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::ScalarFunctionHessian>& {
+    clone = std::unique_ptr<SGPP::optimization::ScalarFunctionHessian>(
+        new SwigDirector_OptScalarFunctionHessian(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::VectorFunction>& {
+    clone = std::unique_ptr<SGPP::optimization::VectorFunction>(
+        new SwigDirector_OptVectorFunction(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::VectorFunctionGradient>& {
+    clone = std::unique_ptr<SGPP::optimization::VectorFunctionGradient>(
+        new SwigDirector_OptVectorFunctionGradient(*this));
+    return;
+}
+
+%typemap(directorin) std::unique_ptr<SGPP::optimization::VectorFunctionHessian>& {
+    clone = std::unique_ptr<SGPP::optimization::VectorFunctionHessian>(
+        new SwigDirector_OptVectorFunctionHessian(*this));
     return;
 }
 

@@ -29,8 +29,8 @@ namespace SGPP {
               h(h),
               mu(mu),
               lambda(lambda),
-              mG(g.getNumberOfConstraints()),
-              mH(h.getNumberOfConstraints()) {
+              mG(g.getNumberOfComponents()),
+              mH(h.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x) {
@@ -97,8 +97,8 @@ namespace SGPP {
               hGradient(hGradient),
               mu(mu),
               lambda(lambda),
-              mG(gGradient.getNumberOfConstraints()),
-              mH(hGradient.getNumberOfConstraints()) {
+              mG(gGradient.getNumberOfComponents()),
+              mH(hGradient.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x,
@@ -247,12 +247,12 @@ namespace SGPP {
                                         float_t sMin,
                                         float_t sMax) :
               ConstraintFunction(d + 1,
-                                 g.getNumberOfConstraints() +
-                                 2 * h.getNumberOfConstraints() + 1),
+                                 g.getNumberOfComponents() +
+                                 2 * h.getNumberOfComponents() + 1),
               g(g),
               h(h),
-              mG(g.getNumberOfConstraints()),
-              mH(h.getNumberOfConstraints()),
+              mG(g.getNumberOfComponents()),
+              mH(h.getNumberOfComponents()),
               sMin(sMin),
               sMax(sMax) {
             }
@@ -312,12 +312,12 @@ namespace SGPP {
                                         float_t sMin,
                                         float_t sMax) :
               ConstraintGradient(d + 1,
-                                 gGradient.getNumberOfConstraints() +
-                                 2 * hGradient.getNumberOfConstraints() + 1),
+                                 gGradient.getNumberOfComponents() +
+                                 2 * hGradient.getNumberOfComponents() + 1),
               gGradient(gGradient),
               hGradient(hGradient),
-              mG(gGradient.getNumberOfConstraints()),
-              mH(hGradient.getNumberOfConstraints()),
+              mG(gGradient.getNumberOfComponents()),
+              mH(hGradient.getNumberOfComponents()),
               sMin(sMin),
               sMax(sMax) {
             }
@@ -420,8 +420,8 @@ namespace SGPP {
         printer.printStatusBegin("Optimizing (Augmented Lagrangian)...");
 
         const size_t d = f.getDimension();
-        const size_t mG = g.getNumberOfConstraints();
-        const size_t mH = h.getNumberOfConstraints();
+        const size_t mG = g.getNumberOfComponents();
+        const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
@@ -504,8 +504,8 @@ namespace SGPP {
 
       base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
         const size_t d = f.getDimension();
-        const size_t mG = g.getNumberOfConstraints();
-        const size_t mH = h.getNumberOfConstraints();
+        const size_t mG = g.getNumberOfComponents();
+        const size_t mH = h.getNumberOfComponents();
         base::DataVector x(d, 0.5);
         base::DataVector gx(mG);
         base::DataVector hx(mH);
