@@ -11,6 +11,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp>
 #include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarComponent.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>

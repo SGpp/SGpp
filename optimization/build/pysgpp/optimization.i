@@ -59,6 +59,7 @@ const bool UMFPACK_ENABLED;
 %rename(OptInterpolantObjectiveFunction)        SGPP::optimization::InterpolantObjectiveFunction;
 %rename(OptInterpolantObjectiveGradient)        SGPP::optimization::InterpolantObjectiveGradient;
 %rename(OptInterpolantObjectiveHessian)         SGPP::optimization::InterpolantObjectiveHessian;
+%rename(OptScalarComponent)                     SGPP::optimization::ScalarComponent;
 
 %rename(OptVectorFunction)                  SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)          SGPP::optimization::VectorFunctionGradient;
@@ -256,6 +257,8 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantConstraintFunction.hpp"
+
+%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponent.hpp"
 
 %include "optimization/src/sgpp/optimization/function/scalar/test/TestFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/test/Ackley.hpp"
