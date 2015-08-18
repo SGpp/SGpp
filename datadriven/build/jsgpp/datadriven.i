@@ -28,10 +28,10 @@
 //%apply std::vector<std::pair<size_t, float_t> > *OUTPUT { std::vector<std::pair<size_t, float_t> >& result };
 //%apply std::vector<float_t> *INPUT { std::vector<float_t>& point }; 
 
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationTest.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRegularizationDiagonal.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformation.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {

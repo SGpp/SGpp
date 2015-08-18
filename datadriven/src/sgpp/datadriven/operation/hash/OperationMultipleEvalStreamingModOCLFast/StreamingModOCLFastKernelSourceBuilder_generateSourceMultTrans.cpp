@@ -13,13 +13,13 @@ namespace SGPP {
 namespace datadriven {
 std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMultTrans() {
 
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
+    if (parameters->getAsBoolean("REUSE_SOURCE")) {
         return this->reuseSource("multTransKernelModFast_tmp.cl");
     }
 
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    size_t transGridBlockSize = this->parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
-    size_t transDataBlockSize = this->parameters.getAsUnsigned("KERNEL_TRANS_DATA_BLOCK_SIZE");
+    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+    size_t transGridBlockSize = this->parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
+    size_t transDataBlockSize = this->parameters->getAsUnsigned("KERNEL_TRANS_DATA_BLOCK_SIZE");
 
     std::stringstream sourceStream;
 
@@ -54,7 +54,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMultTrans() {
     }
 
     // create a register storage for the level and index of the grid points of the work item
-    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
             sourceStream << indent << this->asString() << " level_" << gridIndex << "[" << dims << "];" << std::endl;
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
@@ -72,7 +72,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMultTrans() {
 
     sourceStream << indent << "size_t dimDataIndex;" << std::endl;
 
-    if (parameters.get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
         sourceStream << indent << "size_t dimLevelIndex;" << std::endl;
     }
 
@@ -176,7 +176,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMultTrans() {
 
     sourceStream << "}" << std::endl;
 
-    if (parameters.getAsBoolean("WRITE_SOURCE")) {
+    if (parameters->getAsBoolean("WRITE_SOURCE")) {
         this->writeSource("multTransKernelModFast_tmp.cl", sourceStream.str());
     }
 

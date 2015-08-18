@@ -9,9 +9,9 @@
 #include <random>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
+#include "../src/sgpp/datadriven/opencl/OCLClonedBufferMultiPlatform.hpp"
+#include "../src/sgpp/datadriven/opencl/OCLManagerMultiPlatform.hpp"
+#include "../src/sgpp/datadriven/opencl/OCLStretchedBufferMultiPlatform.hpp"
 
 int main(int argc, char** argv) {
 
@@ -26,8 +26,9 @@ int main(int argc, char** argv) {
     defaultParameter["KERNEL_TRANS_UNROLL_1D"] = "true";
     defaultParameter["KERNEL_STORE_DATA"] = "array";
 
-    SGPP::base::OCLConfigurationParameters parameters("StreamingModOCLFastMultiPlatform.cfg", defaultParameter);
-    SGPP::base::OCLManagerMultiPlatform manager(parameters);
+    std::shared_ptr<SGPP::base::OCLConfigurationParameters> parameters = std::make_shared<SGPP::base::OCLConfigurationParameters>(
+            "StreamingModOCLFastMultiPlatform.cfg", defaultParameter);
+    std::shared_ptr<SGPP::base::OCLManagerMultiPlatform> manager = std::make_shared<SGPP::base::OCLManagerMultiPlatform>(parameters);
 
     SGPP::base::OCLClonedBufferMultiPlatform clonedBuffer(manager);
 
@@ -42,19 +43,19 @@ int main(int argc, char** argv) {
 
     buffer.initializeBuffer(sizeof(double), 100);
 
-    double *hostBuffer = (double *) buffer.getMappedHostBuffer(manager.platforms[0].platformId);
+    double *hostBuffer = (double *) buffer.getMappedHostBuffer(manager->platforms[0].platformId);
 
     for (size_t i = 0; i < 100; i++) {
         hostBuffer[i] = static_cast<double>(i);
     }
 
     std::cout << "copying to other buffers" << std::endl;
-    buffer.copyToOtherHostBuffers(manager.platforms[0].platformId);
+    buffer.copyToOtherHostBuffers(manager->platforms[0].platformId);
     std::cout << "write to buffer" << std::endl;
     buffer.writeToBuffer();
 
     std::map<cl_platform_id, size_t *> indexStart;
-    for (SGPP::base::OCLPlatformWrapper &platform : manager.platforms) {
+    for (SGPP::base::OCLPlatformWrapper &platform : manager->platforms) {
         indexStart[platform.platformId] = new size_t[platform.deviceCount];
         for (size_t i = 0; i < platform.deviceCount; i++) {
             indexStart[platform.platformId][i] = i;
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
     }
 
     std::map<cl_platform_id, size_t *> indexEnd;
-    for (SGPP::base::OCLPlatformWrapper &platform : manager.platforms) {
+    for (SGPP::base::OCLPlatformWrapper &platform : manager->platforms) {
         indexEnd[platform.platformId] = new size_t[platform.deviceCount];
         for (size_t i = 0; i < platform.deviceCount; i++) {
             indexEnd[platform.platformId][i] = i + 1;
@@ -72,7 +73,7 @@ int main(int argc, char** argv) {
     std::cout << "read from buffer" << std::endl;
     buffer.readFromBuffer(indexStart, indexEnd);
     std::cout << "combine buffers in single host buffer" << std::endl;
-    buffer.combineBuffer(indexStart, indexEnd, manager.platforms[0].platformId);
+    buffer.combineBuffer(indexStart, indexEnd, manager->platforms[0].platformId);
     for (size_t i = 0; i < 100; i++) {
         if (i != 0) {
             std::cout << ", ";

@@ -8,12 +8,12 @@
 #include <chrono>
 #include <omp.h>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/globaldef.hpp>
+#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include "../../../opencl/OCLManager.hpp"
 #include "StreamingModOCLFastMultiPlatformKernelImpl.hpp"
 
 namespace SGPP {
@@ -24,7 +24,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform: public base::Operation
 protected:
     size_t dims;
     SGPP::base::DataMatrix preparedDataset;
-    base::OCLConfigurationParameters parameters;
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
     T* kernelDataset = nullptr;
     size_t datasetSize = 0;
     /// Member to store the sparse grid's levels for better vectorization
@@ -39,27 +39,27 @@ protected:
 
     float_t duration;
 
-    base::OCLManagerMultiPlatform* manager;
+    std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     StreamingModOCLFastMultiPlatformKernelImpl<T>* kernel;
 public:
 
     OperationMultiEvalStreamingModOCLFastMultiPlatform(base::Grid& grid, base::DataMatrix& dataset,
-            base::OCLConfigurationParameters parameters) :
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
-        if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0 &&
-                dataset.getNcols() > parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
+        if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0 &&
+                dataset.getNcols() > parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
             std::stringstream errorString;
             errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
             errorString << " to be greater than the dimension of the data set" << std::endl;
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        this->manager = new base::OCLManagerMultiPlatform(parameters);
+        this->manager = std::make_shared<base::OCLManagerMultiPlatform>(parameters);
 
         this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = new StreamingModOCLFastMultiPlatformKernelImpl<T>(dims, *(this->manager), parameters);
+        this->kernel = new StreamingModOCLFastMultiPlatformKernelImpl<T>(dims, this->manager, parameters);
 
         this->storage = grid.getStorage();
         this->padDataset(this->preparedDataset);
@@ -124,7 +124,7 @@ public:
                 resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        if (parameters.getAsBoolean("VERBOSE")) {
+        if (parameters->getAsBoolean("VERBOSE")) {
             std::cout << "duration mult ocl mod fast: " << elapsed_seconds.count() << std::endl;
         }
 
@@ -170,7 +170,7 @@ public:
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
 
-        if (parameters.getAsBoolean("VERBOSE")) {
+        if (parameters->getAsBoolean("VERBOSE")) {
             std::cout << "duration multTranspose ocl mod fast: " << elapsed_seconds.count() << std::endl;
         }
 
@@ -202,8 +202,8 @@ private:
 
         //TODO: padding has to be least common multiple of "LOCAL_SIZE" and "KERNEL_DATA_BLOCKING_SIZE" and "KERNEL_TRANS_DATA_BLOCK_SIZE"
         //TODO: choose max from DATA_BLOCKING_SIZE and TRANS_DATA_BLOCKING_SIZE
-        size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE")
-                * parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t vecWidth = parameters->getAsUnsigned("LOCAL_SIZE")
+                * parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -231,8 +231,8 @@ private:
             delete this->index;
 
         //TODO: padding has to be least common multiple of "LOCAL_SIZE" and "KERNEL_TRANS_GRID_BLOCK_SIZE"
-        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE")
-                * (uint32_t) parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
+        uint32_t localWorkSize = static_cast<uint32_t>(parameters->getAsUnsigned("LOCAL_SIZE"))
+                * static_cast<uint32_t>(parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE"));
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

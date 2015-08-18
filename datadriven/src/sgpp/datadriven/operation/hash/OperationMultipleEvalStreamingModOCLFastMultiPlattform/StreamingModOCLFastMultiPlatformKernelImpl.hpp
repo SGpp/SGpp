@@ -12,11 +12,11 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include "../../../opencl/LinearLoadBalancerMultiPlatform.hpp"
+#include "../../../opencl/OCLClonedBufferMultiPlatform.hpp"
+#include "../../../opencl/OCLManagerMultiPlatform.hpp"
+#include "../../../opencl/OCLStretchedBufferMultiPlatform.hpp"
 
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
 #include "StreamingModOCLFastMultiPlatformKernelSourceBuilder.hpp"
 
 namespace SGPP {
@@ -46,8 +46,8 @@ private:
     std::map<cl_platform_id, double *> deviceTimingsMultTranspose;
 
     StreamingModOCLFastMultiPlatformKernelSourceBuilder kernelSourceBuilder;
-    base::OCLManagerMultiPlatform& manager;
-    base::OCLConfigurationParameters parameters;
+    std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
     base::LinearLoadBalancerMultiPlatform multLoadBalancer;
     base::LinearLoadBalancerMultiPlatform multTransposeLoadBalancer;
@@ -57,15 +57,15 @@ private:
 
 public:
 
-    StreamingModOCLFastMultiPlatformKernelImpl(size_t dims, base::OCLManagerMultiPlatform& manager,
-            base::OCLConfigurationParameters parameters) :
+    StreamingModOCLFastMultiPlatformKernelImpl(size_t dims, std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
                     this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
 
         this->dims = dims;
 
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             this->deviceTimingsMult[platform.platformId] = new double[platform.deviceCount];
             this->deviceTimingsMultTranspose[platform.platformId] = new double[platform.deviceCount];
 
@@ -78,7 +78,7 @@ public:
 
         this->err = CL_SUCCESS;
 
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
             this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
             // initialize arrays
@@ -93,7 +93,7 @@ public:
         releaseDataBuffers();
         releaseGridBuffers();
 
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             for (size_t i = 0; i < platform.deviceCount; i++) {
                 if (kernelsMult[platform.platformId][i]) {
                     clReleaseKernel(kernelsMult[platform.platformId][i]);
@@ -136,7 +136,7 @@ public:
 
         if (!multKernelsBuilt) {
             std::string program_src = kernelSourceBuilder.generateSourceMult();
-            manager.buildKernel(program_src, "multOCL", kernelsMult);
+            manager->buildKernel(program_src, "multOCL", kernelsMult);
             multKernelsBuilt = true;
         }
 
@@ -145,12 +145,12 @@ public:
 
         // determine best fit
         std::map<cl_platform_id, size_t *> gpu_start_index_data;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             gpu_start_index_data[platform.platformId] = new size_t[platform.deviceCount];
         }
 
         std::map<cl_platform_id, size_t *> gpu_end_index_data;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             gpu_end_index_data[platform.platformId] = new size_t[platform.deviceCount];
         }
 
@@ -158,8 +158,8 @@ public:
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters.getAsUnsigned("LOCAL_SIZE") * dataBlockingSize,
+        size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters->getAsUnsigned("LOCAL_SIZE") * dataBlockingSize,
                 gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
@@ -167,7 +167,7 @@ public:
         cl_uint gpu_start_grid = (cl_uint) start_index_grid;
         cl_uint gpu_end_grid = (cl_uint) end_index_grid;
 
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             for (size_t i = 0; i < platform.deviceCount; i++) {
                 cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[platform.platformId][i]
                         / (cl_uint) dataBlockingSize;
@@ -196,17 +196,17 @@ public:
         }
 
         std::map<cl_platform_id, cl_event *> clTimings;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             clTimings[platform.platformId] = new cl_event[platform.deviceCount];
         }
 
         // enqueue kernel
-        size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
 
         std::map<cl_platform_id, size_t> platformTransferringDevice;
 
         bool allDistributed = false;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             if (allDistributed) {
                 platformTransferringDevice[platform.platformId] = 0;
                 continue;
@@ -241,16 +241,16 @@ public:
         //synchronization is realized through inorder queue in read
 
         deviceTemp.readFromBuffer(gpu_start_index_data, gpu_end_index_data);
-        deviceTemp.combineBuffer(gpu_start_index_data, gpu_end_index_data, manager.platforms[0].platformId);
+        deviceTemp.combineBuffer(gpu_start_index_data, gpu_end_index_data, manager->platforms[0].platformId);
 
-        real_type *hostTemp = (real_type *) deviceTemp.getMappedHostBuffer(manager.platforms[0].platformId);
+        real_type *hostTemp = (real_type *) deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
 
         for (size_t i = start_index_data; i < end_index_data; i++) {
             result[i] = hostTemp[i];
         }
 
         // determine kernel execution time
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             for (size_t i = 0; i < platform.deviceCount; i++) {
                 double tmpTime;
                 cl_ulong startTime, endTime;
@@ -314,11 +314,11 @@ public:
         }
 
         double time = 0.0;
-        size_t gridBlockingSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
+        size_t gridBlockingSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
 
         if (!multTransKernelsBuilt) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
-            manager.buildKernel(program_src, "multTransOCL", kernelsMultTrans);
+            manager->buildKernel(program_src, "multTransOCL", kernelsMultTrans);
             multTransKernelsBuilt = true;
         }
 
@@ -327,25 +327,25 @@ public:
 
         // determine best fit
         std::map<cl_platform_id, size_t *> gpu_start_index_grid;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             gpu_start_index_grid[platform.platformId] = new size_t[platform.deviceCount];
         }
 
         std::map<cl_platform_id, size_t *> gpu_end_index_grid;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             gpu_end_index_grid[platform.platformId] = new size_t[platform.deviceCount];
         }
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters.getAsUnsigned("LOCAL_SIZE") * gridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
+                parameters->getAsUnsigned("LOCAL_SIZE") * gridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
         cl_uint gpu_start_data = (cl_uint) start_index_data;
         cl_uint gpu_end_data = (cl_uint) end_index_data;
 
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             for (size_t i = 0; i < platform.deviceCount; i++) {
                 cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[platform.platformId][i]
                         / (cl_uint) gridBlockingSize;
@@ -376,17 +376,17 @@ public:
         }
 
         std::map<cl_platform_id, cl_event *> clTimings;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             clTimings[platform.platformId] = new cl_event[platform.deviceCount];
         }
 
         // enqueue kernels
-        size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
 
         std::map<cl_platform_id, size_t> platformTransferringDevice;
 
         bool allDistributed = false;
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             if (allDistributed) {
                 platformTransferringDevice[platform.platformId] = 0;
                 continue;
@@ -423,9 +423,9 @@ public:
         //implicit synchonization in read due to inorder queue
 
         deviceGrid.readFromBuffer(gpu_start_index_grid, gpu_end_index_grid);
-        deviceGrid.combineBuffer(gpu_start_index_grid, gpu_end_index_grid, manager.platforms[0].platformId);
+        deviceGrid.combineBuffer(gpu_start_index_grid, gpu_end_index_grid, manager->platforms[0].platformId);
 
-        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager.platforms[0].platformId);
+        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
 
         for (size_t i = start_index_grid; i < end_index_grid; i++) {
 //            printf("result i=%lu: %lf\n",i, hostGrid[i]);
@@ -433,7 +433,7 @@ public:
         }
 
         // determine kernel execution time
-        for (base::OCLPlatformWrapper &platform : manager.platforms) {
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
             for (size_t i = 0; i < platform.deviceCount; i++) {
                 double tmpTime;
                 cl_ulong startTime, endTime;
@@ -518,24 +518,24 @@ private:
             this->deviceGrid.initializeBuffer(sizeof(real_type), gridSize * this->dims);
         }
 
-        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager.platforms[0].platformId);
+        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
         for (size_t i = 0; i < gridSize; i++) {
             hostGrid[i] = grid[i];
         }
 
-        deviceGrid.copyToOtherHostBuffers(manager.platforms[0].platformId);
+        deviceGrid.copyToOtherHostBuffers(manager->platforms[0].platformId);
         deviceGrid.writeToBuffer();
 
         if (!this->deviceTemp.isInitialized()) {
             this->deviceTemp.initializeBuffer(sizeof(real_type), datasetSize * this->dims);
         }
 
-        real_type *hostTemp = (real_type*) this->deviceTemp.getMappedHostBuffer(manager.platforms[0].platformId);
+        real_type *hostTemp = (real_type*) this->deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
         for (size_t i = 0; i < datasetSize; i++) {
             hostTemp[i] = tmp[i];
         }
 
-        deviceTemp.copyToOtherHostBuffers(manager.platforms[0].platformId);
+        deviceTemp.copyToOtherHostBuffers(manager->platforms[0].platformId);
         deviceTemp.writeToBuffer();
     }
 

@@ -47,18 +47,16 @@ int main(int argc, char** argv) {
 
     uint32_t level = 4;
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = 0;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = 80;
+//    adaptConfig.numRefinements_ = 0;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type =
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType =
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

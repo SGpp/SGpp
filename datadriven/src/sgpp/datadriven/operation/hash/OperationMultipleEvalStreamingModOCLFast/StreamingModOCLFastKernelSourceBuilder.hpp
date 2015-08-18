@@ -12,7 +12,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include "../../../opencl/OCLConfigurationParameters.hpp"
 
 //#include "StreamingOCLParameters.hpp"
 
@@ -21,7 +21,7 @@ namespace datadriven {
 
 class StreamingModOCLFastKernelSourceBuilder {
 private:
-    base::ConfigurationParameters parameters;
+    std::shared_ptr<base::ConfigurationParameters> parameters;
 
     size_t dims;
 
@@ -61,7 +61,7 @@ private:
             size_t endDim, std::string unrollVariable, size_t gridBlockIndex);
 
 public:
-    StreamingModOCLFastKernelSourceBuilder(base::ConfigurationParameters parameters, size_t dims);
+    StreamingModOCLFastKernelSourceBuilder(std::shared_ptr<base::ConfigurationParameters> parameters, size_t dims);
 
     std::string generateSourceMult();
 

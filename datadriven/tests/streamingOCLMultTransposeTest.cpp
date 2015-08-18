@@ -26,7 +26,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestStreamingOCLMultTranspose)
 
@@ -116,13 +116,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
@@ -133,6 +127,10 @@ BOOST_AUTO_TEST_CASE(Simple) {
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
     parameters.set("MAX_DEVICES", "1");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
@@ -155,12 +153,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
@@ -172,6 +165,11 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
     parameters.set("REUSE_SOURCE", "false");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
@@ -194,13 +192,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
@@ -210,6 +202,10 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
@@ -231,13 +227,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("INTERNAL_PRECISION", "float");
@@ -249,6 +239,10 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("MAX_DEVICES", "1");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
@@ -271,13 +265,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("INTERNAL_PRECISION", "float");
@@ -289,6 +277,10 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("MAX_DEVICES", "1");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
@@ -310,13 +302,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("INTERNAL_PRECISION", "float");
@@ -327,6 +313,10 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);

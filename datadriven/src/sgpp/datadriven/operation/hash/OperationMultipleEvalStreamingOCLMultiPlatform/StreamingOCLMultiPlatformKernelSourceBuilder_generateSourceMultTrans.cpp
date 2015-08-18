@@ -19,13 +19,13 @@ namespace datadriven {
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMultTrans() {
 
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
+    if (parameters->getAsBoolean("REUSE_SOURCE")) {
         return this->reuseSource("StreamingOCLMultiPlatform_multTrans.cl");
     }
 
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
 
     std::stringstream sourceStream;
 
@@ -61,7 +61,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMultTran
     }
 
     // create a register storage for the level and index of the grid points of the work item
-    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
             sourceStream << indent << this->asString() << " level_" << gridIndex << "[" << dims << "];" << std::endl;
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
@@ -76,7 +76,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMultTran
             sourceStream << std::endl;
         }
         sourceStream << std::endl;
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
 
             for (size_t d = 0; d < dims; d++) {
@@ -164,7 +164,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMultTran
     }
     sourceStream << "}" << std::endl;
 
-    if (parameters.getAsBoolean("WRITE_SOURCE")) {
+    if (parameters->getAsBoolean("WRITE_SOURCE")) {
         this->writeSource("StreamingOCLMultiPlatform_multTrans.cl", sourceStream.str());
     }
 

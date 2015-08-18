@@ -2,7 +2,7 @@
 #include <string>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 
 int main(int argc, char** argv) {
 
@@ -11,11 +11,11 @@ int main(int argc, char** argv) {
 
     //  std::string fileName = "debugging.arff";
 //   std::string fileName = "friedman_4d.arff";
-   std::string fileName = "chess_train.arff";
+    std::string fileName = "chess_train.arff";
 //  std::string fileName = "chess_train.arff";
 //    std::string fileName = "bigger.arff";
 
-    //sg::base::RegularGridConfiguration gridConfig;
+//sg::base::RegularGridConfiguration gridConfig;
     sg::base::RegularGridConfiguration gridConfig;
     sg::solver::SLESolverConfiguration SLESolverConfigRefine;
     sg::solver::SLESolverConfiguration SLESolverConfigFinal;
@@ -64,9 +64,9 @@ int main(int argc, char** argv) {
     //streaming default - 1600 (13 without avx)
     //streaming ocl - 13
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+            SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+            SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM);
     learner.learn(configuration, fileName);
     //learner.learnReference(fileName);
 

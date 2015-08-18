@@ -17,13 +17,13 @@ namespace datadriven {
 
 std::string StreamingOCLKernelSourceBuilder::generateSourceMult() {
 
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
+    if (parameters->getAsBoolean("REUSE_SOURCE")) {
         return this->reuseSource("StreamingOCL_mult.cl");
     }
 
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
 
     std::stringstream sourceStream;
 
@@ -64,7 +64,7 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMult() {
     sourceStream << std::endl;
 
     //caching data in register array, this also requires loading the data into the registers (in contrast using pointers to data directly)
-    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
         for (size_t i = 0; i < dataBlockSize; i++) {
             sourceStream << indent << this->asString() << " data_" << i << "[" << dims << "];" << std::endl;
         }
@@ -76,7 +76,7 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMult() {
             }
             sourceStream << std::endl;
         }
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
         for (size_t i = 0; i < dataBlockSize; i++) {
             for (size_t d = 0; d < dims; d++) {
                 sourceStream << indent << this->asString() << " " << getData(d, i) << " = ptrData[" << i << " + ("
@@ -166,7 +166,7 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMult() {
     }
     sourceStream << "}" << std::endl;
 
-    if (parameters.getAsBoolean("WRITE_SOURCE")) {
+    if (parameters->getAsBoolean("WRITE_SOURCE")) {
         this->writeSource("StreamingOCL_mult.cl", sourceStream.str());
     }
 
