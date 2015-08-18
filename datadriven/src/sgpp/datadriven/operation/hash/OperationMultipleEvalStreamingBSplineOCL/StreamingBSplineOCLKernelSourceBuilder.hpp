@@ -42,18 +42,18 @@ namespace SGPP {
     class StreamingBSplineOCLKernelSourceBuilder {
       private:
         size_t degree;
-        base::ConfigurationParameters parameters;
+        std::shared_ptr<base::ConfigurationParameters> parameters;
       public:
         StreamingBSplineOCLKernelSourceBuilder(
             size_t degree,
-            base::ConfigurationParameters parameters)
+            std::shared_ptr<base::ConfigurationParameters> parameters)
           : degree(degree),
             parameters(parameters) {
         }
 
         std::string generateSourceMult(size_t dims) {
 
-          if (parameters.getAsBoolean("REUSE_SOURCE")) {
+          if (parameters->getAsBoolean("REUSE_SOURCE")) {
             std::stringstream streamProgramSrc;
             std::ifstream file;
             file.open("multKernelBSpline_tmp.cl");
@@ -74,11 +74,11 @@ namespace SGPP {
             return streamProgramSrc.str();
           }
 
-          size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-          bool useLocalMemory = this->parameters.getAsBoolean(
+          size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+          bool useLocalMemory = this->parameters->getAsBoolean(
                                   "KERNEL_USE_LOCAL_MEMORY");
 
-          size_t dataBlockSize = parameters.getAsUnsigned(
+          size_t dataBlockSize = parameters->getAsUnsigned(
                                    "KERNEL_DATA_BLOCKING_SIZE");
 
           std::string streamProgramSrc;
@@ -431,7 +431,7 @@ uint end_grid) {
 
         std::string generateSourceMultTrans(size_t dims) {
 
-          if (parameters.getAsBoolean("REUSE_SOURCE")) {
+          if (parameters->getAsBoolean("REUSE_SOURCE")) {
             std::stringstream streamProgramSrc;
             std::ifstream file;
             file.open("multTransKernelBSpline_tmp.cl");
@@ -452,8 +452,8 @@ uint end_grid) {
             return streamProgramSrc.str();
           }
 
-          size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-          size_t transDataBlockSize = this->parameters.getAsUnsigned(
+          size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+          size_t transDataBlockSize = this->parameters->getAsUnsigned(
               "KERNEL_TRANS_DATA_BLOCK_SIZE");
 
           std::string streamProgramSrc;

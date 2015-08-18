@@ -17,33 +17,33 @@
 namespace SGPP {
 namespace datadriven {
 
-StreamingOCLKernelSourceBuilder::StreamingOCLKernelSourceBuilder(base::OCLConfigurationParameters parameters,
+StreamingOCLKernelSourceBuilder::StreamingOCLKernelSourceBuilder(std::shared_ptr<base::OCLConfigurationParameters> parameters,
         size_t dims) :
         parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
                 "                ") {
-    localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    dataBlockSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-    transGridBlockSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
-    maxDimUnroll = this->parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+    useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+    dataBlockSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+    transGridBlockSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+    maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
 }
 
 std::string StreamingOCLKernelSourceBuilder::asString() {
-    if (parameters.get("INTERNAL_PRECISION") == "float") {
+    if (parameters->get("INTERNAL_PRECISION") == "float") {
         return "float";
     } else {
         return "double";
     }
 }
 std::string StreamingOCLKernelSourceBuilder::constSuffix() {
-    if (parameters.get("INTERNAL_PRECISION") == "float") {
+    if (parameters->get("INTERNAL_PRECISION") == "float") {
         return "f";
     } else {
         return "";
     }
 }
 std::string StreamingOCLKernelSourceBuilder::intAsString() {
-    if (parameters.get("INTERNAL_PRECISION") == "float") {
+    if (parameters->get("INTERNAL_PRECISION") == "float") {
         return "uint";
     } else {
         return "ulong";
@@ -80,11 +80,11 @@ void StreamingOCLKernelSourceBuilder::writeSource(std::string fileName, std::str
 
 std::string StreamingOCLKernelSourceBuilder::getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
-    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
         output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
         output << "data_" << dataBlockingIndex << "_" << dim;
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
         output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim << ") + " << dataBlockingIndex
                 << "]";
     } else {
@@ -102,11 +102,11 @@ std::string StreamingOCLKernelSourceBuilder::getData(size_t dim, size_t dataBloc
 
 std::string StreamingOCLKernelSourceBuilder::getLevelTrans(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
-    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
         output << "level_" << gridBlockingIndex << "[" << dim << "]";
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
         output << "level_" << gridBlockingIndex << "_" << dim;
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
         output << "ptrLevel[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -116,11 +116,11 @@ std::string StreamingOCLKernelSourceBuilder::getLevelTrans(std::string dim, size
 
 std::string StreamingOCLKernelSourceBuilder::getIndexTrans(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
-    if (parameters.get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
         output << "index_" << gridBlockingIndex << "[" << dim << "]";
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
         output << "index_" << gridBlockingIndex << "_" << dim;
-    } else if (parameters.get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    } else if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
         output << "ptrIndex[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -130,7 +130,7 @@ std::string StreamingOCLKernelSourceBuilder::getIndexTrans(std::string dim, size
 
 std::string StreamingOCLKernelSourceBuilder::getDataTrans(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
-    if (parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY")) {
+    if (parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY")) {
         // (locData[(d * 128)+k])
         output << "locData[(" << dim << " * " << localWorkgroupSize << ")+k]";
     } else {
@@ -156,7 +156,7 @@ std::string StreamingOCLKernelSourceBuilder::unrolledBasisFunctionEvalulation(si
         std::string pointerAccess = dimElement.str();
 
         std::string dString;
-        if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+        if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
             std::stringstream stream;
             stream << (d);
             dString = stream.str();
@@ -203,7 +203,7 @@ std::string StreamingOCLKernelSourceBuilder::unrolledBasisFunctionEvalulationTra
         std::string pointerAccess = dimElement.str();
 
         std::string dString;
-        if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0) {
+        if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
             std::stringstream stream;
             stream << (d);
             dString = stream.str();

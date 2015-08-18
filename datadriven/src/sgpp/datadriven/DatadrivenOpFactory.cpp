@@ -14,27 +14,27 @@
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 
-#include <sgpp/datadriven/operation/hash/OperationTestLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestLinearBoundary.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestModBspline.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestModLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestPoly.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestModPoly.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestModWavelet.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestPrewavelet.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestLinearStretchedBoundary.hpp>
-#include <sgpp/datadriven/operation/hash/OperationTestLinearStretched.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityMarginalizeLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityMargTo1DLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensitySampling1DLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensitySamplingLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityRejectionSamplingLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityConditionalLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationRosenblattTransformationLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationRosenblattTransformation1DLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformation1DLinear.hpp>
-#include <sgpp/datadriven/operation/hash/OperationRegularizationDiagonalLinearBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestModBspline.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestModLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestModPoly.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestModWavelet.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestPrewavelet.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestLinearStretchedBoundary.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestLinearStretched.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySamplingLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityRejectionSamplingLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 
 #ifdef __AVX__
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
@@ -220,52 +220,50 @@ datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE
 }
 
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid, base::DataMatrix& dataset,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
-    if (configuration.type == SGPP::datadriven::OperationMultipleEvalType::DEFAULT) {
+SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
+    if (configuration.getType() == SGPP::datadriven::OperationMultipleEvalType::DEFAULT) {
         return createOperationMultipleEval(grid, dataset);
     }
 
     if (strcmp(grid.getType(), "linear") == 0) {
-        if (configuration.type == datadriven::OperationMultipleEvalType::DEFAULT
-                || configuration.type == datadriven::OperationMultipleEvalType::STREAMING) {
-            if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
+        if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT
+                || configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
+            if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef __AVX__
                 return new datadriven::OperationMultiEvalStreaming(grid, dataset);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
-            } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
+            } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-                return datadriven::createStreamingOCLConfigured(grid, dataset,
-                        *((base::OCLConfigurationParameters *) configuration.parameters));
+                return datadriven::createStreamingOCLConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
-            } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLMP) {
+            } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLMP) {
 #ifdef USE_OCL
-                return datadriven::createStreamingOCLMultiPlatformConfigured(grid, dataset,
-                        *((base::OCLConfigurationParameters *) configuration.parameters));
+                return datadriven::createStreamingOCLMultiPlatformConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
             }
-        } else if (configuration.type == datadriven::OperationMultipleEvalType::SUBSPACELINEAR) {
-            if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT
-                    || configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::COMBINED) {
+        } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SUBSPACELINEAR) {
+            if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT
+                    || configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::COMBINED) {
 #ifdef __AVX__
                 return new datadriven::OperationMultipleEvalSubspaceCombined(grid, dataset);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
-            } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE) {
+            } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE) {
 #ifdef __AVX__
                 return new datadriven::OperationMultipleEvalSubspaceSimple(grid, dataset);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
             }
-        } else if (configuration.type == datadriven::OperationMultipleEvalType::ADAPTIVE) {
-            if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
+        } else if (configuration.getType() == datadriven::OperationMultipleEvalType::ADAPTIVE) {
+            if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef USE_OCL
                 return datadriven::createAdaptiveOCLConfigured(grid, dataset);
 #else
@@ -274,35 +272,31 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
             }
         }
     } else if (strcmp(grid.getType(), "modlinear") == 0) {
-        if (configuration.type == datadriven::OperationMultipleEvalType::STREAMING) {
-            if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
+        if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
+            if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-                return datadriven::createStreamingModOCLConfigured(grid, dataset,
-                        *((base::OCLConfigurationParameters *) configuration.parameters));
+                return datadriven::createStreamingModOCLConfigured(grid, dataset, configuration);
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
-            } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST) {
+            } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST) {
 #ifdef USE_OCL
-                return datadriven::createStreamingModOCLFastConfigured(grid, dataset,
-                        *((base::OCLConfigurationParameters *) configuration.parameters));
+                return datadriven::createStreamingModOCLFastConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
-            } else if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM) {
+            } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM) {
 #ifdef USE_OCL
-                return datadriven::createStreamingModOCLFastMultiPlatformConfigured(grid, dataset,
-                        *((base::OCLConfigurationParameters *) configuration.parameters));
+                return datadriven::createStreamingModOCLFastMultiPlatformConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
             }
         }
     } else if (strcmp(grid.getType(), "bspline") == 0) {
-        if (configuration.type == datadriven::OperationMultipleEvalType::STREAMING) {
-            if (configuration.subType == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
+        if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
+            if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
-                return datadriven::createStreamingBSplineOCLConfigured(grid, dataset,
-                        *((base::OCLConfigurationParameters *) configuration.parameters));
+                return datadriven::createStreamingBSplineOCLConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif

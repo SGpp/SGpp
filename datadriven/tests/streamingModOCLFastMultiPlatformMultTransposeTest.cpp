@@ -23,8 +23,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
-
+#include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestStreamingModOCLFastMultiPlatformMultTranspose)
 
@@ -102,7 +101,8 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz", "datadriven/tests/data/friedman_10d.arff.gz" };
+    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
+            "datadriven/tests/data/friedman_10d.arff.gz" };
 
     uint32_t level = 4;
     //  uint32_t level = 3;
@@ -114,13 +114,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
@@ -130,6 +124,10 @@ BOOST_AUTO_TEST_CASE(Simple) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (std::string fileName : fileNames) {
         double mse = compareToReference(fileName, level, adaptConfig, configuration);
@@ -141,7 +139,8 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz", "datadriven/tests/data/friedman_10d.arff.gz" };
+    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
+            "datadriven/tests/data/friedman_10d.arff.gz" };
 
     uint32_t level = 4;
     //  uint32_t level = 3;
@@ -153,13 +152,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "2");
@@ -169,6 +162,10 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (std::string fileName : fileNames) {
         double mse = compareToReference(fileName, level, adaptConfig, configuration);
@@ -180,7 +177,8 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz", "datadriven/tests/data/friedman_10d.arff.gz" };
+    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
+            "datadriven/tests/data/friedman_10d.arff.gz" };
 
     uint32_t level = 4;
     //  uint32_t level = 3;
@@ -192,13 +190,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "2");
@@ -208,6 +200,10 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (std::string fileName : fileNames) {
         double mse = compareToReference(fileName, level, adaptConfig, configuration);
@@ -219,7 +215,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //    std::string fileName = "debugging.arff";
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz", "datadriven/tests/data/friedman_10d.arff.gz" };
+    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
+            "datadriven/tests/data/friedman_10d.arff.gz" };
 
     uint32_t level = 4;
     //  uint32_t level = 3;
@@ -231,13 +228,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "2");
@@ -247,6 +238,10 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "all");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (std::string fileName : fileNames) {
         double mse = compareToReference(fileName, level, adaptConfig, configuration);
@@ -262,7 +257,8 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 //    std::vector<std::tuple<std::string, double> > fileNamesError = { };
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 2.0E+04), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1.0E+5) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 2.0E+04), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1.0E+5) };
 
     uint32_t level = 4;
 
@@ -273,13 +269,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
@@ -291,6 +281,10 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
@@ -300,7 +294,8 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 2E+4), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+4) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 2E+4), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1E+4) };
 
     uint32_t level = 4;
 
@@ -311,13 +306,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
@@ -329,6 +318,10 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
@@ -338,7 +331,8 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 2E+4), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+4) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 2E+4), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1E+4) };
 
     uint32_t level = 4;
 
@@ -349,13 +343,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
@@ -367,6 +355,10 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
 
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
@@ -376,7 +368,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 2E+4), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+4) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 2E+4), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1E+4) };
 
     uint32_t level = 4;
 
@@ -387,13 +380,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
-
     SGPP::base::OCLConfigurationParameters parameters;
-    configuration.parameters = (SGPP::base::ConfigurationParameters *) &parameters;
-
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
@@ -404,6 +391,10 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "all");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
         double mse = compareToReference(std::get<0>(fileNameError), level, adaptConfig, configuration);

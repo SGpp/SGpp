@@ -8,12 +8,12 @@
 #include <chrono>
 #include <omp.h>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/globaldef.hpp>
+#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include "../../../opencl/OCLManager.hpp"
 #include "StreamingModOCLFastKernelImpl.hpp"
 
 namespace SGPP {
@@ -23,7 +23,7 @@ template<typename T>
 class OperationMultiEvalStreamingModOCLFast: public base::OperationMultipleEval {
 protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
-    base::OCLConfigurationParameters parameters;
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
     T* kernelDataset = nullptr;
     size_t datasetSize = 0;
     /// Member to store the sparse grid's levels for better vectorization
@@ -38,19 +38,19 @@ protected:
 
     float_t duration;
 
-    base::OCLManager* manager;
-    StreamingModOCLFastKernelImpl<T>* kernel;
+    std::shared_ptr<base::OCLManager> manager;
+    std::unique_ptr<StreamingModOCLFastKernelImpl<T>> kernel;
 public:
 
     OperationMultiEvalStreamingModOCLFast(base::Grid& grid, base::DataMatrix& dataset,
-            base::OCLConfigurationParameters parameters) :
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
-        this->manager = new base::OCLManager(parameters);
+        this->manager = std::make_shared<base::OCLManager>(parameters);
 
         this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = new StreamingModOCLFastKernelImpl<T>(dims, *(this->manager), parameters);
+        this->kernel = std::unique_ptr<StreamingModOCLFastKernelImpl<T>>(new StreamingModOCLFastKernelImpl<T>(dims, this->manager, parameters));
 
         this->storage = grid.getStorage();
         this->padDataset(this->preparedDataset);
@@ -186,8 +186,8 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE")
-                * parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t vecWidth = parameters->getAsUnsigned("LOCAL_SIZE")
+                * parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -214,7 +214,7 @@ private:
         if (this->index != nullptr)
             delete this->index;
 
-        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE");
+        uint32_t localWorkSize = (uint32_t) parameters->getAsUnsigned("LOCAL_SIZE");
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

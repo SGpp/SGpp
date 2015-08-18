@@ -7,12 +7,12 @@
 
 #include <omp.h>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/globaldef.hpp>
+#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include "../../../opencl/OCLManager.hpp"
 #include "StreamingOCLKernelImpl.hpp"
 
 namespace SGPP {
@@ -22,7 +22,7 @@ template<typename T>
 class OperationMultiEvalStreamingOCL: public base::OperationMultipleEval {
 protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
-    base::OCLConfigurationParameters parameters;
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
     T *kernelDataset = nullptr;
     size_t datasetSize = 0;
     // Member to store the sparse grid's levels for better vectorization
@@ -37,17 +37,17 @@ protected:
 
     float_t duration;
 
-    base::OCLManager *manager;
+    std::shared_ptr<base::OCLManager> manager;
     StreamingOCLKernelImpl<T> *kernel;
 public:
 
     OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset,
-            base::OCLConfigurationParameters parameters) :
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
-        if (parameters.get("KERNEL_STORE_DATA").compare("register") == 0
-                && dataset.getNcols() > parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
+        if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0
+                && dataset.getNcols() > parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
             std::stringstream errorString;
             errorString
                     << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
@@ -55,10 +55,10 @@ public:
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        this->manager = new base::OCLManager(parameters);
+        this->manager = std::make_shared<base::OCLManager>(parameters);
 
         this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = new StreamingOCLKernelImpl<T>(dims, *(this->manager), parameters);
+        this->kernel = new StreamingOCLKernelImpl<T>(dims, this->manager, parameters);
 
         this->storage = grid.getStorage();
         this->padDataset(this->preparedDataset);
@@ -184,11 +184,11 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+        size_t dataBlocking = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t transGridBlocking = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
         size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
-        size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE") * blockingPadRequirements;
+        size_t vecWidth = parameters->getAsUnsigned("LOCAL_SIZE") * blockingPadRequirements;
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -215,12 +215,12 @@ private:
         if (this->index != nullptr)
             delete this->index;
 
-        size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+        size_t dataBlocking = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t transGridBlocking = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
         size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
 
-        uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE") * blockingPadRequirements;
+        uint32_t localWorkSize = static_cast<uint32_t>(parameters->getAsUnsigned("LOCAL_SIZE")) * static_cast<uint32_t>(blockingPadRequirements);
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

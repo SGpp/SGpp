@@ -48,17 +48,17 @@ template<> struct getType<double> {
 template<typename real_type>
 class AdaptiveOCLKernelSourceBuilder {
 private:
-  base::ConfigurationParameters parameters;
+  std::shared_ptr<base::OCLConfigurationParameters> parameters;
   real_type blubb;
 public:
-  AdaptiveOCLKernelSourceBuilder(base::ConfigurationParameters parameters) :
+  AdaptiveOCLKernelSourceBuilder(std::shared_ptr<base::OCLConfigurationParameters> parameters) :
       parameters(parameters) {
 
   }
 
   std::string generateSourceMult(size_t dims) {
 
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
+    if (parameters->getAsBoolean("REUSE_SOURCE")) {
       std::stringstream stream_program_src;
       std::ifstream file;
       file.open("multKernel_tmp.cl");
@@ -74,9 +74,9 @@ public:
       return stream_program_src.str();
     }
 
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+//    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
 
     std::stringstream stream_program_src;
 
@@ -308,7 +308,7 @@ public:
 
   std::string generateSourceMultTrans(size_t dims) {
 
-    if (parameters.getAsBoolean("REUSE_SOURCE")) {
+    if (parameters->getAsBoolean("REUSE_SOURCE")) {
       std::stringstream stream_program_src;
       std::ifstream file;
       file.open("multTransKernel_tmp.cl");
@@ -324,9 +324,9 @@ public:
       return stream_program_src.str();
     }
 
-    size_t localWorkgroupSize = parameters.getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters.getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters.getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
+//    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
 
     std::stringstream stream_program_src;
     std::string strPrecisionType = AdaptiveOCL::getType<real_type>::asString();

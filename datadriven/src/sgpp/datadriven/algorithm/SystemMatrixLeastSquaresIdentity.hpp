@@ -13,7 +13,7 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 //#include "AbstractOperationMultipleEval.hpp"

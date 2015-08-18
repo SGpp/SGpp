@@ -35,10 +35,10 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp"
 
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityMarginalizeKDE.hpp"
-%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityConditionalKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {

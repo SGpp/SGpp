@@ -11,12 +11,11 @@
 #include <limits>
 
 #include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/opencl/OCLManager.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
-#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancer.hpp>
+#include "../../../opencl/LinearLoadBalancer.hpp"
+#include "../../../opencl/OCLClonedBuffer.hpp"
+#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include "../../../opencl/OCLManager.hpp"
+#include "../../../opencl/OCLStretchedBuffer.hpp"
 #include "StreamingOCLMultiPlatformKernelSourceBuilder.hpp"
 
 namespace SGPP {
@@ -50,21 +49,22 @@ private:
     double* deviceTimingsMultTranspose;
 
     StreamingOCLMultiPlatformKernelSourceBuilder kernelSourceBuilder;
-    base::OCLManager& manager;
-    base::OCLConfigurationParameters parameters;
+    std::shared_ptr<base::OCLManager> manager;
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
     base::LinearLoadBalancer multLoadBalancer;
     base::LinearLoadBalancer multTransposeLoadBalancer;
 
 public:
 
-    StreamingOCLMultiPlatformKernelImpl(size_t dims, base::OCLManager& manager, base::OCLConfigurationParameters parameters) :
+    StreamingOCLMultiPlatformKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
                     this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
 
         this->dims = dims;
-        this->num_devices = manager.num_devices;
+        this->num_devices = manager->num_devices;
         this->deviceTimingsMult = new double[this->num_devices];
         this->deviceTimingsMultTranspose = new double[this->num_devices];
 
@@ -74,9 +74,9 @@ public:
             this->deviceTimingsMultTranspose[i] = 1.0;
         }
 
-        this->context = manager.context;
-        this->command_queue = manager.command_queue;
-        this->device_ids = manager.device_ids;
+        this->context = manager->context;
+        this->command_queue = manager->command_queue;
+        this->device_ids = manager->device_ids;
         this->err = CL_SUCCESS;
 
         this->hostGrid = nullptr;
@@ -151,7 +151,7 @@ public:
 
         if (kernel_mult[0] == nullptr) {
             std::string program_src = kernelSourceBuilder.generateSourceMult();
-            manager.buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel_mult);
+            manager->buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel_mult);
         }
 
         initOCLBuffers(level, index, gridSize, dataset, datasetSize);
@@ -163,9 +163,9 @@ public:
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
         multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
-                parameters.getAsUnsigned("LOCAL_SIZE") * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
+                parameters->getAsUnsigned("LOCAL_SIZE") * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
@@ -197,7 +197,7 @@ public:
         cl_event* clTimings = new cl_event[num_devices];
 
         // enqueue kernel
-        size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
@@ -297,11 +297,11 @@ public:
         }
 
         double time = 0.0;
-        size_t transGridBlockingSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+        size_t transGridBlockingSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
         if (kernel_multTrans[0] == nullptr) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
-            manager.buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel_multTrans);
+            manager->buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel_multTrans);
         }
 
         initOCLBuffers(level, index, gridSize, dataset, datasetSize);
@@ -313,7 +313,8 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters.getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
+                parameters->getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid,
+                gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
@@ -349,7 +350,7 @@ public:
         cl_event* clTimings = new cl_event[num_devices];
 
         // enqueue kernels
-        size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
@@ -362,8 +363,8 @@ public:
 //                std::cout << "number of threads on device " << "\"" << i << "\": " << rangeSize << std::endl;
 
                 //TODO: check that all variables that are submitted by reference survive the loop
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &offset,
-                        &rangeSize, &local, 0, nullptr, &(clTimings[i]));
+                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &offset, &rangeSize, &local, 0,
+                        nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
                     std::stringstream errorString;

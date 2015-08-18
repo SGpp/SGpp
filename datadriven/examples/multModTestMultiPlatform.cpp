@@ -48,11 +48,9 @@ int main(int argc, char** argv) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-    configuration.type =
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configuration.subType =
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -101,11 +99,9 @@ int main(int argc, char** argv) {
 
     std::cout << "calculating comparison values..." << std::endl;
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configurationReference;
-    configurationReference.type =
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    configurationReference.subType =
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+    SGPP::datadriven::OperationMultipleEvalConfiguration configurationReference(
+            SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+            SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
     SGPP::base::OperationMultipleEval* evalCompare =
     SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configurationReference);

@@ -12,11 +12,11 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include "../../../opencl/LinearLoadBalancer.hpp"
+#include "../../../opencl/OCLClonedBuffer.hpp"
+#include "../../../opencl/OCLManager.hpp"
+#include "../../../opencl/OCLStretchedBuffer.hpp"
 
-#include <sgpp/base/opencl/OCLManager.hpp>
-#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
-#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
-#include <sgpp/base/opencl/LinearLoadBalancer.hpp>
 #include "StreamingModOCLFastKernelSourceBuilder.hpp"
 
 namespace SGPP {
@@ -50,22 +50,22 @@ private:
     double* deviceTimingsMultTranspose;
 
     StreamingModOCLFastKernelSourceBuilder kernelSourceBuilder;
-    base::OCLManager& manager;
-    base::OCLConfigurationParameters parameters;
+    std::shared_ptr<base::OCLManager> manager;
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
     base::LinearLoadBalancer multLoadBalancer;
     base::LinearLoadBalancer multTransposeLoadBalancer;
 
 public:
 
-    StreamingModOCLFastKernelImpl(size_t dims, base::OCLManager& manager,
-            base::OCLConfigurationParameters parameters) :
+    StreamingModOCLFastKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
                     this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
 
         this->dims = dims;
-        this->num_devices = manager.num_devices;
+        this->num_devices = manager->num_devices;
         this->deviceTimingsMult = new double[this->num_devices];
         this->deviceTimingsMultTranspose = new double[this->num_devices];
 
@@ -75,9 +75,9 @@ public:
             this->deviceTimingsMultTranspose[i] = 1.0;
         }
 
-        this->context = manager.context;
-        this->command_queue = manager.command_queue;
-        this->device_ids = manager.device_ids;
+        this->context = manager->context;
+        this->command_queue = manager->command_queue;
+        this->device_ids = manager->device_ids;
         this->err = CL_SUCCESS;
 
         this->hostGrid = nullptr;
@@ -151,7 +151,7 @@ public:
         double time = 0.0;
 
         if (kernel_mult[0] == nullptr) {
-            this->createMult(this->dims, parameters.getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
+            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
                     kernel_mult);
         }
 
@@ -166,8 +166,8 @@ public:
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters.getAsUnsigned("LOCAL_SIZE"),
+        size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters->getAsUnsigned("LOCAL_SIZE"),
                 gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
@@ -200,7 +200,7 @@ public:
         cl_event* clTimings = new cl_event[num_devices];
 
         // enqueue kernel
-        size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
@@ -298,10 +298,10 @@ public:
         }
 
         double time = 0.0;
-        size_t gridBlockingSize = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
+        size_t gridBlockingSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
 
         if (kernel_multTrans[0] == nullptr) {
-            this->createMultTrans(this->dims, parameters.getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
+            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
                     kernel_multTrans);
         }
 
@@ -314,7 +314,7 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters.getAsUnsigned("LOCAL_SIZE"), gpu_start_index_grid, gpu_end_index_grid);
+                parameters->getAsUnsigned("LOCAL_SIZE"), gpu_start_index_grid, gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
@@ -347,7 +347,7 @@ public:
         cl_event* clTimings = new cl_event[num_devices];
 
         // enqueue kernels
-        size_t local = parameters.getAsUnsigned("LOCAL_SIZE");
+        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
@@ -444,13 +444,13 @@ private:
     void createMultTrans(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
             cl_device_id* device_ids, cl_kernel* kernel) {
         std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
-        manager.buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel);
+        manager->buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel);
     }
 
     void createMult(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
             cl_device_id* device_ids, cl_kernel* kernel) {
         std::string program_src = kernelSourceBuilder.generateSourceMult();
-        manager.buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel);
+        manager->buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel);
     }
 
     void releaseGridBuffers() {
