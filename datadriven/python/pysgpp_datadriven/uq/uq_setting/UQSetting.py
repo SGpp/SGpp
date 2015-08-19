@@ -18,17 +18,17 @@ quantities of interest are computed out of the simulation results.
 @version  0.1
 
 """
-from bin.uq.sampler import Sample, SampleType
+from pysgpp_datadriven.uq.sampler import Sample, SampleType
 from math import ceil
 from pysgpp import DataVector, DataMatrix
 import subprocess
 import json
 import os
 
-from bin.tools import readDataARFF
+from pysgpp_datadriven.tools import readDataARFF
 from UQSettingFormatter import UQSettingFormatter
 from UQSpecification import UQSpecification
-import uq.jsonLib as ju
+import pysgpp_datadriven.uq.jsonLib as ju
 import numpy as np
 import warnings
 
@@ -424,7 +424,7 @@ class UQSetting(object):
 
         # choose unique working directory on host
         cmd = ["ssh", host,
-               "python2 -c 'from bin.uq.uq_setting.choose_working_dir import choose_working_directory; choose_working_directory(\"%s\")'"
+               "python2 -c 'from pysgpp_datadriven.uq.uq_setting.choose_working_dir import choose_working_directory; choose_working_directory(\"%s\")'"
                % remote.hosts[host]['scratch'] ]
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         p.wait()
@@ -1186,7 +1186,7 @@ class UQSetting(object):
 #             # version 2
 #             # --------------------------------------------------
 #             dd = {}
-#             # from bin.utils.GzipSerializer import GzipSerializer
+#             # from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
 #             broken_lmp, broken_reason, unbroken = [], [], []
 #             print "-" * 60
 #             for i, (q, _) in enumerate(d3.items()):

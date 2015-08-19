@@ -16,7 +16,7 @@
 """
 
 from Dist import Dist
-import uq.jsonLib as ju
+import pysgpp_datadriven.uq.jsonLib as ju
 import scipy.stats as stats
 
 

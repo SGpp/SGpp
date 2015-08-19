@@ -1,8 +1,8 @@
-from bin.tools import readGrid, readAlphaARFF, readDataTrivial
-from bin.uq.operations import evalSGFunctionMulti, hierarchize, dehierarchize, evalSGFunction
+from pysgpp_datadriven.tools import readGrid, readAlphaARFF, readDataTrivial
+from pysgpp_datadriven.uq.operations import evalSGFunctionMulti, hierarchize, dehierarchize, evalSGFunction
 from pysgpp import DataVector, DataMatrix
 from scipy.stats import norm
-from bin.uq.uq_plot import scatterplot_matrix
+from pysgpp_datadriven.uq.plot import scatterplot_matrix
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
@@ -75,7 +75,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
     def __estimate(self, vol, grid, alpha, U, T, f, npaths):
         n = npaths * self.__n
         A = self.__getSamples(U, T, n)
-        # import pylab as plt
+        # import matplotlib.pyplot as plt
         # fig = plt.figure()
         # plt.plot(A[:, 0], A[:, 1], ' ', marker='^')
         # fig.show()

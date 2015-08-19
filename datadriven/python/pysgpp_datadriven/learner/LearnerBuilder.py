@@ -3,26 +3,26 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from learner.LearnedKnowledge import LearnedKnowledge
-from learner.Classifier import Classifier
-from learner.TrainingStopPolicy import TrainingStopPolicy
+from LearnedKnowledge import LearnedKnowledge
+from Classifier import Classifier
+from TrainingStopPolicy import TrainingStopPolicy
 
-from learner.TrainingSpecification import TrainingSpecification
-from learner.solver.CGSolver import CGSolver
-from learner.Types import BorderTypes
+from TrainingSpecification import TrainingSpecification
+from solver.CGSolver import CGSolver
+from Types import BorderTypes
 
 from pysgpp import *
-from data.ARFFAdapter import ARFFAdapter
-from data.CSVAdapter import CSVAdapter
-from data.DataContainer import DataContainer
-from learner.Regressor import Regressor
+from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.data.CSVAdapter import CSVAdapter
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from Regressor import Regressor
 
-import utils.json as json
-from learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
-from learner.folding.RandomFoldingPolicy import RandomFoldingPolicy
-from learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
-from learner.folding.FilesFoldingPolicy import FilesFoldingPolicy
-from learner.formatter import LearnedKnowledgeFormatter
+import pysgpp_datadriven.utils.json as json
+from folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from folding.RandomFoldingPolicy import RandomFoldingPolicy
+from folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from folding.FilesFoldingPolicy import FilesFoldingPolicy
+from formatter import LearnedKnowledgeFormatter
 
 ## Implement mechanisms to create customized learning system
 #

@@ -13,12 +13,12 @@
 @version  0.1
 
 """
-from bin.uq.estimators import MCEstimator
-from bin.uq.tools import writeDataARFF
+from pysgpp_datadriven.uq.estimators import MCEstimator
+from pysgpp_datadriven.uq.tools import writeDataARFF
 from pysgpp import (DataVector, DataMatrix)
 import numpy as np
 
-from bin.uq.analysis import Analysis
+from pysgpp_datadriven.uq.analysis import Analysis
 
 
 class MCAnalysis(Analysis):

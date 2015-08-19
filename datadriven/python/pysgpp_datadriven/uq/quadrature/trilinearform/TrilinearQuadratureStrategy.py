@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from pysgpp import DataMatrix, DataVector
-from bin.uq.quadrature.HashQuadrature import HashQuadrature
+from pysgpp_datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
 
 class TrilinearQuadratureStrategy(HashQuadrature):
@@ -26,12 +26,12 @@ class TrilinearQuadratureStrategy(HashQuadrature):
                                    gpsj, basisj):
         """
         Compute trilinear form for two lists of grid points
-        @param gpsk: list of GridIndex
+        @param gpsk: list of HashGridIndex
         @param basisk: SG++ basis for grid indices gpsk
         @param alphak: coefficients for kth grid
-        @param gpsi: list of GridIndex
+        @param gpsi: list of HashGridIndex
         @param basisi: SG++ basis for grid indices gpsi
-        @param gpsj: list of GridIndex
+        @param gpsj: list of HashGridIndex
         @param basisj: SG++ basis for grid indices gpsj
         @return: DataMatrix
         """
@@ -61,11 +61,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         """
         Compute the trilinear form of two grid point with a list
         of grid points
-        @param gpk: list of GridIndex
+        @param gpk: list of HashGridIndex
         @param basisk: SG++ Basis for grid indices k
-        @param gpi: GridIndex
+        @param gpi: HashGridIndex
         @param basisi: SG++ Basis for grid indices i
-        @param gpj: GridIndex
+        @param gpj: HashGridIndex
         @param basisj: SG++ Basis for grid indices j
         @return DataVector
         """
@@ -93,11 +93,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         """
         Restore the trilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
-        @param gpk: GridIndex
+        @param gpk: HashGridIndex
         @param basisk: SG++ Basis
-        @param gpi: GridIndex
+        @param gpi: HashGridIndex
         @param basisi: SG++ Basis
-        @param gpj: GridIndex
+        @param gpj: HashGridIndex
         @param basisj: SG++ Basis
         """
         available, key = self.hasValue(gpk, gpi, gpj, d)
@@ -117,11 +117,11 @@ class TrilinearQuadratureStrategy(HashQuadrature):
     def computeTrilinearFormEntry(self, gpk, basisk, gpi, basisi, gpj, basisj, d):
         """
         Compute the Trilinear form of one grid point with another one
-        @param gpk: GridIndex
+        @param gpk: HashGridIndex
         @param basisk: SG++ Basis
-        @param gpi: GridIndex
+        @param gpi: HashGridIndex
         @param basisi: SG++ Basis
-        @param gpj: GridIndex
+        @param gpj: HashGridIndex
         @param basisj: SG++ Basis
         """
         raise NotImplementedError()

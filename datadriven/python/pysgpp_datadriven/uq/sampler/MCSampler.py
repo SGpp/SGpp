@@ -1,6 +1,6 @@
 from pysgpp import (DataVector,
                     NaiveSampleGenerator,
-                    LatinHypercubeSampleGenerator,
+                    # LatinHypercubeSampleGenerator,
                     HaltonSampleGenerator)
 from Sample import Samples, SampleType, DistributionType
 from Sampler import Sampler

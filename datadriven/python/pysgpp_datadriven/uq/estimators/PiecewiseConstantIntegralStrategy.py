@@ -1,7 +1,7 @@
 from uq.estimators.SparseGridEstimationStrategy import EstimationStrategy
 from numpy import prod
-from bin.uq.operations import evalSGFunction, discretize
-from bin.uq.quadrature import doQuadrature
+from pysgpp_datadriven.uq.operations import evalSGFunction, discretize
+from pysgpp_datadriven.uq.quadrature import doQuadrature
 
 
 class PiecewiseConstantIntegralStrategy(EstimationStrategy):
@@ -22,7 +22,7 @@ class PiecewiseConstantIntegralStrategy(EstimationStrategy):
 
         # add the density measure
         for i in xrange(gs.size()):
-            p = [gs.get(i).abs(j) for j in range(gs.dim())]
+            p = [gs.get(i).getCoord(j) for j in range(gs.dim())]
             q = U.pdf(tr.trans(p), marginal=True)
             n_alpha[i] *= prod(q)
 

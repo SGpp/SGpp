@@ -18,7 +18,7 @@
 from Dist import Dist
 from scipy.stats import uniform
 
-import uq.jsonLib as ju
+import pysgpp_datadriven.uq.jsonLib as ju
 
 
 class Uniform(Dist):
@@ -40,7 +40,7 @@ class Uniform(Dist):
             raise AttributeError('lower bound of the interval is larger then \
                                   the higher one')
 
-        self._dist = uniform(loc=a, scale=abs(b-a))
+        self._dist = uniform(loc=a, scale=b-a)
 
     def pdf(self, x):
         return self._dist.pdf(x)

@@ -52,7 +52,7 @@ class InverseCDFTransformation(Transformation):
 
     @classmethod
     def fromJson(cls, jsonObject):
-        from bin.uq.dists.Dist import Dist
+        from pysgpp_datadriven.uq.dists.Dist import Dist
 
         key = '_InverseCDFTransformation__dist'
         if key in jsonObject:

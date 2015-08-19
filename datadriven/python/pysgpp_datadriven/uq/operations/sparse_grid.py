@@ -1,12 +1,12 @@
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval,
                     DataVector, DataMatrix,
-                    GridIndex,
+                    HashGridIndex,
 #                     X86SIMD, createOperationMultipleEvalVectorized,
 #                     DMVectorizationPaddingAssistant_padDataset,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
-                    SMyPolyBase, SMyPolyBoundaryBase)
+                    SPolyBase, SPolyBoundaryBase)
 
 from scipy.interpolate import interp1d
 
@@ -14,30 +14,30 @@ import numpy as np
 
 
 #######################################################################
-def createGrid(grid, dim, deg=1, addTrapezoidBorder=False):
+def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
 
-    if "ultraPoly" in gridType or "myPoly" in gridType:
+    if gridType in ["poly", "polyTruncatedBoundary"]:
         deg = max(deg, grid.getDegree())
 
     # print gridType, deg
     if deg > 1:
-        if gridType == "linearTrapezoidBoundary" or \
-           gridType == "myPolyTrapezoidBoundary":
-            return Grid.createMyPolyTrapezoidBoundaryGrid(dim, deg)
+        if gridType == "linearTuncatedBoundary" or \
+           gridType == "polyTruncatedBoundary":
+            return Grid.createPolyTruncatedBoundaryGrid(dim, deg)
         elif gridType == "linearBoundary":
             raise NotImplementedError("there is not full boundary polynomial grid")
-        elif gridType == "linear" or gridType == "myPoly":
-            return Grid.createMyPolyGrid(dim, deg)
+        elif gridType == "linear" or gridType == "poly":
+            return Grid.createPolyGrid(dim, deg)
         else:
             raise Exception('unknown grid type %s' % gridType)
     else:
         if gridType == "linear":
             return Grid.createLinearGrid(dim)
-        elif gridType == "linearTrapezoidBoundary":
-            return Grid.createLinearTrapezoidBoundaryGrid(dim)
-        elif gridType == "linearBoudary":
+        elif gridType == "linearTruncatedBoundary":
+            return Grid.createLinearTruncatedBoundaryGrid(dim)
+        elif gridType == "linearBoundary":
             return Grid.createLinearBoundaryGrid(dim)
         else:
             raise Exception('unknown grid type %s' % gridType)
@@ -69,7 +69,7 @@ def copyGrid(grid, level=0, deg=1):
 
         # insert grid point
         if not newGs.has_key(gp):
-            newGs.insert(GridIndex(gp))
+            newGs.insert(HashGridIndex(gp))
 
     newGs.recalcLeafProperty()
     return newGrid
@@ -78,18 +78,18 @@ def copyGrid(grid, level=0, deg=1):
 def getBasis(grid):
     if grid.getType() == "linear":
         return SLinearBase()
-    elif grid.getType() == "linearTrapezoidBoundary":
+    elif grid.getType() == "linearTruncatedBoundary":
         return SLinearBoundaryBase()
-    elif grid.getType() == "myPoly":
-        return SMyPolyBase(grid.getDegree())
-    elif grid.getType() == "myPolyTrapezoidBoundary":
-        return SMyPolyBoundaryBase(grid.getDegree())
+    elif grid.getType() == "poly":
+        return SPolyBase(grid.getDegree())
+    elif grid.getType() == "polyTruncatedBoundary":
+        return SPolyBoundaryBase(grid.getDegree())
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())
 
 
 def getDegree(grid):
-    if grid.getType() in ["myPoly", "myPolyTrapezoidBoundary"]:
+    if grid.getType() in ["myPoly", "myPolyTruncatedBoundary"]:
         return grid.getDegree()
     else:
         return 1
@@ -122,8 +122,8 @@ def isValid(grid, gp):
     if valid:
         minLevel = 0 if hasBorder(grid) else 1
         for d in xrange(gp.dim()):
-            if gp.abs(d) > 1 or gp.abs(d) < 0:
-                x = [gp.abs(d) for d in xrange(gp.dim())]
+            if gp.getCoord(d) > 1 or gp.getCoord(d) < 0:
+                x = [gp.getCoord(d) for d in xrange(gp.dim())]
                 level = [gp.getLevel(d) for d in xrange(gp.dim())]
                 index = [gp.getIndex(d) for d in xrange(gp.dim())]
                 raise AttributeError('grid point out of range %s, (%s, %s), \
@@ -139,7 +139,7 @@ def parent(grid, gp, d):
 
     if isValid1d(grid, level, index):
         # create parent
-        ans = GridIndex(gp)
+        ans = HashGridIndex(gp)
         ans.set(d, level, index)
         return ans
 
@@ -173,15 +173,15 @@ def insertHierarchicalAncestors(grid, gp):
     """
     insert all hierarchical ancestors recursively to the grid
     @param grid: Grid
-    @param gp: GridIndex
-    @return: list of GridIndex, contains all the newly added grid points
+    @param gp: HashGridIndex
+    @return: list of HashGridIndex, contains all the newly added grid points
     """
     newGridPoints = []
     gs = grid.getStorage()
     gps = [gp]
     while len(gps) > 0:
         gp = gps.pop()
-        gpc = GridIndex(gp)
+        gpc = HashGridIndex(gp)
         for dim in xrange(gp.dim()):
             oldlevel, oldindex = gpc.getLevel(dim), gpc.getIndex(dim)
             # run up to the root node until you find one existing node
@@ -193,7 +193,7 @@ def insertHierarchicalAncestors(grid, gp):
                 gpc.set(dim, level, index)
 
                 if not gs.has_key(gpc):
-                    newGridPoints.append(GridIndex(gpc))
+                    newGridPoints.append(HashGridIndex(gpc))
                 else:
                     break
 
@@ -227,7 +227,7 @@ def insertHierarchicalAncestorsS(grid, gp):
 def hasChildren(grid, gp):
     gs = grid.getStorage()
     d = 0
-    gpn = GridIndex(gp)
+    gpn = HashGridIndex(gp)
     while d < gs.dim():
         # load level index
         level, index = gp.getLevel(d), gp.getIndex(d)
@@ -272,12 +272,12 @@ def hasAllChildren(grid, gp):
     return cnt % 2 == 0
 
 
-def insertTrapezoidBorder(grid, gp):
+def insertTruncatedBorder(grid, gp):
     """
     insert points on the border recursively for grids with border
     @param grid: Grid
-    @param gp: GridIndex
-    @return: list of GridIndex, contains all the newly added grid points
+    @param gp: HashGridIndex
+    @return: list of HashGridIndex, contains all the newly added grid points
     """
     gs = grid.getStorage()
     gps = [gp]
@@ -287,7 +287,7 @@ def insertTrapezoidBorder(grid, gp):
         gp = gps.pop()
         for d in xrange(gs.dim()):
             # right border in d
-            rgp = GridIndex(gp)
+            rgp = HashGridIndex(gp)
             gs.right_levelzero(rgp, d)
             # insert the point
             if not gs.has_key(rgp):
@@ -295,7 +295,7 @@ def insertTrapezoidBorder(grid, gp):
                 gps.append(rgp)
 
             # left border in d
-            lgp = GridIndex(gp)
+            lgp = HashGridIndex(gp)
             gs.left_levelzero(lgp, d)
             # insert the point
             if not gs.has_key(rgp):
@@ -314,9 +314,9 @@ def insertPoint(grid, gp):
     if gs.has_key(gp) or not isValid(grid, gp):
         return []
 
-    success = gs.insert(GridIndex(gp)) > -1
+    success = gs.insert(HashGridIndex(gp)) > -1
     if success:
-        return [GridIndex(gp)]
+        return [HashGridIndex(gp)]
     else:
         raise AttributeError('can not insert this new grid point to the storage')
 
@@ -326,13 +326,13 @@ def isRefineable(grid, gp):
 
     for d in xrange(gs.dim()):
         # left child in dimension dim
-        gpl = GridIndex(gp)
+        gpl = HashGridIndex(gp)
         gs.left_child(gpl, d)
         if not gs.has_key(gpl) and isValid(grid, gpl):
             return True
 
         # right child in dimension dim
-        gpr = GridIndex(gp)
+        gpr = HashGridIndex(gp)
         gs.right_child(gpr, d)
         if not gs.has_key(gpr) and isValid(grid, gpr):
             return True
@@ -391,7 +391,7 @@ def evalHierToTop(basis, grid, coeffs, gp, d):
     # print "======== evalHierToTop (%i, %i) ========" % (gp.getLevel(0), gp.getIndex(0))
     while gpa is not None:
         ix = gs.seq(gpa)
-        accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gp.abs(d)
+        accLevel, i, p = gpa.getLevel(d), gpa.getIndex(d), gp.getCoord(d)
         b = basis.eval(accLevel, i, p)
 #         print "%i, %i, %.20f: %.20f * %.20f = %.20f (%.20f)" % \
 #             (accLevel, i, p, coeffs[ix], b, coeffs[ix] * b, ans)
@@ -433,9 +433,9 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
             gp = gs.get(ix)
 
             # append left and right child
-            gpl = GridIndex(gp)
+            gpl = HashGridIndex(gp)
             gs.left_child(gpl, d)
-            gpr = GridIndex(gp)
+            gpr = HashGridIndex(gp)
             gs.right_child(gpr, d)
 
             gps = []
@@ -454,9 +454,9 @@ def hierarchizeBruteForce(grid, nodalValues, ignore=None):
                 alpha[ix] -= diff
 
                 # append left and right child
-                gpl = GridIndex(gpc)
+                gpl = HashGridIndex(gpc)
                 gs.left_child(gpl, d)
-                gpr = GridIndex(gpc)
+                gpr = HashGridIndex(gpc)
                 gs.right_child(gpr, d)
 
                 if gs.has_key(gpr):
@@ -491,7 +491,8 @@ def dehierarchize(grid, alpha):
     for i in xrange(gs.size()):
         gs.get(i).getCoords(p)
         A.setRow(i, p)
-    createOperationMultipleEval(grid, A).mult(alpha, nodalValues)
+    opEval = createOperationMultipleEval(grid, A)
+    opEval.mult(alpha, nodalValues)
     return nodalValues
 
 
@@ -500,7 +501,7 @@ def dehierarchizeList(grid, alpha, gps):
     evaluate sparse grid function at grid points in gps
     @param grid: Grid
     @param alpha: DataVector
-    @param gps: list of GridIndex
+    @param gps: list of HashGridIndex
     """
     dim = grid.getStorage().dim()
     p = DataVector(dim)
@@ -522,11 +523,11 @@ def balance(grid):
         gp = gps.pop()
         for dim in xrange(gs.dim()):
             # left child in dimension dim
-            lgp = GridIndex(gp)
+            lgp = HashGridIndex(gp)
             gs.left_child(lgp, dim)
 
             # right child in dimension dim
-            rgp = GridIndex(gp)
+            rgp = HashGridIndex(gp)
             gs.right_child(rgp, dim)
 
             if gs.has_key(lgp) and not gs.has_key(rgp):
@@ -592,9 +593,9 @@ def addConst(grid, alpha, c):
 #             # use a linear extrapolation through parent and grandparent
 #             # to estimate the surplus of the current collocation node
 #             igrandpar = gs.seq(grp)
-#             xpar = p.abs(dgrp)
-#             xgrandpar = grp.abs(dgrp)
-#             xgp = p.abs(dgrp) + 2 ** -gp.getLevel(dp)
+#             xpar = p.getCoord(dgrp)
+#             xgrandpar = grp.getCoord(dgrp)
+#             xgp = p.getCoord(dgrp) + 2 ** -gp.getLevel(dp)
 #             # slope between parent and grand parent
 #             a = (v[ipar] - v[igrandpar]) / (xpar - xgrandpar)
 #             # half the slope for the child
@@ -620,7 +621,7 @@ def addConst(grid, alpha, c):
 #             # do the linear extrapolation
 #             y = a * xgp + b
 #
-# #             import pylab as plt
+# #             import matplotlib.pyplot as plt
 # #             plt.plot([xpar, xgp], [a * xi + b for xi in [xpar, xgp]])
 # #             plt.plot([xgrandpar, xpar], [sign * 2 * a * xi + v[ipar]
 # #                                          - sign * 2 * a * xpar
@@ -642,7 +643,7 @@ def estimateSurplus(grid, gp, v):
     """
     Linear extrapolation of the surplus
     @param grid: Grid
-    @param gp: GridIndex
+    @param gp: HashGridIndex
     @param v: DataVector, surplus vector
     @return: float, estimated surplus for gp
     """
@@ -760,11 +761,11 @@ def checkPositivity(grid, alpha):
     gs = grid.getStorage()
     fullGrid = Grid.createLinearGrid(gs.dim())
     fullGrid.createGridGenerator().full(gs.getMaxLevel())
-    fullGridStorage = fullGrid.getStorage()
-    A = DataMatrix(fullGridStorage.size(), fullGridStorage.dim())
+    fullHashGridStorage = fullGrid.getStorage()
+    A = DataMatrix(fullHashGridStorage.size(), fullHashGridStorage.dim())
     p = DataVector(gs.dim())
-    for i in xrange(fullGridStorage.size()):
-        fullGridStorage.get(i).getCoords(p)
+    for i in xrange(fullHashGridStorage.size()):
+        fullHashGridStorage.get(i).getCoords(p)
         A.setRow(i, p)
 
     res = evalSGFunctionMulti(grid, alpha, A)
@@ -778,5 +779,5 @@ def checkPositivity(grid, alpha):
             print "  %s = %g" % (p, yi)
     if cnt > 0:
         print "warning: function is not positive"
-        print "%i/%i: [%g, %g]" % (cnt, fullGridStorage.size(), ymin, ymax)
+        print "%i/%i: [%g, %g]" % (cnt, fullHashGridStorage.size(), ymin, ymax)
     return cnt == 0

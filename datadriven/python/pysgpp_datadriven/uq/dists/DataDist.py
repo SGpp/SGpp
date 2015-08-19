@@ -13,7 +13,7 @@
 @version  0.1
 """
 
-from bin.tools import readDataTrivial
+from pysgpp_datadriven.tools import readDataTrivial
 import os
 
 from Dist import Dist

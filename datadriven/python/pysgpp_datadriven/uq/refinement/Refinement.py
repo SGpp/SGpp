@@ -1,11 +1,11 @@
-from bin.uq.operations import balance
-from pysgpp import (DataVector, GridIndex,
+from pysgpp_datadriven.uq.operations import balance
+from pysgpp import (DataVector, HashGridIndex,
                     SurplusRefinementFunctor,
-                    GridStorage)
+                    HashGridStorage)
 
 import numpy as np
-from bin.uq.operations.sparse_grid import copyGrid
-from bin.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
+from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid
+from pysgpp_datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
 
 
 class Refinement(object):
@@ -133,7 +133,7 @@ class Refinement(object):
 #             values = self._admissibleSet.values()
 #             for i, ri in enumerate(rix):
 #                 values[ri].getCoords(p)
-#                 while i < len(rix) and abs(r[ri] - r[rix[i]]) < 1e-10:
+#                 while i < len(rix) and.getCoord(r[ri] - r[rix[i]]) < 1e-10:
 #                     i += 1
 #                 plt.plot(p[0], p[1], marker="o", color='yellow')
 #                 plt.text(p[0], p[1], "%i" % (i - 1,), color='yellow',
@@ -200,10 +200,10 @@ class Refinement(object):
         # check if this method is used in the right context
         if learner.getGrid().getType() not in ('linear',
                                                'linearBoundary',
-                                               'linearTrapezoidBoundary',
+                                               'linearTruncatedBoundary',
                                                'modlinear',
                                                'ultraPoly',
-                                               'ultraPolyTrapezoidBoundary',
+                                               'ultraPolyTruncatedBoundary',
                                                'myPoly'):
             raise AttributeError('Grid type %s is not supported' %
                                  learner.getGrid().getType())
@@ -252,7 +252,7 @@ class Refinement(object):
 
             # ## set surplus vector such that just the desired point
             # ## is going to be refined and nothing else
-            # oldgs = GridStorage(gs)
+            # oldgs = HashGridStorage(gs)
             # alpha = DataVector(gs.size())
             # alpha.setAll(0.0)
             # alpha[gs.seq(gp)] = 2.0
@@ -273,7 +273,7 @@ class Refinement(object):
                 pointsNum -= 1
 
                 # store which point has been refined
-                refinedPoints.append(GridIndex(gp))
+                refinedPoints.append(HashGridIndex(gp))
                 newGridPoints += nps
 
                 # increase iteration of the learner

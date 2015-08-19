@@ -3,7 +3,6 @@ import re
 import gzip
 
 from pysgpp import DataMatrix, DataVector, Grid
-from datadriven.earner.Types import BorderTypes
 import numpy as np
 from math import log, trunc, exp
 
@@ -34,6 +33,7 @@ def gzOpen(filename, mode="r"):
 
 
 def createGrid(dim, level, borderType, isFull=False):
+    from pysgpp_datadriven.learner.Types import BorderTypes
     if borderType == BorderTypes.NONE:
         grid = Grid.createLinearGrid(dim)
     elif borderType == BorderTypes.TRAPEZOIDBOUNDARY:
@@ -187,4 +187,3 @@ def writeCSV(filename, samples, delim=' '):
         samples.getRow(i, p)
         fd.write(delim.join(str(p)[1:-1].split(', ')) + '\n')
     fd.close()
-

@@ -1,5 +1,5 @@
-from bin.uq.transformation import InverseCDFTransformation
-from bin.uq.dists import Uniform, J
+from pysgpp_datadriven.uq.transformation import InverseCDFTransformation
+from pysgpp_datadriven.uq.dists import Uniform, J
 
 
 class SparseGridEstimationStrategy(object):
@@ -47,7 +47,7 @@ class SparseGridEstimationStrategy(object):
 
     @classmethod
     def fromJson(cls, jsonObject):
-        import uq.estimators as estimators
+        import pysgpp_datadriven.uq.estimators as estimators
         if jsonObject['module'] == 'estimators.IntegralStrategy':
             return estimators.IntegralStrategy()
         elif jsonObject['module'] == 'estimators.MonteCarloStrategy':

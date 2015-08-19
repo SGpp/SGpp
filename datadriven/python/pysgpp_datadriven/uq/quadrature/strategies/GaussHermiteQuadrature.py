@@ -19,5 +19,7 @@ class GaussHermiteQuadrature(QuadratureStrategy):
             rootsArray, weights = hermgauss(i + 1)
             # transform rootsArray to [0, 1]
             rootsArray = (rootsArray + 1) / 2.
+            # normalize weights
+            weights /= np.sum(weights)
             # zip them
             self._gaussPoints[i] = zip(rootsArray, weights)

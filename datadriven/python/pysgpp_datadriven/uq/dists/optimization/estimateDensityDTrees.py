@@ -1,7 +1,7 @@
-from bin.uq.dists import DTreesDist
+from pysgpp_datadriven.uq.dists import DTreesDist
 import numpy as np
 import os
-from bin.uq.tools import writeDataARFF
+from pysgpp_datadriven.uq.tools import writeDataARFF
 from pysgpp import DataMatrix
 
 

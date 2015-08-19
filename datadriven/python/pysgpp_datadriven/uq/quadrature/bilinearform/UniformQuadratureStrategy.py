@@ -9,7 +9,9 @@ from BilinearQuadratureStrategy import BilinearQuadratureStrategy
 
 class UniformQuadratureStrategy(BilinearQuadratureStrategy):
     """
-    Generic object for quadrature strategies
+    Generate the a quadrature strategy for uniformly distributed
+    random variables. Therefore is the mass matrix just the bilinear form
+    of the sparse grid basis functions.
     """
 
     def __init__(self):
@@ -28,6 +30,8 @@ class UniformQuadratureStrategy(BilinearQuadratureStrategy):
         A = DataMatrix(gs.size(), gs.size())
         A.setAll(0.)
         createOperationLTwoDotExplicit(A, grid)
+
+        # store the result in the hash map
         for i in xrange(gs.size()):
             gpi = gs.get(i)
             for j in xrange(gs.size()):

@@ -1,11 +1,11 @@
 from pysgpp import createOperationQuadrature
-from bin.uq.operations import getBasis
+from pysgpp_datadriven.uq.operations import getBasis
 import numpy as np
 
 
 def getIntegral(grid, level, index):
     # create new grid
-    if grid.getType() == "linearTrapezoidBoundary" or \
+    if grid.getType() == "linearTruncatedBoundary" or \
             grid.getType() == "linearBoundary":
         return np.power(2., -max(1, level))
     elif grid.getType() == "linear":
@@ -15,7 +15,7 @@ def getIntegral(grid, level, index):
         return np.power(2., -level)
     elif grid.getType() == "myPoly":
         return getBasis(grid).getIntegral(level, index)
-    elif grid.getType() == "myPolyTrapezoidBoundary":
+    elif grid.getType() == "polyTruncatedBoundary":
         return getBasis(grid).getIntegral(level, index)
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())
@@ -30,7 +30,6 @@ def getIntegralOfBasisFunction(grid, gp):
 
 def doQuadrature(grid, alpha):
     try:
-        raise Exception()
         return createOperationQuadrature(grid).doQuadrature(alpha)
     except Exception:
         # import ipdb; ipdb.set_trace()

@@ -13,8 +13,8 @@
 @version  0.1
 
 """
-from bin.uq.dists import J
-from bin.uq.transformation import JointTransformation
+from pysgpp_datadriven.uq.dists import J
+from pysgpp_datadriven.uq.transformation import JointTransformation
 from Parameter import Parameter
 
 import numpy as np

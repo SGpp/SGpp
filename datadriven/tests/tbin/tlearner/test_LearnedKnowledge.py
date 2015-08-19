@@ -11,7 +11,7 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
 
 ##
 # @package tests.tbin.test_LearnerKnowledge

@@ -3,16 +3,16 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
-from bin.uq.operations import checkPositivity, \
+from pysgpp_datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import GridIndex, createOperationEval, DataVector, IndexList, \
+from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
     createOperationQuadrature
 import warnings
-from bin.uq.uq_plot.plot2d import plotSG2d
-import pylab as plt
-from bin.uq.operations.sparse_grid import getHierarchicalAncestors, \
-    insertTrapezoidBorder
+from pysgpp_datadriven.uq.plot.plot2d import plotSG2d
+import matplotlib.pyplot as plt
+from pysgpp_datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
+    insertTruncatedBorder
 
 
 class OperationMakePositive(object):
@@ -86,7 +86,7 @@ class OperationMakePositive(object):
                 for gp in acc:
                     ix = gs.seq(gp)
                     if ix not in candidates:
-                        candidates[ix] = GridIndex(gp)
+                        candidates[ix] = HashGridIndex(gp)
 
         return candidates.values()
 
@@ -127,7 +127,7 @@ class OperationMakePositive(object):
         gs.left_child(gp, d)
         gp.getCoords(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(GridIndex(gp))
+            acc.append(HashGridIndex(gp))
 
         if level + 1 < maxLevel:
             self.lookupFullGridPointsRec1d(grid, alpha, gp, d, p, opEval, maxLevel, acc)
@@ -139,7 +139,7 @@ class OperationMakePositive(object):
         gs.right_child(gp, d)
         gp.getCoords(p)
         if opEval.eval(alpha, p) < 0:
-            acc.append(GridIndex(gp))
+            acc.append(HashGridIndex(gp))
 
         # store them for next round
         if level + 1 < maxLevel:
@@ -184,7 +184,7 @@ class OperationMakePositive(object):
             newGridPoints += insertPoint(grid, gp)
             newGridPoints += insertHierarchicalAncestors(grid, gp)
             if "Boundary" in grid.getType():
-                newGridPoints += insertTrapezoidBorder(grid, gp)
+                newGridPoints += insertTruncatedBorder(grid, gp)
 
         # recompute the leaf property and return the result
         grid.getStorage().recalcLeafProperty()

@@ -15,9 +15,9 @@
 
 """
 
-from bin.uq.uq_setting.UQSetting import UQSetting
-from bin.uq.uq_setting.UQSettingFormatter import UQSettingFormatter
-from bin.uq.uq_setting.UQSpecification import UQSpecification
+from pysgpp_datadriven.uq.uq_setting.UQSetting import UQSetting
+from pysgpp_datadriven.uq.uq_setting.UQSettingFormatter import UQSettingFormatter
+from pysgpp_datadriven.uq.uq_setting.UQSpecification import UQSpecification
 from scipy.interpolate import interp1d
 import os
 

@@ -14,13 +14,13 @@ pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
 from pysgpp import Grid, DataVector
-from datadriven.learner import LearnedKnowledge
-import datadriven.learner.LearnerBuilder as LearnerBuilder
-from datadriven.controller import InfoToScreen
+from pysgpp_datadriven.learner import LearnedKnowledge
+import pysgpp_datadriven.learner.LearnerBuilder as LearnerBuilder
+from pysgpp_datadriven.controller import InfoToScreen
 
 import gzip
 
-from datadriven.controller import CheckpointController
+from pysgpp_datadriven.controller import CheckpointController
 
 
 ##

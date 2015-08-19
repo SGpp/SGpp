@@ -1,5 +1,5 @@
 from Dist import Dist
-from bin.uq.operations.general import isNumerical, isList, isMatrix
+from pysgpp_datadriven.uq.operations.general import isNumerical, isList, isMatrix
 from pysgpp import (DataVector, DataMatrix, GaussianKDE)
 import numpy as np
 

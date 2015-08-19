@@ -1,7 +1,7 @@
-from bin.uq.dists import LibAGFDist
+from pysgpp_datadriven.uq.dists import LibAGFDist
 import numpy as np
 import os
-from bin.uq.tools import writeDataARFF
+from pysgpp_datadriven.uq.tools import writeDataARFF
 from pysgpp import DataMatrix
 
 

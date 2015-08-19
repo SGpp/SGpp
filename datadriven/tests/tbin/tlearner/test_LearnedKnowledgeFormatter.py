@@ -13,8 +13,8 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.formatter.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
-from datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
 from pysgpp import DataVector
 
 

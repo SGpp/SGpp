@@ -1,7 +1,7 @@
-from bin.data.DataContainer import DataContainer
-from bin.uq.analysis import KnowledgeTypes
-from bin.uq.learner.Learner import Learner, LearnerEvents
-from bin.uq.sampler import Samples, SampleType
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.uq.analysis import KnowledgeTypes
+from pysgpp_datadriven.uq.learner.Learner import Learner, LearnerEvents
+from pysgpp_datadriven.uq.sampler import Samples, SampleType
 from pysgpp import DataVector, SurplusRefinementFunctor, DataMatrix
 
 import numpy as np

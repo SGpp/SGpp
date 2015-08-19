@@ -1,4 +1,4 @@
-from bin.uq.dists import TNormal, Normal, Uniform, SGDEdist
+from pysgpp_datadriven.uq.dists import TNormal, Normal, Uniform, SGDEdist
 from GaussHermiteQuadrature import GaussHermiteQuadrature
 from GaussLegendreQuadrature import GaussLegendreQuadrature
 import warnings

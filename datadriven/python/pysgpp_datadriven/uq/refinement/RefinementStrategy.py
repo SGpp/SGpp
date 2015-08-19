@@ -1,12 +1,12 @@
-from bin.uq.analysis import KnowledgeTypes
-from bin.uq.quadrature import getIntegral
-from bin.uq.operations import (estimateConvergence,
+from pysgpp_datadriven.uq.analysis import KnowledgeTypes
+from pysgpp_datadriven.uq.quadrature import getIntegral
+from pysgpp_datadriven.uq.operations import (estimateConvergence,
                                estimateSurplus)
 from pysgpp import DataVector, DataMatrix
 import numpy as np
-from bin.uq.uq_plot.plot2d import plotDensity2d
-import pylab as plt
-from bin.uq.operations.sparse_grid import getBasis
+from pysgpp_datadriven.uq.plot.plot2d import plotDensity2d
+import matplotlib.pyplot as plt
+from pysgpp_datadriven.uq.operations.sparse_grid import getBasis
 
 
 class Ranking(object):
@@ -64,7 +64,7 @@ class ExpectationValueOptRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gp.abs(j) for j in xrange(gs.dim())]
+        p = [gp.getCoord(j) for j in xrange(gs.dim())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -262,7 +262,7 @@ class ExpectationValueBFRanking(Ranking):
     def rank(self, grid, gp, alphas, params, *args, **kws):
         # get grid point associated to ix
         gs = grid.getStorage()
-        p = [gp.abs(j) for j in xrange(gs.dim())]
+        p = [gp.getCoord(j) for j in xrange(gs.dim())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -293,7 +293,7 @@ class SurplusRatioEstimationRanking(Ranking):
         ratio = estimateConvergence(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gp.abs(j) for j in xrange(gs.dim())]
+        p = [gp.getCoord(j) for j in xrange(gs.dim())]
 
         # get joint distribution
         ap = params.activeParams()
@@ -321,7 +321,7 @@ class LinearSurplusEstimationRanking(Ranking):
         ratio = estimateSurplus(grid, gp, alphas)
 
         # get grid point associated to ix
-        p = [gp.abs(j) for j in xrange(gs.dim())]
+        p = [gp.getCoord(j) for j in xrange(gs.dim())]
 
         # get joint distribution
         ap = params.activeParams()

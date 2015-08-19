@@ -1,4 +1,4 @@
-from bin.uq.analysis import KnowledgeTypes
+from pysgpp_datadriven.uq.analysis import KnowledgeTypes
 
 
 class ASGCSamplerSpecification(object):

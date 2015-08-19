@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
-from bin.uq.operations import getBoundsOfSupport
+from pysgpp_datadriven.uq.operations import getBoundsOfSupport
 
 
 class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
@@ -56,7 +56,7 @@ class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
 #                 # -----------------------------------------
 #                 # plot the basis
 #                 import numpy as np
-#                 import pylab as plt
+#                 import matplotlib.pyplot as plt
 #                 x = np.linspace(0, 1, 100)
 #                 b1 = [basisi.eval(lid, iid, xi) for xi in x]
 #                 b2 = [basisj.eval(ljd, ijd, xi) for xi in x]

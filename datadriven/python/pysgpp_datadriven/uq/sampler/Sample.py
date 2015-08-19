@@ -1,5 +1,5 @@
 import numpy as np
-import uq.jsonLib as ju
+import pysgpp_datadriven.uq.jsonLib as ju
 from copy import copy
 
 

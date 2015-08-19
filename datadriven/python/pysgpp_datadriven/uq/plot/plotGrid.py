@@ -1,7 +1,7 @@
 from pysgpp import createOperationEval, DataVector
 
 import numpy as np
-import pylab as plt
+import matplotlib.pyplot as plt
 
 
 def plotGrid(grid, alpha, admissibleSet, params, refined=None):
@@ -10,14 +10,14 @@ def plotGrid(grid, alpha, admissibleSet, params, refined=None):
     y = [0.0] * gs.size()
 
     for i in xrange(gs.size()):
-        x[i] = gs.get(i).abs(0)
-        y[i] = gs.get(i).abs(1)
+        x[i] = gs.get(i).getCoord(0)
+        y[i] = gs.get(i).getCoord(1)
 
     xa = [0.0] * len(admissibleSet)
     ya = [0.0] * len(admissibleSet)
     for i, gp in enumerate(admissibleSet):
-        xa[i] = gp.abs(0)
-        ya[i] = gp.abs(1)
+        xa[i] = gp.getCoord(0)
+        ya[i] = gp.getCoord(1)
 
     xr = []
     yr = []
@@ -26,8 +26,8 @@ def plotGrid(grid, alpha, admissibleSet, params, refined=None):
         yr = [0.0] * len(refined)
 
         for i, ix in enumerate(refined):
-            xr[i] = gs.get(ix).abs(0)
-            yr[i] = gs.get(ix).abs(1)
+            xr[i] = gs.get(ix).getCoord(0)
+            yr[i] = gs.get(ix).getCoord(1)
 
     n = 50
     A = np.ones(n * n).reshape(n, n)

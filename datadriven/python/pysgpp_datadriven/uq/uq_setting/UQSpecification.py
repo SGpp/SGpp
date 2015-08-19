@@ -15,7 +15,7 @@
 """
 
 
-from bin.uq.transformation import Transformation
+from pysgpp_datadriven.uq.transformation import Transformation
 from scipy.interpolate import interp1d
 
 

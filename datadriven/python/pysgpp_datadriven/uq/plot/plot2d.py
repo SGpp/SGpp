@@ -1,15 +1,14 @@
-from bin.uq.operations import evalSGFunction
+from pysgpp_datadriven.uq.operations import evalSGFunction
 from pysgpp import DataVector, DataMatrix
 
 import numpy as np
-import pylab as plt
-from bin.uq.operations.sparse_grid import evalSGFunctionMultiVectorized, \
-    evalSGFunctionMulti
+import matplotlib.pyplot as plt
+from pysgpp_datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
 
 
 def plotDensity2d(U, n=50):
     A = np.ones(n * n).reshape(n, n)
-    xlim, ylim = U.getBounds()
+    xlim, ylim = [0, 1], [0, 1]  # U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
@@ -35,8 +34,8 @@ def plotSGDE2d(U, n=100):
     y = [0.0] * gs.size()
 
     for i in xrange(gs.size()):
-        x[i] = gs.get(i).abs(0)
-        y[i] = gs.get(i).abs(1)
+        x[i] = gs.get(i).getCoord(0)
+        y[i] = gs.get(i).getCoord(1)
 
     neg_x = []
     neg_y = []
@@ -45,7 +44,7 @@ def plotSGDE2d(U, n=100):
     for xi in np.linspace(xlim[0], ylim[1], n):
         for yi in np.linspace(ylim[0], ylim[1], n):
             value = U.pdf([yi, 1 - xi])
-            if value < 0:
+            if value < 0 and abs(value) > 1e-14:
                 neg_x.append(yi)
                 neg_y.append(1 - xi)
                 neg_z.append(U.pdf([yi, 1 - xi]))
@@ -53,12 +52,12 @@ def plotSGDE2d(U, n=100):
     # plot image of density
     plotDensity2d(U)
 
-#     # plot grid points
+    # plot grid points
 #     plt.plot(x, y, linestyle=' ', marker='o', color="white")
 
     # plot data points
-    plt.plot(U.trainData.array()[:, 0], U.trainData.array()[:, 1],
-             linestyle=' ', marker='x', color='orange')
+#     plt.plot(U.trainData.array()[:, 0], U.trainData.array()[:, 1],
+#              linestyle=' ', marker='x', color='orange')
 
     # plot negative areas
     if len(neg_z) > 0:
@@ -70,7 +69,32 @@ def plotSGDE2d(U, n=100):
     plt.ylim(0, 1)
 
 
-def plotSG2d(grid, alpha, n=100):
+def plotFunction2d(f, addContour=True, n=101):
+    x = np.linspace(0, 1, n)
+    y = np.linspace(0, 1, n)
+    X, Y = np.meshgrid(x, y)
+    Z = np.ones(n * n).reshape(n, n)
+
+    print "-" * 60
+    for i in xrange(len(X)):
+        for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
+            Z[i, j] = f(xi, yi)
+            if yi == 0.6:
+                print xi, yi, f(xi, yi)
+
+    plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
+
+    plt.jet()
+    plt.colorbar()
+
+    if addContour:
+        cs = plt.contour(X, 1 - Y, Z, colors='black')
+        plt.clabel(cs, inline=1, fontsize=18)
+
+    return
+
+
+def plotSG2d(grid, alpha, addContour=True, n=100):
     gs = grid.getStorage()
 
     gpxp = []
@@ -81,11 +105,11 @@ def plotSG2d(grid, alpha, n=100):
 
     for i in xrange(gs.size()):
         if alpha[i] > 0:
-            gpxp.append(gs.get(i).abs(0))
-            gpyp.append(gs.get(i).abs(1))
+            gpxp.append(gs.get(i).getCoord(0))
+            gpyp.append(gs.get(i).getCoord(1))
         else:
-            gpxn.append(gs.get(i).abs(0))
-            gpyn.append(gs.get(i).abs(1))
+            gpxn.append(gs.get(i).getCoord(0))
+            gpyn.append(gs.get(i).getCoord(1))
 
     x = np.linspace(0, 1, n)
     y = np.linspace(0, 1, n)
@@ -102,8 +126,8 @@ def plotSG2d(grid, alpha, n=100):
     k = 0
     for i in xrange(len(X)):
         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-            p[0] = 1 - xi
-            p[1] = yi
+            p[0] = xi
+            p[1] = 1 - yi
             A.setRow(k, p)
             k += 1
 
@@ -114,12 +138,13 @@ def plotSG2d(grid, alpha, n=100):
         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
             Z[i, j] = res[k]
             if Z[i, j] < 0 and abs(Z[i, j]) > 1e-13:
-                neg_x.append(1 - xi)
-                neg_y.append(yi)
+                neg_x.append(xi)
+                neg_y.append(1 - yi)
                 neg_z.append(res[k])
             k += 1
 
     plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
+
     if len(neg_z) > 0:
         plt.plot(neg_x, neg_y, linestyle=' ', marker='o', color='red')
         plt.title("[%g, %g]" % (min(neg_z), max(neg_z)))
@@ -130,6 +155,10 @@ def plotSG2d(grid, alpha, n=100):
 
     plt.jet()
     plt.colorbar()
+
+    if addContour:
+        cs = plt.contour(X, 1 - Y, Z, colors='black')
+        plt.clabel(cs, inline=1, fontsize=18)
 
     return res
 

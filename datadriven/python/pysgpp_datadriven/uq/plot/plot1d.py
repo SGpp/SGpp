@@ -1,18 +1,18 @@
 from pysgpp import DataVector
-from bin.uq.operations import evalSGFunction
+from pysgpp_datadriven.uq.operations import evalSGFunction
 
 import numpy as np
-import pylab as plt
-from bin.uq.operations.sparse_grid import dehierarchize
+import matplotlib.pyplot as plt
+from pysgpp_datadriven.uq.operations.sparse_grid import dehierarchize
 
 
-def plotDensity1d(U):
-    bounds = U.getBounds()[0]
+def plotDensity1d(U, n=1000, *args, **kws):
+    bounds = U.getBounds()
 
-    x = np.linspace(bounds[0], bounds[1], 1000)
+    x = np.linspace(bounds[0], bounds[1], n)
     y = [U.pdf([xi]) for xi in x]
 
-    plt.plot(x, y)
+    plt.plot(x, y, *args, **kws)
 
 
 def plotSGDE1d(U):
@@ -26,7 +26,7 @@ def plotNodal1d(grid, alpha):
     x = np.zeros(gs.size())
     nodalValues = np.zeros(gs.size())
     for i in xrange(gs.size()):
-        x[i] = gs.get(i).abs(0)
+        x[i] = gs.get(i).getCoord(0)
         nodalValues[i] = evalSGFunction(grid, alpha, DataVector([x[i]]))
 
     plt.plot(x, nodalValues, " ", marker="o")

@@ -11,8 +11,8 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
-from datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from pysgpp_datadriven.data.DataContainer import DataContainer
 from pysgpp import DataVector, DataMatrix
 
 

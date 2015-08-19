@@ -11,9 +11,9 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.data.DataEntry import DataEntry
+from pysgpp_datadriven.data.DataEntry import DataEntry
 from pysgpp import DataVector
-from datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.data.DataContainer import DataContainer
 
 
 ##

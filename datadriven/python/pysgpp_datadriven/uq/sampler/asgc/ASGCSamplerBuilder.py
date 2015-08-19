@@ -1,4 +1,4 @@
-from bin.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
+from pysgpp_datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
 
 from ASGCSampler import ASGCSampler
 from ASGCSamplerSpecification import ASGCSamplerSpecification

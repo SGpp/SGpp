@@ -3,10 +3,10 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from datadriven.src.python.learner.solver.LinearSolver import LinearSolverEvents
-from datadriven.src.python.learner.Learner import LearnerEvents
-from datadriven.src.python.controller.LearnerEventController import LearnerEventController
-from datadriven.src.python.controller.SolverEventController import SolverEventController
+from pysgpp_datadriven.src.python.learner.solver.LinearSolver import LinearSolverEvents
+from pysgpp_datadriven.src.python.learner.Learner import LearnerEvents
+from pysgpp_datadriven.src.python.controller.LearnerEventController import LearnerEventController
+from pysgpp_datadriven.src.python.controller.SolverEventController import SolverEventController
 import matplotlib
 matplotlib.use('Agg') #to prevent the bug with matplot unable to open display
 from matplotlib import pyplot

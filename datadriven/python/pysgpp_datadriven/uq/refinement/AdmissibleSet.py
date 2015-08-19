@@ -1,6 +1,6 @@
-from bin.uq.operations import (isValid, isRefineable,
+from pysgpp_datadriven.uq.operations import (isValid, isRefineable,
                                getHierarchicalAncestors)
-from pysgpp import GridIndex
+from pysgpp import HashGridIndex
 
 
 class AdmissibleSetGenerator(object):
@@ -76,14 +76,14 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
         gs = grid.getStorage()
         for d in xrange(gs.dim()):
             # check left child in d
-            gpl = GridIndex(gp)
+            gpl = HashGridIndex(gp)
             gs.left_child(gpl, d)
             if not gs.has_key(gpl) and isValid(grid, gpl) and \
                     self.checkRange(gpl, self.maxLevel):
                 self.addCollocationNode(grid, gpl)
 
             # check right child in d
-            gpr = GridIndex(gp)
+            gpr = HashGridIndex(gp)
             gs.right_child(gpr, d)
             if not gs.has_key(gpr) and isValid(grid, gpr) and \
                     self.checkRange(gpr, self.maxLevel):
@@ -104,5 +104,5 @@ class AdmissibleSparseGridNodeSet(AdmissibleSetGenerator):
             self.addChildren(grid, gp)
 
     def toString(self):
-        return str([[ngp.abs(d) for d in xrange(ngp.dim())]
+        return str([[ngp.getCoord(d) for d in xrange(ngp.dim())]
                     for ngp in self.getAdmissibleSet()])

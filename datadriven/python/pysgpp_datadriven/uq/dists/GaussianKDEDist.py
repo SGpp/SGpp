@@ -1,6 +1,8 @@
 from Dist import Dist
-from bin.uq.operations.general import isNumerical, isList, isMatrix
-from pysgpp import (DataVector, DataMatrix, GaussianKDE)
+from pysgpp_datadriven.uq.operations.general import isNumerical, isList, isMatrix
+from pysgpp import (DataVector, DataMatrix, GaussianKDE,
+    createOperationRosenblattTransformationKDE,
+    createOperationInverseRosenblattTransformationKDE)
 import numpy as np
 
 
@@ -18,7 +20,9 @@ class GaussianKDEDist(Dist):
         self.dist = GaussianKDE(self.trainData)
         self.bounds = bounds
         if self.bounds is None:
-            self.bounds = [[0, 1] for _ in xrange(trainData.shape[1])]
+            self.bounds = [[np.min(trainData[:, i]),
+                            np.max(trainData[:, i])]
+                           for i in xrange(trainData.shape[1])]
         if len(self.bounds) == 1:
             self.bounds = self.bounds[0]
         if transformation is not None:
@@ -72,7 +76,8 @@ class GaussianKDEDist(Dist):
             B.setAll(0)
 
         # do the transformation
-        self.dist.cdf(A, B)
+        opRosen = createOperationRosenblattTransformationKDE(self.dist)
+        opRosen.doTransformation(A, B)
 
         # transform the outcome
         if isNumerical(x) or isinstance(x, DataVector):
@@ -100,7 +105,8 @@ class GaussianKDEDist(Dist):
             B.setAll(0)
 
         # do the transformation
-        self.dist.ppf(A, B)
+        opInvRosen = createOperationInverseRosenblattTransformationKDE(self.dist)
+        opInvRosen.doTransformation(A, B)
 
         # transform the outcome
         if isNumerical(x) or isinstance(x, DataVector):
@@ -116,16 +122,16 @@ class GaussianKDEDist(Dist):
         return self.dist.mean()
 
     def var(self):
-        return self.dist.var()
+        return self.dist.variance()
 
     def cov(self):
         covMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
         self.dist.cov(covMatrix)
         return covMatrix.array()
 
-    def corrcoeff(self):
+    def corrcoef(self):
         corrMatrix = DataMatrix(np.zeros((self.dim, self.dim)))
-        self.dist.corrcoeff(corrMatrix)
+        self.dist.corrcoef(corrMatrix)
         return corrMatrix.array()
 
     def getBounds(self):

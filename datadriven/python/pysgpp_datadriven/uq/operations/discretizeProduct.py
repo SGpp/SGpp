@@ -82,7 +82,7 @@ def refine(jgrid, jalpha):
 #     jgn = jgrid.createGridGenerator()
 #     rp = jgn.getNumberOfRefinablePoints()
 #     jgn.refine(SurplusRefinementFunctor(jalpha, rp, 0.))
-    from bin.uq.refinement.LocalRefinementStrategy import CreateAllChildrenRefinement
+    from pysgpp_datadriven.uq.refinement.LocalRefinementStrategy import CreateAllChildrenRefinement
     global refinable
     jgs = jgrid.getStorage()
     refinementStrategy = CreateAllChildrenRefinement()
@@ -106,7 +106,7 @@ def discretizeProduct(grid1, alpha1, grid2, alpha2):
 
         h(x) := f(x) * g(x)
 
-    on a full grid with piecewise polynomial basis. Therefore 
+    on a full grid with piecewise polynomial basis. Therefore
     a maximum number of grid points 10^6 is allowed.
 
     @param grid1: Grid, grid of f
@@ -132,10 +132,10 @@ def discretizeProduct(grid1, alpha1, grid2, alpha2):
     # check if maximum number of grid points is goint to be exceeded
     n = 2 ** ((deg - 1) * grid1.getStorage().dim())
     if n > 1e6:
-        raise AttributeError("Can not create a full grid of level %i and dimensionality %i. The number of grid points %i would exceed 10^6" % (deg - 1, grid1.getStorage().dim(), n)) 
+        raise AttributeError("Can not create a full grid of level %i and dimensionality %i. The number of grid points %i would exceed 10^6" % (deg - 1, grid1.getStorage().dim(), n))
 
     # join the two grids
-    joinedGrid = Grid.createMyPolyGrid(2, deg)
+    joinedGrid = Grid.createPolyGrid(2, deg)
     joinedGrid.createGridGenerator().full(maxlevel)
     # interpolate the product on the new grid
     joinedAlpha = interpolateProduct(grid1, alpha1, grid2, alpha2, joinedGrid)

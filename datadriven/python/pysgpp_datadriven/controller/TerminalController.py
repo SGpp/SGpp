@@ -6,7 +6,7 @@
 #############################################################################
                                     #
 #############################################################################
-from datadriven.src.python.data.DataContainer import DataContainer
+from pysgpp_datadriven.src.python.data.DataContainer import DataContainer
 
 
 import ConfigParser, os
@@ -18,11 +18,11 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.controller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
-from datadriven.learner.LearnerBuilder import LearnerBuilder
-from datadriven.data.ARFFAdapter import ARFFAdapter
-from datadriven.data.DataContainer import DataContainer
-from datadriven.learner.Types import BorderTypes
+from pysgpp_datadriven.controller import InfoToScreen, InfoToScreenRegressor, InfoToFile, CheckpointController
+from pysgpp_datadriven.learner.LearnerBuilder import LearnerBuilder
+from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.learner.Types import BorderTypes
 import types
 
 

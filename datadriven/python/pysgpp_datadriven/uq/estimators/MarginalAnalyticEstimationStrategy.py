@@ -1,8 +1,8 @@
-from bin.uq.dists import SGDEdist
+from pysgpp_datadriven.uq.dists import SGDEdist
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp import DataVector, DataMatrix
-from bin.uq.quadrature.marginalization import doMarginalize
+from pysgpp_datadriven.uq.quadrature.marginalization import doMarginalize
 
 import numpy as np
 
