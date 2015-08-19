@@ -13,12 +13,12 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
 from pysgpp import *
-from datadriven.learner.solver import CGSolver
-from datadriven.learner import Learner, LearnedKnowledge, TrainingSpecification, TrainingStopPolicy, Classifier
-from datadriven.learner.folding import SequentialFoldingPolicy, FoldingPolicy
-from datadriven.controller.InfoToScreen import InfoToScreen
+from pysgpp_datadriven.learner.solver import CGSolver
+from pysgpp_datadriven.learner import Learner, LearnedKnowledge, TrainingSpecification, TrainingStopPolicy, Classifier
+from pysgpp_datadriven.learner.folding import SequentialFoldingPolicy, FoldingPolicy
+from pysgpp_datadriven.controller.InfoToScreen import InfoToScreen
 
 
 ##

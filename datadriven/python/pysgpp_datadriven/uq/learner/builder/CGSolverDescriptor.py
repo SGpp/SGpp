@@ -1,4 +1,4 @@
-from bin.learner.solver.CGSolver import CGSolver
+from pysgpp_datadriven.learner.solver.CGSolver import CGSolver
 
 
 class CGSolverDescriptor(object):

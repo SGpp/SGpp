@@ -1,16 +1,16 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 
 from pysgpp import *
 from solver.CGSolver import CGSolver
 from folding.FoldingPolicy import FoldingPolicy
-import utils.json as json
+import pysgpp_datadriven.utils.json as json
 from TrainingStopPolicy import TrainingStopPolicy
 from TrainingSpecification import TrainingSpecification
-from data.DataContainer import DataContainer
+from pysgpp_datadriven.data.DataContainer import DataContainer
 import types
 
 
@@ -21,13 +21,13 @@ import types
 # The class also implements the subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer
 # design pattern</a>.
 #
-# @section Observer design pattern 
-# To customize the processing of progress information in SGPP the observer pattern 
+# @section Observer design pattern
+# To customize the processing of progress information in SGPP the observer pattern
 # is used. The classes that want to be informed about events should implement LearnerEvenController
 # and subscribe by the instance of Learner subclass
 # with <code>attachEventController()</code>. After some event of LearnerEvents
-# arise, the Learner subclass object calls method <code>handleLearningEvent()</code> by 
-# all subscribers. As subscribers get a reference to the Learner object, 
+# arise, the Learner subclass object calls method <code>handleLearningEvent()</code> by
+# all subscribers. As subscribers get a reference to the Learner object,
 # they can retrieve the attributes of the learner and process the information.
 #
 # <i>Roles</i>
@@ -36,66 +36,66 @@ import types
 # - Observer: LernerEventController
 # - Concrete Observer: e.g. InfoToScreen
 #
-# Observer can also want to retrieve the process information from LinearSolver. 
+# Observer can also want to retrieve the process information from LinearSolver.
 # See documentation of @link datadriven.src.python.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 #
 class Learner(object):
-    
+
     ##list of object listening to the learning events
-    eventControllers = None 
-    
+    eventControllers = None
+
     ##DataContainer object with training (and maybe test) data
-    dataContainer = None    
-    
+    dataContainer = None
+
     ##TrainingStopPolicy object associated with this Learner
-    stopPolicy = None       
-    
+    stopPolicy = None
+
     ##TrainingSpecification object associated with this Learner
-    specification = None    
-    
+    specification = None
+
     ##Grid of the Learner
-    grid = None             
-    
+    grid = None
+
     ##LearnedKnowledge where alpha is stored
-    knowledge = None        
-    
+    knowledge = None
+
     ##Implementation of folding policy if training with folding is used
-    foldingPolicy = None    
-    
+    foldingPolicy = None
+
     ##LinearSolver object associated with this Learner
-    solver = None           
-    
+    solver = None
+
     ##DMSystemMatrix object associated with this Learner
-    linearSystem = None     
-    
+    linearSystem = None
+
     ##Number of current iterations
-    iteration = None      
-    
+    iteration = None
+
     ##list of train accuracy values measured in refinement iteration
-    trainAccuracy = None   
-    
+    trainAccuracy = None
+
     ##list of test accuracy values measured in refinement iteration
-    testAccuracy = None       
-    
+    testAccuracy = None
+
     ##DataVector with current alpha vector
-    alpha = None            
-    
+    alpha = None
+
     ##List of average training accuracy data over all refinement iterations
-    trainingOverall = None    
-    
+    trainingOverall = None
+
     ##List of average training accuracy data over all refinement iterations
-    testingOverall = None    
-    
+    testingOverall = None
+
     ##List of numbers of point on grid for different refinement iterations
-    numberPoints = None    
-    
-    
-    __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer', 
-                                 'stopPolicy', 'specification', 'grid', 
-                                 'knowledge','foldingPolicy', 'solver' 
+    numberPoints = None
+
+
+    __SERIALIZABLE_ATTRIBUTES = ['eventControllers', 'dataContainer',
+                                 'stopPolicy', 'specification', 'grid',
+                                 'knowledge','foldingPolicy', 'solver'
                                  ]
-    
-    
+
+
     ## Constructor
     def __init__(self):
         self.eventControllers = []
@@ -116,9 +116,9 @@ class Learner(object):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
               self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
-        
+
         if dataset == None: dataset = self.dataContainer
-        
+
         #learning step
         trainSubset = dataset.getTrainDataset()
         #testpoint = data.allPoint\points
@@ -132,20 +132,20 @@ class Learner(object):
 
             #calculate avg. error for training and test data and avg. for refine alpha
             self.updateResults(self.alpha, trainSubset, testSubset)
-            
+
             self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE)
-         
+
             self.iteration += 1
-            
+
             if(self.stopPolicy.isTrainingComplete(self)): break
-            
+
             #refine grid
             self.refineGrid()
-       
+
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_TESTING_COMPLETE)
         return self.alpha
-    
-    
+
+
     ## Refines Grid
     # the function is not implemented here
     def refineGrid(self):
@@ -154,11 +154,11 @@ class Learner(object):
     ## Calculate the value of the function for given points
     #
     # @param points: DataVector set of points
-    # @return: DataVector values 
+    # @return: DataVector values
     def applyData(self, points):
         self.notifyEventControllers(LearnerEvents.APPLICATION_STARTED)
         # if learner is restored from checkpoint, you need to create new B Operator
-         
+
         if self.specification.getBOperator() == None:
             # FIXME: createOperationB() does not exist
             self.specification.setBOperator(self.grid.createOperationB())
@@ -171,7 +171,7 @@ class Learner(object):
             values[i] = self.grid.eval(self.knowledge.getAlphas(), row)
         self.notifyEventControllers(LearnerEvents.APPLICATION_COMPLETE)
         return values
-    
+
 
     ## Simple data learning
     #
@@ -180,12 +180,12 @@ class Learner(object):
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
                 self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
-        
+
         while True: #repeat until policy says "stop"
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_STARTED)
             #learning step
             self.alpha = self.doLearningIteration(self.dataContainer)
-            
+
             #calculate avg. error for training and test data and avg. for refine alpha
             self.updateResults(self.alpha, self.dataContainer)
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
@@ -193,7 +193,7 @@ class Learner(object):
             if(self.stopPolicy.isTrainingComplete(self)): break
             #refine grid
             self.refineGrid()
-       
+
         self.notifyEventControllers(LearnerEvents.LEARNING_COMPLETE)
         return self.alpha
 
@@ -203,18 +203,18 @@ class Learner(object):
     # @return: list of DataVector alpha in different folds
     def learnDataWithFolding(self,):
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_FOLDING_STARTED)
-        
+
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
                   self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
-     
+
         alphas = []
         for dataset in self.foldingPolicy:
             alphas.append(self.learnDataWithTest(dataset))
-            
+
         self.notifyEventControllers(LearnerEvents.LEARNING_WITH_FOLDING_COMPLETE)
         return alphas
-    
-    
+
+
     ## Perform one learning step
     #
     # @param set: DataContainer training data set
@@ -226,14 +226,14 @@ class Learner(object):
             and self.specification.getVectorizationType() != None:
             self.linearSystem = DMSystemMatrixVectorizedIdentity(self.grid,
                                                set.getPoints(),
-                                               self.specification.getL(), 
+                                               self.specification.getL(),
                                                self.specification.getVectorizationType())
-        else: 
+        else:
             self.linearSystem = DMSystemMatrix(self.grid,
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())
-        size =  self.grid.getStorage().size() 
+        size =  self.grid.getStorage().size()
         # Reuse data from old alpha vector increasing its dimension
         self.solver.getReuse()
         if self.solver.getReuse() and self.alpha != None:
@@ -251,14 +251,14 @@ class Learner(object):
         return alpha
 
 
-    ## Evaluate  accuracy 
+    ## Evaluate  accuracy
     # this method is not implemented!
     # @param dataContainer: DataContainer data set
     # @param alpha: DataVector alpha-vector
     def evalError(self, dataContainer, alpha):
         raise NotImplementedError
-    
-    
+
+
     ## Update different statistics about training progress
     # this method is not implemented!
     # @param alpha: DataVector alpha-vector
@@ -266,44 +266,44 @@ class Learner(object):
     # @param testSubset: DataContainer with validation data, default value: None
     def updateResults(self, alpha, trainSubset, testSubset = None):
         raise NotImplementedError
-    
-    
+
+
     ## Returns the number of current iteration
     #
     # @return: integer iteration number
     def getCurrentIterationNumber(self,):
         return self.iteration
-    
-    
+
+
     ## Sets the number of current iteration
     #
     # @param value: integer new iteration number
     def setCurrentIterationNumber(self, value):
         self.iteration = value
-    
-    
+
+
     ## Add observer to the list
     #
     # @param observer: LearnerEventController object
     def attachEventController(self, observer):
         if observer not in self.eventControllers: self.eventControllers.append(observer)
 
-    
+
     ## Remove observer from the list
     #
     # @param observer: LearnerEventController object
     def detachEventController(self,observer):
         if observer in self.eventControllers: self.eventControllers.remove(observer)
-    
-    
+
+
     ## Notify all observers about the new event
     #
     # @param event: LearnerEvents event
     def notifyEventControllers(self, event):
         for controller in self.eventControllers:
             controller.handleLearningEvent(self, event)
-    
-    
+
+
     ## Setter for data container
     # @param container: the data container object
     # @return: leaner itself
@@ -311,7 +311,7 @@ class Learner(object):
         self.dataContainer = container
         return self
 
-    
+
     ## Setter for grid
     # @param grid: the grid obejct
     # @return: leaner itself
@@ -319,7 +319,7 @@ class Learner(object):
         self.grid = grid
         return self
 
-    
+
     ## Setter for training specification
     # @param specification: the training specification object
     # @return: leaner itself
@@ -327,15 +327,15 @@ class Learner(object):
         self.specification = specification
         return self
 
-    
+
     ## Setter for training stop policy
     # @param policy: the training stop policy object
     # @return: leaner itself
     def setStopPolicy(self, policy):
         self.stopPolicy = policy
         return self
-    
-    
+
+
     ## Setter for linear solver
     # @param solver: the linear solver object
     # @return: leaner itself
@@ -350,67 +350,67 @@ class Learner(object):
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
         return self
-    
-    
+
+
     ## Setter for folding policy
     # @param policy: the folding policy object
     # @return: leaner itself
     def setFoldingPolicy(self, policy):
         self.foldingPolicy = policy
         return self
-    
-    
+
+
     ## Converts list of float values to string, where floats are written in exponential fromat
     #
     # @param list list of floats
-    # @return the string representation of the list 
+    # @return the string representation of the list
     def __listOfFloatsToString(self, list):
         result = '['
         for item in list[0:-1]:
             result += "%e"%item + ","
         result += "%e"%list[-1] + ']'
         return result
-            
-    
+
+
     ##Returns a string that represents the object.
     #
-    # @return A string that represents the object. 
+    # @return A string that represents the object.
     def toString(self):
         serializationString = "'module' : '" + self.__module__ + "',\n"
         for attrName in dir(self):
             attrValue = self.__getattribute__(attrName)
-            
+
             #integers, dictionaries can serialized with str()
-            if type(attrValue) in [types.IntType, types.DictType] and attrName.find("__") != 0: 
+            if type(attrValue) in [types.IntType, types.DictType] and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
-            
+
             #store floats in exponential format
             elif type(attrValue) == types.FloatType:
                 serializationString += "'" + attrName + "'" + " : " + "%e"%attrValue + ",\n"
-            
+
             #store list of floats in exponential format
             elif type(attrValue) == types.ListType:
                 if len(attrValue)>0 and type(attrValue[0]) == types.FloatType:
                     serializationString += "'" + attrName + "'" + " : " + self.__listOfFloatsToString(attrValue) + ",\n"
                 else:
                     serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
-            
-            # serialize strings with quotes    
+
+            # serialize strings with quotes
             elif type(attrValue) == types.StringType and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
-                
+
             #serialize knowledge
             elif attrName in self.__SERIALIZABLE_ATTRIBUTES :
                 # grid and knowledge are stored by checkpoint controller itself
                 if attrName not in ['grid', 'knowledge'] and attrName != 'foldingPolicy':
-#                    try: 
-                    serializationString += "'" + attrName + "'" + " : " + attrValue.toString() + ",\n" 
+#                    try:
+                    serializationString += "'" + attrName + "'" + " : " + attrValue.toString() + ",\n"
 #                    except Exception as detail:
 #                        print "**********atrname**********:",attrName
 
         return "{" + serializationString.rstrip(",\n").replace("'",'"') + "}"
-    
-    
+
+
     ## Restores the attributes of a subclass of Learner from the json object with attributes.
     #
     # @param jsonObject A json object.
@@ -426,21 +426,21 @@ class Learner(object):
         self.specification = TrainingSpecification.fromJson(jsonObject['specification'])
         self.solver = CGSolver.fromJson(jsonObject['solver'])
         return self
-    
-    
+
+
     ##Restores the state which is saved in the given memento
     #
     #@param memento the memento object
     def setMemento(self, memento):
         self.fromJson(memento)
-        
-    
+
+
     ##Creates a new memento to hold the current state
     #
     #@return a new memento
     def createMemento(self):
-        # ok, it's weird now since I've wrote the toString() method before 
-        # createMemento(). Correct would be to create an Json Object and then 
+        # ok, it's weird now since I've wrote the toString() method before
+        # createMemento(). Correct would be to create an Json Object and then
         # convert it to the string
         jsonString = self.toString()
         jsonObject = json.JsonReader().read(jsonString)
@@ -450,40 +450,40 @@ class Learner(object):
 ## Constants of different learning events
 class LearnerEvents:
     ## Learning process is started
-    LEARNING_STARTED = 100          
-    
-    ## Learning process is complete            
-    LEARNING_COMPLETE = 200            
-    
-    ## Learning with k-fold cross-validation is started         
-    LEARNING_WITH_FOLDING_STARTED = 300         
-    
+    LEARNING_STARTED = 100
+
+    ## Learning process is complete
+    LEARNING_COMPLETE = 200
+
+    ## Learning with k-fold cross-validation is started
+    LEARNING_WITH_FOLDING_STARTED = 300
+
     ## Learning with k-fold cross-validation is complete
-    LEARNING_WITH_FOLDING_COMPLETE = 400      
-    
-    ## Learning / refinement step is started  
-    LEARNING_STEP_STARTED = 500                 
-    
+    LEARNING_WITH_FOLDING_COMPLETE = 400
+
+    ## Learning / refinement step is started
+    LEARNING_STEP_STARTED = 500
+
     ## Learning / refinement step is complete
-    LEARNING_STEP_COMPLETE = 600                
-    
+    LEARNING_STEP_COMPLETE = 600
+
     ## Learning with testing (validation) is started
-    LEARNING_WITH_TESTING_STARTED = 700         
-    
+    LEARNING_WITH_TESTING_STARTED = 700
+
     ## Learning with testing (validation) is complete
-    LEARNING_WITH_TESTING_COMPLETE = 800        
-    
+    LEARNING_WITH_TESTING_COMPLETE = 800
+
     ## Initial / refinement step of learning with testing (validation) is started
-    LEARNING_WITH_TESTING_STEP_STARTED = 900    
-    
+    LEARNING_WITH_TESTING_STEP_STARTED = 900
+
     ## Initial / refinement step of learning with testing (validation) is complete
-    LEARNING_WITH_TESTING_STEP_COMPLETE = 1000  
-    
+    LEARNING_WITH_TESTING_STEP_COMPLETE = 1000
+
     ## Applying of grid on data is started
-    APPLICATION_STARTED = 1100                  
-    
+    APPLICATION_STARTED = 1100
+
     ## Applying of grid on data is complete
-    APPLICATION_COMPLETE = 1200                 
-    
+    APPLICATION_COMPLETE = 1200
+
     ## Refining of the grid
-    REFINING_GRID = 1300                        
+    REFINING_GRID = 1300

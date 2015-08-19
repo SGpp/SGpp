@@ -1,11 +1,11 @@
-from bin.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
+from pysgpp_datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
                           Lognormal, Beta, MultivariateNormal)
-from bin.uq.transformation import (LinearTransformation,
+from pysgpp_datadriven.uq.transformation import (LinearTransformation,
                                    InverseCDFTransformation)
 
 from DeterministicParameter import DeterministicParameter
 from UncertainParameter import UncertainParameter
-from bin.uq.transformation.JointTransformation import JointTransformation
+from pysgpp_datadriven.uq.transformation.JointTransformation import JointTransformation
 
 
 class ParameterDescriptor(object):

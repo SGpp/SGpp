@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from LinearQuadratureStrategy import LinearQuadratureStrategy
-from bin.uq.operations import getBoundsOfSupport
+from pysgpp_datadriven.uq.operations import getBoundsOfSupport
 
 
 class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
@@ -52,7 +52,7 @@ class LinearGaussQuadratureStrategy(LinearQuadratureStrategy):
 #             # -----------------------------------------
 #             # plot the basis
 #             import numpy as np
-#             import pylab as plt
+#             import matplotlib.pyplot as plt
 #             x = np.linspace(0, 1, 100)
 #             pdf = [self._U[d].pdf(xi) for xi in x]
 #             plt.plot(x, pdf)

@@ -3,7 +3,7 @@ import os
 from Dist import Dist
 import ConfigParser as cp
 import numpy as np
-from bin.uq.operations.general import isNumerical
+from pysgpp_datadriven.uq.operations.general import isNumerical
 
 
 class DTreesDist(Dist):
@@ -89,7 +89,7 @@ class DTreesDist(Dist):
 
     @classmethod
     def computeDensity(self, config,
-                       pathsgpp='/home/franzefn/workspace/SGppUQ/lib/sgpp',
+                       pathsgpp='/home/franzefn/workspace/SGppUncertaintyQuantification/lib/sgpp',
                        cluster='/home/franzefn/Promotion/UQ/benjamin/clustc/cluster'):
         if not os.path.exists(config):
             raise Exception('the config file "%s" does not exist' % config)

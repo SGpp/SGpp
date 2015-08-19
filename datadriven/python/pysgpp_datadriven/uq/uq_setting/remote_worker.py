@@ -7,7 +7,7 @@ with python code. The code should load a UQSetting with proper
 Simulation set.
 """
 import os
-from bin.uq.sampler import Sample
+from pysgpp_datadriven.uq.sampler import Sample
 import json
 
 from time import sleep
@@ -125,7 +125,7 @@ def do_dist_run(host, uqsetting, outfile, samplelist, starti, scratch_path, samp
     sam_no = sam_no.replace("'", '"')
 
     # python command
-    data = "from bin.uq.uq_setting.remote_worker import *; \
+    data = "from pysgpp_datadriven.uq.uq_setting.remote_worker import *; \
     pwd = %s; \
     setup = %s; \
     infile = %s; \

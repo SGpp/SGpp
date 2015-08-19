@@ -1,11 +1,11 @@
 from ASGCAnalysisSpecification import ASGCAnalysisSpecification
 
-from bin.uq.estimators import (
+from pysgpp_datadriven.uq.estimators import (
     MonteCarloStrategy,
     IntegralStrategy,
     CollocationPointsStrategy)
 
-from bin.uq.refinement import RefinementDescriptor
+from pysgpp_datadriven.uq.refinement import RefinementDescriptor
 # import types
 
 

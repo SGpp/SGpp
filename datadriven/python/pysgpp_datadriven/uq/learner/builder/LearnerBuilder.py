@@ -21,22 +21,22 @@
 #############################################################################
 
 
-from bin.data.ARFFAdapter import ARFFAdapter
-from bin.data.CSVAdapter import CSVAdapter
-from bin.data.DataContainer import DataContainer
-from bin.learner.LearnedKnowledge import LearnedKnowledge
-from bin.learner.TrainingSpecification import TrainingSpecification
-from bin.learner.TrainingStopPolicy import TrainingStopPolicy
-from bin.learner.Types import BorderTypes
-from bin.learner.formatter import LearnedKnowledgeFormatter
-from bin.learner.solver.CGSolver import CGSolver
-from bin.uq.learner.Interpolant import Interpolant
-from bin.uq.learner.Regressor import Regressor
+from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.data.CSVAdapter import CSVAdapter
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp_datadriven.learner.TrainingSpecification import TrainingSpecification
+from pysgpp_datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp_datadriven.learner.Types import BorderTypes
+from pysgpp_datadriven.learner.formatter import LearnedKnowledgeFormatter
+from pysgpp_datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp_datadriven.uq.learner.Interpolant import Interpolant
+from pysgpp_datadriven.uq.learner.Regressor import Regressor
 from pysgpp import createOperationMultipleEval
 
 from GridDescriptor import GridDescriptor
 from RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
-import utils.json as json
+import pysgpp_datadriven.utils.json as json
 
 
 ## Implement mechanisms to create customized learning system
@@ -45,10 +45,10 @@ import utils.json as json
 #
 # To create a learning system first define if it should be for classification
 # @code
-#import learner.LearnerBuilder as LearnerBuilder
+#import pysgpp_datadriven.learner.LearnerBuilder as LearnerBuilder
 #builder = LearnerBuilder()
 #builder = builder.buildClassifier()
-# @endcode
+# @endcode  
 # or regression
 # @code
 #builder = builder.buildRegressor()
@@ -56,7 +56,7 @@ import utils.json as json
 #
 # LearnerBuilder is implementing <a href="http://en.wikipedia.org/wiki/Fluent_interface" target="parent">Fluent Interface design pattern</a>
 # it means it operates as an automata, switching in some state
-# where you can set all parameters associated with some category. For example to
+# where you can set all parameters associated with some category. For example to 
 # define the grid parameters you switch the builder into GridDescriptor set with
 # @code
 #builder = builder.withGrid()...
@@ -74,7 +74,7 @@ import utils.json as json
 # @code
 #builder.andGetResult()
 # @endcode
-#
+# 
 # The complete construction could look like following:
 # @code
 #classifier = builder.buildClassifier()\

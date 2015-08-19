@@ -1,30 +1,30 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 from pysgpp import *
 
-from utils.GzipSerializer import GzipSerializer
+from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
 
 
 ## Provides functionality for the runtime serialization of the Grid object
 #
 # This design intends to separate the binary object representation and its
 # business logic from the text representation that can be saved into file.
-# The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern" 
-# target="new">Memento design pattern</a> described in details in @link 
+# The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern"
+# target="new">Memento design pattern</a> described in details in @link
 # datadriven.src.python.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
 #
-# However strict separation of grid object and its representation is not 
-# implemented,as Formatter becomes from Grid object not a GridMemento object, 
-# but a string serialization of Grid itself. So Grid plays the role of 
+# However strict separation of grid object and its representation is not
+# implemented,as Formatter becomes from Grid object not a GridMemento object,
+# but a string serialization of Grid itself. So Grid plays the role of
 # GridMemento. The complete decoupling is a subject for future work.
 #
 class GridFormatter(GzipSerializer):
 
-    
+
     ##Deserializes the Grid memento object from the stream
     #
     #@param serializationStream The stream to deserialize.
@@ -32,8 +32,8 @@ class GridFormatter(GzipSerializer):
     def deserialize(self, serializationStream):
         text = serializationStream.read()
         return Grid.setMemento(text)
-    
-    
+
+
     ##Deserializes the Grid object from the file.
     # The file may or may be not gzip compressed.
     #@param filename The name of file with serialized Grid.
@@ -67,12 +67,11 @@ class GridFormatter(GzipSerializer):
             self.serialize(memento, fstream)
         finally:
             fstream.close()
-    
-    
+
+
     ##Returns a string that represents the Grid object.
     #
     # @param memento The Grid memento object.
-    # @return A string that represents the Grid object.        
+    # @return A string that represents the Grid object.
     def toString(self, memento):
         return memento.serialize()
-    

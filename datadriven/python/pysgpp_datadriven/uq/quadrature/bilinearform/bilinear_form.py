@@ -6,12 +6,12 @@ Created on Jul 23, 2014
 
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit)
-from bin.uq.operations import (getBasis, hierarchize,
+from pysgpp_datadriven.uq.operations import (getBasis, hierarchize,
                                discretize)
 import numpy as np
-# from bin.uq.uq_plot.plot1d import plotSG1d
-# import pylab as plt
-from bin.uq.quadrature.sparse_grid import doQuadrature
+# from pysgpp_datadriven.uq.plot.plot1d import plotSG1d
+# import matplotlib.pyplot as plt
+from pysgpp_datadriven.uq.quadrature.sparse_grid import doQuadrature
 from scipy.integrate import quad
 
 
@@ -81,8 +81,8 @@ def computeBilinearForm(grid, U):
     # interpolate phi_i phi_j on sparse grid with piecewise polynomial SG
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
-    ngrid = Grid.createUltraPolyTrapezoidBoundaryGrid(1, 2)
-    # ngrid = Grid.createLinearTrapezoidBoundaryGrid(1)
+    ngrid = Grid.createUltraPolyTruncatedBoundaryGrid(1, 2)
+    # ngrid = Grid.createLinearTruncatedBoundaryGrid(1)
     ngrid.createGridGenerator().regular(gs.getMaxLevel() + 1)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
@@ -124,7 +124,7 @@ def computeBilinearForm(grid, U):
                     lid, iid = gpi.getLevel(d), int(iid)
                     ljd, ijd = gpj.getLevel(d), int(ijd)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).abs(0)
+                        x = ngs.get(k).getCoord(0)
                         nodalValues[k] = max(0, basis.eval(lid, iid, x)) * \
                             max(0, basis.eval(ljd, ijd, x))
                     # ... by hierarchization

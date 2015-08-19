@@ -12,8 +12,8 @@ pathlocal = os.path.abspath(pathname)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.folding import FilesFoldingPolicy
-from datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.learner.folding import FilesFoldingPolicy
+from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
 
 
 ##

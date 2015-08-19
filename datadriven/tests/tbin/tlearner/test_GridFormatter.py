@@ -13,7 +13,7 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.formatter.GridFormatter import GridFormatter
+from pysgpp_datadriven.learner.formatter.GridFormatter import GridFormatter
 from pysgpp import Grid
 
 

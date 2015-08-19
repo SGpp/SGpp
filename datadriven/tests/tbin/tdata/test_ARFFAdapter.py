@@ -13,7 +13,7 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
 from pysgpp import DataVector, DataMatrix, cvar
 
 

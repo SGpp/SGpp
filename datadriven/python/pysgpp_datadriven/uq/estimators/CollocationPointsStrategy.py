@@ -1,5 +1,5 @@
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy 
-from bin.uq.operations import dehierarchize
+from pysgpp_datadriven.uq.operations import dehierarchize
 from pysgpp import DataVector
 import numpy as np
 

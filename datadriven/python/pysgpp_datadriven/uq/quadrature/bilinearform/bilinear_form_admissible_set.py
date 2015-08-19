@@ -5,15 +5,15 @@ Created on Jul 23, 2014
 '''
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit, createOperationEval)
-from bin.uq.operations import (getBasis, hierarchize,
+from pysgpp_datadriven.uq.operations import (getBasis, hierarchize,
                                evalSGFunction,
                                evalSGFunctionMulti)
 import numpy as np
-# from bin.uq.uq_plot import plotSG1d
-# import pylab as plt
-from bin.uq.operations import discretize
-from bin.uq.transformation import LinearTransformation
-from bin.uq.quadrature import doQuadrature
+# from pysgpp_datadriven.uq.plot import plotSG1d
+# import matplotlib.pyplot as plt
+from pysgpp_datadriven.uq.operations import discretize
+from pysgpp_datadriven.uq.transformation import LinearTransformation
+from pysgpp_datadriven.uq.quadrature import doQuadrature
 from scipy.integrate import quad
 
 
@@ -73,8 +73,8 @@ def computeBFGridPoint(basis, U, gpi, gps):
     stored in gps
     @param basis: basis of sparse grid function,
     @param U: list of distributions
-    @param gpi: GridIndex
-    @param gps: list of GridIndex
+    @param gpi: HashGridIndex
+    @param gps: list of HashGridIndex
     """
     n = len(gps)
     s = np.ndarray(gpi.dim(), dtype='float32')
@@ -133,7 +133,7 @@ def computeBF(grid, U, admissibleSet):
     # interpolate phi_i phi_j on sparse grid with piecewise polynomial SG
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
-    ngrid = Grid.createUltraPolyTrapezoidBoundaryGrid(1, 2)
+    ngrid = Grid.createUltraPolyTruncatedBoundaryGrid(1, 2)
     ngrid.createGridGenerator().regular(2)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
@@ -212,7 +212,7 @@ def computeBF(grid, U, admissibleSet):
                     # define transformation function
                     T = LinearTransformation(lb, ub)
                     for k in xrange(ngs.size()):
-                        x = ngs.get(k).abs(0)
+                        x = ngs.get(k).getCoord(0)
                         x = T.unitToProbabilistic(x)
                         nodalValues[k] = basis.eval(lid, iid, x) * \
                             basis.eval(ljd, ijd, x)

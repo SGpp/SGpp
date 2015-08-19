@@ -1,11 +1,11 @@
-from bin.learner.TrainingSpecification import TrainingSpecification
+from pysgpp_datadriven.learner.TrainingSpecification import TrainingSpecification
 from pysgpp import (createOperationLaplace,
                     createOperationIdentity)
 
 from StopPolicyDescriptor import StopPolicyDescriptor
 from CGSolverDescriptor import CGSolverDescriptor
 
-from bin.learner.folding import (RandomFoldingPolicy,
+from pysgpp_datadriven.learner.folding import (RandomFoldingPolicy,
                                  SequentialFoldingPolicy,
                                  StratifiedFoldingPolicy,
                                  FilesFoldingPolicy)

@@ -1,13 +1,13 @@
-from bin.data.DataContainer import DataContainer
-from bin.learner.Learner import Learner
-from bin.uq.analysis import KnowledgeTypes
-from bin.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.learner.Learner import Learner
+from pysgpp_datadriven.uq.analysis import KnowledgeTypes
+from pysgpp_datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 from pysgpp import DataVector, DataMatrix
 
 from SimulationLearnerSpecification import SimulationLearnerSpecification
 import numpy as np
 import copy
-from bin.uq.operations.sparse_grid import copyGrid, dehierarchize
+from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid, dehierarchize
 
 
 class SimulationLearner(Learner):
@@ -94,7 +94,7 @@ class SimulationLearner(Learner):
                     p = DataVector(sample.getActiveUnit())
                     mydata.setRow(i, p)
                     sol[i] = float(res)
-                ans[dtype][t] = DataContainer(mydata, sol, name)
+                ans[dtype][t] = DataContainer(points=mydata, values=sol, name=name)
         return ans
 
     # @profile

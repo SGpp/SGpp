@@ -1,9 +1,9 @@
-from pysgpp import Grid, GridIndex, SMyPolyBoundaryBase, SLinearBoundaryBase, \
-    SLinearBase, SMyPolyBase
+from pysgpp import Grid, HashGridIndex, SPolyBoundaryBase, SLinearBoundaryBase, \
+    SLinearBase, SPolyBase
 
 from sparse_grid import createGrid, isValid
 import numpy as np
-from bin.uq.operations.sparse_grid import copyGrid, insertPoint, getBasis, \
+from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid, insertPoint, getBasis, \
     hasBorder, getDegree
 
 
@@ -25,14 +25,14 @@ def insert_children(grid, gp, d):
     gs = grid.getStorage()
 
     # left child in dimension dim
-    gpl = GridIndex(gp)
+    gpl = HashGridIndex(gp)
     gs.left_child(gpl, d)
     if not gs.has_key(gpl) and isValid(grid, gpl):
         success = gs.insert(gpl) > -1
         cnt += 1 if success else 0
 
     # right child in dimension dim
-    gpr = GridIndex(gp)
+    gpr = HashGridIndex(gp)
     gs.right_child(gpr, d)
     if not gs.has_key(gpr) and isValid(grid, gpr):
         success = gs.insert(gpr) > -1
@@ -57,7 +57,7 @@ def extend_grid_1d(grid, *args, **kws):
     # create cross product between the 1d and the dimd-grid
     for i in xrange(gs.size()):
         gp = gs.get(i)
-        new_gp = GridIndex(dim + 1)
+        new_gp = HashGridIndex(dim + 1)
 
         # copy level index vectors from old grid to the new one
         for d in xrange(gs.dim()):
@@ -108,7 +108,7 @@ def project(grid, dims):
     # project them to the dimensions dims
     for i in xrange(gs.size()):
         gp = gs.get(i)
-        ngp = GridIndex(dim)
+        ngp = HashGridIndex(dim)
         # copy level index to new grid point
         for k, d in enumerate(dims):
             ngp.set(k, gp.getLevel(d), gp.getIndex(d))

@@ -13,7 +13,7 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.controller.TerminalController import TerminalController
+from pysgpp_datadriven.controller.TerminalController import TerminalController
 
 import os
 from subprocess import *

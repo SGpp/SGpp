@@ -3,7 +3,7 @@ import os
 from Dist import Dist
 import ConfigParser as cp
 import numpy as np
-from bin.uq.operations.general import isNumerical, isList
+from pysgpp_datadriven.uq.operations.general import isNumerical, isList
 from pysgpp import (DataVector, DataMatrix,
                     createOperationRosenblattTransformationKDE,
                     createOperationInverseRosenblattTransformationKDE)

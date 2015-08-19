@@ -1,10 +1,10 @@
-from bin.learner.Types import BorderTypes
-from bin.learner.formatter.GridFormatter import GridFormatter
+from pysgpp_datadriven.learner.Types import BorderTypes
+from pysgpp_datadriven.learner.formatter.GridFormatter import GridFormatter
 
-from pysgpp import Grid, GridIndex
+from pysgpp import Grid, HashGridIndex
 
 import os
-from bin.uq.operations.sparse_grid import (insertTrapezoidBorder,
+from pysgpp_datadriven.uq.operations.sparse_grid import (insertTruncatedBorder,
                                            hasBorder,
                                            getDegree)
 
@@ -106,9 +106,9 @@ class GridDescriptor(object):
             if self.__border is not None:
                 if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                     if self.__deg > 1:
-                        grid = Grid.createMyPolyTrapezoidBoundaryGrid(self.__dim, self.__deg)
+                        grid = Grid.createPolyTruncatedBoundaryGrid(self.__dim, self.__deg)
                     else:
-                        grid = Grid.createLinearTrapezoidBoundaryGrid(self.__dim)
+                        grid = Grid.createLinearTruncatedBoundaryGrid(self.__dim)
                 elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                     if self.__deg > 1:
                         raise NotImplementedError()
@@ -122,7 +122,7 @@ class GridDescriptor(object):
             else:
                 # no border points
                 if self.__deg > 1:
-                    grid = Grid.createMyPolyGrid(self.__dim, self.__deg)
+                    grid = Grid.createPolyGrid(self.__dim, self.__deg)
                 else:
                     grid = Grid.createLinearGrid(self.__dim)
 
@@ -144,9 +144,9 @@ class GridDescriptor(object):
                     gp = copygs.get(i)
                     # insert grid point
                     if not gs.has_key(gp):
-                        gs.insert(GridIndex(gp))
+                        gs.insert(HashGridIndex(gp))
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
-                        insertTrapezoidBorder(grid, gp)
+                        insertTruncatedBorder(grid, gp)
                 gs.recalcLeafProperty()
 
         return grid

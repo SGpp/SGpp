@@ -20,16 +20,16 @@
 # or see <http://www.gnu.org/licenses/>.                                    #
 #############################################################################
 
-from bin.data.DataContainer import DataContainer
-from bin.learner.TrainingSpecification import TrainingSpecification
-from bin.learner.TrainingStopPolicy import TrainingStopPolicy
-from bin.learner.folding.FoldingPolicy import FoldingPolicy
-from bin.learner.solver.CGSolver import CGSolver
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.learner.TrainingSpecification import TrainingSpecification
+from pysgpp_datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp_datadriven.learner.folding.FoldingPolicy import FoldingPolicy
+from pysgpp_datadriven.learner.solver.CGSolver import CGSolver
 from pysgpp import (createOperationMultipleEval,
                     DMSystemMatrix,
                     DataVector)
 import types
-import utils.json as json
+import pysgpp_datadriven.utils.json as json
 import matplotlib.pyplot as plt
 
 
@@ -200,7 +200,7 @@ class Learner(object):
             # refine grid
             self.refineGrid()
 
-#         from bin.uq.uq_plot import plotNodal3d
+#         from pysgpp_datadriven.uq.plot import plotNodal3d
 #         plotNodal3d(self.grid, self.alpha)
 #         data = self.dataContainer.getPoints('train').array()
 #         fig = plt.figure()

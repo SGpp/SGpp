@@ -13,9 +13,9 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.LearnerBuilder import LearnerBuilder
-from datadriven.controller import InfoToScreen
-from datadriven.controller import InfoToFile
+from pysgpp_datadriven.learner.LearnerBuilder import LearnerBuilder
+from pysgpp_datadriven.controller import InfoToScreen
+from pysgpp_datadriven.controller import InfoToFile
 
 
 ##

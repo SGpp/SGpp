@@ -16,7 +16,7 @@
 from Dist import Dist
 from SGDEdist import SGDEdist
 import numpy as np
-from bin.uq.operations import discretizeFunction
+from pysgpp_datadriven.uq.operations import discretizeFunction
 
 
 class J(Dist):

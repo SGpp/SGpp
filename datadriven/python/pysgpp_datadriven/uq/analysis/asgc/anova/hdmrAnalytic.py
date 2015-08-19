@@ -15,9 +15,9 @@ decomposition for a Sparse-Grid function
 @version  0.1
 
 """
-from bin.uq.estimators import (AnalyticEstimationStrategy,
+from pysgpp_datadriven.uq.estimators import (AnalyticEstimationStrategy,
                                MarginalAnalyticEstimationStrategy)
-from bin.uq.operations import (evalSGFunction,
+from pysgpp_datadriven.uq.operations import (evalSGFunction,
                                isNumerical)
 from pysgpp import DataVector
 

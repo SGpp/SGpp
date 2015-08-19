@@ -13,7 +13,7 @@
 @version  0.1
 
 """
-from bin.uq.tools import writeDataARFF
+from pysgpp_datadriven.uq.tools import writeDataARFF
 
 
 class AnalysisHash(object):

@@ -8,17 +8,17 @@
 #############################################################################
 
 from pysgpp import createOperationLaplace, createOperationIdentity
-from datadriven.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
-from datadriven.controller.LearnerEventController import LearnerEventController
-#from datadriven.ata.ARFFAdapter import ARFFAdapter
+from pysgpp_datadriven.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
+from pysgpp_datadriven.controller.LearnerEventController import LearnerEventController
+#from pysgpp_datadriven.ata.ARFFAdapter import ARFFAdapter
 
-import utils.json as json
-from datadriven.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
-from datadriven.controller.InfoToScreenRegressor import InfoToScreenRegressor
-from datadriven.controller.InfoToScreen import InfoToScreen
-from datadriven.controller.InfoToFile import InfoToFile
+import pysgpp_datadriven.utils.json as json
+from pysgpp_datadriven.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
+from pysgpp_datadriven.controller.InfoToScreenRegressor import InfoToScreenRegressor
+from pysgpp_datadriven.controller.InfoToScreen import InfoToScreen
+from pysgpp_datadriven.controller.InfoToFile import InfoToFile
 try:
-    from datadriven.controller.InfoToGraph import InfoToGraph
+    from pysgpp_datadriven.controller.InfoToGraph import InfoToGraph
 except ImportError: pass
 import gzip, copy
 
@@ -352,7 +352,7 @@ class CheckpointController(LearnerEventController):
 #$-m e
 #$-v SGPP,OPT_TMP,PATH,LD_LIBRARY_PATH
 . /etc/profile
-echo "from datadriven.ontroller.CheckpointController import CheckpointController\nlearner = CheckpointController('""" \
+echo "from pysgpp_datadriven.ontroller.CheckpointController import CheckpointController\nlearner = CheckpointController('""" \
 + self.title + """', '.', 1, $SGE_TASK_ID).loadAll(0)\nlearner.learnDataWithTest()" | python
 
 echo "JOB_ID: $JOB_ID"

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 #
 """
@@ -17,18 +17,18 @@
 import os
 import json
 from anova import HDMR, HDMRAnalytic
-from bin.uq.estimators import MonteCarloStrategy
-from bin.uq.operations import (evalSGFunctionMulti,
+from pysgpp_datadriven.uq.estimators import MonteCarloStrategy
+from pysgpp_datadriven.uq.operations import (evalSGFunctionMulti,
                                evalSGFunction,
                                isNumerical, discretize)
-from bin.uq.tools import writeDataARFF, eval_fullGrid
+from pysgpp_datadriven.uq.tools import writeDataARFF, eval_fullGrid
 from pysgpp import (DataVector,
                     DataMatrix)
 import numpy as np
 
-from bin.uq.analysis.KnowledgeTypes import KnowledgeTypes
-from bin.tools import writeAlphaARFF, writeGrid
-from bin.uq.analysis import Analysis
+from pysgpp_datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp_datadriven.tools import writeAlphaARFF, writeGrid
+from pysgpp_datadriven.uq.analysis import Analysis
 
 
 class ASGCAnalysis(Analysis):
@@ -630,7 +630,7 @@ class ASGCAnalysis(Analysis):
 
             for i in xrange(gs.size()):
                 gp = gs.get(i)
-                v = np.array([gp.abs(j) for j in xrange(dim)])
+                v = np.array([gp.getCoord(j) for j in xrange(dim)])
                 data.setRow(i, DataVector(v))
 
             # write results

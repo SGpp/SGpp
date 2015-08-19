@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
-from bin.uq.operations.sparse_grid import getBoundsOfSupport
+from pysgpp_datadriven.uq.operations.sparse_grid import getBoundsOfSupport
 
 
 class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
@@ -51,7 +51,7 @@ class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):
                                            deg=2 * (gpi.getLevel(d) + 1) + 1)
 #             # -----------------------------------------
 #             # plot the basis
-#             import pylab as plt
+#             import matplotlib.pyplot as plt
 #             import numpy as np
 #             x = np.linspace(xlow, xhigh, 100)
 #             b0 = [basisk.eval(lkd, ikd, xi) for xi in np.linspace(xlowk, xhighk, 100)]

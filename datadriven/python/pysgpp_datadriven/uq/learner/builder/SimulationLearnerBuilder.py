@@ -1,12 +1,12 @@
-from bin.data.DataContainer import DataContainer
-from bin.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
-from bin.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
-from bin.uq.learner.Regressor import Regressor
-from bin.uq.learner.SimulationLearner import SimulationLearner
-from bin.uq.learner.SimulationLearnerSpecification import SimulationLearnerSpecification
-from bin.uq.learner.builder.GridDescriptor import GridDescriptor
-from bin.uq.refinement import RefinementDescriptor
-from bin.uq.uq_setting import UQSettingAdapter
+from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp_datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
+from pysgpp_datadriven.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
+from pysgpp_datadriven.uq.learner.Regressor import Regressor
+from pysgpp_datadriven.uq.learner.SimulationLearner import SimulationLearner
+from pysgpp_datadriven.uq.learner.SimulationLearnerSpecification import SimulationLearnerSpecification
+from pysgpp_datadriven.uq.learner.builder.GridDescriptor import GridDescriptor
+from pysgpp_datadriven.uq.refinement import RefinementDescriptor
+from pysgpp_datadriven.uq.uq_setting import UQSettingAdapter
 import os
 
 from LearnerBuilder import LearnerBuilder

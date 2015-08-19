@@ -28,10 +28,10 @@
 
 """
 
-from bin.utils.GzipSerializer import GzipSerializer
+from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
 import json
 import types
-import utils.json as json_manual
+import pysgpp_datadriven.utils.json as json_manual
 
 
 class UQSettingFormatter(GzipSerializer):

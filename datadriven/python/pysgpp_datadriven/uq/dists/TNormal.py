@@ -17,7 +17,7 @@
 from scipy.stats import truncnorm, norm
 from Dist import Dist
 
-import uq.jsonLib as ju
+import pysgpp_datadriven.uq.jsonLib as ju
 
 import numpy as np
 

@@ -4,14 +4,18 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
-from bin.uq.transformation.LinearTransformation import LinearTransformation
+from pysgpp_datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp import Grid, DataVector
-from bin.uq.operations.discretization import discretize
-from bin.uq.quadrature.sparse_grid import doQuadrature
-from bin.uq.operations.sparse_grid import hierarchize
+from pysgpp_datadriven.uq.operations.discretization import discretize
+from pysgpp_datadriven.uq.quadrature.sparse_grid import doQuadrature
+from pysgpp_datadriven.uq.operations.sparse_grid import hierarchize
 
 
 class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
+    """
+    Generate the a quadrature strategy that uses a sparse grid to approximate
+    the function in the integral of the bilinear form.
+    """
 
     def __init__(self, U):
         """
@@ -32,7 +36,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
         err = 0.
 
         # interpolating 1d sparse grid
-        ngrid = Grid.createUltraPolyTrapezoidBoundaryGrid(1, 2)
+        ngrid = Grid.createUltraPolyTruncatedBoundaryGrid(1, 2)
         ngrid.createGridGenerator().regular(2)
         ngs = ngrid.getStorage()
         nodalValues = DataVector(ngs.size())
@@ -62,7 +66,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
                 # define transformation function
                 T = LinearTransformation(xlow, xhigh)
                 for k in xrange(ngs.size()):
-                    x = ngs.get(k).abs(0)
+                    x = ngs.get(k).getCoord(0)
                     x = T.unitToProbabilistic(x)
                     nodalValues[k] = basisi.eval(lid, iid, x) * \
                         basisj.eval(ljd, ijd, x)

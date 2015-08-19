@@ -4,8 +4,8 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from pysgpp import DataVector
-from bin.uq.operations import getBasis
-from bin.uq.quadrature import HashQuadrature
+from pysgpp_datadriven.uq.operations import getBasis
+from pysgpp_datadriven.uq.quadrature import HashQuadrature
 
 
 class LinearQuadratureStrategy(HashQuadrature):
@@ -40,7 +40,7 @@ class LinearQuadratureStrategy(HashQuadrature):
     def computeLinearFormByList(self, gps, basis):
         """
         Compute bilinear form for two lists of grid points
-        @param gps: list of GridIndex
+        @param gps: list of HashGridIndex
         @param basis: SG++ basis for grid indices gpsi
         @return: DataMatrix
         """
@@ -62,7 +62,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         """
         Restore the bilinear form of two grid points if it is available.
         If not, forward the result to the computation method.
-        @param gp: GridIndex
+        @param gp: HashGridIndex
         @param basis: SG++ Basis
         @param d: int dimension
         """
@@ -80,7 +80,7 @@ class LinearQuadratureStrategy(HashQuadrature):
     def computeLinearFormEntry(self, gp, basis, d):
         """
         Compute the bilinear form of one grid point with another one
-        @param gp: GridIndex
+        @param gp: HashGridIndex
         @param basis: SG++ Basis
         """
         raise NotImplementedError()

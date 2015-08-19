@@ -1,15 +1,15 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 ##############################################################################
                                     #
 #############################################################################
 
-from utils.GzipSerializer import GzipSerializer
+from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
 
-from learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
 from pysgpp import DataVector, DataMatrix
 
 
@@ -17,12 +17,12 @@ from pysgpp import DataVector, DataMatrix
 #
 # This design intends to separate the binary object representation and its
 # business logic from the text representation that can be saved into file.
-# The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern" 
-# target="new">Memento design pattern</a> described in details in @link 
+# The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern"
+# target="new">Memento design pattern</a> described in details in @link
 # datadriven.src.python.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
-# 
-# Currently, the LearnerKnowledge memento object is DataVector object with 
+#
+# Currently, the LearnerKnowledge memento object is DataVector object with
 # alpha values.
 class LearnedKnowledgeFormatter(GzipSerializer):
 
@@ -39,8 +39,8 @@ class LearnedKnowledgeFormatter(GzipSerializer):
         finally:
             serializationStream.close()
         return knowledge
-    
-    
+
+
     ##Deserializes the LearnedKnowledgeMemento object from the stream
     #
     #@param serializationStream The stream to deserialize.
@@ -48,8 +48,8 @@ class LearnedKnowledgeFormatter(GzipSerializer):
     def deserialize(self, serializationStream):
         alphas = self.__readAlphaARFF(serializationStream)
         return alphas
-        
-        
+
+
     ##Serializes the LearnedKnowledge memento object to the file
     #
     #@param memento LearnedKnowledgeMemento
@@ -60,24 +60,24 @@ class LearnedKnowledgeFormatter(GzipSerializer):
             self.serialize(memento, stream)
         finally:
             stream.close()
-    
-    
+
+
     ##Serializes the LearnedKnowledge memento object to the stream
     #
     #@param memento The LearnedKnowledgeMemento object.
     #@param serializationStream Output stream where the LearnedKnowledgeMemento object should be serialized to.
     def serialize(self, memento, serializationStream):
         self.__writeAlphaARFF(serializationStream, memento)
-        
-    
+
+
     ##Returns a string that represents the LearnedKnowledge memento object.
     #
     # @param memento The LearnedKnowledgeMemento object.
-    # @return A string that represents the LearnedKnowledge memento object.        
+    # @return A string that represents the LearnedKnowledge memento object.
     def toString(self, memento):
         return memento.toString()
-    
-    
+
+
     ## Reads alpha vector from the input stream
     #
     # @param serializationStream The stream.
@@ -88,8 +88,8 @@ class LearnedKnowledgeFormatter(GzipSerializer):
         for i in xrange(len(data["data"][0])):
             alpha[i] = data["data"][0][i]
         return alpha
-    
-    
+
+
     ## Writes alpha vector to output stream
     #
     # @param fout The output stream
@@ -98,15 +98,15 @@ class LearnedKnowledgeFormatter(GzipSerializer):
         if hasattr(fout, "name"):
             fout.write("@RELATION \"%s ALPHAFILE\"\n\n" % fout.name)
         fout.write("@ATTRIBUTE alpha NUMERIC\n")
-        
+
         fout.write("\n@DATA\n")
-        
+
         for i in xrange(len(alpha)):
             fout.write("%1.20f\n" % alpha[i])
-        
-        
+
+
     ## Reads from an ARFF file stream:
-    # The data is stored in lists. There is a value list for every dimension of the data set. e.g. 
+    # The data is stored in lists. There is a value list for every dimension of the data set. e.g.
     # [[2, 3],[1, 1]] are the data points P_1(2,1) and P_2(3,1)
     #
     # @param serializationStream An ARFF file stream
@@ -115,36 +115,35 @@ class LearnedKnowledgeFormatter(GzipSerializer):
         data = []
         classes = []
         hasclass = False
-    
+
         # get the different section of ARFF-File
         for line in serializationStream:
             sline = line.strip().lower()
             if sline.startswith("%") or len(sline) == 0:
                 continue
-    
+
             if sline.startswith("@data"):
                 break
-            
+
             if sline.startswith("@attribute"):
                 value = sline.split()
                 if value[1].startswith("class"):
                     hasclass = True
                 else:
                     data.append([])
-        
+
         #read in the data stored in the ARFF file
         for line in serializationStream:
             sline = line.strip()
             if sline.startswith("%") or len(sline) == 0:
                 continue
-    
+
             values = sline.split(",")
             if hasclass:
                 classes.append(float(values[-1]))
                 values = values[:-1]
             for i in xrange(len(values)):
                 data[i].append(float(values[i]))
-                
+
         # return
         return {"data":data, "classes":classes}
-        

@@ -9,7 +9,10 @@ from BilinearQuadratureStrategy import BilinearQuadratureStrategy
 
 class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
     """
-    Generic object for quadrature strategies
+    Generate the a quadrature strategy that appriximates the probability
+    density in each dimension with a piecewise constant function. Each constant
+    function is determined by the density evaluated at the center of the support
+    of the corresponding basis function.
     """
 
     def __init__(self, params):

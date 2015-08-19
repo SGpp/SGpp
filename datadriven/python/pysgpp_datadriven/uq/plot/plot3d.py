@@ -1,4 +1,4 @@
-from bin.uq.operations import evalSGFunction
+from pysgpp_datadriven.uq.operations import evalSGFunction
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
@@ -12,8 +12,8 @@ import numpy as np
 def plotDensity3d(U, n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    xlim = U.getBounds()[0]
-    ylim = U.getBounds()[1]
+    xlim = [0, 1]  # U.getBounds()[0]
+    ylim = [0, 1]  # U.getBounds()[1]
     X = np.linspace(xlim[0], xlim[1], n)
     Y = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(X, Y)
