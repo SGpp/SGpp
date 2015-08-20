@@ -1,11 +1,11 @@
-from pysgpp_datadriven.uq.operations import balance
+from pysgpp.extensions.datadriven.uq.operations import balance
 from pysgpp import (DataVector, HashGridIndex,
                     SurplusRefinementFunctor,
                     HashGridStorage)
 
 import numpy as np
-from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid
-from pysgpp_datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
+from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import AdmissibleSparseGridNodeSet
 
 
 class Refinement(object):

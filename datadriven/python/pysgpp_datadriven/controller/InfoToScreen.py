@@ -3,10 +3,10 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from pysgpp_datadriven.learner.solver.LinearSolver import LinearSolverEvents
-from pysgpp_datadriven.learner.Learner import LearnerEvents
-from pysgpp_datadriven.controller.LearnerEventController import LearnerEventController
-from pysgpp_datadriven.controller.SolverEventController import SolverEventController
+from pysgpp.extensions.datadriven.learner.solver.LinearSolver import LinearSolverEvents
+from pysgpp.extensions.datadriven.learner.Learner import LearnerEvents
+from pysgpp.extensions.datadriven.controller.LearnerEventController import LearnerEventController
+from pysgpp.extensions.datadriven.controller.SolverEventController import SolverEventController
 
 ## The class processes the progress information from Learner and LinearSolver and
 # shows it on the terminal screen.

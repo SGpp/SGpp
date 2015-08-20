@@ -27,10 +27,10 @@
 @version  0.1
 
 """
-from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
+from pysgpp.extensions.datadriven.utils.GzipSerializer import GzipSerializer
 import types
 
-import pysgpp_datadriven.utils.json as json
+import pysgpp.extensions.datadriven.utils.json as json
 
 
 class ASGCSamplerFormatter(GzipSerializer):

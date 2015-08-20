@@ -1,16 +1,16 @@
-from pysgpp_datadriven.uq.operations import (hierarchize,
+from pysgpp.extensions.datadriven.uq.operations import (hierarchize,
                                evalSGFunctionMulti,
                                hierarchizeBruteForce)
 from pysgpp import (DataVector, DataMatrix)
 
 from Learner import Learner, LearnerEvents
 import numpy as np
-from pysgpp_datadriven.uq.operations.sparse_grid import checkInterpolation, dehierarchize
-from pysgpp_datadriven.uq.plot import plotNodal3d, plotSGNodal3d
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpolation, dehierarchize
+from pysgpp.extensions.datadriven.uq.plot import plotNodal3d, plotSGNodal3d
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.plot.plot3d import plotSG3d
+from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
 import pdb
-from pysgpp_datadriven.uq.analysis import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 
 
 class Interpolant(Learner):

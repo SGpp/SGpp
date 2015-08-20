@@ -14,10 +14,10 @@ decomposition for a Sparse-Grid function
 @version  0.1
 
 """
-from pysgpp_datadriven.uq.estimators.IntegralStrategy import IntegralStrategy
-from pysgpp_datadriven.uq.estimators.MarginalIntegralStrategy import MarginalIntegralStrategy
+from pysgpp.extensions.datadriven.uq.estimators.IntegralStrategy import IntegralStrategy
+from pysgpp.extensions.datadriven.uq.estimators.MarginalIntegralStrategy import MarginalIntegralStrategy
 
-from pysgpp_datadriven.uq.operations import (evalSGFunction,
+from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
                                isNumerical,
                                discretize,
                                hierarchize,

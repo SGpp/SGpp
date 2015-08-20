@@ -17,18 +17,18 @@
 import os
 import json
 from anova import HDMR, HDMRAnalytic
-from pysgpp_datadriven.uq.estimators import MonteCarloStrategy
-from pysgpp_datadriven.uq.operations import (evalSGFunctionMulti,
+from pysgpp.extensions.datadriven.uq.estimators import MonteCarloStrategy
+from pysgpp.extensions.datadriven.uq.operations import (evalSGFunctionMulti,
                                evalSGFunction,
                                isNumerical, discretize)
-from pysgpp_datadriven.uq.tools import writeDataARFF, eval_fullGrid
+from pysgpp.extensions.datadriven.uq.tools import writeDataARFF, eval_fullGrid
 from pysgpp import (DataVector,
                     DataMatrix)
 import numpy as np
 
-from pysgpp_datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
-from pysgpp_datadriven.tools import writeAlphaARFF, writeGrid
-from pysgpp_datadriven.uq.analysis import Analysis
+from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp.extensions.datadriven.tools import writeAlphaARFF, writeGrid
+from pysgpp.extensions.datadriven.uq.analysis import Analysis
 
 
 class ASGCAnalysis(Analysis):

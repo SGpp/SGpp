@@ -1,6 +1,6 @@
-from pysgpp_datadriven.uq.dists import Dist
+from pysgpp.extensions.datadriven.uq.dists import Dist
 
-import pysgpp_datadriven.uq.jsonLib as ju
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
 
 class Parameter(object):
@@ -83,10 +83,10 @@ class Parameter(object):
             value = None
 
         if jsonObject['module'] == 'parameters.UncertainParameter':
-            from pysgpp_datadriven.uq.parameters.UncertainParameter import UncertainParameter
+            from pysgpp.extensions.datadriven.uq.parameters.UncertainParameter import UncertainParameter
             return UncertainParameter(name, dist, value)
         elif jsonObject['module'] == 'parameters.DeterministicParameter':
-            from pysgpp_datadriven.uq.parameters.DeterministicParameter import \
+            from pysgpp.extensions.datadriven.uq.parameters.DeterministicParameter import \
                 DeterministicParameter
             return DeterministicParameter(name, value)
         else:

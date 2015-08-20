@@ -82,7 +82,7 @@ def refine(jgrid, jalpha):
 #     jgn = jgrid.createGridGenerator()
 #     rp = jgn.getNumberOfRefinablePoints()
 #     jgn.refine(SurplusRefinementFunctor(jalpha, rp, 0.))
-    from pysgpp_datadriven.uq.refinement.LocalRefinementStrategy import CreateAllChildrenRefinement
+    from pysgpp.extensions.datadriven.uq.refinement.LocalRefinementStrategy import CreateAllChildrenRefinement
     global refinable
     jgs = jgrid.getStorage()
     refinementStrategy = CreateAllChildrenRefinement()

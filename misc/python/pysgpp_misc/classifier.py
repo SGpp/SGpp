@@ -20,7 +20,7 @@ if os.environ.has_key("SGPP"):
     sys.path.append(os.path.join(os.environ["SGPP"], "bin"))
 from tools import *
 from pysgpp import *
-from pysgpp_datadriven import *
+from pysgpp.extensions.datadriven import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
 from math import ceil

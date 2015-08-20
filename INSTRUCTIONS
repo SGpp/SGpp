@@ -7,5 +7,5 @@ export LD_LIBRARY_PATH=$SGPP_BUILD_PATH:$LD_LIBRARY_PATH
 # If you installed Python support execute the following code or add it
 # to your ~/.bashrc file
 
-export PYTHONPATH=$PYSGPP_BUILD_PATH:$PYSGPP_MODULE_PATHS:$PYTHONPATH
+export PYTHONPATH=$PYSGPP_PACKAGE_PATH:$PYTHONPATH
 # ------------------------------------------------------------------------

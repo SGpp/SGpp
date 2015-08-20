@@ -1,9 +1,9 @@
-from pysgpp_datadriven.uq.analysis import KnowledgeTypes
-from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid
+from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp import DataVector, Grid
 
-import pysgpp_datadriven.uq.jsonLib as ju
-import pysgpp_datadriven.utils.json as json
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
+import pysgpp.extensions.datadriven.utils.json as json
 
 
 class ASGCKnowledge(object):

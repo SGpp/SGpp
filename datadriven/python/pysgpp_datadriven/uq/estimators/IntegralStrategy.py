@@ -1,12 +1,12 @@
-from pysgpp_datadriven.uq.dists import Uniform, J
-from pysgpp_datadriven.uq.operations import discretize
-from pysgpp_datadriven.uq.quadrature import doQuadrature
-from pysgpp_datadriven.uq.transformation import InverseCDFTransformation
+from pysgpp.extensions.datadriven.uq.dists import Uniform, J
+from pysgpp.extensions.datadriven.uq.operations import discretize
+from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
+from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
-from pysgpp_datadriven.uq.operations.discretizeProduct import discretizeProduct
-from pysgpp_datadriven.uq.operations.sparse_grid import evalSGFunction
+from pysgpp.extensions.datadriven.uq.operations.discretizeProduct import discretizeProduct
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction
 from pysgpp import DataVector
 
 

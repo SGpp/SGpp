@@ -6,7 +6,7 @@ Created on Feb 6, 2015
 
 from interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
-from pysgpp_datadriven.uq.operations import (dehierarchize,
+from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                getBoundsOfSupport,
                                hierarchize)
 

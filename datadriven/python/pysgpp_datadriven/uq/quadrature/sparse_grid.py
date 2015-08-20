@@ -1,5 +1,5 @@
 from pysgpp import createOperationQuadrature
-from pysgpp_datadriven.uq.operations import getBasis
+from pysgpp.extensions.datadriven.uq.operations import getBasis
 import numpy as np
 
 

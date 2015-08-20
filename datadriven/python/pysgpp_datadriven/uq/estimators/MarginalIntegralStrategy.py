@@ -1,7 +1,7 @@
-from pysgpp_datadriven.uq.dists import Uniform, J
-from pysgpp_datadriven.uq.operations import discretize
-from pysgpp_datadriven.uq.quadrature.marginalization import doMarginalize
-from pysgpp_datadriven.uq.transformation import InverseCDFTransformation
+from pysgpp.extensions.datadriven.uq.dists import Uniform, J
+from pysgpp.extensions.datadriven.uq.operations import discretize
+from pysgpp.extensions.datadriven.uq.quadrature.marginalization import doMarginalize
+from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np

@@ -1,7 +1,7 @@
 from uq.estimators.SparseGridEstimationStrategy import EstimationStrategy
 from numpy import prod
-from pysgpp_datadriven.uq.operations import evalSGFunction, discretize
-from pysgpp_datadriven.uq.quadrature import doQuadrature
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction, discretize
+from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
 
 
 class PiecewiseConstantIntegralStrategy(EstimationStrategy):

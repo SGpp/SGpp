@@ -1,4 +1,4 @@
-from pysgpp_datadriven.uq.dists import Dist
+from pysgpp.extensions.datadriven.uq.dists import Dist
 
 
 # # Collection of parameters, which specify the ASGC process.

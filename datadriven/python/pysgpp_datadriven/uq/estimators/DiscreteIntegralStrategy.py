@@ -1,20 +1,20 @@
-from pysgpp_datadriven.uq.dists import Uniform, J, SGDEdist
-from pysgpp_datadriven.uq.operations import discretize
-from pysgpp_datadriven.uq.quadrature import doQuadrature
-from pysgpp_datadriven.uq.transformation import InverseCDFTransformation
+from pysgpp.extensions.datadriven.uq.dists import Uniform, J, SGDEdist
+from pysgpp.extensions.datadriven.uq.operations import discretize
+from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
+from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
-from pysgpp_datadriven.uq.operations.general import project
-from pysgpp_datadriven.uq.operations.discretizeProduct import discretizeProduct
-from pysgpp_datadriven.uq.operations.sparse_grid import evalSGFunction, getBasis
+from pysgpp.extensions.datadriven.uq.operations.general import project
+from pysgpp.extensions.datadriven.uq.operations.discretizeProduct import discretizeProduct
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunction, getBasis
 from pysgpp import DataVector, HashGridIndex
-from pysgpp_datadriven.uq.quadrature.bilinearform.ScipyQuadratureStrategy import ScipyQuadratureStrategy
-from pysgpp_datadriven.uq.quadrature.bilinearform.UniformQuadratureStrategy import UniformQuadratureStrategy
-from pysgpp_datadriven.uq.plot.plot1d import plotSG1d
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.ScipyQuadratureStrategy import ScipyQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.UniformQuadratureStrategy import UniformQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.plot import plotDensity1d
+from pysgpp.extensions.datadriven.uq.plot import plotDensity1d
 
 
 class DiscreteIntegralStrategy(SparseGridEstimationStrategy):

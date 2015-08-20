@@ -11,19 +11,19 @@ pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowledge
 
 
 ##
 # @package tests.tbin.test_TrainingSpecification
-# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link python.pysgpp.extensions.datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Class with unittests for @link python.pysgpp.extensions.datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# @test Unittests for @link python.pysgpp.extensions.datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 # @todo (khakhutv) implement the test case for TrainingSpecification
 class TestTrainingSpecification(unittest.TestCase):
 

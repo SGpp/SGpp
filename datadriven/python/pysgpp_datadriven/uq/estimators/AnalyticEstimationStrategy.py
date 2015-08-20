@@ -1,16 +1,16 @@
-from pysgpp_datadriven.uq.dists import SGDEdist
+from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
-from pysgpp_datadriven.uq.operations.general import project
+from pysgpp.extensions.datadriven.uq.operations.general import project
 from pysgpp import DataVector, DataMatrix
-from pysgpp_datadriven.uq.operations.sparse_grid import hierarchize, evalSGFunction
-from pysgpp_datadriven.uq.learner.builder.GridDescriptor import GridDescriptor
-from pysgpp_datadriven.learner.Types import BorderTypes
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize, evalSGFunction
+from pysgpp.extensions.datadriven.uq.learner.builder.GridDescriptor import GridDescriptor
+from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 
-from pysgpp_datadriven.uq.quadrature.linearform import LinearGaussQuadratureStrategy
-from pysgpp_datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
-from pysgpp_datadriven.uq.quadrature.trilinearform import TrilinearGaussQuadratureStrategy
-from pysgpp_datadriven.uq.dists.Dist import Dist
+from pysgpp.extensions.datadriven.uq.quadrature.linearform import LinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.trilinearform import TrilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 
 class AnalyticEstimationStrategy(SparseGridEstimationStrategy):

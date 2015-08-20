@@ -5,15 +5,15 @@ Created on Jul 23, 2014
 '''
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit, createOperationEval)
-from pysgpp_datadriven.uq.operations import (getBasis, hierarchize,
+from pysgpp.extensions.datadriven.uq.operations import (getBasis, hierarchize,
                                evalSGFunction,
                                evalSGFunctionMulti)
 import numpy as np
-# from pysgpp_datadriven.uq.plot import plotSG1d
+# from pysgpp.extensions.datadriven.uq.plot import plotSG1d
 # import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.operations import discretize
-from pysgpp_datadriven.uq.transformation import LinearTransformation
-from pysgpp_datadriven.uq.quadrature import doQuadrature
+from pysgpp.extensions.datadriven.uq.operations import discretize
+from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
+from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
 from scipy.integrate import quad
 
 

@@ -6,8 +6,8 @@ from sparse_grid import (copyGrid,
                          hierarchize,
                          evalSGFunctionMulti)
 import numpy as np
-from pysgpp_datadriven.uq.transformation.JointTransformation import JointTransformation
-from pysgpp_datadriven.uq.transformation.LinearTransformation import LinearTransformation
+from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
 
 def computeCoefficients(jgrid, grid, alpha, f):
@@ -37,7 +37,7 @@ def computeCoefficients(jgrid, grid, alpha, f):
         A.getRow(i, p)
 #         print i, p.array(), nodalValues[i], alpha.min(), alpha.max()
 #         if nodalValues[i] < -1e20 or nodalValues[i] > 1e20:
-#             from pysgpp_datadriven.uq.operations import evalSGFunction, evalSGFunctionMultiVectorized
+#             from pysgpp.extensions.datadriven.uq.operations import evalSGFunction, evalSGFunctionMultiVectorized
 #             print alpha.min(), alpha.max()
 #             print evalSGFunction(grid, alpha, p)
 #             print evalSGFunctionMulti(grid, alpha, DataMatrix([p.array()]))

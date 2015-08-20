@@ -4,18 +4,18 @@
 # sgpp.sparsegrids.org
 
 
-from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
-from pysgpp_datadriven.learner import Classifier, Regressor
-import pysgpp_datadriven.utils.json as json
+from pysgpp.extensions.datadriven.utils.GzipSerializer import GzipSerializer
+from pysgpp.extensions.datadriven.learner import Classifier, Regressor
+import pysgpp.extensions.datadriven.utils.json as json
 
 
-# # Provides functionality for the runtime serialization of the @link pysgpp_datadriven.learner.Learner.Learner Learner@endlink subclasses.
+# # Provides functionality for the runtime serialization of the @link pysgpp.extensions.datadriven.learner.Learner.Learner Learner@endlink subclasses.
 #
 # This design intends to separate the binary object representation and its
 # business logic from the text representation that can be saved into file.
 # The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern"
 # target="new">Memento design pattern</a> described in details in @link
-# pysgpp_datadriven.controller.CheckpointController.CheckpointController CheckpointController
+# pysgpp.extensions.datadriven.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
 #
 # Currently, the Learner memento object is a dictionary with attributes describing

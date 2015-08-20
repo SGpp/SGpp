@@ -7,9 +7,9 @@
                                     #
 #############################################################################
 
-from pysgpp_datadriven.utils.GzipSerializer import GzipSerializer
+from pysgpp.extensions.datadriven.utils.GzipSerializer import GzipSerializer
 
-from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowledge
 from pysgpp import DataVector, DataMatrix
 
 
@@ -19,7 +19,7 @@ from pysgpp import DataVector, DataMatrix
 # business logic from the text representation that can be saved into file.
 # The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern"
 # target="new">Memento design pattern</a> described in details in @link
-# pysgpp_datadriven.controller.CheckpointController.CheckpointController CheckpointController
+# pysgpp.extensions.datadriven.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
 #
 # Currently, the LearnerKnowledge memento object is DataVector object with

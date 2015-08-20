@@ -7,10 +7,10 @@
 from pysgpp import *
 from solver.CGSolver import CGSolver
 from folding.FoldingPolicy import FoldingPolicy
-import pysgpp_datadriven.utils.json as json
+import pysgpp.extensions.datadriven.utils.json as json
 from TrainingStopPolicy import TrainingStopPolicy
 from TrainingSpecification import TrainingSpecification
-from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 import types
 
 
@@ -37,7 +37,7 @@ import types
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from LinearSolver.
-# See documentation of@link pysgpp_datadriven.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
+# See documentation of@link pysgpp.extensions.datadriven.learner.solver.LinearSolver.LinearSolver LinearSolver@endlink for more information.
 #
 class Learner(object):
 

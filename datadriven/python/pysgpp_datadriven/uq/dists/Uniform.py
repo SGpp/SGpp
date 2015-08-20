@@ -18,7 +18,7 @@
 from Dist import Dist
 from scipy.stats import uniform
 
-import pysgpp_datadriven.uq.jsonLib as ju
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
 
 class Uniform(Dist):

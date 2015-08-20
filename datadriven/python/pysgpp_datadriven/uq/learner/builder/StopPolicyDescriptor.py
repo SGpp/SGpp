@@ -1,4 +1,4 @@
-from pysgpp_datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
 
 
 class StopPolicyDescriptor(object):

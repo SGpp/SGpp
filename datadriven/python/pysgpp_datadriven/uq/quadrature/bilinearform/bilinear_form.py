@@ -6,12 +6,12 @@ Created on Jul 23, 2014
 
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit)
-from pysgpp_datadriven.uq.operations import (getBasis, hierarchize,
+from pysgpp.extensions.datadriven.uq.operations import (getBasis, hierarchize,
                                discretize)
 import numpy as np
-# from pysgpp_datadriven.uq.plot.plot1d import plotSG1d
+# from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 # import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.quadrature.sparse_grid import doQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature
 from scipy.integrate import quad
 
 

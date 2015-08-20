@@ -7,7 +7,7 @@
                                     #
 #############################################################################
 
-from pysgpp_datadriven.controller.InfoToScreen import InfoToScreen
+from pysgpp.extensions.datadriven.controller.InfoToScreen import InfoToScreen
 import sys
 
 ## The class processes the progress information from Learner and LinearSolver and

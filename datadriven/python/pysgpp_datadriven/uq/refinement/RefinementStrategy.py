@@ -1,12 +1,12 @@
-from pysgpp_datadriven.uq.analysis import KnowledgeTypes
-from pysgpp_datadriven.uq.quadrature import getIntegral
-from pysgpp_datadriven.uq.operations import (estimateConvergence,
+from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
+from pysgpp.extensions.datadriven.uq.operations import (estimateConvergence,
                                estimateSurplus)
 from pysgpp import DataVector, DataMatrix
 import numpy as np
-from pysgpp_datadriven.uq.plot.plot2d import plotDensity2d
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.operations.sparse_grid import getBasis
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
 
 
 class Ranking(object):

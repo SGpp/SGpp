@@ -17,7 +17,7 @@
 from scipy.stats import multivariate_normal
 from Dist import Dist
 import numpy as np
-import pysgpp_datadriven.uq.jsonLib as ju
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
 
 
 class MultivariateNormal(Dist):

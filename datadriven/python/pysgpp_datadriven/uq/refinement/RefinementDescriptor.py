@@ -13,8 +13,8 @@ from RefinementStrategy import (SurplusRanking,
                                 ExpectationValueBFRanking,
                                 VarianceBFRanking,
                                 SquaredSurplusBFRanking)
-from pysgpp_datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
-from pysgpp_datadriven.uq.quadrature.HashQuadrature import HashQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform import BilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
 
 class RefinementDescriptor(object):

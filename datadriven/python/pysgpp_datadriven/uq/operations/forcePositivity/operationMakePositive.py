@@ -3,15 +3,15 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
-from pysgpp_datadriven.uq.operations import checkPositivity, \
+from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
 from pysgpp import HashGridIndex, createOperationEval, DataVector, IndexList, \
     createOperationQuadrature
 import warnings
-from pysgpp_datadriven.uq.plot.plot2d import plotSG2d
+from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
     insertTruncatedBorder
 
 
