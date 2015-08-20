@@ -18,14 +18,14 @@ from pysgpp import DataVector, DataMatrix
 
 ##
 # @package tests.tbin.test_RandomFoldingPolicy
-# Contains class test_RandomFoldingPolicy::TestRandomFoldingPolicy with unittests for @link datadriven.src.python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# Contains class test_RandomFoldingPolicy::TestRandomFoldingPolicy with unittests for @link pysgpp_datadriven.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link datadriven.src.python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# Class with unittests for @link pysgpp_datadriven.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.src.python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# @test Unittests for @link pysgpp_datadriven.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 class TestRandomFoldingPolicy(unittest.TestCase):
 
     
@@ -44,7 +44,7 @@ class TestRandomFoldingPolicy(unittest.TestCase):
     
     
     ##
-    # Tests the function @link datadriven.src.python.learner.folding.FoldingPolicy.FoldingPolicy.next() RandomFoldingPolicy.next() @endlink    
+    # Tests the function @link pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() RandomFoldingPolicy.next() @endlink    
     def testNext(self):
         self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:

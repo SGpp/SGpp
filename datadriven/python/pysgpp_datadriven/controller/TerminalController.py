@@ -6,7 +6,7 @@
 #############################################################################
                                     #
 #############################################################################
-from pysgpp_datadriven.src.python.data.DataContainer import DataContainer
+from pysgpp_datadriven.data.DataContainer import DataContainer
 
 
 import ConfigParser, os
