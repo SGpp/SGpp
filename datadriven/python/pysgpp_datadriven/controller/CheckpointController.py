@@ -190,7 +190,7 @@ class CheckpointController(LearnerEventController):
 
 
     ## Setter for the current LearnedKnowledge object
-    #@param knowledge: @link pysgpp.extensions.datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    # @param knowledge: @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
 
@@ -206,7 +206,7 @@ class CheckpointController(LearnerEventController):
 
     ## Loads knowledge from the checkpoint of given iteration
     #@param iteration: integer iteration number
-    #@return @link pysgpp.extensions.datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    # @return @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def loadLearnedKnowledge(self, iteration):
         knowledgeFile = self.composeName(iteration) + ".arff.gz"
         knowledgeMemento = LearnedKnowledgeFormatter().deserializeFromFile(knowledgeFile)
@@ -289,7 +289,7 @@ class CheckpointController(LearnerEventController):
         return learner
 
 
-    # # Learning event @link pysgpp.extensions.datadriven.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
+    # # Learning event @link python.pysgpp_datadriven.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
     def handleLearningEvent(self, subject, status):
         if status == LearnerEvents.LEARNING_STEP_COMPLETE or status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
             if subject.iteration % self.interval == 0:
