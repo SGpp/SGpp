@@ -3,7 +3,7 @@ from pysgpp import Grid, HashGridIndex, SPolyBoundaryBase, SLinearBoundaryBase, 
 
 from sparse_grid import createGrid, isValid
 import numpy as np
-from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid, insertPoint, getBasis, \
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid, insertPoint, getBasis, \
     hasBorder, getDegree
 
 

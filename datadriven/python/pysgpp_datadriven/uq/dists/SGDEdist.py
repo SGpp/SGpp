@@ -1,4 +1,4 @@
-from pysgpp_datadriven.tools import (readAlphaARFF,
+from pysgpp.extensions.datadriven.tools import (readAlphaARFF,
                        readGrid,
                        readDataTrivial)
 from pysgpp import (DataVector,
@@ -8,7 +8,7 @@ from pysgpp import (DataVector,
                     createOperationRosenblattTransformation1D,
                     createOperationRosenblattTransformation,
                     DataMatrix)
-from pysgpp_datadriven.uq.operations import (dehierarchize,
+from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                hierarchize,
                                hierarchizeBruteForce,
                                evalSGFunction)
@@ -19,8 +19,8 @@ import warnings
 from Dist import Dist
 import ConfigParser as cp
 import numpy as np
-from pysgpp_datadriven.uq.operations import isNumerical, isList
-from pysgpp_datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
+from pysgpp.extensions.datadriven.uq.operations import isNumerical, isList
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
 
 
 class SGDEdist(Dist):
@@ -163,7 +163,7 @@ class SGDEdist(Dist):
 #         for i in invalid:
 #             assert self.logalpha[i] < 1e-10
 #
-#         from pysgpp_datadriven.uq.plot import plotNodal3d
+#         from pysgpp.extensions.datadriven.uq.plot import plotNodal3d
 #         fig, ax = plotNodal3d(self.loggrid, self.logalpha)
 #         ax.set_title("%g" % nodalValues.min())
 #         fig.show()

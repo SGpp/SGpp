@@ -1,9 +1,9 @@
 from pysgpp import DataVector
-from pysgpp_datadriven.uq.operations import evalSGFunction
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 
 import numpy as np
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.operations.sparse_grid import dehierarchize
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
 
 
 def plotDensity1d(U, n=1000, *args, **kws):

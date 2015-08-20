@@ -1,5 +1,5 @@
-from pysgpp_datadriven.learner.TrainingSpecification import TrainingSpecification
-from pysgpp_datadriven.uq.analysis import KnowledgeTypes
+from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 
 
 class SimulationLearnerSpecification(TrainingSpecification):

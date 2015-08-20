@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
-from pysgpp_datadriven.uq.operations import getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport
 
 
 class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):

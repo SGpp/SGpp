@@ -21,22 +21,22 @@
 #############################################################################
 
 
-from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
-from pysgpp_datadriven.data.CSVAdapter import CSVAdapter
-from pysgpp_datadriven.data.DataContainer import DataContainer
-from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
-from pysgpp_datadriven.learner.TrainingSpecification import TrainingSpecification
-from pysgpp_datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
-from pysgpp_datadriven.learner.Types import BorderTypes
-from pysgpp_datadriven.learner.formatter import LearnedKnowledgeFormatter
-from pysgpp_datadriven.learner.solver.CGSolver import CGSolver
-from pysgpp_datadriven.uq.learner.Interpolant import Interpolant
-from pysgpp_datadriven.uq.learner.Regressor import Regressor
+from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp.extensions.datadriven.data.CSVAdapter import CSVAdapter
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.Types import BorderTypes
+from pysgpp.extensions.datadriven.learner.formatter import LearnedKnowledgeFormatter
+from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
+from pysgpp.extensions.datadriven.uq.learner.Regressor import Regressor
 from pysgpp import createOperationMultipleEval
 
 from GridDescriptor import GridDescriptor
 from RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
-import pysgpp_datadriven.utils.json as json
+import pysgpp.extensions.datadriven.utils.json as json
 
 
 ## Implement mechanisms to create customized learning system
@@ -45,7 +45,7 @@ import pysgpp_datadriven.utils.json as json
 #
 # To create a learning system first define if it should be for classification
 # @code
-#import pysgpp_datadriven.learner.LearnerBuilder as LearnerBuilder
+#import pysgpp.extensions.datadriven.learner.LearnerBuilder as LearnerBuilder
 #builder = LearnerBuilder()
 #builder = builder.buildClassifier()
 # @endcode  

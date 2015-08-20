@@ -4,11 +4,11 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from BilinearQuadratureStrategy import BilinearQuadratureStrategy
-from pysgpp_datadriven.uq.transformation.LinearTransformation import LinearTransformation
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp import Grid, DataVector
-from pysgpp_datadriven.uq.operations.discretization import discretize
-from pysgpp_datadriven.uq.quadrature.sparse_grid import doQuadrature
-from pysgpp_datadriven.uq.operations.sparse_grid import hierarchize
+from pysgpp.extensions.datadriven.uq.operations.discretization import discretize
+from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
 
 
 class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):

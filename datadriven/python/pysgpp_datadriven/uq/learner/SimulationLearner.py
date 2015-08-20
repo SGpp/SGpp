@@ -1,13 +1,13 @@
-from pysgpp_datadriven.data.DataContainer import DataContainer
-from pysgpp_datadriven.learner.Learner import Learner
-from pysgpp_datadriven.uq.analysis import KnowledgeTypes
-from pysgpp_datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.learner.Learner import Learner
+from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 from pysgpp import DataVector, DataMatrix
 
 from SimulationLearnerSpecification import SimulationLearnerSpecification
 import numpy as np
 import copy
-from pysgpp_datadriven.uq.operations.sparse_grid import copyGrid, dehierarchize
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid, dehierarchize
 
 
 class SimulationLearner(Learner):

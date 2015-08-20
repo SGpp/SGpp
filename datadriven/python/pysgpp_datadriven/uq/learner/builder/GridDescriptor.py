@@ -1,10 +1,10 @@
-from pysgpp_datadriven.learner.Types import BorderTypes
-from pysgpp_datadriven.learner.formatter.GridFormatter import GridFormatter
+from pysgpp.extensions.datadriven.learner.Types import BorderTypes
+from pysgpp.extensions.datadriven.learner.formatter.GridFormatter import GridFormatter
 
 from pysgpp import Grid, HashGridIndex
 
 import os
-from pysgpp_datadriven.uq.operations.sparse_grid import (insertTruncatedBorder,
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (insertTruncatedBorder,
                                            hasBorder,
                                            getDegree)
 

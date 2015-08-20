@@ -24,7 +24,7 @@
 
 
 from pysgpp import *
-from pysgpp_datadriven import *
+from pysgpp.extensions.datadriven import *
 
 def ApplyA(B, C, alpha, result, x, l):
     temp = DataVector(x.getNrows())

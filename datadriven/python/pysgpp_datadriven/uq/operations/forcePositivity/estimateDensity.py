@@ -6,7 +6,7 @@ Created on Feb 6, 2015
 '''
 
 from interpolationAlgorithm import InterpolationAlgorithm
-from pysgpp_datadriven.uq.dists.SGDEdist import SGDEdist
+from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 import ConfigParser as cp
 
 

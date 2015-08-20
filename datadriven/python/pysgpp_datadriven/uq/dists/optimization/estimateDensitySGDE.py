@@ -1,14 +1,14 @@
-from pysgpp_datadriven.uq.dists import SGDEdist
-from pysgpp_datadriven.uq.plot import plotSG2d
+from pysgpp.extensions.datadriven.uq.dists import SGDEdist
+from pysgpp.extensions.datadriven.uq.plot import plotSG2d
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from pysgpp_datadriven.uq.operations.forcePositivity import (OperationMakePositive,
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity import (OperationMakePositive,
                                                EstimateDensityAlgorithm)
-from pysgpp_datadriven.uq.quadrature import doQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
 from pysgpp import DataMatrix, Grid, createOperationQuadrature
 from shutil import copy2
-from pysgpp_datadriven.uq.tools import writeDataARFF
+from pysgpp.extensions.datadriven.uq.tools import writeDataARFF
 
 
 def estimateDensitySGDE(trainSamplesUnit,

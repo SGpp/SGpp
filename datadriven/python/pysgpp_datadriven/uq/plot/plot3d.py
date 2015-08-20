@@ -1,4 +1,4 @@
-from pysgpp_datadriven.uq.operations import evalSGFunction
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D

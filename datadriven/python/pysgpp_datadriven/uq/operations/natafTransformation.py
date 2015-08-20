@@ -1,15 +1,15 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.plot.plot1d import plotDensity1d
+from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d
 from pysgpp import createOperationDensityMarginalizeKDE, GaussianKDE, DataMatrix
 
 
 class NatafTransformation(object):
 
     def __init__(self, data, sample_type=None, dist=None):
-        from pysgpp_datadriven.uq.dists import Uniform, Beta, SGDEdist, Normal, GaussianKDEDist
-        from pysgpp_datadriven.uq.quadrature.marginalization.marginalization import doMarginalize
+        from pysgpp.extensions.datadriven.uq.dists import Uniform, Beta, SGDEdist, Normal, GaussianKDEDist
+        from pysgpp.extensions.datadriven.uq.quadrature.marginalization.marginalization import doMarginalize
 
         # fix stochastic setting
         self.alpha, self.beta = 5., 10.

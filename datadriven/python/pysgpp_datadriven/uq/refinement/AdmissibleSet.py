@@ -1,4 +1,4 @@
-from pysgpp_datadriven.uq.operations import (isValid, isRefineable,
+from pysgpp.extensions.datadriven.uq.operations import (isValid, isRefineable,
                                getHierarchicalAncestors)
 from pysgpp import HashGridIndex
 

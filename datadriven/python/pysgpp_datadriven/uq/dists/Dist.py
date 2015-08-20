@@ -3,8 +3,8 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from pysgpp_datadriven.uq.transformation.LinearTransformation import LinearTransformation
-from pysgpp_datadriven.uq.sampler.Sample import Sample, SampleType
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
 from pysgpp import DataVector
 """
 @file    base.py
@@ -16,7 +16,7 @@ from pysgpp import DataVector
 @version  0.1
 """
 
-from pysgpp_datadriven.uq.operations.discretization import discretizeFunction
+from pysgpp.extensions.datadriven.uq.operations.discretization import discretizeFunction
 import numpy as np
 
 
@@ -198,7 +198,7 @@ class Dist(object):
 
     @classmethod
     def fromJson(cls, jsonObject):
-        import pysgpp_datadriven.uq.dists as dists
+        import pysgpp.extensions.datadriven.uq.dists as dists
         if jsonObject['module'] == 'bin.uq.dists.J':
             return dists.J.fromJson(jsonObject)
         elif jsonObject['module'] == 'bin.uq.dists.Corr':

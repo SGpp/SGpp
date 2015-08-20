@@ -5,7 +5,7 @@
 
 ## Abstract class of Subscribers of LearnerEvents. The classes that wants to obtain
 # the progress notifications from Learner should implement this class. See @link
-# pysgpp_datadriven.learner.Learner.Learner documentation of Learner@endlink for details.
+# pysgpp.extensions.datadriven.learner.Learner.Learner documentation of Learner@endlink for details.
 class LearnerEventController(object):
 
     ##

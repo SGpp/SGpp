@@ -8,7 +8,7 @@
 #############################################################################
 
 from FoldingPolicy import FoldingPolicy
-from pysgpp_datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 import math
 
 ## Provides functionality for accomplishment of learning with cross-validation

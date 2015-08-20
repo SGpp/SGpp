@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from pysgpp import DataMatrix, DataVector
-from pysgpp_datadriven.uq.quadrature.HashQuadrature import HashQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
 
 class TrilinearQuadratureStrategy(HashQuadrature):

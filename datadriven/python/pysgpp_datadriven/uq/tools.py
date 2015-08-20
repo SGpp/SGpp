@@ -33,7 +33,7 @@ def gzOpen(filename, mode="r"):
 
 
 def createGrid(dim, level, borderType, isFull=False):
-    from pysgpp_datadriven.learner.Types import BorderTypes
+    from pysgpp.extensions.datadriven.learner.Types import BorderTypes
     if borderType == BorderTypes.NONE:
         grid = Grid.createLinearGrid(dim)
     elif borderType == BorderTypes.TRAPEZOIDBOUNDARY:

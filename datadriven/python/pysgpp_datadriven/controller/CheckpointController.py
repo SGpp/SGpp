@@ -8,17 +8,17 @@
 #############################################################################
 
 from pysgpp import createOperationLaplace, createOperationIdentity
-from pysgpp_datadriven.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
-from pysgpp_datadriven.controller.LearnerEventController import LearnerEventController
-# from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp.extensions.datadriven.learner import Classifier, Regressor, LearnerEvents, LearnedKnowledge
+from pysgpp.extensions.datadriven.controller.LearnerEventController import LearnerEventController
+# from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 
-import pysgpp_datadriven.utils.json as json
-from pysgpp_datadriven.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
-from pysgpp_datadriven.controller.InfoToScreenRegressor import InfoToScreenRegressor
-from pysgpp_datadriven.controller.InfoToScreen import InfoToScreen
-from pysgpp_datadriven.controller.InfoToFile import InfoToFile
+import pysgpp.extensions.datadriven.utils.json as json
+from pysgpp.extensions.datadriven.learner.formatter import LearnedKnowledgeFormatter, GridFormatter, LearnerFormatter
+from pysgpp.extensions.datadriven.controller.InfoToScreenRegressor import InfoToScreenRegressor
+from pysgpp.extensions.datadriven.controller.InfoToScreen import InfoToScreen
+from pysgpp.extensions.datadriven.controller.InfoToFile import InfoToFile
 try:
-    from pysgpp_datadriven.controller.InfoToGraph import InfoToGraph
+    from pysgpp.extensions.datadriven.controller.InfoToGraph import InfoToGraph
 except ImportError: pass
 import gzip, copy
 
@@ -190,7 +190,7 @@ class CheckpointController(LearnerEventController):
 
 
     ## Setter for the current LearnedKnowledge object
-    #@param knowledge: @link pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@param knowledge: @link pysgpp.extensions.datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def setLearnedKnowledge(self, knowledge):
         self.knowledge = knowledge
 
@@ -206,7 +206,7 @@ class CheckpointController(LearnerEventController):
 
     ## Loads knowledge from the checkpoint of given iteration
     #@param iteration: integer iteration number
-    #@return @link pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
+    #@return @link pysgpp.extensions.datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink object
     def loadLearnedKnowledge(self, iteration):
         knowledgeFile = self.composeName(iteration) + ".arff.gz"
         knowledgeMemento = LearnedKnowledgeFormatter().deserializeFromFile(knowledgeFile)
@@ -289,7 +289,7 @@ class CheckpointController(LearnerEventController):
         return learner
 
 
-    # # Learning event @link pysgpp_datadriven.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
+    # # Learning event @link pysgpp.extensions.datadriven.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
     def handleLearningEvent(self, subject, status):
         if status == LearnerEvents.LEARNING_STEP_COMPLETE or status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
             if subject.iteration % self.interval == 0:
@@ -352,7 +352,7 @@ class CheckpointController(LearnerEventController):
 #$-m e
 #$-v SGPP,OPT_TMP,PATH,LD_LIBRARY_PATH
 . /etc/profile
-echo "from pysgpp_datadriven.controller.CheckpointController import CheckpointController\nlearner = CheckpointController('""" \
+echo "from pysgpp.extensions.datadriven.controller.CheckpointController import CheckpointController\nlearner = CheckpointController('""" \
 + self.title + """', '.', 1, $SGE_TASK_ID).loadAll(0)\nlearner.learnDataWithTest()" | python
 
 echo "JOB_ID: $JOB_ID"

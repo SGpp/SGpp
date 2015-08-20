@@ -1,8 +1,8 @@
-from pysgpp_datadriven.tools import readGrid, readAlphaARFF, readDataTrivial
-from pysgpp_datadriven.uq.operations import evalSGFunctionMulti, hierarchize, dehierarchize, evalSGFunction
+from pysgpp.extensions.datadriven.tools import readGrid, readAlphaARFF, readDataTrivial
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunctionMulti, hierarchize, dehierarchize, evalSGFunction
 from pysgpp import DataVector, DataMatrix
 from scipy.stats import norm
-from pysgpp_datadriven.uq.plot import scatterplot_matrix
+from pysgpp.extensions.datadriven.uq.plot import scatterplot_matrix
 
 from SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np

@@ -12,22 +12,22 @@ pathlocal = os.path.abspath(pathname)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from pysgpp_datadriven.learner.folding import FilesFoldingPolicy
-from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp.extensions.datadriven.learner.folding import FilesFoldingPolicy
+from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 
 
 ##
 # @package tests.tbin.test_Classifier
 # Contains class test_Classifier::TestClassifier with unittests for @link
-# python.pysgpp_datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
+# python.pysgpp.extensions.datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
 
 ##
 # Class with unittests for @link
-# python.pysgpp_datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
+# python.pysgpp.extensions.datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
+# @test Unittests for @link python.pysgpp.extensions.datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
 class TestFilesFoldingPolicy(unittest.TestCase):
 
     ## Set up the variables
@@ -48,7 +48,7 @@ class TestFilesFoldingPolicy(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() FilesFoldingPolicy.next() @endlink
+    # Tests the function @link python.pysgpp.extensions.datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() FilesFoldingPolicy.next() @endlink
     def testNext(self):
 #        validationCorrectData = [[4,0],[5,1], [6,2], [7,8,3]]
 #        self.assertEqual(self.level, len(self.policy.dataFold))

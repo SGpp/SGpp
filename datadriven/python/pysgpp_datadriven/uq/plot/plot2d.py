@@ -1,9 +1,9 @@
-from pysgpp_datadriven.uq.operations import evalSGFunction
+from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp import DataVector, DataMatrix
 
 import numpy as np
 import matplotlib.pyplot as plt
-from pysgpp_datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
 
 
 def plotDensity2d(U, n=50):

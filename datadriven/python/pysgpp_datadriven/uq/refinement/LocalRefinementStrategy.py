@@ -1,6 +1,6 @@
 from pysgpp import HashGridIndex
 
-from pysgpp_datadriven.uq.operations import (insertPoint,
+from pysgpp.extensions.datadriven.uq.operations import (insertPoint,
                                insertHierarchicalAncestors,
                                insertTruncatedBorder,
                                hasBorder)

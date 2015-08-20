@@ -4,8 +4,8 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from pysgpp import DataVector
-from pysgpp_datadriven.uq.operations import getBasis
-from pysgpp_datadriven.uq.quadrature import HashQuadrature
+from pysgpp.extensions.datadriven.uq.operations import getBasis
+from pysgpp.extensions.datadriven.uq.quadrature import HashQuadrature
 
 
 class LinearQuadratureStrategy(HashQuadrature):

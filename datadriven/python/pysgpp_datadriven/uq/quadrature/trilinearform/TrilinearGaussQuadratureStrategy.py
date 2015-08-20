@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
-from pysgpp_datadriven.uq.operations.sparse_grid import getBoundsOfSupport
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport
 
 
 class TrilinearGaussQuadratureStrategy(TrilinearQuadratureStrategy):

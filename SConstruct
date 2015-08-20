@@ -49,21 +49,6 @@ for wrapper in languageSupport:
 print "Available modules:", ", ".join(moduleNames)
 print "Available language support:", ", ".join(languageSupportNames)
 
-pythonModuleFolders = []
-if 'pysgpp' in languageSupport:
-    # find all python modules
-    def getPythonModules():
-        """
-        Returns all modules, which have a separate python modules
-        """
-        return [moduleFolder
-                for moduleFolder in moduleFolders
-                if os.path.exists(os.path.join(moduleFolder, "python"))]
-
-    pythonModuleFolders = getPythonModules()
-    print "Available python modules:", ", ".join(["pysgpp_" + pythonModuleFolder
-                                                  for pythonModuleFolder in pythonModuleFolders])
-
 vars = Variables("custom.py")
 
 # define the flags
@@ -151,7 +136,9 @@ vars.GenerateHelpText(env))
 # adds trailing slashes were required and if not present
 BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp'))
+PYSGPP_PACKAGE_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib'))
+Export('PYSGPP_PACKAGE_PATH')
+PYSGPP_BUILD_PATH = Dir(os.path.join(PYSGPP_PACKAGE_PATH.abspath, 'pysgpp'))
 Export('PYSGPP_BUILD_PATH')
 JSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
 Export('JSGPP_BUILD_PATH')
@@ -272,12 +259,8 @@ def finish(target, source, env):
     instructionsTemplate = Template(fd.read())
     fd.close()
 
-    pythonModulePaths = ":".join([os.path.join(os.getcwd(), pythonModuleFolder, "python")
-                                  for pythonModuleFolder in pythonModuleFolders])
-
     s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                             PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
-                                             PYSGPP_MODULE_PATHS=pythonModulePaths)
+                                             PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
     print
     print s
 

@@ -1,4 +1,4 @@
-from pysgpp_datadriven.uq.estimators import (MonteCarloStrategy,
+from pysgpp.extensions.datadriven.uq.estimators import (MonteCarloStrategy,
                                AnalyticEstimationStrategy,
                                CollocationPointsStrategy)
 

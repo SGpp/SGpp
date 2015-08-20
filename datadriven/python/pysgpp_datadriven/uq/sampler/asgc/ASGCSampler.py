@@ -14,16 +14,16 @@
 
 """
 
-from pysgpp_datadriven.uq.analysis.asgc import ASGCKnowledge
-from pysgpp_datadriven.uq.dists import Dist
-from pysgpp_datadriven.uq.parameters import ParameterSet
-from pysgpp_datadriven.uq.sampler import SampleType, Samples
-from pysgpp_datadriven.uq.sampler.Sampler import Sampler
+from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCKnowledge
+from pysgpp.extensions.datadriven.uq.dists import Dist
+from pysgpp.extensions.datadriven.uq.parameters import ParameterSet
+from pysgpp.extensions.datadriven.uq.sampler import SampleType, Samples
+from pysgpp.extensions.datadriven.uq.sampler.Sampler import Sampler
 from pysgpp import DataVector
 
 from ASGCSamplerSpecification import ASGCSamplerSpecification
-import pysgpp_datadriven.uq.jsonLib as ju
-import pysgpp_datadriven.utils.json as json
+import pysgpp.extensions.datadriven.uq.jsonLib as ju
+import pysgpp.extensions.datadriven.utils.json as json
 import numpy as np
 
 

@@ -4,12 +4,12 @@
 # sgpp.sparsegrids.org
 
 
-from pysgpp_datadriven.controller.InfoToScreen import InfoToScreen
-from pysgpp_datadriven.learner.Learner import LearnerEvents
+from pysgpp.extensions.datadriven.controller.InfoToScreen import InfoToScreen
+from pysgpp.extensions.datadriven.learner.Learner import LearnerEvents
 
-# @package pysgpp_datadriven.controller
+# @package pysgpp.extensions.datadriven.controller
 ## Prints some regression specific information together with information
-# processed by @link pysgpp_datadriven.controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
+# processed by @link pysgpp.extensions.datadriven.controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
 class InfoToScreenRegressor(InfoToScreen):
 
 

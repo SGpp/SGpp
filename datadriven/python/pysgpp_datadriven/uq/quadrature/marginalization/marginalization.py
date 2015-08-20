@@ -1,7 +1,7 @@
 from pysgpp import DataVector, HashGridIndex
-from pysgpp_datadriven.uq.operations import createGrid, getBasis
-from pysgpp_datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
-from pysgpp_datadriven.uq.quadrature import getIntegral
+from pysgpp.extensions.datadriven.uq.operations import createGrid, getBasis
+from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
 
 
 def __doMarginalize(grid, alpha, dd, measure=None):

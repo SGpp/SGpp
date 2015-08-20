@@ -1,8 +1,8 @@
 from pysgpp import DataVector, DataMatrix
-from pysgpp_datadriven.data.DataAdapter import DataAdapter
-from pysgpp_datadriven.data.DataContainer import DataContainer
-from pysgpp_datadriven.uq.analysis import KnowledgeTypes
-from pysgpp_datadriven.uq.uq_setting import UQSetting, UQSettingFormatter
+from pysgpp.extensions.datadriven.data.DataAdapter import DataAdapter
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.uq_setting import UQSetting, UQSettingFormatter
 import gzip
 import re
 
