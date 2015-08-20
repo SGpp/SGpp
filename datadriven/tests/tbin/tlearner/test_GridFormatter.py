@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -19,17 +19,17 @@ from pysgpp import Grid
 
 ##
 # @package tests.tbin.test_GridFormatter
-# Contains class test_GridFormatter::TestGridFormatter with unittests for @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
+# Contains class test_GridFormatter::TestGridFormatter with unittests for @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
 
 ##
-# Class with unittests for @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
+# Class with unittests for @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
+# @test Unittests for @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter GridFormatter @endlink
 class TestGridFormatter(unittest.TestCase):
-    
-    
+
+
     ## Set up the variables
     def setUp(self,):
         self.__gridFormatter = None
@@ -37,33 +37,33 @@ class TestGridFormatter(unittest.TestCase):
         self.savefile = pathlocal + "/datasets/savetest.grid.gz"
         self.correct_str = ""
         self.grid = None
-    
+
         self.__gridFormatter = GridFormatter()
         dim = 3
         self.grid = Grid.createLinearGrid(dim)
         self.grid.createGridGenerator().regular(3)
         self.correct_str = self.grid.serialize()
 
-    
+
     ##
-    # Tests the functions @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.serialize() GridFormatter.serialize() @endlink
-    # and  @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink
+    # Tests the functions @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.serialize() GridFormatter.serialize() @endlink
+    # and  @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink
     def testLoad(self,):
         grid = self.__gridFormatter.deserializeFromFile(self.filename)
         test_str = grid.serialize()
         self.assertEqual(test_str, self.correct_str)
-    
-    
+
+
     ##
-    # Tests the functions @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.serializeToFile() GridFormatter.serializeToFile() @endlink
-    # and  @link pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink     
+    # Tests the functions @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.serializeToFile() GridFormatter.serializeToFile() @endlink
+    # and  @link python.pysgpp_datadriven.learner.formatter.GridFormatter.GridFormatter.deserializeFromFile() GridFormatter.deserializeFromFile() @endlink
     def testSave(self,):
         self.__gridFormatter.serializeToFile(self.grid, self.savefile)
         grid = self.__gridFormatter.deserializeFromFile(self.savefile)
         test_str = grid.serialize()
         self.assertEqual(test_str, self.correct_str)
-        
-        
-        
+
+
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()

@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -18,17 +18,17 @@ from pysgpp import DataVector, DataMatrix
 
 ##
 # @package tests.tbin.test_SequentialFoldingPolicy
-# Contains class test_SequentialFoldingPolicy::TestSequentialFoldingPolicy with unittests for @link pysgpp_datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# Contains class test_SequentialFoldingPolicy::TestSequentialFoldingPolicy with unittests for @link python.pysgpp_datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link pysgpp_datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# Class with unittests for @link python.pysgpp_datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link pysgpp_datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
+# @test Unittests for @link python.pysgpp_datadriven.learner.folding.SequentialFoldingPolicy.SequentialFoldingPolicy SequentialFoldingPolicy @endlink
 class TestSequentialFoldingPolicy(unittest.TestCase):
-    
-    
+
+
     ## Set up the variables
     def setUp(self):
         self.size = 11
@@ -40,17 +40,17 @@ class TestSequentialFoldingPolicy(unittest.TestCase):
             values[i] = i
         self.dataContainer = DataContainer(points=points, values=values)
         self.policy = SequentialFoldingPolicy(self.dataContainer, self.level)
-    
-    
+
+
     ##
-    # Tests the function @link pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() SequentialFoldingPolicy.next() @endlink
+    # Tests the function @link python.pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() SequentialFoldingPolicy.next() @endlink
     def testNext(self):
         self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:
             sizeTrain = l.getTrainDataset().getPoints().getSize()
             sizeValidation = l.getTestDataset().getPoints().getSize()
             self.assertEqual(self.size, sizeTrain + sizeValidation)
-        
-        
+
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()

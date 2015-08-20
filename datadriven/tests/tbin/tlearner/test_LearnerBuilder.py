@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -20,24 +20,24 @@ from pysgpp_datadriven.controller import InfoToFile
 
 ##
 # @package tests.tbin.test_LearnerBuilder
-# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 
 ##
-# Class with unittests for @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Class with unittests for @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# @test Unittests for @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 class TestLearnerBuilder(unittest.TestCase):
-    
-    
+
+
     ## Set up the variables and
-    # test the functions @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
-    # @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
-    # @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
-    # @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
-    # @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
-    # @link pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
+    # test the functions @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
+    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
+    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
+    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
+    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
+    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
     def setUp(self):
         self.builder = LearnerBuilder()
         self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\
@@ -66,11 +66,11 @@ class TestLearnerBuilder(unittest.TestCase):
 #        self.classifier.setStopPolicy(stopPolicy)
 #        self.classifier.setSolver(CGSolver())
 
-    
+
 #    def testScreenEventPresentor(self,):
 #        self.classifier.learnDataWithTest()
 
 
-        
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()

@@ -289,7 +289,7 @@ class CheckpointController(LearnerEventController):
         return learner
 
 
-    ## Learning event @link pysgpp_datadriven.python.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
+    # # Learning event @link pysgpp_datadriven.controller.LearnerEventController.LearnerEventController.handleLearningEvent handler routine @endlink of LearnerEventController
     def handleLearningEvent(self, subject, status):
         if status == LearnerEvents.LEARNING_STEP_COMPLETE or status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
             if subject.iteration % self.interval == 0:

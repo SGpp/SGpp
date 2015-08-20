@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -16,14 +16,14 @@ from pysgpp_datadriven.learner.LearnedKnowledge import LearnedKnowledge
 
 ##
 # @package tests.tbin.test_TrainingSpecification
-# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 
 ##
-# Class with unittests for @link pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Class with unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# @test Unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 # @todo (khakhutv) implement the test case for TrainingSpecification
 class TestTrainingSpecification(unittest.TestCase):
 

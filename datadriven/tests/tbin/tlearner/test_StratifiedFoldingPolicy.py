@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -18,17 +18,17 @@ from pysgpp import DataVector, DataMatrix
 
 ##
 # @package tests.tbin.test_StratifiedFoldingPolicy
-# Contains class test_StratifiedFoldingPolicy::TestStratifiedFoldingPolicy with unittests for @link pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+# Contains class test_StratifiedFoldingPolicy::TestStratifiedFoldingPolicy with unittests for @link python.pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+# Class with unittests for @link python.pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+# @test Unittests for @link python.pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 class TestStratifiedFoldingPolicy(unittest.TestCase):
 
-    
+
     ## Set up the variables
     def setUp(self):
         self.size = 9
@@ -40,10 +40,10 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
             values[i] = -1 if i < self.size/2 else 1
         self.dataContainer = DataContainer(points=points, values=values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
-    
-    
+
+
     ##
-    # Tests the function @link pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() StratifiedFoldingPolicy.next() @endlink    
+    # Tests the function @link python.pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() StratifiedFoldingPolicy.next() @endlink
     def testNext(self):
         validationCorrectData = [[4,0],[5,1], [6,2], [7,8,3]]
         self.assertEqual(self.level, len(self.policy.dataFold))
@@ -53,18 +53,18 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
             validationPoints = l.getTestDataset().getPoints()
             validCorrectD = set(validationCorrectData[i])
             trainCorrectD = set(range(self.size)) - validCorrectD
-            
+
             self.assertEqual(trainPoints.getNrows(), len(trainCorrectD))
             self.assertEqual(validationPoints.getSize(), len(validCorrectD))
             for k in xrange(trainPoints.getNrows()):
                 self.assertTrue(trainPoints.get(k,0)  in trainCorrectD)
             for k in xrange(validationPoints.getSize()):
                 self.assertTrue(validationPoints.get(k,0) in validCorrectD)
-                
+
             i += 1
-           
-        
-        
-        
+
+
+
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()
