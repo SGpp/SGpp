@@ -172,10 +172,7 @@ env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
     BUILD_DIR.abspath])
 env["ENV"]["PYTHONPATH"] = ":".join([
     env["ENV"].get("PYTHONPATH", ""),
-    PYSGPP_BUILD_PATH.abspath,
-    # add sub modules for python unit tests
-    os.path.join(os.getcwd(), "datadriven/python"),
-    os.path.join(os.getcwd(), "misc/python")])
+    PYSGPP_PACKAGE_PATH.abspath])
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
