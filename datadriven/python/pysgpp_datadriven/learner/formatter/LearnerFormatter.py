@@ -15,7 +15,7 @@ import pysgpp_datadriven.utils.json as json
 # business logic from the text representation that can be saved into file.
 # The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern"
 # target="new">Memento design pattern</a> described in details in @link
-# datadriven.src.python.controller.CheckpointController.CheckpointController CheckpointController
+# from pysgpp_datadriven.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
 #
 # Currently, the Learner memento object is a dictionary with attributes describing

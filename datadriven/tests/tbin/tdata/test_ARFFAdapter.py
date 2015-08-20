@@ -19,19 +19,19 @@ from pysgpp import DataVector, DataMatrix, cvar
 
 ##
 # @package tests.tbin.test_ARFFAdapter
-# Contains class test_ARFFAdapter::TestARFFAdapter with unittests for @link datadriven.src.python.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+# Contains class test_ARFFAdapter::TestARFFAdapter with unittests for @link pysgpp_datadriven.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 
 ##
-# Class with unittests for @link datadriven.src.python.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+# Class with unittests for @link pysgpp_datadriven.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.src.python.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+# @test Unittests for @link pysgpp_datadriven.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 class TestARFFAdapter(unittest.TestCase):
     
 
     ##
-    # Tests the function @link datadriven.src.python.data.ARFFAdapter.ARFFAdapter.save() ARFFAdapter.save() @endlink
+    # Tests the function @link pysgpp_datadriven.data.ARFFAdapter.ARFFAdapter.save() ARFFAdapter.save() @endlink
     def testSave(self):
         filename = pathlocal + '/datasets/saving.arff.gz'
         testPoints = [[0.307143,0.130137,0.050000],
@@ -80,7 +80,7 @@ class TestARFFAdapter(unittest.TestCase):
         
     
     ##
-    # Tests the function @link datadriven.src.python.data.ARFFAdapter.ARFFAdapter.loadData() ARFFAdapter.loadData() @endlink   
+    # Tests the function @link pysgpp_datadriven.data.ARFFAdapter.ARFFAdapter.loadData() ARFFAdapter.loadData() @endlink   
     def testLoadData(self):
         testPoints = [[0.307143,0.130137,0.050000],
                       [0.365584,0.105479,0.050000],
@@ -113,7 +113,7 @@ class TestARFFAdapter(unittest.TestCase):
         
 
     ##
-    # Tests the function @link datadriven.src.python.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
+    # Tests the function @link pysgpp_datadriven.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
     def testLoadSpecification(self):
         attributes = {
                       "x0":"NUMERIC",

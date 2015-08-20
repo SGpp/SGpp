@@ -10,7 +10,7 @@ import types
 
 ## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sg::ConjugateGradients class.
 # The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
-# described in @link datadriven.src.python.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
+# described in @link from pysgpp_datadriven.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
 # end deserialization.
 #
 # In order to combine high performance of C++ code and flexibility of Subscription pattern

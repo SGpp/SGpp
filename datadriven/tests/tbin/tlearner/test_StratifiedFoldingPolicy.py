@@ -18,14 +18,14 @@ from pysgpp import DataVector, DataMatrix
 
 ##
 # @package tests.tbin.test_StratifiedFoldingPolicy
-# Contains class test_StratifiedFoldingPolicy::TestStratifiedFoldingPolicy with unittests for @link datadriven.src.python.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+# Contains class test_StratifiedFoldingPolicy::TestStratifiedFoldingPolicy with unittests for @link pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link datadriven.src.python.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+# Class with unittests for @link pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.src.python.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
+# @test Unittests for @link pysgpp_datadriven.learner.folding.StratifiedFoldingPolicy.StratifiedFoldingPolicy StratifiedFoldingPolicy @endlink
 class TestStratifiedFoldingPolicy(unittest.TestCase):
 
     
@@ -43,7 +43,7 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
     
     
     ##
-    # Tests the function @link datadriven.src.python.learner.folding.FoldingPolicy.FoldingPolicy.next() StratifiedFoldingPolicy.next() @endlink    
+    # Tests the function @link pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() StratifiedFoldingPolicy.next() @endlink    
     def testNext(self):
         validationCorrectData = [[4,0],[5,1], [6,2], [7,8,3]]
         self.assertEqual(self.level, len(self.policy.dataFold))

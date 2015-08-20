@@ -19,15 +19,15 @@ from pysgpp_datadriven.data.ARFFAdapter import ARFFAdapter
 ##
 # @package tests.tbin.test_Classifier
 # Contains class test_Classifier::TestClassifier with unittests for @link 
-# datadriven.src.python.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
+# pysgpp_datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
 
 ##
 # Class with unittests for @link 
-# datadriven.src.python.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
+# pysgpp_datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.src.python.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
+# @test Unittests for @link pysgpp_datadriven.learner.folding.FilesFoldingPolicy.FilesFoldingPolicy FilesFoldingPolicy @endlink
 class TestFilesFoldingPolicy(unittest.TestCase):
     
     ## Set up the variables
@@ -48,7 +48,7 @@ class TestFilesFoldingPolicy(unittest.TestCase):
         
         
     ##
-    # Tests the function @link datadriven.src.python.learner.folding.FoldingPolicy.FoldingPolicy.next() FilesFoldingPolicy.next() @endlink    
+    # Tests the function @link pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() FilesFoldingPolicy.next() @endlink    
     def testNext(self):
 #        validationCorrectData = [[4,0],[5,1], [6,2], [7,8,3]]
 #        self.assertEqual(self.level, len(self.policy.dataFold))
