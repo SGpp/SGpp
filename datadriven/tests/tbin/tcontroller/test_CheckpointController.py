@@ -5,7 +5,7 @@
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
@@ -25,18 +25,18 @@ from pysgpp.extensions.datadriven.controller import CheckpointController
 
 ##
 # @package tests.tbin.test_CheckpointController
-# Contains class test_CheckpointController::TestCheckpointController with unittests for @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController CheckpointController @endlink
+# Contains class test_CheckpointController::TestCheckpointController with unittests for @link python.controller.CheckpointController.CheckpointController CheckpointController @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController CheckpointController @endlink
+# Class with unittests for @link python.controller.CheckpointController.CheckpointController CheckpointController @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController CheckpointController @endlink
+# @test Unittests for @link python.controller.CheckpointController.CheckpointController CheckpointController @endlink
 class TestCheckpointController(unittest.TestCase):
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController.saveGrid() CheckpointController.saveGrid() @endlink
+    # Tests the function @link python.controller.CheckpointController.CheckpointController.saveGrid() CheckpointController.saveGrid() @endlink
     def testSaveGrid(self):
         dim = 2
         level = 2
@@ -58,7 +58,7 @@ class TestCheckpointController(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController.loadGrid() CheckpointController.loadGrid() @endlink
+    # Tests the function @link python.controller.CheckpointController.CheckpointController.loadGrid() CheckpointController.loadGrid() @endlink
     def testLoadGrid(self):
         dim = 2
         level = 2
@@ -78,7 +78,7 @@ class TestCheckpointController(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController.saveLearnedKnowledge() CheckpointController.saveLearnedKnowledge() @endlink
+    # Tests the function @link python.controller.CheckpointController.CheckpointController.saveLearnedKnowledge() CheckpointController.saveLearnedKnowledge() @endlink
     def testSaveLearnedKnowledge(self):
         testValues = [-0.0310651210442,
                       -0.618841896127,
@@ -109,7 +109,7 @@ class TestCheckpointController(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController.loadLearnedKnowledge() CheckpointController.loadLearnedKnowledge() @endlink
+    # Tests the function @link python.controller.CheckpointController.CheckpointController.loadLearnedKnowledge() CheckpointController.loadLearnedKnowledge() @endlink
     def testLoadLearnedKnowledge(self):
         controller = CheckpointController("sample", pathlocal)
         learnedKnowledge = controller.loadLearnedKnowledge(0)
@@ -127,8 +127,8 @@ class TestCheckpointController(unittest.TestCase):
 
 
     ##
-    # Tests the functions @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController.saveAll() CheckpointController.saveAll() @endlink
-    # @link python.pysgpp_datadriven.controller.CheckpointController.CheckpointController.loadAll() CheckpointController.loadAll() @endlink
+    # Tests the functions @link python.controller.CheckpointController.CheckpointController.saveAll() CheckpointController.saveAll() @endlink
+    # @link python.controller.CheckpointController.CheckpointController.loadAll() CheckpointController.loadAll() @endlink
     def testSaveAllLoadAll(self):
         # test of two method is put together since it should test the capability
         # to store and restore data accurately

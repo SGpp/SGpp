@@ -5,7 +5,7 @@
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
@@ -20,14 +20,14 @@ from pysgpp import DataVector
 
 ##
 # @package tests.tbin.test_LearnedKnowledgeFormatter
-# Contains class test_LearnedKnowledgeFormatte::TestLearnedKnowledgeFormatter with unittests for @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+# Contains class test_LearnedKnowledgeFormatte::TestLearnedKnowledgeFormatter with unittests for @link python.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+# Class with unittests for @link python.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+# @test Unittests for @link python.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 class TestLearnedKnowledgeFormatter(unittest.TestCase):
 
     ## Set up the variables
@@ -38,7 +38,7 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.deserializeFromFile() LearnedKnowledgeFormatter.deserializeFromFile() @endlink
+    # Tests the function @link python.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.deserializeFromFile() LearnedKnowledgeFormatter.deserializeFromFile() @endlink
     def testLoad(self,):
         alphas = self.formatter.deserializeFromFile(self.filename_load)
         self.assertEqual(len(alphas), 10)
@@ -52,7 +52,7 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
 
 
     ##
-    # Tests the functions @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.serializeToFile() LearnedKnowledgeFormatter.serializeToFile() @endlink
+    # Tests the functions @link python.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.serializeToFile() LearnedKnowledgeFormatter.serializeToFile() @endlink
     def testSave(self,):
         alphas = DataVector(10)
         a = 0.1

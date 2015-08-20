@@ -56,8 +56,7 @@ def setupPython(target, source, env):
     for pythonModuleFolder in pythonModuleFolders:
         src = Dir(os.path.join(env['OUTPUT_PATH'],
                                pythonModuleFolder,
-                               "python",
-                               "pysgpp_" + pythonModuleFolder)).abspath
+                               "python")).abspath
         dst = os.path.join(extensionsPath, pythonModuleFolder)
         if not os.path.exists(dst):
             os.symlink(src, dst)

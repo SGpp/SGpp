@@ -7,9 +7,9 @@
 from pysgpp.extensions.datadriven.controller.InfoToScreen import InfoToScreen
 from pysgpp.extensions.datadriven.learner.Learner import LearnerEvents
 
-# @package python.pysgpp_datadriven.controller
+# @package python..controller
 ## Prints some regression specific information together with information
-# processed by @link python.pysgpp_datadriven.controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
+# processed by @link python..controller.InfoToScreen.InfoToScreen InfoToScreen @endlink
 class InfoToScreenRegressor(InfoToScreen):
 
 

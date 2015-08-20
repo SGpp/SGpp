@@ -5,7 +5,7 @@
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
@@ -16,14 +16,14 @@ from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowled
 
 ##
 # @package tests.tbin.test_TrainingSpecification
-# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Class with unittests for @link python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# @test Unittests for @link python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 # @todo (khakhutv) implement the test case for TrainingSpecification
 class TestTrainingSpecification(unittest.TestCase):
 
