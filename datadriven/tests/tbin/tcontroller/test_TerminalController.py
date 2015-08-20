@@ -21,19 +21,19 @@ from subprocess import *
 
 ##
 # @package tests.tbin.test_TerminalController
-# Contains class test_TerminalController::TestTerminalController with unittests for @link python.pysgpp.extensions.datadriven.controller.TerminalController.TerminalController TerminalController @endlink
+# Contains class test_TerminalController::TestTerminalController with unittests for @link python.pysgpp_datadriven.controller.TerminalController.TerminalController TerminalController @endlink
 
 ##
-# Class with unittests for @link python.pysgpp.extensions.datadriven.controller.TerminalController.TerminalController TerminalController @endlink
+# Class with unittests for @link python.pysgpp_datadriven.controller.TerminalController.TerminalController TerminalController @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp.extensions.datadriven.controller.TerminalController.TerminalController TerminalController @endlink
+# @test Unittests for @link python.pysgpp_datadriven.controller.TerminalController.TerminalController TerminalController @endlink
 class TestTerminalController(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp.extensions.datadriven.controller.TerminalController.TerminalController.constructObjectsFromFile TerminalController @endlink
+    # Tests the function @link python.pysgpp_datadriven.controller.TerminalController.TerminalController.constructObjectsFromFile TerminalController @endlink
     def testConstructObjectsFromFile(self,):
         jobfile = 'testsettings.job'
 

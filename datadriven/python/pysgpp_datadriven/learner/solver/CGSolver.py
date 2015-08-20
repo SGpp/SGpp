@@ -10,7 +10,7 @@ import types
 
 ## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sg::ConjugateGradients class.
 # The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
-# described in @link pysgpp.extensions.datadriven.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
+# described in @link python.pysgpp_datadriven.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
 # end deserialization.
 #
 # In order to combine high performance of C++ code and flexibility of Subscription pattern
@@ -56,15 +56,15 @@ class CGSolver(ConjugateGradients, LinearSolver):
         self.__reuse = value
 
     
-    # # Returns the @link pysgpp.extensions.datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
-    # @return the @link pysgpp.extensions.datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
+    # # Returns the @link python.pysgpp_datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
+    # @return the @link python.pysgpp_datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
     def getThreshold(self):
         return self.max_threshold
     
     
-    # #Sets the @link pysgpp.extensions.datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
+    # #Sets the @link python.pysgpp_datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
     #
-    # @param threshold: float value of @link pysgpp.extensions.datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
+    # @param threshold: float value of @link python.pysgpp_datadriven.learner.solver.CGSolver.CGSolver.max_threshold threshold@endlink parameter
     # @return: CG Solver itself
     def setThreshold(self, threshold):
         self.max_threshold = threshold
