@@ -28,7 +28,7 @@ def computeBFQuad(grid, U, admissibleSet, n=100):
     basis = getBasis(grid)
     A = DataMatrix(admissibleSet.getSize(), gs.size())
     b = DataVector(admissibleSet.getSize())
-    s = np.ndarray(gs.dim(), dtype='float32')
+    s = np.ndarray(gs.dim(), dtype='float')
     # run over all rows
     for i, gpi in enumerate(admissibleSet.values()):
         # run over all columns
@@ -77,7 +77,7 @@ def computeBFGridPoint(basis, U, gpi, gps):
     @param gps: list of HashGridIndex
     """
     n = len(gps)
-    s = np.ndarray(gpi.dim(), dtype='float32')
+    s = np.ndarray(gpi.dim(), dtype='float')
     ans = DataVector(n)
 
     # run over all grid points
@@ -133,14 +133,14 @@ def computeBF(grid, U, admissibleSet):
     # interpolate phi_i phi_j on sparse grid with piecewise polynomial SG
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
-    ngrid = Grid.createUltraPolyTruncatedBoundaryGrid(1, 2)
+    ngrid = Grid.createPolyTruncatedBoundaryGrid(1, 2)
     ngrid.createGridGenerator().regular(2)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
 
     A = DataMatrix(admissibleSet.getSize(), gs.size())
     b = DataVector(admissibleSet.getSize())
-    s = np.ndarray(gs.dim(), dtype='float32')
+    s = np.ndarray(gs.dim(), dtype='float')
 
 #     # pre compute basis evaluations
 #     basis_eval = {}
@@ -259,7 +259,7 @@ def computePiecewiseConstantBF(grid, U, admissibleSet):
 
     B = DataMatrix(admissibleSet.getSize(), gs.size())
     b = DataVector(admissibleSet.getSize())
-#     s = np.ndarray(gs.dim(), dtype='float32')
+#     s = np.ndarray(gs.dim(), dtype='float')
     for k, gpi in enumerate(admissibleSet.values()):
         i = gs.seq(gpi)
         gpi.getCoords(p)
@@ -294,7 +294,7 @@ def computeExpectationValueEstimation(grid, U, admissibleSet):
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
     b = DataVector(admissibleSet.getSize())
-    s = np.ndarray(gs.dim(), dtype='float32')
+    s = np.ndarray(gs.dim(), dtype='float')
 
     # run over all rows
     p = DataVector(gs.dim())

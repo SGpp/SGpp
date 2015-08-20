@@ -36,7 +36,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
         err = 0.
 
         # interpolating 1d sparse grid
-        ngrid = Grid.createUltraPolyTruncatedBoundaryGrid(1, 2)
+        ngrid = Grid.createPolyTruncatedBoundaryGrid(1, 2)
         ngrid.createGridGenerator().regular(2)
         ngs = ngrid.getStorage()
         nodalValues = DataVector(ngs.size())

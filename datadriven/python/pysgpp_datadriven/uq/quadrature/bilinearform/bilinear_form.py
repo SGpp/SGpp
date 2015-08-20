@@ -24,7 +24,7 @@ def computeBilinearFormQuad(grid, U):
     index = DataMatrix(gs.size(), gs.dim())
     gs.getLevelIndexArraysForEval(level, index)
 
-    s = np.ndarray(gs.dim(), dtype='float32')
+    s = np.ndarray(gs.dim(), dtype='float')
     # run over all rows
     for i in xrange(gs.size()):
         gpi = gs.get(i)
@@ -81,7 +81,7 @@ def computeBilinearForm(grid, U):
     # interpolate phi_i phi_j on sparse grid with piecewise polynomial SG
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
-    ngrid = Grid.createUltraPolyTruncatedBoundaryGrid(1, 2)
+    ngrid = Grid.createPolyTruncatedBoundaryGrid(1, 2)
     # ngrid = Grid.createLinearTruncatedBoundaryGrid(1)
     ngrid.createGridGenerator().regular(gs.getMaxLevel() + 1)
     ngs = ngrid.getStorage()
@@ -92,7 +92,7 @@ def computeBilinearForm(grid, U):
     gs.getLevelIndexArraysForEval(level, index)
 
     A = DataMatrix(gs.size(), gs.size())
-    s = np.ndarray(gs.dim(), dtype='float32')
+    s = np.ndarray(gs.dim(), dtype='float')
 
     # run over all rows
     for i in xrange(gs.size()):
