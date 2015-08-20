@@ -49,6 +49,21 @@ for wrapper in languageSupport:
 print "Available modules:", ", ".join(moduleNames)
 print "Available language support:", ", ".join(languageSupportNames)
 
+pythonModuleFolders = []
+if 'pysgpp' in languageSupport:
+    # find all python modules
+    def getPythonModules():
+        """
+        Returns all modules, which have a separate python modules
+        """
+        return [moduleFolder
+                for moduleFolder in moduleFolders
+                if os.path.exists(os.path.join(moduleFolder, "python"))]
+
+    pythonModuleFolders = getPythonModules()
+    print "Available python modules:", ", ".join(["pysgpp_" + pythonModuleFolder
+                                                  for pythonModuleFolder in pythonModuleFolders])
+
 vars = Variables("custom.py")
 
 # define the flags
@@ -256,9 +271,13 @@ def finish(target, source, env):
     fd = open("INSTRUCTIONS")
     instructionsTemplate = Template(fd.read())
     fd.close()
+
+    pythonModulePaths = ":".join([os.path.join(os.getcwd(), pythonModuleFolder, "python")
+                                  for pythonModuleFolder in pythonModuleFolders])
+
     s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
                                              PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
-                                             SGPP_HOME=os.getcwd())
+                                             PYSGPP_MODULE_PATHS=pythonModulePaths)
     print
     print s
 
