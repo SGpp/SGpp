@@ -28,7 +28,7 @@
 # - Concrete Observer: e.g. InfoToScreen
 #
 # Observer can also want to retrieve the process information from Learner. See documentation of
-# @link from pysgpp_datadriven.learner.Learner.Learner Learner@endlink for more information.
+# @link pysgpp_datadriven.learner.Learner.Learner Learner@endlink for more information.
 class LinearSolver(object):
     
     ##list of object listening to the solver events

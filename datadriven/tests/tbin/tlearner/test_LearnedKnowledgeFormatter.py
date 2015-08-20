@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -20,25 +20,25 @@ from pysgpp import DataVector
 
 ##
 # @package tests.tbin.test_LearnedKnowledgeFormatter
-# Contains class test_LearnedKnowledgeFormatte::TestLearnedKnowledgeFormatter with unittests for @link pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+# Contains class test_LearnedKnowledgeFormatte::TestLearnedKnowledgeFormatter with unittests for @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 
 ##
-# Class with unittests for @link pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+# Class with unittests for @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
+# @test Unittests for @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter LearnedKnowledgeFormatter @endlink
 class TestLearnedKnowledgeFormatter(unittest.TestCase):
-    
+
     ## Set up the variables
     def setUp(self,):
         self.filename_load = pathlocal + "/datasets/load.alpha.arff"
         self.filename_save = pathlocal + "/datasets/save.alpha.arff"
         self.formatter = LearnedKnowledgeFormatter()
 
-    
+
     ##
-    # Tests the function @link pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.deserializeFromFile() LearnedKnowledgeFormatter.deserializeFromFile() @endlink
+    # Tests the function @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.deserializeFromFile() LearnedKnowledgeFormatter.deserializeFromFile() @endlink
     def testLoad(self,):
         alphas = self.formatter.deserializeFromFile(self.filename_load)
         self.assertEqual(len(alphas), 10)
@@ -49,10 +49,10 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
             row = alphas[i]
             self.assertAlmostEqual(row, a)
             a = a + 0.1
-    
-    
+
+
     ##
-    # Tests the functions @link pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.serializeToFile() LearnedKnowledgeFormatter.serializeToFile() @endlink    
+    # Tests the functions @link python.pysgpp_datadriven.learner.formatter.LearnedKnowledgeFormatter.LearnedKnowledgeFormatter.serializeToFile() LearnedKnowledgeFormatter.serializeToFile() @endlink
     def testSave(self,):
         alphas = DataVector(10)
         a = 0.1
@@ -62,7 +62,7 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
         knowledge = LearnedKnowledge()
         knowledge.update(alphas)
         self.formatter.serializeToFile(knowledge.createMemento(), self.filename_save)
-        
+
         alphas = self.formatter.deserializeFromFile(self.filename_save)
         self.assertEqual(len(alphas), 10)
         #self.assertEqual(alphas.getDim(), 1)
@@ -72,8 +72,8 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
             row = alphas[i]
             self.assertAlmostEqual(row, a)
             a = a + 0.1
-        
-        
-        
+
+
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()
