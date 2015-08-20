@@ -14,7 +14,7 @@ from pysgpp.extensions.datadriven.utils.GzipSerializer import GzipSerializer
 # business logic from the text representation that can be saved into file.
 # The class is a part of <a href="http://en.wikipedia.org/wiki/Memento_pattern"
 # target="new">Memento design pattern</a> described in details in @link
-# python..controller.CheckpointController.CheckpointController CheckpointController
+# python.controller.CheckpointController.CheckpointController CheckpointController
 # @endlink.
 #
 # However strict separation of grid object and its representation is not
