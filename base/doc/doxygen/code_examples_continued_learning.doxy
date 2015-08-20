@@ -19,7 +19,7 @@ the learning.
 
 @section continued_learning_examples__builder_generation Automatic Generation of the Builder code
 
-In order to create a Learner object one should use the @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink. You can let the @link python.pysgpp_datadriven.controller.TerminalController.TerminalController TerminalController @endlink to generate the code from the command line
+In order to create a Learner object one should use the @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink. You can let the @link python.controller.TerminalController.TerminalController TerminalController @endlink to generate the code from the command line
 arguments.
 
 Make sure the SG++ project is in your $PYTHONPATH and add it, if it is not
@@ -38,7 +38,7 @@ arguments
 -L 0.0001
 @endcode
 
-With @link python.pysgpp_datadriven.controller.TerminalController.TerminalController TerminalController @endlink class you now can automatically generate the code to
+With @link python.controller.TerminalController.TerminalController TerminalController @endlink class you now can automatically generate the code to
 create the Learner object using LearnerBuilder. Just call the
 %TerminalController.py with all the command line arguments as above and an
 additional argument @c --generate
