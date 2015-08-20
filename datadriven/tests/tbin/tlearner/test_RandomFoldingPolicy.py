@@ -5,7 +5,7 @@
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
@@ -18,14 +18,14 @@ from pysgpp import DataVector, DataMatrix
 
 ##
 # @package tests.tbin.test_RandomFoldingPolicy
-# Contains class test_RandomFoldingPolicy::TestRandomFoldingPolicy with unittests for @link python.pysgpp_datadriven.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# Contains class test_RandomFoldingPolicy::TestRandomFoldingPolicy with unittests for @link python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# Class with unittests for @link python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
+# @test Unittests for @link python.learner.folding.RandomFoldingPolicy.RandomFoldingPolicy RandomFoldingPolicy @endlink
 class TestRandomFoldingPolicy(unittest.TestCase):
 
 
@@ -44,7 +44,7 @@ class TestRandomFoldingPolicy(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.folding.FoldingPolicy.FoldingPolicy.next() RandomFoldingPolicy.next() @endlink
+    # Tests the function @link python.learner.folding.FoldingPolicy.FoldingPolicy.next() RandomFoldingPolicy.next() @endlink
     def testNext(self):
         self.assertEqual(self.level, len(self.policy.dataFold))
         for l in self.policy:

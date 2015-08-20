@@ -1141,7 +1141,7 @@ class Matrix:
 #     return grid.serialize()
 #
 ##-------------------------------------------------------------------------------
-### @brief Converts a python "dataset"-structure into two objects of type DataVector (X,Y).
+### @brief Converts a python.dataset"-structure into two objects of type DataVector (X,Y).
 ##
 #def createDataVectorFromDataset(dataset):
 #    dim = len(dataset["data"])
@@ -1165,7 +1165,7 @@ class Matrix:
 #
 ##-------------------------------------------------------------------------------
 ### @brief Converts one or two (data + optionally classes) objects of type DataVector
-## to a python "dataset"-structure.
+## to a python.dataset"-structure.
 #def createDatasetFromDataVector(data, classes=None):
 #    dataset = {}
 #    dataset['data'] = []

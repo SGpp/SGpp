@@ -5,7 +5,7 @@
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
@@ -20,24 +20,24 @@ from pysgpp.extensions.datadriven.controller import InfoToFile
 
 ##
 # @package tests.tbin.test_LearnerBuilder
-# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Class with unittests for @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# @test Unittests for @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 class TestLearnerBuilder(unittest.TestCase):
 
 
     ## Set up the variables and
-    # test the functions @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
-    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
-    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
-    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
-    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
-    # @link python.pysgpp_datadriven.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
+    # test the functions @link python.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
     def setUp(self):
         self.builder = LearnerBuilder()
         self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\

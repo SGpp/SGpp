@@ -5,7 +5,7 @@
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
@@ -15,14 +15,14 @@ from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowled
 
 ##
 # @package tests.tbin.test_LearnerKnowledge
-# Contains class test_LearnerKnowledge::TestLearnedKnowledge with unittests for @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
+# Contains class test_LearnerKnowledge::TestLearnedKnowledge with unittests for @link python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
 
 ##
-# Class with unittests for @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
+# Class with unittests for @link python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
+# @test Unittests for @link python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
 # @todo (khakhutv) implement the test case
 class TestLearnedKnowledge(unittest.TestCase):
 
@@ -33,24 +33,24 @@ class TestLearnedKnowledge(unittest.TestCase):
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
+    # Tests the function @link python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
     def testSave(self, iteration):
         self.fail("Not Implemented")
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
+    # Tests the function @link python.learner.LearnedKnowledge.LearnedKnowledge LearnedKnowledge @endlink
     def testLoad(self, source):
         self.fail("Not Implemented")
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge.getAlphas() LearnedKnowledge.getAlphas() @endlink
+    # Tests the function @link python.learner.LearnedKnowledge.LearnedKnowledge.getAlphas() LearnedKnowledge.getAlphas() @endlink
     def testGetAlphas(self):
         self.fail("Not Implemented")
 
 
     ##
-    # Tests the function @link python.pysgpp_datadriven.learner.LearnedKnowledge.LearnedKnowledge.update() LearnedKnowledge.update() @endlink
+    # Tests the function @link python.learner.LearnedKnowledge.LearnedKnowledge.update() LearnedKnowledge.update() @endlink
     def testUpdate(self, alphas):
         self.fail("Not Implemented")
