@@ -166,8 +166,8 @@ namespace SGPP {
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // stopping criterion:
           // stop if delta is smaller than tolerance theta
@@ -185,10 +185,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));;
         printer.printStatusEnd();
 
         return fx;

@@ -136,7 +136,9 @@ vars.GenerateHelpText(env))
 # adds trailing slashes were required and if not present
 BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp'))
+PYSGPP_PACKAGE_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib'))
+Export('PYSGPP_PACKAGE_PATH')
+PYSGPP_BUILD_PATH = Dir(os.path.join(PYSGPP_PACKAGE_PATH.abspath, 'pysgpp'))
 Export('PYSGPP_BUILD_PATH')
 JSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
 Export('JSGPP_BUILD_PATH')
@@ -170,7 +172,7 @@ env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
     BUILD_DIR.abspath])
 env["ENV"]["PYTHONPATH"] = ":".join([
     env["ENV"].get("PYTHONPATH", ""),
-    PYSGPP_BUILD_PATH.abspath])
+    PYSGPP_PACKAGE_PATH.abspath])
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
@@ -253,9 +255,9 @@ def finish(target, source, env):
     fd = open("INSTRUCTIONS")
     instructionsTemplate = Template(fd.read())
     fd.close()
+
     s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                             PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
-                                             SGPP_HOME=os.getcwd())
+                                             PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
     print
     print s
 
