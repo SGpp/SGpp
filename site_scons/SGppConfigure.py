@@ -17,12 +17,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
-                                            'CheckFlag' : SGppConfigureExtend.CheckFlag })    
+                                            'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
         sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-        sys.exit(1) #TODO: exist undefined, fix
+        sys.exit(1)  # TODO: exist undefined, fix
     config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
     if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS']:
@@ -48,56 +48,56 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
     else:
         print "Using " + commands.getoutput('dot -V').splitlines()[0]
-    
+
     if config.env['USE_OCL']:
       if 'OCL_INCLUDE_PATH' in config.env['ENV']:
         config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
-         
+
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
-        
+
       if 'OCL_LIBRARY_PATH' in config.env['ENV']:
         config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
-        
+
       if not config.CheckLib('OpenCL'):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
-        
+
       config.env.AppendUnique(CPPDEFINES="USE_OCL")
     else:
       print "Info: OpenCL is not enabled"
-    
+
     # Check the availability of the boost unit test dependencies
     if env['COMPILE_BOOST_TESTS']:
         if not config.CheckHeader("boost/test/unit_test.hpp", language="c++"):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
-No Boost Unit Test Headers found. Omitting Boost unit tests. 
+No Boost Unit Test Headers found. Omitting Boost unit tests.
 Please install the corresponding package, e.g. using command on Ubuntu
 > sudo apt-get install libboost-test-dev
 ****************************************************
 """
-        
+
         if not config.CheckLib('boost_unit_test_framework'):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
-No Boost Unit Test library found. Omitting Boost unit tests. 
+No Boost Unit Test library found. Omitting Boost unit tests.
 Please install the corresponding package, e.g. using command on Ubuntu
 > sudo apt-get install libboost-test-dev
 ****************************************************
 """
-    
+
     if env["SG_PYTHON"]:
         # check whether swig installed
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
             sys.exit(1)
-        
+
         # make sure swig version is new enough
         from SCons.Script.SConscript import SConsEnvironment
         import warnings
@@ -172,7 +172,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
        env.Append(CPPFLAGS=['-O3'])
     else:
        env.Append(CPPFLAGS=['-g', '-O0'])
-    
+
     if not env['USE_DOUBLE_PRECISION']:
        env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
@@ -196,7 +196,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         #     ensure you also compile with -fno-strict-aliasing"
         env.Append(CPPFLAGS=allWarnings + [
                              # '-Wall', '-Wextra',
-                             #'-std=c++11',  # '-Wno-long-long', '-Wno-deprecated',
+                             # '-std=c++11',  # '-Wno-long-long', '-Wno-deprecated',
                              # '-Werror',
                              '-Wno-unused-parameter',
                              # '-Wconversion',
@@ -205,7 +205,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
-        
+
         if not env['USE_DOUBLE_PRECISION']:
             if gcc_ver >= (4, 9, 0):
                 # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
@@ -245,9 +245,9 @@ Please install the corresponding package, e.g. using command on Ubuntu
         # the python binding (pysgpp) requires lpython and a flat namespace
         # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
         env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
-        #The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
-        #From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
-        #Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
+        # The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
+        # From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
+        # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
         env.Append(CPPFLAGS=['-Wa,-q'])
         env.AppendUnique(CPPPATH="/usr/local/include")
         env.AppendUnique(LIBPATH="/usr/local/lib")

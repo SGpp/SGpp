@@ -83,6 +83,7 @@ namespace SGPP {
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
                 if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  gradient.setAll(NAN);
                   return INFINITY;
                 }
               }
@@ -158,6 +159,8 @@ namespace SGPP {
 
         base::DataVector xNew(d);
 
+        base::DataVector gx(g.getNumberOfComponents());
+
         float_t mu = mu0;
 
         size_t breakIterationCounter = 0;
@@ -170,7 +173,6 @@ namespace SGPP {
         PenalizedObjectiveGradient fPenalizedGradient(
           fGradient, gGradient, mu);
 
-        // http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO_files/Page3389.htm
         while (k < N) {
           fPenalized.setMu(mu);
           fPenalizedGradient.setMu(mu);
@@ -183,12 +185,14 @@ namespace SGPP {
 
           x = xNew;
           fx = f.eval(x);
+          g.eval(x, gx);
           k++;
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx) +
+            ", g(x) = " + gx.toString());
 
           mu *= rhoMuMinus;
 
@@ -207,10 +211,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

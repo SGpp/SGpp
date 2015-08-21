@@ -118,9 +118,6 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, float_t(1e-5) );
 #endif
 
-  NaiveSampleGenerator pNSampler(dim, seed);
-  HaltonSampleGenerator pHSampler(dim);
-  LatinHypercubeSampleGenerator pLHSampler(dim, numSamples, seed);
   std::vector<size_t> blockSize(dim);
 
   for (size_t i = 0; i < dim; i++) {

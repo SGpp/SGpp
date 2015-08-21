@@ -37,15 +37,12 @@ namespace SGPP {
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponent g(f, 3, {NAN, NAN, 0.42});
-         * where f is a vector-valued function with 5 components and
-         * 3 parameters.
-         * This selects the first two parameters and the fourth component
-         * of f, while constantly using 0.42 for the third parameter.
+         * ScalarComponent g(f, {NAN, NAN, 0.42});
+         * where f is a scalar-valued function with 3 parameters.
+         * This selects the first two parameters of f, while constantly
+         * using 0.42 for the third parameter.
          *
-         * @param f             vector-valued function (m components)
-         * @param k             index of component \f$f_k\f$ to select
-         *                      (between 0 and m - 1)
+         * @param f             scalar-valued function
          * @param defaultValues Vector of constant default values.
          *                      It can be either empty (the default) or
          *                      a vector of exactly m float_ts,
@@ -58,6 +55,41 @@ namespace SGPP {
          *                      values for the corresponding parameter.
          */
         ScalarComponent(
+          ScalarFunction& f,
+          std::vector<float_t> defaultValues = std::vector<float_t>()) :
+
+          ScalarFunction((defaultValues.size() > 0) ?
+                         std::count(defaultValues.begin(),
+                                    defaultValues.end(), NAN) :
+                         f.getDimension()),
+          fScalar(&f),
+          fVector(nullptr),
+          dF(f.getDimension()),
+          k(0),
+          defaultValues((defaultValues.size() > 0) ?
+                        defaultValues : std::vector<float_t>(dF, NAN)),
+          tmpVec1(dF),
+          tmpVec2(0) {
+
+          initialize();
+        }
+
+        /**
+         * Constructor.
+         *
+         * Use it like this:
+         * ScalarComponent g(f, 3, {NAN, NAN, 0.42});
+         * where f is a vector-valued function with 5 components and
+         * 3 parameters.
+         * This selects the first two parameters and the fourth component
+         * of f, while constantly using 0.42 for the third parameter.
+         *
+         * @param f             vector-valued function (m components)
+         * @param k             index of component \f$f_k\f$ to select
+         *                      (between 0 and m - 1)
+         * @param defaultValues see other constructor
+         */
+        ScalarComponent(
           VectorFunction& f,
           size_t k,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
@@ -66,26 +98,16 @@ namespace SGPP {
                          std::count(defaultValues.begin(),
                                     defaultValues.end(), NAN) :
                          f.getDimension()),
-          f(f),
+          fScalar(nullptr),
+          fVector(&f),
+          dF(f.getDimension()),
           k(k),
           defaultValues((defaultValues.size() > 0) ?
-                        defaultValues :
-                        std::vector<float_t>(f.getDimension(), NAN)),
-          y(f.getDimension()),
-          fy(f.getNumberOfComponents()) {
+                        defaultValues : std::vector<float_t>(dF, NAN)),
+          tmpVec1(dF),
+          tmpVec2(f.getNumberOfComponents()) {
 
-          // make sure defaultValues has the correct size
-          if (this->defaultValues.size() != f.getDimension()) {
-            throw std::runtime_error(
-              "ScalarComponent(): Invalid defaultValues.");
-          }
-
-          // initialize constant non-NAN entries
-          for (size_t t = 0; t < f.getDimension(); t++) {
-            if (!std::isnan(this->defaultValues[t])) {
-              y[t] = this->defaultValues[t];
-            }
-          }
+          initialize();
         }
 
         /**
@@ -94,21 +116,26 @@ namespace SGPP {
          *              where \f$(x_1, \dotsc, x_n) =
          *              (y_{i_1}, \dotsc, y_{i_n})\f$
          */
-        float_t eval(const base::DataVector& x) {
+        inline float_t eval(const base::DataVector& x) {
           size_t t2 = 0;
 
           // select entries of x which correspond to NAN entries in
           // defaultValues
-          for (size_t t = 0; t < f.getDimension(); t++) {
+          for (size_t t = 0; t < dF; t++) {
             if (std::isnan(defaultValues[t])) {
-              y[t] = x[t2];
+              tmpVec1[t] = x[t2];
               t2++;
             }
           }
 
-          // evaluate and select component
-          f.eval(y, fy);
-          return fy[k];
+          if (fScalar == nullptr) {
+            // evaluate and select component
+            fVector->eval(tmpVec1, tmpVec2);
+            return tmpVec2[k];
+          } else {
+            // evaluate
+            return fScalar->eval(tmpVec1);
+          }
         }
 
         /**
@@ -116,20 +143,39 @@ namespace SGPP {
          */
         virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
           clone = std::unique_ptr<ScalarFunction>(
-                    new ScalarComponent(f, k, defaultValues));
+                    new ScalarComponent(*this));
         }
 
       protected:
+        /// scalar-valued function
+        ScalarFunction* fScalar;
         /// vector-valued function
-        VectorFunction& f;
+        VectorFunction* fVector;
+        /// dimension of underlying function
+        size_t dF;
         /// index of component
         size_t k;
         /// vector of default values, indicating free variables with NAN
         std::vector<float_t> defaultValues;
-        /// temporary evaluation point
-        base::DataVector y;
-        /// temporary result point
-        base::DataVector fy;
+        /// temporary vector 1
+        base::DataVector tmpVec1;
+        /// temporary vector 2
+        base::DataVector tmpVec2;
+
+        void initialize() {
+          // make sure defaultValues has the correct size
+          if (defaultValues.size() != dF) {
+            throw std::runtime_error(
+              "ScalarComponent::initialize(): Invalid defaultValues.");
+          }
+
+          // initialize constant non-NAN entries
+          for (size_t t = 0; t < dF; t++) {
+            if (!std::isnan(defaultValues[t])) {
+              tmpVec1[t] = defaultValues[t];
+            }
+          }
+        }
     };
 
   }

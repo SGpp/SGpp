@@ -96,6 +96,7 @@ namespace SGPP {
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
                 if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  gradient.setAll(NAN);
                   return INFINITY;
                 }
               }
@@ -219,17 +220,18 @@ namespace SGPP {
 
           x = xNew;
           fx = f.eval(x);
+          g.eval(x, gx);
+          h.eval(x, hx);
           k++;
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx) +
+            ", g(x) = " + gx.toString() +
+            ", h(x) = " + hx.toString());
 
           mu *= rhoMuPlus;
-
-          g.eval(x, gx);
-          h.eval(x, hx);
 
           xNew.sub(x);
 
@@ -248,10 +250,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

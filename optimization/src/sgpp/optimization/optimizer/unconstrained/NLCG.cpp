@@ -100,23 +100,19 @@ namespace SGPP {
             s[t] = beta * s[t] - gradFy[t];
           }
 
-          // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
-
           x = y;
           fx = fy;
           gradFx = gradFy;
           gradFxNorm = gradFyNorm;
+
+          // status printing
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
         }
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

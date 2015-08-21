@@ -105,6 +105,7 @@ namespace SGPP {
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
                 if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  gradient.setAll(NAN);
                   return INFINITY;
                 }
               }
@@ -220,6 +221,7 @@ namespace SGPP {
 
               for (size_t t = 0; t < d + 1; t++) {
                 if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  gradient.setAll(NAN);
                   return INFINITY;
                 }
 
@@ -264,6 +266,7 @@ namespace SGPP {
 
               for (size_t t = 0; t < d + 1; t++) {
                 if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  value.setAll(INFINITY);
                   return;
                 }
 
@@ -327,10 +330,11 @@ namespace SGPP {
                       base::DataMatrix& gradient) {
               const size_t d = this->d - 1;
               base::DataVector xPart(d);
-              //std::cout << "AuxiliaryConstraintGradient.eval(): x = " << x.toString() << ", d = " << d << "\n";
 
               for (size_t t = 0; t < d + 1; t++) {
                 if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  value.setAll(INFINITY);
+                  gradient.setAll(NAN);
                   return;
                 }
 
@@ -456,15 +460,16 @@ namespace SGPP {
 
           x = xNew;
           fx = f.eval(x);
+          g.eval(x, gx);
+          h.eval(x, hx);
           k++;
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
-
-          g.eval(x, gx);
-          h.eval(x, hx);
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx) +
+            ", g(x) = " + gx.toString() +
+            ", h(x) = " + hx.toString());
 
           for (size_t i = 0; i < mG; i++) {
             lambda[i] = std::max(lambda[i] + 2.0 * mu * gx[i], 0.0);
@@ -493,10 +498,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

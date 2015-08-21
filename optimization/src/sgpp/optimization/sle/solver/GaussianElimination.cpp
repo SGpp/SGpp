@@ -85,7 +85,7 @@ namespace SGPP {
             const float_t wll = W(l, l);
 
             for (size_t k = l; k <= n; k++) {
-              W(l, k) = W(l, k) / wll;
+              W(l, k) /= wll;
             }
           }
 
@@ -95,7 +95,7 @@ namespace SGPP {
               const float_t wjl = W(j, l);
 
               for (size_t k = l; k <= n; k++) {
-                W(j, k) = W(j, k) - wjl * W(l, k);
+                W(j, k) -= wjl * W(l, k);
               }
             }
           }

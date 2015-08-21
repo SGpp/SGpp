@@ -60,6 +60,20 @@ namespace SGPP {
         DataVectorSP(float* input, size_t size);
 
         /**
+         * Create a new DataVectorSP from a std::vector<float>.
+         *
+         * @param input std::vector<float> that contains the data
+         */
+        DataVectorSP(std::vector<float> input);
+
+        /**
+         * Create a new DataVectorSP from a std::vector<int>.
+         *
+         * @param input std::vector<int> that contains the data
+         */
+        DataVectorSP(std::vector<int> input);
+
+        /**
          * Resizes the DataVector to size elements.
          * All new additional entries are uninitialized.
          * If nrows is smaller than the current number of rows,
@@ -70,7 +84,7 @@ namespace SGPP {
         void resize(size_t size);
 
         /**
-        * Resizes the DataVector to size elements.
+         * Resizes the DataVector to size elements.
          * All new additional entries are set to zero.
          * If nrows is smaller than the current number of rows,
          * all superfluous entries are removed.
@@ -108,10 +122,10 @@ namespace SGPP {
         size_t append();
 
         /**
-           * Appends a new element and returns index of new element.
-           * If the new element does not fit into the reserved memory,
-           * reserves memory for getInc() additional elements.
-           *
+         * Appends a new element and returns index of new element.
+         * If the new element does not fit into the reserved memory,
+         * reserves memory for getInc() additional elements.
+         *
          * @param value Value of new element
          * @return Index of new element
          */
@@ -202,8 +216,8 @@ namespace SGPP {
         void add(DataVectorSP& vec);
 
         /**
-           * Subtracts the values from another DataVectorSP of the current values.
-           * Modifies the current values.
+         * Subtracts the values from another DataVectorSP of the current values.
+         * Modifies the current values.
          *
          * @param vec The DataVectorSP which is subtracted from the current values
          */
@@ -274,24 +288,27 @@ namespace SGPP {
         float maxNorm() const;
 
         /**
-         * calculates the vectors L two norm
-         * function based two norm
+         * Returns the vector's root mean square (RMS)-norm, i.e.,
+         * @f$\sqrt{ 1/N \sum_{i=1}^N x_i^2 }@f$. If the vector's entries
+         * correspond to function values on a full grid, this is the
+         * discrete @f$L^2@f$-norm of the corresponding function.
          *
-         * @return the vector's L two norm
+         * @return The vector's root mean square-norm.
          */
         float RMSNorm() const;
 
         /**
-         * calculates the vectors two norm
+         * Returns the vector's @f$l^2@f$-norm, i.e.,
+         * @f$\sqrt{ \sum_i x_i^2 }@f$.
          *
-         * @return the vector's two norm
+         * @return The vector's @f$l^2@f$-norm.
          */
         float l2Norm() const;
 
         /**
          * Returns the minimum over all entries.
          *
-         * @return global minimum
+         * @return Minimal value
          */
         float min() const;
 
@@ -303,10 +320,10 @@ namespace SGPP {
         float max() const;
 
         /**
-           * Determines minimum and maximum over all entries.
-           *
-           * @param min Reference variable for the minimum
-           * @param max Reference variable for the maximum
+         * Determines minimum and maximum over all entries.
+         *
+         * @param min Reference variable for the minimum
+         * @param max Reference variable for the maximum
          */
         void minmax(float* min, float* max) const;
 
@@ -327,7 +344,6 @@ namespace SGPP {
          * @return The dot-product
          */
         float dotProduct(DataVectorSP& vec) const;
-
 
         /**
          * gets a pointer to the data array
@@ -363,7 +379,7 @@ namespace SGPP {
 
         /**
          * Get the current number of elements by which the DataVector is extended,
-         * if append() is called and no unused rows are left
+         * if append() or insert() is called and no unused rows are left
          *
          * @return Increment
          */
@@ -373,7 +389,7 @@ namespace SGPP {
 
         /**
          * Sets the current number of elements by which the DataVector is extended,
-         * if append() is called and no unused elements are left.
+         * if append() or insert() is called and no unused elements are left.
          * Defaults to 100.
          *
          * @param inc_elems Increment
@@ -421,8 +437,6 @@ namespace SGPP {
          */
         virtual ~DataVectorSP();
 
-
-
       private:
         /// Array to store the data
         float* data;
@@ -436,4 +450,5 @@ namespace SGPP {
 
   }
 }
+
 #endif /* DATAVECTORSP_HPP */
