@@ -34,12 +34,6 @@ env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppfinance" 
 env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppsolver" + env["SHLIBSUFFIX"])
 libInstall = env.Install(BUILD_DIR, lib)
 
-if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-  Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
-  testTargetList.append(moduleTest)
-
 Import('exampleTargetList')
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):

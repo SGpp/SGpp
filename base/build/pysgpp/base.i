@@ -43,6 +43,7 @@ namespace std {
 %include "GridFactory.i"
 
 
+%ignore SGPP::base::DataVectorSP::DataVectorSP(std::vector<float> input);
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];
 %ignore SGPP::base::DataVectorSP::toString(std::string& text) const;
