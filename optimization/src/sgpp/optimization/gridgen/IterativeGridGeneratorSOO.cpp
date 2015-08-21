@@ -17,7 +17,7 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
-      ObjectiveFunction& f, base::Grid& grid, size_t N,
+      ScalarFunction& f, base::Grid& grid, size_t N,
       float_t adaptivity) :
       IterativeGridGenerator(f, grid, N) {
       setAdaptivity(adaptivity);
@@ -80,7 +80,7 @@ namespace SGPP {
       fX.resize(N);
 
       {
-        base::GridIndex& gp = *gridStorage.get(0);
+        base::GridIndex& gp = *gridStorage[0];
         base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
@@ -157,7 +157,7 @@ namespace SGPP {
             refinementAlpha[iBest] = 0.0;
 
             for (size_t i = currentN; i < newN; i++) {
-              base::GridIndex& gp = *gridStorage.get(i);
+              base::GridIndex& gp = *gridStorage[i];
               // set point distribution accordingly to
               // normal/Clenshaw-Curtis grids
               gp.setPointDistribution(distr);

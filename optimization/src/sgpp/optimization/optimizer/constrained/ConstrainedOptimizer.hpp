@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/vector/ConstraintFunction.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/ConstraintFunction.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <cstddef>

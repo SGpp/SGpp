@@ -3,14 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATAVECTOR_H_
-#define DATAVECTOR_H_
+#ifndef DATAVECTOR_HPP
+#define DATAVECTOR_HPP
 
 #include <string>
 #include <vector>
 #include <sgpp/base/datatypes/DataVectorDefinition.hpp>
 
 #include <sgpp/globaldef.hpp>
+
 
 namespace SGPP {
   namespace base {
@@ -65,7 +66,7 @@ namespace SGPP {
         /**
          * Create a new DataVector from a std::vector<int>.
          *
-         * @param input std::vector<float_t> that contains the data
+         * @param input std::vector<int> that contains the data
          */
         DataVector(std::vector<int> input);
 
@@ -195,7 +196,7 @@ namespace SGPP {
         DataVector& operator=(const DataVector& vec);
 
         /**
-         * Returns the i-th element.
+         * Returns a reference to the i-th element.
          *
          * @param i position of the element
          * @return data[i]
@@ -203,7 +204,16 @@ namespace SGPP {
         inline float_t& operator[](size_t i) {
           return data[i];
         }
-        ;
+
+        /**
+         * Returns a constant reference to the i-th element.
+         *
+         * @param i position of the element
+         * @return data[i]
+         */
+        inline const float_t& operator[](size_t i) const {
+          return data[i];
+        }
 
         /**
          * Returns the i-th element.
@@ -232,10 +242,10 @@ namespace SGPP {
         void add(DataVector& vec);
 
         /**
-         * Subtracts the values from another DataMatrix of the current values.
+         * Subtracts the values from another DataVector of the current values.
          * Modifies the current values.
          *
-         * @param vec The DataMatrix which is subtracted from the current values
+         * @param vec The DataVector which is subtracted from the current values
          */
         void sub(const DataVector& vec);
 
@@ -376,7 +386,6 @@ namespace SGPP {
         inline size_t getSize() const {
           return size;
         }
-        ;
 
         /**
          * Returns the number of unused elements.
@@ -386,7 +395,6 @@ namespace SGPP {
         inline size_t getUnused() const {
           return unused;
         }
-        ;
 
         /**
          * Determines the number of non-zero elements in the vector.
@@ -456,10 +464,6 @@ namespace SGPP {
         virtual ~DataVector();
 
       private:
-        /**
-         * Standard Constructor
-         */
-        //  DataVector();
         /// Array to store the data
         float_t* data;
         /// Number of elements of the data vector
@@ -469,7 +473,8 @@ namespace SGPP {
         /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
         size_t inc_elems;
     };
+
   }
 }
 
-#endif /*DATAVECTOR_H_*/
+#endif /* DATAVECTOR_HPP */

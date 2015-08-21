@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
 
 #include <cstddef>
 #include <cmath>
@@ -69,7 +69,7 @@ namespace SGPP {
 
           // calculate new point
           for (size_t t = 0; t < d; t++) {
-            y[t] = x.get(t) + sigma * s.get(t);
+            y[t] = x[t] + sigma * s[t];
 
             if ((y[t] < 0.0) || (y[t] > 1.0)) {
               y_in_domain = false;

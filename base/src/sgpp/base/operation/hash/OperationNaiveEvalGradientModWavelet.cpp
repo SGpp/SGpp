@@ -18,30 +18,30 @@ namespace SGPP {
       gradient.resize(storage->dim());
       gradient.setAll(0.0);
 
-      DataVector cur_gradient(d);
+      DataVector curGradient(d);
 
       for (size_t i = 0; i < n; i++) {
-        const GridIndex* gp = storage->get(i);
-        float_t cur_val = 1.0;
-        cur_gradient.setAll(alpha[i]);
+        const GridIndex& gp = *(*storage)[i];
+        float_t curValue = 1.0;
+        curGradient.setAll(alpha[i]);
 
         for (size_t t = 0; t < d; t++) {
-          float_t val1d = base.eval(gp->getLevel(t), gp->getIndex(t), point[t]);
-          float_t dx1d = base.evalDx(gp->getLevel(t), gp->getIndex(t), point[t]);
+          const float_t val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
+          const float_t dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]);
 
-          cur_val *= val1d;
+          curValue *= val1d;
 
           for (size_t t2 = 0; t2 < d; t2++) {
             if (t2 == t) {
-              cur_gradient[t2] *= dx1d;
+              curGradient[t2] *= dx1d;
             } else {
-              cur_gradient[t2] *= val1d;
+              curGradient[t2] *= val1d;
             }
           }
         }
 
-        result += alpha[i] * cur_val;
-        gradient.add(cur_gradient);
+        result += alpha[i] * curValue;
+        gradient.add(curGradient);
       }
 
       return result;

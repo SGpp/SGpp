@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
 
 #include <cstddef>
 #include <memory>

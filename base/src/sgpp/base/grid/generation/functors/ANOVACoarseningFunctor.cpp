@@ -37,7 +37,7 @@ namespace SGPP {
 
       for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++) {
         index = *(iter->first);
-        seq = (*storage)[&index];
+        seq = storage->seq(&index);
         int level_sum = index.getLevelSum();
 
         if (level_sum > static_cast<int>(storage->dim())) {

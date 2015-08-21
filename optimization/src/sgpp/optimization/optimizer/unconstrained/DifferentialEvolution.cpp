@@ -146,7 +146,7 @@ namespace SGPP {
 
               // for each dimension
               for (size_t t = 0; t < d; t++) {
-                const float_t& curProb = prob_ki.get(t);
+                const float_t& curProb = prob_ki[t];
 
                 if ((t == cur_j) || (curProb < crossoverProbability)) {
                   // mutate point in this dimension

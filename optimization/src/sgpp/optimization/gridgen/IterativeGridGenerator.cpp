@@ -16,7 +16,7 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGenerator::IterativeGridGenerator(
-      ObjectiveFunction& f, base::Grid& grid, size_t N) :
+      ScalarFunction& f, base::Grid& grid, size_t N) :
       f(f),
       grid(grid),
       N(N),
@@ -52,9 +52,9 @@ namespace SGPP {
       {
         base::GridIndex* gp;
         base::DataVector x(d);
-        ObjectiveFunction* curFPtr = &f;
+        ScalarFunction* curFPtr = &f;
 #ifdef _OPENMP
-        std::unique_ptr<ObjectiveFunction> curF;
+        std::unique_ptr<ScalarFunction> curF;
 
         if (omp_get_max_threads() > 1) {
           f.clone(curF);
@@ -67,7 +67,7 @@ namespace SGPP {
 
         for (size_t i = oldGridSize; i < curGridSize; i++) {
           // convert grid point to coordinate vector
-          gp = gridStorage.get(i);
+          gp = gridStorage[i];
 
           for (size_t t = 0; t < d; t++) {
             x[t] = gp->getCoord(t);

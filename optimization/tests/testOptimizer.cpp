@@ -1,16 +1,13 @@
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
 
-#include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
-#include <sgpp/optimization/function/EmptyConstraintGradient.hpp>
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
-#include <sgpp/optimization/function/InterpolantFunction.hpp>
-#include <sgpp/optimization/function/InterpolantGradient.hpp>
-#include <sgpp/optimization/function/InterpolantHessian.hpp>
+#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantObjectiveFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyConstraintGradient.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
@@ -52,9 +49,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   std::unique_ptr<OperationMultipleHierarchisation> op(
     op_factory::createOperationMultipleHierarchisation(*grid));
   op->doHierarchisation(alpha);
-  InterpolantFunction ft(*grid, alpha);
-  InterpolantGradient ftGradient(*grid, alpha);
-  InterpolantHessian ftHessian(*grid, alpha);
+  InterpolantObjectiveFunction ft(*grid, alpha);
+  InterpolantObjectiveGradient ftGradient(*grid, alpha);
+  InterpolantObjectiveHessian ftHessian(*grid, alpha);
 
   // test getters/setters
   {
@@ -386,8 +383,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
       f.reset(new G3ObjectiveFunction(d));
       fGradient.reset(new G3ObjectiveGradient(d));
-      g.reset(new EmptyConstraintFunction());
-      gGradient.reset(new EmptyConstraintGradient());
+      emptyConstraintFunction.clone(g);
+      emptyConstraintGradient.clone(gGradient);
       h.reset(new G3ConstraintFunction(d));
       hGradient.reset(new G3ConstraintGradient(d));
       optimizers.push_back(
@@ -411,8 +408,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       fGradient.reset(new G8ObjectiveGradient());
       g.reset(new G8ConstraintFunction());
       gGradient.reset(new G8ConstraintGradient());
-      h.reset(new EmptyConstraintFunction());
-      hGradient.reset(new EmptyConstraintGradient());
+      emptyConstraintFunction.clone(h);
+      emptyConstraintGradient.clone(hGradient);
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(
@@ -538,8 +535,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       dynamic_cast<optimizer::AugmentedLagrangian*>(optimizers.back().get());
 
     base::DataVector x = optimizer->findFeasiblePoint();
-    base::DataVector gx(g->getNumberOfConstraints());
-    base::DataVector hx(h->getNumberOfConstraints());
+    base::DataVector gx(g->getNumberOfComponents());
+    base::DataVector hx(h->getNumberOfComponents());
     g->eval(x, gx);
     h->eval(x, hx);
 

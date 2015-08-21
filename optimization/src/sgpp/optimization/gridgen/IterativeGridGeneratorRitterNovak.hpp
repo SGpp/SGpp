@@ -56,7 +56,7 @@ namespace SGPP {
          *                      but only approximative)
          */
         IterativeGridGeneratorRitterNovak(
-          ObjectiveFunction& f,
+          ScalarFunction& f,
           base::Grid& grid,
           size_t N,
           float_t adaptivity = DEFAULT_ADAPTIVITY,

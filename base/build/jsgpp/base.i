@@ -32,10 +32,12 @@ namespace std {
 %rename(operatorAssignment) SGPP::base::DataVectorSP::operator=;
 %rename(operatorAssignment) SGPP::base::DataMatrix::operator=;
 %rename(operatorAssignment) SGPP::base::DataMatrixSP::operator=;
-%rename(operatorSquareBrackets) SGPP::base::DataVector::operator[];
-%rename(operatorSquareBrackets) SGPP::base::DataVectorSP::operator[];
-%rename(operatorSquareBrackets) SGPP::base::DataMatrix::operator[];
-%rename(operatorSquareBrackets) SGPP::base::DataMatrixSP::operator[];
+%ignore SGPP::base::DataVector::operator[];
+%ignore SGPP::base::DataVectorSP::operator[];
+%ignore SGPP::base::DataMatrix::operator[];
+%ignore SGPP::base::DataMatrixSP::operator[];
+%ignore SGPP::base::DataMatrix::operator();
+%ignore SGPP::base::DataMatrixSP::operator();
 %include "base/src/sgpp/base/datatypes/DataVectorDefinition.hpp"
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
@@ -55,7 +57,7 @@ namespace std {
 %rename(operatorParentheses) SGPP::base::HashGridIndexHashFunctor::operator();
 %rename(operatorParentheses) SGPP::base::HashGridIndexEqualityFunctor::operator();
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
-%rename(operatorSquareBrackets) SGPP::base::HashGridStorage::operator[];
+%ignore SGPP::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
