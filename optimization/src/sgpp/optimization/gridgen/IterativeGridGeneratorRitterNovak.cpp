@@ -38,7 +38,7 @@ namespace SGPP {
     }
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
-      ObjectiveFunction& f, base::Grid& grid, size_t N,
+      ScalarFunction& f, base::Grid& grid, size_t N,
       float_t adaptivity, base::level_t maxLevel, PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
       gamma(adaptivity),
@@ -126,7 +126,7 @@ namespace SGPP {
       refinementAlpha.setAll(0.0);
 
       for (size_t i = 0; i < currentN; i++) {
-        base::GridIndex& gp = *gridStorage.get(i);
+        base::GridIndex& gp = *gridStorage[i];
         gp.setPointDistribution(distr);
         // prepare fXOrder and rank
         fXOrder[i] = i;
@@ -144,7 +144,7 @@ namespace SGPP {
       // determine fXOrder and rank (prepared above)
       std::sort(fXOrder.begin(), fXOrder.begin() + currentN,
       [&](size_t a, size_t b) {
-        return (fX.get(a) < fX.get(b));
+        return (fX[a] < fX[b]);
       });
       std::sort(rank.begin(), rank.begin() + currentN,
       [&](size_t a, size_t b) {
@@ -198,7 +198,7 @@ namespace SGPP {
             // ==> check if a refinement of this point would generate
             // children with a level greater than max_level
             // (in one coordinate), if yes ignore the point
-            base::GridIndex& gp = *gridStorage.get(i);
+            base::GridIndex& gp = *gridStorage[i];
 
             {
               base::index_t sourceIndex, childIndex;
@@ -288,7 +288,7 @@ namespace SGPP {
         refinementAlpha[iBest] = 0.0;
 
         for (size_t i = currentN; i < newN; i++) {
-          base::GridIndex& gp = *gridStorage.get(i);
+          base::GridIndex& gp = *gridStorage[i];
           // set point distribution accordingly to normal/Clenshaw-Curtis grids
           gp.setPointDistribution(distr);
           refinementAlpha[i] = 0.0;

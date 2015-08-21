@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
               }
             }
 
-            fxHessian.set(j, k, fxHessian.get(j, k) + val);
+            fxHessian(j, k) += val;
           }
         }
       }
@@ -277,8 +277,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
         for (size_t t2 = 0; t2 < d; t2++) {
           // test Hessian evaluation
-          BOOST_CHECK_CLOSE(fxHessian.get(t1, t2),
-                            fxHessian2.get(t1, t2), 1e-10);
+          BOOST_CHECK_CLOSE(fxHessian(t1, t2), fxHessian2(t1, t2), 1e-10);
         }
       }
     }

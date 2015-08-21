@@ -128,8 +128,8 @@ namespace SGPP {
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
@@ -145,10 +145,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

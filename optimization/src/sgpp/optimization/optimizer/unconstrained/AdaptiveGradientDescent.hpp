@@ -8,7 +8,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {

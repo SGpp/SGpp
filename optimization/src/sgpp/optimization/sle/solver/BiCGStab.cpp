@@ -40,7 +40,7 @@ namespace SGPP {
 
           if (A != 0.0) {
             x.resize(1);
-            x[0] = b.get(0) / A;
+            x[0] = b[0] / A;
             printer.printStatusEnd();
             return true;
           } else {
@@ -60,7 +60,7 @@ namespace SGPP {
         system.matrixVectorMultiplication(x, r);
 
         for (size_t i = 0; i < n; i++) {
-          r[i] = b.get(i) - r[i];
+          r[i] = b[i] - r[i];
         }
 
         base::DataVector r0Hat(r);

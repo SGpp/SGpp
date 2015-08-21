@@ -2,7 +2,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/optimization/function/test/Sphere.hpp>
+#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
 
     for (size_t i = 0; i < grid->getSize(); i++) {
       for (size_t j = 0; j < m; j++) {
-        BOOST_CHECK_CLOSE(functionValuesMatrix.get(i, j),
-                          functionValuesMatrix2.get(i, j), tol);
+        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j),
+                          functionValuesMatrix2(i, j), tol);
       }
     }
   }

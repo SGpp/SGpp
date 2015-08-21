@@ -37,7 +37,7 @@ namespace SGPP {
          * @param adaptivity  adaptivity between 0 and 1
          */
         IterativeGridGeneratorLinearSurplus(
-          ObjectiveFunction& f,
+          ScalarFunction& f,
           base::Grid& grid,
           size_t N,
           float_t adaptivity = DEFAULT_ADAPTIVITY);

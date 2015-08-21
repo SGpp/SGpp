@@ -189,7 +189,7 @@ namespace SGPP {
         }
 
         // print grid point and function value
-        (*stream) << *gridStorage.get(i) << ", " << functionValues.get(i);
+        (*stream) << *gridStorage[i] << ", " << functionValues[i];
       }
 
       (*stream) << "\n";

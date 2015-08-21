@@ -7,8 +7,8 @@
 
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
-#include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
+#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -24,12 +24,12 @@ namespace SGPP {
               f(f),
               g(g),
               mu(mu),
-              m(g.getNumberOfConstraints()) {
+              m(g.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
                   return INFINITY;
                 }
               }
@@ -76,13 +76,14 @@ namespace SGPP {
               fGradient(fGradient),
               gGradient(gGradient),
               mu(mu),
-              m(gGradient.getNumberOfConstraints()) {
+              m(gGradient.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x,
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  gradient.setAll(NAN);
                   return INFINITY;
                 }
               }
@@ -104,7 +105,7 @@ namespace SGPP {
                   value -= mu * std::log(-gx[i]);
 
                   for (size_t t = 0; t < d; t++) {
-                    gradient[t] -= mu * gradGx.get(i, t) / gx[i];
+                    gradient[t] -= mu * gradGx(i, t) / gx[i];
                   }
                 } else {
                   return INFINITY;
@@ -158,6 +159,8 @@ namespace SGPP {
 
         base::DataVector xNew(d);
 
+        base::DataVector gx(g.getNumberOfComponents());
+
         float_t mu = mu0;
 
         size_t breakIterationCounter = 0;
@@ -170,7 +173,6 @@ namespace SGPP {
         PenalizedObjectiveGradient fPenalizedGradient(
           fGradient, gGradient, mu);
 
-        // http://www-optima.amp.i.kyoto-u.ac.jp/member/student/hedar/Hedar_files/TestGO_files/Page3389.htm
         while (k < N) {
           fPenalized.setMu(mu);
           fPenalizedGradient.setMu(mu);
@@ -183,12 +185,14 @@ namespace SGPP {
 
           x = xNew;
           fx = f.eval(x);
+          g.eval(x, gx);
           k++;
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx) +
+            ", g(x) = " + gx.toString());
 
           mu *= rhoMuMinus;
 
@@ -207,10 +211,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;

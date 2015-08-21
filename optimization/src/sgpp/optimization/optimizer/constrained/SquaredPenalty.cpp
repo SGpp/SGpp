@@ -25,13 +25,13 @@ namespace SGPP {
               g(g),
               h(h),
               mu(mu),
-              mG(g.getNumberOfConstraints()),
-              mH(h.getNumberOfConstraints()) {
+              mG(g.getNumberOfComponents()),
+              mH(h.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
                   return INFINITY;
                 }
               }
@@ -88,14 +88,15 @@ namespace SGPP {
               gGradient(gGradient),
               hGradient(hGradient),
               mu(mu),
-              mG(gGradient.getNumberOfConstraints()),
-              mH(hGradient.getNumberOfConstraints()) {
+              mG(gGradient.getNumberOfComponents()),
+              mH(hGradient.getNumberOfComponents()) {
             }
 
             float_t eval(const base::DataVector& x,
                          base::DataVector& gradient) {
               for (size_t t = 0; t < d; t++) {
-                if ((x.get(t) < 0.0) || (x.get(t) > 1.0)) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  gradient.setAll(NAN);
                   return INFINITY;
                 }
               }
@@ -122,7 +123,7 @@ namespace SGPP {
                   value += mu * gxi * gxi;
 
                   for (size_t t = 0; t < d; t++) {
-                    gradient[t] += mu * 2.0 * gxi * gradGx.get(i, t);
+                    gradient[t] += mu * 2.0 * gxi * gradGx(i, t);
                   }
                 }
               }
@@ -132,7 +133,7 @@ namespace SGPP {
                 value += mu * hxi * hxi;
 
                 for (size_t t = 0; t < d; t++) {
-                  gradient[t] += mu * 2.0 * hxi * gradHx.get(i, t);
+                  gradient[t] += mu * 2.0 * hxi * gradHx(i, t);
                 }
               }
 
@@ -184,8 +185,8 @@ namespace SGPP {
         printer.printStatusBegin("Optimizing (Squared Penalty)...");
 
         const size_t d = f.getDimension();
-        const size_t mG = g.getNumberOfConstraints();
-        const size_t mH = h.getNumberOfConstraints();
+        const size_t mG = g.getNumberOfComponents();
+        const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
@@ -219,17 +220,18 @@ namespace SGPP {
 
           x = xNew;
           fx = f.eval(x);
+          g.eval(x, gx);
+          h.eval(x, hx);
           k++;
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx) +
+            ", g(x) = " + gx.toString() +
+            ", h(x) = " + hx.toString());
 
           mu *= rhoMuPlus;
-
-          g.eval(x, gx);
-          h.eval(x, hx);
 
           xNew.sub(x);
 
@@ -248,10 +250,6 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;
