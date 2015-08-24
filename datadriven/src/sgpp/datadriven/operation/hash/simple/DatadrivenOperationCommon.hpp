@@ -57,6 +57,7 @@ public:
         return this->subType;
     }
 
+    //TODO: change this to return a reference
     std::shared_ptr<base::ConfigurationParameters> getParameters() {
         return this->parameters;
     }

@@ -37,12 +37,12 @@ SGPP::base::DataVector& alpha, std::mt19937 mt, std::uniform_real_distribution<d
 
 int main(int argc, char** argv) {
 
-/*    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.readFromFile("StreamingOCL.cfg");
-    std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION") << std::endl;*/
+    /*    SGPP::base::OCLConfigurationParameters parameters;
+     parameters.readFromFile("StreamingOCL.cfg");
+     std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION") << std::endl;*/
 
     //  std::string fileName = "friedman2_90000.arff";
-  std::string fileName = "debugging.arff";
+    std::string fileName = "debugging.arff";
 
 //    std::string fileName = "friedman_4d.arff";
 //  std::string fileName = "friedman_10d.arff";
@@ -116,26 +116,25 @@ int main(int argc, char** argv) {
 
     std::cout << "duration: " << eval->getDuration() << std::endl;
 
-//  std::cout << "calculating comparison values..." << std::endl;
-//
-//  SGPP::base::OperationMultipleEval* evalCompare =
-//    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
-//
-//  SGPP::base::DataVector dataSizeVectorResultCompare(
-//    dataset.getNumberInstances());
-//  dataSizeVectorResultCompare.setAll(0.0);
-//
-//  evalCompare->mult(alpha, dataSizeVectorResultCompare);
-//
-//  double mse = 0.0;
-//
-//  for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-//    mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
-//           * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-//  }
-//
-//  mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-//  std::cout << "mse: " << mse << std::endl;
+    std::cout << "calculating comparison values..." << std::endl;
+
+    SGPP::base::OperationMultipleEval* evalCompare =
+    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+
+    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+    dataSizeVectorResultCompare.setAll(0.0);
+
+    evalCompare->mult(alpha, dataSizeVectorResultCompare);
+
+    double mse = 0.0;
+
+    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+        mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
+                * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    }
+
+    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+    std::cout << "mse: " << mse << std::endl;
 
 }
 

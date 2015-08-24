@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <sgpp/globaldef.hpp>
+
 //define required for clCreateCommandQueue on platforms that don't support OCL2.0 yet
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
