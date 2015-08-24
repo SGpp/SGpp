@@ -18,7 +18,7 @@ namespace SGPP {
       Halton
     };
 
-  } /* namespace op_factory */
+  } /* namespace quadrature */
 } /* namespace SGPP */
 
 #endif /* SAMPLERTYPES_HPP_ */
