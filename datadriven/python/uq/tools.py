@@ -164,7 +164,7 @@ def eval_linear(ppd, dim, norm_offset=0.0):
 
 def eval_fullGrid(level, dim, border=True):
     if border:
-        grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
+        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
     else:
         grid = Grid.createLinearGrid(dim)
 
