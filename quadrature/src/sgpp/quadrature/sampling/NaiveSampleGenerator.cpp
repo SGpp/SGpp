@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../sampling/NaiveSampleGenerator.hpp"
+#include "NaiveSampleGenerator.hpp"
 
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/globaldef.hpp>
