@@ -14,6 +14,9 @@
 #include <fstream>
 #include <iostream>
 
+#include <zlib.h>
+
+
 #include "test_datadrivenCommon.hpp"
 
 #include <sgpp/globaldef.hpp>
@@ -27,6 +30,65 @@
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestStreamingOCLMult)
+
+std::string uncompressFile(std::string fileName) {
+
+  gzFile inFileZ = gzopen(fileName.c_str(), "rb");
+
+  if (inFileZ == NULL) {
+    std::cout << "Error: Failed to gzopen file " << fileName << std::endl;
+    exit(0);
+  }
+
+  unsigned char unzipBuffer[8192];
+  unsigned int unzippedBytes;
+  std::vector<unsigned char> unzippedData;
+
+  while (true) {
+    unzippedBytes = gzread(inFileZ, unzipBuffer, 8192);
+
+    if (unzippedBytes > 0) {
+      for (size_t i = 0; i < unzippedBytes; i++) {
+        unzippedData.push_back(unzipBuffer[i]);
+      }
+    } else {
+      break;
+    }
+  }
+
+  gzclose(inFileZ);
+
+  std::stringstream convert;
+
+  for (size_t i = 0; i < unzippedData.size(); i++) {
+    convert << unzippedData[i];
+  }
+
+  return convert.str();
+}
+
+void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
+SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
+SGPP::base::DataVector& alpha) {
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1, 100);
+
+    for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
+        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alpha,
+                adaptConfig.noPoints_, adaptConfig.threshold_);
+        gridGen.refine(myRefineFunc);
+        size_t oldSize = alpha.getSize();
+        alpha.resize(grid.getSize());
+
+        for (size_t j = oldSize; j < alpha.getSize(); j++) {
+            alpha[j] = dist(mt);
+        }
+
+        delete myRefineFunc;
+    }
+}
 
 double compareToReference(std::string fileName, size_t level, SGPP::base::AdpativityConfiguration adaptConfig,
 SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
@@ -45,8 +107,8 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
     gridGen->regular(level);
-//    BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
-//    BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
+    BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
+    BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
 
     SGPP::base::DataVector alpha(gridStorage->size());
 
@@ -104,7 +166,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     }
 
     mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-    BOOST_TEST_MESSAGE("fileName: " << fileName << "mse: " << mse);
+    BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
     return mse;
 }
 
@@ -115,7 +177,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
 
-    uint32_t level = 6;
+    uint32_t level = 5;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -131,7 +193,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
     parameters.set("MAX_DEVICES", "1");
 
@@ -166,7 +228,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("MAX_DEVICES", "1");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
@@ -204,7 +266,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -239,7 +301,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("MAX_DEVICES", "1");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
@@ -275,7 +337,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("MAX_DEVICES", "1");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
@@ -305,14 +367,13 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(

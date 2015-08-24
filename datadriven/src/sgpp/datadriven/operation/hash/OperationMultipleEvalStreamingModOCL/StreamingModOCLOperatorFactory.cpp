@@ -20,8 +20,9 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
     if (configuration.getParameters().operator bool()) {
-        parameters = std::static_pointer_cast<base::OCLConfigurationParameters>(configuration.getParameters()->clone());
+        parameters = std::dynamic_pointer_cast<base::OCLConfigurationParameters>(configuration.getParameters()->clone());
     } else {
+        parameters = std::make_shared<base::OCLConfigurationParameters>();
         parameters->set("KERNEL_USE_LOCAL_MEMORY", "true");
         parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
         parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");

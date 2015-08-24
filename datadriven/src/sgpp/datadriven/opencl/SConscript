@@ -4,6 +4,7 @@ import fnmatch
 Import('env')
 
 objs = []
+
 if env['USE_OCL']:
   for currentFolder, subdirNames, fileNames in os.walk("."):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):

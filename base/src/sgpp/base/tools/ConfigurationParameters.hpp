@@ -21,7 +21,6 @@ namespace base {
 class ConfigurationParameters {
 protected:
     std::map<std::string, std::string> parameters;
-    bool useDefaults;
 public:
     ConfigurationParameters();
 
@@ -29,8 +28,6 @@ public:
             std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
 
     virtual ~ConfigurationParameters();
-
-    bool doUseDefaults();
 
     void set(const std::string key, std::string value);
 

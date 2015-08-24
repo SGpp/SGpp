@@ -19,10 +19,12 @@ namespace datadriven {
 base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(base::Grid& grid, base::DataMatrix& dataset,
 SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
 
-    std::shared_ptr<base::OCLConfigurationParameters> parameters = std::static_pointer_cast<
-            base::OCLConfigurationParameters>(configuration.getParameters()->clone());
+    std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
-    if (parameters->doUseDefaults()) {
+    if (configuration.getParameters().operator bool()) {
+        parameters = std::dynamic_pointer_cast<base::OCLConfigurationParameters>(configuration.getParameters()->clone());
+    } else {
+        parameters = std::make_shared<base::OCLConfigurationParameters>();
         parameters->set("KERNEL_USE_LOCAL_MEMORY", "false");
         parameters->set("KERNEL_STORE_DATA", "array");
         parameters->set("KERNEL_MAX_DIM_UNROLL", "10");
@@ -30,7 +32,6 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
         parameters->set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
         parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
-
         parameters->readFromFile("StreamingOCLMultiPlatform.cfg");
     }
 

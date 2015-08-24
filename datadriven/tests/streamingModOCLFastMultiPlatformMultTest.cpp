@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
             "datadriven/tests/data/friedman_10d.arff.gz" };
 
-    uint32_t level = 4;
+    uint32_t level = 1;
     //  uint32_t level = 3;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
@@ -115,14 +115,15 @@ BOOST_AUTO_TEST_CASE(Simple) {
     adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
+    parameters.set("OCL_MANAGER_VERBOSE", "true");
+    parameters.set("VERBOSE", "true");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_TRANS_GRID_BLOCK_SIZE", "1");
     parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "1");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -160,7 +161,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "2");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -198,7 +199,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "2");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -273,7 +274,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "1");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -310,7 +311,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "2");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -347,7 +348,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "2");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
     parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(

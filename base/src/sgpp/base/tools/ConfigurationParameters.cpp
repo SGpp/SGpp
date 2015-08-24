@@ -17,12 +17,12 @@
 namespace SGPP {
 namespace base {
 
-ConfigurationParameters::ConfigurationParameters(): useDefaults(true) {
+ConfigurationParameters::ConfigurationParameters() {
 
 }
 
 ConfigurationParameters::ConfigurationParameters(std::string fileName,
-        std::map<std::string, std::string> defaultParameters): useDefaults(true) {
+        std::map<std::string, std::string> defaultParameters) {
 
     this->readFromMap(defaultParameters);
 
@@ -33,12 +33,7 @@ ConfigurationParameters::~ConfigurationParameters() {
 
 }
 
-bool ConfigurationParameters::doUseDefaults() {
-    return this->useDefaults;
-}
-
 void ConfigurationParameters::set(std::string key, std::string value) {
-    this->useDefaults = false;
     this->parameters[key] = value;
 }
 
@@ -90,14 +85,12 @@ std::vector<std::string> ConfigurationParameters::split(const std::string& s, ch
 }
 
 void ConfigurationParameters::readFromMap(std::map<std::string, std::string> &parametersMap) {
-    this->useDefaults = false;
     for (auto pair : parametersMap) {
         this->parameters[pair.first] = pair.second;
     }
 }
 
 void ConfigurationParameters::readFromFile(std::string fileName) {
-    this->useDefaults = false;
     std::ifstream file(fileName);
 
     if (file.is_open()) {
