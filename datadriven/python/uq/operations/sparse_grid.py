@@ -23,7 +23,7 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
 
     # print gridType, deg
     if deg > 1:
-        if gridType == "linearTuncatedBoundary" or \
+        if gridType == "linearTruncatedBoundary" or \
            gridType == "polyTruncatedBoundary":
             return Grid.createPolyTruncatedBoundaryGrid(dim, deg)
         elif gridType == "linearBoundary":
