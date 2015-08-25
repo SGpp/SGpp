@@ -30,14 +30,18 @@
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
 #define OUT_FILENAME "results.csv"
-#define LEVEL 5
-#define REFINEMENT_STEPS 20
+
+std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
+        "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
+
+std::vector<size_t> levels = { 11, 7, 9 };
+std::vector<size_t> refinementSteps = { 40, 30, 40 };
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
         BOOST_TEST_MESSAGE("setup fixture");
         outFile.open(OUT_FILENAME);
-        outFile << "dataset, kernel, duration" << std::endl;
+        outFile << "dataset, kernel, refinedGridSize, duration" << std::endl;
     }
     ~HPCSE2015Fixture() {
         BOOST_TEST_MESSAGE("teardown fixture");
@@ -46,9 +50,12 @@ struct HPCSE2015Fixture {
     std::ofstream outFile;
 } logger;
 
+static size_t refinedGridSize = 0;
+
 BOOST_AUTO_TEST_SUITE(HPCSE2015)
 
-double getRuntime(std::string fileName, size_t level, SGPP::base::AdpativityConfiguration adaptConfig,
+void getRuntime(const std::string &kernel, std::string &fileName, size_t level,
+SGPP::base::AdpativityConfiguration adaptConfig,
 SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     std::string content = uncompressFile(fileName);
@@ -71,6 +78,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     doRandomRefinements(adaptConfig, *grid, *gridGen);
 
     BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->size());
+    refinedGridSize = gridStorage->size();
 
     SGPP::base::DataVector alpha(gridStorage->size());
 
@@ -98,20 +106,16 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     BOOST_TEST_MESSAGE("duration: " << elapsed_seconds.count());
 
-    return elapsed_seconds.count();
+    logger.outFile << fileName << "," << kernel << "," << refinedGridSize << "," << elapsed_seconds.count()
+            << std::endl;
+
 }
 
 BOOST_AUTO_TEST_CASE(StreamingDefault) {
 
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-            "datadriven/tests/data/friedman_10d.arff.gz" };
-
-    uint32_t level = LEVEL;
-
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = REFINEMENT_STEPS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -130,23 +134,17 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
 
-    for (std::string &fileName : fileNames) {
-        double duration = getRuntime(fileName, level, adaptConfig, configuration);
-        logger.outFile << fileName << "," << "STREAMING::DEFAULT" << "," << duration << std::endl;
+    for (size_t i = 0; i < fileNames.size(); i++) {
+        adaptConfig.numRefinements_ = refinementSteps[i];
+        getRuntime("STREAMING::DEFAULT", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
 
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-            "datadriven/tests/data/friedman_10d.arff.gz" };
-
-    uint32_t level = LEVEL;
-
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = REFINEMENT_STEPS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -165,23 +163,17 @@ BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
     SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
     SGPP::datadriven::OperationMultipleEvalSubType::COMBINED, parameters);
 
-    for (std::string &fileName : fileNames) {
-        double duration = getRuntime(fileName, level, adaptConfig, configuration);
-        logger.outFile << fileName << "," << "SUBSPACELINEAR::COMBINED" << "," << duration << std::endl;
+    for (size_t i = 0; i < fileNames.size(); i++) {
+        adaptConfig.numRefinements_ = refinementSteps[i];
+        getRuntime("SUBSPACELINEAR::COMBINED", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingBase) {
 
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-            "datadriven/tests/data/friedman_10d.arff.gz" };
-
-    uint32_t level = LEVEL;
-
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = REFINEMENT_STEPS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -200,23 +192,17 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
     SGPP::datadriven::OperationMultipleEvalType::DEFAULT,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
 
-    for (std::string &fileName : fileNames) {
-        double duration = getRuntime(fileName, level, adaptConfig, configuration);
-        logger.outFile << fileName << "," << "DEFAULT::DEFAULT" << "," << duration << std::endl;
+    for (size_t i = 0; i < fileNames.size(); i++) {
+        adaptConfig.numRefinements_ = refinementSteps[i];
+        getRuntime("DEFAULT::DEFAULT", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-            "datadriven/tests/data/friedman_10d.arff.gz" };
-
-    uint32_t level = LEVEL;
-
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = REFINEMENT_STEPS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -227,17 +213,19 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "Intel(R) OpenCL");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("INTERNAL_PRECISION", "float");
+    parameters.set("SELECT_SPECIFIC_DEVICE", "2");
     parameters.set("MAX_DEVICES", "1");
+    parameters.set("VERBOSE", "true");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
-    for (std::string &fileName : fileNames) {
-        double duration = getRuntime(fileName, level, adaptConfig, configuration);
-        logger.outFile << fileName << "," << "STREAMING::OCL" << "," << duration << std::endl;
+    for (size_t i = 0; i < fileNames.size(); i++) {
+        adaptConfig.numRefinements_ = refinementSteps[i];
+        getRuntime("STREAMING::OCL", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
