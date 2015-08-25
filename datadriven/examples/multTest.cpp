@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 //  std::string fileName = "friedman_10d.arff";
 //  std::string fileName = "DR5_train.arff";
 
-    uint32_t level = 1;
+    uint32_t level = 5;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
         if (strcmp(argv[1], "streaming") == 0) {
             configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+            SGPP::datadriven::OperationMultipleEvalSubType::OCLMP);
             std::cout << "EvalType::STREAMING" << std::endl;
         }
     }

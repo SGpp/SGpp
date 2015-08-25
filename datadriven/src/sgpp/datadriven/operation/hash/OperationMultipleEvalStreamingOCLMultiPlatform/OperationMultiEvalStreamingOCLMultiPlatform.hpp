@@ -6,6 +6,7 @@
 #pragma once
 
 #include <omp.h>
+#include <chrono>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
@@ -37,7 +38,7 @@ protected:
 
     float_t duration;
 
-    std::shared_ptr<base::OCLManager> manager;
+    std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     StreamingOCLMultiPlatformKernelImpl<T> *kernel;
 public:
 
@@ -55,7 +56,7 @@ public:
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        this->manager = std::make_shared<base::OCLManager>(parameters);
+        this->manager = std::make_shared<base::OCLManagerMultiPlatform>(parameters);
 
         this->dims = dataset.getNcols(); //be aware of transpose!
         this->kernel = new StreamingOCLMultiPlatformKernelImpl<T>(dims, this->manager, parameters);
@@ -117,8 +118,16 @@ public:
             resultArray[i] = 0.0;
         }
 
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        start = std::chrono::system_clock::now();
         this->kernel->mult(this->level, this->index, this->gridSize, this->kernelDataset, this->datasetSize, alphaArray,
                 resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+        end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        if (parameters->getAsBoolean("VERBOSE")) {
+            std::cout << "duration mult streaming oclmp: " << elapsed_seconds.count() << std::endl;
+        }
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -155,8 +164,16 @@ public:
             resultArray[i] = 0.0;
         }
 
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        start = std::chrono::system_clock::now();
         this->kernel->multTranspose(this->level, this->index, this->gridSize, this->kernelDataset,
                 this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+        end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        if (parameters->getAsBoolean("VERBOSE")) {
+            std::cout << "duration multTranspose streaming oclmp: " << elapsed_seconds.count() << std::endl;
+        }
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];

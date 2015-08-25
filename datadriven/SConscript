@@ -90,10 +90,22 @@ if env['COMPILE_BOOST_TESTS']:
         fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
         test = test_env.Program(fileName, testObjects)
         test_env.Requires(test, libInstall)
-        print "file to run:", fileName
         if env['RUN_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
+            
+# build unit tests
+if env['COMPILE_BOOST_PERFORMANCE_TESTS']:
+    test_env = env.Clone()
+    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])
+    testObjects = []
+    for fileName in os.listdir("performanceTests"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            testObjects += [test_env.Object(source=os.path.join("performanceTests", fileName))]
+    if len(testObjects) > 0:
+        fileName = os.path.join("performanceTests", "test_{}_performance".format(moduleName))
+        test = test_env.Program(fileName, testObjects)
+        test_env.Requires(test, libInstall)
 
 Import('libraryTargetList')
 Import('installTargetList')
