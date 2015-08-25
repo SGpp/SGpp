@@ -11,11 +11,11 @@
 #include <limits>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../opencl/LinearLoadBalancer.hpp"
-#include "../../../opencl/OCLClonedBuffer.hpp"
+#include "../../../opencl/LinearLoadBalancerMultiPlatform.hpp"
+#include "../../../opencl/OCLClonedBufferMultiPlatform.hpp"
 #include "../../../opencl/OCLConfigurationParameters.hpp"
-#include "../../../opencl/OCLManager.hpp"
-#include "../../../opencl/OCLStretchedBuffer.hpp"
+#include "../../../opencl/OCLManagerMultiPlatform.hpp"
+#include "../../../opencl/OCLStretchedBufferMultiPlatform.hpp"
 #include "StreamingOCLMultiPlatformKernelSourceBuilder.hpp"
 
 namespace SGPP {
@@ -27,110 +27,163 @@ private:
     size_t dims;
 
     cl_int err;
-    cl_device_id* device_ids;
-    cl_uint num_devices;
-    cl_context context;
-    cl_command_queue* command_queue;
+//    cl_device_id* device_ids;
+//    cl_uint num_devices;
+//    cl_context context;
+//    cl_command_queue* command_queue;
 
-    base::OCLClonedBuffer deviceData;
-    base::OCLClonedBuffer deviceLevel;
-    base::OCLClonedBuffer deviceIndex;
+    base::OCLClonedBufferMultiPlatform deviceData;
+    base::OCLClonedBufferMultiPlatform deviceLevel;
+    base::OCLClonedBufferMultiPlatform deviceIndex;
 
     // use pinned memory (on host and device) to speed up data transfers from/to GPU
-    base::OCLStretchedBuffer deviceGrid;
-    real_type* hostGrid;
-    base::OCLStretchedBuffer deviceTemp;
-    real_type* hostTemp;
+    base::OCLStretchedBufferMultiPlatform deviceGrid;
+//    real_type* hostGrid;
+    base::OCLStretchedBufferMultiPlatform deviceTemp;
+//    real_type* hostTemp;
 
-    cl_kernel* kernel_multTrans;
-    cl_kernel* kernel_mult;
+    std::map<cl_platform_id, cl_kernel *> kernelsMultTrans;
+    std::map<cl_platform_id, cl_kernel *> kernelsMult;
 
-    double* deviceTimingsMult;
-    double* deviceTimingsMultTranspose;
+    std::map<cl_platform_id, double *> deviceTimingsMult;
+    std::map<cl_platform_id, double *> deviceTimingsMultTranspose;
 
     StreamingOCLMultiPlatformKernelSourceBuilder kernelSourceBuilder;
-    std::shared_ptr<base::OCLManager> manager;
+    std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
-    base::LinearLoadBalancer multLoadBalancer;
-    base::LinearLoadBalancer multTransposeLoadBalancer;
+    base::LinearLoadBalancerMultiPlatform multLoadBalancer;
+    base::LinearLoadBalancerMultiPlatform multTransposeLoadBalancer;
+
+    bool multKernelsBuilt = false;
+    bool multTransKernelsBuilt = false;
 
 public:
 
-    StreamingOCLMultiPlatformKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
+    StreamingOCLMultiPlatformKernelImpl(size_t dims, std::shared_ptr<base::OCLManagerMultiPlatform> manager,
             std::shared_ptr<base::OCLConfigurationParameters> parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
                     this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
 
         this->dims = dims;
-        this->num_devices = manager->num_devices;
-        this->deviceTimingsMult = new double[this->num_devices];
-        this->deviceTimingsMultTranspose = new double[this->num_devices];
+//        this->num_devices = manager->num_devices;
+//        this->deviceTimingsMult = new double[this->num_devices];
+//        this->deviceTimingsMultTranspose = new double[this->num_devices];
+//
+//        for (size_t i = 0; i < this->num_devices; i++) {
+//            //initialize with same timing to enforce equal problem sizes in the beginning
+//            this->deviceTimingsMult[i] = 1.0;
+//            this->deviceTimingsMultTranspose[i] = 1.0;
+//        }
+//
+//        this->context = manager->context;
+//        this->command_queue = manager->command_queue;
+//        this->device_ids = manager->device_ids;
+//        this->err = CL_SUCCESS;
+//
+//        this->hostGrid = nullptr;
+//        this->hostTemp = nullptr;
+//
+//        this->kernel_mult = new cl_kernel[num_devices];
+//        this->kernel_multTrans = new cl_kernel[num_devices];
+//
+//        // initialize arrays
+//        for (size_t i = 0; i < num_devices; i++) {
+//            this->kernel_mult[i] = nullptr;
+//            this->kernel_multTrans[i] = nullptr;
+//        }
 
-        for (size_t i = 0; i < this->num_devices; i++) {
-            //initialize with same timing to enforce equal problem sizes in the beginning
-            this->deviceTimingsMult[i] = 1.0;
-            this->deviceTimingsMultTranspose[i] = 1.0;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            this->deviceTimingsMult[platform.platformId] = new double[platform.deviceCount];
+            this->deviceTimingsMultTranspose[platform.platformId] = new double[platform.deviceCount];
+
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                //initialize with same timing to enforce equal problem sizes in the beginning
+                this->deviceTimingsMult[platform.platformId][i] = 1.0;
+                this->deviceTimingsMultTranspose[platform.platformId][i] = 1.0;
+            }
         }
 
-        this->context = manager->context;
-        this->command_queue = manager->command_queue;
-        this->device_ids = manager->device_ids;
         this->err = CL_SUCCESS;
 
-        this->hostGrid = nullptr;
-        this->hostTemp = nullptr;
-
-        this->kernel_mult = new cl_kernel[num_devices];
-        this->kernel_multTrans = new cl_kernel[num_devices];
-
-        // initialize arrays
-        for (size_t i = 0; i < num_devices; i++) {
-            this->kernel_mult[i] = nullptr;
-            this->kernel_multTrans[i] = nullptr;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
+            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
+            // initialize arrays
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                this->kernelsMult[platform.platformId][i] = nullptr;
+                this->kernelsMultTrans[platform.platformId][i] = nullptr;
+            }
         }
     }
 
     ~StreamingOCLMultiPlatformKernelImpl() {
+//        releaseDataBuffers();
+//        releaseGridBuffers();
+//
+//        for (size_t i = 0; i < num_devices; i++) {
+//            if (kernel_mult[i]) {
+//                clReleaseKernel(kernel_mult[i]);
+//                kernel_mult[i] = nullptr;
+//            }
+//
+//            if (kernel_multTrans[i]) {
+//                clReleaseKernel(kernel_multTrans[i]);
+//                kernel_multTrans[i] = nullptr;
+//            }
+//        }
+//
+//        // release command queue
+//        for (size_t i = 0; i < num_devices; i++) {
+//            if (command_queue[i]) {
+//                clReleaseCommandQueue(command_queue[i]);
+//            }
+//        }
+//
+//        // release context
+//        clReleaseContext(context);
+//
+//        delete[] this->command_queue;
+//
+//        this->deviceData.freeBuffer();
+//        this->deviceLevel.freeBuffer();
+//        this->deviceIndex.freeBuffer();
+//
+//        delete[] this->kernel_mult;
+//        delete[] this->kernel_multTrans;
+//
+//        delete[] this->deviceTimingsMult;
+//        delete[] this->deviceTimingsMultTranspose;
+//
+//        delete[] this->device_ids;
+
         releaseDataBuffers();
         releaseGridBuffers();
 
-        for (size_t i = 0; i < num_devices; i++) {
-            if (kernel_mult[i]) {
-                clReleaseKernel(kernel_mult[i]);
-                kernel_mult[i] = nullptr;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                if (kernelsMult[platform.platformId][i]) {
+                    clReleaseKernel(kernelsMult[platform.platformId][i]);
+                    kernelsMult[platform.platformId][i] = nullptr;
+                }
+
+                if (kernelsMultTrans[platform.platformId][i]) {
+                    clReleaseKernel(kernelsMultTrans[platform.platformId][i]);
+                    kernelsMultTrans[platform.platformId][i] = nullptr;
+                }
             }
 
-            if (kernel_multTrans[i]) {
-                clReleaseKernel(kernel_multTrans[i]);
-                kernel_multTrans[i] = nullptr;
-            }
+            delete[] this->kernelsMult[platform.platformId];
+            delete[] this->kernelsMultTrans[platform.platformId];
         }
-
-        // release command queue
-        for (size_t i = 0; i < num_devices; i++) {
-            if (command_queue[i]) {
-                clReleaseCommandQueue(command_queue[i]);
-            }
-        }
-
-        // release context
-        clReleaseContext(context);
-
-        delete[] this->command_queue;
 
         this->deviceData.freeBuffer();
         this->deviceLevel.freeBuffer();
         this->deviceIndex.freeBuffer();
 
-        delete[] this->kernel_mult;
-        delete[] this->kernel_multTrans;
-
         delete[] this->deviceTimingsMult;
         delete[] this->deviceTimingsMultTranspose;
-
-        delete[] this->device_ids;
     }
 
     void resetKernel() {
@@ -149,17 +202,25 @@ public:
 
         double time = 0.0;
 
-        if (kernel_mult[0] == nullptr) {
+        if (!multKernelsBuilt) {
             std::string program_src = kernelSourceBuilder.generateSourceMult();
-            manager->buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel_mult);
+            manager->buildKernel(program_src, "multOCL", kernelsMult);
+            multKernelsBuilt = true;
         }
 
         initOCLBuffers(level, index, gridSize, dataset, datasetSize);
         initParams(alpha, gridSize, result, datasetSize);
 
         // determine best fit
-        size_t* gpu_start_index_data = new size_t[num_devices];
-        size_t* gpu_end_index_data = new size_t[num_devices];
+        std::map<cl_platform_id, size_t *> gpu_start_index_data;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            gpu_start_index_data[platform.platformId] = new size_t[platform.deviceCount];
+        }
+
+        std::map<cl_platform_id, size_t *> gpu_end_index_data;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            gpu_end_index_data[platform.platformId] = new size_t[platform.deviceCount];
+        }
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
@@ -173,116 +234,177 @@ public:
         cl_uint gpu_end_grid = (cl_uint) end_index_grid;
         //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
-        for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i] / (cl_uint) dataBlockingSize;
-            cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i] / (cl_uint) dataBlockingSize;
-            //      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[platform.platformId][i]
+                        / (cl_uint) dataBlockingSize;
+                cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[platform.platformId][i]
+                        / (cl_uint) dataBlockingSize;
 
-            if (gpu_end_data > gpu_start_data) {
-                if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), this->deviceGrid.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 5, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
-                        clSetKernelArg(kernel_mult[i], 6, sizeof(cl_uint), &gpu_start_grid) ||
-                        clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &gpu_end_grid) != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                cl_kernel &kernel = kernelsMult[platform.platformId][i];
+
+                if (gpu_end_data > gpu_start_data) {
+                    err = clSetKernelArg(kernel, 0, sizeof(cl_mem),
+                            this->deviceLevel.getBuffer(platform.platformId, i));
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 1, sizeof(cl_mem),
+                            this->deviceIndex.getBuffer(platform.platformId, i));
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 2, sizeof(cl_mem),
+                            this->deviceData.getBuffer(platform.platformId, i));
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 3, sizeof(cl_mem),
+                            this->deviceGrid.getBuffer(platform.platformId, i));
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 4, sizeof(cl_mem),
+                            this->deviceTemp.getBuffer(platform.platformId, i));
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 5, sizeof(cl_uint), &clResultSize); // resultsize == number of entries in dataset
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 6, sizeof(cl_uint), &gpu_start_grid);
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+                    err |= clSetKernelArg(kernel, 7, sizeof(cl_uint), &gpu_end_grid);
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
                 }
             }
         }
 
-        cl_event* clTimings = new cl_event[num_devices];
+        std::map<cl_platform_id, cl_event *> clTimings;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            clTimings[platform.platformId] = new cl_event[platform.deviceCount];
+        }
 
         // enqueue kernel
         size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
-        size_t active_devices = 0;
 
-        for (size_t i = 0; i < num_devices; i++) {
-            size_t rangeSize = (gpu_end_index_data[i] / dataBlockingSize)
-                    - (gpu_start_index_data[i] / dataBlockingSize);
+        std::map<cl_platform_id, size_t> platformTransferringDevice;
 
-            if (rangeSize > 0) {
+        bool allDistributed = false;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            if (allDistributed) {
+                platformTransferringDevice[platform.platformId] = 0;
+                continue;
+            }
+            size_t activeDevices = 0;
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                size_t rangeSize = (gpu_end_index_data[platform.platformId][i] / dataBlockingSize)
+                        - (gpu_start_index_data[platform.platformId][i] / dataBlockingSize);
 
-                size_t dataOffset = gpu_start_index_data[i] / dataBlockingSize;
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &dataOffset, &rangeSize, &local, 0,
-                        nullptr, &(clTimings[i]));
+                if (rangeSize > 0) {
 
-                if (active_devices != i) {
-                    std::stringstream errorString;
-                    errorString
-                            << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may handle 0 entries. Synchronization will be not correct."
-                            << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
-                }
+                    size_t dataOffset = gpu_start_index_data[platform.platformId][i] / dataBlockingSize;
+                    err = clEnqueueNDRangeKernel(platform.commandQueues[i], kernelsMult[platform.platformId][i], 1,
+                            &dataOffset, &rangeSize, &local, 0, nullptr, &(clTimings[platform.platformId][i]));
 
-                active_devices++;
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
 
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    activeDevices++;
+                } else {
+                    allDistributed = true;
+                    break;
                 }
             }
+            platformTransferringDevice[platform.platformId] = activeDevices;
         }
 
+        //synchronization is realized through inorder queue in read
+
         deviceTemp.readFromBuffer(gpu_start_index_data, gpu_end_index_data);
+        deviceTemp.combineBuffer(gpu_start_index_data, gpu_end_index_data, manager->platforms[0].platformId);
+
+        real_type *hostTemp = (real_type *) deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
 
         for (size_t i = start_index_data; i < end_index_data; i++) {
             result[i] = hostTemp[i];
         }
 
         // determine kernel execution time
-        for (size_t i = 0; i < num_devices; i++) {
-            double tmpTime;
-            cl_ulong startTime, endTime;
-            startTime = endTime = 0;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                double tmpTime;
+                cl_ulong startTime, endTime;
+                startTime = endTime = 0;
 
-            if (gpu_end_index_data[i] > gpu_start_index_data[i]) {
-                err = clGetEventProfilingInfo(clTimings[i],
-                CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, nullptr);
+                if (gpu_end_index_data[platform.platformId][i] > gpu_start_index_data[platform.platformId][i]) {
+                    err = clGetEventProfilingInfo(clTimings[platform.platformId][i],
+                    CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, nullptr);
 
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString
-                            << "OCL Error: Failed to read start-time from command queue (or crash in mult)! Error code: "
-                            << err << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString
+                                << "OCL Error: Failed to read start-time from command queue (or crash in mult)! Error code: "
+                                << err << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+
+                    err = clGetEventProfilingInfo(clTimings[platform.platformId][i],
+                    CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
+
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
+                                << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
                 }
 
-                err = clGetEventProfilingInfo(clTimings[i],
-                CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
+                tmpTime = (double) (endTime - startTime);
+                tmpTime *= 1e-9;
+                this->deviceTimingsMult[platform.platformId][i] = tmpTime;
 
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
-                            << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                if (tmpTime > time) {
+                    time = tmpTime;
                 }
             }
 
-            tmpTime = (double) (endTime - startTime);
-            tmpTime *= 1e-9;
-            this->deviceTimingsMult[i] = tmpTime;
-
-            if (tmpTime > time) {
-                time = tmpTime;
+            // clean up
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                if (gpu_end_index_data[platform.platformId][i] > gpu_start_index_data[platform.platformId][i]) {
+                    clReleaseEvent(clTimings[platform.platformId][i]);
+                }
             }
+
+            delete[] gpu_start_index_data[platform.platformId];
+            delete[] gpu_end_index_data[platform.platformId];
+
+            delete[] clTimings[platform.platformId];
         }
-
-        // clean up
-        for (size_t i = 0; i < num_devices; i++) {
-            if (gpu_end_index_data[i] > gpu_start_index_data[i]) {
-                clReleaseEvent(clTimings[i]);
-            }
-        }
-
-        delete[] gpu_start_index_data;
-        delete[] gpu_end_index_data;
-
-        delete[] clTimings;
 
         return time;
     }
@@ -299,18 +421,27 @@ public:
         double time = 0.0;
         size_t transGridBlockingSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
-        if (kernel_multTrans[0] == nullptr) {
+        if (!multTransKernelsBuilt) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
-            manager->buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel_multTrans);
+            manager->buildKernel(program_src, "multTransOCL", kernelsMultTrans);
+            multTransKernelsBuilt = true;
         }
 
         initOCLBuffers(level, index, gridSize, dataset, datasetSize);
         initParams(result, gridSize, source, datasetSize);
 
         // determine best fit
-        size_t* gpu_start_index_grid = new size_t[num_devices];
-        size_t* gpu_end_index_grid = new size_t[num_devices];
+        std::map<cl_platform_id, size_t *> gpu_start_index_grid;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            gpu_start_index_grid[platform.platformId] = new size_t[platform.deviceCount];
+        }
 
+        std::map<cl_platform_id, size_t *> gpu_end_index_grid;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            gpu_end_index_grid[platform.platformId] = new size_t[platform.deviceCount];
+        }
+
+        std::cout << "overall start: " << start_index_grid << " end: " << end_index_grid << std::endl;
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
                 parameters->getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid,
@@ -321,124 +452,150 @@ public:
         cl_uint gpu_start_data = (cl_uint) start_index_data;
         cl_uint gpu_end_data = (cl_uint) end_index_data;
 
-        //    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[platform.platformId][i]
+                        / (cl_uint) transGridBlockingSize;
+                cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[platform.platformId][i]
+                        / (cl_uint) transGridBlockingSize;
 
-        for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i];
-            cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
-            //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
+                std::cout << "device start: " << gpu_start_grid << " end: "
+                        << gpu_end_grid << std::endl;
 
-            if (gpu_end_grid > gpu_start_grid) {
-                //TODO: add this as argument for multi-platform support
-                //size_t resultOffset = gpu_start_index_grid[i] / gridBlockingSize; //based on work groups, cannot be transmitted through global_work_offset mechanism
+                cl_kernel &kernel = kernelsMultTrans[platform.platformId][i];
 
-                if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), this->deviceGrid.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
-                        clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_uint), &gpu_start_data) ||
-                        clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &gpu_end_data) != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                if (gpu_end_grid > gpu_start_grid) {
+                    err = clSetKernelArg(kernel, 0, sizeof(cl_mem),
+                            this->deviceLevel.getBuffer(platform.platformId, i));
+                    err |= clSetKernelArg(kernel, 1, sizeof(cl_mem),
+                            this->deviceIndex.getBuffer(platform.platformId, i));
+                    err |= clSetKernelArg(kernel, 2, sizeof(cl_mem),
+                            this->deviceData.getBuffer(platform.platformId, i));
+                    err |= clSetKernelArg(kernel, 3, sizeof(cl_mem),
+                            this->deviceTemp.getBuffer(platform.platformId, i));
+                    err |= clSetKernelArg(kernel, 4, sizeof(cl_mem),
+                            this->deviceGrid.getBuffer(platform.platformId, i));
+                    err |= clSetKernelArg(kernel, 5, sizeof(cl_uint), &clSourceSize); // sourceSize == number of entries in dataset
+                    err |= clSetKernelArg(kernel, 6, sizeof(cl_uint), &gpu_start_data);
+                    err |= clSetKernelArg(kernel, 7, sizeof(cl_uint), &gpu_end_data);
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
                 }
             }
+
         }
 
-        cl_event* clTimings = new cl_event[num_devices];
+        std::map<cl_platform_id, cl_event *> clTimings;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            clTimings[platform.platformId] = new cl_event[platform.deviceCount];
+        }
 
         // enqueue kernels
         size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
-        size_t active_devices = 0;
 
-        for (size_t i = 0; i < num_devices; i++) {
-            size_t rangeSize = (gpu_end_index_grid[i] / transGridBlockingSize)
-                    - (gpu_start_index_grid[i] / transGridBlockingSize);
-            size_t offset = gpu_start_index_grid[i] / transGridBlockingSize;
+        std::map<cl_platform_id, size_t> platformTransferringDevice;
 
-            if (rangeSize > 0) {
-                //      std::cout << "enqueuing device: " << i << std::endl;
-//                std::cout << "number of threads on device " << "\"" << i << "\": " << rangeSize << std::endl;
+        bool allDistributed = false;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            if (allDistributed) {
+                platformTransferringDevice[platform.platformId] = 0;
+                continue;
+            }
+            size_t activeDevices = 0;
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                size_t gpuEndGrid = gpu_end_index_grid[platform.platformId][i];
+                size_t gpuStartGrid = gpu_start_index_grid[platform.platformId][i];
+                size_t rangeSize = (gpuEndGrid / transGridBlockingSize) - (gpuStartGrid / transGridBlockingSize);
 
-                //TODO: check that all variables that are submitted by reference survive the loop
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &offset, &rangeSize, &local, 0,
-                        nullptr, &(clTimings[i]));
+                if (rangeSize > 0) {
+                    std::cout << "offset: " << gpu_start_index_grid[platform.platformId][i] << std::endl;
+                    std::cout << "range: " << rangeSize << std::endl;
 
-                if (active_devices != i) {
-                    std::stringstream errorString;
-                    errorString
-                            << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may handle 0 entries. Synchronization will be not correct."
-                            << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
-                }
+                    err = clEnqueueNDRangeKernel(platform.commandQueues[i], kernelsMultTrans[platform.platformId][i], 1,
+                            &gpu_start_index_grid[platform.platformId][i], &rangeSize, &local, 0, nullptr,
+                            &(clTimings[platform.platformId][i]));
 
-                active_devices++;
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
 
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    activeDevices++;
+                } else {
+                    allDistributed = true;
+                    break;
                 }
             }
+            platformTransferringDevice[platform.platformId] = activeDevices;
         }
 
+        //implicit synchonization in read due to inorder queue
+
         deviceGrid.readFromBuffer(gpu_start_index_grid, gpu_end_index_grid);
+        deviceGrid.combineBuffer(gpu_start_index_grid, gpu_end_index_grid, manager->platforms[0].platformId);
+
+        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
 
         for (size_t i = start_index_grid; i < end_index_grid; i++) {
+//            printf("result i=%lu: %lf\n",i, hostGrid[i]);
             result[i] = hostGrid[i];
         }
 
         // determine kernel execution time
-        for (size_t i = 0; i < num_devices; i++) {
-            double tmpTime;
-            cl_ulong startTime, endTime;
-            startTime = endTime = 0;
+        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                double tmpTime;
+                cl_ulong startTime, endTime;
+                startTime = endTime = 0;
 
-            if (gpu_end_index_grid[i] > gpu_start_index_grid[i]) {
-                err = clGetEventProfilingInfo(clTimings[i],
-                CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, nullptr);
+                if (gpu_end_index_grid[platform.platformId][i] > gpu_start_index_grid[platform.platformId][i]) {
+                    err = clGetEventProfilingInfo(clTimings[platform.platformId][i],
+                    CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &startTime, nullptr);
 
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString
-                            << "OCL Error: Failed to read start-time from command queue (or crash in multTranspose)! Error code: "
-                            << err << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString
+                                << "OCL Error: Failed to read start-time from command queue (or crash in multTranspose)! Error code: "
+                                << err << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
+
+                    err = clGetEventProfilingInfo(clTimings[platform.platformId][i],
+                    CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
+
+                    if (err != CL_SUCCESS) {
+                        std::stringstream errorString;
+                        errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
+                                << std::endl;
+                        throw SGPP::base::operation_exception(errorString.str());
+                    }
                 }
 
-                err = clGetEventProfilingInfo(clTimings[i],
-                CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &endTime, nullptr);
+                tmpTime = (double) (endTime - startTime);
+                tmpTime *= 1e-9;
+                this->deviceTimingsMultTranspose[platform.platformId][i] = tmpTime;
 
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
-                            << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                if (tmpTime > time) {
+                    time = tmpTime;
                 }
             }
 
-            tmpTime = (double) (endTime - startTime);
-            tmpTime *= 1e-9;
-            this->deviceTimingsMultTranspose[i] = tmpTime;
-
-            if (tmpTime > time) {
-                time = tmpTime;
+            // clean up
+            for (size_t i = 0; i < platform.deviceCount; i++) {
+                if (gpu_end_index_grid[platform.platformId][i] > gpu_start_index_grid[platform.platformId][i]) {
+                    clReleaseEvent(clTimings[platform.platformId][i]);
+                }
             }
+
+            delete[] gpu_start_index_grid[platform.platformId];
+            delete[] gpu_end_index_grid[platform.platformId];
+
+            delete[] clTimings[platform.platformId];
         }
-
-        // clean up
-        for (size_t i = 0; i < num_devices; i++) {
-            if (gpu_end_index_grid[i] > gpu_start_index_grid[i]) {
-                clReleaseEvent(clTimings[i]);
-            }
-        }
-
-        delete[] gpu_start_index_grid;
-        delete[] gpu_end_index_grid;
-
-        delete[] clTimings;
 
         return time;
     }
@@ -472,28 +629,31 @@ private:
     void initParams(real_type* grid, size_t gridSize, real_type* tmp, size_t datasetSize) {
         if (!this->deviceGrid.isInitialized()) {
             this->deviceGrid.initializeBuffer(sizeof(real_type), gridSize * this->dims);
-            this->hostGrid = (real_type*) this->deviceGrid.getMappedHostBuffer();
         }
 
+        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
         for (size_t i = 0; i < gridSize; i++) {
-            this->hostGrid[i] = grid[i];
+            hostGrid[i] = grid[i];
         }
 
+        deviceGrid.copyToOtherHostBuffers(manager->platforms[0].platformId);
         deviceGrid.writeToBuffer();
 
         if (!this->deviceTemp.isInitialized()) {
             this->deviceTemp.initializeBuffer(sizeof(real_type), datasetSize * this->dims);
-            this->hostTemp = (real_type*) this->deviceTemp.getMappedHostBuffer();
         }
 
+        real_type *hostTemp = (real_type*) this->deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
         for (size_t i = 0; i < datasetSize; i++) {
-            this->hostTemp[i] = tmp[i];
+            hostTemp[i] = tmp[i];
         }
 
+        deviceTemp.copyToOtherHostBuffers(manager->platforms[0].platformId);
         deviceTemp.writeToBuffer();
     }
 
-};
+}
+;
 
 }
 }

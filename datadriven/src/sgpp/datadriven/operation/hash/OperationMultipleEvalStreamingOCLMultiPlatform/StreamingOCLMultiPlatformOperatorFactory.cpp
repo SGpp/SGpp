@@ -43,6 +43,10 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         std::cout << "platform is: " << parameters->get("PLATFORM") << std::endl;
         std::cout << "device type is: " << parameters->get("DEVICE_TYPE") << std::endl;
         std::cout << "KERNEL_USE_LOCAL_MEMORY: " << parameters->get("KERNEL_USE_LOCAL_MEMORY") << std::endl;
+        std::cout << "KERNEL_DATA_BLOCKING_SIZE: " << parameters->get("KERNEL_DATA_BLOCKING_SIZE") << std::endl;
+        std::cout << "KERNEL_TRANS_GRID_BLOCKING_SIZE: " << parameters->get("KERNEL_TRANS_GRID_BLOCKING_SIZE") << std::endl;
+        std::cout << "LOAD_BALANCING_VERBOSE: " << parameters->get("LOAD_BALANCING_VERBOSE") << std::endl;
+        std::cout << "KERNEL_STORE_DATA: " << parameters->get("KERNEL_STORE_DATA") << std::endl;
     }
 
     if (parameters->get("INTERNAL_PRECISION") == "float") {

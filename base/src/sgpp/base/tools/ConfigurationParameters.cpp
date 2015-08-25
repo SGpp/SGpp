@@ -41,9 +41,7 @@ std::string &ConfigurationParameters::get(const std::string &key) {
     if (this->parameters.count(key) != 1) {
         std::stringstream errorString;
         errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
-        std::cout << "key: " << key << std::endl;
-//        throw SGPP::base::operation_exception(errorString.str());
-        throw nullptr;
+        throw SGPP::base::operation_exception(errorString.str());
     }
     return this->parameters[key];
 }
