@@ -34,8 +34,8 @@
 std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
         "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
 
-std::vector<size_t> levels = { 11, 7, 9 };
-std::vector<size_t> refinementSteps = { 40, 30, 40 };
+std::vector<size_t> levels = { 11, 7, 8 };
+std::vector<size_t> refinementSteps = { 40, 30, 30 };
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {

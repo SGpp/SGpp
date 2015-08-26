@@ -44,7 +44,6 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
 
 lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         source=objs,
-                        LIBPATH=BUILD_DIR,
                         LIBS=libs)
 libInstall = env.Install(BUILD_DIR, lib)
 
@@ -56,7 +55,6 @@ libStaticInstall = env.Install(BUILD_DIR, libStatic)
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
                               LIBS=libs + ["sgpp%s" % moduleName])
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
