@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "../OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelImpl.hpp"
+
 #include <CL/cl.h>
 
 #include <string.h>
@@ -13,17 +15,17 @@
 #include <sgpp/globaldef.hpp>
 #include "../../../opencl/LinearLoadBalancer.hpp"
 #include "../../../opencl/OCLClonedBuffer.hpp"
-#include "../../../opencl/OCLConfigurationParameters.hpp"
 #include "../../../opencl/OCLManager.hpp"
 #include "../../../opencl/OCLStretchedBuffer.hpp"
+#include "../OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelSourceBuilder.hpp"
 
-#include "StreamingOCLKernelSourceBuilder.hpp"
+#include <chrono>
 
 namespace SGPP {
 namespace datadriven {
 
 template<typename real_type>
-class StreamingOCLKernelImpl {
+class StreamingModOCLMaskKernelImpl {
 private:
     size_t dims;
 
@@ -36,6 +38,8 @@ private:
     base::OCLClonedBuffer deviceData;
     base::OCLClonedBuffer deviceLevel;
     base::OCLClonedBuffer deviceIndex;
+    base::OCLClonedBuffer deviceMask;
+    base::OCLClonedBuffer deviceOffset;
 
     // use pinned memory (on host and device) to speed up data transfers from/to GPU
     base::OCLStretchedBuffer deviceGrid;
@@ -49,7 +53,7 @@ private:
     double* deviceTimingsMult;
     double* deviceTimingsMultTranspose;
 
-    StreamingOCLKernelSourceBuilder kernelSourceBuilder;
+    StreamingModOCLMaskKernelSourceBuilder kernelSourceBuilder;
     std::shared_ptr<base::OCLManager> manager;
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
 
@@ -58,10 +62,12 @@ private:
 
 public:
 
-    StreamingOCLKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager, std::shared_ptr<base::OCLConfigurationParameters> parameters) :
-            deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
-                    parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
-                    this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
+    StreamingModOCLMaskKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
+            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+            deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceMask(manager), deviceOffset(manager), deviceGrid(
+                    manager), deviceTemp(manager), kernelSourceBuilder(parameters, dims), manager(manager), parameters(
+                    parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(manager,
+                    this->parameters) {
 
         this->dims = dims;
         this->num_devices = manager->num_devices;
@@ -92,7 +98,7 @@ public:
         }
     }
 
-    ~StreamingOCLKernelImpl() {
+    ~StreamingModOCLMaskKernelImpl() {
         releaseDataBuffers();
         releaseGridBuffers();
 
@@ -138,9 +144,9 @@ public:
         releaseGridBuffers();
     }
 
-    double mult(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            real_type* alpha, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data) {
+    double mult(real_type* level, real_type* index, real_type *mask, real_type *offset, size_t gridSize,
+            real_type* dataset, size_t datasetSize, real_type* alpha, real_type* result, const size_t start_index_grid,
+            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -150,22 +156,25 @@ public:
         double time = 0.0;
 
         if (kernel_mult[0] == nullptr) {
-            std::string program_src = kernelSourceBuilder.generateSourceMult();
-            manager->buildKernel(program_src, "multOCL", context, num_devices, device_ids, kernel_mult);
+            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
+                    kernel_mult);
         }
 
-        initOCLBuffers(level, index, gridSize, dataset, datasetSize);
+        initOCLBuffers(level, index, mask, offset, gridSize, dataset, datasetSize);
         initParams(alpha, gridSize, result, datasetSize);
 
         // determine best fit
         size_t* gpu_start_index_data = new size_t[num_devices];
         size_t* gpu_end_index_data = new size_t[num_devices];
 
+        //TODO: don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
+
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
-                parameters->getAsUnsigned("LOCAL_SIZE") * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
+//        size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t dataBlockingSize = 1;
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters->getAsUnsigned("LOCAL_SIZE"),
+                gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
@@ -174,21 +183,70 @@ public:
         //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
         for (size_t i = 0; i < num_devices; i++) {
-            cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[i] / (cl_uint) dataBlockingSize;
-            cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[i] / (cl_uint) dataBlockingSize;
+            cl_uint gpu_start_data = static_cast<cl_uint>(gpu_start_index_data[i])
+                    / static_cast<cl_uint>(dataBlockingSize);
+            cl_uint gpu_end_data = static_cast<cl_uint>(gpu_end_index_data[i]) / static_cast<cl_uint>(dataBlockingSize);
             //      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
             if (gpu_end_data > gpu_start_data) {
-                if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), this->deviceGrid.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
-                clSetKernelArg(kernel_mult[i], 5, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
-                        clSetKernelArg(kernel_mult[i], 6, sizeof(cl_uint), &gpu_start_grid) ||
-                        clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &gpu_end_grid) != CL_SUCCESS) {
+                err = clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i));
+                if (err != CL_SUCCESS) {
                     std::stringstream errorString;
-                    errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), this->deviceMask.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), this->deviceOffset.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), this->deviceData.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 5, sizeof(cl_mem), this->deviceGrid.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 6, sizeof(cl_mem), this->deviceTemp.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &clResultSize); // resultsize == number of entries in dataset
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 8, sizeof(cl_uint), &gpu_start_grid);
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_mult[i], 9, sizeof(cl_uint), &gpu_end_grid);
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
             }
@@ -200,15 +258,16 @@ public:
         size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
         size_t active_devices = 0;
 
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        start = std::chrono::system_clock::now();
+
         for (size_t i = 0; i < num_devices; i++) {
             size_t rangeSize = (gpu_end_index_data[i] / dataBlockingSize)
                     - (gpu_start_index_data[i] / dataBlockingSize);
 
             if (rangeSize > 0) {
-
-                size_t dataOffset = gpu_start_index_data[i] / dataBlockingSize;
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &dataOffset, &rangeSize, &local, 0,
-                        nullptr, &(clTimings[i]));
+                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i], &rangeSize,
+                        &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
                     std::stringstream errorString;
@@ -229,6 +288,10 @@ public:
         }
 
         deviceTemp.readFromBuffer(gpu_start_index_data, gpu_end_index_data);
+
+        end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::cout << "duration kernel+read: " << elapsed_seconds.count() << std::endl;
 
         for (size_t i = start_index_data; i < end_index_data; i++) {
             result[i] = hostTemp[i];
@@ -287,9 +350,9 @@ public:
         return time;
     }
 
-    double multTranspose(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            real_type* source, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data) {
+    double multTranspose(real_type* level, real_type* index, real_type *mask, real_type *offset, size_t gridSize,
+            real_type* dataset, size_t datasetSize, real_type* source, real_type* result, const size_t start_index_grid,
+            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -297,14 +360,13 @@ public:
         }
 
         double time = 0.0;
-        size_t transGridBlockingSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
         if (kernel_multTrans[0] == nullptr) {
-            std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
-            manager->buildKernel(program_src, "multTransOCL", context, num_devices, device_ids, kernel_multTrans);
+            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
+                    kernel_multTrans);
         }
 
-        initOCLBuffers(level, index, gridSize, dataset, datasetSize);
+        initOCLBuffers(level, index, mask, offset, gridSize, dataset, datasetSize);
         initParams(result, gridSize, source, datasetSize);
 
         // determine best fit
@@ -313,7 +375,7 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters->getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
+                parameters->getAsUnsigned("LOCAL_SIZE"), gpu_start_index_grid, gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
@@ -328,19 +390,64 @@ public:
             //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
             if (gpu_end_grid > gpu_start_grid) {
-                //TODO: add this as argument for multi-platform support
-                //size_t resultOffset = gpu_start_index_grid[i] / gridBlockingSize; //based on work groups, cannot be transmitted through global_work_offset mechanism
-
-                if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), this->deviceGrid.getBuffer(i)) ||
-                clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
-                        clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_uint), &gpu_start_data) ||
-                        clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &gpu_end_data) != CL_SUCCESS) {
+                err = clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevel.getBuffer(i));
+                if (err != CL_SUCCESS) {
                     std::stringstream errorString;
-                    errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceMask.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), this->deviceOffset.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), this->deviceData.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_mem), this->deviceTemp.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_mem), this->deviceGrid.getBuffer(i));
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &clSourceSize); // sourceSize == number of entries in dataset
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 8, sizeof(cl_uint), &gpu_start_data);
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
+                    throw SGPP::base::operation_exception(errorString.str());
+                }
+                err = clSetKernelArg(kernel_multTrans[i], 9, sizeof(cl_uint), &gpu_end_data);
+                if (err != CL_SUCCESS) {
+                    std::stringstream errorString;
+                    errorString << "OCL Error: Failed to create kernel arguments for device " << i << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
             }
@@ -353,16 +460,11 @@ public:
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
-            size_t rangeSize = (gpu_end_index_grid[i] / transGridBlockingSize)
-                    - (gpu_start_index_grid[i] / transGridBlockingSize);
-            size_t offset = gpu_start_index_grid[i] / transGridBlockingSize;
+            size_t rangeSize = gpu_end_index_grid[i] - gpu_start_index_grid[i];
 
             if (rangeSize > 0) {
                 //      std::cout << "enqueuing device: " << i << std::endl;
-//                std::cout << "number of threads on device " << "\"" << i << "\": " << rangeSize << std::endl;
-
-                //TODO: check that all variables that are submitted by reference survive the loop
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &offset,
+                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_grid[i],
                         &rangeSize, &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
@@ -443,6 +545,18 @@ public:
     }
 private:
 
+    void createMultTrans(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
+            cl_device_id* device_ids, cl_kernel* kernel) {
+        std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
+        manager->buildKernel(program_src, "multTransOCLMask", context, num_devices, device_ids, kernel);
+    }
+
+    void createMult(size_t dims, size_t local_workgroup_size, cl_context context, size_t num_devices,
+            cl_device_id* device_ids, cl_kernel* kernel) {
+        std::string program_src = kernelSourceBuilder.generateSourceMult();
+        manager->buildKernel(program_src, "multOCLMask", context, num_devices, device_ids, kernel);
+    }
+
     void releaseGridBuffers() {
         this->deviceLevel.freeBuffer();
         this->deviceIndex.freeBuffer();
@@ -454,13 +568,22 @@ private:
         this->deviceTemp.freeBuffer();
     }
 
-    void initOCLBuffers(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize) {
+    void initOCLBuffers(real_type* level, real_type* index, real_type* mask, real_type* offset, size_t gridSize,
+            real_type* dataset, size_t datasetSize) {
         if (level != nullptr && !this->deviceLevel.isInitialized()) {
             this->deviceLevel.initializeBuffer(level, sizeof(real_type), gridSize * this->dims);
         }
 
         if (index != nullptr && !this->deviceIndex.isInitialized()) {
             this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * this->dims);
+        }
+
+        if (mask != nullptr && !this->deviceMask.isInitialized()) {
+            this->deviceMask.initializeBuffer(mask, sizeof(real_type), gridSize * this->dims);
+        }
+
+        if (offset != nullptr && !this->deviceOffset.isInitialized()) {
+            this->deviceOffset.initializeBuffer(offset, sizeof(real_type), gridSize * this->dims);
         }
 
         if (!this->deviceData.isInitialized()) {

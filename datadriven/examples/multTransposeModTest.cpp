@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     //  std::string fileName = "debugging.arff";
     std::string fileName = "friedman_4d.arff";
 
-    uint32_t level = 9;
+    uint32_t level = 3;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM);
+            SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

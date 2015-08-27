@@ -6,6 +6,7 @@
  */
 
 #include <random>
+#include <chrono>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
@@ -36,9 +37,9 @@ int main(int argc, char** argv) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //  std::string fileName = "debugging.arff";
-    std::string fileName = "friedman_4d.arff";
+    std::string fileName = "DR5_train.arff";
 
-    uint32_t level = 11;
+    uint32_t level = 10;
     //  uint32_t level = 3;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -95,28 +96,38 @@ int main(int argc, char** argv) {
 
     std::cout << "calculating result" << std::endl;
 
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
     eval->mult(alpha, dataSizeVectorResult);
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "duration: " << elapsed_seconds.count() << std::endl;
+/*
+    std::cout << "calculating comparison values..." << std::endl;
 
-//  std::cout << "calculating comparison values..." << std::endl;
-//
-//  SGPP::base::OperationMultipleEval* evalCompare =
-//    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
-//
-//  SGPP::base::DataVector dataSizeVectorResultCompare(
-//    dataset.getNumberInstances());
-//  dataSizeVectorResultCompare.setAll(0.0);
-//
-//  evalCompare->mult(alpha, dataSizeVectorResultCompare);
-//
-//  double mse = 0.0;
-//
-//  for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-//    //std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
-//    mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
-//           * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-//  }
-//
-//  mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-//  std::cout << "mse: " << mse << std::endl;
+    SGPP::base::OperationMultipleEval* evalCompare =
+    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+
+    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+    dataSizeVectorResultCompare.setAll(0.0);
+
+    start = std::chrono::system_clock::now();
+    evalCompare->mult(alpha, dataSizeVectorResultCompare);
+    end = std::chrono::system_clock::now();
+    elapsed_seconds = end - start;
+    std::cout << "duration base: " << elapsed_seconds.count() << std::endl;
+
+    std::cout << "calculating comparison values..." << std::endl;
+
+    double mse = 0.0;
+
+    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+        //std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+        mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
+                * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    }
+
+    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+    std::cout << "mse: " << mse << std::endl;*/
 }
 

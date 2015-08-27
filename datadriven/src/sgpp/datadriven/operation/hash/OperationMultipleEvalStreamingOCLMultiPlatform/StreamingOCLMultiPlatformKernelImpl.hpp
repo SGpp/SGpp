@@ -617,7 +617,7 @@ private:
             this->deviceLevel.initializeBuffer(level, sizeof(real_type), gridSize * this->dims);
         }
 
-        if (level != nullptr && !this->deviceIndex.isInitialized()) {
+        if (index != nullptr && !this->deviceIndex.isInitialized()) {
             this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * this->dims);
         }
 

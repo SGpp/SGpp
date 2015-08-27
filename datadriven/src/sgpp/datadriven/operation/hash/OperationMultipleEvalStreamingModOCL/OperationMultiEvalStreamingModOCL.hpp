@@ -31,7 +31,7 @@ namespace SGPP {
         T* level = nullptr;
         /// Member to store the sparse grid's indices for better vectorization
         T* index = nullptr;
-        size_t gridSize = 0;
+        size_t gridSize;
         /// Timer object to handle time measurements
         SGPP::base::SGppStopwatch myTimer;
 
@@ -53,6 +53,7 @@ namespace SGPP {
           this->kernel = std::unique_ptr<StreamingModOCLKernelImpl<T>>(new StreamingModOCLKernelImpl<T>(dims, this->manager, parameters));
 
           this->storage = grid.getStorage();
+          this->gridSize = this->storage->size();
           this->padDataset(this->preparedDataset);
           this->preparedDataset.transpose();
           this->datasetSize = this->preparedDataset.getNcols();
@@ -186,6 +187,7 @@ namespace SGPP {
         size_t padDataset(
           SGPP::base::DataMatrix& dataset) {
 
+          //TODO: take max from both padding directions!
           size_t vecWidth = parameters->getAsUnsigned("LOCAL_SIZE") * parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
 
           // Assure that data has a even number of instances -> padding might be needed
