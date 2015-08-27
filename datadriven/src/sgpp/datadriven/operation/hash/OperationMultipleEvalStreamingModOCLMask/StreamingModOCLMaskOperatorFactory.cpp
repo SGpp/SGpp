@@ -9,12 +9,12 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
-#include "OperationMultiEvalStreamingModOCL.hpp"
+#include "../OperationMultipleEvalStreamingModOCLMask/OperationMultiEvalStreamingModOCLMask.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingModOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
+base::OperationMultipleEval* createStreamingModOCLMaskConfigured(base::Grid& grid, base::DataMatrix& dataset,
 SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
 
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
@@ -24,10 +24,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
     } else {
         parameters = std::make_shared<base::OCLConfigurationParameters>();
         parameters->set("KERNEL_USE_LOCAL_MEMORY", "false");
-        parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
-        parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
-
-        parameters->readFromFile("StreamingModOCL.cfg");
+        parameters->readFromFile("StreamingModOCLMask.cfg");
     }
 
     if (parameters->getAsBoolean("VERBOSE")) {
@@ -40,12 +37,12 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
     }
 
     if (parameters->get("INTERNAL_PRECISION") == "float") {
-        return new datadriven::OperationMultiEvalStreamingModOCL<float>(grid, dataset, parameters);
+        return new datadriven::OperationMultiEvalStreamingModOCLMask<float>(grid, dataset, parameters);
     } else if (parameters->get("INTERNAL_PRECISION") == "double") {
-        return new datadriven::OperationMultiEvalStreamingModOCL<double>(grid, dataset, parameters);
+        return new datadriven::OperationMultiEvalStreamingModOCLMask<double>(grid, dataset, parameters);
     } else {
         throw base::factory_exception(
-                "Error creating operation\"OperationMultiEvalStreamingModOCL\": invalid value for parameter \"INTERNAL_PRECISION\"");
+                "Error creating operation\"OperationMultiEvalStreamingModOCLMask\": invalid value for parameter \"INTERNAL_PRECISION\"");
     }
 }
 

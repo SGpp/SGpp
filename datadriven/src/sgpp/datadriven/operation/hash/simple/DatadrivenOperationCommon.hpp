@@ -20,7 +20,7 @@ enum class OperationMultipleEvalType {
 };
 
 enum class OperationMultipleEvalSubType {
-    DEFAULT, SIMPLE, COMBINED, OCL, OCLFAST, OCLFASTMULTIPLATFORM, OCLMP
+    DEFAULT, SIMPLE, COMBINED, OCL, OCLFAST, OCLFASTMULTIPLATFORM, OCLMP, OCLMASK
 };
 
 //TODO: remove pointer and create constructor with parameters
