@@ -36,10 +36,10 @@ std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.g
 
 std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 
-std::vector<size_t> levels = { 10, 5, 7 };
+std::vector<size_t> levels = { 10, 6, 8 };
 std::vector<size_t> refinementSteps = { 40, 40, 40 };
 
-std::vector<size_t> levelsModLinear = { 10, 5, 7 };
+std::vector<size_t> levelsModLinear = { 10, 6, 8 };
 std::vector<size_t> refinementStepsModLinear = { 40, 40, 40 };
 
 struct HPCSE2015Fixture {
