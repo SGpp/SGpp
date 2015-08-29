@@ -34,11 +34,11 @@
 std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
         "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
 
-std::vector<size_t> levels = { 11, 7, 9 };
-std::vector<size_t> refinementSteps = { 40, 30, 30 };
+std::vector<size_t> levels = { 10, 5, 7 };
+std::vector<size_t> refinementSteps = { 40, 40, 40 };
 
-std::vector<size_t> levelsModLinear = { 10, 5, 8 };
-std::vector<size_t> refinementStepsModLinear = { 40, 30, 30 };
+std::vector<size_t> levelsModLinear = { 10, 5, 7 };
+std::vector<size_t> refinementStepsModLinear = { 40, 40, 40 };
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
@@ -308,6 +308,35 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
         getRuntime(GridType::ModLinear, "OCL (GPU)", fileNames[i], levelsModLinear[i], adaptConfig, configuration);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(StreamingOCLBlocked) {
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    SGPP::base::OCLConfigurationParameters parameters;
+    parameters.set("OCL_MANAGER_VERBOSE", "false");
+    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
+    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
+    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
+    parameters.set("KERNEL_STORE_DATA", "register");
+    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
+    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+    parameters.set("MAX_DEVICES", "1");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
+
+    for (size_t i = 0; i < fileNames.size(); i++) {
+        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
+        getRuntime(GridType::ModLinear, "OCL blocked (GPU)", fileNames[i], levelsModLinear[i], adaptConfig, configuration);
     }
 }
 
