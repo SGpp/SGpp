@@ -95,8 +95,13 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     SGPP::base::DataVector alpha(gridStorage->size());
 
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1, 100);
+
     for (size_t i = 0; i < alpha.getSize(); i++) {
-        alpha[i] = static_cast<double>(i);
+//        alpha[i] = static_cast<double>(i);
+        alpha[i] = dist(mt);
     }
 
     BOOST_TEST_MESSAGE("creating operation with unrefined grid");
