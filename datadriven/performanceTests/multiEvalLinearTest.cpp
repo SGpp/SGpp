@@ -44,7 +44,7 @@ struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
         BOOST_TEST_MESSAGE("setup fixture");
         outFile.open(OUT_FILENAME);
-        outFile << "dataset, grid, kernel, refinedGridSize, duration" << std::endl;
+        outFile << "Dataset, Basis, Kernel, Grid size, Duration (s)" << std::endl;
     }
     ~HPCSE2015Fixture() {
         BOOST_TEST_MESSAGE("teardown fixture");
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementSteps[i];
-        getRuntime(GridType::Linear, "STREAMING::DEFAULT", fileNames[i], levels[i], adaptConfig, configuration);
+        getRuntime(GridType::Linear, "AVX", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
@@ -170,24 +170,13 @@ BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
-
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
-    SGPP::datadriven::OperationMultipleEvalSubType::COMBINED, parameters);
+    SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementSteps[i];
-        getRuntime(GridType::Linear, "SUBSPACELINEAR::COMBINED", fileNames[i], levels[i], adaptConfig, configuration);
+        getRuntime(GridType::Linear, "Subspace", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
@@ -199,28 +188,47 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
-
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::DEFAULT,
-    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
+    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementSteps[i];
-        getRuntime(GridType::Linear, "DEFAULT::DEFAULT", fileNames[i], levels[i], adaptConfig, configuration);
+        getRuntime(GridType::Linear, "Generic", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCL) {
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    SGPP::base::OCLConfigurationParameters parameters;
+    parameters.set("OCL_MANAGER_VERBOSE", "true");
+    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
+    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
+    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
+    parameters.set("KERNEL_STORE_DATA", "register");
+    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
+    parameters.set("PLATFORM", "NVIDIA CUDA");
+    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+    parameters.set("MAX_DEVICES", "1");
+    parameters.set("VERBOSE", "true");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
+
+    for (size_t i = 0; i < fileNames.size(); i++) {
+        adaptConfig.numRefinements_ = refinementSteps[i];
+        getRuntime(GridType::Linear, "OCL (GPU)", fileNames[i], levels[i], adaptConfig, configuration);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -236,8 +244,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "2");
+    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
     parameters.set("MAX_DEVICES", "1");
     parameters.set("VERBOSE", "true");
 
@@ -247,7 +254,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementSteps[i];
-        getRuntime(GridType::Linear, "STREAMING::OCL", fileNames[i], levels[i], adaptConfig, configuration);
+        getRuntime(GridType::Linear, "OCL blocked (GPU)", fileNames[i], levels[i], adaptConfig, configuration);
     }
 }
 
@@ -263,15 +270,14 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::DEFAULT,
-    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
+    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "DEFAULT::DEFAULT", fileNames[i], levelsModLinear[i], adaptConfig,
+        getRuntime(GridType::ModLinear, "Generic", fileNames[i], levelsModLinear[i], adaptConfig,
                 configuration);
     }
 }
@@ -288,7 +294,6 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_STORE_DATA", "register");
@@ -302,7 +307,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "STREAMING::OCL", fileNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntime(GridType::ModLinear, "OCL (GPU)", fileNames[i], levelsModLinear[i], adaptConfig, configuration);
     }
 }
 
@@ -318,7 +323,6 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
     parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("INTERNAL_PRECISION", "float");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
     parameters.set("MAX_DEVICES", "1");
 
@@ -328,7 +332,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "STREAMING::OCLMASK", fileNames[i], levelsModLinear[i], adaptConfig,
+        getRuntime(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], levelsModLinear[i], adaptConfig,
                 configuration);
     }
 }
