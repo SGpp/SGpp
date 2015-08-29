@@ -30,17 +30,18 @@
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
 #define OUT_FILENAME "results.csv"
+#define REFINEMENT_POINTS 200
 
 std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
         "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
 
 std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 
-std::vector<size_t> levels = { 10, 6, 8 };
-std::vector<size_t> refinementSteps = { 40, 40, 40 };
+std::vector<size_t> levels = { 9, 5, 7 };
+std::vector<size_t> refinementSteps = { 60, 60, 60 };
 
-std::vector<size_t> levelsModLinear = { 10, 6, 8 };
-std::vector<size_t> refinementStepsModLinear = { 40, 40, 40 };
+std::vector<size_t> levelsModLinear = { 9, 5, 7 };
+std::vector<size_t> refinementStepsModLinear = { 60, 60, 60 };
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
@@ -145,7 +146,7 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -174,7 +175,7 @@ BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -192,7 +193,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -210,7 +211,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -240,7 +241,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -274,7 +275,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -292,7 +293,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -321,7 +322,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocked) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -351,7 +352,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
+    adaptConfig.noPoints_ = REFINEMENT_POINTS;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
