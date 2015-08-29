@@ -30,7 +30,7 @@
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
 #define OUT_FILENAME "results.csv"
-#define REFINEMENT_POINTS 200
+#define REFINEMENT_POINTS 300
 
 std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
         "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
@@ -38,10 +38,10 @@ std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.g
 std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 
 std::vector<size_t> levels = { 9, 5, 7 };
-std::vector<size_t> refinementSteps = { 60, 60, 60 };
+std::vector<size_t> refinementSteps = { 70, 70, 70 };
 
 std::vector<size_t> levelsModLinear = { 9, 5, 7 };
-std::vector<size_t> refinementStepsModLinear = { 60, 60, 60 };
+std::vector<size_t> refinementStepsModLinear = { 70, 70, 70 };
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
