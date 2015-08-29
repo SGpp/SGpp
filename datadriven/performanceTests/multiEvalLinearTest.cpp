@@ -396,7 +396,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     }
 }
 
-BOOST_AUTO_TEST_CASE(StreamingOCLBlocked) {
+BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -410,6 +410,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocked) {
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
+    parameters.set("KERNEL_TRANS_DATA_BLOCKING_SIZE", "4");
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
@@ -417,7 +418,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocked) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
