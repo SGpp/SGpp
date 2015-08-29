@@ -409,8 +409,8 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCK_SIZE", "4");
-    parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "4");
+    parameters.set("KERNEL_TRANS_GRID_BLOCK_SIZE", "1");
+    parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "8");
 
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
@@ -423,7 +423,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntimeTransposed(GridType::ModLinear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig,
+        getRuntimeTransposed(GridType::ModLinear, "OCL blocked fast (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig,
                 configuration);
     }
 }
