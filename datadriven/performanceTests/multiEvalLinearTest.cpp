@@ -140,6 +140,84 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
 }
 
+void getRuntimeTransposed(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName, size_t level,
+SGPP::base::AdpativityConfiguration adaptConfig,
+SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+
+    std::string content = uncompressFile(fileName);
+
+    SGPP::datadriven::ARFFTools arffTools;
+    SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+
+    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+
+    size_t dim = dataset.getDimension();
+
+    SGPP::base::Grid* grid;
+    if (gridType == GridType::Linear) {
+        grid = SGPP::base::Grid::createLinearGrid(dim);
+    } else if (gridType == GridType::ModLinear) {
+        grid = SGPP::base::Grid::createModLinearGrid(dim);
+    } else {
+        throw nullptr;
+    }
+    SGPP::base::GridStorage* gridStorage = grid->getStorage();
+    BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->dim());
+
+    SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
+    gridGen->regular(level);
+    BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
+    BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
+
+    doDirectedRefinements(adaptConfig, *grid, *gridGen);
+//    doRandomRefinements(adaptConfig, *grid, *gridGen);
+
+    BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->size());
+    refinedGridSize = gridStorage->size();
+
+    SGPP::base::DataVector source(dataset.getNumberInstances());
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1, 100);
+
+    for (size_t i = 0; i < source.getSize(); i++) {
+//        alpha[i] = static_cast<double>(i);
+        source[i] = dist(mt);
+    }
+
+    BOOST_TEST_MESSAGE("creating operation with unrefined grid");
+    SGPP::base::OperationMultipleEval* eval =
+    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+
+    SGPP::base::DataVector gridSizeVectorResult(gridStorage->size());
+    gridSizeVectorResult.setAll(0);
+
+    BOOST_TEST_MESSAGE("preparing operation for refined grid");
+    eval->prepare();
+
+    BOOST_TEST_MESSAGE("calculating result");
+
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    eval->multTranspose(source, gridSizeVectorResult);
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+
+    BOOST_TEST_MESSAGE("duration: " << elapsed_seconds.count());
+
+    if (gridType == GridType::Linear) {
+        logger.outFile << datasetName << "," << "Linear" << "," << kernel << "," << refinedGridSize << ","
+                << elapsed_seconds.count() << std::endl;
+    } else if (gridType == GridType::ModLinear) {
+        logger.outFile << datasetName << "," << "ModLinear" << "," << kernel << "," << refinedGridSize << ","
+                << elapsed_seconds.count() << std::endl;
+    } else {
+        throw nullptr;
+    }
+
+}
+
 BOOST_AUTO_TEST_SUITE(HPCSE2015Linear)
 
 BOOST_AUTO_TEST_CASE(StreamingDefault) {
@@ -285,7 +363,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "Generic", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntimeTransposed(GridType::ModLinear, "Generic", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
     }
 }
 
@@ -314,7 +392,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntimeTransposed(GridType::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
     }
 }
 
@@ -343,7 +421,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocked) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig,
+        getRuntimeTransposed(GridType::ModLinear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig,
                 configuration);
     }
 }
@@ -369,7 +447,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntime(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntimeTransposed(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
     }
 }
 
