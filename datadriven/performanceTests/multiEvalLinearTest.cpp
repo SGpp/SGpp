@@ -409,8 +409,9 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("PLATFORM", "NVIDIA CUDA");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_DATA_BLOCKING_SIZE", "4");
+    parameters.set("KERNEL_TRANS_GRID_BLOCK_SIZE", "4");
+    parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "4");
+
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
