@@ -85,3 +85,31 @@ SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
         delete myRefineFunc;
     }
 }
+
+void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
+SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
+
+    double dummySurplusValue = 1.0;
+
+    SGPP::base::DataVector alphaRefine(grid.getSize());
+
+    for (size_t i = 0; i < alphaRefine.getSize(); i++) {
+        alphaRefine[i] = dummySurplusValue;
+        dummySurplusValue += 1.0;
+    }
+
+    for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
+        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alphaRefine,
+                adaptConfig.noPoints_, adaptConfig.threshold_);
+        gridGen.refine(myRefineFunc);
+        size_t oldSize = alphaRefine.getSize();
+        alphaRefine.resize(grid.getSize());
+
+        for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
+            alphaRefine[i] = dummySurplusValue;
+            dummySurplusValue += 1.0;
+        }
+
+        delete myRefineFunc;
+    }
+}
