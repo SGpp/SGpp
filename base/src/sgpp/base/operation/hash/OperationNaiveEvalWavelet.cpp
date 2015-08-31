@@ -9,7 +9,7 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationNaiveEvalWavelet::eval(DataVector& alpha, DataVector& point) {
+    float_t OperationNaiveEvalWavelet::eval(const DataVector& alpha, const DataVector& point) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;

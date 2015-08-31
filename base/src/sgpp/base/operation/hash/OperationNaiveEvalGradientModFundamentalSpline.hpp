@@ -43,7 +43,8 @@ namespace SGPP {
          * @param[out]  gradient    gradient of linear combination
          * @return                  value of linear combination
          */
-        virtual float_t evalGradient(DataVector& alpha, DataVector& point,
+        virtual float_t evalGradient(const DataVector& alpha,
+                                     const DataVector& point,
                                      DataVector& gradient);
 
       protected:

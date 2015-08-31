@@ -8,8 +8,7 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationNaiveEvalPolyBoundary::eval(DataVector& alpha,
-        DataVector& point) {
+    float_t OperationNaiveEvalPolyBoundary::eval(const DataVector& alpha, const DataVector& point) {
       const size_t n = storage->size();
       const size_t dim = storage->dim();
       float_t result = 0.0;

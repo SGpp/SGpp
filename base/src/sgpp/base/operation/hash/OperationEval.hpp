@@ -40,7 +40,8 @@ namespace SGPP {
          * @param alpha The coefficients of the sparse grid's basis functions
          * @param point The coordinates of the evaluation point
          */
-        float_t eval(DataVector& alpha, std::vector<float_t>& point) {
+        float_t eval(const DataVector& alpha,
+                     const std::vector<float_t>& point) {
           DataVector p(point);
           return eval(alpha, p);
         }
@@ -51,7 +52,8 @@ namespace SGPP {
          * @param alpha The coefficients of the sparse grid's basis functions
          * @param point The coordinates of the evaluation point
          */
-        virtual float_t eval(DataVector& alpha, DataVector& point) = 0;
+        virtual float_t eval(const DataVector& alpha,
+                             const DataVector& point) = 0;
     };
 
   }

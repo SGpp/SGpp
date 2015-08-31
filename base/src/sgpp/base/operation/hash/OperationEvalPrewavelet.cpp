@@ -16,8 +16,8 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationEvalPrewavelet::eval(DataVector& alpha,
-                                          DataVector& point) {
+    float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
+                                          const DataVector& point) {
       typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
       IndexValVector vec;
@@ -36,12 +36,13 @@ namespace SGPP {
       return result;
     }
 
-    float_t OperationEvalPrewavelet::test(DataVector& alpha, DataVector& data,
-                                          DataVector& classes) {
+    float_t OperationEvalPrewavelet::test(const DataVector& alpha,
+                                          const DataVector& data,
+                                          const DataVector& classes) {
       return 0;
     }
 
-    float_t OperationEvalPrewavelet::integrate(DataVector& alpha) {
+    float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
       float_t result = 0.0;
 
       for (size_t i = 0; i < storage->size(); i++) {

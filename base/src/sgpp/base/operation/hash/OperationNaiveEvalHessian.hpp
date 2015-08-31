@@ -42,8 +42,8 @@ namespace SGPP {
          * @param[out]  hessian     Hessian matrix of the linear combination
          * @return                  value of the linear combination
          */
-        float_t evalHessian(DataVector& alpha,
-                            std::vector<float_t>& point,
+        float_t evalHessian(const DataVector& alpha,
+                            const std::vector<float_t>& point,
                             DataVector& gradient,
                             DataMatrix& hessian) {
           DataVector p(point);
@@ -59,8 +59,8 @@ namespace SGPP {
          * @param[out]  hessian     Hessian matrix of the linear combination
          * @return                  value of the linear combination
          */
-        virtual float_t evalHessian(DataVector& alpha,
-                                    DataVector& point,
+        virtual float_t evalHessian(const DataVector& alpha,
+                                    const DataVector& point,
                                     DataVector& gradient,
                                     DataMatrix& hessian) = 0;
     };

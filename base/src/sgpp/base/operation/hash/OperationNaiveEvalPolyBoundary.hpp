@@ -18,7 +18,7 @@
 namespace SGPP {
   namespace base {
 
-    class OperationNaiveEvalPolyBoundary: public base::OperationNaiveEval {
+    class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
       public:
 
         /**
@@ -27,7 +27,7 @@ namespace SGPP {
          * @param storage   storage of the sparse grid
          * @param degree    polynomial degree
          */
-        OperationNaiveEvalPolyBoundary(base::GridStorage* storage, size_t degree) :
+        OperationNaiveEvalPolyBoundary(GridStorage* storage, size_t degree) :
           storage(storage), base(degree) {
         }
 
@@ -39,11 +39,11 @@ namespace SGPP {
          * @param point     evaluation point
          * @return          value of linear combination
          */
-        virtual float_t eval(base::DataVector& alpha, base::DataVector& point);
+        virtual float_t eval(const DataVector& alpha, const DataVector& point);
 
       protected:
         /// storage of the sparse grid
-        base::GridStorage* storage;
+        GridStorage* storage;
         /// 1D B-spline basis
         SPolyBoundaryBase base;
     };
