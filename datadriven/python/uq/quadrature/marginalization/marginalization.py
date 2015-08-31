@@ -64,7 +64,7 @@ def __doMarginalize(grid, alpha, dd, measure=None):
         if measure is None:
             q, err = getIntegral(grid, dd_level, dd_index), 0.
         else:
-            dist, trans = measure[0][dd_index], measure[1][dd_index]
+            dist, trans = measure[0][dd], measure[1][dd]
             lf = LinearGaussQuadratureStrategy([dist], [trans])
             basis = getBasis(grid)
             gpdd = HashGridIndex(1)

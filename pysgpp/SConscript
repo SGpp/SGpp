@@ -14,8 +14,8 @@ Import('libraryTargetList')
 Import('installTargetList')
 
 # as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
-if os.path.exists("pysgpp_swig_wrap.cc"):
-    os.remove("pysgpp_swig_wrap.cc")
+if os.path.exists("pysgpp_wrap.cc"):
+    os.remove("pysgpp_wrap.cc")
 
 py_env = env.Clone()
 

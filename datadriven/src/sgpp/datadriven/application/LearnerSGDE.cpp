@@ -13,18 +13,18 @@
 #include <iostream>
 #include <vector>
 
-#include "../../../../../base/src/sgpp/base/exception/application_exception.hpp"
-#include "../../../../../base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "../../../../../base/src/sgpp/base/grid/generation/GridGenerator.hpp"
-#include "../../../../../base/src/sgpp/base/grid/GridStorage.hpp"
-#include "../../../../../base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
-#include "../../../../../base/src/sgpp/base/operation/BaseOpFactory.hpp"
-#include "../../../../../base/src/sgpp/base/operation/hash/OperationEval.hpp"
-#include "../../../../../base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
-#include "../../../../../base/src/sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "../../../../../pde/src/sgpp/pde/operation/PdeOpFactory.hpp"
-#include "../../../../../solver/src/sgpp/solver/sle/ConjugateGradients.hpp"
-#include "../algorithm/DensitySystemMatrix.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
 using namespace std;
 using namespace SGPP::base;

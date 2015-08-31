@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE SGppQuadratureModule
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp_quadrature.hpp>
-#include <sgpp/quadrature/sampling/SamplerTypes.hpp>
 #include <sgpp_base.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include <sgpp_quadrature.hpp>
 #include <sgpp/quadrature/QuadratureOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 

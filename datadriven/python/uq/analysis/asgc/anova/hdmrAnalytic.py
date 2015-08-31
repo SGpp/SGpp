@@ -69,43 +69,17 @@ class HDMRAnalytic(object):
         self.__marginalization = MarginalAnalyticEstimationStrategy()
         self.__estimation = AnalyticEstimationStrategy()
 
-        # self.__estimation = MonteCarloStrategy(npaths=40, isPositive=True)
-
-#     def __discretize(self):
-#         """
-#         Discretize squared f to obtain a well suited grid for all
-#         further computations.
-#         """
-#         def f(p, val):
-#             q = self.__T.unitToProbabilistic(p)
-#             return val ** 2 * self.__U.pdf(q)
-#         grid, _, _ = discretize(self.__grid, self.__alpha, f,
-#                                 refnums=12, deg=1, epsilon=1e-6)
-#
-#         # hierarchize without pdf
-#         gs = grid.getStorage()
-#         nodalValues = DataVector(gs.size())
-#         p = DataVector(gs.dim())
-#         for i in xrange(gs.size()):
-#             gs.get(i).getCoords(p)
-#             nodalValues[i] = evalSGFunction(self.__grid, self.__alpha, p)
-#
-#         self.__alpha = hierarchize(grid, nodalValues)
-#         self.__grid = grid
-#
-#         err = checkInterpolation(self.__grid, self.__alpha, nodalValues)
-#         if err is True:
-#             import pdb; pdb.set_trace()
-
     def __computeMean(self):
         print "estimate mean:",
         self.__E, _ = self.__estimation.mean(self.__grid, self.__alpha,
                                              self.__U, self.__T)
+        print "done"
 
     def __computeVariance(self):
         print "estimate variance:",
         self.__V, _ = self.__estimation.var(self.__grid, self.__alpha,
                                             self.__U, self.__T, self.__E)
+        print "done"
 
     def getSortedPermutations(self, keys):
         """
@@ -132,16 +106,13 @@ class HDMRAnalytic(object):
 
         # init
         expec = {}
-        U = self.__ap.getIndependentJointDistribution()
-        T = self.__ap.getJointTransformation()
 
         # add higher order terms
         for k in xrange(self.__nk):
-            perms = it.combinations(U.getTupleIndices(), r=k + 1)
-            # perms = it.combinations(range(self.__dim), r=k + 1)
+            perms = it.combinations(self.__U.getTupleIndices(), r=k + 1)
             for perm in perms:
                 # select dimensions to be integrated
-                dd = [d for d in U.getTupleIndices() if d not in perm]
+                dd = [d for d in self.__U.getTupleIndices() if d not in perm]
 
                 if self._verbose:
                     print "-" * 60
@@ -157,7 +128,8 @@ class HDMRAnalytic(object):
                 # compute first moment
                 grid, alpha, err = self.__marginalization.mean(self.__grid,
                                                                self.__alpha,
-                                                               U, T, dd)
+                                                               self.__U, self.__T,
+                                                               dd)
                 expec[tuple([d for di in perm for d in di])] = grid, alpha
 
                 if self._verbose:
