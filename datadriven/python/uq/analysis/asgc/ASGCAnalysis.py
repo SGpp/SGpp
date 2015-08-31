@@ -56,6 +56,9 @@ class ASGCAnalysis(Analysis):
         else:
             self.__estimationStrategy = strategy
 
+        # store anova components
+        self.__anova = {}
+
     def getLearner(self):
         return self.__learner
 
@@ -178,7 +181,7 @@ class ASGCAnalysis(Analysis):
             anova = HDMR(grid, alpha, self.__params, *args, **kws)
         else:
             anova = HDMRAnalytic(grid, alpha, self.__params, *args, **kws)
-        # anova = HDMR(grid, alpha, self.__params, *args, **kws)
+#         anova = HDMR(grid, alpha, self.__params, *args, **kws)
         anova.doDecomposition()
 
         # store it ...
