@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalHessianBsplineClenshawCurtis::evalHessian(
-      DataVector& alpha, DataVector& point, DataVector& gradient,
+      const DataVector& alpha, const DataVector& point, DataVector& gradient,
       DataMatrix& hessian) {
       const size_t n = storage->size();
       const size_t d = storage->dim();

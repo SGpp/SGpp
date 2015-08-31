@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis::evalPartialDerivative(
-      DataVector& alpha, DataVector& point, size_t derivDim) {
+      const DataVector& alpha, const DataVector& point, size_t derivDim) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;
