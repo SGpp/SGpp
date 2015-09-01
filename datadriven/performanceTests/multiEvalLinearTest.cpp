@@ -37,11 +37,11 @@ std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.g
 
 std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 
-std::vector<size_t> levels = { 9, 5, 7 };
-std::vector<size_t> refinementSteps = { 70, 70, 70 };
+std::vector<size_t> levels = { 10, 6, 8 };
+std::vector<size_t> refinementSteps = { 0, 0, 0 };
 
-std::vector<size_t> levelsModLinear = { 9, 5, 7 };
-std::vector<size_t> refinementStepsModLinear = { 70, 70, 70 };
+std::vector<size_t> levelsModLinear = { 10, 6, 8 };
+std::vector<size_t> refinementStepsModLinear = { 0, 0, 0 };
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
@@ -62,9 +62,10 @@ enum class GridType {
     Linear, ModLinear
 };
 
-void getRuntime(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName, size_t level,
-SGPP::base::AdpativityConfiguration adaptConfig,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+void getRuntime(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName,
+        size_t level,
+        SGPP::base::AdpativityConfiguration adaptConfig,
+        SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     std::string content = uncompressFile(fileName);
 
@@ -140,9 +141,10 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
 }
 
-void getRuntimeTransposed(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName, size_t level,
-SGPP::base::AdpativityConfiguration adaptConfig,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+void getRuntimeTransposed(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName,
+        size_t level,
+        SGPP::base::AdpativityConfiguration adaptConfig,
+        SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     std::string content = uncompressFile(fileName);
 
@@ -341,7 +343,8 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementSteps[i];
-        getRuntime(GridType::Linear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levels[i], adaptConfig, configuration);
+        getRuntime(GridType::Linear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levels[i], adaptConfig,
+                configuration);
     }
 }
 
@@ -363,7 +366,8 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntimeTransposed(GridType::ModLinear, "Generic", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntimeTransposed(GridType::ModLinear, "Generic", fileNames[i], datasetNames[i], levelsModLinear[i],
+                adaptConfig, configuration);
     }
 }
 
@@ -392,7 +396,8 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntimeTransposed(GridType::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntimeTransposed(GridType::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i],
+                adaptConfig, configuration);
     }
 }
 
@@ -423,8 +428,8 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntimeTransposed(GridType::ModLinear, "OCL blocked fast (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig,
-                configuration);
+        getRuntimeTransposed(GridType::ModLinear, "OCL blocked fast (GPU)", fileNames[i], datasetNames[i],
+                levelsModLinear[i], adaptConfig, configuration);
     }
 }
 
@@ -449,7 +454,8 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
     for (size_t i = 0; i < fileNames.size(); i++) {
         adaptConfig.numRefinements_ = refinementStepsModLinear[i];
-        getRuntimeTransposed(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i], adaptConfig, configuration);
+        getRuntimeTransposed(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i], levelsModLinear[i],
+                adaptConfig, configuration);
     }
 }
 

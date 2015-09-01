@@ -107,8 +107,11 @@ SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
 
         for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
             alphaRefine[i] = dummySurplusValue;
-            dummySurplusValue += 1.0;
+
         }
+
+        //increment only once for added grid points
+        dummySurplusValue += 1.0;
 
         delete myRefineFunc;
     }
