@@ -346,19 +346,12 @@ This results in the same output as before:
 
 
 @subsection code_examples__matlab_hints Hints
-@code
-javaaddpath('/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar')
-@endcode
-adds the path to the dynamic Java path.
-To add it to the static Java path (thus permanently),
-change the @c /path/To/MATLAB/toolbox/local/classpath.txt file,
-so you do not have to use @c javaaddpath any longer.
 Use
 @code
 javaclasspath
 @endcode
 to see the loaded jar files (upper part static, lower
-part dynamic; our jsgpp.jar should be in there).
+part dynamic; our jsgpp.jar should be in the latter part).
 Write
 @code
 import sgpp.*
