@@ -49,7 +49,7 @@ std::vector<std::string> fileNames = { "datadriven/tests/data/DR5_train.arff.gz"
 
 std::vector<std::string> datasetNames = { "DR5" };
 
-std::vector<size_t> levels = { 6 };
+std::vector<size_t> levels = { 7 };
 std::vector<size_t> refinementSteps = { 0 };
 
 std::vector<size_t> levelsModLinear = { 7 };
@@ -179,7 +179,7 @@ void prepareGrid(std::string fileName, size_t level) {
     // Set Adaptivity
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 200;
-    adaptConfig.numRefinements_ = 7; //6
+    adaptConfig.numRefinements_ = 10; //6
     adaptConfig.percent_ = 100.0;
     adaptConfig.threshold_ = 0.0;
 
