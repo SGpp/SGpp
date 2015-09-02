@@ -90,7 +90,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
     double mse = 0.0;
 
     for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
-        BOOST_TEST_MESSAGE("i: " << i << " mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i]);
+//        BOOST_TEST_MESSAGE("i: " << i << " mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i]);
         mse += (alphaResult[i] - alphaResultCompare[i]) * (alphaResult[i] - alphaResultCompare[i]);
     }
 
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("VERBOSE", "true");
+    parameters.set("VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
@@ -184,6 +184,9 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
             "datadriven/tests/data/friedman_4d.arff.gz", 1E-13), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-17) };
 
+//    std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
+//            "datadriven/tests/data/friedman_4d.arff.gz", 1E-13)};
+
     uint32_t level = 6;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
@@ -194,7 +197,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "true");
+    parameters.set("OCL_MANAGER_VERBOSE", "false");
     parameters.set("ENABLE_OPTIMIZATIONS", "true");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
@@ -203,7 +206,9 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
-    parameters.set("VERBOSE", "true");
+//    parameters.set("WRITE_SOURCE", "true");
+//    parameters.set("REUSE_SOURCE", "true");
+    parameters.set("VERBOSE", "false");
 
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
