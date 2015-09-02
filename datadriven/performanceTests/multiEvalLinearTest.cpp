@@ -32,7 +32,7 @@
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 
 #define OUT_FILENAME "results.csv"
-#define REFINEMENT_POINTS 100
+//#define REFINEMENT_POINTS 100
 
 //std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
 //        "datadriven/tests/data/friedman_10d.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
@@ -55,7 +55,9 @@ std::vector<size_t> refinementSteps = { 0 };
 std::vector<size_t> levelsModLinear = { 7 };
 std::vector<size_t> refinementStepsModLinear = { 0 };
 
-std::map<std::string, SGPP::datadriven::MetaLearner *> preparedGrids = { };
+std::map<std::string, SGPP::datadriven::MetaLearner *> preparedGrids;
+
+std::map<std::string, SGPP::datadriven::MetaLearner *> preparedGridsModLinear;
 
 struct HPCSE2015Fixture {
     HPCSE2015Fixture() {
@@ -72,12 +74,8 @@ struct HPCSE2015Fixture {
 
 static size_t refinedGridSize = 0;
 
-enum class GridType {
-    Linear, ModLinear
-};
-
-void getRuntime(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName,
-        size_t level,
+void getRuntime(SGPP::base::GridType gridType, const std::string &kernel, std::string &fileName,
+        std::string &datasetName, size_t level,
         SGPP::base::AdpativityConfiguration adaptConfig,
         SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
@@ -91,9 +89,9 @@ void getRuntime(GridType gridType, const std::string &kernel, std::string &fileN
     size_t dim = dataset.getDimension();
 
     SGPP::base::Grid* grid;
-    if (gridType == GridType::Linear) {
+    if (gridType == SGPP::base::Linear) {
         grid = SGPP::base::Grid::createLinearGrid(dim);
-    } else if (gridType == GridType::ModLinear) {
+    } else if (gridType == SGPP::base::ModLinear) {
         grid = SGPP::base::Grid::createModLinearGrid(dim);
     } else {
         throw nullptr;
@@ -152,10 +150,10 @@ void getRuntime(GridType gridType, const std::string &kernel, std::string &fileN
 
     BOOST_TEST_MESSAGE("average duration: " << durationOverall);
 
-    if (gridType == GridType::Linear) {
+    if (gridType == SGPP::base::Linear) {
         logger.outFile << datasetName << "," << "Linear" << "," << kernel << "," << refinedGridSize << ","
                 << durationOverall << std::endl;
-    } else if (gridType == GridType::ModLinear) {
+    } else if (gridType == SGPP::base::ModLinear) {
         logger.outFile << datasetName << "," << "ModLinear" << "," << kernel << "," << refinedGridSize << ","
                 << durationOverall << std::endl;
     } else {
@@ -164,7 +162,7 @@ void getRuntime(GridType gridType, const std::string &kernel, std::string &fileN
 
 }
 
-void prepareGrid(std::string fileName, size_t level) {
+void prepareGrid(std::string fileName, SGPP::base::GridType gridType, size_t level) {
 
     sg::base::RegularGridConfiguration gridConfig;
     sg::solver::SLESolverConfiguration SLESolverConfigRefine;
@@ -174,7 +172,7 @@ void prepareGrid(std::string fileName, size_t level) {
     // setup grid
     gridConfig.dim_ = 0; //dim is inferred from the data
     gridConfig.level_ = static_cast<int>(level);
-    gridConfig.type_ = sg::base::Linear;
+    gridConfig.type_ = gridType;
 
     // Set Adaptivity
     adaptConfig.maxLevelType_ = false;
@@ -205,11 +203,6 @@ void prepareGrid(std::string fileName, size_t level) {
     SGPP::datadriven::MetaLearner * learner = new SGPP::datadriven::MetaLearner(gridConfig, SLESolverConfigRefine,
             SLESolverConfigFinal, adaptConfig, lambda, verbose);
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration refineConfiguration =
-    SGPP::datadriven::OperationMultipleEvalConfiguration(
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
-
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
@@ -220,11 +213,15 @@ void prepareGrid(std::string fileName, size_t level) {
 
     BOOST_MESSAGE("info: grid preparation by metalearner is complete!");
 
-    preparedGrids[fileName] = learner;
+    if (gridType == SGPP::base::Linear) {
+        preparedGrids[fileName] = learner;
+    } else {
+        preparedGridsModLinear[fileName] = learner;
+    }
 }
 
-void getRuntimeDataMining(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName,
-        size_t level,
+void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string &kernel, std::string &fileName,
+        std::string &datasetName, size_t level,
         SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
     std::string content = uncompressFile(fileName);
@@ -235,10 +232,15 @@ void getRuntimeDataMining(GridType gridType, const std::string &kernel, std::str
     SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
 
     if (preparedGrids.size() == 0) {
-        prepareGrid(fileName, level);
+        prepareGrid(fileName, gridType, level);
     }
 
-    SGPP::datadriven::MetaLearner *learner = preparedGrids[fileName];
+    SGPP::datadriven::MetaLearner *learner = nullptr;
+    if (gridType == SGPP::base::Linear) {
+        learner = preparedGrids[fileName];
+    } else if (gridType == SGPP::base::ModLinear) {
+        learner = preparedGridsModLinear[fileName];
+    }
 
     SGPP::base::Grid &grid = learner->getLearnedGrid();
 
@@ -287,10 +289,10 @@ void getRuntimeDataMining(GridType gridType, const std::string &kernel, std::str
 
     BOOST_TEST_MESSAGE("average duration: " << durationOverall);
 
-    if (gridType == GridType::Linear) {
+    if (gridType == SGPP::base::Linear) {
         logger.outFile << datasetName << "," << "Linear" << "," << kernel << "," << refinedGridSize << ","
                 << durationOverall << std::endl;
-    } else if (gridType == GridType::ModLinear) {
+    } else if (gridType == SGPP::base::ModLinear) {
         logger.outFile << datasetName << "," << "ModLinear" << "," << kernel << "," << refinedGridSize << ","
                 << durationOverall << std::endl;
     } else {
@@ -299,7 +301,7 @@ void getRuntimeDataMining(GridType gridType, const std::string &kernel, std::str
 
 }
 
-void getRuntimeDataMiningTransposed(GridType gridType, const std::string &kernel, std::string &fileName,
+void getRuntimeDataMiningTransposed(SGPP::base::GridType gridType, const std::string &kernel, std::string &fileName,
         std::string &datasetName, size_t level,
         SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
@@ -310,11 +312,12 @@ void getRuntimeDataMiningTransposed(GridType gridType, const std::string &kernel
 
     SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
 
-    if (preparedGrids.size() == 0) {
-        prepareGrid(fileName, level);
+    SGPP::datadriven::MetaLearner *learner = nullptr;
+    if (gridType == SGPP::base::Linear) {
+        learner = preparedGrids[fileName];
+    } else if (gridType == SGPP::base::ModLinear) {
+        learner = preparedGridsModLinear[fileName];
     }
-
-    SGPP::datadriven::MetaLearner *learner = preparedGrids[fileName];
 
     SGPP::base::Grid &grid = learner->getLearnedGrid();
 
@@ -346,28 +349,37 @@ void getRuntimeDataMiningTransposed(GridType gridType, const std::string &kernel
 
     BOOST_TEST_MESSAGE("calculating result");
 
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-    eval->multTranspose(source, gridSizeVectorResult);
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
+    double durationOverall = 0.0;
+    size_t runs = 5;
 
-    BOOST_TEST_MESSAGE("duration: " << elapsed_seconds.count());
+    for (size_t i = 0; i < runs; i++) {
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        start = std::chrono::system_clock::now();
+        eval->multTranspose(source, gridSizeVectorResult);
+        end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        BOOST_TEST_MESSAGE("duration: " << elapsed_seconds.count());
+        durationOverall += elapsed_seconds.count();
+    }
 
-    if (gridType == GridType::Linear) {
+    durationOverall /= static_cast<double>(runs);
+
+    BOOST_TEST_MESSAGE("average duration: " << durationOverall);
+
+    if (gridType == SGPP::base::Linear) {
         logger.outFile << datasetName << "," << "Linear" << "," << kernel << "," << refinedGridSize << ","
-                << elapsed_seconds.count() << std::endl;
-    } else if (gridType == GridType::ModLinear) {
+                << durationOverall << std::endl;
+    } else if (gridType == SGPP::base::ModLinear) {
         logger.outFile << datasetName << "," << "ModLinear" << "," << kernel << "," << refinedGridSize << ","
-                << elapsed_seconds.count() << std::endl;
+                << durationOverall << std::endl;
     } else {
         throw nullptr;
     }
 
 }
 
-void getRuntimeTransposed(GridType gridType, const std::string &kernel, std::string &fileName, std::string &datasetName,
-        size_t level,
+void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string &kernel, std::string &fileName,
+        std::string &datasetName, size_t level,
         SGPP::base::AdpativityConfiguration adaptConfig,
         SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
@@ -381,9 +393,9 @@ void getRuntimeTransposed(GridType gridType, const std::string &kernel, std::str
     size_t dim = dataset.getDimension();
 
     SGPP::base::Grid* grid;
-    if (gridType == GridType::Linear) {
+    if (gridType == SGPP::base::Linear) {
         grid = SGPP::base::Grid::createLinearGrid(dim);
-    } else if (gridType == GridType::ModLinear) {
+    } else if (gridType == SGPP::base::ModLinear) {
         grid = SGPP::base::Grid::createModLinearGrid(dim);
     } else {
         throw nullptr;
@@ -433,10 +445,10 @@ void getRuntimeTransposed(GridType gridType, const std::string &kernel, std::str
 
     BOOST_TEST_MESSAGE("duration: " << elapsed_seconds.count());
 
-    if (gridType == GridType::Linear) {
+    if (gridType == SGPP::base::Linear) {
         logger.outFile << datasetName << "," << "Linear" << "," << kernel << "," << refinedGridSize << ","
                 << elapsed_seconds.count() << std::endl;
-    } else if (gridType == GridType::ModLinear) {
+    } else if (gridType == SGPP::base::ModLinear) {
         logger.outFile << datasetName << "," << "ModLinear" << "," << kernel << "," << refinedGridSize << ","
                 << elapsed_seconds.count() << std::endl;
     } else {
@@ -449,11 +461,11 @@ BOOST_AUTO_TEST_SUITE(HPCSE2015Linear)
 
 BOOST_AUTO_TEST_CASE(StreamingDefault) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
@@ -471,60 +483,60 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementSteps[i];
+//        adaptConfig.numRefinements_ = refinementSteps[i];
 //        getRuntimeDataMining(GridType::Linear, "AVX", fileNames[i], datasetNames[i], levels[i], adaptConfig,
 //                configuration);
-        getRuntimeDataMining(GridType::Linear, "AVX", fileNames[i], datasetNames[i], levels[i], configuration);
+        getRuntimeDataMining(SGPP::base::Linear, "AVX", fileNames[i], datasetNames[i], levels[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
     SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementSteps[i];
+//        adaptConfig.numRefinements_ = refinementSteps[i];
 //        getRuntimeDataMining(GridType::Linear, "Subspace", fileNames[i], datasetNames[i], levels[i], adaptConfig,
 //                configuration);
-        getRuntimeDataMining(GridType::Linear, "Subspace", fileNames[i], datasetNames[i], levels[i], configuration);
+        getRuntimeDataMining(SGPP::base::Linear, "Subspace", fileNames[i], datasetNames[i], levels[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingBase) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::DEFAULT,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementSteps[i];
+//        adaptConfig.numRefinements_ = refinementSteps[i];
 //        getRuntimeDataMining(GridType::Linear, "Generic", fileNames[i], datasetNames[i], levels[i], adaptConfig,
 //                configuration);
-        getRuntimeDataMining(GridType::Linear, "Generic", fileNames[i], datasetNames[i], levels[i], configuration);
+        getRuntimeDataMining(SGPP::base::Linear, "Generic", fileNames[i], datasetNames[i], levels[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "true");
@@ -543,20 +555,20 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementSteps[i];
+//        adaptConfig.numRefinements_ = refinementSteps[i];
 //        getRuntimeDataMining(GridType::Linear, "OCL (GPU)", fileNames[i], datasetNames[i], levels[i], adaptConfig,
 //                configuration);
-        getRuntimeDataMining(GridType::Linear, "OCL (GPU)", fileNames[i], datasetNames[i], levels[i], configuration);
+        getRuntimeDataMining(SGPP::base::Linear, "OCL (GPU)", fileNames[i], datasetNames[i], levels[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "true");
@@ -575,10 +587,10 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementSteps[i];
+//        adaptConfig.numRefinements_ = refinementSteps[i];
 //        getRuntimeDataMining(GridType::Linear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levels[i],
 //                adaptConfig, configuration);
-        getRuntimeDataMining(GridType::Linear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levels[i],
+        getRuntimeDataMining(SGPP::base::Linear, "OCL blocked (GPU)", fileNames[i], datasetNames[i], levels[i],
                 configuration);
     }
 }
@@ -589,32 +601,32 @@ BOOST_AUTO_TEST_SUITE(HPCSE2015ModLinear)
 
 BOOST_AUTO_TEST_CASE(StreamingBase) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::DEFAULT,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
+//        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
 //        getRuntimeDataMiningTransposed(GridType::ModLinear, "Generic", fileNames[i], datasetNames[i],
 //                levelsModLinear[i], adaptConfig, configuration);
-        getRuntimeDataMiningTransposed(GridType::ModLinear, "Generic", fileNames[i], datasetNames[i],
+        getRuntimeDataMiningTransposed(SGPP::base::ModLinear, "Generic", fileNames[i], datasetNames[i],
                 levelsModLinear[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCL) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
@@ -632,21 +644,21 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
+//        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
 //        getRuntimeDataMiningTransposed(GridType::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i],
 //                levelsModLinear[i], adaptConfig, configuration);
-        getRuntimeDataMiningTransposed(GridType::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i],
+        getRuntimeDataMiningTransposed(SGPP::base::ModLinear, "OCL (GPU)", fileNames[i], datasetNames[i],
                 levelsModLinear[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
@@ -666,21 +678,21 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
+//        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
 //        getRuntimeDataMiningTransposed(GridType::ModLinear, "OCL blocked (GPU)", fileNames[i], datasetNames[i],
 //                levelsModLinear[i], adaptConfig, configuration);
-        getRuntimeDataMiningTransposed(GridType::ModLinear, "OCL blocked (GPU)", fileNames[i], datasetNames[i],
+        getRuntimeDataMiningTransposed(SGPP::base::ModLinear, "OCL blocked (GPU)", fileNames[i], datasetNames[i],
                 levelsModLinear[i], configuration);
     }
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
-    SGPP::base::AdpativityConfiguration adaptConfig;
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = REFINEMENT_POINTS;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
+//    SGPP::base::AdpativityConfiguration adaptConfig;
+//    adaptConfig.maxLevelType_ = false;
+//    adaptConfig.noPoints_ = REFINEMENT_POINTS;
+//    adaptConfig.percent_ = 200.0;
+//    adaptConfig.threshold_ = 0.0;
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
@@ -694,10 +706,10 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
+//        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
 //        getRuntimeDataMiningTransposed(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i],
 //                levelsModLinear[i], adaptConfig, configuration);
-        getRuntimeDataMiningTransposed(GridType::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i],
+        getRuntimeDataMiningTransposed(SGPP::base::ModLinear, "OCL Mask (GPU)", fileNames[i], datasetNames[i],
                 levelsModLinear[i], configuration);
     }
 }
