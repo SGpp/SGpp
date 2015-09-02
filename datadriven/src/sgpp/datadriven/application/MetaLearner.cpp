@@ -64,9 +64,16 @@ void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& op
     if (this->myLearner != nullptr) {
         delete this->myLearner;
     }
-
     this->myLearner = myLearner;
 }
+
+Grid &MetaLearner::getLearnedGrid() {
+    if (this->myLearner == nullptr) {
+        throw;
+    }
+    return this->myLearner->getGrid();
+}
+
 
 void MetaLearner::learnReference(std::string fileName) {
 
@@ -493,6 +500,8 @@ void MetaLearner::testRegular(SGPP::datadriven::OperationMultipleEvalConfigurati
     duration = learner->testRegular(this->gridConfig, testTrainingData);
     durationReference = learnerReference->testRegular(this->gridConfig, testTrainingData);
 }
+
+
 
 }
 }

@@ -100,6 +100,8 @@ namespace SGPP {
 
         void testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, size_t dim,
                          size_t level, size_t instances, float_t& duration, float_t& durationReference);
+
+        SGPP::base::Grid &getLearnedGrid();
     };
 
   }

@@ -85,6 +85,7 @@ int main(int argc, char** argv) {
 
     //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
     learner.learnAndCompare(configuration, fileName, 2, 1.0);
+
     //learner.writeStatisticsFile("statistics.csv", "test");
 
     return EXIT_SUCCESS;
