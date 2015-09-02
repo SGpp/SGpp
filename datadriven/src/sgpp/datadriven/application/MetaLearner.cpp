@@ -39,8 +39,17 @@ SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConf
 
 void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
         std::string datasetFileName) {
+    std::ifstream t(datasetFileName);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    this->learnString(operationConfiguration, buffer.str());
+}
 
-    Dataset dataset = ARFFTools::readARFF(datasetFileName);
+void MetaLearner::learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+        std::string content) {
+
+    Dataset dataset = ARFFTools::readARFFFromString(content);
+
     this->gridConfig.dim_ = dataset.getDimension();
     this->instances = dataset.getNumberInstances();
 
@@ -74,10 +83,16 @@ Grid &MetaLearner::getLearnedGrid() {
     return this->myLearner->getGrid();
 }
 
+void MetaLearner::learnReference(std::string datasetFileName) {
+    std::ifstream t(datasetFileName);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    this->learnReferenceString(buffer.str());
+}
 
-void MetaLearner::learnReference(std::string fileName) {
+void MetaLearner::learnReferenceString(std::string content) {
 
-    Dataset dataset = ARFFTools::readARFF(fileName);
+    Dataset dataset = ARFFTools::readARFFFromString(content);
     this->gridConfig.dim_ = dataset.getDimension();
     this->instances = dataset.getNumberInstances();
 
@@ -108,14 +123,26 @@ void MetaLearner::learnReference(std::string fileName) {
     this->referenceLearner = referenceLearner;
 }
 
-//learn and test against test dataset and measure hits/mse
 void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
         std::string datasetFileName, std::string testFileName, bool isBinaryClassification) {
+    std::ifstream dataFile(datasetFileName);
+    std::stringstream bufferData;
+    bufferData << dataFile.rdbuf();
+    std::ifstream testFile(datasetFileName);
+    std::stringstream bufferTest;
+    bufferTest << testFile.rdbuf();
+    this->learnAndTestString(operationConfiguration, bufferData.str(), bufferTest.str(), isBinaryClassification);
+}
+
+
+//learn and test against test dataset and measure hits/mse
+void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+        std::string dataContent, std::string testContent, bool isBinaryClassification) {
 
     //always to this first
-    this->learn(operationConfiguration, datasetFileName);
+    this->learnString(operationConfiguration, dataContent);
 
-    Dataset testDataset = ARFFTools::readARFF(testFileName);
+    Dataset testDataset = ARFFTools::readARFFFromString(testContent);
     size_t testDim = testDataset.getDimension();
     size_t testInstances = testDataset.getNumberInstances();
 
@@ -176,9 +203,18 @@ void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfigurat
 //learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
         std::string datasetFileName, size_t gridGranularity, float_t tolerance) {
+    std::ifstream t(datasetFileName);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    this->learnAndCompareString(operationConfiguration, buffer.str(), gridGranularity, tolerance);
+}
+
+//learn and test against the streaming implemenation
+float_t MetaLearner::learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+        std::string content, size_t gridGranularity, float_t tolerance) {
     //always do this first
-    this->learn(operationConfiguration, datasetFileName);
-    this->learnReference(datasetFileName);
+    this->learn(operationConfiguration, content);
+    this->learnReference(content);
 
     DataMatrix testTrainingData(0, this->gridConfig.dim_);
 
@@ -500,8 +536,6 @@ void MetaLearner::testRegular(SGPP::datadriven::OperationMultipleEvalConfigurati
     duration = learner->testRegular(this->gridConfig, testTrainingData);
     durationReference = learnerReference->testRegular(this->gridConfig, testTrainingData);
 }
-
-
 
 }
 }
