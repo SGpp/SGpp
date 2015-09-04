@@ -12,6 +12,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/CMAES.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
@@ -293,6 +294,12 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
                       populationSize);
   }
 
+  {
+    optimizer::CMAES cmaes(f, N);
+
+    BOOST_CHECK_EQUAL(&cmaes.getObjectiveFunction(), &f);
+  }
+
   for (size_t k = 0; k < 2; k++) {
     std::unique_ptr<ObjectiveFunction> curF;
     std::unique_ptr<ObjectiveGradient> curFGradient;
@@ -330,6 +337,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
                                      new optimizer::MultiStart(*curF, N))));
     optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
                                      new optimizer::DifferentialEvolution(*curF, N))));
+    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                                     new optimizer::CMAES(*curF, N))));
 
     for (auto& optimizer : optimizers) {
       base::DataVector xOpt(0);

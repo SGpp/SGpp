@@ -335,6 +335,15 @@ namespace SGPP {
         void mult(float_t scalar);
 
         /**
+         * Multiplies the matrix with a vector x and stores the result
+         * in another vector y.
+         *
+         * @param[in] x vector to be multiplied
+         * @param[out] y vector in which the result should be stored
+         */
+        void mult(const DataVector& x, DataVector& y);
+
+        /**
          * Squares all elements of the DataMatrix
          */
         void sqr();

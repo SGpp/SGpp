@@ -24,8 +24,12 @@ namespace SGPP {
        * matrix \f$V\f$
        * (similiarity transformation such that \f$S = V^{-1} AV\f$
        * upper triangular, \f$V\f$ orthogonal).
+       * The diagonal of \f$S\f$ contains the eigenvalues of \f$A\f$.
        * The Schur decomposition exists iff the characteristic polynomial
        * of \f$A\f$ factorizes in real linear factors.
+       * If \f$A\f$ is symmetric, then the Schur decomposition exists
+       * with diagonal \f$S\f$, i.e., the columns of \f$V\f$ are the
+       * eigenvectors of \f$A\f$.
        *
        * @param[in,out] A   square matrix, afterwards \f$S\f$
        * @param[out]    V   transformation matrix

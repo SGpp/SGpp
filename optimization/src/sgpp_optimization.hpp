@@ -78,6 +78,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/CMAES.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>

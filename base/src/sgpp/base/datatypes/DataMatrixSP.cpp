@@ -403,6 +403,28 @@ namespace SGPP {
       }
     }
 
+    void DataMatrixSP::mult(const DataVectorSP& x, DataVectorSP& y) {
+      if (ncols != x.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrixSP::mult : Dimensions do not match (x)");
+      }
+
+      if (nrows != y.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrixSP::mult : Dimensions do not match (y)");
+      }
+
+      for (size_t i = 0; i < nrows; i++) {
+        float entry = 0.0f;
+
+        for (size_t j = 0; j < ncols; j++) {
+          entry += data[(i * ncols) + j] * x[j];
+        }
+
+        y[i] = entry;
+      }
+    }
+
     void DataMatrixSP::sqr() {
       size_t n = nrows * ncols;
 

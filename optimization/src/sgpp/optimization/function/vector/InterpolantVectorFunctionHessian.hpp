@@ -60,9 +60,16 @@ namespace SGPP {
                          base::DataVector& value,
                          base::DataMatrix& gradient,
                          std::vector<base::DataMatrix>& hessian) {
-          // copy x, necessary due to non-existing const correctness
-          // in SGPP::base
-          base::DataVector y(x);
+          for (size_t t = 0; t < d; t++) {
+            if ((x[t] < 0.0) || (x[t] > 1.0)) {
+              for (size_t j = 0; j < m; j++) {
+                value[j] = INFINITY;
+              }
+
+              return;
+            }
+          }
+
           base::DataVector curAlpha(alpha.getNrows());
           base::DataVector curGradient(d);
           base::DataMatrix curHessian(d, d);
@@ -70,7 +77,7 @@ namespace SGPP {
           for (size_t j = 0; j < m; j++) {
             alpha.getColumn(j, curAlpha);
             value[j] = opEvalHessian->evalHessian(
-                         curAlpha, y, curGradient, hessian[j]);
+                         curAlpha, x, curGradient, hessian[j]);
             gradient.setRow(j, curGradient);
           }
         }
