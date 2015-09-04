@@ -124,8 +124,8 @@ namespace SGPP {
         }
       }
 
-      else if (strcmp(grid.getType(), "linearBoundary") == 0
-               || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
+      else if (strcmp(grid.getType(), "linearL0Boundary") == 0
+               || strcmp(grid.getType(), "linearBoundary") == 0) {
         if (vecType == parallel::X86SIMD) {
           return new parallel::OperationMultipleEvalIterativeSP<parallel::SPCPUKernel<parallel::SPX86SimdLinear> >(
                    grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);

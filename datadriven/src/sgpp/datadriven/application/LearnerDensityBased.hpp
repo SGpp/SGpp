@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
+#include "../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 
 
 namespace SGPP {

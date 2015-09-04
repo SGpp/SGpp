@@ -106,14 +106,14 @@ class GridDescriptor(object):
             if self.__border is not None:
                 if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                     if self.__deg > 1:
-                        grid = Grid.createPolyTruncatedBoundaryGrid(self.__dim, self.__deg)
+                        grid = Grid.createPolyBoundaryGrid(self.__dim, self.__deg)
                     else:
-                        grid = Grid.createLinearTruncatedBoundaryGrid(self.__dim)
+                        grid = Grid.createLinearBoundaryGrid(self.__dim)
                 elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                     if self.__deg > 1:
                         raise NotImplementedError()
                     else:
-                        grid = Grid.createLinearBoundaryGrid(self.__dim)
+                        grid = Grid.createLinearBoundaryGrid(self.__dim, 0)
                 else:
                     if self.__deg > 1:
                         grid = Grid.createModPolyGrid(self.__dim, self.__deg)

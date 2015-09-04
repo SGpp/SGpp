@@ -15,7 +15,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
@@ -41,13 +41,13 @@ namespace SGPP {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::LinearGrid(f.getDimension()));
       } else if ((std::strcmp(grid.getType(),
-                              "bsplineTruncatedBoundary") == 0) ||
+                              "bsplineBoundary") == 0) ||
                  (std::strcmp(grid.getType(),
-                              "waveletTruncatedBoundary") == 0) ||
+                              "waveletBoundary") == 0) ||
                  (std::strcmp(grid.getType(),
-                              "linearTruncatedBoundary") == 0)) {
+                              "linearBoundary") == 0)) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::LinearTruncatedBoundaryGrid(
+                       new base::LinearBoundaryGrid(
                          f.getDimension()));
       } else if ((std::strcmp(grid.getType(),
                               "bsplineClenshawCurtis") == 0) ||
@@ -97,9 +97,9 @@ namespace SGPP {
 
       std::unique_ptr<base::AbstractRefinement> abstractRefinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) ||
-          (std::strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) ||
-          (std::strcmp(grid.getType(), "linearTruncatedBoundary") == 0) ||
+      if ((std::strcmp(grid.getType(), "bsplineBoundary") == 0) ||
+          (std::strcmp(grid.getType(), "waveletBoundary") == 0) ||
+          (std::strcmp(grid.getType(), "linearBoundary") == 0) ||
           (std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
           (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
         // grid with boundaries

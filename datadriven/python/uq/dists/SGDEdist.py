@@ -174,7 +174,7 @@ class SGDEdist(Dist):
         level = min(10, gs.getMaxLevel())
         dim = self.getDim()
 
-        # fg = Grid.createLinearTruncatedBoundaryGrid(dim)
+        # fg = Grid.createLinearBoundaryGrid(dim)
         # fg.createGridGenerator().full(level)
         # opEval = createOperationEval(self.grid)
         # p = DataVector(dim)

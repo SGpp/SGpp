@@ -14,7 +14,7 @@ namespace SGPP {
   namespace datadriven {
     AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(SGPP::base::Grid& SparseGrid, size_t gridType, SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData, SGPP::base::DataVector& trainDataClass, size_t NUM, float_t lambda, size_t IMAX, float_t eps, size_t IMAX_final, float_t eps_final, float_t firstLabel, float_t secondLabel, float_t threshold, float_t maxLambda, float_t minLambda, size_t searchNum, bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda, float_t percentOfAda, size_t mode) {
       if (refine && (gridType != 1 && gridType != 2 && gridType != 3)) {
-        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+        throw new SGPP::base::operation_exception("AlgorithmAdaBoostBase : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)!");
       }
 
       if (refine && (percentOfAda >= 1.0 || percentOfAda <= 0.0)) {
@@ -283,9 +283,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -293,7 +293,7 @@ namespace SGPP {
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)!");
           }
 
           SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
@@ -410,9 +410,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -420,7 +420,7 @@ namespace SGPP {
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)!");
           }
 
           SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
@@ -601,9 +601,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -611,7 +611,7 @@ namespace SGPP {
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)!");
           }
 
           SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();
@@ -780,9 +780,9 @@ namespace SGPP {
             std::cout << std::endl;
             std::cout << "Reset to the regular LinearGrid" << std::endl;
           } else if (this->type == 2) {
-            this->grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(this->dim);
+            this->grid = SGPP::base::Grid::createLinearBoundaryGrid(this->dim);
             std::cout << std::endl;
-            std::cout << "Reset to the regular LinearTruncatedBoundaryGrid" << std::endl;
+            std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
           } else if (this->type == 3) {
             this->grid = SGPP::base::Grid::createModLinearGrid(this->dim);
             std::cout << std::endl;
@@ -790,7 +790,7 @@ namespace SGPP {
           }
           // should not happen because this exception should have been thrown some lines upwards!
           else {
-            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)!");
+            throw new SGPP::base::operation_exception("AlgorithmAdaboost : Only 1 or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)!");
           }
 
           SGPP::base::GridGenerator* gridGen = this->grid->createGridGenerator();

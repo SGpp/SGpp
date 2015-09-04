@@ -199,8 +199,8 @@ class Refinement(object):
     def refineGrid(self, learner, ts=None):
         # check if this method is used in the right context
         if learner.getGrid().getType() not in ('linear',
+                                               'linearL0Boundary',
                                                'linearBoundary',
-                                               'linearTruncatedBoundary',
                                                'modlinear',
                                                'ultraPoly',
                                                'ultraPolyTruncatedBoundary',

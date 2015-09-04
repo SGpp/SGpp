@@ -20,14 +20,14 @@ namespace SGPP {
     /**
      * Grid with Bspline basis functions with boundaries, pentagon cut
      */
-    class BsplineTruncatedBoundaryGrid : public Grid {
+    class BsplineBoundaryGrid : public Grid {
       protected:
         /**
          * This constructor creates a new GridStorage out of the stream.
          *
          * @param istr inputstream that contains the grid information
          */
-        BsplineTruncatedBoundaryGrid(std::istream& istr);
+        BsplineBoundaryGrid(std::istream& istr);
 
       public:
         /**
@@ -36,12 +36,12 @@ namespace SGPP {
          * @param dim the dimension of the grid
          * @param degree the bspline's degree
          */
-        BsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+        BsplineBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * Destructor.
          */
-        virtual ~BsplineTruncatedBoundaryGrid();
+        virtual ~BsplineBoundaryGrid();
 
         /**
          * @return string that identifies the grid type uniquely

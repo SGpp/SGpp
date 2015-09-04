@@ -5,8 +5,8 @@ import numpy as np
 
 def getIntegral(grid, level, index):
     # create new grid
-    if grid.getType() == "linearTruncatedBoundary" or \
-            grid.getType() == "linearBoundary":
+    if grid.getType() == "linearBoundary" or \
+            grid.getType() == "linearL0Boundary":
         return np.power(2., -max(1, level))
     elif grid.getType() == "linear":
         # # employ 4/3 rule
@@ -15,7 +15,7 @@ def getIntegral(grid, level, index):
         return np.power(2., -level)
     elif grid.getType() == "myPoly":
         return getBasis(grid).getIntegral(level, index)
-    elif grid.getType() == "polyTruncatedBoundary":
+    elif grid.getType() == "polyBoundary":
         return getBasis(grid).getIntegral(level, index)
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())

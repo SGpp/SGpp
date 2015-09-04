@@ -39,7 +39,7 @@ def createGrid(dim, level, borderType, isFull=False):
     elif borderType == BorderTypes.TRAPEZOIDBOUNDARY:
         grid = Grid.createLinearTrapezoidBoundaryGrid(dim)
     elif borderType == BorderTypes.COMPLETEBOUNDARY:
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 0)
     else:
         raise Exception('Unknown border type')
 
@@ -164,7 +164,7 @@ def eval_linear(ppd, dim, norm_offset=0.0):
 
 def eval_fullGrid(level, dim, border=True):
     if border:
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
     else:
         grid = Grid.createLinearGrid(dim)
 

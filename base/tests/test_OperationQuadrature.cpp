@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyTruncatedBoundaryGrid(dim, deg);
+  Grid* grid = Grid::createPolyBoundaryGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
   size_t N = gS->size();

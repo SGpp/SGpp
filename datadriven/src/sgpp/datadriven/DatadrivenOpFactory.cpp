@@ -59,8 +59,8 @@ namespace SGPP {
     datadriven::OperationTest* createOperationTest(base::Grid& grid) {
       if (strcmp(grid.getType(), "linear") == 0) {
         return new datadriven::OperationTestLinear(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearBoundary") == 0
-                 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearL0Boundary") == 0
+                 || strcmp(grid.getType(), "linearBoundary") == 0) {
         return new datadriven::OperationTestLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "modBspline") == 0) {
         return new datadriven::OperationTestModBspline(grid.getStorage(),
@@ -79,7 +79,7 @@ namespace SGPP {
         return new datadriven::OperationTestPrewavelet(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new datadriven::OperationTestLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearStretchedTruncatedBoundary")
+      } else if (strcmp(grid.getType(), "LinearStretchedBoundary")
                  == 0) {
         return new datadriven::OperationTestLinearStretchedBoundary(
                  grid.getStorage());
@@ -93,8 +93,8 @@ namespace SGPP {
     base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid,
         int mode, float_t k) {
       if (strcmp(grid.getType(), "linear") == 0
+          || strcmp(grid.getType(), "linearL0Boundary") == 0
           || strcmp(grid.getType(), "linearBoundary") == 0
-          || strcmp(grid.getType(), "linearTruncatedBoundary") == 0
           || strcmp(grid.getType(), "modlinear") == 0) {
         return new datadriven::OperationRegularizationDiagonalLinearBoundary(
                  grid.getStorage(), mode, k);

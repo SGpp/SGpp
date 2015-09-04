@@ -58,7 +58,7 @@ namespace SGPP {
         size_t numBaseLearners;
         /// the grid
         SGPP::base::Grid* grid;
-        /// type of grid possible value are 1, 2 or 3(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid);
+        /// type of grid possible value are 1, 2 or 3(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid);
         size_t type;
         /// Number of grid points
         size_t gridPoint;
@@ -119,7 +119,7 @@ namespace SGPP {
          * Std-Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)
+         * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)
          * @param gridLevel reference to the level of grid
          * @param trainData reference to the training dataset
          * @param trainDataClass reference to the class(real value in regression) of training dataset

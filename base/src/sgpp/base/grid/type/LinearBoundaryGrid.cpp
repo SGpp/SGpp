@@ -4,12 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
-#include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
@@ -17,6 +12,8 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
@@ -28,6 +25,10 @@ namespace SGPP {
 
     LinearBoundaryGrid::LinearBoundaryGrid(size_t dim) {
       this->storage = new GridStorage(dim);
+    }
+
+    LinearBoundaryGrid::LinearBoundaryGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
     }
 
     LinearBoundaryGrid::~LinearBoundaryGrid() {
@@ -53,6 +54,7 @@ namespace SGPP {
     GridGenerator* LinearBoundaryGrid::createGridGenerator() {
       return new BoundaryGridGenerator(this->storage);
     }
+
 
   }
 }

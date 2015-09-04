@@ -19,9 +19,9 @@ namespace SGPP {
     /**
      * grid with wavelet base functions with boundaries, pentagon cut
      */
-    class WaveletTruncatedBoundaryGrid : public Grid {
+    class WaveletBoundaryGrid : public Grid {
       protected:
-        WaveletTruncatedBoundaryGrid(std::istream& istr);
+        WaveletBoundaryGrid(std::istream& istr);
 
       public:
         /**
@@ -29,12 +29,12 @@ namespace SGPP {
          *
          * @param dim the dimension of the grid
          */
-        WaveletTruncatedBoundaryGrid(size_t dim);
+        WaveletBoundaryGrid(size_t dim);
 
         /**
          * Destructor
          */
-        virtual ~WaveletTruncatedBoundaryGrid();
+        virtual ~WaveletBoundaryGrid();
 
         virtual const char* getType();
 

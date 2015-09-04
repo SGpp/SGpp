@@ -18,15 +18,15 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
 
-    if gridType in ["poly", "polyTruncatedBoundary"]:
+    if gridType in ["poly", "polyBoundary"]:
         deg = max(deg, grid.getDegree())
 
     # print gridType, deg
     if deg > 1:
-        if gridType == "linearTruncatedBoundary" or \
-           gridType == "polyTruncatedBoundary":
-            return Grid.createPolyTruncatedBoundaryGrid(dim, deg)
-        elif gridType == "linearBoundary":
+        if gridType == "linearBoundary" or \
+           gridType == "polyBoundary":
+            return Grid.createPolyBoundaryGrid(dim, deg)
+        elif gridType == "linearL0Boundary":
             raise NotImplementedError("there is not full boundary polynomial grid")
         elif gridType == "linear" or gridType == "poly":
             return Grid.createPolyGrid(dim, deg)
@@ -35,10 +35,10 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     else:
         if gridType == "linear":
             return Grid.createLinearGrid(dim)
-        elif gridType == "linearTruncatedBoundary":
-            return Grid.createLinearTruncatedBoundaryGrid(dim)
         elif gridType == "linearBoundary":
             return Grid.createLinearBoundaryGrid(dim)
+        elif gridType == "linearL0Boundary":
+            return Grid.createLinearBoundaryGrid(dim, 0)
         else:
             raise Exception('unknown grid type %s' % gridType)
 
@@ -78,11 +78,11 @@ def copyGrid(grid, level=0, deg=1):
 def getBasis(grid):
     if grid.getType() == "linear":
         return SLinearBase()
-    elif grid.getType() == "linearTruncatedBoundary":
+    elif grid.getType() == "linearBoundary":
         return SLinearBoundaryBase()
     elif grid.getType() == "poly":
         return SPolyBase(grid.getDegree())
-    elif grid.getType() == "polyTruncatedBoundary":
+    elif grid.getType() == "polyBoundary":
         return SPolyBoundaryBase(grid.getDegree())
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())

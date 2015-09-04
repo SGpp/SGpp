@@ -7,7 +7,7 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createBsplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineTruncatedBoundaryGrid(d, p))));
+                              base::Grid::createBsplineBoundaryGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createBsplineClenshawCurtisGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
@@ -21,7 +21,7 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createLinearGrid(d))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearTruncatedBoundaryGrid(d))));
+                              base::Grid::createLinearBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createLinearClenshawCurtisGrid(d))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
@@ -29,7 +29,7 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createWaveletTruncatedBoundaryGrid(d))));
+                              base::Grid::createWaveletBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<base::Grid>(
                               base::Grid::createModWaveletGrid(d))));
 }

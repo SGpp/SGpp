@@ -37,7 +37,7 @@ namespace SGPP {
          * Std-Constructor
          *
          * @param SparseGrid reference to the sparse grid
-         * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearBoundary Grid, 3 = ModLinear Grid)
+         * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)
          * @param gridLevel reference to the level of grid
          * @param trainData reference to the training dataset
          * @param trainDataClass reference to the class of training dataset
