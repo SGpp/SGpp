@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
   if (grid_selection == "I") {
     myGrid = new SGPP::base::LinearGrid(*myBoundingBox);
   } else if (grid_selection == "B") {
-    myGrid = new SGPP::base::LinearTruncatedBoundaryGrid(*myBoundingBox);
+    myGrid = new SGPP::base::LinearBoundaryGrid(*myBoundingBox);
   } else {
     std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]" << std::endl << std::endl;
     exit(-1);

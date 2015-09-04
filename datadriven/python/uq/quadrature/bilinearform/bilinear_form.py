@@ -81,8 +81,8 @@ def computeBilinearForm(grid, U):
     # interpolate phi_i phi_j on sparse grid with piecewise polynomial SG
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
-    ngrid = Grid.createPolyTruncatedBoundaryGrid(1, 2)
-    # ngrid = Grid.createLinearTruncatedBoundaryGrid(1)
+    ngrid = Grid.createPolyBoundaryGrid(1, 2)
+    # ngrid = Grid.createLinearBoundaryGrid(1)
     ngrid.createGridGenerator().regular(gs.getMaxLevel() + 1)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())

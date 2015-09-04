@@ -118,8 +118,8 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
 
   if (GridConfig.type_ == SGPP::base::Linear) {
     std::cout << "chosen gridtype: Linear" << std::endl << std::endl;
-  } else if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
-    std::cout << "chosen gridtype: LinearTruncatedBoundary" << std::endl << std::endl;
+  } else if (GridConfig.type_ == SGPP::base::LinearBoundary) {
+    std::cout << "chosen gridtype: LinearBoundary" << std::endl << std::endl;
   } else {
     const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
 
@@ -456,7 +456,7 @@ int main(int argc, char* argv[]) {
     ggridtype = gridtype;
 
     if (gridtype == "linearboundary") {
-      gridConfig.type_ = SGPP::base::LinearTruncatedBoundary;
+      gridConfig.type_ = SGPP::base::LinearBoundary;
     } else if (gridtype == "modlinear") {
       gridConfig.type_ = SGPP::base::ModLinear;
     } else if (gridtype == "linear") {

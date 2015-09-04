@@ -22,7 +22,7 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
+#include "../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 
 
 namespace SGPP {
@@ -84,8 +84,8 @@ namespace SGPP {
     }
 
     void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig) {
-      if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
-        grid_ = new SGPP::base::LinearTruncatedBoundaryGrid(GridConfig.dim_);
+      if (GridConfig.type_ == SGPP::base::LinearBoundary) {
+        grid_ = new SGPP::base::LinearBoundaryGrid(GridConfig.dim_);
       } else if (GridConfig.type_ == SGPP::base::ModLinear) {
         grid_ = new SGPP::base::ModLinearGrid(GridConfig.dim_);
       } else if (GridConfig.type_ == SGPP::base::Linear) {

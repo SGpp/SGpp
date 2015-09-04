@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createBsplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createBsplineTruncatedBoundaryGrid(d, p))));
+                              Grid::createBsplineBoundaryGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createBsplineClenshawCurtisGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createLinearGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createLinearTruncatedBoundaryGrid(d))));
+                              Grid::createLinearBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createLinearClenshawCurtisGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
@@ -71,13 +71,13 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createWaveletTruncatedBoundaryGrid(d))));
+                              Grid::createWaveletBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createModWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createPolyGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createPolyTruncatedBoundaryGrid(d, p))));
+                              Grid::createPolyBoundaryGrid(d, p))));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::move(std::unique_ptr<SBasis>(

@@ -148,12 +148,12 @@ def constructGrid(dim):
                 sys.exit(1)
             if options.trapezoidboundary == True:
                 if options.verbose:
-                    print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
-                grid = Grid.createLinearTruncatedBoundaryGrid(dim)
-            if options.completeboundary == True:
-                if options.verbose:
                     print "LinearBoundaryGrid, l=%s" % (options.level)
                 grid = Grid.createLinearBoundaryGrid(dim)
+            if options.completeboundary == True:
+                if options.verbose:
+                    print "LinearL0BoundaryGrid, l=%s" % (options.level)
+                grid = Grid.createLinearBoundaryGrid(dim, 0)
         elif options.function_type == "modWavelet":
             if options.verbose:
                 print "ModWaveletGrid, l=%s" % (options.level)
@@ -176,8 +176,8 @@ def constructGrid(dim):
                     sys.exit(1)
                 else:
                     if options.verbose:
-                        print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
-                    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+                        print "LinearBoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearBoundaryGrid(dim)
             # more grid points on boundary?
             elif options.boundary == 2:
                 if options.polynom > 1:
@@ -185,8 +185,8 @@ def constructGrid(dim):
                     sys.exit(1)
                 else:
                     if options.verbose:
-                        print "LinearBoundaryGrid, l=%s" % (options.level)
-                    grid = Grid.createLinearBoundaryGrid(dim)
+                        print "LinearL0BoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearBoundaryGrid(dim, 0)
             else: #no border points
                 if options.polynom > 1:
                     if options.verbose:

@@ -11,63 +11,63 @@
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "StretchedTruncatedBoundaryGridGenerator.hpp"
+#include "StretchedBoundaryGridGenerator.hpp"
 
 
 namespace SGPP {
   namespace base {
 
-    StretchedTruncatedBoundaryGridGenerator::StretchedTruncatedBoundaryGridGenerator(GridStorage* storage) : storage(storage) {
+    StretchedBoundaryGridGenerator::StretchedBoundaryGridGenerator(GridStorage* storage) : storage(storage) {
     }
 
-    StretchedTruncatedBoundaryGridGenerator::~StretchedTruncatedBoundaryGridGenerator() {
+    StretchedBoundaryGridGenerator::~StretchedBoundaryGridGenerator() {
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::regular(size_t level) {
+    void StretchedBoundaryGridGenerator::regular(size_t level) {
       HashGenerator gen;
       gen.regularWithBoundaries(this->storage, static_cast<HashGenerator::level_t>(level), true);
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
+    void StretchedBoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
       throw generation_exception("Method is not implemented");
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::full(size_t level) {
+    void StretchedBoundaryGridGenerator::full(size_t level) {
       HashGenerator gen;
       gen.fullWithBoundary(this->storage, static_cast<HashGenerator::level_t>(level));
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::refine(RefinementFunctor* func) {
+    void StretchedBoundaryGridGenerator::refine(RefinementFunctor* func) {
       HashRefinementBoundaries refine;
       refine.free_refine(this->storage, func);
     }
 
-    size_t StretchedTruncatedBoundaryGridGenerator::getNumberOfRefinablePoints() {
+    size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePoints() {
       HashRefinementBoundaries refine;
       return refine.getNumberOfRefinablePoints(this->storage);
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha) {
+    void StretchedBoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha) {
       HashCoarsening coarsen;
       coarsen.free_coarsen(this->storage, func, alpha);
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {
+    void StretchedBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {
       HashCoarsening coarsen;
       coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
     }
 
-    size_t StretchedTruncatedBoundaryGridGenerator::getNumberOfRemovablePoints() {
+    size_t StretchedBoundaryGridGenerator::getNumberOfRemovablePoints() {
       HashCoarsening coarsen;
       return coarsen.getNumberOfRemovablePoints(this->storage);
     }
 
-    void StretchedTruncatedBoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, size_t maxLevel) {
+    void StretchedBoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, size_t maxLevel) {
       HashRefinementBoundariesMaxLevel refine;
       refine.refineToMaxLevel(this->storage, func, static_cast<HashGenerator::level_t>(maxLevel));
     }
 
-    size_t StretchedTruncatedBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
+    size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
       HashRefinementBoundariesMaxLevel refine;
       return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, static_cast<HashGenerator::level_t>(maxLevel));
     }

@@ -26,13 +26,13 @@ namespace SGPP {
     enum GridType {
       Linear,
       LinearStretched,
+      LinearL0Boundary,
       LinearBoundary,
+      LinearStretchedBoundary,
       LinearTruncatedBoundary,
-      LinearStretchedTruncatedBoundary,
-      LinearGeneralizedTruncatedBoundary,
       ModLinear,
       Poly,
-      PolyTruncatedBoundary,
+      PolyBoundary,
       ModPoly,
       ModWavelet,
       ModBspline,
@@ -41,10 +41,10 @@ namespace SGPP {
       Periodic,
       LinearClenshawCurtis,
       Bspline,
-      BsplineTruncatedBoundary,
+      BsplineBoundary,
       BsplineClenshawCurtis,
       Wavelet,
-      WaveletTruncatedBoundary,
+      WaveletBoundary,
       FundamentalSpline,
       ModFundamentalSpline,
       ModBsplineClenshawCurtis
@@ -118,27 +118,23 @@ namespace SGPP {
         static Grid* createLinearStretchedGrid(size_t dim);
 
         /**
-         * creates a linear boundary grid
+         * creates a linear boundary grid.
+	 * Optional parameter boundaryLevel, which specifies on which level the 
+	 * boundary grid points and basis functions should be added.
+	 * The default boundaryLevel=1 results in a grid with the same resolution on
+	 * the boundary as on the main axis.
          *
          * @param dim the grid's dimension
          * @return grid
          */
-        static Grid* createLinearBoundaryGrid(size_t dim);
-
-        /**
-         * creates a linear truncated boundary grid
-         *
-         * @param dim the grid's dimension
-         * @return grid
-         */
-        static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
+        static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel = 1);
 
         /**
          * creates a linearstretched truncated boundary grid
          *
          * @param dim the grid's dimension
          */
-        static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+        static Grid* createLinearStretchedBoundaryGrid(size_t dim);
 
         /**
          * creates a linear Clenshaw-Curtis grid
@@ -172,7 +168,7 @@ namespace SGPP {
          * @param degree the polynom's max. degree
          * @return grid
          */
-        static Grid* createPolyTruncatedBoundaryGrid(size_t dim, size_t degree);
+        static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * creates a poly grid
@@ -196,7 +192,7 @@ namespace SGPP {
          *
          * @param dim the grid's dimension
          */
-        static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
+        static Grid* createWaveletBoundaryGrid(size_t dim);
 
         /**
          * creates a mod wavelet grid
@@ -222,7 +218,7 @@ namespace SGPP {
          * @param degree the B-spline degree
          * @return grid
          */
-        static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+        static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * creates a Bspline Clenshaw-Curtis grid
@@ -291,7 +287,7 @@ namespace SGPP {
          * @param dim the grid's dimension
          * @return grid
          */
-        static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
+        static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 
         /**
          * creates a periodic grid

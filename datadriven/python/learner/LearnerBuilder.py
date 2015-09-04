@@ -435,9 +435,9 @@ class LearnerBuilder(object):
                     raise AttributeError, "Not all attributes assigned to create grid"
                 if self.__border != None:
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
-                        grid = Grid.createLinearTruncatedBoundaryGrid(self.__dim)
-                    elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim)
+                    elif self.__border == BorderTypes.COMPLETEBOUNDARY:
+                        grid = Grid.createLinearBoundaryGrid(self.__dim, 0)
                     else:
                         if self.__deg > 1:
                             grid = Grid.createModPolyGrid(self.__dim, self.__deg)

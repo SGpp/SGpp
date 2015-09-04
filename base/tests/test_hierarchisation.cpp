@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationTruncatedBoundary) {
   int level = 5;
 
   for (int dim = 1; dim < 4; dim++) {
-    Grid* grid = Grid::createLinearTruncatedBoundaryGrid(dim);
+    Grid* grid = Grid::createLinearBoundaryGrid(dim);
 #if USE_DOUBLE_PRECISION
     testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
 #else
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
   int level = 5;
 
   for (int dim = 1; dim < 4; dim++) {
-    Grid* grid = Grid::createLinearBoundaryGrid(dim);
+    Grid* grid = Grid::createLinearBoundaryGrid(dim, 0);
 #if USE_DOUBLE_PRECISION
     testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
 #else
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
 
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
-      Grid* grid = Grid::createPolyTruncatedBoundaryGrid(dim, degree[i]);
+      Grid* grid = Grid::createPolyBoundaryGrid(dim, degree[i]);
       testHierarchisationDehierarchisation(grid, level, &parabola, 0.0, true);
     }
   }
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   dimBound->leftBoundary = 0.00001;
   dimBound->rightBoundary = 1.;
   Stretching stretch(dim, dimBound, str1d);
-  Grid* grid = Grid::createLinearStretchedTruncatedBoundaryGrid(dim);
+  Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
   testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13, false, true);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   dimBound_vec.push_back(dimBound);
 
   Stretching stretch(dim, dimBound_vec, stretch_vec);
-  Grid* grid = Grid::createLinearStretchedTruncatedBoundaryGrid(dim);
+  Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
   testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12, false, true);

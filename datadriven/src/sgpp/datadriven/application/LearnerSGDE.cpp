@@ -134,10 +134,10 @@ namespace SGPP {
       // load grid
       if (gridConfig.type_ == GridType::Linear) {
         grid = Grid::createLinearGrid(ndim);
+      } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
+        grid = Grid::createLinearBoundaryGrid(ndim, 0);
       } else if (gridConfig.type_ == GridType::LinearBoundary) {
         grid = Grid::createLinearBoundaryGrid(ndim);
-      } else if (gridConfig.type_ == GridType::LinearTruncatedBoundary) {
-        grid = Grid::createLinearTruncatedBoundaryGrid(ndim);
       } else {
         throw application_exception(
           "LeanerSGDE::initialize : grid type is not supported");
