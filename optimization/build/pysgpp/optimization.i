@@ -122,6 +122,7 @@ const bool UMFPACK_ENABLED;
 %rename(OptAdaptiveGradientDescent) SGPP::optimization::optimizer::AdaptiveGradientDescent;
 %rename(OptAdaptiveNewton)          SGPP::optimization::optimizer::AdaptiveNewton;
 %rename(OptBFGS)                    SGPP::optimization::optimizer::BFGS;
+%rename(OptCMAES)                   SGPP::optimization::optimizer::CMAES;
 %rename(OptDifferentialEvolution)   SGPP::optimization::optimizer::DifferentialEvolution;
 %rename(OptGradientDescent)         SGPP::optimization::optimizer::GradientDescent;
 %rename(OptMultiStart)              SGPP::optimization::optimizer::MultiStart;
@@ -311,6 +312,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/BFGS.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/CMAES.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/MultiStart.hpp"

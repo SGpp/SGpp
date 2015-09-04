@@ -58,10 +58,13 @@ namespace SGPP {
          * @return      \f$f(\vec{x})\f$
          */
         inline float_t eval(const base::DataVector& x) {
-          // copy x, necessary due to non-existing const correctness
-          // in SGPP::base
-          base::DataVector y(x);
-          return opEval->eval(alpha, y);
+          for (size_t t = 0; t < d; t++) {
+            if ((x[t] < 0.0) || (x[t] > 1.0)) {
+              return INFINITY;
+            }
+          }
+
+          return opEval->eval(alpha, x);
         }
 
         /**
