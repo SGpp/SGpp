@@ -5,9 +5,7 @@
 
 import unittest, sys
 
-if __name__ == '__main__': 
-    sys.stdout.write("Running unit tests. ")
-        
+if __name__ == '__main__':
     alltests = unittest.TestSuite()
 
     result = unittest.TextTestRunner(verbosity=9).run(alltests)

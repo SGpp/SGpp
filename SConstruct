@@ -22,7 +22,7 @@ print "Using SCons", SCons.__version__
 sconsenv = SConsEnvironment()
 scons_ver = sconsenv._get_major_minor_revision(SCons.__version__)
 if scons_ver < (2, 3, 0):
-  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports, that it also compiles with scons >= 2.1.0")
+  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports that it also compiles with scons >= 2.1.0.")
 
 # to ignore folders containing a SConscript file, do the following:
 # ignoreFolders = ["jsgpp"]
@@ -210,61 +210,64 @@ for moduleFolder in moduleFolders:
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
 
-#TODO: ask julian
 if env['SG_JAVA']:
   env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': "jsgpp"})
 
-# Unit tests
+# Python tests
 #########################################################################
 
-# necessary to enforce an order on the final steps of the building of the wrapper
-dependency = None
+dependencies = []
+separator = 70 * "-"
+
+def printRunningPythonTests(target, source, env):
+  print "\n" + separator + "\nRunning Python tests...\n" + separator
+
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
+
   # serialize tests and move them at the end of the build
   for testTarget in testTargetList:
     env.Requires(testTarget, installTargetList)
+    dependencies.append(testTarget)
 
-    if dependency is None:
-      #print testTarget, 'depends on nothing'
-      dependency = testTarget
-    else:
-      #print testTarget, 'depends on', dependency
-      env.Depends(testTarget, dependency)
-      dependency = testTarget
+# Boost tests
+#########################################################################
+
+def printRunningBoostTests(target, source, env):
+  print "\n" + separator + "\nRunning Boost tests...\n" + separator
 
 if env['COMPILE_BOOST_TESTS'] and env['RUN_BOOST_TESTS']:
+  dependencies.append(env.Command('printRunningBoostTests', [], printRunningBoostTests))
+
   for testTarget in boostTestTargetList:
     env.Requires(testTarget, installTargetList)
-    if dependency is None:
-      dependency = testTarget
-    else:
-      env.Depends(testTarget, dependency)
-      dependency = testTarget
+    dependencies.append(testTarget)
+
+# Examples
+#########################################################################
+
+def printCompilingExamples(target, source, env):
+  print "\n" + separator + "\nCompiling examples...\n" + separator
+
+dependencies.append(env.Command('printCompilingExamples', [], printCompilingExamples))
 
 for exampleTarget in exampleTargetList:
   env.Requires(exampleTarget, installTargetList)
-  if dependency is None:
-    dependency = exampleTarget
-  else:
-    env.Depends(exampleTarget, dependency)
-    dependency = exampleTarget
+  dependencies.append(exampleTarget)
 
-# final output
-def finish(target, source, env):
-    from string import Template
-    fd = open("INSTRUCTIONS")
-    instructionsTemplate = Template(fd.read())
-    fd.close()
+# Final output
+#########################################################################
 
-    s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+def printFinished(target, source, env):
+  import string
+  with open("INSTRUCTIONS") as f:
+    instructionsTemplate = string.Template(f.read())
+  print
+  print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
                                              PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
-    print
-    print s
 
-moduleFinish = env.Command('finish', [], finish)
-# env.Requires(moduleFinish, installTargetList)
-# # testTargetList.append(moduleFinish)
-if dependency is not None:
-    env.Depends(moduleFinish, dependency)
-# env.Default(moduleFinish)
-  
+dependencies.append(env.Command('printFinished', [], printFinished))
+
+# necessary to enforce an order on the final steps of the building of the wrapper
+for i in range(len(dependencies) - 1):
+  env.Depends(dependencies[i + 1], dependencies[i])
