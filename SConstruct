@@ -216,7 +216,8 @@ if env['SG_JAVA']:
 # Python tests
 #########################################################################
 
-dependencies = []
+# execute first test after installing the last module
+dependencies = [installTargetList]
 separator = 70 * "-"
 
 def printRunningPythonTests(target, source, env):
@@ -246,10 +247,10 @@ if env['COMPILE_BOOST_TESTS'] and env['RUN_BOOST_TESTS']:
 # Examples
 #########################################################################
 
-def printCompilingExamples(target, source, env):
-  print "\n" + separator + "\nCompiling examples...\n" + separator
+def printLinkingExamples(target, source, env):
+  print "\n" + separator + "\nLinking examples...\n" + separator
 
-dependencies.append(env.Command('printCompilingExamples', [], printCompilingExamples))
+dependencies.append(env.Command('printLinkingExamples', [], printLinkingExamples))
 
 for exampleTarget in exampleTargetList:
   env.Requires(exampleTarget, installTargetList)

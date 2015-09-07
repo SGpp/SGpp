@@ -119,10 +119,10 @@ namespace SGPP {
 
         /**
          * creates a linear boundary grid.
-	 * Optional parameter boundaryLevel, which specifies on which level the 
-	 * boundary grid points and basis functions should be added.
-	 * The default boundaryLevel=1 results in a grid with the same resolution on
-	 * the boundary as on the main axis.
+         * Optional parameter boundaryLevel, which specifies on which level the
+         * boundary grid points and basis functions should be added.
+         * The default boundaryLevel=1 results in a grid with the same resolution on
+         * the boundary as on the main axis.
          *
          * @param dim the grid's dimension
          * @return grid
