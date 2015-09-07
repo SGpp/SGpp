@@ -78,7 +78,7 @@ namespace SGPP {
       this->dim = BoundingBox.getDimensions();
       this->levels = level;
 
-      this->myGrid = new LinearTruncatedBoundaryGrid(BoundingBox);
+      this->myGrid = new LinearBoundaryGrid(BoundingBox);
 
       GridGenerator* myGenerator = this->myGrid->createGridGenerator();
       myGenerator->regular(this->levels);

@@ -143,7 +143,7 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
 
     # create adequate grid
     if hasBorder:
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
     else:
         grid = Grid.createLinearGrid(dim)
 

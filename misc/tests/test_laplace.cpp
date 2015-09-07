@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -404,7 +404,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = 3;
   size_t level = 2;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -422,7 +422,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -450,7 +450,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = 3;
   size_t level = 2;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -482,7 +482,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -496,7 +496,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -510,7 +510,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -524,7 +524,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = 3;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceMatrix(grid, level);
 
@@ -542,7 +542,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -556,7 +556,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -570,7 +570,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 
@@ -584,7 +584,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = 3;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
   DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
 

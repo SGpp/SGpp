@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+#include <sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
@@ -29,37 +29,37 @@ namespace SGPP {
       throw generation_exception("Method is not implemented");
     }
 
-    //void BoundaryGridGenerator::refine(RefinementFunctor* func)
+    //void L0BoundaryGridGenerator::refine(RefinementFunctor* func)
     //{
     //  HashRefinementBoundaries refine;
     //  refine.free_refine(this->storage, func);
     //}
     //
-    //size_t BoundaryGridGenerator::getNumberOfRefinablePoints()
+    //size_t L0BoundaryGridGenerator::getNumberOfRefinablePoints()
     //{
     //  HashRefinementBoundaries refine;
     //  return refine.getNumberOfRefinablePoints(this->storage);
     //}
     //
-    //void BoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
+    //void L0BoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
     //{
     //  HashCoarsening coarsen;
     //  coarsen.free_coarsen(this->storage, func, alpha);
     //}
     //
-    //size_t BoundaryGridGenerator::getNumberOfRemovablePoints()
+    //size_t L0BoundaryGridGenerator::getNumberOfRemovablePoints()
     //{
     //  HashCoarsening coarsen;
     //  return coarsen.getNumberOfRemovablePoints(this->storage);
     //}
     //
-    //void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
+    //void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
     //{
     //  HashRefinementBoundariesMaxLevel refine;
     //  refine.refineToMaxLevel(this->storage, func, maxLevel);
     //}
     //
-    //size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
+    //size_t L0BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
     //{
     //  HashRefinementBoundariesMaxLevel refine;
     //  return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);

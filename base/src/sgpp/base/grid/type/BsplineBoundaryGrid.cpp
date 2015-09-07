@@ -5,7 +5,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
@@ -20,42 +20,42 @@
 namespace SGPP {
   namespace base {
 
-    BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
+    BsplineBoundaryGrid::BsplineBoundaryGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
       istr >> degree;
     }
 
 
-    BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
+    BsplineBoundaryGrid::BsplineBoundaryGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
       this->storage = new GridStorage(dim);
     }
 
-    BsplineClenshawCurtisGrid::~BsplineClenshawCurtisGrid() {
+    BsplineBoundaryGrid::~BsplineBoundaryGrid() {
       if (basis_ != NULL) {
         delete basis_;
       }
     }
 
-    const char* BsplineClenshawCurtisGrid::getType() {
-      return "bsplineClenshawCurtis";
+    const char* BsplineBoundaryGrid::getType() {
+      return "bsplineBoundary";
     }
 
-    const SBasis& BsplineClenshawCurtisGrid::getBasis() {
+    const SBasis& BsplineBoundaryGrid::getBasis() {
       if (basis_ == NULL) {
-        basis_ = new SBsplineClenshawCurtisBase(degree);
+        basis_ = new SBsplineBoundaryBase(degree);
       }
 
       return *basis_;
     }
 
-    size_t BsplineClenshawCurtisGrid::getDegree() {
+    size_t BsplineBoundaryGrid::getDegree() {
       return this->degree;
     }
 
-    Grid* BsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
-      return new BsplineClenshawCurtisGrid(istr);
+    Grid* BsplineBoundaryGrid::unserialize(std::istream& istr) {
+      return new BsplineBoundaryGrid(istr);
     }
 
-    void BsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
+    void BsplineBoundaryGrid::serialize(std::ostream& ostr) {
       this->Grid::serialize(ostr);
       ostr << degree << std::endl;
     }
@@ -64,7 +64,7 @@ namespace SGPP {
      * Creates new GridGenerator
      * This must be changed if we add other storage types
      */
-    GridGenerator* BsplineClenshawCurtisGrid::createGridGenerator() {
+    GridGenerator* BsplineBoundaryGrid::createGridGenerator() {
       return new BoundaryGridGenerator(this->storage);
     }
 

@@ -10,8 +10,6 @@ import tbin.tdata.testsuite as datatests
 import tbin.tcontroller.testsuite as controllertests
 
 if __name__ == '__main__':
-    sys.stdout.write("Running unit tests. ")
-
     alltests = unittest.TestSuite([
             #unittest.defaultTestLoader.loadTestsFromModule(test_RefinementANOVA),
             #unittest.defaultTestLoader.loadTestsFromModule(test_periodic),

@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/generation/TruncatedBoundaryGridGenerator.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
@@ -52,7 +52,7 @@ namespace SGPP {
      * This must be changed if we add other storage types
      */
     GridGenerator* LinearClenshawCurtisGrid::createGridGenerator() {
-      return new TruncatedBoundaryGridGenerator(this->storage);
+      return new BoundaryGridGenerator(this->storage);
     }
 
 

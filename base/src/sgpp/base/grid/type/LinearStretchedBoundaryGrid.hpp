@@ -19,9 +19,9 @@ namespace SGPP {
     /**
      * grid with linear base functions with boundaries, pentagon cut
      */
-    class LinearStretchedTruncatedBoundaryGrid : public Grid {
+    class LinearStretchedBoundaryGrid : public Grid {
       protected:
-        LinearStretchedTruncatedBoundaryGrid(std::istream& istr);
+        LinearStretchedBoundaryGrid(std::istream& istr);
 
       public:
         /**
@@ -29,19 +29,19 @@ namespace SGPP {
          *
          * @param dim the dimension of the grid
          */
-        LinearStretchedTruncatedBoundaryGrid(size_t dim);
+        LinearStretchedBoundaryGrid(size_t dim);
 
         /**
          * Constructor Linear Truncated Boundary Grid
          *
          * @param BB the Stretching of the grid
          */
-        LinearStretchedTruncatedBoundaryGrid(Stretching& BB);
+        LinearStretchedBoundaryGrid(Stretching& BB);
 
         /**
          * Destructor
          */
-        virtual ~LinearStretchedTruncatedBoundaryGrid();
+        virtual ~LinearStretchedBoundaryGrid();
 
         virtual const char* getType();
 
