@@ -18,9 +18,9 @@ namespace SGPP {
     /**
      * trapezoid boundary grid with polynomial base functions
      */
-    class PolyTruncatedBoundaryGrid : public Grid {
+    class PolyBoundaryGrid : public Grid {
       protected:
-        PolyTruncatedBoundaryGrid(std::istream& istr);
+        PolyBoundaryGrid(std::istream& istr);
 
       public:
         /**
@@ -29,12 +29,12 @@ namespace SGPP {
          * @param dim the dimension of the grid
          * @param degree the max. polynom's degree
          */
-        PolyTruncatedBoundaryGrid(size_t dim, size_t degree);
+        PolyBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * Destructor
          */
-        virtual ~PolyTruncatedBoundaryGrid();
+        virtual ~PolyBoundaryGrid();
 
         virtual const SBasis& getBasis();
         virtual const char* getType();

@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -446,7 +446,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();

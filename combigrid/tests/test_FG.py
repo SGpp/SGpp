@@ -123,7 +123,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
         dim = 2
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 0)
         testFG(self, grid, level, function)
 
   
@@ -134,7 +134,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
         dim = 3
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 0)
         testFG(self, grid, level, function)
 
 
@@ -144,7 +144,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
         dim = 4
         level = 6
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 0)
         testFG(self, grid, level, function)    
 
 
@@ -154,7 +154,7 @@ class TestCompositionLinearBoundary(unittest.TestCase):
         dim = 2
         level = 9
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim, 0)
         testFG(self, grid, level, function)
 
 class TestCompositionLinearTruncated(unittest.TestCase):        
@@ -164,7 +164,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
         dim = 1
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
   
@@ -175,7 +175,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
         dim = 3
         level = 5
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
         testFG(self, grid, level, function)
 
 
@@ -185,7 +185,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
         dim = 4
         level = 4
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
         testFG(self, grid, level, function)    
 
 
@@ -195,7 +195,7 @@ class TestCompositionLinearTruncated(unittest.TestCase):
         dim = 2
         level = 9
         function = buildParableBoundary(dim)
-        grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
         testFG(self, grid, level, function)
         
 class TestCompositionSquareRoot(unittest.TestCase):        

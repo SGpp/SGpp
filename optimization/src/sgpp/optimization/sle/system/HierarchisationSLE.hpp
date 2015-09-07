@@ -29,7 +29,7 @@
 
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
-#include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
@@ -80,11 +80,11 @@ namespace SGPP {
                                dynamic_cast<base::BsplineGrid&>(grid).
                                getDegree()));
             basisType = BSPLINE;
-          } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+          } else if (strcmp(grid.getType(), "bsplineBoundary") == 0) {
             bsplineBoundaryBasis =
               std::unique_ptr<base::SBsplineBoundaryBase>(
                 new base::SBsplineBoundaryBase(
-                  dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid)
+                  dynamic_cast<base::BsplineBoundaryGrid&>(grid)
                   .getDegree()));
             basisType = BSPLINE_BOUNDARY;
           } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
@@ -123,8 +123,8 @@ namespace SGPP {
             linearBasis = std::unique_ptr<base::SLinearBase>(
                             new base::SLinearBase());
             basisType = LINEAR;
-          } else if (strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
-            linearBoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
+          } else if (strcmp(grid.getType(), "linearBoundary") == 0) {
+            linearL0BoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
                                     new base::SLinearBoundaryBase());
             basisType = LINEAR_BOUNDARY;
           } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
@@ -140,7 +140,7 @@ namespace SGPP {
             waveletBasis = std::unique_ptr<base::SWaveletBase>(
                              new base::SWaveletBase());
             basisType = WAVELET;
-          } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+          } else if (strcmp(grid.getType(), "waveletBoundary") == 0) {
             waveletBoundaryBasis = std::unique_ptr<base::SWaveletBoundaryBase>(
                                      new base::SWaveletBoundaryBase());
             basisType = WAVELET_BOUNDARY;
@@ -231,7 +231,7 @@ namespace SGPP {
         /// linear basis
         std::unique_ptr<base::SLinearBase> linearBasis;
         /// linear boundary basis
-        std::unique_ptr<base::SLinearBoundaryBase> linearBoundaryBasis;
+        std::unique_ptr<base::SLinearBoundaryBase> linearL0BoundaryBasis;
         /// linear Clenshaw-Curtis basis
         std::unique_ptr<base::SLinearClenshawCurtisBase>
         linearClenshawCurtisBasis;
@@ -560,7 +560,7 @@ namespace SGPP {
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
-            const float_t result1d = linearBoundaryBasis->eval(
+            const float_t result1d = linearL0BoundaryBasis->eval(
                                        gpBasis.getLevel(t),
                                        gpBasis.getIndex(t),
                                        gpPoint.getCoord(t));

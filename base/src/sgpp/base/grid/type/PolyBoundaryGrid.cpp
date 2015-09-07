@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include "PolyTruncatedBoundaryGrid.hpp"
+#include "PolyBoundaryGrid.hpp"
 
-#include <sgpp/base/grid/generation/TruncatedBoundaryGridGenerator.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
@@ -15,24 +15,24 @@
 namespace SGPP {
   namespace base {
 
-    PolyTruncatedBoundaryGrid::PolyTruncatedBoundaryGrid(std::istream& istr) :
+    PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
       Grid(istr), degree(1 << 16), basis_(NULL) {
       istr >> degree;
     }
 
-    PolyTruncatedBoundaryGrid::PolyTruncatedBoundaryGrid(size_t dim,
+    PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
         size_t degree) :
       degree(degree), basis_(NULL) {
       this->storage = new GridStorage(dim);
     }
 
-    PolyTruncatedBoundaryGrid::~PolyTruncatedBoundaryGrid() {
+    PolyBoundaryGrid::~PolyBoundaryGrid() {
       if (basis_ != NULL) {
         delete basis_;
       }
     }
 
-    const SBasis& PolyTruncatedBoundaryGrid::getBasis() {
+    const SBasis& PolyBoundaryGrid::getBasis() {
       if (basis_ == NULL) {
         basis_ = new SPolyBoundaryBase(degree);
       }
@@ -40,19 +40,19 @@ namespace SGPP {
       return *basis_;
     }
 
-    const char* PolyTruncatedBoundaryGrid::getType() {
-      return "polyTruncatedBoundary";
+    const char* PolyBoundaryGrid::getType() {
+      return "polyBoundary";
     }
 
-    size_t PolyTruncatedBoundaryGrid::getDegree() const {
+    size_t PolyBoundaryGrid::getDegree() const {
       return this->degree;
     }
 
-    Grid* PolyTruncatedBoundaryGrid::unserialize(std::istream& istr) {
-      return new PolyTruncatedBoundaryGrid(istr);
+    Grid* PolyBoundaryGrid::unserialize(std::istream& istr) {
+      return new PolyBoundaryGrid(istr);
     }
 
-    void PolyTruncatedBoundaryGrid::serialize(std::ostream& ostr) {
+    void PolyBoundaryGrid::serialize(std::ostream& ostr) {
       this->Grid::serialize(ostr);
       ostr << degree << std::endl;
     }
@@ -61,8 +61,8 @@ namespace SGPP {
      * Creates new GridGenerator
      * This must be changed if we add other storage types
      */
-    GridGenerator* PolyTruncatedBoundaryGrid::createGridGenerator() {
-      return new TruncatedBoundaryGridGenerator(this->storage);
+    GridGenerator* PolyBoundaryGrid::createGridGenerator() {
+      return new BoundaryGridGenerator(this->storage);
     }
 
   }

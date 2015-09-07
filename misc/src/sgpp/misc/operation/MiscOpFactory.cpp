@@ -20,7 +20,7 @@ namespace SGPP {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearL0Boundary") == 0 || strcmp(grid.getType(), "linearBoundary") == 0) {
         return new pde::OperationLaplaceEnhancedLinearBoundary(grid.getStorage());
       } else {
         throw base::factory_exception("OperationLaplaceEnhanced is not implemented for this grid type.");
@@ -31,7 +31,7 @@ namespace SGPP {
 
       if (strcmp(grid.getType(), "linear") == 0) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearBoundary") == 0 || strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearL0Boundary") == 0 || strcmp(grid.getType(), "linearBoundary") == 0) {
         return new pde::OperationLaplaceEnhancedLinearBoundary(grid.getStorage(), coef);
       } else {
         throw base::factory_exception("OperationLaplaceEnhanced is not implemented for this grid type.");

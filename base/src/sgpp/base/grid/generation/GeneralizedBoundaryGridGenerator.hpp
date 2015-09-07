@@ -18,19 +18,19 @@ namespace SGPP {
      * This class provides the interface for the grid generation
      * for grids with boundaries, pentagon cut through sub space scheme
      */
-    class GeneralizedTruncatedBoundaryGridGenerator : public GridGenerator {
+    class GeneralizedBoundaryGridGenerator : public GridGenerator {
       public:
         /**
          * Constructor
          *
          * @param storage template type that holds the grid points
          */
-        GeneralizedTruncatedBoundaryGridGenerator(GridStorage* storage);
+        GeneralizedBoundaryGridGenerator(GridStorage* storage);
 
         /**
          * Destructor
          */
-        virtual ~GeneralizedTruncatedBoundaryGridGenerator();
+        virtual ~GeneralizedBoundaryGridGenerator();
         /**
          * Creates a regular truncated boundary grid with given level and l_user=1
          * Is the same as the regular truncated grid

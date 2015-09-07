@@ -98,7 +98,7 @@ namespace SGPP {
       this->numAssets = this->dim / 2;
       this->levels = level;
 
-      this->myGrid = new LinearTruncatedBoundaryGrid(BoundingBox);
+      this->myGrid = new LinearBoundaryGrid(BoundingBox);
 
       GridGenerator* myGenerator = this->myGrid->createGridGenerator();
       myGenerator->regular(this->levels);
@@ -886,7 +886,7 @@ namespace SGPP {
 
       BoundingBox* boundingBox1d = new BoundingBox(dim1d, boundaries1d);
 
-      Grid* grid1d = new LinearTruncatedBoundaryGrid(*boundingBox1d);
+      Grid* grid1d = new LinearBoundaryGrid(*boundingBox1d);
 
       GridGenerator* myGenerator = grid1d->createGridGenerator();
       myGenerator->regular(levels1d);

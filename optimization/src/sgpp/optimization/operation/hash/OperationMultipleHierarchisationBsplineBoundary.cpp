@@ -16,7 +16,7 @@ namespace SGPP {
   namespace optimization {
 
     OperationMultipleHierarchisationBsplineBoundary::OperationMultipleHierarchisationBsplineBoundary(
-      base::BsplineTruncatedBoundaryGrid& grid) :
+      base::BsplineBoundaryGrid& grid) :
       grid(grid) {
     }
 

@@ -11,20 +11,18 @@ for @e all other developers.</div>
 @section development__overview Overview
 - @ref development__unittests (this page)
 - @ref development__doxygen (this page)
-- @subpage svn
 - @subpage styleguide
 
 
 <!-- ############################################################# -->
 @section development__unittests Testing
 
-In the subdirectory @c tests/ there are @link tests the following@endlink
-unit tests written in Python. To simplify unit testing, we enforce that all
-unit tests are written in Python in order to also check the build success of the
-python bindings.
+We have both Python unit tests and unit test based on @c BOOST. They can be found
+in the test subdirectory of each module. The @c BOOST unit tests are preferrably
+to be used. However, there is some extra functionality in Python which
+can be tested only in Python, of course.
 
-The tests can be run separately or all together via the file
-@c test_pyclass.py. If you modify existing code, do not forget
+If you modify existing code, do not forget
 to make sure that no new errors are introduced. If you write new
 functionalities, do @em always add unit tests for each functionality!
 
@@ -56,29 +54,7 @@ documentation with doxygen!
 Executing <tt>doxygen</tt> in the main folder creates the
 Doxygen-documentation in the subfolder <tt>doc</tt>. The settings
 for Doxygen are automatically taken from the file
-<tt>Doxyfile</tt>. As those settings do some preprocessing to
-include the revision numbers from the svn-Repository this requires the
-use of <tt>svn</tt> and takes longer than normal execution.
-
-Therefore a second file with Doxygen-settings exists, just without
-the preprocessing steps,
-@todo file does not exist
-<tt>Doxyfile.fast</tt>, which is much
-faster. It can be used running <tt>doxygen Doxyfile.fast</tt>
-in the main folder.
-
-The preprocessing steps include the substitution of the tags
-<pre>
-\@version&nbsp;$HEAD$
-</pre> to show the current revision of the svn, and
-<pre>
-\@version&nbsp;$CURR$
-</pre> to additionally show the last revision, the current file
-changed and the last author working on the file. Additionally the tag
-<pre>
-$<tt>SVN_LOG</tt>$
-</pre>
-is substituted by a list of the last few check-ins.
-
+<tt>Doxyfile</tt>. It is automatically created based on @c Doxyfile.template
+each time @c scons is exectued.
 
 */

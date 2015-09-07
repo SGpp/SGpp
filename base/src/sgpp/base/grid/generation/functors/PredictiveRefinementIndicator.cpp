@@ -132,12 +132,12 @@ namespace SGPP {
       //  gridTypes.insert(std::make_pair("poly",7));
       gridTypes.insert(std::make_pair("modlinear", 8));
       //  gridTypes.insert(std::make_pair("modBspline",9));
-      //  gridTypes.insert(std::make_pair("linearTruncatedBoundary",10));
-      //  gridTypes.insert(std::make_pair("linearStretchedTruncatedBoundary",11));
-      //  gridTypes.insert(std::make_pair("linearGeneralizedTruncatedBoundary",12));
+      //  gridTypes.insert(std::make_pair("linearBoundary",10));
+      //  gridTypes.insert(std::make_pair("LinearStretchedBoundary",11));
+      //  gridTypes.insert(std::make_pair("linearTruncatedBoundary",12));
       //  gridTypes.insert(std::make_pair("squareRoot",13));
       //  gridTypes.insert(std::make_pair("prewavelet",14));
-      gridTypes.insert(std::make_pair("linearBoundary", 15));
+      gridTypes.insert(std::make_pair("linearL0Boundary", 15));
 
 
       //find the integer representation of the grid type and return it.

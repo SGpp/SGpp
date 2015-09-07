@@ -16,7 +16,7 @@ namespace SGPP {
   namespace optimization {
 
     OperationMultipleHierarchisationWaveletBoundary::OperationMultipleHierarchisationWaveletBoundary(
-      base::WaveletTruncatedBoundaryGrid& grid) :
+      base::WaveletBoundaryGrid& grid) :
       grid(grid) {
     }
 
