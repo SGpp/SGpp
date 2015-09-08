@@ -3,29 +3,29 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYCONSTRAINTFUNCTION_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYCONSTRAINTFUNCTION_HPP
+#ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
+#define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
 
 #include <cstddef>
-#include <sgpp/optimization/function/vector/ConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/VectorFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
 
     /**
-     * Empty implementation of ConstraintFunction.
+     * Empty implementation of VectorFunction.
      * This is intended as a fill-in for ConstrainedOptimizer, if
      * only equality or inequality constraints are supported.
      */
-    class EmptyConstraintFunction : public ConstraintFunction {
+    class EmptyVectorFunction : public VectorFunction {
       public:
         /**
          * Constructor.
          */
-        EmptyConstraintFunction() : ConstraintFunction(0, 0) {
+        EmptyVectorFunction() : VectorFunction(0, 0) {
         }
 
-        virtual ~EmptyConstraintFunction() {};
+        virtual ~EmptyVectorFunction() {};
 
         /**
          * Does nothing.
@@ -41,14 +41,14 @@ namespace SGPP {
         virtual void clone(
           std::unique_ptr<VectorFunction>& clone) const {
           clone = std::unique_ptr<VectorFunction>(
-                    new EmptyConstraintFunction());
+                    new EmptyVectorFunction());
         }
     };
 
-    /// instance of EmptyConstraintFunction
-    extern EmptyConstraintFunction emptyConstraintFunction;
+    /// instance of EmptyVectorFunction
+    extern EmptyVectorFunction emptyVectorFunction;
 
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYCONSTRAINTFUNCTION_HPP */
+#endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP */

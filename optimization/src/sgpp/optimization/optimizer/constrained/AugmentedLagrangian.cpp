@@ -8,22 +8,22 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintGradient.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
       namespace {
-        class PenalizedObjectiveFunction : public ObjectiveFunction {
+        class PenalizedObjectiveFunction : public ScalarFunction {
           public:
-            PenalizedObjectiveFunction(ObjectiveFunction& f,
-                                       ConstraintFunction& g,
-                                       ConstraintFunction& h,
+            PenalizedObjectiveFunction(ScalarFunction& f,
+                                       VectorFunction& g,
+                                       VectorFunction& h,
                                        float_t mu,
                                        base::DataVector& lambda) :
-              ObjectiveFunction(f.getDimension()),
+              ScalarFunction(f.getDimension()),
               f(f),
               g(g),
               h(h),
@@ -65,8 +65,8 @@ namespace SGPP {
               return value;
             }
 
-            void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-              clone = std::unique_ptr<ObjectiveFunction>(
+            void clone(std::unique_ptr<ScalarFunction>& clone) const {
+              clone = std::unique_ptr<ScalarFunction>(
                         new PenalizedObjectiveFunction(*this));
             }
 
@@ -75,23 +75,23 @@ namespace SGPP {
             }
 
           protected:
-            ObjectiveFunction& f;
-            ConstraintFunction& g;
-            ConstraintFunction& h;
+            ScalarFunction& f;
+            VectorFunction& g;
+            VectorFunction& h;
             float_t mu;
             base::DataVector& lambda;
             size_t mG;
             size_t mH;
         };
 
-        class PenalizedObjectiveGradient : public ObjectiveGradient {
+        class PenalizedObjectiveGradient : public ScalarFunctionGradient {
           public:
-            PenalizedObjectiveGradient(ObjectiveGradient& fGradient,
-                                       ConstraintGradient& gGradient,
-                                       ConstraintGradient& hGradient,
+            PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
+                                       VectorFunctionGradient& gGradient,
+                                       VectorFunctionGradient& hGradient,
                                        float_t mu,
                                        base::DataVector& lambda) :
-              ObjectiveGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getDimension()),
               fGradient(fGradient),
               gGradient(gGradient),
               hGradient(hGradient),
@@ -158,8 +158,8 @@ namespace SGPP {
               return value;
             }
 
-            void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
-              clone = std::unique_ptr<ObjectiveGradient>(
+            void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+              clone = std::unique_ptr<ScalarFunctionGradient>(
                         new PenalizedObjectiveGradient(*this));
             }
 
@@ -168,19 +168,19 @@ namespace SGPP {
             }
 
           protected:
-            ObjectiveGradient& fGradient;
-            ConstraintGradient& gGradient;
-            ConstraintGradient& hGradient;
+            ScalarFunctionGradient& fGradient;
+            VectorFunctionGradient& gGradient;
+            VectorFunctionGradient& hGradient;
             float_t mu;
             base::DataVector& lambda;
             size_t mG;
             size_t mH;
         };
 
-        class AuxiliaryObjectiveFunction : public ObjectiveFunction {
+        class AuxiliaryObjectiveFunction : public ScalarFunction {
           public:
             AuxiliaryObjectiveFunction(size_t d, float_t sMin, float_t sMax) :
-              ObjectiveFunction(d + 1),
+              ScalarFunction(d + 1),
               sMin(sMin),
               sMax(sMax) {
             }
@@ -197,8 +197,8 @@ namespace SGPP {
               return x[d] * (sMax - sMin) + sMin;
             }
 
-            void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-              clone = std::unique_ptr<ObjectiveFunction>(
+            void clone(std::unique_ptr<ScalarFunction>& clone) const {
+              clone = std::unique_ptr<ScalarFunction>(
                         new AuxiliaryObjectiveFunction(*this));
             }
 
@@ -207,10 +207,10 @@ namespace SGPP {
             float_t sMax;
         };
 
-        class AuxiliaryObjectiveGradient : public ObjectiveGradient {
+        class AuxiliaryObjectiveGradient : public ScalarFunctionGradient {
           public:
             AuxiliaryObjectiveGradient(size_t d, float_t sMin, float_t sMax) :
-              ObjectiveGradient(d + 1),
+              ScalarFunctionGradient(d + 1),
               sMin(sMin),
               sMax(sMax) {
             }
@@ -231,8 +231,8 @@ namespace SGPP {
               return x[d] * (sMax - sMin) + sMin;
             }
 
-            void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
-              clone = std::unique_ptr<ObjectiveGradient>(
+            void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+              clone = std::unique_ptr<ScalarFunctionGradient>(
                         new AuxiliaryObjectiveGradient(*this));
             }
 
@@ -241,16 +241,16 @@ namespace SGPP {
             float_t sMax;
         };
 
-        class AuxiliaryConstraintFunction : public ConstraintFunction {
+        class AuxiliaryConstraintFunction : public VectorFunction {
           public:
             AuxiliaryConstraintFunction(size_t d,
-                                        ConstraintFunction& g,
-                                        ConstraintFunction& h,
+                                        VectorFunction& g,
+                                        VectorFunction& h,
                                         float_t sMin,
                                         float_t sMax) :
-              ConstraintFunction(d + 1,
-                                 g.getNumberOfComponents() +
-                                 2 * h.getNumberOfComponents() + 1),
+              VectorFunction(d + 1,
+                             g.getNumberOfComponents() +
+                             2 * h.getNumberOfComponents() + 1),
               g(g),
               h(h),
               mG(g.getNumberOfComponents()),
@@ -293,30 +293,30 @@ namespace SGPP {
               }
             }
 
-            void clone(std::unique_ptr<ConstraintFunction>& clone) const {
-              clone = std::unique_ptr<ConstraintFunction>(
+            void clone(std::unique_ptr<VectorFunction>& clone) const {
+              clone = std::unique_ptr<VectorFunction>(
                         new AuxiliaryConstraintFunction(*this));
             }
 
           protected:
-            ConstraintFunction& g;
-            ConstraintFunction& h;
+            VectorFunction& g;
+            VectorFunction& h;
             size_t mG;
             size_t mH;
             float_t sMin;
             float_t sMax;
         };
 
-        class AuxiliaryConstraintGradient : public ConstraintGradient {
+        class AuxiliaryConstraintGradient : public VectorFunctionGradient {
           public:
             AuxiliaryConstraintGradient(size_t d,
-                                        ConstraintGradient& gGradient,
-                                        ConstraintGradient& hGradient,
+                                        VectorFunctionGradient& gGradient,
+                                        VectorFunctionGradient& hGradient,
                                         float_t sMin,
                                         float_t sMax) :
-              ConstraintGradient(d + 1,
-                                 gGradient.getNumberOfComponents() +
-                                 2 * hGradient.getNumberOfComponents() + 1),
+              VectorFunctionGradient(d + 1,
+                                     gGradient.getNumberOfComponents() +
+                                     2 * hGradient.getNumberOfComponents() + 1),
               gGradient(gGradient),
               hGradient(hGradient),
               mG(gGradient.getNumberOfComponents()),
@@ -383,14 +383,14 @@ namespace SGPP {
               }
             }
 
-            void clone(std::unique_ptr<ConstraintGradient>& clone) const {
-              clone = std::unique_ptr<ConstraintGradient>(
+            void clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
+              clone = std::unique_ptr<VectorFunctionGradient>(
                         new AuxiliaryConstraintGradient(*this));
             }
 
           protected:
-            ConstraintGradient& gGradient;
-            ConstraintGradient& hGradient;
+            VectorFunctionGradient& gGradient;
+            VectorFunctionGradient& hGradient;
             size_t mG;
             size_t mH;
             float_t sMin;
@@ -399,12 +399,12 @@ namespace SGPP {
       }
 
       AugmentedLagrangian::AugmentedLagrangian(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
-        ConstraintFunction& g,
-        ConstraintGradient& gGradient,
-        ConstraintFunction& h,
-        ConstraintGradient& hGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
+        VectorFunction& g,
+        VectorFunctionGradient& gGradient,
+        VectorFunction& h,
+        VectorFunctionGradient& hGradient,
         size_t maxItCount,
         float_t xTolerance,
         float_t constraintTolerance,
@@ -538,7 +538,7 @@ namespace SGPP {
 
         AugmentedLagrangian optimizer(
           auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
-          emptyConstraintFunction, emptyConstraintGradient);
+          emptyVectorFunction, emptyVectorFunctionGradient);
         optimizer.setStartingPoint(auxX);
         optimizer.optimize(auxX);
 
@@ -549,16 +549,16 @@ namespace SGPP {
         return x;
       }
 
-      ObjectiveGradient& AugmentedLagrangian::getObjectiveGradient() const {
+      ScalarFunctionGradient& AugmentedLagrangian::getObjectiveGradient() const {
         return fGradient;
       }
 
-      ConstraintGradient&
+      VectorFunctionGradient&
       AugmentedLagrangian::getInequalityConstraintGradient() const {
         return gGradient;
       }
 
-      ConstraintGradient&
+      VectorFunctionGradient&
       AugmentedLagrangian::getEqualityConstraintGradient() const {
         return hGradient;
       }

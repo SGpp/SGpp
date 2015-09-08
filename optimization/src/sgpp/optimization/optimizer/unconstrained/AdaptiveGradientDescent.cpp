@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       AdaptiveGradientDescent::AdaptiveGradientDescent(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -132,7 +132,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
+      ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
         return fGradient;
       }
 

@@ -45,7 +45,7 @@ namespace SGPP {
            * @param gamma                 contraction coefficient
            * @param delta                 shrinking coefficient
            */
-          NelderMead(ObjectiveFunction& f,
+          NelderMead(ScalarFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      float_t alpha = DEFAULT_ALPHA,
                      float_t beta = DEFAULT_BETA,

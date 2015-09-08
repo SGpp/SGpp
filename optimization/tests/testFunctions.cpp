@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(TestTestFunctions) {
     const size_t d = fcn->getDimension();
 
     // test cloning
-    std::unique_ptr<ObjectiveFunction> fcn2(nullptr);
+    std::unique_ptr<ScalarFunction> fcn2(nullptr);
     fcn->clone(fcn2);
 
     // check displacement

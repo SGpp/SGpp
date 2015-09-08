@@ -14,8 +14,8 @@ namespace SGPP {
     namespace optimizer {
 
       AdaptiveNewton::AdaptiveNewton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -36,8 +36,8 @@ namespace SGPP {
       }
 
       AdaptiveNewton::AdaptiveNewton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -233,7 +233,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveHessian& AdaptiveNewton::getObjectiveHessian() const {
+      ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {
         return fHessian;
       }
 

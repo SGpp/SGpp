@@ -21,7 +21,7 @@ namespace SGPP {
     }
 
     PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
-        size_t degree) :
+                                       size_t degree) :
       degree(degree), basis_(NULL) {
       this->storage = new GridStorage(dim);
     }

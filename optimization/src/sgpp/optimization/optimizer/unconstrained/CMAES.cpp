@@ -11,13 +11,13 @@
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <algorithm>
-#include <iostream>
+#include <cmath>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      CMAES::CMAES(ObjectiveFunction& f, size_t maxFcnEvalCount) :
+      CMAES::CMAES(ScalarFunction& f, size_t maxFcnEvalCount) :
         UnconstrainedOptimizer(f, maxFcnEvalCount) {
       }
 
@@ -115,8 +115,19 @@ namespace SGPP {
             x.add(m);
             X.setColumn(k, x);
 
-            fX[k] = f.eval(x);
-            fXOrder[k] = k;
+            {
+              bool inDomain = true;
+
+              for (size_t t = 0; t < d; t++) {
+                if ((x[t] < 0.0) || (x[t] > 1.0)) {
+                  inDomain = false;
+                  break;
+                }
+              }
+
+              fX[k] = (inDomain ? f.eval(x) : INFINITY);
+              fXOrder[k] = k;
+            }
           }
 
           numberOfFcnEvals += lambda;

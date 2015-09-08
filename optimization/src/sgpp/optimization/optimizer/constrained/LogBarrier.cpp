@@ -8,19 +8,19 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
       namespace {
-        class PenalizedObjectiveFunction : public ObjectiveFunction {
+        class PenalizedObjectiveFunction : public ScalarFunction {
           public:
-            PenalizedObjectiveFunction(ObjectiveFunction& f,
-                                       ConstraintFunction& g,
+            PenalizedObjectiveFunction(ScalarFunction& f,
+                                       VectorFunction& g,
                                        float_t mu) :
-              ObjectiveFunction(f.getDimension()),
+              ScalarFunction(f.getDimension()),
               f(f),
               g(g),
               mu(mu),
@@ -51,8 +51,8 @@ namespace SGPP {
               return value;
             }
 
-            void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-              clone = std::unique_ptr<ObjectiveFunction>(
+            void clone(std::unique_ptr<ScalarFunction>& clone) const {
+              clone = std::unique_ptr<ScalarFunction>(
                         new PenalizedObjectiveFunction(*this));
             }
 
@@ -61,18 +61,18 @@ namespace SGPP {
             }
 
           protected:
-            ObjectiveFunction& f;
-            ConstraintFunction& g;
+            ScalarFunction& f;
+            VectorFunction& g;
             float_t mu;
             size_t m;
         };
 
-        class PenalizedObjectiveGradient : public ObjectiveGradient {
+        class PenalizedObjectiveGradient : public ScalarFunctionGradient {
           public:
-            PenalizedObjectiveGradient(ObjectiveGradient& fGradient,
-                                       ConstraintGradient& gGradient,
+            PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
+                                       VectorFunctionGradient& gGradient,
                                        float_t mu) :
-              ObjectiveGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getDimension()),
               fGradient(fGradient),
               gGradient(gGradient),
               mu(mu),
@@ -115,8 +115,8 @@ namespace SGPP {
               return value;
             }
 
-            void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
-              clone = std::unique_ptr<ObjectiveGradient>(
+            void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+              clone = std::unique_ptr<ScalarFunctionGradient>(
                         new PenalizedObjectiveGradient(*this));
             }
 
@@ -125,23 +125,23 @@ namespace SGPP {
             }
 
           protected:
-            ObjectiveGradient& fGradient;
-            ConstraintGradient& gGradient;
+            ScalarFunctionGradient& fGradient;
+            VectorFunctionGradient& gGradient;
             float_t mu;
             size_t m;
         };
       }
 
       LogBarrier::LogBarrier(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
-        ConstraintFunction& g,
-        ConstraintGradient& gGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
+        VectorFunction& g,
+        VectorFunctionGradient& gGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t barrierStartValue,
         float_t barrierDecreaseFactor) :
-        ConstrainedOptimizer(f, g, emptyConstraintFunction, maxItCount),
+        ConstrainedOptimizer(f, g, emptyVectorFunction, maxItCount),
         fGradient(fGradient),
         gGradient(gGradient),
         theta(tolerance),
@@ -216,11 +216,11 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& LogBarrier::getObjectiveGradient() const {
+      ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const {
         return fGradient;
       }
 
-      ConstraintGradient& LogBarrier::getInequalityConstraintGradient() const {
+      VectorFunctionGradient& LogBarrier::getInequalityConstraintGradient() const {
         return gGradient;
       }
 
