@@ -198,7 +198,7 @@ namespace SGPP {
         tMap->insert(std::pair<std::string, Grid::Factory>("linearstencil", LinearGridStencil::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinearstencil", ModLinearGridStencil::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("linearBoundary", LinearBoundaryGrid::unserialize));
-        tMap->insert(std::pair<std::string, Grid::Factory>("LinearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
@@ -223,7 +223,7 @@ namespace SGPP {
         tMap->insert(std::make_pair("linearstencil", LinearGridStencil::unserialize));
         tMap->insert(std::make_pair("modlinearstencil", ModLinearGridStencil::unserialize));
         tMap->insert(std::make_pair("linearBoundary", LinearBoundaryGrid::unserialize));
-        tMap->insert(std::make_pair("LinearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
+        tMap->insert(std::make_pair("linearStretchedBoundary", LinearStretchedBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::make_pair("poly", PolyGrid::unserialize));

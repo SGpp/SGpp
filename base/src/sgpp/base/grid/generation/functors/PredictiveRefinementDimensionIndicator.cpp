@@ -166,8 +166,8 @@ namespace SGPP {
       gridTypes.insert(std::make_pair("modlinear", 8));
       //  gridTypes.insert(std::make_pair("modBspline",9));
       //  gridTypes.insert(std::make_pair("linearBoundary",10));
-      //  gridTypes.insert(std::make_pair("LinearStretchedBoundary",11));
-      //  gridTypes.insert(std::make_pair("linearTruncatedBoundary""LinearStretchedBoundary",12));
+      //  gridTypes.insert(std::make_pair("linearStretchedBoundary",11));
+      //  gridTypes.insert(std::make_pair("linearTruncatedBoundary""linearStretchedBoundary",12));
       //  gridTypes.insert(std::make_pair("squareRoot",13));
       //  gridTypes.insert(std::make_pair("prewavelet",14));
       gridTypes.insert(std::make_pair("linearL0Boundary", 15));

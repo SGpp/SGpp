@@ -117,7 +117,7 @@ namespace SGPP {
     }
 
     DataMatrix* LearnerSGDE::getSamples() {
-      return samples;
+      return new DataMatrix(*samples);
     }
 
     size_t LearnerSGDE::getDim() {
@@ -185,9 +185,11 @@ namespace SGPP {
             % static_cast<size_t>(std::max(
                                     static_cast<float_t>(learnerSGDEConfig.lambdaSteps_)
                                     / 10.0f, static_cast<float_t>(1.0f))) == 0) {
-          cout << i << "/" << learnerSGDEConfig.lambdaSteps_ - 1
-               << " (lambda = " << curLambda << ") " << endl;
-          cout.flush();
+          if (!learnerSGDEConfig.silent_) {
+            cout << i + 1 << "/" << learnerSGDEConfig.lambdaSteps_
+                 << " (lambda = " << curLambda << ") " << endl;
+            cout.flush();
+          }
         }
 
         // cross-validation
@@ -203,8 +205,10 @@ namespace SGPP {
           //get L2 norm of residual for test set
           curMean = computeResidual(*grid, *alpha, *(kfold_test[j]), 0.0);
           curMeanAcc += curMean;
-          cout << "# " << curLambda << " " << i << " " << j << " "
-               << curMeanAcc << " " << curMean << endl;
+          if (!learnerSGDEConfig.silent_) {
+            cout << "# " << curLambda << " " << i << " " << j << " "
+                 << curMeanAcc << " " << curMean << endl;
+          }
 
           // free space
           delete grid;
@@ -218,11 +222,15 @@ namespace SGPP {
           bestLambda = curLambda;
         }
 
-        cout << "# " << curLambda << " " << bestLambda << " " << i << " "
-             << curMeanAcc << endl;
+        if (!learnerSGDEConfig.silent_) {
+          cout << "# " << curLambda << " " << bestLambda << " " << i << " "
+               << curMeanAcc << endl;
+        }
       }
 
-      cout << "# -> best lambda = " << bestLambda << endl;
+      if (!learnerSGDEConfig.silent_) {
+        cout << "# -> best lambda = " << bestLambda << endl;
+      }
 
       // free splitted sets
       for (size_t i = 0; i < kfold; i++) {
@@ -243,20 +251,26 @@ namespace SGPP {
       alpha.resize(grid.getStorage()->size());
       alpha.setAll(0.0);
 
-      cout << "# LearnerSGDE: grid points " << grid.getSize() << endl;
+      if (!learnerSGDEConfig.silent_) {
+        cout << "# LearnerSGDE: grid points " << grid.getSize() << endl;
+      }
 
       for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
         OperationMatrix* C = computeRegularizationMatrix(grid);
 
         SGPP::datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambdaReg);
         SMatrix.generateb(rhs);
-        cout << "# LearnerSGDE: Solving " << endl;
+        if (!learnerSGDEConfig.silent_) {
+          cout << "# LearnerSGDE: Solving " << endl;
+        }
         SGPP::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
                                               solverConfig.eps_);
         myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
         if (ref < adaptivityConfig.numRefinements_) {
-          cout << "# LearnerSGDE: Refine grid ... ";
+          if (!learnerSGDEConfig.silent_) {
+            cout << "# LearnerSGDE: Refine grid ... ";
+          }
           //Weight surplus with function evaluation at grid points
           OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
           GridIndex* gp;
@@ -275,9 +289,11 @@ namespace SGPP {
           SurplusRefinementFunctor srf(&alphaWeight,
                                        adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
           gridGen->refine(&srf);
-          cout << "# LearnerSGDE: ref " << ref << "/"
-               << adaptivityConfig.numRefinements_ - 1 << ": "
-               << grid.getStorage()->size() << endl;
+          if (!learnerSGDEConfig.silent_) {
+            cout << "# LearnerSGDE: ref " << ref << "/"
+                 << adaptivityConfig.numRefinements_ - 1 << ": "
+                 << grid.getStorage()->size() << endl;
+          }
           alpha.resize(grid.getStorage()->size());
           rhs.resize(grid.getStorage()->size());
           alpha.setAll(0.0);
@@ -390,18 +406,18 @@ namespace SGPP {
                                    mydata->getNcols());
         stest[i] = new DataMatrix(s[i], mydata->getNcols());
 
-        size_t lokal_test = 0;
-        size_t lokal_train = 0;
+        size_t local_test = 0;
+        size_t local_train = 0;
 
         for (size_t j = 0; j < mydata->getNrows(); j++) {
           mydata->getRow(j, p);
 
           if (ind[i] <= j && j < ind[i + 1]) {
-            stest[i]->setRow(lokal_test, p);
-            lokal_test++;
+            stest[i]->setRow(local_test, p);
+            local_test++;
           } else {
-            strain[i]->setRow(lokal_train, p);
-            lokal_train++;
+            strain[i]->setRow(local_train, p);
+            local_train++;
           }
         }
       }

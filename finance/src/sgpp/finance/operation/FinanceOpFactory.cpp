@@ -81,7 +81,7 @@ namespace SGPP {
         return new finance::OperationGammaLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationGammaLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary") == 0) {
         return new finance::OperationGammaLinearStretchedBoundary(grid.getStorage(), coef);
       }
 
@@ -98,7 +98,7 @@ namespace SGPP {
         return new finance::OperationGammaLogLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationGammaLogLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary") == 0) {
         return new finance::OperationGammaLogLinearStretchedBoundary(grid.getStorage(), coef);
       }
 
@@ -168,7 +168,7 @@ namespace SGPP {
         return new finance::OperationDeltaLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationDeltaLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary") == 0) {
         return new finance::OperationDeltaLinearStretchedBoundary(grid.getStorage(), coef);
       }
 
@@ -187,7 +187,7 @@ namespace SGPP {
         return new finance::OperationDeltaLogLinear(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new finance::OperationDeltaLogLinearStretched(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary") == 0) {
         return new finance::OperationDeltaLogLinearStretchedBoundary(grid.getStorage(), coef);
       } else if (strcmp(grid.getType(), "linearL0Boundary") == 0
                  || strcmp(grid.getType(), "linearBoundary") == 0 ) {

@@ -79,7 +79,7 @@ namespace SGPP {
         return new datadriven::OperationTestPrewavelet(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new datadriven::OperationTestLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary")
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary")
                  == 0) {
         return new datadriven::OperationTestLinearStretchedBoundary(
                  grid.getStorage());

@@ -24,30 +24,30 @@ namespace SGPP {
      *
      */
     enum GridType {
-      Linear,
-      LinearStretched,
-      LinearL0Boundary,
-      LinearBoundary,
-      LinearStretchedBoundary,
-      LinearTruncatedBoundary,
-      ModLinear,
-      Poly,
-      PolyBoundary,
-      ModPoly,
-      ModWavelet,
-      ModBspline,
-      Prewavelet,
-      SquareRoot,
-      Periodic,
-      LinearClenshawCurtis,
-      Bspline,
-      BsplineBoundary,
-      BsplineClenshawCurtis,
-      Wavelet,
-      WaveletBoundary,
-      FundamentalSpline,
-      ModFundamentalSpline,
-      ModBsplineClenshawCurtis
+      Linear,                       //  0
+      LinearStretched,              //  1
+      LinearL0Boundary,             //  2
+      LinearBoundary,               //  3
+      LinearStretchedBoundary,      //  4
+      LinearTruncatedBoundary,	    //  5
+      ModLinear,                    //  6
+      Poly,                         //  7
+      PolyBoundary,                 //  8
+      ModPoly,                      //  9
+      ModWavelet,                   // 10
+      ModBspline,                   // 11
+      Prewavelet,                   // 12
+      SquareRoot,                   // 13
+      Periodic,                     // 14
+      LinearClenshawCurtis,         // 15
+      Bspline,                      // 16
+      BsplineBoundary,              // 17
+      BsplineClenshawCurtis,        // 18
+      Wavelet,                      // 19
+      WaveletBoundary,              // 20
+      FundamentalSpline,            // 21
+      ModFundamentalSpline,         // 22
+      ModBsplineClenshawCurtis      // 23
     };
 
     /**

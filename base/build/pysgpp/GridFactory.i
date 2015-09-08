@@ -59,32 +59,45 @@ struct RegularGridConfiguration {
       /// number of levels
       int level_;
     };
-    
+
+struct AdpativityConfiguration {
+      /// number of refinements
+      size_t numRefinements_;
+      /// refinement threshold for surpluses
+      float_t threshold_;
+      /// refinement type: false: classic, true: maxLevel
+      bool maxLevelType_;
+      /// max. number of points to be refined
+      size_t noPoints_;
+      /// max. percent of points to be refined
+      float_t percent_;
+    };
+
 typedef enum mail_ {
-    Linear = 0,
-    LinearStretched = 1,
-    LinearL0Boundary = 2,
-    LinearBoundary = 3,
-    LinearStretchedBoundary = 4,
-    ModLinear = 5,
-    Poly = 6,
-    PolyBoundary = 7,
-    ModPoly = 8,
-    ModWavelet = 9,
-    ModBspline = 10,
-    Prewavelet = 11,
-    SquareRoot = 12,
-    LinearTruncatedBoundary = 13,
-    Periodic = 14,
-    LinearClenshawCurtis = 15,
-    Bspline = 16,
-    BsplineBoundary = 17,
-    BsplineClenshawCurtis = 18,
-    Wavelet = 19,
-    WaveletBoundary = 20,
-    FundamentalSpline = 21,
-    ModFundamentalSpline = 22,
-    ModBsplineClenshawCurtis = 23
+      Linear                        =  0,
+      LinearStretched               =  1,
+      LinearL0Boundary              =  2,
+      LinearBoundary                =  3,
+      LinearStretchedBoundary       =  4,
+      LinearTruncatedBoundary       =  5,
+      ModLinear                     =  6,
+      Poly                          =  7,
+      PolyBoundary                  =  8,
+      ModPoly                       =  9,
+      ModWavelet                    = 10,
+      ModBspline                    = 11,
+      Prewavelet                    = 12,
+      SquareRoot                    = 13,
+      Periodic                      = 14,
+      LinearClenshawCurtis          = 15,
+      Bspline                       = 16,
+      BsplineBoundary               = 17,
+      BsplineClenshawCurtis         = 18,
+      Wavelet                       = 19,
+      WaveletBoundary               = 20,
+      FundamentalSpline             = 21,
+      ModFundamentalSpline          = 22,
+      ModBsplineClenshawCurtis      = 23
 } GridType;
 
 class Grid

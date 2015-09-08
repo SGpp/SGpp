@@ -153,7 +153,7 @@ namespace SGPP {
       else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new base::OperationHierarchisationLinearStretched(
                  grid.getStorage());
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary")
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary")
                  == 0) {
         return new base::OperationHierarchisationLinearStretchedBoundary(
                  grid.getStorage());
@@ -271,7 +271,7 @@ namespace SGPP {
         return new base::OperationEvalPrewavelet(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new base::OperationEvalLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary")
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary")
                  == 0) {
         return new base::OperationEvalLinearStretchedBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "periodic") == 0) {
@@ -311,7 +311,7 @@ namespace SGPP {
         return new base::OperationMultipleEvalPrewavelet(grid, dataset);
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new base::OperationMultipleEvalLinearStretched(grid, dataset);
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary")
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary")
                  == 0) {
         return new base::OperationMultipleEvalLinearStretchedBoundary(grid,
                dataset);
