@@ -33,6 +33,8 @@ namespace SGPP {
 
         OCLStretchedBuffer(std::shared_ptr<OCLManager> manager);
 
+        ~OCLStretchedBuffer();
+
         bool isInitialized();
 
         cl_mem* getBuffer(size_t deviceNumber);

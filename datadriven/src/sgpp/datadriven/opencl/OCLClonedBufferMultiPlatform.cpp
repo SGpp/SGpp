@@ -23,6 +23,10 @@ OCLClonedBufferMultiPlatform::OCLClonedBufferMultiPlatform(std::shared_ptr<OCLMa
     elements = 0;
 }
 
+OCLClonedBufferMultiPlatform::~OCLClonedBufferMultiPlatform() {
+    this->freeBuffer();
+}
+
 bool OCLClonedBufferMultiPlatform::isInitialized() {
     return this->initialized;
 }
@@ -155,16 +159,23 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
 
     for (OCLPlatformWrapper &platform : manager->platforms) {
         if (this->platformBufferList[platform.platformId] == nullptr) {
-            continue;
+            std::stringstream errorString;
+            errorString << "OCL Error: OCLClonedBufferMultiPlatform in partially initialized state: platform buffer list is null" << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
         }
         cl_mem *bufferList = this->platformBufferList[platform.platformId];
         for (size_t i = 0; i < platform.deviceCount; i++) {
             if (bufferList[i] != nullptr) {
                 clReleaseMemObject(bufferList[i]);
                 bufferList[i] = nullptr;
+            } else {
+                std::stringstream errorString;
+                errorString << "OCL Error: OCLClonedBufferMultiPlatform in partially initialized state: device buffer is null" << std::endl;
+                throw SGPP::base::operation_exception(errorString.str());
             }
         }
         delete[] this->platformBufferList[platform.platformId];
+        this->platformBufferList[platform.platformId] = nullptr;
     }
     this->initialized = false;
 }

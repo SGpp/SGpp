@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
     // create a two-dimensional piecewise bi-linear grid
     const size_t dim = dataset.getDimension();
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
     {
         // create coefficient vector

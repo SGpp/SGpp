@@ -291,7 +291,6 @@ public:
 
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "duration kernel+read: " << elapsed_seconds.count() << std::endl;
 
         for (size_t i = start_index_data; i < end_index_data; i++) {
             result[i] = hostTemp[i];
@@ -560,6 +559,8 @@ private:
     void releaseGridBuffers() {
         this->deviceLevel.freeBuffer();
         this->deviceIndex.freeBuffer();
+        this->deviceMask.freeBuffer();
+        this->deviceOffset.freeBuffer();
         this->deviceGrid.freeBuffer();
     }
 

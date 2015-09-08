@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
     size_t dim = dataset.getDimension();
     SGPP::base::Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 
     std::cout << "creating operation with unrefined grid" << std::endl;
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
     doAllRefinements(adaptConfig, *grid, *gridGen, alpha, mt, dist);
 
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
             SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
     SGPP::base::OperationMultipleEval* evalCompare =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configurationReference);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configurationReference);
 
     SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
     dataSizeVectorResultCompare.setAll(0.0);

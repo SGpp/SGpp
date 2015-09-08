@@ -25,6 +25,10 @@ OCLStretchedBufferMultiPlatform::OCLStretchedBufferMultiPlatform(std::shared_ptr
     isMappedMemory = false;
 }
 
+OCLStretchedBufferMultiPlatform::~OCLStretchedBufferMultiPlatform() {
+    this->freeBuffer();
+}
+
 bool OCLStretchedBufferMultiPlatform::isInitialized() {
     return this->initialized;
 }
@@ -87,17 +91,66 @@ void OCLStretchedBufferMultiPlatform::freeBuffer() {
     }
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
+
+        if (this->mappedHostBuffer[platform.platformId] == nullptr) {
+            std::stringstream errorString;
+            errorString
+                    << "OCL Error: OCLStretchedBufferMultiPlatform in partially initialized state: mappedHostBuffer is null"
+                    << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
+
+        if (this->hostBuffer[platform.platformId] == nullptr) {
+            std::stringstream errorString;
+            errorString
+                    << "OCL Error: OCLStretchedBufferMultiPlatform in partially initialized state: hostBuffer is null"
+                    << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
+
+        cl_int err = clEnqueueUnmapMemObject(platform.commandQueues[0], hostBuffer[platform.platformId],
+                this->mappedHostBuffer[platform.platformId], 0, nullptr, nullptr);
+        if (err != CL_SUCCESS) {
+            std::stringstream errorString;
+            errorString << "OCL Error: OCLStretchedBuffer unmapping memory not successful" << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
+
+        if (platformBufferList[platform.platformId] == nullptr) {
+            std::stringstream errorString;
+            errorString
+                    << "OCL Error: OCLStretchedBufferMultiPlatform in partially initialized state: platform buffer list is null"
+                    << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
+
         for (size_t i = 0; i < platform.deviceCount; i++) {
             if (this->platformBufferList[platform.platformId][i] != nullptr) {
                 clReleaseMemObject(this->platformBufferList[platform.platformId][i]);
                 this->platformBufferList[platform.platformId][i] = nullptr;
+            } else {
+                std::stringstream errorString;
+                errorString
+                        << "OCL Error: OCLStretchedBufferMultiPlatform in partially initialized state: device buffer is null"
+                        << std::endl;
+                throw SGPP::base::operation_exception(errorString.str());
             }
         }
 
         delete[] this->platformBufferList[platform.platformId];
+        this->platformBufferList[platform.platformId] = nullptr;
 
         if (this->isMappedMemory) {
-            clReleaseMemObject(this->hostBuffer[platform.platformId]);
+            if (this->hostBuffer[platform.platformId] != nullptr) {
+                clReleaseMemObject(this->hostBuffer[platform.platformId]);
+                this->hostBuffer[platform.platformId] = nullptr;
+            } else {
+                std::stringstream errorString;
+                errorString
+                        << "OCL Error: OCLStretchedBufferMultiPlatform in partially initialized state: host buffer is null"
+                        << std::endl;
+                throw SGPP::base::operation_exception(errorString.str());
+            }
         }
     }
 

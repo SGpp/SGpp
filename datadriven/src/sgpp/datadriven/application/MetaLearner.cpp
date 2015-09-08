@@ -57,14 +57,14 @@ void MetaLearner::learnString(SGPP::datadriven::OperationMultipleEvalConfigurati
         std::cout << "instances: " << this->instances << std::endl;
     }
 
-    DataVector* classesVector = dataset.getClasses();
-    DataMatrix* trainingData = dataset.getTrainingData();
+    DataVector &classesVector = dataset.getClasses();
+    DataMatrix &trainingData = dataset.getTrainingData();
 
     bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
     LearnerLeastSquaresIdentity* myLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
     myLearner->setImplementation(operationConfiguration);
 
-    LearnerTiming timings = myLearner->train(*trainingData, *classesVector, this->gridConfig, this->solverConfig,
+    LearnerTiming timings = myLearner->train(trainingData, classesVector, this->gridConfig, this->solverConfig,
             this->solverFinalStep, this->adaptivityConfiguration, false, this->lambda);
 
     this->myTiming = timings;
@@ -100,8 +100,8 @@ void MetaLearner::learnReferenceString(std::string content) {
         std::cout << "instances: " << this->instances << std::endl;
     }
 
-    DataVector* classesVector = dataset.getClasses();
-    DataMatrix* trainingData = dataset.getTrainingData();
+    DataVector &classesVector = dataset.getClasses();
+    DataMatrix &trainingData = dataset.getTrainingData();
 
     // treat everything as if it were a regression, as classification is not fully supported by Learner
     bool isRegression = true;
@@ -110,7 +110,7 @@ void MetaLearner::learnReferenceString(std::string content) {
             OperationMultipleEvalSubType::DEFAULT, "STREAMING");
     referenceLearner->setImplementation(operationConfiguration);
 
-    LearnerTiming timings = referenceLearner->train(*trainingData, *classesVector, gridConfig, solverConfig,
+    LearnerTiming timings = referenceLearner->train(trainingData, classesVector, gridConfig, solverConfig,
             solverFinalStep, adaptivityConfiguration, false, lambda);
     this->referenceTiming = timings;
     this->ExecTimesOnStepReference = referenceLearner->getRefinementExecTimes();
@@ -146,8 +146,8 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
     size_t testDim = testDataset.getDimension();
     size_t testInstances = testDataset.getNumberInstances();
 
-    DataVector* testClassesVector = testDataset.getClasses();
-    DataMatrix* testTrainingData = testDataset.getTrainingData();
+    DataVector &testClassesVector = testDataset.getClasses();
+    DataMatrix &testTrainingData = testDataset.getTrainingData();
 
     if (verbose && testDim != this->gridConfig.dim_) {
         std::cout << "dim of test dataset and training dataset doesn't match" << std::endl;
@@ -157,8 +157,8 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
         std::cout << "computing classes of test dataset" << std::endl;
     }
 
-    DataVector computedClasses(testTrainingData->getNrows());
-    this->myLearner->predict(*testTrainingData, computedClasses);
+    DataVector computedClasses(testTrainingData.getNrows());
+    this->myLearner->predict(testTrainingData, computedClasses);
 
     if (verbose) {
         std::cout << "classes computed" << std::endl;
@@ -168,7 +168,7 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
         float_t mse = 0.0;
 
         for (size_t i = 0; i < computedClasses.getSize(); i++) {
-            float_t diff = testClassesVector->get(i) - computedClasses.get(i);
+            float_t diff = testClassesVector.get(i) - computedClasses.get(i);
             mse += diff * diff;
         }
 
@@ -189,7 +189,7 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
                 classToken = -1;
             }
 
-            if (classToken == testClassesVector->get(i)) {
+            if (classToken == testClassesVector.get(i)) {
                 hits += 1;
             }
         }

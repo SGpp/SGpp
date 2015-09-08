@@ -31,8 +31,8 @@ Dataset ARFFTools::readARFF(const std::string& filename) {
         std::transform(line.begin(), line.end(), line.begin(), toupper);
 
         if (dataReached && !line.empty()) {
-            writeNewClass(line, *dataset.getClasses(), instanceNo);
-            writeNewTrainingDataEntry(line, *dataset.getTrainingData(), instanceNo);
+            writeNewClass(line, dataset.getClasses(), instanceNo);
+            writeNewTrainingDataEntry(line, dataset.getTrainingData(), instanceNo);
             instanceNo++;
         }
 
@@ -120,8 +120,8 @@ Dataset ARFFTools::readARFFFromString(const std::string& content) {
         std::transform(line.begin(), line.end(), line.begin(), toupper);
 
         if (dataReached && !line.empty()) {
-            writeNewClass(line, *dataset.getClasses(), instanceNo);
-            writeNewTrainingDataEntry(line, *dataset.getTrainingData(), instanceNo);
+            writeNewClass(line, dataset.getClasses(), instanceNo);
+            writeNewTrainingDataEntry(line, dataset.getTrainingData(), instanceNo);
             instanceNo++;
         }
 

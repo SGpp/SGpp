@@ -28,6 +28,8 @@ namespace SGPP {
 
         OCLClonedBuffer(std::shared_ptr<OCLManager> manager);
 
+        ~OCLClonedBuffer();
+
         bool isInitialized();
 
         cl_mem* getBuffer(size_t deviceNumber);
