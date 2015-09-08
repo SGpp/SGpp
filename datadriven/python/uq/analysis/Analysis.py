@@ -73,7 +73,7 @@ class Analysis(object):
     def mean(self, iterations=None, ts=None):
         """
         compute means
-        @return: dictionary, means
+        @return: dictionary, {<iteration>: {<time>: mean}}
         """
         if iterations is None:
             iterations = self._iterations
@@ -116,7 +116,7 @@ class Analysis(object):
     def var(self, iterations=None, ts=None):
         """
         Compute the variance
-        @return: dictionary, variances
+        @return: dictionary, {<iteration>: {<time>: variance}}
         """
         if iterations is None:
             iterations = self._iterations

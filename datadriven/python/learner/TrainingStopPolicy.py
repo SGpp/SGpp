@@ -64,19 +64,24 @@ class TrainingStopPolicy(object):
     # @param learner: Learner object 
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, learner):
-        if (self.__adaptiveIterationLimit == None 
-        or self.__adaptiveIterationLimit < learner.getCurrentIterationNumber()) \
-        and (self.getGridSizeLimit() == None 
-        or self.getGridSizeLimit() <= learner.grid.getSize()) \
-        and (self.getMSELimit() == None
-        or self.getMSELimit() >= learner.trainingOverall[-1]):
-            return True
-        if learner.grid.getSize() == self.__oldGridSize: return True
+        ans = self.hasLimitReached(learner) or not self.hasGridSizeChanged(learner)
         self.__oldGridSize = learner.grid.getSize()
-        return False
+        return ans
 
-    
-    ## Setter for Maximal number of refinement iterations
+    def hasGridSizeChanged(self, learner):
+        return self.__oldGridSize != learner.grid.getSize()
+
+    def hasLimitReached(self, learner):
+        ans = (self.__adaptiveIterationLimit is None or
+               self.__adaptiveIterationLimit < learner.getCurrentIterationNumber()) \
+               and (self.getGridSizeLimit() is None or
+                    self.getGridSizeLimit() <= learner.grid.getSize()) \
+               and (self.getMSELimit() is None or
+                    self.getMSELimit() >= learner.trainingOverall[-1])
+        return ans
+
+
+    # # Setter for Maximal number of refinement iterations
     # @param limit: integer Maximal number of refinement iterations
     def setAdaptiveIterationLimit(self, limit):
         self.__adaptiveIterationLimit = limit

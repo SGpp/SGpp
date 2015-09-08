@@ -15,6 +15,7 @@
 %newobject SGPP::base::Grid::createLinearStretchedBoundaryGrid(SGPP::base::Stretching& BB);
 %newobject SGPP::base::Grid::createModLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createPolyGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createWaveletGrid(size_t dim);
 %newobject SGPP::base::Grid::createWaveletBoundaryGrid(size_t dim);
@@ -48,6 +49,55 @@ namespace SGPP
 namespace base
 {
 
+struct RegularGridConfiguration {
+      /// Grid Type, see enum
+      SGPP::base::GridType type_;
+      /// number of dimensions
+      size_t dim_;
+      /// number of levels
+      int level_;
+    };
+
+struct AdpativityConfiguration {
+      /// number of refinements
+      size_t numRefinements_;
+      /// refinement threshold for surpluses
+      float_t threshold_;
+      /// refinement type: false: classic, true: maxLevel
+      bool maxLevelType_;
+      /// max. number of points to be refined
+      size_t noPoints_;
+      /// max. percent of points to be refined
+      float_t percent_;
+    };
+
+typedef enum GridType {
+      Linear                        =  0,
+      LinearStretched               =  1,
+      LinearL0Boundary              =  2,
+      LinearBoundary                =  3,
+      LinearStretchedBoundary       =  4,
+      LinearTruncatedBoundary       =  5,
+      ModLinear                     =  6,
+      Poly                          =  7,
+      PolyBoundary                  =  8,
+      ModPoly                       =  9,
+      ModWavelet                    = 10,
+      ModBspline                    = 11,
+      Prewavelet                    = 12,
+      SquareRoot                    = 13,
+      Periodic                      = 14,
+      LinearClenshawCurtis          = 15,
+      Bspline                       = 16,
+      BsplineBoundary               = 17,
+      BsplineClenshawCurtis         = 18,
+      Wavelet                       = 19,
+      WaveletBoundary               = 20,
+      FundamentalSpline             = 21,
+      ModFundamentalSpline          = 22,
+      ModBsplineClenshawCurtis      = 23
+};
+
 class Grid
 {
 public:
@@ -59,6 +109,7 @@ public:
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
   static Grid* createWaveletBoundaryGrid(size_t dim);

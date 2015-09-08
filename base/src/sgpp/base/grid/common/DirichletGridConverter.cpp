@@ -77,7 +77,7 @@ namespace SGPP {
           //(*InnerGrid)->getStorage()->recalcLeafProperty();
 
           this->bFirstTime = false;
-        } else if (strcmp(BoundaryGrid.getType(), "LinearStretchedBoundary") == 0) {
+        } else if (strcmp(BoundaryGrid.getType(), "linearStretchedBoundary") == 0) {
           GridStorage* myGridStorage = BoundaryGrid.getStorage();
 
           // determine the number of grid points for both grids
@@ -136,7 +136,7 @@ namespace SGPP {
     void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs) {
       if (this->bFirstTime == false) {
         if (strcmp(BoundaryGrid.getType(), "linearL0Boundary") == 0 || strcmp(BoundaryGrid.getType(), "linearBoundary") == 0
-            || strcmp(BoundaryGrid.getType(), "LinearStretchedBoundary") == 0) {
+            || strcmp(BoundaryGrid.getType(), "linearStretchedBoundary") == 0) {
           GridStorage* myGridStorage = BoundaryGrid.getStorage();
 
           // determine the number of grid points for both grids

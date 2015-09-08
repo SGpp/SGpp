@@ -35,7 +35,7 @@ namespace SGPP {
     }
 
     const char* LinearStretchedBoundaryGrid::getType() {
-      return "LinearStretchedBoundary";
+      return "linearStretchedBoundary";
     }
 
     const SBasis& LinearStretchedBoundaryGrid::getBasis() {

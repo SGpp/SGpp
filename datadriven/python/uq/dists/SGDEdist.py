@@ -7,7 +7,8 @@ from pysgpp import (DataVector,
                     createOperationInverseRosenblattTransformation1D,
                     createOperationRosenblattTransformation1D,
                     createOperationRosenblattTransformation,
-                    DataMatrix)
+                    DataMatrix,
+                    LearnerSGDE)
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                hierarchize,
                                hierarchizeBruteForce,
@@ -52,6 +53,14 @@ class SGDEdist(Dist):
         self.vol = 1.  # / np.prod(np.diff(self.bounds))
 
         # print "Vol: %g" % (self.scale - self.fmin)
+
+    @classmethod
+    def byLearnerSGDE(cls, samples, gridConfig, adaptConfig, solverConfig,
+                      regularizationConfig, learnerConfig):
+        learner = LearnerSGDE(gridConfig, adaptConfig, solverConfig,
+                      regularizationConfig, learnerConfig)
+        learner.initialize(samples)
+        return cls(learner.getGrid(), learner.getAlpha(), trainData=samples.array())
 
     @classmethod
     def byConfig(cls, config):
@@ -101,8 +110,8 @@ class SGDEdist(Dist):
 
     @classmethod
     def computeDensity(self, config,
-                       pathsgpp='/home/franzefn/workspace/SGppUQ/lib/sgpp',
-                       cluster='/home/franzefn/Promotion/UQ/benjamin/clustc/cluster'):
+                       pathsgpp='/home/franzefn/workspace/SGppUncertaintyQuantification/lib/sgpp',
+                       cluster='/home/franzefn/workspace/clustc/cluster'):
         if not os.path.exists(config):
             raise Exception('the config file "%s" does not exist' % config)
 

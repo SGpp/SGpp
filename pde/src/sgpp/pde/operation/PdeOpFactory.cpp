@@ -50,7 +50,7 @@ namespace SGPP {
                ((base::PrewaveletGrid*) &grid)->getShadowStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0 ) {
         return new pde::OperationLaplaceLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary") == 0 ) {
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary") == 0 ) {
         return new pde::OperationLaplaceLinearStretchedBoundary(grid.getStorage());
       } else {
         throw base::factory_exception("OperationLaplace is not implemented for this grid type.");
@@ -76,7 +76,7 @@ namespace SGPP {
         return new pde::OperationLTwoDotProductLinearBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "linearStretched") == 0) {
         return new pde::OperationLTwoDotProductLinearStretched(grid.getStorage());
-      } else if (strcmp(grid.getType(), "LinearStretchedBoundary") == 0) {
+      } else if (strcmp(grid.getType(), "linearStretchedBoundary") == 0) {
         return new pde::OperationLTwoDotProductLinearStretchedBoundary(grid.getStorage());
       } else if (strcmp(grid.getType(), "periodic") == 0) {
         return new pde::OperationMatrixLTwoDotPeriodic(grid.getStorage());
