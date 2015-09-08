@@ -15,8 +15,8 @@ namespace SGPP {
     namespace optimizer {
 
       GradientDescent::GradientDescent(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t beta,
         float_t gamma,
@@ -82,7 +82,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& GradientDescent::getObjectiveGradient() const {
+      ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const {
         return fGradient;
       }
 

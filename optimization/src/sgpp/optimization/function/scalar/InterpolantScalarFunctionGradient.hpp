@@ -27,7 +27,7 @@ namespace SGPP {
         /**
          * Constructor.
          * Do not destruct the grid before the
-         * InterpolantObjectiveGradient object!
+         * InterpolantScalarFunctionGradient object!
          *
          * @param grid  sparse grid
          * @param alpha coefficient vector

@@ -9,7 +9,7 @@
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -18,7 +18,7 @@ namespace SGPP {
       /**
        * Base class for analytical objective function examples
        * ("test functions").
-       * The only difference to ObjectiveFunction is the possibility for
+       * The only difference to ScalarFunction is the possibility for
        * pseudorandom displacements of the function and the specification of
        * the (or an) minimal point.
        *
@@ -29,7 +29,7 @@ namespace SGPP {
        * \f$d_t\f$ distributed normally with mean 0 and a specific standard
        * deviation.
        */
-      class TestFunction : public ObjectiveFunction {
+      class TestFunction : public ScalarFunction {
         public:
           /// default standard deviation
           static constexpr float_t DEFAULT_STANDARD_DEVIATION = 0.01;

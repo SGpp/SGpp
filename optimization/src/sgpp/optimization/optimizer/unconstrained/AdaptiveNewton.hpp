@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
@@ -53,8 +54,8 @@ namespace SGPP {
            * @param dampingDecreaseFactor     damping decrease factor
            * @param lineSearchAccuracy        line search accuracy
            */
-          AdaptiveNewton(ObjectiveFunction& f,
-                         ObjectiveHessian& fHessian,
+          AdaptiveNewton(ScalarFunction& f,
+                         ScalarFunctionHessian& fHessian,
                          size_t maxItCount = DEFAULT_N,
                          float_t tolerance = DEFAULT_TOLERANCE,
                          float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
@@ -81,8 +82,8 @@ namespace SGPP {
            *                                  solving the linear systems
            *                                  (Hessian as coefficient matrix)
            */
-          AdaptiveNewton(ObjectiveFunction& f,
-                         ObjectiveHessian& fHessian,
+          AdaptiveNewton(ScalarFunction& f,
+                         ScalarFunctionHessian& fHessian,
                          size_t maxItCount,
                          float_t tolerance,
                          float_t stepSizeIncreaseFactor,
@@ -101,7 +102,7 @@ namespace SGPP {
           /**
            * @return objective function Hessian
            */
-          ObjectiveHessian& getObjectiveHessian() const;
+          ScalarFunctionHessian& getObjectiveHessian() const;
 
           /**
            * @return tolerance
@@ -165,7 +166,7 @@ namespace SGPP {
 
         protected:
           /// objective function Hessian
-          ObjectiveHessian& fHessian;
+          ScalarFunctionHessian& fHessian;
           /// tolerance
           float_t theta;
           /// step size increase factor

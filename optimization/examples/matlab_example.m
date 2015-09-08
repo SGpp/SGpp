@@ -51,8 +51,8 @@ end
 
 printLine();
 fprintf('Optimizing smooth interpolant...\n\n');
-ft = sgpp.OptInterpolantObjectiveFunction(grid, coeffs);
-ftGradient = sgpp.OptInterpolantObjectiveGradient(grid, coeffs);
+ft = sgpp.OptInterpolantScalarFunction(grid, coeffs);
+ftGradient = sgpp.OptInterpolantScalarFunctionGradient(grid, coeffs);
 gradientMethod = sgpp.OptGradientDescent(ft, ftGradient);
 x0 = sgpp.DataVector(d);
 

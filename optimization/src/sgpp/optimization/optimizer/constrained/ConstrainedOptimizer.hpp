@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/vector/ConstraintFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/optimization/function/vector/VectorFunction.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -43,9 +43,9 @@ namespace SGPP {
            *              (depending on the implementation)
            */
           ConstrainedOptimizer(
-            ObjectiveFunction& f,
-            ConstraintFunction& g,
-            ConstraintFunction& h,
+            ScalarFunction& f,
+            VectorFunction& g,
+            VectorFunction& h,
             size_t N = DEFAULT_N) :
             UnconstrainedOptimizer(f, N),
             g(g),
@@ -67,22 +67,22 @@ namespace SGPP {
           /**
            * @return inequality constraint function
            */
-          ConstraintFunction& getInequalityConstraintFunction() const {
+          VectorFunction& getInequalityConstraintFunction() const {
             return g;
           }
 
           /**
            * @return equality constraint function
            */
-          ConstraintFunction& getEqualityConstraintFunction() const {
+          VectorFunction& getEqualityConstraintFunction() const {
             return h;
           }
 
         protected:
           /// inequality constraint function
-          ConstraintFunction& g;
+          VectorFunction& g;
           /// equality constraint function
-          ConstraintFunction& h;
+          VectorFunction& h;
       };
 
     }

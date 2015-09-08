@@ -12,12 +12,12 @@
 /**
  * Example test function.
  */
-class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
+class ExampleFunction : public SGPP::optimization::ScalarFunction {
   public:
     /**
      * Constructor.
      */
-    ExampleFunction() : SGPP::optimization::ObjectiveFunction(2) {
+    ExampleFunction() : SGPP::optimization::ScalarFunction(2) {
     }
 
     /**
@@ -35,8 +35,8 @@ class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
      * @param[out] clone pointer to cloned object
      */
     virtual void clone(
-      std::unique_ptr<SGPP::optimization::ObjectiveFunction>& clone) const {
-      clone = std::unique_ptr<SGPP::optimization::ObjectiveFunction>(
+      std::unique_ptr<SGPP::optimization::ScalarFunction>& clone) const {
+      clone = std::unique_ptr<SGPP::optimization::ScalarFunction>(
                 new ExampleFunction(*this));
     }
 };
@@ -112,8 +112,8 @@ int main(int argc, const char* argv[]) {
 
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
-  SGPP::optimization::InterpolantObjectiveFunction ft(grid, coeffs);
-  SGPP::optimization::InterpolantObjectiveGradient ftGradient(grid, coeffs);
+  SGPP::optimization::InterpolantScalarFunction ft(grid, coeffs);
+  SGPP::optimization::InterpolantScalarFunctionGradient ftGradient(grid, coeffs);
   SGPP::optimization::optimizer::GradientDescent gradientMethod(ft, ftGradient);
   SGPP::base::DataVector x0(d);
   SGPP::float_t fX0;
