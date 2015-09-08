@@ -50,10 +50,8 @@ std::vector<std::string> fileNames = { "datadriven/tests/data/DR5_train.arff.gz"
 std::vector<std::string> datasetNames = { "DR5" };
 
 std::vector<size_t> levels = { 7 };
-std::vector<size_t> refinementSteps = { 0 };
 
 std::vector<size_t> levelsModLinear = { 7 };
-std::vector<size_t> refinementStepsModLinear = { 0 };
 
 std::map<std::string, SGPP::datadriven::MetaLearner *> preparedGrids;
 
@@ -84,7 +82,7 @@ void getRuntime(SGPP::base::GridType gridType, const std::string &kernel, std::s
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
     size_t dim = dataset.getDimension();
 
@@ -123,7 +121,7 @@ void getRuntime(SGPP::base::GridType gridType, const std::string &kernel, std::s
 
     BOOST_TEST_MESSAGE("creating operation with unrefined grid");
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
     SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
     dataSizeVectorResult.setAll(0);
@@ -203,9 +201,28 @@ void prepareGrid(std::string fileName, SGPP::base::GridType gridType, size_t lev
     SGPP::datadriven::MetaLearner * learner = new SGPP::datadriven::MetaLearner(gridConfig, SLESolverConfigRefine,
             SLESolverConfigFinal, adaptConfig, lambda, verbose);
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
+    SGPP::base::OCLConfigurationParameters parameters;
+    parameters.set("OCL_MANAGER_VERBOSE", "true");
+    parameters.set("VERBOSE", "true");
+    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
+    parameters.set("PLATFORM", "NVIDIA CUDA");
+//    parameters.set("PLATFORM", "Intel(R) OpenCL");
+    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+//    parameters.set("WRITE_SOURCE", "true");
+//    parameters.set("REUSE_SOURCE", "true");
+    parameters.set("MAX_DEVICES", "1");
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
+
+    if (gridType == SGPP::base::Linear) {
+        configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
+        SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
+        SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
+    } else if (gridType == SGPP::base::ModLinear) {
+        configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
+        SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+        SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
+    }
 
     std::string content = uncompressFile(fileName);
 
@@ -215,8 +232,10 @@ void prepareGrid(std::string fileName, SGPP::base::GridType gridType, size_t lev
 
     if (gridType == SGPP::base::Linear) {
         preparedGrids[fileName] = learner;
-    } else {
+    } else if (gridType == SGPP::base::ModLinear) {
         preparedGridsModLinear[fileName] = learner;
+    } else {
+        throw;
     }
 }
 
@@ -229,10 +248,18 @@ void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string &kern
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
-    if (preparedGrids.size() == 0) {
-        prepareGrid(fileName, gridType, level);
+    if (gridType == SGPP::base::Linear) {
+        if (preparedGrids.size() == 0) {
+            prepareGrid(fileName, gridType, level);
+        }
+    } else if (gridType == SGPP::base::ModLinear) {
+        if (preparedGridsModLinear.size() == 0) {
+            prepareGrid(fileName, gridType, level);
+        }
+    } else {
+        throw;
     }
 
     SGPP::datadriven::MetaLearner *learner = nullptr;
@@ -240,6 +267,8 @@ void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string &kern
         learner = preparedGrids[fileName];
     } else if (gridType == SGPP::base::ModLinear) {
         learner = preparedGridsModLinear[fileName];
+    } else {
+        throw;
     }
 
     SGPP::base::Grid &grid = learner->getLearnedGrid();
@@ -262,7 +291,7 @@ void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string &kern
 
     BOOST_TEST_MESSAGE("creating operation with unrefined grid");
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
 
     SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
     dataSizeVectorResult.setAll(0);
@@ -310,13 +339,27 @@ void getRuntimeDataMiningTransposed(SGPP::base::GridType gridType, const std::st
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
+
+    if (gridType == SGPP::base::Linear) {
+        if (preparedGrids.size() == 0) {
+            prepareGrid(fileName, gridType, level);
+        }
+    } else if (gridType == SGPP::base::ModLinear) {
+        if (preparedGridsModLinear.size() == 0) {
+            prepareGrid(fileName, gridType, level);
+        }
+    } else {
+        throw;
+    }
 
     SGPP::datadriven::MetaLearner *learner = nullptr;
     if (gridType == SGPP::base::Linear) {
         learner = preparedGrids[fileName];
     } else if (gridType == SGPP::base::ModLinear) {
         learner = preparedGridsModLinear[fileName];
+    } else {
+        throw;
     }
 
     SGPP::base::Grid &grid = learner->getLearnedGrid();
@@ -339,7 +382,7 @@ void getRuntimeDataMiningTransposed(SGPP::base::GridType gridType, const std::st
 
     BOOST_TEST_MESSAGE("creating operation with unrefined grid");
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
 
     SGPP::base::DataVector gridSizeVectorResult(gridStorage->size());
     gridSizeVectorResult.setAll(0);
@@ -388,7 +431,7 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string &kern
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
     size_t dim = dataset.getDimension();
 
@@ -427,7 +470,7 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string &kern
 
     BOOST_TEST_MESSAGE("creating operation with unrefined grid");
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
     SGPP::base::DataVector gridSizeVectorResult(gridStorage->size());
     gridSizeVectorResult.setAll(0);

@@ -33,6 +33,8 @@ public:
 
     OCLStretchedBufferMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager);
 
+    ~OCLStretchedBufferMultiPlatform();
+
     bool isInitialized();
 
     cl_mem* getBuffer(cl_platform_id platformId, size_t deviceNumber);

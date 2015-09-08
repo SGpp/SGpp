@@ -14,91 +14,95 @@
 #include <random>
 #include <fstream>
 
+#include <boost/test/unit_test.hpp>
+
 #include <boost/lexical_cast.hpp>
 
 #include <zlib.h>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 using namespace SGPP::base;
 
 std::string uncompressFile(std::string fileName) {
 
-  gzFile inFileZ = gzopen(fileName.c_str(), "rb");
+    gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
-  if (inFileZ == NULL) {
-    std::cout << "Error: Failed to gzopen file " << fileName << std::endl;
-    exit(0);
-  }
-
-  unsigned char unzipBuffer[8192];
-  unsigned int unzippedBytes;
-  std::vector<unsigned char> unzippedData;
-
-  while (true) {
-    unzippedBytes = gzread(inFileZ, unzipBuffer, 8192);
-
-    if (unzippedBytes > 0) {
-      for (size_t i = 0; i < unzippedBytes; i++) {
-        unzippedData.push_back(unzipBuffer[i]);
-      }
-    } else {
-      break;
+    if (inFileZ == NULL) {
+        std::cout << "Error: Failed to gzopen file " << fileName << std::endl;
+        exit(0);
     }
-  }
 
-  gzclose(inFileZ);
+    unsigned char unzipBuffer[8192];
+    unsigned int unzippedBytes;
+    std::vector<unsigned char> unzippedData;
 
-  std::stringstream convert;
+    while (true) {
+        unzippedBytes = gzread(inFileZ, unzipBuffer, 8192);
 
-  for (size_t i = 0; i < unzippedData.size(); i++) {
-    convert << unzippedData[i];
-  }
+        if (unzippedBytes > 0) {
+            for (size_t i = 0; i < unzippedBytes; i++) {
+                unzippedData.push_back(unzipBuffer[i]);
+            }
+        } else {
+            break;
+        }
+    }
 
-  return convert.str();
+    gzclose(inFileZ);
+
+    std::stringstream convert;
+
+    for (size_t i = 0; i < unzippedData.size(); i++) {
+        convert << unzippedData[i];
+    }
+
+    return convert.str();
 }
 
 DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
 
-  std::string content = uncompressFile(fileName);
+    std::string content = uncompressFile(fileName);
 
-  std::stringstream contentStream;
-  contentStream << content;
-  std::string line;
+    std::stringstream contentStream;
+    contentStream << content;
+    std::string line;
 
-  DataMatrix* m = new DataMatrix(0, storage->size());
+    DataMatrix* m = new DataMatrix(0, storage->size());
 
-  size_t currentRow = 0;
+    size_t currentRow = 0;
 
-  while (!contentStream.eof()) {
+    while (!contentStream.eof()) {
 
-    std::getline(contentStream, line);
+        std::getline(contentStream, line);
 
-    // for lines that only contain a newline
-    if (line.size() == 0) {
-      break;
+        // for lines that only contain a newline
+        if (line.size() == 0) {
+            break;
+        }
+
+        m->appendRow();
+
+        size_t curPos = 0;
+        size_t curFind = 0;
+        std::string curValue;
+        float_t floatValue;
+
+        for (size_t i = 0; i < storage->size(); i++) {
+            curFind = line.find_first_of(" \t", curPos);
+            curValue = line.substr(curPos, curFind - curPos);
+
+            floatValue = boost::lexical_cast<float_t>(curValue);
+            m->set(currentRow, i, floatValue);
+            curPos = curFind + 1;
+        }
+
+        currentRow += 1;
     }
 
-    m->appendRow();
-
-    size_t curPos = 0;
-    size_t curFind = 0;
-    std::string curValue;
-    float_t floatValue;
-
-    for (size_t i = 0; i < storage->size(); i++) {
-      curFind = line.find_first_of(" \t", curPos);
-      curValue = line.substr(curPos, curFind - curPos);
-
-      floatValue = boost::lexical_cast<float_t>(curValue);
-      m->set(currentRow, i, floatValue);
-      curPos = curFind + 1;
-    }
-
-    currentRow += 1;
-  }
-
-  return m;
+    return m;
 }
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
@@ -150,4 +154,159 @@ SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
 
         delete myRefineFunc;
     }
+}
+
+double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &resultsCompare) {
+    double mse = 0.0;
+
+    double largestDifference = 0.0;
+    double value = 0.0;
+    double valueReference = 0.0;
+
+    for (size_t i = 0; i < resultsCompare.getSize(); i++) {
+        double diff = (results[i] - resultsCompare[i]) * (results[i] - resultsCompare[i]);
+        if (diff > largestDifference) {
+            largestDifference = diff;
+            value = results[i];
+            valueReference = resultsCompare[i];
+        }
+
+//        BOOST_TEST_MESSAGE("i: " << i << " mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i]);
+        mse += (results[i] - resultsCompare[i]) * (results[i] - resultsCompare[i]);
+    }
+
+    BOOST_TEST_MESSAGE(
+            "largestDifference: " << largestDifference << " value: " << value << " valueReference: " << valueReference);
+
+    mse = mse / static_cast<double>(resultsCompare.getSize());
+    return mse;
+}
+
+double compareToReference(SGPP::base::GridType gridType, std::string fileName, size_t level,
+SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 1;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    std::string content = uncompressFile(fileName);
+
+    SGPP::datadriven::ARFFTools arffTools;
+    SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
+
+    size_t dim = dataset.getDimension();
+
+    std::shared_ptr<SGPP::base::Grid> grid;
+    if (gridType == SGPP::base::Linear) {
+        grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
+    } else if (gridType == SGPP::base::ModLinear) {
+        grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
+    }
+    SGPP::base::GridStorage* gridStorage = grid->getStorage();
+
+    auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
+    gridGen->regular(level);
+
+    SGPP::base::DataVector alpha(gridStorage->size());
+
+    for (size_t i = 0; i < alpha.getSize(); i++) {
+        alpha[i] = static_cast<double>(i);
+    }
+
+    auto eval = std::shared_ptr<SGPP::base::OperationMultipleEval>(
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
+
+    eval->prepare();
+
+    doRandomRefinements(adaptConfig, *grid, *gridGen, alpha);
+
+    SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
+    dataSizeVectorResult.setAll(0);
+
+    eval->prepare();
+
+    eval->mult(alpha, dataSizeVectorResult);
+
+    auto evalCompare = std::shared_ptr<SGPP::base::OperationMultipleEval>(
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
+
+    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+    dataSizeVectorResultCompare.setAll(0.0);
+
+    evalCompare->mult(alpha, dataSizeVectorResultCompare);
+
+    double mse = compareVectors(dataSizeVectorResult, dataSizeVectorResultCompare);
+
+    BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
+    return mse;
+}
+
+double compareToReferenceTranspose(SGPP::base::GridType gridType, std::string fileName, size_t level,
+SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+
+    SGPP::base::AdpativityConfiguration adaptConfig;
+    adaptConfig.maxLevelType_ = false;
+    adaptConfig.noPoints_ = 80;
+    adaptConfig.numRefinements_ = 1;
+    adaptConfig.percent_ = 200.0;
+    adaptConfig.threshold_ = 0.0;
+
+    std::string content = uncompressFile(fileName);
+
+    SGPP::datadriven::ARFFTools arffTools;
+    SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
+
+    size_t dim = dataset.getDimension();
+
+    std::shared_ptr<SGPP::base::Grid> grid;
+    if (gridType == SGPP::base::Linear) {
+        grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
+    } else if (gridType == SGPP::base::ModLinear) {
+        grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
+    }
+
+    SGPP::base::GridStorage* gridStorage = grid->getStorage();
+
+    auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
+    gridGen->regular(level);
+
+    SGPP::base::DataVector dataSizeVector(dataset.getNumberInstances());
+
+    //Don't use random data! Random data will change the expected MSE
+    for (size_t i = 0; i < dataSizeVector.getSize(); i++) {
+        dataSizeVector[i] = static_cast<double>(i + 1);
+    }
+
+    auto eval = std::shared_ptr<SGPP::base::OperationMultipleEval>(
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
+
+    eval->prepare();
+
+    doRandomRefinements(adaptConfig, *grid, *gridGen);
+
+    SGPP::base::DataVector alphaResult(gridStorage->size());
+
+    eval->prepare();
+
+    eval->multTranspose(dataSizeVector, alphaResult);
+
+    auto evalCompare = std::shared_ptr<SGPP::base::OperationMultipleEval>(
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
+
+    SGPP::base::DataVector alphaResultCompare(gridStorage->size());
+    alphaResultCompare.setAll(0.0);
+
+    evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
+
+    double mse = compareVectors(alphaResult, alphaResultCompare);
+
+    BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
+    return mse;
 }

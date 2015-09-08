@@ -376,7 +376,6 @@ public:
             gpu_end_index_grid[platform.platformId] = new size_t[platform.deviceCount];
         }
 
-        std::cout << "overall start: " << start_index_grid << " end: " << end_index_grid << std::endl;
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
                 parameters->getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid,
@@ -393,9 +392,6 @@ public:
                         / (cl_uint) transGridBlockingSize;
                 cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[platform.platformId][i]
                         / (cl_uint) transGridBlockingSize;
-
-                std::cout << "device start: " << gpu_start_grid << " end: "
-                        << gpu_end_grid << std::endl;
 
                 cl_kernel &kernel = kernelsMultTrans[platform.platformId][i];
 

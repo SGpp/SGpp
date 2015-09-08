@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-    SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
     // create a two-dimensional piecewise bi-linear grid
     size_t dim = dataset.getDimension();
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
             SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
     SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
     //  SGPP::base::OperationMultipleEval *eval =
     //  SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     std::cout << "calculating comparison values..." << std::endl;
 
     SGPP::base::OperationMultipleEval* evalCompare =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
     SGPP::base::DataVector resultCompare(dataset.getNumberInstances());
     evalCompare->eval(alpha, resultCompare);
 

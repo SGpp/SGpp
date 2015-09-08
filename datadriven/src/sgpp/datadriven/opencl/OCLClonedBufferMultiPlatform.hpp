@@ -28,6 +28,8 @@ public:
 
     OCLClonedBufferMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager);
 
+    ~OCLClonedBufferMultiPlatform();
+
     bool isInitialized();
 
     cl_mem* getBuffer(cl_platform_id platformId, size_t deviceIndex);
