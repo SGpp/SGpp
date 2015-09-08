@@ -9,6 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -39,10 +41,10 @@ namespace SGPP {
            * @param barrierStartValue     barrier start value
            * @param barrierDecreaseFactor barrier decrease factor
            */
-          LogBarrier(ObjectiveFunction& f,
-                     ObjectiveGradient& fGradient,
-                     ConstraintFunction& g,
-                     ConstraintGradient& gGradient,
+          LogBarrier(ScalarFunction& f,
+                     ScalarFunctionGradient& fGradient,
+                     VectorFunction& g,
+                     VectorFunctionGradient& gGradient,
                      size_t maxItCount = DEFAULT_N,
                      float_t tolerance = DEFAULT_TOLERANCE,
                      float_t barrierStartValue = DEFAULT_BARRIER_START_VALUE,
@@ -58,12 +60,12 @@ namespace SGPP {
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return inequality constraint function gradient
            */
-          ConstraintGradient& getInequalityConstraintGradient() const;
+          VectorFunctionGradient& getInequalityConstraintGradient() const;
 
           /**
            * @return tolerance
@@ -97,9 +99,9 @@ namespace SGPP {
 
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// inequality constraint function gradient
-          ConstraintGradient& gGradient;
+          VectorFunctionGradient& gGradient;
           /// tolerance
           float_t theta;
           /// barrier start value

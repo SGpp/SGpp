@@ -27,7 +27,7 @@ which can be executed by
 @endcode 
 in the directory @c examples/.
 
-This results in the output
+This results in an output similar to
 @include all_simple_quadrature.output.txt
 
 
@@ -44,7 +44,6 @@ which can be executed by
 @endcode 
 in the directory @c examples/.
 
-This results in the output
-@include all_simple_quadrature.output.txt
+This results in an output similar to the Python example output from above.
 
 */

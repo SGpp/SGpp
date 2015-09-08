@@ -6,7 +6,7 @@ import sys
 
 
 
-class ExampleFunction(pysgpp.OptObjectiveFunction):
+class ExampleFunction(pysgpp.OptScalarFunction):
     """Example objective function from the title of my Master's thesis."""
     def __init__(self):
         super(ExampleFunction, self).__init__(2)
@@ -77,8 +77,8 @@ if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
 
 printLine()
 print "Optimizing smooth interpolant...\n"
-ft = pysgpp.OptInterpolantObjectiveFunction(grid, coeffs)
-ftGradient = pysgpp.OptInterpolantObjectiveGradient(grid, coeffs)
+ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
+ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
 gradientMethod = pysgpp.OptGradientDescent(ft, ftGradient)
 x0 = pysgpp.DataVector(d)
 

@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -47,8 +48,8 @@ namespace SGPP {
            * @param epsilon           epsilon (parameter for Armijo's rule)
            * @param restartThreshold  restart threshold
            */
-          NLCG(ObjectiveFunction& f,
-               ObjectiveGradient& fGradient,
+          NLCG(ScalarFunction& f,
+               ScalarFunctionGradient& fGradient,
                size_t maxItCount = DEFAULT_N,
                float_t beta = DEFAULT_BETA,
                float_t gamma = DEFAULT_GAMMA,
@@ -65,7 +66,7 @@ namespace SGPP {
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -119,7 +120,7 @@ namespace SGPP {
 
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)

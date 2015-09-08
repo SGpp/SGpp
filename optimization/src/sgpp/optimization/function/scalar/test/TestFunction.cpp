@@ -17,7 +17,7 @@ namespace SGPP {
     namespace test_functions {
 
       TestFunction::TestFunction(size_t d) :
-        ObjectiveFunction(d),
+        ScalarFunction(d),
         stdDev(0.0),
         displacement(base::DataVector(d, 0.0)),
         xTmp(base::DataVector(d)) {

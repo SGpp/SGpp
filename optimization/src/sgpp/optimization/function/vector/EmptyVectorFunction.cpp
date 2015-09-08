@@ -4,12 +4,12 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
 
-    EmptyConstraintFunction emptyConstraintFunction;
+    EmptyVectorFunction emptyVectorFunction;
 
   }
 }

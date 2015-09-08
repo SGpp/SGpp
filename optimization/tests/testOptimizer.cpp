@@ -4,10 +4,12 @@
 
 #include <vector>
 
-#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantObjectiveFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintGradient.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
@@ -49,9 +51,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   std::unique_ptr<OperationMultipleHierarchisation> op(
     op_factory::createOperationMultipleHierarchisation(*grid));
   op->doHierarchisation(alpha);
-  InterpolantObjectiveFunction ft(*grid, alpha);
-  InterpolantObjectiveGradient ftGradient(*grid, alpha);
-  InterpolantObjectiveHessian ftHessian(*grid, alpha);
+  InterpolantScalarFunction ft(*grid, alpha);
+  InterpolantScalarFunctionGradient ftGradient(*grid, alpha);
+  InterpolantScalarFunctionHessian ftHessian(*grid, alpha);
 
   // test getters/setters
   {
@@ -294,9 +296,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   }
 
   for (size_t k = 0; k < 2; k++) {
-    std::unique_ptr<ObjectiveFunction> curF;
-    std::unique_ptr<ObjectiveGradient> curFGradient;
-    std::unique_ptr<ObjectiveHessian> curFHessian;
+    std::unique_ptr<ScalarFunction> curF;
+    std::unique_ptr<ScalarFunctionGradient> curFGradient;
+    std::unique_ptr<ScalarFunctionHessian> curFHessian;
 
     if (k == 0) {
       f.clone(curF);
@@ -362,12 +364,12 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     base::DataVector x0(0);
     base::DataVector xOptReal(0);
     SGPP::float_t fOptReal;
-    std::unique_ptr<ObjectiveFunction> f(nullptr);
-    std::unique_ptr<ObjectiveGradient> fGradient(nullptr);
-    std::unique_ptr<ConstraintFunction> g(nullptr);
-    std::unique_ptr<ConstraintGradient> gGradient(nullptr);
-    std::unique_ptr<ConstraintFunction> h(nullptr);
-    std::unique_ptr<ConstraintGradient> hGradient(nullptr);
+    std::unique_ptr<ScalarFunction> f(nullptr);
+    std::unique_ptr<ScalarFunctionGradient> fGradient(nullptr);
+    std::unique_ptr<VectorFunction> g(nullptr);
+    std::unique_ptr<VectorFunctionGradient> gGradient(nullptr);
+    std::unique_ptr<VectorFunction> h(nullptr);
+    std::unique_ptr<VectorFunctionGradient> hGradient(nullptr);
     std::vector<std::unique_ptr<optimizer::ConstrainedOptimizer>> optimizers;
 
     if (i == 0) {
@@ -383,8 +385,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
       f.reset(new G3ObjectiveFunction(d));
       fGradient.reset(new G3ObjectiveGradient(d));
-      emptyConstraintFunction.clone(g);
-      emptyConstraintGradient.clone(gGradient);
+      emptyVectorFunction.clone(g);
+      emptyVectorFunctionGradient.clone(gGradient);
       h.reset(new G3ConstraintFunction(d));
       hGradient.reset(new G3ConstraintGradient(d));
       optimizers.push_back(
@@ -408,8 +410,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       fGradient.reset(new G8ObjectiveGradient());
       g.reset(new G8ConstraintFunction());
       gGradient.reset(new G8ConstraintGradient());
-      emptyConstraintFunction.clone(h);
-      emptyConstraintGradient.clone(hGradient);
+      emptyVectorFunction.clone(h);
+      emptyVectorFunctionGradient.clone(hGradient);
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(

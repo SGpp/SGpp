@@ -6,11 +6,9 @@
 #ifndef SGPP_OPTIMIZATION_HPP
 #define SGPP_OPTIMIZATION_HPP
 
-#include <sgpp/optimization/function/scalar/InterpolantObjectiveFunction.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
 #include <sgpp/optimization/function/scalar/ScalarComponent.hpp>
 #include <sgpp/optimization/function/scalar/ScalarComponentGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarComponentHessian.hpp>
@@ -18,10 +16,8 @@
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 
-#include <sgpp/optimization/function/vector/ConstraintFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyConstraintGradient.hpp>
-#include <sgpp/optimization/function/vector/InterpolantConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/InterpolantVectorFunction.hpp>
 #include <sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp>

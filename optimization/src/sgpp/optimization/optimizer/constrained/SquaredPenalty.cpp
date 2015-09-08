@@ -14,13 +14,13 @@ namespace SGPP {
     namespace optimizer {
 
       namespace {
-        class PenalizedObjectiveFunction : public ObjectiveFunction {
+        class PenalizedObjectiveFunction : public ScalarFunction {
           public:
-            PenalizedObjectiveFunction(ObjectiveFunction& f,
-                                       ConstraintFunction& g,
-                                       ConstraintFunction& h,
+            PenalizedObjectiveFunction(ScalarFunction& f,
+                                       VectorFunction& g,
+                                       VectorFunction& h,
                                        float_t mu) :
-              ObjectiveFunction(f.getDimension()),
+              ScalarFunction(f.getDimension()),
               f(f),
               g(g),
               h(h),
@@ -59,8 +59,8 @@ namespace SGPP {
               return value;
             }
 
-            void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-              clone = std::unique_ptr<ObjectiveFunction>(
+            void clone(std::unique_ptr<ScalarFunction>& clone) const {
+              clone = std::unique_ptr<ScalarFunction>(
                         new PenalizedObjectiveFunction(*this));
             }
 
@@ -69,21 +69,21 @@ namespace SGPP {
             }
 
           protected:
-            ObjectiveFunction& f;
-            ConstraintFunction& g;
-            ConstraintFunction& h;
+            ScalarFunction& f;
+            VectorFunction& g;
+            VectorFunction& h;
             float_t mu;
             size_t mG;
             size_t mH;
         };
 
-        class PenalizedObjectiveGradient : public ObjectiveGradient {
+        class PenalizedObjectiveGradient : public ScalarFunctionGradient {
           public:
-            PenalizedObjectiveGradient(ObjectiveGradient& fGradient,
-                                       ConstraintGradient& gGradient,
-                                       ConstraintGradient& hGradient,
+            PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
+                                       VectorFunctionGradient& gGradient,
+                                       VectorFunctionGradient& hGradient,
                                        float_t mu) :
-              ObjectiveGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getDimension()),
               fGradient(fGradient),
               gGradient(gGradient),
               hGradient(hGradient),
@@ -140,8 +140,8 @@ namespace SGPP {
               return value;
             }
 
-            void clone(std::unique_ptr<ObjectiveGradient>& clone) const {
-              clone = std::unique_ptr<ObjectiveGradient>(
+            void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+              clone = std::unique_ptr<ScalarFunctionGradient>(
                         new PenalizedObjectiveGradient(*this));
             }
 
@@ -150,9 +150,9 @@ namespace SGPP {
             }
 
           protected:
-            ObjectiveGradient& fGradient;
-            ConstraintGradient& gGradient;
-            ConstraintGradient& hGradient;
+            ScalarFunctionGradient& fGradient;
+            VectorFunctionGradient& gGradient;
+            VectorFunctionGradient& hGradient;
             float_t mu;
             size_t mG;
             size_t mH;
@@ -160,12 +160,12 @@ namespace SGPP {
       }
 
       SquaredPenalty::SquaredPenalty(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
-        ConstraintFunction& g,
-        ConstraintGradient& gGradient,
-        ConstraintFunction& h,
-        ConstraintGradient& hGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
+        VectorFunction& g,
+        VectorFunctionGradient& gGradient,
+        VectorFunction& h,
+        VectorFunctionGradient& hGradient,
         size_t maxItCount,
         float_t xTolerance,
         float_t constraintTolerance,
@@ -255,16 +255,16 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& SquaredPenalty::getObjectiveGradient() const {
+      ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const {
         return fGradient;
       }
 
-      ConstraintGradient&
+      VectorFunctionGradient&
       SquaredPenalty::getInequalityConstraintGradient() const {
         return gGradient;
       }
 
-      ConstraintGradient& SquaredPenalty::getEqualityConstraintGradient() const {
+      VectorFunctionGradient& SquaredPenalty::getEqualityConstraintGradient() const {
         return hGradient;
       }
 

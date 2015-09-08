@@ -20,8 +20,8 @@ namespace SGPP {
     namespace optimizer {
 
       Newton::Newton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
@@ -39,8 +39,8 @@ namespace SGPP {
       }
 
       Newton::Newton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p,
@@ -150,7 +150,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveHessian& Newton::getObjectiveHessian() const {
+      ScalarFunctionHessian& Newton::getObjectiveHessian() const {
         return fHessian;
       }
 
