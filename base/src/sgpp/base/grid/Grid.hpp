@@ -118,13 +118,14 @@ namespace SGPP {
         static Grid* createLinearStretchedGrid(size_t dim);
 
         /**
-         * creates a linear boundary grid.
-	 * Optional parameter boundaryLevel, which specifies on which level the 
-	 * boundary grid points and basis functions should be added.
-	 * The default boundaryLevel=1 results in a grid with the same resolution on
-	 * the boundary as on the main axis.
+         * creates a linear boundary grid
          *
          * @param dim the grid's dimension
+         * @param boundaryLevel on which level the boundary grid points and
+         *                      basis functions should be added;
+         *                      the default is 1, which results in a grid with
+         *                      the same resolution on the boundary as on the
+         *                      main axis
          * @return grid
          */
         static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel = 1);

@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       Rprop::Rprop(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t initialStepSize,
@@ -119,7 +119,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& Rprop::getObjectiveGradient() const {
+      ScalarFunctionGradient& Rprop::getObjectiveGradient() const {
         return fGradient;
       }
 

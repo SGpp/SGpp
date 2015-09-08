@@ -9,6 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -44,12 +46,12 @@ namespace SGPP {
            * @param penaltyStartValue     penalty start value
            * @param penaltyIncreaseFactor penalty increase factor
            */
-          SquaredPenalty(ObjectiveFunction& f,
-                         ObjectiveGradient& fGradient,
-                         ConstraintFunction& g,
-                         ConstraintGradient& gGradient,
-                         ConstraintFunction& h,
-                         ConstraintGradient& hGradient,
+          SquaredPenalty(ScalarFunction& f,
+                         ScalarFunctionGradient& fGradient,
+                         VectorFunction& g,
+                         VectorFunctionGradient& gGradient,
+                         VectorFunction& h,
+                         VectorFunctionGradient& hGradient,
                          size_t maxItCount = DEFAULT_N,
                          float_t xTolerance = DEFAULT_X_TOLERANCE,
                          float_t constraintTolerance =
@@ -68,17 +70,17 @@ namespace SGPP {
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return inequality constraint function gradient
            */
-          ConstraintGradient& getInequalityConstraintGradient() const;
+          VectorFunctionGradient& getInequalityConstraintGradient() const;
 
           /**
            * @return equality constraint function gradient
            */
-          ConstraintGradient& getEqualityConstraintGradient() const;
+          VectorFunctionGradient& getEqualityConstraintGradient() const;
 
           /**
            * @return point tolerance
@@ -122,11 +124,11 @@ namespace SGPP {
 
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// inequality constraint function gradient
-          ConstraintGradient& gGradient;
+          VectorFunctionGradient& gGradient;
           /// equality constraint function gradient
-          ConstraintGradient& hGradient;
+          VectorFunctionGradient& hGradient;
           /// point tolerance
           float_t theta;
           /// constraint tolerance

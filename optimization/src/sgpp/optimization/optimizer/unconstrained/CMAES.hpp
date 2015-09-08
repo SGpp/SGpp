@@ -31,7 +31,7 @@ namespace SGPP {
            * @param maxFcnEvalCount       maximal number of
            *                              function evaluations
            */
-          CMAES(ObjectiveFunction& f,
+          CMAES(ScalarFunction& f,
                 size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
 
           /**

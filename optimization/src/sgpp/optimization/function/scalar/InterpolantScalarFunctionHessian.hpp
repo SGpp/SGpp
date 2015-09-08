@@ -29,7 +29,7 @@ namespace SGPP {
         /**
          * Constructor.
          * Do not destruct the grid before the
-         * InterpolantObjectiveHessian object!
+         * InterpolantScalarFunctionHessian object!
          *
          * @param grid  sparse grid
          * @param alpha coefficient vector

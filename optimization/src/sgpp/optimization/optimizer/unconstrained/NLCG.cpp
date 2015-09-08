@@ -15,8 +15,8 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      NLCG::NLCG(ObjectiveFunction& f,
-                 ObjectiveGradient& fGradient,
+      NLCG::NLCG(ScalarFunction& f,
+                 ScalarFunctionGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon,
                  float_t restartThreshold) :
@@ -118,7 +118,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& NLCG::getObjectiveGradient() const {
+      ScalarFunctionGradient& NLCG::getObjectiveGradient() const {
         return fGradient;
       }
 

@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/function/scalar/ObjectiveFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <cstddef>
 #include <cmath>
@@ -51,7 +51,7 @@ namespace SGPP {
        * @return                    whether the new point reaches an acceptable
        *                            improvement
        */
-      inline bool lineSearchArmijo(ObjectiveFunction& f, float_t beta,
+      inline bool lineSearchArmijo(ScalarFunction& f, float_t beta,
                                    float_t gamma,
                                    float_t tol, float_t eps,
                                    const base::DataVector& x, float_t fx,

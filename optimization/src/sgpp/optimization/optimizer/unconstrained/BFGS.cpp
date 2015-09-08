@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       BFGS::BFGS(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -190,7 +190,7 @@ namespace SGPP {
         return fx;
       }
 
-      ObjectiveGradient& BFGS::getObjectiveGradient() const {
+      ScalarFunctionGradient& BFGS::getObjectiveGradient() const {
         return fGradient;
       }
 

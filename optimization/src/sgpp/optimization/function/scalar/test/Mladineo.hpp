@@ -94,8 +94,8 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-            clone = std::unique_ptr<ObjectiveFunction>(new Mladineo(*this));
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
+            clone = std::unique_ptr<ScalarFunction>(new Mladineo(*this));
           }
       };
 

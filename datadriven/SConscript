@@ -64,12 +64,10 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   testTargetList.append(moduleTest)
 
 example_env = env.Clone()
-example_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
 example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = example_env.Program(source=os.path.join("examples", fileName),
-                              # LIBPATH=[BUILD_DIR, "#/lib/alglib"],
                               # LIBS=libs + ["sgpp%s" % moduleName]
                               )
         example_env.Requires(example, libInstall)

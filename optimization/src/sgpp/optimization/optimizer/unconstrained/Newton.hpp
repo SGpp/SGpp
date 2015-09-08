@@ -9,6 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
@@ -60,8 +61,8 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          Newton(ObjectiveFunction& f,
-                 ObjectiveHessian& fHessian,
+          Newton(ScalarFunction& f,
+                 ScalarFunctionHessian& fHessian,
                  size_t maxItCount = DEFAULT_N,
                  float_t beta = DEFAULT_BETA,
                  float_t gamma = DEFAULT_GAMMA,
@@ -89,8 +90,8 @@ namespace SGPP {
            *                          the linear systems
            *                          (Hessian as coefficient matrix)
            */
-          Newton(ObjectiveFunction& f,
-                 ObjectiveHessian& fHessian,
+          Newton(ScalarFunction& f,
+                 ScalarFunctionHessian& fHessian,
                  size_t maxItCount,
                  float_t beta,
                  float_t gamma,
@@ -110,7 +111,7 @@ namespace SGPP {
           /**
            * @return objective function Hessian
            */
-          ObjectiveHessian& getObjectiveHessian() const;
+          ScalarFunctionHessian& getObjectiveHessian() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -184,7 +185,7 @@ namespace SGPP {
 
         protected:
           /// objective function Hessian
-          ObjectiveHessian& fHessian;
+          ScalarFunctionHessian& fHessian;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)

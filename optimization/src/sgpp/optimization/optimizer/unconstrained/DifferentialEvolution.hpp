@@ -44,7 +44,7 @@ namespace SGPP {
            * @param avgImprovementThreshold   stopping criterion parameter 2
            * @param maxDistanceThreshold      stopping criterion parameter 3
            */
-          DifferentialEvolution(ObjectiveFunction& f,
+          DifferentialEvolution(ScalarFunction& f,
                                 size_t maxFcnEvalCount =
                                   DEFAULT_N,
                                 size_t populationSize =

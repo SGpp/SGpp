@@ -89,10 +89,10 @@ public class java_example {
 
     printLine();
     System.out.println("Optimizing smooth interpolant...\n");
-    sgpp.OptInterpolantObjectiveFunction ft =
-        new sgpp.OptInterpolantObjectiveFunction(grid, coeffs);
-    sgpp.OptInterpolantObjectiveGradient ftGradient =
-        new sgpp.OptInterpolantObjectiveGradient(grid, coeffs);
+    sgpp.OptInterpolantScalarFunction ft =
+        new sgpp.OptInterpolantScalarFunction(grid, coeffs);
+    sgpp.OptInterpolantScalarFunctionGradient ftGradient =
+        new sgpp.OptInterpolantScalarFunctionGradient(grid, coeffs);
     sgpp.OptGradientDescent gradientMethod =
         new sgpp.OptGradientDescent(ft, ftGradient);
     sgpp.DataVector x0 = new sgpp.DataVector(d);

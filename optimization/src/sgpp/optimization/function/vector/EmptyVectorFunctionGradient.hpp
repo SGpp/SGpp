@@ -3,29 +3,29 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYCONSTRAINTGRADIENT_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYCONSTRAINTGRADIENT_HPP
+#ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTIONGRADIENT_HPP
+#define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTIONGRADIENT_HPP
 
 #include <cstddef>
-#include <sgpp/optimization/function/vector/ConstraintFunction.hpp>
+#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
 
     /**
-     * Empty implementation of ConstraintGradient.
+     * Empty implementation of VectorFunctionGradient.
      * This is intended as a fill-in for ConstrainedOptimizer, if
      * only equality or inequality constraints are supported.
      */
-    class EmptyConstraintGradient : public ConstraintGradient {
+    class EmptyVectorFunctionGradient : public VectorFunctionGradient {
       public:
         /**
          * Constructor.
          */
-        EmptyConstraintGradient() : ConstraintGradient(0, 0) {
+        EmptyVectorFunctionGradient() : VectorFunctionGradient(0, 0) {
         }
 
-        virtual ~EmptyConstraintGradient() {};
+        virtual ~EmptyVectorFunctionGradient() {};
 
         /**
          * Does nothing.
@@ -44,14 +44,14 @@ namespace SGPP {
         virtual void clone(
           std::unique_ptr<VectorFunctionGradient>& clone) const {
           clone = std::unique_ptr<VectorFunctionGradient>(
-                    new EmptyConstraintGradient());
+                    new EmptyVectorFunctionGradient());
         }
     };
 
-    /// instance of EmptyConstraintGradient
-    extern EmptyConstraintGradient emptyConstraintGradient;
+    /// instance of EmptyVectorFunctionGradient
+    extern EmptyVectorFunctionGradient emptyVectorFunctionGradient;
 
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYCONSTRAINTGRADIENT_HPP */
+#endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORGRADIENT_HPP */

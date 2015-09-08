@@ -125,7 +125,7 @@ namespace SGPP {
             basisType = LINEAR;
           } else if (strcmp(grid.getType(), "linearBoundary") == 0) {
             linearL0BoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
-                                    new base::SLinearBoundaryBase());
+                                      new base::SLinearBoundaryBase());
             basisType = LINEAR_BOUNDARY;
           } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
             linearClenshawCurtisBasis =

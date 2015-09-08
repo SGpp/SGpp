@@ -15,7 +15,7 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      NelderMead::NelderMead(ObjectiveFunction& f,
+      NelderMead::NelderMead(ScalarFunction& f,
                              size_t maxFcnEvalCount, float_t alpha,
                              float_t beta, float_t gamma, float_t delta) :
         UnconstrainedOptimizer(f, maxFcnEvalCount),
