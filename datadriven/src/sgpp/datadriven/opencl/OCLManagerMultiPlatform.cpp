@@ -125,6 +125,27 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
     }
 }
 
+OCLManagerMultiPlatform::~OCLManagerMultiPlatform() {
+    cl_int err;
+    for (OCLPlatformWrapper platform : this->platforms) {
+        for (size_t i = 0; i < platform.deviceCount; i++) {
+            err = clReleaseCommandQueue(platform.commandQueues[i]);
+            if (err != CL_SUCCESS) {
+                std::stringstream errorString;
+                errorString << "OCL Error: Could not release command queue! Error Code: " << err << std::endl;
+                throw SGPP::base::operation_exception(errorString.str());
+            }
+        }
+        cl_int err = clReleaseContext(platform.context);
+        if (err != CL_SUCCESS) {
+            std::stringstream errorString;
+            errorString << "OCL Error: Could not release context! Error Code: " << err << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
+    }
+
+}
+
 /**
  * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects
  * that are stored into the array @a kernel (must be already allocated with at least @a num_devices )
@@ -138,7 +159,7 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
  * @return
  */
 void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const char* kernel_name,
-        std::map<cl_platform_id, cl_kernel *> &kernels) {
+        std::map<cl_platform_id, std::vector<cl_kernel> > &kernels) {
     cl_int err;
 
     for (OCLPlatformWrapper &platform : this->platforms) {
@@ -185,15 +206,16 @@ void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const 
 
         }
 
-        // creating the kernel
         for (size_t i = 0; i < platform.deviceCount; i++) {
-            kernels[platform.platformId][i] = clCreateKernel(program, kernel_name, &err);
-
+            // creating the kernel
+            cl_kernel kernel = clCreateKernel(program, kernel_name, &err);
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
                 errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
                 throw SGPP::base::operation_exception(errorString.str());
             }
+
+            kernels[platform.platformId].push_back(kernel);
         }
 
         if (program) {

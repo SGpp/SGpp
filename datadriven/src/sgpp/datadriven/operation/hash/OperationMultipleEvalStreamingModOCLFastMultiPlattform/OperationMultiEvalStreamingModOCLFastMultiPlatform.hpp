@@ -22,15 +22,15 @@ namespace datadriven {
 template<typename T>
 class OperationMultiEvalStreamingModOCLFastMultiPlatform: public base::OperationMultipleEval {
 protected:
-    size_t dims;
-    SGPP::base::DataMatrix preparedDataset;
+    size_t dims;SGPP::base::DataMatrix preparedDataset;
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
-    T* kernelDataset = nullptr;
+    std::vector<T> kernelDataset;
     size_t datasetSize = 0;
     /// Member to store the sparse grid's levels for better vectorization
-    T* level = nullptr;
+    std::vector<T> level;
     /// Member to store the sparse grid's indices for better vectorization
-    T* index = nullptr;
+    std::vector<T> index;
+
     size_t gridSize = 0;
     /// Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
@@ -40,7 +40,7 @@ protected:
     float_t duration;
 
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-    StreamingModOCLFastMultiPlatformKernelImpl<T>* kernel;
+    std::shared_ptr<StreamingModOCLFastMultiPlatformKernelImpl<T>> kernel;
 public:
 
     OperationMultiEvalStreamingModOCLFastMultiPlatform(base::Grid& grid, base::DataMatrix& dataset,
@@ -48,10 +48,11 @@ public:
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
-        if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0 &&
-                dataset.getNcols() > parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
+        if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0
+                && dataset.getNcols() > parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL")) {
             std::stringstream errorString;
-            errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+            errorString
+                    << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
             errorString << " to be greater than the dimension of the data set" << std::endl;
             throw SGPP::base::operation_exception(errorString.str());
         }
@@ -59,7 +60,7 @@ public:
         this->manager = std::make_shared<base::OCLManagerMultiPlatform>(parameters);
 
         this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = new StreamingModOCLFastMultiPlatformKernelImpl<T>(dims, this->manager, parameters);
+        this->kernel = std::make_shared<StreamingModOCLFastMultiPlatformKernelImpl<T>>(dims, this->manager, parameters);
 
         this->storage = grid.getStorage();
         this->padDataset(this->preparedDataset);
@@ -69,28 +70,18 @@ public:
         //    std::cout << "dims: " << this->dims << std::endl;
         //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-        this->kernelDataset = new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
+        this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
+//        this->kernelDataset = std::unique_ptr<T>(new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()]);
 
         for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
             this->kernelDataset[i] = (T) this->preparedDataset[i];
         }
 
-        //create the kernel specific data structures
+//        create the kernel specific data structures
         this->prepare();
     }
 
     ~OperationMultiEvalStreamingModOCLFastMultiPlatform() {
-        if (this->level != nullptr) {
-            delete this->level;
-        }
-
-        if (this->index != nullptr) {
-            delete this->index;
-        }
-
-        if (this->kernelDataset != nullptr) {
-            delete this->kernelDataset;
-        }
     }
 
     void mult(SGPP::base::DataVector& alpha,
@@ -102,7 +93,7 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        T* alphaArray = new T[this->gridSize];
+        std::vector<T> alphaArray(this->gridSize);
 
         for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
@@ -112,7 +103,7 @@ public:
             alphaArray[i] = 0.0;
         }
 
-        T* resultArray = new T[this->datasetSize];
+        std::vector<T> resultArray(this->datasetSize);
 
         for (size_t i = 0; i < this->datasetSize; i++) {
             resultArray[i] = 0.0;
@@ -132,8 +123,6 @@ public:
             result[i] = resultArray[i];
         }
 
-        delete alphaArray;
-        delete resultArray;
         this->duration = this->myTimer.stop();
     }
 
@@ -147,7 +136,7 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        T* sourceArray = new T[this->datasetSize];
+        std::vector<T> sourceArray(this->datasetSize);
 
         for (size_t i = 0; i < source.getSize(); i++) {
             sourceArray[i] = (T) source[i];
@@ -157,7 +146,7 @@ public:
             sourceArray[i] = 0.0;
         }
 
-        T* resultArray = new T[this->gridSize];
+        std::vector<T> resultArray(this->gridSize);
 
         for (size_t i = 0; i < this->gridSize; i++) {
             resultArray[i] = 0.0;
@@ -178,8 +167,6 @@ public:
             result[i] = resultArray[i];
         }
 
-        delete sourceArray;
-        delete resultArray;
         this->duration = this->myTimer.stop();
     }
 
@@ -224,11 +211,11 @@ private:
     }
 
     void recalculateLevelAndIndex() {
-        if (this->level != nullptr)
-            delete this->level;
-
-        if (this->index != nullptr)
-            delete this->index;
+//        if (this->level != nullptr)
+//            delete this->level;
+//
+//        if (this->index != nullptr)
+//            delete this->index;
 
         //TODO: padding has to be least common multiple of "LOCAL_SIZE" and "KERNEL_TRANS_GRID_BLOCK_SIZE"
         uint32_t localWorkSize = static_cast<uint32_t>(parameters->getAsUnsigned("LOCAL_SIZE"))
@@ -243,6 +230,7 @@ private:
 
         this->gridSize = this->storage->size() + padding;
 
+        //TODO: change to vector
         SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
         SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
 
@@ -255,8 +243,11 @@ private:
             }
         }
 
-        this->level = new T[this->gridSize * this->dims];
-        this->index = new T[this->gridSize * this->dims];
+        this->level = std::vector<T>(this->gridSize * this->dims);
+        this->index = std::vector<T>(this->gridSize * this->dims);
+
+//        this->level = new T[this->gridSize * this->dims];
+//        this->index = new T[this->gridSize * this->dims];
 
         for (size_t i = 0; i < this->gridSize * this->dims; i++) {
             this->level[i] = (T) (*levelMatrix)[i];

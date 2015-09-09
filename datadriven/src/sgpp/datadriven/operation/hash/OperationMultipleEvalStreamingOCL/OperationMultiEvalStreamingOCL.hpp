@@ -23,12 +23,12 @@ class OperationMultiEvalStreamingOCL: public base::OperationMultipleEval {
 protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
-    T *kernelDataset = nullptr;
+    std::vector<T> kernelDataset;
     size_t datasetSize = 0;
     // Member to store the sparse grid's levels for better vectorization
-    T *level = nullptr;
+    std::vector<T> level;
     // Member to store the sparse grid's indices for better vectorization
-    T *index = nullptr;
+    std::vector<T> index;
     size_t gridSize = 0;
     // Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
@@ -38,7 +38,7 @@ protected:
     float_t duration;
 
     std::shared_ptr<base::OCLManager> manager;
-    StreamingOCLKernelImpl<T> *kernel;
+    std::unique_ptr<StreamingOCLKernelImpl<T>> kernel;
 public:
 
     OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset,
@@ -58,7 +58,7 @@ public:
         this->manager = std::make_shared<base::OCLManager>(parameters);
 
         this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = new StreamingOCLKernelImpl<T>(dims, this->manager, parameters);
+        this->kernel = std::make_unique<StreamingOCLKernelImpl<T>>(dims, this->manager, parameters);
 
         this->storage = grid.getStorage();
         this->padDataset(this->preparedDataset);
@@ -68,7 +68,7 @@ public:
         //    std::cout << "dims: " << this->dims << std::endl;
         //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-        this->kernelDataset = new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
+        this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
 
         for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
             this->kernelDataset[i] = (T) this->preparedDataset[i];
@@ -79,17 +79,17 @@ public:
     }
 
     ~OperationMultiEvalStreamingOCL() {
-        if (this->level != nullptr) {
-            delete this->level;
-        }
-
-        if (this->index != nullptr) {
-            delete this->index;
-        }
-
-        if (this->kernelDataset != nullptr) {
-            delete this->kernelDataset;
-        }
+//        if (this->level != nullptr) {
+//            delete this->level;
+//        }
+//
+//        if (this->index != nullptr) {
+//            delete this->index;
+//        }
+//
+//        if (this->kernelDataset != nullptr) {
+//            delete this->kernelDataset;
+//        }
     }
 
     void mult(SGPP::base::DataVector& alpha,
@@ -101,7 +101,7 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        T* alphaArray = new T[this->gridSize];
+        std::vector<T> alphaArray(this->gridSize);
 
         for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
@@ -111,7 +111,7 @@ public:
             alphaArray[i] = 0.0;
         }
 
-        T* resultArray = new T[this->datasetSize];
+        std::vector<T> resultArray(this->datasetSize);
 
         for (size_t i = 0; i < this->datasetSize; i++) {
             resultArray[i] = 0.0;
@@ -124,8 +124,6 @@ public:
             result[i] = resultArray[i];
         }
 
-        delete alphaArray;
-        delete resultArray;
         this->duration = this->myTimer.stop();
     }
 
@@ -139,7 +137,7 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        T* sourceArray = new T[this->datasetSize];
+        std::vector<T> sourceArray(this->datasetSize);
 
         for (size_t i = 0; i < source.getSize(); i++) {
             sourceArray[i] = (T) source[i];
@@ -149,7 +147,7 @@ public:
             sourceArray[i] = 0.0;
         }
 
-        T* resultArray = new T[this->gridSize];
+        std::vector<T> resultArray(this->gridSize);
 
         for (size_t i = 0; i < this->gridSize; i++) {
             resultArray[i] = 0.0;
@@ -162,8 +160,6 @@ public:
             result[i] = resultArray[i];
         }
 
-        delete sourceArray;
-        delete resultArray;
         this->duration = this->myTimer.stop();
     }
 
@@ -209,11 +205,6 @@ private:
     }
 
     void recalculateLevelAndIndex() {
-        if (this->level != nullptr)
-            delete this->level;
-
-        if (this->index != nullptr)
-            delete this->index;
 
         size_t dataBlocking = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
         size_t transGridBlocking = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
@@ -231,6 +222,7 @@ private:
 
         this->gridSize = this->storage->size() + padding;
 
+        //TODO: remove this
         SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
         SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
 
@@ -243,8 +235,8 @@ private:
             }
         }
 
-        this->level = new T[this->gridSize * this->dims];
-        this->index = new T[this->gridSize * this->dims];
+        this->level = std::vector<T>(this->gridSize * this->dims);
+        this->index = std::vector<T>(this->gridSize * this->dims);
 
         for (size_t i = 0; i < this->gridSize * this->dims; i++) {
             this->level[i] = (T) (*levelMatrix)[i];

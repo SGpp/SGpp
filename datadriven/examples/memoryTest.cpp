@@ -33,6 +33,9 @@ void doStuff(std::shared_ptr<OCLManagerMultiPlatform> manager, double *values, s
 //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
     OCLStretchedBufferMultiPlatform stretched(manager);
+    stretched.freeBuffer();
+    stretched.initializeBuffer(sizeof(double), valueSize);
+    stretched.freeBuffer();
     stretched.initializeBuffer(sizeof(double), valueSize);
 }
 
@@ -56,7 +59,7 @@ int main(int argc, char** argv) {
     for (size_t i = 0; i < iterations; i++) {
         std::cout << "it: " << i << std::endl;
         doStuff(manager, values, valueSize);
-        doStuffOld(managerOld, values, valueSize);
+//        doStuffOld(managerOld, values, valueSize);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 

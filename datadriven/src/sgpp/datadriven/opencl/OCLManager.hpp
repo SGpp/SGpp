@@ -33,6 +33,8 @@ namespace SGPP {
       public:
         OCLManager(std::shared_ptr<base::OCLConfigurationParameters> parameters);
 
+        ~OCLManager();
+
         /**
          * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects
          * that are stored into the array @a kernel (must be already allocated with at least @a num_devices )
