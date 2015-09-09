@@ -112,30 +112,22 @@ namespace SGPP {
 
 
     float_t PredictiveRefinementDimensionIndicator::basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, float_t value) {
-
-      switch (gridType) {
-        case base::GridType::Linear: {
-          // linear basis
-          LinearBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBasis;
-          return linBasis.eval(level, index, value);
-        }
-
-        case base::GridType::LinearBoundary:
-        case base::GridType::LinearL0Boundary: {
-          // linear Basis with Boundaries
-          LinearBoundaryBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBoundBasis;
-          return linBoundBasis.eval(level, index, value);
-        }
-
-        case base::GridType::ModLinear: {
-          // modified linear basis
-          LinearModifiedBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> modLinBasis;
-          return modLinBasis.eval(level, index, value);
-        }
-
-        default:
-          // not found.
-          return 0;
+      if (gridType == base::GridType::Linear) {
+        // linear basis
+        LinearBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBasis;
+        return linBasis.eval(level, index, value);
+      } else if (gridType == base::GridType::LinearBoundary ||
+          gridType == base::GridType::LinearL0Boundary) {
+        // linear Basis with Boundaries
+        LinearBoundaryBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBoundBasis;
+        return linBoundBasis.eval(level, index, value);
+      } else if (gridType == base::GridType::ModLinear) {
+        // modified linear basis
+        LinearModifiedBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> modLinBasis;
+        return modLinBasis.eval(level, index, value);
+      } else {
+        // not found.
+        return 0.0f;
       }
     }
 

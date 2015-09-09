@@ -61,7 +61,7 @@ namespace SGPP {
           size_t N,
           float_t adaptivity = DEFAULT_ADAPTIVITY,
           base::level_t maxLevel = DEFAULT_MAX_LEVEL,
-          PowMethod powMethod = STD_POW);
+          PowMethod powMethod =STD_POW);
 
         /**
          * Generate the grid.

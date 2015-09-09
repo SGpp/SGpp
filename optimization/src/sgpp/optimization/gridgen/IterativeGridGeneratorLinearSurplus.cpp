@@ -69,13 +69,13 @@ namespace SGPP {
     bool IterativeGridGeneratorLinearSurplus::generate() {
       printer.printStatusBegin("Adaptive grid generation (linear surplus)...");
 
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
 
       if ((grid.getType() == base::GridType::BsplineClenshawCurtis)
           || (grid.getType() == base::GridType::ModBsplineClenshawCurtis)
           || (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       std::unique_ptr<base::AbstractRefinement> abstractRefinement;

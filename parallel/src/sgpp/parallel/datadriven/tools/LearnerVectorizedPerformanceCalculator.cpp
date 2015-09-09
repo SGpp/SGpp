@@ -71,7 +71,7 @@ namespace SGPP {
                          * ((static_cast<double>(nGridsize) * static_cast<double>(numInstances) * static_cast<double>(sizeDatatype)));
       }
 
-      if (solver == SGPP::solver::BiCGSTAB) {
+      if (solver == SGPP::solver::SLESolverType::BiCGSTAB) {
         result.GFlop_ = result.GFlop_ * 2.0;
         result.GByte_ = result.GByte_ * 2.0;
       }

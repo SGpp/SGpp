@@ -139,7 +139,7 @@ namespace SGPP {
         /*
          * integer representation of the grid type needed for evaluation of basis functions.
          */
-        size_t gridType;
+        SGPP::base::GridType gridType;
     };
 
   } /* namespace base */

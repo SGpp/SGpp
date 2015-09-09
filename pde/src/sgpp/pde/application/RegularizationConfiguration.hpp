@@ -11,7 +11,7 @@
 namespace SGPP {
   namespace pde {
 
-    enum RegularizationType {
+    enum class RegularizationType {
       Identity,
       Laplace
     };

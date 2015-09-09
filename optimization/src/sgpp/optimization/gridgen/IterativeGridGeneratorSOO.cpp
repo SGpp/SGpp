@@ -43,7 +43,7 @@ namespace SGPP {
       printer.printStatusBegin("Adaptive grid generation (SOO)...");
 
       bool result = true;
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
       base::GridStorage& gridStorage = *grid.getStorage();
       const size_t d = f.getDimension();
 
@@ -53,7 +53,7 @@ namespace SGPP {
           grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
           grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       // generate initial grid
