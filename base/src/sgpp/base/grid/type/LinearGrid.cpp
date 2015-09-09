@@ -37,8 +37,8 @@ namespace SGPP {
     LinearGrid::~LinearGrid() {
     }
 
-    const char* LinearGrid::getType() {
-      return "linear";
+    SGPP::base::GridType LinearGrid::getType() {
+      return SGPP::base::GridType::Linear;
     }
 
     const SBasis& LinearGrid::getBasis() {

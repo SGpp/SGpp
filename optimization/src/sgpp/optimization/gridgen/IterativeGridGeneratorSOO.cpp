@@ -49,9 +49,9 @@ namespace SGPP {
 
       HashRefinementMultiple refinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if (grid.getType() == base::GridType::BsplineClenshawCurtis||
+          grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+          grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid
         distr = base::GridIndex::ClenshawCurtis;
       }

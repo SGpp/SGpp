@@ -40,8 +40,8 @@ namespace SGPP {
       return *basis_;
     }
 
-    const char* PolyBoundaryGrid::getType() {
-      return "polyBoundary";
+    SGPP::base::GridType PolyBoundaryGrid::getType() {
+      return SGPP::base::GridType::PolyBoundary;
     }
 
     size_t PolyBoundaryGrid::getDegree() const {

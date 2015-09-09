@@ -79,7 +79,7 @@ namespace SGPP {
         modlinear_mode = "mask";
       }
 
-      if (strcmp(grid.getType(), "linear") == 0) {
+      if (grid.getType() == base::GridType::Linear) {
         if (vecType == parallel::X86SIMD) {
           return new parallel::OperationMultipleEvalIterativeSP<parallel::SPCPUKernel<parallel::SPX86SimdLinear> >(
                    grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
@@ -124,8 +124,8 @@ namespace SGPP {
         }
       }
 
-      else if (strcmp(grid.getType(), "linearL0Boundary") == 0
-               || strcmp(grid.getType(), "linearBoundary") == 0) {
+      else if (grid.getType() == base::GridType::LinearL0Boundary
+               || grid.getType() == base::GridType::LinearBoundary) {
         if (vecType == parallel::X86SIMD) {
           return new parallel::OperationMultipleEvalIterativeSP<parallel::SPCPUKernel<parallel::SPX86SimdLinear> >(
                    grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
@@ -170,7 +170,7 @@ namespace SGPP {
         else {
           throw base::factory_exception("Unsupported vectorization type");
         }
-      } else if (strcmp(grid.getType(), "modlinear") == 0) {
+      } else if (grid.getType() == base::GridType::ModLinear) {
         if (vecType == parallel::X86SIMD) {
           if (strcmp(modlinear_mode, "orig") == 0) {
             return new parallel::OperationMultipleEvalIterativeSP<parallel::SPCPUKernel<parallel::SPX86SimdModLinear> >(grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);

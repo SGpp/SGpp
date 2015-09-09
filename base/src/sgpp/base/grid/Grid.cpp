@@ -202,6 +202,7 @@ namespace SGPP {
         tMap->insert(std::pair<std::string, Grid::Factory>("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("poly", PolyGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("polyBoundary", PolyBoundaryGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("modpoly", ModPolyGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("wavelet", WaveletGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("waveletBoundary", WaveletBoundaryGrid::unserialize));
@@ -215,6 +216,7 @@ namespace SGPP {
         tMap->insert(std::pair<std::string, Grid::Factory>("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("prewavelet", PrewaveletGrid::unserialize));
         tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
+        tMap->insert(std::pair<std::string, Grid::Factory>("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
 #else
         tMap->insert(std::make_pair("NULL", Grid::nullFactory));
         tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -227,6 +229,7 @@ namespace SGPP {
         tMap->insert(std::make_pair("linearClenshawCurtis", LinearClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("modlinear", ModLinearGrid::unserialize));
         tMap->insert(std::make_pair("poly", PolyGrid::unserialize));
+        tMap->insert(std::make_pair("polyBoundary", PolyBoundaryGrid::unserialize));
         tMap->insert(std::make_pair("modpoly", ModPolyGrid::unserialize));
         tMap->insert(std::make_pair("wavelet", WaveletGrid::unserialize));
         tMap->insert(std::make_pair("waveletBoundary", WaveletBoundaryGrid::unserialize));
@@ -240,12 +243,78 @@ namespace SGPP {
         tMap->insert(std::make_pair("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
         tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
         tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
+        tMap->insert(std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
 #endif
       }
 
       return *tMap;
     }
 
+    std::map<SGPP::base::GridType, std::string>& Grid::typeVerboseMap() {
+      // This is only executed once!
+      static gridTypeVerboseMap* verboseMap = new gridTypeVerboseMap();
+
+      if (verboseMap->size() == 0) {
+        /*
+         * Insert strings here.
+         */
+#ifdef _WIN32
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Linear, "linear"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearStretched, "linearStretched"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearL0Boundary, "linearL0Boundary"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearStencil, "linearstencil"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModLinearStencil, "modlinearstencil"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearBoundary, "linearBoundary"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModLinear, "modlinear"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Poly, "poly"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::PolyBoundary, "polyBoundary"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModPoly, "modpoly"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Wavelet, "wavelet"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::WaveletBoundary, "waveletBoundary"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModWavelet, "modWavelet"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Bspline, "bspline"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::BsplineBoundary, "bsplineBoundary"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::BsplineClenshawCurtis, "bsplineClenshawCurtis"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModBspline, "modBspline"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::FundamentalSpline, "fundamentalSpline"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModFundamentalSpline, "modFundamentalSpline"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModBsplineClenshawCurtis, "modBsplineClenshawCurtis"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Prewavelet, "prewavelet"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Periodic, "periodic"));
+        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+#else
+        verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
+        verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
+        verboseMap->insert(std::make_pair(GridType::LinearL0Boundary, "linearL0Boundary"));
+        verboseMap->insert(std::make_pair(GridType::LinearStencil, "linearstencil"));
+        verboseMap->insert(std::make_pair(GridType::ModLinearStencil, "modlinearstencil"));
+        verboseMap->insert(std::make_pair(GridType::LinearBoundary, "linearBoundary"));
+        verboseMap->insert(std::make_pair(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
+        verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+        verboseMap->insert(std::make_pair(GridType::ModLinear, "modlinear"));
+        verboseMap->insert(std::make_pair(GridType::Poly, "poly"));
+        verboseMap->insert(std::make_pair(GridType::PolyBoundary, "polyBoundary"));
+        verboseMap->insert(std::make_pair(GridType::ModPoly, "modpoly"));
+        verboseMap->insert(std::make_pair(GridType::Wavelet, "wavelet"));
+        verboseMap->insert(std::make_pair(GridType::WaveletBoundary, "waveletBoundary"));
+        verboseMap->insert(std::make_pair(GridType::ModWavelet, "modWavelet"));
+        verboseMap->insert(std::make_pair(GridType::Bspline, "bspline"));
+        verboseMap->insert(std::make_pair(GridType::BsplineBoundary, "bsplineBoundary"));
+        verboseMap->insert(std::make_pair(GridType::BsplineClenshawCurtis, "bsplineClenshawCurtis"));
+        verboseMap->insert(std::make_pair(GridType::ModBspline, "modBspline"));
+        verboseMap->insert(std::make_pair(GridType::FundamentalSpline, "fundamentalSpline"));
+        verboseMap->insert(std::make_pair(GridType::ModFundamentalSpline, "modFundamentalSpline"));
+        verboseMap->insert(std::make_pair(GridType::ModBsplineClenshawCurtis, "modBsplineClenshawCurtis"));
+        verboseMap->insert(std::make_pair(GridType::Prewavelet, "prewavelet"));
+        verboseMap->insert(std::make_pair(GridType::Periodic, "periodic"));
+        verboseMap->insert(std::make_pair(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+#endif
+      }
+
+      return *verboseMap;
+    }
     /**
      * Factory for everything we don't know.
      */
@@ -313,7 +382,7 @@ namespace SGPP {
     }
 
     void Grid::serialize(std::ostream& ostr) {
-      ostr << this->getType() << std::endl;
+      ostr << typeVerboseMap()[this->getType()] << std::endl;
 
       if (storage != NULL) {
         ostr << "1" << std::endl;

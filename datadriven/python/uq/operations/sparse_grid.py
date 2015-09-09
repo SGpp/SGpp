@@ -6,7 +6,8 @@ from pysgpp import (createOperationHierarchisation,
 #                     DMVectorizationPaddingAssistant_padDataset,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
-                    SPolyBase, SPolyBoundaryBase)
+                    SPolyBase, SPolyBoundaryBase,
+                    Poly, PolyBoundary, Linear, LinearBoundary, LinearL0Boundary)
 
 from scipy.interpolate import interp1d
 
@@ -18,26 +19,26 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
     gridType = grid.getType()
 
-    if gridType in ["poly", "polyBoundary"]:
+    if gridType in [Poly, PolyBoundary]:
         deg = max(deg, grid.getDegree())
 
     # print gridType, deg
     if deg > 1:
-        if gridType == "linearBoundary" or \
-           gridType == "polyBoundary":
+        if gridType == LinearBoundary or \
+           gridType == PolyBoundary:
             return Grid.createPolyBoundaryGrid(dim, deg)
-        elif gridType == "linearL0Boundary":
-            raise NotImplementedError("there is not full boundary polynomial grid")
-        elif gridType == "linear" or gridType == "poly":
+        elif gridType == LinearL0Boundary:
+            raise NotImplementedError("there is no full boundary polynomial grid")
+        elif gridType == Linear or gridType == Poly:
             return Grid.createPolyGrid(dim, deg)
         else:
             raise Exception('unknown grid type %s' % gridType)
     else:
-        if gridType == "linear":
+        if gridType == Linear:
             return Grid.createLinearGrid(dim)
-        elif gridType == "linearBoundary":
+        elif gridType == LinearBoundary:
             return Grid.createLinearBoundaryGrid(dim)
-        elif gridType == "linearL0Boundary":
+        elif gridType == LinearL0Boundary:
             return Grid.createLinearBoundaryGrid(dim, 0)
         else:
             raise Exception('unknown grid type %s' % gridType)
@@ -76,20 +77,20 @@ def copyGrid(grid, level=0, deg=1):
 
 
 def getBasis(grid):
-    if grid.getType() == "linear":
+    if grid.getType() == Linear:
         return SLinearBase()
-    elif grid.getType() == "linearBoundary":
+    elif grid.getType() == LinearBoundary:
         return SLinearBoundaryBase()
-    elif grid.getType() == "poly":
+    elif grid.getType() == Poly:
         return SPolyBase(grid.getDegree())
-    elif grid.getType() == "polyBoundary":
+    elif grid.getType() == PolyBoundary:
         return SPolyBoundaryBase(grid.getDegree())
     else:
         raise AttributeError('unsupported grid type %s' % grid.getType())
 
 
 def getDegree(grid):
-    if grid.getType() in ["myPoly", "myPolyTruncatedBoundary"]:
+    if grid.getType() in [Poly, PolyBoundary]:
         return grid.getDegree()
     else:
         return 1
@@ -98,7 +99,7 @@ def getDegree(grid):
 
 
 def hasBorder(grid):
-    return "Boundary" in grid.getType()
+    return grid.getType() in [PolyBoundary, LinearBoundary, LinearL0Boundary]
 
 
 def isValid1d(grid, level, index):
@@ -402,7 +403,7 @@ def evalHierToTop(basis, grid, coeffs, gp, d):
 
 
 def hierarchizeBruteForce(grid, nodalValues, ignore=None):
-    if "Boundary" in grid.getType():
+    if hasBorder(grid):
         print 'brute force hierarchization is not supported for boundary grids'
         return nodalValues
 

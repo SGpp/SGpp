@@ -1,7 +1,9 @@
 from pysgpp.extensions.datadriven.uq.operations import balance
 from pysgpp import (DataVector, HashGridIndex,
                     SurplusRefinementFunctor,
-                    HashGridStorage)
+                    HashGridStorage,
+                    Linear, LinearL0Boundary, LinearBoundary,
+                    ModLinear, Poly, PolyBoundary)
 
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
@@ -198,13 +200,12 @@ class Refinement(object):
 
     def refineGrid(self, learner, ts=None):
         # check if this method is used in the right context
-        if learner.getGrid().getType() not in ('linear',
-                                               'linearL0Boundary',
-                                               'linearBoundary',
-                                               'modlinear',
-                                               'ultraPoly',
-                                               'ultraPolyTruncatedBoundary',
-                                               'myPoly'):
+        if learner.getGrid().getType() not in (Linear,
+                                               LinearL0Boundary,
+                                               LinearBoundary,
+                                               ModLinear,
+                                               Poly,
+                                               PolyBoundary):
             raise AttributeError('Grid type %s is not supported' %
                                  learner.getGrid().getType())
 

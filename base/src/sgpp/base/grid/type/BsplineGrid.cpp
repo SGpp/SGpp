@@ -35,8 +35,8 @@ namespace SGPP {
       }
     }
 
-    const char* BsplineGrid::getType() {
-      return "bspline";
+    SGPP::base::GridType BsplineGrid::getType() {
+      return SGPP::base::GridType::Bspline;
     }
 
     const SBasis& BsplineGrid::getBasis() {

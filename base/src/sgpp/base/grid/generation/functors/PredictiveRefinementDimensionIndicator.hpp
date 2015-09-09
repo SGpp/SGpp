@@ -165,14 +165,6 @@ namespace SGPP {
         bool isOnSupport(DataVector* floorMask, DataVector* ceilingMask, size_t entry);
 
         /*
-         * Due to a earlier design decision the grid type is only saved as a string in the grid.
-         * Therefore we need to find out what grid class to associate the grid with.
-         * @param grid a pointer to the grid.
-         * @return size_t integer representation of the grid type.
-         */
-        size_t determineGridType(Grid* grid);
-
-        /*
          * integer representation of the grid type needed for evaluation of basis functions.
          */
         size_t gridType;

@@ -53,9 +53,9 @@ void createSampleGrid(base::Grid& grid, size_t l, ScalarFunction& f,
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
-    if ((std::string(grid.getType()) == "bsplineClenshawCurtis") ||
-        (std::string(grid.getType()) == "modBsplineClenshawCurtis") ||
-        (std::string(grid.getType()) == "linearClenshawCurtis")) {
+    if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
+        grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+        grid.getType() == base::GridType::LinearClenshawCurtis) {
       gp.setPointDistribution(
         base::GridIndex::PointDistribution::ClenshawCurtis);
     }

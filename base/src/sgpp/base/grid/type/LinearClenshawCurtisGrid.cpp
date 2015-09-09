@@ -34,8 +34,8 @@ namespace SGPP {
     LinearClenshawCurtisGrid::~LinearClenshawCurtisGrid() {
     }
 
-    const char* LinearClenshawCurtisGrid::getType() {
-      return "linearClenshawCurtis";
+    SGPP::base::GridType LinearClenshawCurtisGrid::getType() {
+      return SGPP::base::GridType::LinearClenshawCurtis;
     }
 
     const SBasis& LinearClenshawCurtisGrid::getBasis() {
