@@ -20,7 +20,7 @@ namespace SGPP {
 
     class SubspaceNodeCombined {
       public:
-        enum SubspaceType {
+        enum class SubspaceType {
           NOT_SET, ARRAY, LIST
         };
 
@@ -50,7 +50,7 @@ namespace SGPP {
           // exactly one gp is added in the loop above
           this->existingGridPointsOnLevel = 1;
           this->flatLevel = flatLevel;
-          this->type = NOT_SET;
+          this->type = SubspaceType::NOT_SET;
 
           this->gridPointsOnLevel = 1;
 
@@ -79,7 +79,7 @@ namespace SGPP {
           this->gridPointsOnLevel = 0;
           this->existingGridPointsOnLevel = 0;
           this->flatLevel = 0;
-          this->type = NOT_SET;
+          this->type = SubspaceType::NOT_SET;
 
           //initalize other member variables with dummies
           this->jumpTargetIndex = index;
@@ -89,7 +89,7 @@ namespace SGPP {
         }
 
         ~SubspaceNodeCombined() {
-          if (this->type == ARRAY) {
+          if (this->type == SubspaceType::ARRAY) {
             delete[] this->subspaceArray;
           }
         }
@@ -132,9 +132,9 @@ namespace SGPP {
           float_t usageRatio = (float_t) this->existingGridPointsOnLevel / (float_t) this->gridPointsOnLevel;
 
           if (usageRatio < X86COMBINED_LIST_RATIO && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
-            this->type = LIST;
+            this->type = SubspaceType::LIST;
           } else {
-            this->type = ARRAY;
+            this->type = SubspaceType::ARRAY;
 
             if (this->subspaceArray == nullptr) {
               this->subspaceArray = new float_t[this->gridPointsOnLevel];
@@ -149,9 +149,9 @@ namespace SGPP {
         // the first call initializes the array for ARRAY type subspaces
         //
         void setSurplus(size_t indexFlat, float_t surplus) {
-          if (this->type == ARRAY) {
+          if (this->type == SubspaceType::ARRAY) {
             this->subspaceArray[indexFlat] = surplus;
-          } else if (this->type == LIST) {
+          } else if (this->type == SubspaceType::LIST) {
             bool found = false;
 
             for (std::pair<uint32_t, float_t>& tuple : this->indexFlatSurplusPairs) {
@@ -171,9 +171,9 @@ namespace SGPP {
         // the first call initializes the array for ARRAY type subspaces
         float_t getSurplus(size_t indexFlat) {
 
-          if (this->type == ARRAY) {
+          if (this->type == SubspaceType::ARRAY) {
             return this->subspaceArray[indexFlat];
-          } else if (this->type == LIST) {
+          } else if (this->type == SubspaceType::LIST) {
             for (std::pair<uint32_t, float_t> tuple : this->indexFlatSurplusPairs) {
               if (tuple.first == indexFlat) {
                 return tuple.second;

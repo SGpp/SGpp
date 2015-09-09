@@ -26,13 +26,13 @@ int main(int argc, char** argv) {
   SLESolverConfigRefine.eps_ = 0;
   SLESolverConfigRefine.maxIterations_ = 0;
   SLESolverConfigRefine.threshold_ = -1.0;
-  SLESolverConfigRefine.type_ = SGPP::solver::CG;
+  SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
   SLESolverConfigFinal.maxIterations_ = 20;
   SLESolverConfigFinal.threshold_ = -1.0;
-  SLESolverConfigFinal.type_ = SGPP::solver::CG;
+  SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
   std::string metaInformation = "refine: "
                                 + std::to_string((unsigned long long) adaptConfig.numRefinements_)

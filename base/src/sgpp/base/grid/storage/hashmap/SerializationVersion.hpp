@@ -17,7 +17,8 @@
  * Version 5: differentiate BoundingBox and Stretching, added support for stretching.
  * Version 6: added PointDistribution to HashGridIndex
  *            ("Normal" with x = i*2^(-l) and "ClenshawCurtis")
+ * Version 7: PointDistribution changed from enum to enum class
  */
-#define SERIALIZATION_VERSION 6
+#define SERIALIZATION_VERSION 7
 
 #endif /* SERIALIZATIONVERSION_HPP */

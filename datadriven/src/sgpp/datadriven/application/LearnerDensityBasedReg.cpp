@@ -22,7 +22,7 @@ namespace SGPP {
   namespace datadriven {
 
     LearnerDensityBasedReg::LearnerDensityBasedReg(
-      SGPP::datadriven::LearnerRegularizationType& regularization,
+      SGPP::pde::RegularizationType& regularization,
       float_t border) :
       LearnerBase(true), CMode_(regularization), C_(NULL), maxValue_(0.), minValue_(
         0.), border_(border) {
@@ -74,10 +74,10 @@ namespace SGPP {
 
       SGPP::solver::SLESolver* myCG;
 
-      if (SolverConfigRefine.type_ == SGPP::solver::CG) {
+      if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
         myCG = new SGPP::solver::ConjugateGradients(
           SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-      } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+      } else if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
         myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                           SolverConfigRefine.eps_);
       } else {
@@ -164,9 +164,9 @@ namespace SGPP {
         if (C_ != NULL)
           delete C_;
 
-        if (this->CMode_ == Laplace) {
+        if (this->CMode_ == SGPP::pde::RegularizationType::Laplace) {
           C_ = SGPP::op_factory::createOperationLaplace(*grid_);
-        } else if (this->CMode_ == Identity) {
+        } else if (this->CMode_ == SGPP::pde::RegularizationType::Identity) {
           C_ = SGPP::op_factory::createOperationIdentity(*grid_);
         } else {
           // should not happen

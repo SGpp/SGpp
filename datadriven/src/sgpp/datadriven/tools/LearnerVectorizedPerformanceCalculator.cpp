@@ -85,7 +85,7 @@ namespace SGPP {
                              * static_cast<float_t>(sizeDatatype)));
       }
 
-      if (solver == SGPP::solver::BiCGSTAB) {
+      if (solver == SGPP::solver::SLESolverType::BiCGSTAB) {
         result.GFlop_ = result.GFlop_ * 2.0;
         result.GByte_ = result.GByte_ * 2.0;
       }

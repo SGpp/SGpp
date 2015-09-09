@@ -21,7 +21,7 @@ namespace SGPP {
      * enum to address different gridtypes in a standardized way
      *
      */
-    enum GridType {
+    enum class GridType {
       Linear,                       //  0
       LinearStretched,              //  1
       LinearL0Boundary,             //  2

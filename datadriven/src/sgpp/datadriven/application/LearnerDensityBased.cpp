@@ -21,7 +21,7 @@ namespace SGPP {
 
   namespace datadriven {
 
-    LearnerDensityBased::LearnerDensityBased(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression,
+    LearnerDensityBased::LearnerDensityBased(SGPP::pde::RegularizationType& regularization, const bool isRegression,
         const bool isVerbose) :
       LearnerBase(isRegression, isVerbose), CMode_(regularization) {
       this->withPrior = true;
@@ -68,11 +68,11 @@ namespace SGPP {
       }
 
       for (size_t i = 0; i < nrClasses; i++) {
-        if (GridConfig.type_ == SGPP::base::LinearBoundary) {
+        if (GridConfig.type_ == SGPP::base::GridType::LinearBoundary) {
           gridVec_.push_back(new SGPP::base::LinearBoundaryGrid(GridConfig.dim_));
-        } else if (GridConfig.type_ == SGPP::base::ModLinear) {
+        } else if (GridConfig.type_ == SGPP::base::GridType::ModLinear) {
           gridVec_.push_back(new SGPP::base::ModLinearGrid(GridConfig.dim_));
-        } else if (GridConfig.type_ == SGPP::base::Linear) {
+        } else if (GridConfig.type_ == SGPP::base::GridType::Linear) {
           gridVec_.push_back(new SGPP::base::LinearGrid(GridConfig.dim_));
         } else {
           gridVec_.push_back(NULL);
@@ -133,10 +133,10 @@ namespace SGPP {
 
       SGPP::solver::SLESolver* myCG;
 
-      if (SolverConfigRefine.type_ == SGPP::solver::CG) {
+      if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
         myCG = new SGPP::solver::ConjugateGradients(
           SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-      } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+      } else if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
         myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                           SolverConfigRefine.eps_);
       } else {
@@ -253,9 +253,9 @@ namespace SGPP {
         }
 
         for (size_t ii = 0; ii < class_indeces.size(); ii++) {
-          if (this->CMode_ == Laplace) {
+          if (this->CMode_ == SGPP::pde::RegularizationType::Laplace) {
             CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]));
-          } else if (this->CMode_ == Identity) {
+          } else if (this->CMode_ == SGPP::pde::RegularizationType::Identity) {
             CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]));
           } else {
             throw base::application_exception("LearnerDensityBased::train: Unknown regularization operator");

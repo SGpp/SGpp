@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
   // configure solver
   cout << "# create solver config" << endl;
   SGPP::solver::SLESolverConfiguration solverConfig;
+  solverConfig.type_ = SGPP::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-10;
   solverConfig.threshold_ = 1e-10;
