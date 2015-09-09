@@ -28,7 +28,7 @@
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
-BOOST_AUTO_TEST_SUITE(TestStreamingOCLMaskMult)
+BOOST_AUTO_TEST_SUITE(TestStreamingModOCLMaskMult)
 
 SGPP::base::OCLConfigurationParameters getConfigurationDefaults() {
     SGPP::base::OCLConfigurationParameters parameters;
@@ -40,66 +40,6 @@ SGPP::base::OCLConfigurationParameters getConfigurationDefaults() {
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
     return parameters;
 }
-
-//double compareToReference(std::string fileName, size_t level,
-//SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
-//
-//    SGPP::base::AdpativityConfiguration adaptConfig;
-//    adaptConfig.maxLevelType_ = false;
-//    adaptConfig.noPoints_ = 80;
-//    adaptConfig.numRefinements_ = 1;
-//    adaptConfig.percent_ = 200.0;
-//    adaptConfig.threshold_ = 0.0;
-//
-//    std::string content = uncompressFile(fileName);
-//
-//    SGPP::datadriven::ARFFTools arffTools;
-//    SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-//
-//    SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
-//
-//    size_t dim = dataset.getDimension();
-//    SGPP::base::Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
-//    SGPP::base::GridStorage* gridStorage = grid->getStorage();
-//
-//    SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
-//    gridGen->regular(level);
-//    BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
-//    BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
-//
-//    SGPP::base::DataVector alpha(gridStorage->size());
-//
-//    for (size_t i = 0; i < alpha.getSize(); i++) {
-//        alpha[i] = static_cast<double>(i);
-//    }
-//
-//    SGPP::base::OperationMultipleEval* eval =
-//    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
-//
-//    eval->prepare();
-//
-//    doRandomRefinements(adaptConfig, *grid, *gridGen, alpha);
-//
-//    SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-//    dataSizeVectorResult.setAll(0);
-//
-//    eval->prepare();
-//
-//    eval->mult(alpha, dataSizeVectorResult);
-//
-//    SGPP::base::OperationMultipleEval* evalCompare =
-//    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
-//
-//    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-//    dataSizeVectorResultCompare.setAll(0.0);
-//
-//    evalCompare->mult(alpha, dataSizeVectorResultCompare);
-//
-//    double mse = compareVectors(dataSizeVectorResult, dataSizeVectorResultCompare);
-//
-//    BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
-//    return mse;
-//}
 
 BOOST_AUTO_TEST_CASE(Simple) {
 

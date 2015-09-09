@@ -24,16 +24,16 @@ class OperationMultiEvalStreamingModOCLMask: public base::OperationMultipleEval 
 protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
     std::shared_ptr<base::OCLConfigurationParameters> parameters;
-    T* kernelDataset = nullptr;
+    std::vector<T> kernelDataset;
     size_t datasetSize = 0;
     /// Member to store the sparse grid's levels for better vectorization
-    T* level = nullptr;
+    std::vector<T> level;
     /// Member to store the sparse grid's indices for better vectorization
-    T* index = nullptr;
+    std::vector<T> index;
     /// Member to store the sparse grid's mask for better vectorization
-    T* mask = nullptr;
+    std::vector<T> mask;
     /// Member to store the sparse grid's offset for better vectorization
-    T* offset = nullptr;
+    std::vector<T> offset;
     size_t gridSize;
     /// Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
@@ -66,7 +66,8 @@ public:
         //    std::cout << "dims: " << this->dims << std::endl;
         //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-        this->kernelDataset = new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
+        this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
+//        this->kernelDataset = new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
 
         for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
             this->kernelDataset[i] = (T) this->preparedDataset[i];
@@ -77,25 +78,25 @@ public:
     }
 
     ~OperationMultiEvalStreamingModOCLMask() {
-        if (this->level != nullptr) {
-            delete this->level;
-        }
-
-        if (this->index != nullptr) {
-            delete this->index;
-        }
-
-        if (this->mask != nullptr) {
-            delete this->mask;
-        }
-
-        if (this->offset != nullptr) {
-            delete this->offset;
-        }
-
-        if (this->kernelDataset != nullptr) {
-            delete this->kernelDataset;
-        }
+//        if (this->level != nullptr) {
+//            delete this->level;
+//        }
+//
+//        if (this->index != nullptr) {
+//            delete this->index;
+//        }
+//
+//        if (this->mask != nullptr) {
+//            delete this->mask;
+//        }
+//
+//        if (this->offset != nullptr) {
+//            delete this->offset;
+//        }
+//
+//        if (this->kernelDataset != nullptr) {
+//            delete this->kernelDataset;
+//        }
     }
 
     void mult(SGPP::base::DataVector& alpha,
@@ -107,7 +108,7 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        T* alphaArray = new T[this->gridSize];
+        std::vector<T> alphaArray(this->gridSize);
 
         for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
@@ -117,7 +118,7 @@ public:
             alphaArray[i] = 0.0;
         }
 
-        T* resultArray = new T[this->datasetSize];
+        std::vector<T> resultArray(this->datasetSize);
 
         for (size_t i = 0; i < this->datasetSize; i++) {
             resultArray[i] = 0.0;
@@ -135,8 +136,6 @@ public:
             result[i] = resultArray[i];
         }
 
-        delete alphaArray;
-        delete resultArray;
         this->duration = this->myTimer.stop();
     }
 
@@ -150,7 +149,7 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        T* sourceArray = new T[this->datasetSize];
+        std::vector<T> sourceArray(this->datasetSize);
 
         for (size_t i = 0; i < source.getSize(); i++) {
             sourceArray[i] = (T) source[i];
@@ -160,7 +159,7 @@ public:
             sourceArray[i] = 0.0;
         }
 
-        T* resultArray = new T[this->gridSize];
+        std::vector<T> resultArray(this->gridSize);
 
         for (size_t i = 0; i < this->gridSize; i++) {
             resultArray[i] = 0.0;
@@ -178,8 +177,6 @@ public:
             result[i] = resultArray[i];
         }
 
-        delete sourceArray;
-        delete resultArray;
         this->duration = this->myTimer.stop();
     }
 
@@ -235,18 +232,6 @@ private:
      */
     void recalculateLevelIndexMask() {
 
-        if (this->level != nullptr)
-          delete this->level;
-
-        if (this->index != nullptr)
-          delete this->index;
-
-        if (this->mask != nullptr)
-          delete this->mask;
-
-        if (this->offset!= nullptr)
-          delete this->offset;
-
         uint32_t localWorkSize = (uint32_t) parameters->getAsUnsigned("LOCAL_SIZE");
 
         size_t remainder = this->storage->size() % localWorkSize;
@@ -263,11 +248,10 @@ private:
 
         //TODO: update the other kernels with this style
 
-        this->level = new T[this->gridSize * this->dims];
-        this->index = new T[this->gridSize * this->dims];
-        this->mask = new T[this->gridSize * this->dims];
-        this->offset = new T[this->gridSize * this->dims];
-
+        this->level = std::vector<T>(this->gridSize * this->dims);
+        this->index = std::vector<T>(this->gridSize * this->dims);
+        this->mask = std::vector<T>(this->gridSize * this->dims);
+        this->offset = std::vector<T>(this->gridSize * this->dims);
 
         for (size_t i = 0; i < this->storage->size(); i++) {
             for (size_t dim = 0; dim < this->dims; dim++) {

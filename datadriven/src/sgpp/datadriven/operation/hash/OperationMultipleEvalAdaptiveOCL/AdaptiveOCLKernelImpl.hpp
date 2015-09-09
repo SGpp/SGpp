@@ -36,8 +36,8 @@ private:
     cl_int err;
     cl_device_id* device_ids;
     cl_uint num_devices;
-    cl_context context;
-    cl_command_queue* command_queue;
+//    cl_context context;
+//    cl_command_queue* command_queue;
 
     base::OCLClonedBuffer deviceData;
     base::OCLClonedBuffer deviceLevels;
@@ -80,8 +80,8 @@ public:
             this->deviceTimingsMultTranspose[i] = 1.0;
         }
 
-        this->context = manager->context;
-        this->command_queue = manager->command_queue;
+//        this->context = manager->context;
+//        this->command_queue = manager->command_queue;
         this->device_ids = manager->device_ids;
         this->err = CL_SUCCESS;
 
@@ -114,17 +114,17 @@ public:
             }
         }
 
-        // release command queue
-        for (size_t i = 0; i < num_devices; i++) {
-            if (command_queue[i]) {
-                clReleaseCommandQueue(command_queue[i]);
-            }
-        }
+//        // release command queue
+//        for (size_t i = 0; i < num_devices; i++) {
+//            if (command_queue[i]) {
+//                clReleaseCommandQueue(command_queue[i]);
+//            }
+//        }
+//
+//        // release context
+//        clReleaseContext(context);
 
-        // release context
-        clReleaseContext(context);
-
-        delete[] this->command_queue;
+//        delete[] this->command_queue;
 
         this->deviceData.freeBuffer();
         this->deviceLevels.freeBuffer();
@@ -156,7 +156,7 @@ public:
         double time = 0.0;
 
         if (kernel_mult[0] == nullptr) {
-            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
+            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), manager->context, num_devices, device_ids,
                     kernel_mult);
         }
 
@@ -211,7 +211,7 @@ public:
             size_t rangeSize = gpu_end_index_data[i] - gpu_start_index_data[i];
 
             if (rangeSize > 0) {
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i], &rangeSize,
+                err = clEnqueueNDRangeKernel(manager->command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i], &rangeSize,
                         &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
@@ -302,7 +302,7 @@ public:
         double time = 0.0;
 
         if (kernel_multTrans[0] == nullptr) {
-            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
+            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), manager->context, num_devices, device_ids,
                     kernel_multTrans);
         }
 
@@ -369,7 +369,7 @@ public:
 
             if (rangeSize > 0) {
 //    	std::cout << "enqueuing device: " << i << std::endl;
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_data[i],
+                err = clEnqueueNDRangeKernel(manager->command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_data[i],
                         &rangeSize, &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {

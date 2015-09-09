@@ -272,7 +272,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
         grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
     }
 
-    SGPP::base::GridStorage* gridStorage = grid->getStorage();
+    SGPP::base::GridStorage *gridStorage = grid->getStorage();
 
     auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
     gridGen->regular(level);

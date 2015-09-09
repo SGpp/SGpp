@@ -26,7 +26,7 @@
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 
-BOOST_AUTO_TEST_SUITE(TestStreamingOCLMaskMultTranspose)
+BOOST_AUTO_TEST_SUITE(TestStreamingModOCLMaskMultTranspose)
 
 SGPP::base::OCLConfigurationParameters getConfigurationDefaults() {
     SGPP::base::OCLConfigurationParameters parameters;

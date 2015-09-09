@@ -40,8 +40,10 @@ SGPP::base::OCLConfigurationParameters getConfigurationDefaults() {
 
 BOOST_AUTO_TEST_CASE(Simple) {
 
-    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
-            "datadriven/tests/data/friedman_10d.arff.gz" };
+//    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz",
+//            "datadriven/tests/data/friedman_10d.arff.gz" };
+
+    std::vector<std::string> fileNames = { "datadriven/tests/data/friedman_4d.arff.gz" };
 
     uint32_t level = 4;
 

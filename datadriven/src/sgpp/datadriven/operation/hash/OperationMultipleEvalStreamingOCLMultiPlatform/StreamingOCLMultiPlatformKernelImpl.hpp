@@ -21,16 +21,12 @@
 namespace SGPP {
 namespace datadriven {
 
-template<typename real_type>
+template<typename T>
 class StreamingOCLMultiPlatformKernelImpl {
 private:
     size_t dims;
 
     cl_int err;
-//    cl_device_id* device_ids;
-//    cl_uint num_devices;
-//    cl_context context;
-//    cl_command_queue* command_queue;
 
     base::OCLClonedBufferMultiPlatform deviceData;
     base::OCLClonedBufferMultiPlatform deviceLevel;
@@ -38,12 +34,12 @@ private:
 
     // use pinned memory (on host and device) to speed up data transfers from/to GPU
     base::OCLStretchedBufferMultiPlatform deviceGrid;
-//    real_type* hostGrid;
+//    std::vector<T> hostGrid;
     base::OCLStretchedBufferMultiPlatform deviceTemp;
-//    real_type* hostTemp;
+//    std::vector<T> hostTemp;
 
-    std::map<cl_platform_id, cl_kernel *> kernelsMultTrans;
-    std::map<cl_platform_id, cl_kernel *> kernelsMult;
+    std::map<cl_platform_id, std::vector<cl_kernel> > kernelsMultTrans;
+    std::map<cl_platform_id, std::vector<cl_kernel> > kernelsMult;
 
     std::map<cl_platform_id, double *> deviceTimingsMult;
     std::map<cl_platform_id, double *> deviceTimingsMultTranspose;
@@ -81,44 +77,38 @@ public:
 
         this->err = CL_SUCCESS;
 
-        for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
-            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
-            // initialize arrays
-            for (size_t i = 0; i < platform.deviceCount; i++) {
-                this->kernelsMult[platform.platformId][i] = nullptr;
-                this->kernelsMultTrans[platform.platformId][i] = nullptr;
-            }
-        }
+//        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+//            this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
+//            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
+//            // initialize arrays
+//            for (size_t i = 0; i < platform.deviceCount; i++) {
+//                this->kernelsMult[platform.platformId][i] = nullptr;
+//                this->kernelsMultTrans[platform.platformId][i] = nullptr;
+//            }
+//        }
     }
 
     ~StreamingOCLMultiPlatformKernelImpl() {
-        releaseDataBuffers();
-        releaseGridBuffers();
-
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
-                if (kernelsMult[platform.platformId][i]) {
-                    clReleaseKernel(kernelsMult[platform.platformId][i]);
-                    kernelsMult[platform.platformId][i] = nullptr;
-                }
-
-                if (kernelsMultTrans[platform.platformId][i]) {
-                    clReleaseKernel(kernelsMultTrans[platform.platformId][i]);
-                    kernelsMultTrans[platform.platformId][i] = nullptr;
+            if (kernelsMult.count(platform.platformId) > 0) {
+                for (cl_kernel &kernelMult : kernelsMult[platform.platformId]) {
+                    if (kernelMult != nullptr) {
+                        clReleaseKernel(kernelMult);
+                    }
                 }
             }
 
-            delete[] this->kernelsMult[platform.platformId];
-            delete[] this->kernelsMultTrans[platform.platformId];
+            if (kernelsMultTrans.count(platform.platformId)) {
+                for (cl_kernel &kernelMultTrans : kernelsMultTrans[platform.platformId]) {
+                    if (kernelMultTrans != nullptr) {
+                        clReleaseKernel(kernelMultTrans);
+                    }
+                }
+            }
+
+            delete[] this->deviceTimingsMult[platform.platformId];
+            delete[] this->deviceTimingsMultTranspose[platform.platformId];
         }
-
-        this->deviceData.freeBuffer();
-        this->deviceLevel.freeBuffer();
-        this->deviceIndex.freeBuffer();
-
-        delete[] this->deviceTimingsMult;
-        delete[] this->deviceTimingsMultTranspose;
     }
 
     void resetKernel() {
@@ -126,8 +116,8 @@ public:
         releaseGridBuffers();
     }
 
-    double mult(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            real_type* alpha, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
+    double mult(std::vector<T> &level, std::vector<T> &index, size_t gridSize, std::vector<T> &dataset, size_t datasetSize,
+            std::vector<T> &alpha, std::vector<T> &result, const size_t start_index_grid, const size_t end_index_grid,
             const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
@@ -176,7 +166,7 @@ public:
                 cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[platform.platformId][i]
                         / (cl_uint) dataBlockingSize;
 
-                cl_kernel &kernel = kernelsMult[platform.platformId][i];
+                cl_kernel kernel = kernelsMult[platform.platformId][i];
 
                 if (gpu_end_data > gpu_start_data) {
                     err = clSetKernelArg(kernel, 0, sizeof(cl_mem),
@@ -283,7 +273,7 @@ public:
         deviceTemp.readFromBuffer(gpu_start_index_data, gpu_end_index_data);
         deviceTemp.combineBuffer(gpu_start_index_data, gpu_end_index_data, manager->platforms[0].platformId);
 
-        real_type *hostTemp = (real_type *) deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
+        T *hostTemp = (T *) deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
 
         for (size_t i = start_index_data; i < end_index_data; i++) {
             result[i] = hostTemp[i];
@@ -344,9 +334,9 @@ public:
         return time;
     }
 
-    double multTranspose(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            real_type* source, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data) {
+    double multTranspose(std::vector<T> &level, std::vector<T> &index, size_t gridSize, std::vector<T> &dataset,
+            size_t datasetSize, std::vector<T> &source, std::vector<T> &result, const size_t start_index_grid,
+            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -393,7 +383,7 @@ public:
                 cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[platform.platformId][i]
                         / (cl_uint) transGridBlockingSize;
 
-                cl_kernel &kernel = kernelsMultTrans[platform.platformId][i];
+                cl_kernel kernel = kernelsMultTrans[platform.platformId][i];
 
                 if (gpu_end_grid > gpu_start_grid) {
                     err = clSetKernelArg(kernel, 0, sizeof(cl_mem),
@@ -445,8 +435,7 @@ public:
 
                     size_t gridOffset = gpu_start_index_grid[platform.platformId][i] / transGridBlockingSize;
                     err = clEnqueueNDRangeKernel(platform.commandQueues[i], kernelsMultTrans[platform.platformId][i], 1,
-                            &gridOffset, &rangeSize, &local, 0, nullptr,
-                            &(clTimings[platform.platformId][i]));
+                            &gridOffset, &rangeSize, &local, 0, nullptr, &(clTimings[platform.platformId][i]));
 
                     if (err != CL_SUCCESS) {
                         std::stringstream errorString;
@@ -468,7 +457,7 @@ public:
         deviceGrid.readFromBuffer(gpu_start_index_grid, gpu_end_index_grid);
         deviceGrid.combineBuffer(gpu_start_index_grid, gpu_end_index_grid, manager->platforms[0].platformId);
 
-        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
+        T *hostGrid = (T *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
 
         for (size_t i = start_index_grid; i < end_index_grid; i++) {
 //            printf("result i=%lu: %lf\n",i, hostGrid[i]);
@@ -542,26 +531,27 @@ private:
         this->deviceTemp.freeBuffer();
     }
 
-    void initOCLBuffers(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize) {
-        if (level != nullptr && !this->deviceLevel.isInitialized()) {
-            this->deviceLevel.initializeBuffer(level, sizeof(real_type), gridSize * this->dims);
+    void initOCLBuffers(std::vector<T> level, std::vector<T> index, size_t gridSize, std::vector<T> dataset,
+            size_t datasetSize) {
+        if (!this->deviceLevel.isInitialized()) {
+            this->deviceLevel.initializeBuffer(level.data(), sizeof(T), gridSize * this->dims);
         }
 
-        if (index != nullptr && !this->deviceIndex.isInitialized()) {
-            this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * this->dims);
+        if (!this->deviceIndex.isInitialized()) {
+            this->deviceIndex.initializeBuffer(index.data(), sizeof(T), gridSize * this->dims);
         }
 
         if (!this->deviceData.isInitialized()) {
-            this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims);
+            this->deviceData.initializeBuffer(dataset.data(), sizeof(T), datasetSize * this->dims);
         }
     }
 
-    void initParams(real_type* grid, size_t gridSize, real_type* tmp, size_t datasetSize) {
+    void initParams(std::vector<T> grid, size_t gridSize, std::vector<T> tmp, size_t datasetSize) {
         if (!this->deviceGrid.isInitialized()) {
-            this->deviceGrid.initializeBuffer(sizeof(real_type), gridSize * this->dims);
+            this->deviceGrid.initializeBuffer(sizeof(T), gridSize * this->dims);
         }
 
-        real_type *hostGrid = (real_type *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
+        T *hostGrid = (T *) deviceGrid.getMappedHostBuffer(manager->platforms[0].platformId);
         for (size_t i = 0; i < gridSize; i++) {
             hostGrid[i] = grid[i];
         }
@@ -570,10 +560,10 @@ private:
         deviceGrid.writeToBuffer();
 
         if (!this->deviceTemp.isInitialized()) {
-            this->deviceTemp.initializeBuffer(sizeof(real_type), datasetSize * this->dims);
+            this->deviceTemp.initializeBuffer(sizeof(T), datasetSize * this->dims);
         }
 
-        real_type *hostTemp = (real_type*) this->deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
+        T *hostTemp = (T*) this->deviceTemp.getMappedHostBuffer(manager->platforms[0].platformId);
         for (size_t i = 0; i < datasetSize; i++) {
             hostTemp[i] = tmp[i];
         }

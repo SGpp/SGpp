@@ -30,10 +30,6 @@ private:
     size_t dims;
 
     cl_int err;
-    cl_device_id* device_ids;
-    cl_uint num_devices;
-    cl_context context;
-    cl_command_queue* command_queue;
 
     base::OCLClonedBuffer deviceData;
     base::OCLClonedBuffer deviceLevel;
@@ -70,29 +66,25 @@ public:
                     this->parameters) {
 
         this->dims = dims;
-        this->num_devices = manager->num_devices;
-        this->deviceTimingsMult = new double[this->num_devices];
-        this->deviceTimingsMultTranspose = new double[this->num_devices];
+        this->deviceTimingsMult = new double[manager->num_devices];
+        this->deviceTimingsMultTranspose = new double[manager->num_devices];
 
-        for (size_t i = 0; i < this->num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             //initialize with same timing to enforce equal problem sizes in the beginning
             this->deviceTimingsMult[i] = 1.0;
             this->deviceTimingsMultTranspose[i] = 1.0;
         }
 
-        this->context = manager->context;
-        this->command_queue = manager->command_queue;
-        this->device_ids = manager->device_ids;
         this->err = CL_SUCCESS;
 
         this->hostGrid = nullptr;
         this->hostTemp = nullptr;
 
-        this->kernel_mult = new cl_kernel[num_devices];
-        this->kernel_multTrans = new cl_kernel[num_devices];
+        this->kernel_mult = new cl_kernel[manager->num_devices];
+        this->kernel_multTrans = new cl_kernel[manager->num_devices];
 
         // initialize arrays
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             this->kernel_mult[i] = nullptr;
             this->kernel_multTrans[i] = nullptr;
         }
@@ -102,7 +94,7 @@ public:
         releaseDataBuffers();
         releaseGridBuffers();
 
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             if (kernel_mult[i]) {
                 clReleaseKernel(kernel_mult[i]);
                 kernel_mult[i] = nullptr;
@@ -114,17 +106,17 @@ public:
             }
         }
 
-        // release command queue
-        for (size_t i = 0; i < num_devices; i++) {
-            if (command_queue[i]) {
-                clReleaseCommandQueue(command_queue[i]);
-            }
-        }
-
-        // release context
-        clReleaseContext(context);
-
-        delete[] this->command_queue;
+//        // release command queue
+//        for (size_t i = 0; i < num_devices; i++) {
+//            if (command_queue[i]) {
+//                clReleaseCommandQueue(command_queue[i]);
+//            }
+//        }
+//
+//        // release context
+//        clReleaseContext(context);
+//
+//        delete[] this->command_queue;
 
         this->deviceData.freeBuffer();
         this->deviceLevel.freeBuffer();
@@ -136,7 +128,6 @@ public:
         delete[] this->deviceTimingsMult;
         delete[] this->deviceTimingsMultTranspose;
 
-        delete[] this->device_ids;
     }
 
     void resetKernel() {
@@ -144,8 +135,9 @@ public:
         releaseGridBuffers();
     }
 
-    double mult(real_type* level, real_type* index, real_type *mask, real_type *offset, size_t gridSize,
-            real_type* dataset, size_t datasetSize, real_type* alpha, real_type* result, const size_t start_index_grid,
+    double mult(std::vector<real_type> &level, std::vector<real_type> &index, std::vector<real_type> &mask,
+            std::vector<real_type> &offset, size_t gridSize, std::vector<real_type> &dataset, size_t datasetSize,
+            std::vector<real_type> &alpha, std::vector<real_type> &result, const size_t start_index_grid,
             const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
@@ -156,16 +148,16 @@ public:
         double time = 0.0;
 
         if (kernel_mult[0] == nullptr) {
-            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
-                    kernel_mult);
+            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), manager->context, manager->num_devices,
+                    manager->device_ids, kernel_mult);
         }
 
         initOCLBuffers(level, index, mask, offset, gridSize, dataset, datasetSize);
         initParams(alpha, gridSize, result, datasetSize);
 
         // determine best fit
-        size_t* gpu_start_index_data = new size_t[num_devices];
-        size_t* gpu_end_index_data = new size_t[num_devices];
+        size_t* gpu_start_index_data = new size_t[manager->num_devices];
+        size_t* gpu_end_index_data = new size_t[manager->num_devices];
 
         //TODO: don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
 
@@ -182,7 +174,7 @@ public:
         cl_uint gpu_end_grid = (cl_uint) end_index_grid;
         //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             cl_uint gpu_start_data = static_cast<cl_uint>(gpu_start_index_data[i])
                     / static_cast<cl_uint>(dataBlockingSize);
             cl_uint gpu_end_data = static_cast<cl_uint>(gpu_end_index_data[i]) / static_cast<cl_uint>(dataBlockingSize);
@@ -252,7 +244,7 @@ public:
             }
         }
 
-        cl_event* clTimings = new cl_event[num_devices];
+        cl_event* clTimings = new cl_event[manager->num_devices];
 
         // enqueue kernel
         size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
@@ -261,13 +253,13 @@ public:
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
 
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             size_t rangeSize = (gpu_end_index_data[i] / dataBlockingSize)
                     - (gpu_start_index_data[i] / dataBlockingSize);
 
             if (rangeSize > 0) {
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i], &rangeSize,
-                        &local, 0, nullptr, &(clTimings[i]));
+                err = clEnqueueNDRangeKernel(manager->command_queue[i], kernel_mult[i], 1, &gpu_start_index_data[i],
+                        &rangeSize, &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
                     std::stringstream errorString;
@@ -297,7 +289,7 @@ public:
         }
 
         // determine kernel execution time
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             double tmpTime;
             cl_ulong startTime, endTime;
             startTime = endTime = 0;
@@ -335,7 +327,7 @@ public:
         }
 
         // clean up
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             if (gpu_end_index_data[i] > gpu_start_index_data[i]) {
                 clReleaseEvent(clTimings[i]);
             }
@@ -349,8 +341,9 @@ public:
         return time;
     }
 
-    double multTranspose(real_type* level, real_type* index, real_type *mask, real_type *offset, size_t gridSize,
-            real_type* dataset, size_t datasetSize, real_type* source, real_type* result, const size_t start_index_grid,
+    double multTranspose(std::vector<real_type> &level, std::vector<real_type> &index, std::vector<real_type> &mask,
+            std::vector<real_type> &offset, size_t gridSize, std::vector<real_type> &dataset, size_t datasetSize,
+            std::vector<real_type> &source, std::vector<real_type> &result, const size_t start_index_grid,
             const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
@@ -361,16 +354,16 @@ public:
         double time = 0.0;
 
         if (kernel_multTrans[0] == nullptr) {
-            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), context, num_devices, device_ids,
-                    kernel_multTrans);
+            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), manager->context, manager->num_devices,
+                    manager->device_ids, kernel_multTrans);
         }
 
         initOCLBuffers(level, index, mask, offset, gridSize, dataset, datasetSize);
         initParams(result, gridSize, source, datasetSize);
 
         // determine best fit
-        size_t* gpu_start_index_grid = new size_t[num_devices];
-        size_t* gpu_end_index_grid = new size_t[num_devices];
+        size_t* gpu_start_index_grid = new size_t[manager->num_devices];
+        size_t* gpu_end_index_grid = new size_t[manager->num_devices];
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
@@ -383,7 +376,7 @@ public:
 
         //    std::cout << "start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[i];
             cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[i];
             //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
@@ -452,19 +445,19 @@ public:
             }
         }
 
-        cl_event* clTimings = new cl_event[num_devices];
+        cl_event* clTimings = new cl_event[manager->num_devices];
 
         // enqueue kernels
         size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
         size_t active_devices = 0;
 
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             size_t rangeSize = gpu_end_index_grid[i] - gpu_start_index_grid[i];
 
             if (rangeSize > 0) {
                 //      std::cout << "enqueuing device: " << i << std::endl;
-                err = clEnqueueNDRangeKernel(command_queue[i], kernel_multTrans[i], 1, &gpu_start_index_grid[i],
-                        &rangeSize, &local, 0, nullptr, &(clTimings[i]));
+                err = clEnqueueNDRangeKernel(manager->command_queue[i], kernel_multTrans[i], 1,
+                        &gpu_start_index_grid[i], &rangeSize, &local, 0, nullptr, &(clTimings[i]));
 
                 if (active_devices != i) {
                     std::stringstream errorString;
@@ -491,7 +484,7 @@ public:
         }
 
         // determine kernel execution time
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             double tmpTime;
             cl_ulong startTime, endTime;
             startTime = endTime = 0;
@@ -529,7 +522,7 @@ public:
         }
 
         // clean up
-        for (size_t i = 0; i < num_devices; i++) {
+        for (size_t i = 0; i < manager->num_devices; i++) {
             if (gpu_end_index_grid[i] > gpu_start_index_grid[i]) {
                 clReleaseEvent(clTimings[i]);
             }
@@ -569,30 +562,30 @@ private:
         this->deviceTemp.freeBuffer();
     }
 
-    void initOCLBuffers(real_type* level, real_type* index, real_type* mask, real_type* offset, size_t gridSize,
-            real_type* dataset, size_t datasetSize) {
-        if (level != nullptr && !this->deviceLevel.isInitialized()) {
-            this->deviceLevel.initializeBuffer(level, sizeof(real_type), gridSize * this->dims);
+    void initOCLBuffers(std::vector<real_type> &level, std::vector<real_type> &index, std::vector<real_type> &mask,
+            std::vector<real_type> &offset, size_t gridSize, std::vector<real_type> &dataset, size_t datasetSize) {
+        if (!this->deviceLevel.isInitialized()) {
+            this->deviceLevel.initializeBuffer(level.data(), sizeof(real_type), gridSize * this->dims);
         }
 
-        if (index != nullptr && !this->deviceIndex.isInitialized()) {
-            this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * this->dims);
+        if (!this->deviceIndex.isInitialized()) {
+            this->deviceIndex.initializeBuffer(index.data(), sizeof(real_type), gridSize * this->dims);
         }
 
-        if (mask != nullptr && !this->deviceMask.isInitialized()) {
-            this->deviceMask.initializeBuffer(mask, sizeof(real_type), gridSize * this->dims);
+        if (!this->deviceMask.isInitialized()) {
+            this->deviceMask.initializeBuffer(mask.data(), sizeof(real_type), gridSize * this->dims);
         }
 
-        if (offset != nullptr && !this->deviceOffset.isInitialized()) {
-            this->deviceOffset.initializeBuffer(offset, sizeof(real_type), gridSize * this->dims);
+        if (!this->deviceOffset.isInitialized()) {
+            this->deviceOffset.initializeBuffer(offset.data(), sizeof(real_type), gridSize * this->dims);
         }
 
         if (!this->deviceData.isInitialized()) {
-            this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims);
+            this->deviceData.initializeBuffer(dataset.data(), sizeof(real_type), datasetSize * this->dims);
         }
     }
 
-    void initParams(real_type* grid, size_t gridSize, real_type* tmp, size_t datasetSize) {
+    void initParams(std::vector<real_type> &grid, size_t gridSize, std::vector<real_type> &tmp, size_t datasetSize) {
         if (!this->deviceGrid.isInitialized()) {
             this->deviceGrid.initializeBuffer(sizeof(real_type), gridSize * this->dims);
             this->hostGrid = (real_type*) this->deviceGrid.getMappedHostBuffer();

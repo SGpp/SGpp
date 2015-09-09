@@ -42,6 +42,8 @@ public:
 public:
     OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfigurationParameters> parameters);
 
+    ~OCLManagerMultiPlatform();
+
     /**
      * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects
      * that are stored into the array @a kernel (must be already allocated with at least @a num_devices )
@@ -55,7 +57,7 @@ public:
      * @return
      */
     void buildKernel(const std::string &program_src, const char* kernel_name,
-            std::map<cl_platform_id, cl_kernel *> &kernels);
+            std::map<cl_platform_id, std::vector<cl_kernel> > &kernels);
 
     void setPlatformIDs();
 

@@ -39,8 +39,8 @@ private:
     base::OCLStretchedBufferMultiPlatform deviceTemp;
     //real_type* hostTemp;
 
-    std::map<cl_platform_id, cl_kernel *> kernelsMultTrans;
-    std::map<cl_platform_id, cl_kernel *> kernelsMult;
+    std::map<cl_platform_id, std::vector<cl_kernel> > kernelsMultTrans;
+    std::map<cl_platform_id, std::vector<cl_kernel> > kernelsMult;
 
     std::map<cl_platform_id, double *> deviceTimingsMult;
     std::map<cl_platform_id, double *> deviceTimingsMultTranspose;
@@ -78,44 +78,39 @@ public:
 
         this->err = CL_SUCCESS;
 
-        for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
-            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
-            // initialize arrays
-            for (size_t i = 0; i < platform.deviceCount; i++) {
-                this->kernelsMult[platform.platformId][i] = nullptr;
-                this->kernelsMultTrans[platform.platformId][i] = nullptr;
-            }
-        }
+//        for (base::OCLPlatformWrapper &platform : manager->platforms) {
+//            this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
+//            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
+//            // initialize arrays
+//            for (size_t i = 0; i < platform.deviceCount; i++) {
+//                this->kernelsMult[platform.platformId][i] = nullptr;
+//                this->kernelsMultTrans[platform.platformId][i] = nullptr;
+//            }
+//        }
     }
 
     ~StreamingModOCLFastMultiPlatformKernelImpl() {
-        releaseDataBuffers();
-        releaseGridBuffers();
 
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
-                if (kernelsMult[platform.platformId][i]) {
-                    clReleaseKernel(kernelsMult[platform.platformId][i]);
-                    kernelsMult[platform.platformId][i] = nullptr;
-                }
-
-                if (kernelsMultTrans[platform.platformId][i]) {
-                    clReleaseKernel(kernelsMultTrans[platform.platformId][i]);
-                    kernelsMultTrans[platform.platformId][i] = nullptr;
+            if (kernelsMult.count(platform.platformId) > 0) {
+                for (cl_kernel &kernelMult : kernelsMult[platform.platformId]) {
+                    if (kernelMult != nullptr) {
+                        clReleaseKernel(kernelMult);
+                    }
                 }
             }
 
-            delete[] this->kernelsMult[platform.platformId];
-            delete[] this->kernelsMultTrans[platform.platformId];
+            if (kernelsMultTrans.count(platform.platformId)) {
+                for (cl_kernel &kernelMultTrans : kernelsMultTrans[platform.platformId]) {
+                    if (kernelMultTrans != nullptr) {
+                        clReleaseKernel(kernelMultTrans);
+                    }
+                }
+            }
+
+            delete[] this->deviceTimingsMult[platform.platformId];
+            delete[] this->deviceTimingsMultTranspose[platform.platformId];
         }
-
-        this->deviceData.freeBuffer();
-        this->deviceLevel.freeBuffer();
-        this->deviceIndex.freeBuffer();
-
-        delete[] this->deviceTimingsMult;
-        delete[] this->deviceTimingsMultTranspose;
     }
 
     void resetKernel() {
@@ -123,8 +118,9 @@ public:
         releaseGridBuffers();
     }
 
-    double mult(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            real_type* alpha, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
+    double mult(std::vector<real_type> &level, std::vector<real_type> &index, size_t gridSize,
+            std::vector<real_type> &dataset, size_t datasetSize, std::vector<real_type> &alpha,
+            std::vector<real_type> &result, const size_t start_index_grid, const size_t end_index_grid,
             const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
@@ -159,8 +155,8 @@ public:
         multLoadBalancer.update(this->deviceTimingsMult);
 
         size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters->getAsUnsigned("LOCAL_SIZE") * dataBlockingSize,
-                gpu_start_index_data, gpu_end_index_data);
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
+                parameters->getAsUnsigned("LOCAL_SIZE") * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
@@ -220,8 +216,7 @@ public:
 
                     size_t dataOffset = gpu_start_index_data[platform.platformId][i] / dataBlockingSize;
                     err = clEnqueueNDRangeKernel(platform.commandQueues[i], kernelsMult[platform.platformId][i], 1,
-                            &dataOffset, &rangeSize, &local, 0, nullptr,
-                            &(clTimings[platform.platformId][i]));
+                            &dataOffset, &rangeSize, &local, 0, nullptr, &(clTimings[platform.platformId][i]));
 
                     if (err != CL_SUCCESS) {
                         std::stringstream errorString;
@@ -304,8 +299,9 @@ public:
         return time;
     }
 
-    double multTranspose(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            real_type* source, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
+    double multTranspose(std::vector<real_type> &level, std::vector<real_type> &index, size_t gridSize,
+            std::vector<real_type> &dataset, size_t datasetSize, std::vector<real_type> &source,
+            std::vector<real_type> &result, const size_t start_index_grid, const size_t end_index_grid,
             const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
@@ -395,8 +391,7 @@ public:
             for (size_t i = 0; i < platform.deviceCount; i++) {
                 size_t gpuEndGrid = gpu_end_index_grid[platform.platformId][i];
                 size_t gpuStartGrid = gpu_start_index_grid[platform.platformId][i];
-                size_t rangeSize = (gpuEndGrid / gridBlockingSize)
-                        - (gpuStartGrid / gridBlockingSize);
+                size_t rangeSize = (gpuEndGrid / gridBlockingSize) - (gpuStartGrid / gridBlockingSize);
 
                 if (rangeSize > 0) {
                     size_t totalWorkItems = rangeSize * local; //TODO: possible bug -> variable might be reallocated, the kernel uses a reference...
@@ -486,6 +481,7 @@ public:
 
         return time;
     }
+
 private:
 
     void releaseGridBuffers() {
@@ -499,21 +495,22 @@ private:
         this->deviceTemp.freeBuffer();
     }
 
-    void initOCLBuffers(real_type* level, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize) {
-        if (level != nullptr && !this->deviceLevel.isInitialized()) {
-            this->deviceLevel.initializeBuffer(level, sizeof(real_type), gridSize * this->dims);
+    void initOCLBuffers(std::vector<real_type> &level, std::vector<real_type> &index, size_t gridSize,
+            std::vector<real_type> &dataset, size_t datasetSize) {
+        if (!this->deviceLevel.isInitialized()) {
+            this->deviceLevel.initializeBuffer(level.data(), sizeof(real_type), gridSize * this->dims);
         }
 
-        if (index != nullptr && !this->deviceIndex.isInitialized()) {
-            this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * this->dims);
+        if (!this->deviceIndex.isInitialized()) {
+            this->deviceIndex.initializeBuffer(index.data(), sizeof(real_type), gridSize * this->dims);
         }
 
         if (!this->deviceData.isInitialized()) {
-            this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims);
+            this->deviceData.initializeBuffer(dataset.data(), sizeof(real_type), datasetSize * this->dims);
         }
     }
 
-    void initParams(real_type* grid, size_t gridSize, real_type* tmp, size_t datasetSize) {
+    void initParams(std::vector<real_type> &grid, size_t gridSize, std::vector<real_type> &tmp, size_t datasetSize) {
         if (!this->deviceGrid.isInitialized()) {
             this->deviceGrid.initializeBuffer(sizeof(real_type), gridSize * this->dims);
         }

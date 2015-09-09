@@ -16,7 +16,6 @@
 
 #include <zlib.h>
 
-
 #include "test_datadrivenCommon.hpp"
 
 #include <sgpp/globaldef.hpp>
@@ -40,6 +39,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
     SGPP::base::OCLConfigurationParameters parameters;
     parameters.set("OCL_MANAGER_VERBOSE", "false");
+    parameters.set("VERBOSE", "false");
     parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
     parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
@@ -62,7 +62,8 @@ BOOST_AUTO_TEST_CASE(Simple) {
 BOOST_AUTO_TEST_CASE(Blocking) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
 
     uint32_t level = 6;
 
@@ -91,7 +92,8 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 BOOST_AUTO_TEST_CASE(MultiDevice) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
 
     uint32_t level = 6;
 
@@ -118,7 +120,8 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 1E-22), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
 
     uint32_t level = 6;
 
@@ -145,7 +148,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
 
     uint32_t level = 6;
 
@@ -174,7 +178,8 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
 
     uint32_t level = 6;
 
@@ -203,7 +208,8 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
 
     uint32_t level = 6;
 
@@ -231,7 +237,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 10E-5), std::tuple<std::string, double>(
+            "datadriven/tests/data/friedman_10d.arff.gz", 10E-1) };
 
     uint32_t level = 6;
 
