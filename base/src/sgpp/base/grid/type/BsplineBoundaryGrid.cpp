@@ -35,8 +35,8 @@ namespace SGPP {
       }
     }
 
-    const char* BsplineBoundaryGrid::getType() {
-      return "bsplineBoundary";
+    SGPP::base::GridType BsplineBoundaryGrid::getType() {
+      return SGPP::base::GridType::BsplineBoundary;
     }
 
     const SBasis& BsplineBoundaryGrid::getBasis() {

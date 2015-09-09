@@ -36,8 +36,8 @@ namespace SGPP {
     LinearGridStencil::~LinearGridStencil() {
     }
 
-    const char* LinearGridStencil::getType() {
-      return "linearstencil";
+    SGPP::base::GridType LinearGridStencil::getType() {
+      return SGPP::base::GridType::LinearStencil;
     }
 
     const SBasis& LinearGridStencil::getBasis() {

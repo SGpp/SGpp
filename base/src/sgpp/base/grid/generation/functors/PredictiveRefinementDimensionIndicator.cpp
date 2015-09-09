@@ -22,7 +22,7 @@ namespace SGPP {
     PredictiveRefinementDimensionIndicator::PredictiveRefinementDimensionIndicator(Grid* grid, DataMatrix* dataSet, DataVector* errorVector,
         size_t refinements_num, float_t threshold, long unsigned int minSupportPoints): minSupportPoints_(minSupportPoints) {
       //find out what type of grid is used;
-      gridType = determineGridType(grid);
+      gridType = grid->getType();
 
       //set global Variables accordingly
       this->dataSet = dataSet;
@@ -114,19 +114,20 @@ namespace SGPP {
     float_t PredictiveRefinementDimensionIndicator::basisFunctionEvalHelper(AbstractRefinement::level_t level, AbstractRefinement::index_t index, float_t value) {
 
       switch (gridType) {
-        case 1: {
+        case base::GridType::Linear: {
           // linear basis
           LinearBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBasis;
           return linBasis.eval(level, index, value);
         }
 
-        case 15: {
+        case base::GridType::LinearBoundary:
+        case base::GridType::LinearL0Boundary: {
           // linear Basis with Boundaries
           LinearBoundaryBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBoundBasis;
           return linBoundBasis.eval(level, index, value);
         }
 
-        case 8: {
+        case base::GridType::ModLinear: {
           // modified linear basis
           LinearModifiedBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> modLinBasis;
           return modLinBasis.eval(level, index, value);
@@ -148,40 +149,6 @@ namespace SGPP {
 
     float_t PredictiveRefinementDimensionIndicator::start() {
       return 0.0;
-    }
-
-    size_t PredictiveRefinementDimensionIndicator::determineGridType(Grid* grid) {
-
-      //define a map where to add the supported grid Types
-      typedef std::map<std::string, size_t> GridTypes;
-      GridTypes gridTypes;
-      // add grid Types and map an integer to them
-      gridTypes.insert(std::make_pair("linear", 1));
-      //  gridTypes.insert(std::make_pair("linearstencil",2));
-      //  gridTypes.insert(std::make_pair("linearStretched",3));
-      //  gridTypes.insert(std::make_pair("modlinearstencil",4));
-      //  gridTypes.insert(std::make_pair("modpoly",5));
-      //  gridTypes.insert(std::make_pair("modWavelet",6));
-      //  gridTypes.insert(std::make_pair("poly",7));
-      gridTypes.insert(std::make_pair("modlinear", 8));
-      //  gridTypes.insert(std::make_pair("modBspline",9));
-      //  gridTypes.insert(std::make_pair("linearBoundary",10));
-      //  gridTypes.insert(std::make_pair("linearStretchedBoundary",11));
-      //  gridTypes.insert(std::make_pair("linearTruncatedBoundary""linearStretchedBoundary",12));
-      //  gridTypes.insert(std::make_pair("squareRoot",13));
-      //  gridTypes.insert(std::make_pair("prewavelet",14));
-      gridTypes.insert(std::make_pair("linearL0Boundary", 15));
-
-
-      //find the integer representation of the grid type and return it.
-      //zero otherwise.
-      GridTypes::iterator typeIter = gridTypes.find(std::string(grid->getType()));
-
-      if (typeIter != gridTypes.end()) {
-        return typeIter->second;
-      } else {
-        return 0;
-      }
     }
 
     bool PredictiveRefinementDimensionIndicator::isOnSupport(

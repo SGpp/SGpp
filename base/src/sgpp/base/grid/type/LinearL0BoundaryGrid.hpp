@@ -36,7 +36,7 @@ namespace SGPP {
          */
         virtual ~LinearL0BoundaryGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 

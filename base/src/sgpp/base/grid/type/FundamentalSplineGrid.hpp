@@ -46,7 +46,7 @@ namespace SGPP {
         /**
          * @return string that identifies the grid type uniquely
          */
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         /**
          * @return fundamental spline basis

@@ -6,7 +6,6 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
@@ -14,7 +13,6 @@
 #include <map>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
   namespace base {
@@ -29,7 +27,7 @@ namespace SGPP {
       LinearL0Boundary,             //  2
       LinearBoundary,               //  3
       LinearStretchedBoundary,      //  4
-      LinearTruncatedBoundary,	    //  5
+      LinearTruncatedBoundary,      //  5
       ModLinear,                    //  6
       Poly,                         //  7
       PolyBoundary,                 //  8
@@ -47,7 +45,9 @@ namespace SGPP {
       WaveletBoundary,              // 20
       FundamentalSpline,            // 21
       ModFundamentalSpline,         // 22
-      ModBsplineClenshawCurtis      // 23
+      ModBsplineClenshawCurtis,     // 23
+      LinearStencil,                // 24
+      ModLinearStencil              // 25
     };
 
     /**
@@ -379,7 +379,7 @@ namespace SGPP {
          *
          * @return string that identifies the grid type uniquely
          */
-        virtual const char* getType() = 0;
+        virtual SGPP::base::GridType getType() = 0;
 
         /**
          * Returns the Basis class associated with the grid
@@ -469,9 +469,9 @@ namespace SGPP {
 
         typedef Grid* (*Factory)(std::istream&);
         typedef std::map<std::string, Grid::Factory> factoryMap;
+        typedef std::map<SGPP::base::GridType, std::string> gridTypeVerboseMap;
 
         static Grid* nullFactory(std::istream&);
-
 
       private:
         /**
@@ -480,6 +480,14 @@ namespace SGPP {
          * @return a map with all available grid types for serialization
          */
         static factoryMap& typeMap();
+
+        /**
+         *  This method returns a map with string representation for the type
+         *  of all available grids.
+         * @return a map with string representation for the type
+         *  of all available grids.
+         */
+        static gridTypeVerboseMap& typeVerboseMap();
 
         //pointer to the Operation Eval used in Grid.eval()
         static OperationEval* evalOp;

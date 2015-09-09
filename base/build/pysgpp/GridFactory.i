@@ -73,7 +73,7 @@ struct AdpativityConfiguration {
       float_t percent_;
     };
 
-typedef enum mail_ {
+typedef enum GridType {
       Linear                        =  0,
       LinearStretched               =  1,
       LinearL0Boundary              =  2,
@@ -97,8 +97,10 @@ typedef enum mail_ {
       WaveletBoundary               = 20,
       FundamentalSpline             = 21,
       ModFundamentalSpline          = 22,
-      ModBsplineClenshawCurtis      = 23
-} GridType;
+      ModBsplineClenshawCurtis      = 23,
+      LinearStencil                 = 24,
+      ModLinearStencil              = 25
+};
 
 class Grid
 {
@@ -145,7 +147,7 @@ public:
   virtual SGPP::base::BoundingBox* getBoundingBox();
   virtual SGPP::base::Stretching* getStretching();
 
-  virtual const char* getType() = 0;
+  virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
   void refine(SGPP::base::DataVector* vector, int num);
@@ -171,10 +173,10 @@ public:
 // which is important for polynomials and bsplines
 %extend SGPP::base::Grid{
     int getDegree() {
-        if (strcmp($self->getType(), "poly") == 0) {
+        if ($self->getType() == SGPP::base::GridType::Poly) {
             return ((SGPP::base::PolyGrid*) $self)->getDegree();
         };
-        if (strcmp($self->getType(), "polyBoundary") == 0) {
+        if ($self->getType() == SGPP::base::GridType::PolyBoundary) {
             return ((SGPP::base::PolyBoundaryGrid*) $self)->getDegree();
         };
 

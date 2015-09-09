@@ -95,7 +95,9 @@ typedef enum GridType {
       WaveletBoundary               = 20,
       FundamentalSpline             = 21,
       ModFundamentalSpline          = 22,
-      ModBsplineClenshawCurtis      = 23
+      ModBsplineClenshawCurtis      = 23,
+      LinearStencil                 = 24,
+      ModLinearStencil              = 25
 };
 
 class Grid
@@ -143,7 +145,7 @@ public:
   virtual SGPP::base::BoundingBox* getBoundingBox();
   virtual SGPP::base::Stretching* getStretching();
 
-  virtual const char* getType() = 0;
+  virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
   void refine(SGPP::base::DataVector* vector, int num);

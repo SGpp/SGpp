@@ -39,7 +39,7 @@ namespace SGPP {
          */
         virtual ~ModPolyGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
         virtual void serialize(std::ostream& ostr);
 
         virtual const SBasis& getBasis();

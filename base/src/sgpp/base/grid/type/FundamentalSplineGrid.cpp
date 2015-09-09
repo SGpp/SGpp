@@ -35,8 +35,8 @@ namespace SGPP {
       }
     }
 
-    const char* FundamentalSplineGrid::getType() {
-      return "fundamentalSpline";
+    SGPP::base::GridType FundamentalSplineGrid::getType() {
+      return SGPP::base::GridType::FundamentalSpline;
     }
 
     const SBasis& FundamentalSplineGrid::getBasis() {
