@@ -259,31 +259,31 @@ namespace SGPP {
          * Insert strings here.
          */
 #ifdef _WIN32
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Linear, "linear"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearStretched, "linearStretched"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearL0Boundary, "linearL0Boundary"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearStencil, "linearstencil"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModLinearStencil, "modlinearstencil"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearBoundary, "linearBoundary"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModLinear, "modlinear"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Poly, "poly"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::PolyBoundary, "polyBoundary"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModPoly, "modpoly"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Wavelet, "wavelet"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::WaveletBoundary, "waveletBoundary"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModWavelet, "modWavelet"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Bspline, "bspline"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::BsplineBoundary, "bsplineBoundary"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::BsplineClenshawCurtis, "bsplineClenshawCurtis"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModBspline, "modBspline"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::FundamentalSpline, "fundamentalSpline"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModFundamentalSpline, "modFundamentalSpline"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::ModBsplineClenshawCurtis, "modBsplineClenshawCurtis"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Prewavelet, "prewavelet"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::Periodic, "periodic"));
-        verboseMap->insert(std::pair<std::string, Grid::Factory>(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::Linear, "linear"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearStretched, "linearStretched"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearL0Boundary, "linearL0Boundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearStencil, "linearstencil"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModLinearStencil, "modlinearstencil"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearBoundary, "linearBoundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearStretchedBoundary, "linearStretchedBoundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModLinear, "modlinear"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::Poly, "poly"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::PolyBoundary, "polyBoundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModPoly, "modpoly"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::Wavelet, "wavelet"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::WaveletBoundary, "waveletBoundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModWavelet, "modWavelet"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::Bspline, "bspline"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::BsplineBoundary, "bsplineBoundary"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::BsplineClenshawCurtis, "bsplineClenshawCurtis"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModBspline, "modBspline"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::FundamentalSpline, "fundamentalSpline"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModFundamentalSpline, "modFundamentalSpline"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::ModBsplineClenshawCurtis, "modBsplineClenshawCurtis"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::Prewavelet, "prewavelet"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::Periodic, "periodic"));
+        verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
 #else
         verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
         verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -315,6 +315,7 @@ namespace SGPP {
 
       return *verboseMap;
     }
+
     /**
      * Factory for everything we don't know.
      */
