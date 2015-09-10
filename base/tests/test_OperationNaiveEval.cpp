@@ -119,16 +119,16 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
     // don't test gradients for linear function
     const bool hasGradients =
-        (grid.getType() == base::GridType::Bspline) ||
-        (grid.getType() == base::GridType::BsplineBoundary) ||
-        (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
-        (grid.getType() == base::GridType::ModBspline) ||
-        (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
-        (grid.getType() == base::GridType::FundamentalSpline) ||
-        (grid.getType() == base::GridType::ModFundamentalSpline) ||
-        (grid.getType() == base::GridType::Wavelet) ||
-        (grid.getType() == base::GridType::WaveletBoundary) ||
-        (grid.getType() == base::GridType::ModWavelet);
+      (grid.getType() == base::GridType::Bspline) ||
+      (grid.getType() == base::GridType::BsplineBoundary) ||
+      (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::ModBspline) ||
+      (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::FundamentalSpline) ||
+      (grid.getType() == base::GridType::ModFundamentalSpline) ||
+      (grid.getType() == base::GridType::Wavelet) ||
+      (grid.getType() == base::GridType::WaveletBoundary) ||
+      (grid.getType() == base::GridType::ModWavelet);
 
     // create regular sparse grid
     std::unique_ptr<GridGenerator> gridGen(grid.createGridGenerator());

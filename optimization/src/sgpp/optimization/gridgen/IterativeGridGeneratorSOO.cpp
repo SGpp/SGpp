@@ -49,7 +49,7 @@ namespace SGPP {
 
       HashRefinementMultiple refinement;
 
-      if (grid.getType() == base::GridType::BsplineClenshawCurtis||
+      if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
           grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
           grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid

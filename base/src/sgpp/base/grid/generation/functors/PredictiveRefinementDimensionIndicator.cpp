@@ -117,7 +117,7 @@ namespace SGPP {
         LinearBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBasis;
         return linBasis.eval(level, index, value);
       } else if (gridType == base::GridType::LinearBoundary ||
-          gridType == base::GridType::LinearL0Boundary) {
+                 gridType == base::GridType::LinearL0Boundary) {
         // linear Basis with Boundaries
         LinearBoundaryBasis<AbstractRefinement::level_t, AbstractRefinement::index_t> linBoundBasis;
         return linBoundBasis.eval(level, index, value);
