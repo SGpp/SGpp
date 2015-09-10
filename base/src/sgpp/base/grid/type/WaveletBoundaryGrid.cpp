@@ -32,8 +32,8 @@ namespace SGPP {
     WaveletBoundaryGrid::~WaveletBoundaryGrid() {
     }
 
-    const char* WaveletBoundaryGrid::getType() {
-      return "waveletBoundary";
+    SGPP::base::GridType WaveletBoundaryGrid::getType() {
+      return SGPP::base::GridType::WaveletBoundary;
     }
 
     const SBasis& WaveletBoundaryGrid::getBasis() {

@@ -36,7 +36,7 @@ namespace SGPP {
          */
         virtual ~WaveletBoundaryGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 

@@ -43,7 +43,7 @@ namespace SGPP {
          */
         virtual ~LinearStretchedBoundaryGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 

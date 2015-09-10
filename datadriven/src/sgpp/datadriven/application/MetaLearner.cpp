@@ -50,7 +50,7 @@ namespace SGPP {
 
       // Set grid config
       this->gridConfig.dim_ = this->dim;
-      this->gridConfig.type_ = SGPP::base::Linear;
+      this->gridConfig.type_ = SGPP::base::GridType::Linear;
       this->gridConfig.level_ = static_cast<int>(this->baseLevel);
 
       DataVector* classesVector = dataset.getClasses();
@@ -85,7 +85,7 @@ namespace SGPP {
 
       // Set grid config
       this->gridConfig.dim_ = this->dim;
-      this->gridConfig.type_ = SGPP::base::Linear;
+      this->gridConfig.type_ = SGPP::base::GridType::Linear;
       this->gridConfig.level_ = static_cast<int>(this->baseLevel);
 
       DataVector* classesVector = dataset.getClasses();
@@ -489,7 +489,7 @@ namespace SGPP {
 
       // Set grid config
       this->gridConfig.dim_ = dim;
-      this->gridConfig.type_ = SGPP::base::Linear;
+      this->gridConfig.type_ = SGPP::base::GridType::Linear;
       this->gridConfig.level_ = static_cast<int>(level);
 
       DataMatrix testTrainingData(instances, dim);

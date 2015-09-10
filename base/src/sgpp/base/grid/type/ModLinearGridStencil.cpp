@@ -36,8 +36,8 @@ namespace SGPP {
     ModLinearGridStencil::~ModLinearGridStencil() {
     }
 
-    const char* ModLinearGridStencil::getType() {
-      return "modlinearstencil";
+    SGPP::base::GridType ModLinearGridStencil::getType() {
+      return SGPP::base::GridType::ModLinearStencil;
     }
 
     const SBasis& ModLinearGridStencil::getBasis() {

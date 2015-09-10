@@ -3,6 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+%{
+#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
+%}
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -19,6 +24,9 @@
 %include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
+%include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
+%include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 #endif
 
 //%apply std::string *INPUT { std::string& istr };
@@ -32,6 +40,11 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationRegularizationDiagonal.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformation.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformation.hpp"
+
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityMarginalizeKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/operation/hash/OperationDensityConditionalKDE.hpp"
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {

@@ -30,8 +30,8 @@ namespace SGPP {
     PeriodicGrid::~PeriodicGrid() {
     }
 
-    const char* PeriodicGrid::getType() {
-      return "periodic";
+    SGPP::base::GridType PeriodicGrid::getType() {
+      return SGPP::base::GridType::Periodic;
     }
 
     Grid* PeriodicGrid::unserialize(std::istream& istr) {

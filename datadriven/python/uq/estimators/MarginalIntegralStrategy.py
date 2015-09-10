@@ -69,6 +69,6 @@ class MarginalIntegralStrategy(SparseGridEstimationStrategy):
         n_alpha.mult(float(vol))
 
         # Estimate the expectation value
-        o_grid, o_alpha = doMarginalize(n_grid, n_alpha, dd)
+        o_grid, o_alpha, errMarg = doMarginalize(n_grid, n_alpha, dd)
 
-        return o_grid, o_alpha, err[1]
+        return o_grid, o_alpha, err[1] + errMarg

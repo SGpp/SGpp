@@ -17,6 +17,7 @@ def reprVal(attrValue):
     7) string
     8) DataVector
     9) objects with ".toJson" method
+    10) objects with ".serialize" method
     @param attrValue: arbitrary object
     """
     if isinstance(attrValue, types.BooleanType):

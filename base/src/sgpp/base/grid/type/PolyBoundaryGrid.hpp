@@ -37,7 +37,7 @@ namespace SGPP {
         virtual ~PolyBoundaryGrid();
 
         virtual const SBasis& getBasis();
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
         virtual void serialize(std::ostream& ostr);
 
         virtual GridGenerator* createGridGenerator();

@@ -13,19 +13,19 @@
 namespace SGPP {
   namespace datadriven {
 
-    LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& Grid,
+    LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
         size_t numInstances, SGPP::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype) {
       LearnerVectorizedPerformance result;
 
       result.GByte_ = 0.0;
       result.GFlop_ = 0.0;
 
-      size_t nDim = Grid.getStorage()->dim();
-      size_t nGridsize = Grid.getSize();
+      size_t nDim = grid.getStorage()->dim();
+      size_t nGridsize = grid.getSize();
 
-      if (strcmp(Grid.getType(), "modlinear") == 0) {
-        for (size_t g = 0; g < Grid.getSize(); g++) {
-          SGPP::base::GridIndex* curPoint = Grid.getStorage()->get(g);
+      if (grid.getType() == base::GridType::ModLinear) {
+        for (size_t g = 0; g < grid.getSize(); g++) {
+          SGPP::base::GridIndex* curPoint = grid.getStorage()->get(g);
 
           for (size_t h = 0; h < nDim; h++) {
             SGPP::base::GridStorage::index_type::level_type level;
@@ -85,7 +85,7 @@ namespace SGPP {
                              * static_cast<float_t>(sizeDatatype)));
       }
 
-      if (solver == SGPP::solver::BiCGSTAB) {
+      if (solver == SGPP::solver::SLESolverType::BiCGSTAB) {
         result.GFlop_ = result.GFlop_ * 2.0;
         result.GByte_ = result.GByte_ * 2.0;
       }

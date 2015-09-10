@@ -45,7 +45,7 @@ namespace SGPP {
          */
         virtual ~LinearTruncatedBoundaryGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 

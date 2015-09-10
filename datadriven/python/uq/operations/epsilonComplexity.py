@@ -1,10 +1,11 @@
 import numpy as np
+from pysgpp import Poly, PolyBoundary
 
 
 def getL2EpsilonComplexity(grid):
     gridType = grid.getType()
 
-    if "ultraPoly" in gridType:
+    if gridType in [Poly, PolyBoundary]:
         p = grid.getDegree()
     else:
         p = 1.

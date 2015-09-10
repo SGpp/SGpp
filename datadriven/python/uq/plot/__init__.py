@@ -26,7 +26,7 @@ from plot2d import (plotSGDE2d,
                     plotGrid2d,
                     plotFunction2d)
 
-from plot3d import (plot3d,
+from plot3d import (plotFunction3d,
                     plotDensity3d,
                     plotKDE3d,
                     plotSG3d,

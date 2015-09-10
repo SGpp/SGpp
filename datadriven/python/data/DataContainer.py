@@ -38,6 +38,9 @@ class DataContainer(object):
     ##Dictionary for values from different categories of data sets
     values = None             
     
+    # Dictionary mapping points to values for fast search
+    dataDict = None
+
     ## Specification of attributes of default data set
     specifications = None  
     
@@ -72,12 +75,21 @@ class DataContainer(object):
     #
     # @param item: integer index of the item in container
     # @return: entry with given index in the container
-    def __getitem__(self,item):
+    def __getitem__(self, item):
+        if isinstance(item, tuple):
+            return self.dataDict[self.name][item]
         self.points[self.name].getRow(item, self.tempPoint)
         self.values[self.name].getRow(item, self.tempValue)
         return DataEntry(self.tempPoint, self.tempValue)
-    
-    
+
+    def __contains__(self, key):
+        return key in self.dataDict[self.name]
+
+    def delTrainingData(self):
+        del self.dataDict[self.TRAIN_CATEGORY]
+        del self.points[self.TRAIN_CATEGORY]
+        del self.values[self.TRAIN_CATEGORY]
+
     ##Implementation of iterator method __iter__()
     # iterates through the container
     def __iter__(self):
@@ -91,7 +103,9 @@ class DataContainer(object):
     # @exception if requested category name doesn't exist
     def getDataSubsetByCategory(self, category):
         if self.points.has_key(category) and self.values.has_key(category):
-            result = DataContainer(points=DataMatrix(self.points[category]), values=DataVector(self.values[category]), name=category)
+            result = DataContainer(points=DataMatrix(self.points[category]),
+                                   values=DataVector(self.values[category]),
+                                   name=category)
             return result
         else:
             raise Exception("Requested category name doesn't exist")
@@ -150,9 +164,10 @@ class DataContainer(object):
     # param points: DataVector with points
     # param values: DataVector with values
     def __init__(self, **kwargs):
-        self.points={}
-        self.values={}
-        self.specifications = {} 
+        self.points = {}
+        self.values = {}
+        self.dataDict = {}
+        self.specifications = {}
         if kwargs is None:
             raise Exception("Argument list is empty")
         try:
@@ -189,6 +204,16 @@ class DataContainer(object):
                         self.values[self.name] = kwargs['values']
                     else:
                         self.values[self.name] = DataVector(kwargs['values'])
+
+                    # creating dictionary for fast search point -> value
+                    self.dataDict[self.name] = {}
+                    
+                    p = DataVector(self.points[self.name].getNcols())
+                    for i in xrange(self.points[self.name].getNrows()):
+                        self.points[self.name].getRow(i, p)
+                        key = tuple(p.array())
+                        self.dataDict[self.name][key] = self.values[self.name][i]
+
                     self.size = self.points[self.name].getNrows()
                     self.dim = self.points[self.name].getNcols()
                     

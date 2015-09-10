@@ -76,17 +76,17 @@ namespace SGPP {
       printer.printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
       bool result = true;
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
       base::GridStorage& gridStorage = *grid.getStorage();
       const size_t d = f.getDimension();
 
       HashRefinementMultiple refinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
+          grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+          grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       // generate initial grid

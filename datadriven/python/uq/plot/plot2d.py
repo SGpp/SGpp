@@ -6,27 +6,29 @@ import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
 
 
-def plotDensity2d(U, n=50):
-    A = np.ones(n * n).reshape(n, n)
+def plotDensity2d(U, n=50, addContour=True):
     xlim, ylim = [0, 1], [0, 1]  # U.getBounds()
 
     x = np.linspace(xlim[0], xlim[1], n)
     y = np.linspace(ylim[0], ylim[1], n)
-    z = np.array([])
+    X, Y = np.meshgrid(x, y)
+    Z = np.ones((n, n))
 
-    for i, xi in enumerate(x):
-        for j, yi in enumerate(y):
-            A[n - 1 - j, i] = U.pdf([xi, yi])
-            z = np.append(z, [xi, yi, U.pdf([xi, yi])])
+    for i in xrange(len(X)):
+        for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
+            Z[i, j] = U.pdf([xi, 1 - yi])
 
     # np.savetxt('density2d.csv', z.reshape(n * n, 3), delimiter=' ')
 
-    plt.imshow(A, interpolation='bicubic', aspect='auto',
+    plt.imshow(Z, interpolation='bicubic', aspect='auto',
                extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
 
     plt.jet()
     plt.colorbar()
 
+    if addContour:
+        cs = plt.contour(X, 1 - Y, Z, colors='black')
+        plt.clabel(cs, inline=1, fontsize=18)
 
 def plotSGDE2d(U, n=100):
     gs = U.grid.getStorage()
