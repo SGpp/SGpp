@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <cmath>
 #include <algorithm>
+#include <map>
 
 #include <sgpp/globaldef.hpp>
 
@@ -40,7 +41,7 @@ namespace SGPP {
         typedef uint32_t index_type;
 
         /// how the coordinates of the points are calculated
-        enum PointDistribution {
+        enum class PointDistribution {
           Normal,
           ClenshawCurtis
         };
@@ -390,6 +391,10 @@ namespace SGPP {
          */
         level_type getLevelMin() const;
 
+      protected:
+        typedef std::map<std::string, PointDistribution> pointDistributionMap;
+        typedef std::map<PointDistribution, std::string> pointDistributionVerboseMap;
+
       private:
         /// the dimension of the gridpoint
         size_t DIM;
@@ -403,6 +408,9 @@ namespace SGPP {
         bool Leaf;
         /// stores the hashvalue of the gridpoint
         size_t hash_value;
+
+        static pointDistributionMap& typeMap();
+        static pointDistributionVerboseMap& typeVerboseMap();
 
 
         friend class HashGridIndexPointerHashFunctor;

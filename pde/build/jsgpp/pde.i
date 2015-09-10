@@ -22,6 +22,8 @@
 %include "pde/src/sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp"
 
+%include "pde/src/sgpp/pde/application/RegularizationConfiguration.hpp"
+
 //%apply std::string *INPUT { std::string& istr };
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };

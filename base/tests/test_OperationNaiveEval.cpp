@@ -119,8 +119,16 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
     // don't test gradients for linear function
     const bool hasGradients =
-      (std::string(grid.getType()).find("linear") == std::string::npos) &&
-      (std::string(grid.getType()).find("poly") == std::string::npos);
+      (grid.getType() == base::GridType::Bspline) ||
+      (grid.getType() == base::GridType::BsplineBoundary) ||
+      (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::ModBspline) ||
+      (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::FundamentalSpline) ||
+      (grid.getType() == base::GridType::ModFundamentalSpline) ||
+      (grid.getType() == base::GridType::Wavelet) ||
+      (grid.getType() == base::GridType::WaveletBoundary) ||
+      (grid.getType() == base::GridType::ModWavelet);
 
     // create regular sparse grid
     std::unique_ptr<GridGenerator> gridGen(grid.createGridGenerator());
@@ -133,9 +141,9 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
-      if ((std::string(grid.getType()) == "bsplineClenshawCurtis") ||
-          (std::string(grid.getType()) == "modBsplineClenshawCurtis") ||
-          (std::string(grid.getType()) == "linearClenshawCurtis")) {
+      if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+          (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+          (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         gp.setPointDistribution(GridIndex::PointDistribution::ClenshawCurtis);
       }
 

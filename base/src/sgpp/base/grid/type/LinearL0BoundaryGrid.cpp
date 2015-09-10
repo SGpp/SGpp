@@ -33,8 +33,8 @@ namespace SGPP {
     LinearL0BoundaryGrid::~LinearL0BoundaryGrid() {
     }
 
-    const char* LinearL0BoundaryGrid::getType() {
-      return "linearL0Boundary";
+    SGPP::base::GridType LinearL0BoundaryGrid::getType() {
+      return SGPP::base::GridType::LinearL0Boundary;
     }
 
     const SBasis& LinearL0BoundaryGrid::getBasis() {

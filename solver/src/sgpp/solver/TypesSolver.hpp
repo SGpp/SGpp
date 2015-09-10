@@ -18,7 +18,7 @@ namespace SGPP {
     /**
      * enum to address different SLE solvers in a standardized way
      */
-    enum SLESolverType {
+    enum class SLESolverType {
       CG,
       BiCGSTAB
     };

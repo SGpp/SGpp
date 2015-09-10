@@ -26,7 +26,7 @@ namespace SGPP {
         PrewaveletGrid(size_t dim);
         virtual ~PrewaveletGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 

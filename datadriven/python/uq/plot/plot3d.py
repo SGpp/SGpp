@@ -65,7 +65,7 @@ def plotSG3d(grid, alpha, n=50, f=lambda x: x):
     return fig, ax, Z
 
 
-def plot3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
+def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=50):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     X = np.linspace(xlim[0], xlim[1], n)

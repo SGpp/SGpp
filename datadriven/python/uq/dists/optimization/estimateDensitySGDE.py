@@ -9,6 +9,7 @@ from pysgpp.extensions.datadriven.uq.quadrature import doQuadrature
 from pysgpp import DataMatrix, Grid, createOperationQuadrature
 from shutil import copy2
 from pysgpp.extensions.datadriven.uq.tools import writeDataARFF
+from pysgpp.extensions.datadriven.tools import writeAlphaARFF
 
 
 def estimateDensitySGDE(trainSamplesUnit,
@@ -200,6 +201,16 @@ printSurfaceFile = %s
 
             sgdeDist.grid = grid
             sgdeDist.alpha = alpha
+
+            gridFileNew = os.path.join(pathResults,
+                                       "samples_%i_%i_l%i_positive.grid" % (iteration, n, level))
+            alphaFileNew = os.path.join(pathResults,
+                                        "samples_%i_%i_l%i_positive.alpha.arff" % (iteration, n, level))
+            fd = open(gridFileNew, "w")
+            fd.write(Grid.serialize(grid))
+            fd.close()
+
+            writeAlphaARFF(alphaFileNew, alpha)
             # -----------------------------------------------------------
             # collect statistics
             accGridSizes = np.append(accGridSizes, grid.getSize())

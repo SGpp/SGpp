@@ -10,6 +10,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
+#include <sgpp/pde/application/RegularizationConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,7 +22,7 @@ namespace SGPP {
     class LearnerSGD: public SGPP::datadriven::Learner {
 
       public:
-        LearnerSGD(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+        LearnerSGD(SGPP::pde::RegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
         /*
          * Implements stochastic gradient descent.

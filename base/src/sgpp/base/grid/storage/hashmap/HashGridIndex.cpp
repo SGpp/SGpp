@@ -19,19 +19,19 @@ namespace SGPP {
 
 
     HashGridIndex::HashGridIndex(size_t dim) :
-      DIM(dim), level(NULL), index(NULL), distr(Normal), hash_value(0) {
+      DIM(dim), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
       level = new level_type[dim];
       index = new index_type[dim];
       Leaf = false;
     }
 
     HashGridIndex::HashGridIndex() :
-      DIM(0), level(NULL), index(NULL), distr(Normal), hash_value(0) {
+      DIM(0), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
       Leaf = false;
     }
 
     HashGridIndex::HashGridIndex(const HashGridIndex& o) :
-      DIM(o.DIM), level(NULL), index(NULL), distr(Normal), hash_value(0) {
+      DIM(o.DIM), level(NULL), index(NULL), distr(PointDistribution::Normal), hash_value(0) {
       level = new level_type[DIM];
       index = new index_type[DIM];
       Leaf = false;
@@ -49,7 +49,6 @@ namespace SGPP {
     HashGridIndex::HashGridIndex(std::istream& istream, int version) :
       DIM(0), level(NULL), index(NULL), hash_value(0) {
       size_t temp_leaf;
-      size_t temp_distr;
 
       istream >> DIM;
 
@@ -75,11 +74,21 @@ namespace SGPP {
         Leaf = false;
       }
 
-      if (version >= 6) {
+      if (version == 6) {
+        size_t temp_distr;
         istream >> temp_distr;
         distr = static_cast<PointDistribution>(temp_distr);
+      } else if (version == 7) {
+        std::string temp_distr;
+        istream >> temp_distr;
+
+        if (typeMap().count(temp_distr) > 0) {
+          distr = typeMap()[temp_distr];
+        } else {
+          distr = PointDistribution::Normal;
+        }
       } else {
-        distr = Normal;
+        distr = PointDistribution::Normal;
       }
 
       rehash();
@@ -110,7 +119,7 @@ namespace SGPP {
       ostream << std::endl;
 
       ostream << Leaf << std::endl;
-      ostream << distr << std::endl;
+      ostream << typeVerboseMap()[distr] << std::endl;
     }
 
     size_t
@@ -140,7 +149,7 @@ namespace SGPP {
 
     float_t
     HashGridIndex::getCoord(size_t d) const {
-      if (distr == Normal) {
+      if (distr == PointDistribution::Normal) {
         // cast 1 to index_type to ensure that 1 << level[d] doesn't overflow
         return static_cast<float_t>(index[d]) /
                static_cast<float_t>(static_cast<index_type>(1) << level[d]);
@@ -385,6 +394,45 @@ namespace SGPP {
       return levelmin;
     }
 
+    std::map<std::string, base::HashGridIndex::PointDistribution>& HashGridIndex::typeMap() {
+      // This is only executed once!
+      static pointDistributionMap* tMap = new pointDistributionMap();
+
+      if (tMap->size() == 0) {
+        /*
+         * Insert strings here.
+         */
+#ifdef _WIN32
+        tMap->insert(std::pair<std::string, base::HashGridIndex::PointDistribution>("Normal", HashGridIndex::PointDistribution::Normal));
+        tMap->insert(std::pair<std::string, base::HashGridIndex::PointDistribution>("ClenshawCurtis", HashGridIndex::PointDistribution::ClenshawCurtis));
+#else
+        tMap->insert(std::make_pair("Normal", HashGridIndex::PointDistribution::Normal));
+        tMap->insert(std::make_pair("ClenshawCurtis", HashGridIndex::PointDistribution::ClenshawCurtis));
+#endif
+      }
+
+      return *tMap;
+    }
+
+    std::map<base::HashGridIndex::PointDistribution, std::string>& HashGridIndex::typeVerboseMap() {
+      // This is only executed once!
+      static pointDistributionVerboseMap* verboseMap = new pointDistributionVerboseMap();
+
+      if (verboseMap->size() == 0) {
+        /*
+         * Insert strings here.
+         */
+#ifdef _WIN32
+        verboseMap->insert(std::pair<base::HashGridIndex::PointDistribution, std::string>(HashGridIndex::PointDistribution::Normal, "Normal"));
+        verboseMap->insert(std::pair<base::HashGridIndex::PointDistribution, std::string>(HashGridIndex::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
+#else
+        verboseMap->insert(std::make_pair(HashGridIndex::PointDistribution::Normal, "Normal"));
+        verboseMap->insert(std::make_pair(HashGridIndex::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
+#endif
+      }
+
+      return *verboseMap;
+    }
 
   }
 }

@@ -32,8 +32,8 @@ namespace SGPP {
     LinearTruncatedBoundaryGrid::~LinearTruncatedBoundaryGrid() {
     }
 
-    const char* LinearTruncatedBoundaryGrid::getType() {
-      return "linearTruncatedBoundary";
+    SGPP::base::GridType LinearTruncatedBoundaryGrid::getType() {
+      return SGPP::base::GridType::LinearTruncatedBoundary;
     }
 
     const SBasis& LinearTruncatedBoundaryGrid::getBasis() {

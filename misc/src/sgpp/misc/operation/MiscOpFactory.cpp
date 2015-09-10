@@ -18,9 +18,9 @@ namespace SGPP {
   namespace op_factory {
     base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid) {
 
-      if (strcmp(grid.getType(), "linear") == 0) {
+      if (grid.getType() == base::GridType::Linear) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage());
-      } else if (strcmp(grid.getType(), "linearL0Boundary") == 0 || strcmp(grid.getType(), "linearBoundary") == 0) {
+      } else if (grid.getType() == base::GridType::LinearL0Boundary || grid.getType() == base::GridType::LinearBoundary) {
         return new pde::OperationLaplaceEnhancedLinearBoundary(grid.getStorage());
       } else {
         throw base::factory_exception("OperationLaplaceEnhanced is not implemented for this grid type.");
@@ -29,9 +29,9 @@ namespace SGPP {
 
     base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, SGPP::base::DataVector& coef) {
 
-      if (strcmp(grid.getType(), "linear") == 0) {
+      if (grid.getType() == base::GridType::Linear) {
         return new pde::OperationLaplaceEnhancedLinear(grid.getStorage(), coef);
-      } else if (strcmp(grid.getType(), "linearL0Boundary") == 0 || strcmp(grid.getType(), "linearBoundary") == 0) {
+      } else if (grid.getType() == base::GridType::LinearL0Boundary || grid.getType() == base::GridType::LinearBoundary) {
         return new pde::OperationLaplaceEnhancedLinearBoundary(grid.getStorage(), coef);
       } else {
         throw base::factory_exception("OperationLaplaceEnhanced is not implemented for this grid type.");
