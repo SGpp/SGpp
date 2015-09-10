@@ -205,6 +205,7 @@ namespace SGPP {
           //get L2 norm of residual for test set
           curMean = computeResidual(*grid, *alpha, *(kfold_test[j]), 0.0);
           curMeanAcc += curMean;
+
           if (!learnerSGDEConfig.silent_) {
             cout << "# " << curLambda << " " << i << " " << j << " "
                  << curMeanAcc << " " << curMean << endl;
@@ -260,9 +261,11 @@ namespace SGPP {
 
         SGPP::datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambdaReg);
         SMatrix.generateb(rhs);
+
         if (!learnerSGDEConfig.silent_) {
           cout << "# LearnerSGDE: Solving " << endl;
         }
+
         SGPP::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
                                               solverConfig.eps_);
         myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
@@ -271,6 +274,7 @@ namespace SGPP {
           if (!learnerSGDEConfig.silent_) {
             cout << "# LearnerSGDE: Refine grid ... ";
           }
+
           //Weight surplus with function evaluation at grid points
           OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
           GridIndex* gp;
@@ -289,11 +293,13 @@ namespace SGPP {
           SurplusRefinementFunctor srf(&alphaWeight,
                                        adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
           gridGen->refine(&srf);
+
           if (!learnerSGDEConfig.silent_) {
             cout << "# LearnerSGDE: ref " << ref << "/"
                  << adaptivityConfig.numRefinements_ - 1 << ": "
                  << grid.getStorage()->size() << endl;
           }
+
           alpha.resize(grid.getStorage()->size());
           rhs.resize(grid.getStorage()->size());
           alpha.setAll(0.0);

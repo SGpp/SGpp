@@ -81,6 +81,7 @@ namespace SGPP {
       } else if (version == 7) {
         std::string temp_distr;
         istream >> temp_distr;
+
         if (typeMap().count(temp_distr) > 0) {
           distr = typeMap()[temp_distr];
         } else {
