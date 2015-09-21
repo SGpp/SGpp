@@ -59,6 +59,8 @@ def setupPython(target, source, env):
                                "python")).abspath
         dst = os.path.join(extensionsPath, pythonModuleFolder)
         if not os.path.exists(dst):
+            if os.path.lexists(dst):
+                os.remove(dst)
             os.symlink(src, dst)
 
     # create __init__.py file which imports all the extensions
