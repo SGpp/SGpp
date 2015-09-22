@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENTGRADIENT_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENTGRADIENT_HPP
+#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONGRADIENT_HPP
+#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONGRADIENT_HPP
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
@@ -21,15 +21,15 @@ namespace SGPP {
     /**
      * One component of a vector-valued function gradient.
      *
-     * @see ScalarComponent
+     * @see ComponentScalarFunction
      */
-    class ScalarComponentGradient : public ScalarFunctionGradient {
+    class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
       public:
         /**
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponentGradient gGradient(fGradient, {NAN, NAN, 0.42});
+         * ComponentScalarFunctionGradient gGradient(fGradient, {NAN, NAN, 0.42});
          * where fGradient is a scalar-valued function gradient with
          * 3 parameters.
          * This selects the first two parameters of fGradient, while
@@ -47,7 +47,7 @@ namespace SGPP {
          *                      while the finite entries denote the constant
          *                      values for the corresponding parameter.
          */
-        ScalarComponentGradient(
+        ComponentScalarFunctionGradient(
           ScalarFunctionGradient& fGradient,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
 
@@ -72,7 +72,7 @@ namespace SGPP {
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponentGradient gGradient(fGradient, 3, {NAN, NAN, 0.42});
+         * ComponentScalarFunctionGradient gGradient(fGradient, 3, {NAN, NAN, 0.42});
          * where fGradient is a vector-valued function gradient with
          * 5 components and 3 parameters.
          * This selects the first two parameters and the fourth component
@@ -83,7 +83,7 @@ namespace SGPP {
          *                      (between 0 and m - 1)
          * @param defaultValues see other constructor
          */
-        ScalarComponentGradient(
+        ComponentScalarFunctionGradient(
           VectorFunctionGradient& fGradient,
           size_t k,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
@@ -160,7 +160,7 @@ namespace SGPP {
         virtual void clone(
           std::unique_ptr<ScalarFunctionGradient>& clone) const {
           clone = std::unique_ptr<ScalarFunctionGradient>(
-                    new ScalarComponentGradient(*this));
+                    new ComponentScalarFunctionGradient(*this));
         }
 
       protected:
@@ -185,7 +185,7 @@ namespace SGPP {
           // make sure defaultValues has the correct size
           if (defaultValues.size() != dF) {
             throw std::runtime_error(
-              "ScalarComponentGradient::initialize(): Invalid defaultValues.");
+              "ComponentScalarFunctionGradient::initialize(): Invalid defaultValues.");
           }
 
           // initialize constant non-NAN entries
@@ -200,4 +200,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENTGRADIENT_HPP */
+#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONGRADIENT_HPP */

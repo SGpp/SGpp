@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENTHESSIAN_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENTHESSIAN_HPP
+#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONHESSIAN_HPP
+#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONHESSIAN_HPP
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
@@ -21,15 +21,15 @@ namespace SGPP {
     /**
      * One component of a vector-valued function Hessian.
      *
-     * @see ScalarComponent
+     * @see ComponentScalarFunction
      */
-    class ScalarComponentHessian : public ScalarFunctionHessian {
+    class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
       public:
         /**
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponentHessian gHessian(fHessian, {NAN, NAN, 0.42});
+         * ComponentScalarFunctionHessian gHessian(fHessian, {NAN, NAN, 0.42});
          * where fHessian is a scalar-valued function Hessian with
          * 3 parameters.
          * This selects the first two parameters of fHessian, while
@@ -47,7 +47,7 @@ namespace SGPP {
          *                      while the finite entries denote the constant
          *                      values for the corresponding parameter.
          */
-        ScalarComponentHessian(
+        ComponentScalarFunctionHessian(
           ScalarFunctionHessian& fHessian,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
 
@@ -73,7 +73,7 @@ namespace SGPP {
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponentHessian gHessian(fHessian, 3, {NAN, NAN, 0.42});
+         * ComponentScalarFunctionHessian gHessian(fHessian, 3, {NAN, NAN, 0.42});
          * where fHessian is a vector-valued function Hessian with
          * 5 components and 3 parameters.
          * This selects the first two parameters and the fourth component
@@ -84,7 +84,7 @@ namespace SGPP {
          *                      (between 0 and m - 1)
          * @param defaultValues see other constructor
          */
-        ScalarComponentHessian(
+        ComponentScalarFunctionHessian(
           VectorFunctionHessian& fHessian,
           size_t k,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
@@ -183,7 +183,7 @@ namespace SGPP {
         virtual void clone(
           std::unique_ptr<ScalarFunctionHessian>& clone) const {
           clone = std::unique_ptr<ScalarFunctionHessian>(
-                    new ScalarComponentHessian(*this));
+                    new ComponentScalarFunctionHessian(*this));
         }
 
       protected:
@@ -210,7 +210,7 @@ namespace SGPP {
           // make sure defaultValues has the correct size
           if (defaultValues.size() != dF) {
             throw std::runtime_error(
-              "ScalarComponentHessian::initialize(): Invalid defaultValues.");
+              "ComponentScalarFunctionHessian::initialize(): Invalid defaultValues.");
           }
 
           // initialize constant non-NAN entries
@@ -225,4 +225,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENTHESSIAN_HPP */
+#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONHESSIAN_HPP */
