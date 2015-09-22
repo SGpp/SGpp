@@ -97,7 +97,8 @@ public:
     stream_program_src << "           uint resultSize," << std::endl;
     stream_program_src << "           uint start_grid," << std::endl;
     stream_program_src << "           uint end_grid," << std::endl;
-    stream_program_src << "           uint numSubspaces) " << std::endl;
+    stream_program_src << "           uint numSubspaces," << std::endl;
+    stream_program_src << "           __global const size_t* ptrLinIndexToGridIndexMap)" << std::endl;
     stream_program_src << "{" << std::endl;
     stream_program_src << "  int globalIdx = get_global_id(0);" << std::endl;
     stream_program_src << "  int localIdx = get_local_id(0);" << std::endl;
@@ -268,7 +269,7 @@ public:
       stream_program_src << "    result += (int)index["<< dims - 1 <<"] >> 1;" << std::endl;
       stream_program_src << "    size_t linIndex = (size_t)result;" << std::endl << std::endl;
 
-      stream_program_src << "    curSupport = ptrAlpha[(int)ptrIndex[(index_start + linIndex)*"<< dims+1 <<"]];;" << std::endl << std::endl;
+      stream_program_src << "    curSupport = ptrAlpha[ptrLinIndexToGridIndexMap[index_start + linIndex]];" << std::endl << std::endl;
 
       if (dims > maxDimUnroll) {
         stream_program_src << "    for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
@@ -385,7 +386,8 @@ public:
     stream_program_src << "           uint sourceSize," << std::endl;
     stream_program_src << "           uint start_data," << std::endl;
     stream_program_src << "           uint end_data," << std::endl;
-    stream_program_src << "           uint numSubspaces)" << std::endl;
+    stream_program_src << "           uint numSubspaces," << std::endl;
+    stream_program_src << "           __global const size_t* ptrLinIndexToGridIndexMap)" << std::endl;
     stream_program_src << "{" << std::endl;
     stream_program_src << "  int globalIdx = get_global_id(0);" << std::endl;
     stream_program_src << "  int localIdx = get_local_id(0);" << std::endl;
@@ -517,7 +519,7 @@ public:
           stream_program_src << "    curSupport *= localSupport;" << std::endl;
         }
       }
-      stream_program_src << "    size_t gridIndex = ptrIndex[(linIndex + index_start)*" << dims+1 << "];" << std::endl;
+      stream_program_src << "    size_t gridIndex = ptrLinIndexToGridIndexMap[index_start + linIndex];" << std::endl;
       stream_program_src << "    atomic_add_global(&ptrResult[gridIndex], curSupport);" << std::endl;
       stream_program_src << "    index_start = numIndices;" << std::endl;
       stream_program_src << "  }" << std::endl;

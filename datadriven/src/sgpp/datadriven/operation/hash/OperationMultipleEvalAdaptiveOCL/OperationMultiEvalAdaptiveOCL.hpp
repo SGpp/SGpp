@@ -11,6 +11,7 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include "../../../opencl/OCLConfigurationParameters.hpp"
 #include "../../../opencl/OCLManager.hpp"
 #include "AdaptiveOCLKernelImpl.hpp"
@@ -31,6 +32,7 @@ protected:
 
     T* levels = nullptr;
     T* indices = nullptr;
+    size_t* linIndexToGridIndexMap = nullptr;
     T* alphas = nullptr;
     /// Member to store the sparse grid's indices for better vectorization
     T* index = nullptr;
@@ -82,6 +84,18 @@ public:
             delete this->index;
         }
 
+        if (this->indices != nullptr) {
+            delete this->indices;
+        }
+
+        if (this->levels != nullptr) {
+            delete this->levels;
+        }
+
+        if (this->linIndexToGridIndexMap != nullptr) {
+            delete this->linIndexToGridIndexMap;
+        }
+
         if (this->kernelDataset != nullptr) {
             delete this->kernelDataset;
         }
@@ -96,15 +110,16 @@ public:
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
+
         T *alphaArray = new T[this->gridSize];
         for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
+            //printf("i: %i alpha: %f \n", i, alpha[i]);
         }
         for (size_t i = alpha.getSize(); i < this->gridSize; i++) {
             alphaArray[i] = 0.0;
         }
         this->alphas = alphaArray;
-        //recalculateLevelAndIndex();
 
         T *resultArray = new T[this->datasetSize];
         for (size_t i = 0; i < this->datasetSize; i++) {
@@ -112,7 +127,7 @@ public:
         }
 
         this->kernel->mult(this->levels, this->indices, this->gridSize, this->kernelDataset, this->datasetSize,
-                this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces);
+                this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces, this->linIndexToGridIndexMap);
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -152,7 +167,7 @@ public:
 
         this->kernel->multTranspose(this->levels, this->indices, this->gridSize, this->kernelDataset,
                 this->preparedDataset.getNcols(), this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo,
-                this->numSubspaces);
+                this->numSubspaces, this->linIndexToGridIndexMap);
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -180,12 +195,9 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+    size_t dataBlocking = parameters.getAsUnsigned("LOCAL_SIZE");
 
-        size_t blockingSize = std::max(dataBlocking, transGridBlocking);
-
-        size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE") * blockingSize;
+    size_t vecWidth = dataBlocking;
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -269,12 +281,11 @@ private:
         std::vector<uint32_t> flatLevelOrder;
 
         for (size_t gridIndex = 0; gridIndex < this->gridSize; gridIndex++) {
-            SGPP::base::GridIndex* point = this->storage->get(gridIndex);
-
             uint32_t* level = new uint32_t[this->dims];
             uint32_t* index = new uint32_t[this->dims];
 
             if (gridIndex < this->storage->size()) {
+                SGPP::base::GridIndex* point = this->storage->get(gridIndex);
                 for (size_t d = 0; d < this->dims; d++) {
                     point->get(d, curLevel, curIndex);
                     level[d] = curLevel;
@@ -304,8 +315,9 @@ private:
                  printf("index: %i \t %i \t %i \t %i \n", index[0], index[1], index[2], index[3]);
                  printf("gridindex: %i \n", gridIndex);*/
 
+                //store gridIndex to map to alphaArray
                 indexList.push_back((uint32_t) gridIndex);
-
+                //store index
                 for (size_t d = 0; d < this->dims; d++) {
                     indexList.push_back(index[d]);
                 }
@@ -313,7 +325,9 @@ private:
                 flatLevelList.insert(std::make_pair(flatLevel, indexList));
                 this->numSubspaces += 1;
             } else {
+                //store gridIndex to map to alphaArray
                 flatLevelEntry->second.push_back((uint32_t) gridIndex);
+                //store index
                 for (size_t d = 0; d < this->dims; d++) {
                     flatLevelEntry->second.push_back(index[d]);
                 }
@@ -326,8 +340,12 @@ private:
 
 //    flatLevelList.clear();
 
+        printf("GridPoints: %i Subspaces: %i \n", this->gridSize,numSubspaces);
+        printf("Subspace Utilization: %f \n", ((double)(this->gridSize))/((double)numSubspaces));
+
         this->levels = new T[(this->dims + 1) * numSubspaces];
         this->indices = new T[(this->dims + 1) * this->gridSize];
+        this->linIndexToGridIndexMap = new size_t[this->gridSize];
 
         size_t indexCounter = 0;
         size_t levelCounter = 0;
@@ -362,6 +380,26 @@ private:
                     T tmpVal = (T) (kv->second[(this->dims) + (i * (this->dims + 1)) + d + 1]);
                     this->indices[(indexCounter + i) * (this->dims + 1) + d + 1] = tmpVal;
                 }
+
+                //calc linear index of gridpoint (relative to subspace)
+                double result = 0.0f;
+                double index_half = 0.0f;
+                double level_calc = 0.0f;
+
+                for (size_t d = 0; d < this->dims - 1; d++) {
+                    //...............................offset...............stepsize.........index.skipalpha
+                    index_half = (int)this->indices[(indexCounter + i) * (this->dims + 1) + d + 1] >> 1;
+                    //..................................offset..........stepsize.........index.skipnumindices
+                    level_calc = pow(2.0, this->levels[(levelCounter * (this->dims + 1)) + d+1 + 1]-1);
+                    result += index_half;
+                    result *= level_calc;
+                }
+
+                //............................offset...............stepsize...........index.........skipalpha
+                result += (int)this->indices[(indexCounter + i) * (this->dims + 1) + (this->dims-1) + 1] >> 1;
+                size_t linIndex = (size_t)result;
+
+                this->linIndexToGridIndexMap[indexCounter + linIndex] = static_cast<size_t>(alpha_idx);
             }
 
             indexCounter += numIndices;

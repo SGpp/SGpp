@@ -266,7 +266,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         } else if (configuration.getType() == datadriven::OperationMultipleEvalType::ADAPTIVE) {
             if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef USE_OCL
-                return datadriven::createAdaptiveOCLConfigured(grid, dataset);
+                return datadriven::createAdaptiveOCLConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif
