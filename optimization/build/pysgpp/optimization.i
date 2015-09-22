@@ -53,9 +53,12 @@ const bool UMFPACK_ENABLED;
 %rename(OptInterpolantScalarFunction)           SGPP::optimization::InterpolantScalarFunction;
 %rename(OptInterpolantScalarFunctionGradient)   SGPP::optimization::InterpolantScalarFunctionGradient;
 %rename(OptInterpolantScalarFunctionHessian)    SGPP::optimization::InterpolantScalarFunctionHessian;
-%rename(OptScalarComponent)                     SGPP::optimization::ScalarComponent;
-%rename(OptScalarComponentGradient)             SGPP::optimization::ScalarComponentGradient;
-%rename(OptScalarComponentHessian)              SGPP::optimization::ScalarComponentHessian;
+%rename(OptComponentScalarFunction)             SGPP::optimization::ComponentScalarFunction;
+%rename(OptComponentScalarFunctionGradient)     SGPP::optimization::ComponentScalarFunctionGradient;
+%rename(OptComponentScalarFunctionHessian)      SGPP::optimization::ComponentScalarFunctionHessian;
+%rename(OptWrapperScalarFunction)               SGPP::optimization::WrapperScalarFunction;
+%rename(OptWrapperScalarFunctionGradient)       SGPP::optimization::WrapperScalarFunctionGradient;
+%rename(OptWrapperScalarFunctionHessian)        SGPP::optimization::WrapperScalarFunctionHessian;
 
 %rename(OptVectorFunction)                      SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)              SGPP::optimization::VectorFunctionGradient;
@@ -67,6 +70,9 @@ const bool UMFPACK_ENABLED;
 %rename(OptInterpolantVectorFunction)           SGPP::optimization::InterpolantVectorFunction;
 %rename(OptInterpolantVectorGradient)           SGPP::optimization::InterpolantVectorGradient;
 %rename(OptInterpolantVectorHessian)            SGPP::optimization::InterpolantVectorHessian;
+%rename(OptWrapperVectorFunction)               SGPP::optimization::WrapperVectorFunction;
+%rename(OptWrapperVectorFunctionGradient)       SGPP::optimization::WrapperVectorFunctionGradient;
+%rename(OptWrapperVectorFunctionHessian)        SGPP::optimization::WrapperVectorFunctionHessian;
 
 %rename(OptTestFunction)    SGPP::optimization::test_functions::TestFunction;
 %rename(OptAckley)          SGPP::optimization::test_functions::Ackley;
@@ -245,9 +251,15 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp"
 
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponent.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponentGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponentHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp"
 
 %include "optimization/src/sgpp/optimization/function/scalar/test/TestFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/test/Ackley.hpp"
